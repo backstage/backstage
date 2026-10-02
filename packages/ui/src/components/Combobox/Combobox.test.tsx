@@ -438,10 +438,10 @@ describe('Combobox', () => {
       </Combobox>,
     );
 
+    openCombobox();
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: 'grace' },
     });
-    openCombobox();
 
     expect(
       screen.queryByRole('option', { name: 'Ada Lovelace' }),
@@ -525,10 +525,10 @@ describe('Combobox', () => {
       </Combobox>,
     );
 
+    openCombobox();
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: 'navy' },
     });
-    openCombobox();
 
     expect(
       screen.queryByRole('option', { name: 'Ada Lovelace' }),
@@ -536,6 +536,57 @@ describe('Combobox', () => {
     expect(screen.getByRole('option', { name: 'Grace Hopper' })).toBeVisible();
     expect(filter).toHaveBeenCalledWith(owners[1], 'navy');
   });
+
+  it.each([
+    {
+      name: 'plain options',
+      query: 'grace',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={owners.map(({ id, name }) => ({ id, label: name }))}
+          search
+          onChange={onChange}
+        />
+      ),
+    },
+    {
+      name: 'a custom filter',
+      query: 'navy',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{ filter: (owner, query) => owner.email.includes(query) }}
+          allowsCustomValue
+          onChange={onChange}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>
+      ),
+    },
+  ])(
+    'selects a client search match with the keyboard for $name',
+    ({ query, renderSubject }) => {
+      const onChange = jest.fn();
+      renderCombobox(renderSubject(onChange));
+
+      const input = screen.getByRole('combobox');
+      openCombobox();
+      fireEvent.change(input, { target: { value: query } });
+
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(input).toHaveAttribute(
+        'aria-activedescendant',
+        screen.getByRole('option', { name: 'Grace Hopper' }).id,
+      );
+
+      fireEvent.keyDown(input, { key: 'Enter' });
+      expect(onChange).toHaveBeenCalledWith('grace');
+      expect(input).toHaveValue('Grace Hopper');
+    },
+  );
 
   it('supports controlled nested client search state', () => {
     const onInputChange = jest.fn();

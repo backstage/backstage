@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import type {
@@ -28,12 +28,15 @@ import type {
   ComboboxServerItemsProps,
   ComboboxServerOptionsProps,
   ComboboxStaticProps,
+  Option,
+  OptionSection,
 } from './types';
 import type { Key } from 'react-aria-components';
 import type {
   AsyncListSource,
   CollectionItem,
   NormalizedOption,
+  NormalizedOptionSection,
 } from '../../types/selectableCollection';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ComboboxDefinition } from './definition';
@@ -48,6 +51,7 @@ import {
 } from '../../hooks/useCollectionAdapter';
 import {
   isAsyncListSource,
+  normalizeOptions,
   resolveCollectionSource,
 } from '../../utils/selectableCollection';
 import {
@@ -120,6 +124,24 @@ function resolveComboboxStateProps<T extends CollectionItem>({
   };
 }
 
+function filterOptions(
+  options: ReadonlyArray<Option | OptionSection>,
+  matches: (option: NormalizedOption) => boolean,
+): Array<NormalizedOption | NormalizedOptionSection> {
+  return normalizeOptions(options).flatMap<
+    NormalizedOption | NormalizedOptionSection
+  >(item => {
+    if (!('options' in item)) {
+      return matches(item) ? [item] : [];
+    }
+
+    const sectionOptions = item.options.filter(matches);
+    return sectionOptions.length > 0
+      ? [{ ...item, options: sectionOptions }]
+      : [];
+  });
+}
+
 /**
  * A text input combined with a dropdown list of options. The user can type to filter
  * suggestions, navigate with the keyboard, and pick a value. With
@@ -179,17 +201,33 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
   const renderedItems = collectionSource.rendersItems
     ? collection.canonicalItems
     : undefined;
-  const rootItems =
-    renderedItems ??
-    (collectionSource.options !== undefined && search !== undefined
-      ? collection.canonicalItems
-      : undefined);
   const searchProps = typeof search === 'object' ? search : undefined;
+  const isServerSearch = searchProps?.mode === 'server';
   const isDirectAsyncServer =
-    searchProps?.mode === 'server' &&
-    isAsyncListSource(collectionSource.source);
-  const shouldDisableRootFilter =
-    searchProps?.mode === 'server' || searchProps?.filter !== undefined;
+    isServerSearch && isAsyncListSource(collectionSource.source);
+  // React Aria filters the collection by text unless items are passed, so
+  // items are only passed when the server or a custom filter decides what
+  // matches. The collection must hold only the visible options, because
+  // keyboard navigation and announcements read it directly.
+  const customFilter = searchProps?.filter as
+    | ((item: T | NormalizedOption, query: string) => boolean)
+    | undefined;
+  const [customFilterQuery, setCustomFilterQuery] = useState('');
+  const matchesCustomFilter = customFilter
+    ? (item: T | NormalizedOption) => customFilter(item, customFilterQuery)
+    : undefined;
+  const listBoxOptions =
+    matchesCustomFilter && collectionSource.options
+      ? filterOptions(collectionSource.options, matchesCustomFilter)
+      : collectionSource.options;
+  const listBoxItems =
+    matchesCustomFilter && renderedItems
+      ? renderedItems.filter(matchesCustomFilter)
+      : renderedItems;
+  const rootItems =
+    isServerSearch || matchesCustomFilter
+      ? listBoxItems ?? collection.canonicalItems
+      : undefined;
   const {
     value,
     defaultValue,
@@ -198,6 +236,7 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     defaultInputValue,
     onInputChange,
     menuTrigger = 'focus',
+    onOpenChange,
     ...ariaProps
   } = restProps as typeof restProps & ComboboxRuntimeStateProps<T>;
   const asyncComboboxProps = isDirectAsyncServer
@@ -223,7 +262,18 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     collection,
     hasSearch: search !== undefined,
   });
-  const defaultFilter = shouldDisableRootFilter ? () => true : contains;
+  const handleInputChange = (nextInputValue: string) => {
+    setCustomFilterQuery(nextInputValue);
+    comboboxStateProps.onInputChange?.(nextInputValue);
+  };
+  const handleOpenChange: typeof onOpenChange = (isOpen, trigger) => {
+    // Like React Aria's own filtering, show every option when the menu opens
+    // without typing.
+    if (isOpen && trigger !== 'input') {
+      setCustomFilterQuery('');
+    }
+    onOpenChange?.(isOpen, trigger);
+  };
   const getItemTextValue =
     isDirectAsyncServer && items !== undefined
       ? getAsyncComboboxItemTextValue
@@ -232,12 +282,14 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
   return (
     <AriaComboBox<T>
       className={classes.root}
-      defaultFilter={defaultFilter}
+      defaultFilter={contains}
       items={rootItems}
       {...dataAttributes}
       ref={ref}
       {...ariaProps}
       {...comboboxStateProps}
+      onInputChange={handleInputChange}
+      onOpenChange={handleOpenChange}
       menuTrigger={menuTrigger}
       allowsEmptyCollection
     >
@@ -251,10 +303,9 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
       <FieldError />
       <Popover className={classes.popover} hideArrow {...dataAttributes}>
         <ComboboxListBox
-          options={collectionSource.options}
-          items={renderedItems}
+          options={listBoxOptions}
+          items={listBoxItems}
           dependencies={dependencies}
-          search={search as never}
           loading={collection.loading}
           isStale={collection.isStale}
           getItemTextValue={getItemTextValue}
