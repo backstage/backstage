@@ -34,6 +34,10 @@ import {
   isRuleAiResourceEntity,
   isPluginAiResourceEntity,
   isMarketplaceAiResourceEntity,
+  RELATION_HAS_SKILL,
+  RELATION_SKILL_OF,
+  RELATION_HAS_PLUGIN,
+  RELATION_PLUGIN_OF,
 } from './AiResourceEntityV1alpha1';
 
 describe('AiResourceV1alpha1 default validator', () => {
@@ -469,7 +473,6 @@ describe('aiResourceEntityModel', () => {
     ]);
     expect(relations?.find(r => r.forward.type === 'partOf')?.toKind).toEqual([
       'System',
-      'AiResource',
     ]);
     expect(
       relations?.find(r => r.forward.type === 'dependsOn')?.toKind,
@@ -484,6 +487,45 @@ describe('aiResourceEntityModel', () => {
       model
         .getRelations({ kind: 'AiResource' })
         ?.find(r => r.forward.type === 'dependencyOf')?.toKind,
+    ).toEqual(['AiResource']);
+
+    const plugin = model.getKind({
+      kind: 'AiResource',
+      apiVersion: 'backstage.io/v1alpha1',
+      spec: { type: 'plugin' },
+    });
+    expect(plugin?.relationFields).toContainEqual(
+      expect.objectContaining({
+        path: 'spec.skills',
+        relation: RELATION_HAS_SKILL,
+        allowedKinds: ['AiResource'],
+      }),
+    );
+
+    const marketplace = model.getKind({
+      kind: 'AiResource',
+      apiVersion: 'backstage.io/v1alpha1',
+      spec: { type: 'marketplace' },
+    });
+    expect(marketplace?.relationFields).toContainEqual(
+      expect.objectContaining({
+        path: 'spec.plugins',
+        relation: RELATION_HAS_PLUGIN,
+        allowedKinds: ['AiResource'],
+      }),
+    );
+
+    expect(
+      relations?.find(r => r.forward.type === RELATION_HAS_SKILL)?.toKind,
+    ).toEqual(['AiResource']);
+    expect(
+      relations?.find(r => r.forward.type === RELATION_SKILL_OF)?.toKind,
+    ).toEqual(['AiResource']);
+    expect(
+      relations?.find(r => r.forward.type === RELATION_HAS_PLUGIN)?.toKind,
+    ).toEqual(['AiResource']);
+    expect(
+      relations?.find(r => r.forward.type === RELATION_PLUGIN_OF)?.toKind,
     ).toEqual(['AiResource']);
   });
 });
