@@ -326,7 +326,6 @@ export type ComboboxListBoxOwnProps<T extends CollectionItem> = {
   items?: Iterable<T>;
   children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);
   dependencies?: ReadonlyArray<unknown>;
-  search?: ComboboxSearch<T> | ComboboxAsyncSearch<T> | ComboboxStaticSearch;
   loading?: LoadingConfig;
   isStale?: boolean;
   getItemTextValue?: (item: T) => string;
