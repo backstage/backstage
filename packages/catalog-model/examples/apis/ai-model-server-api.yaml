@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: local-inference-server
+  description: A locally hosted AI model server exposing an OpenAI-compatible inference API
+  title: Local Inference Server
+  tags:
+    - ai
+    - ai-model
+spec:
+  type: ai-model-server
+  lifecycle: experimental
+  owner: team-a
+  serverType: openai-v1
+  serverUrl: http://localhost:11434/v1
+  models:
+    discoverable: true
+    available:
+      - llama3
+      - mistral
+    default: llama3
