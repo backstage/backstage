@@ -209,7 +209,7 @@ describe('runCli', () => {
       expect(output).toContain(['example-cli', ...commandPath].join(' '));
       expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
       expect(output).toContain(
-        ['example/', 'list', 'List examples'][commandPath.length],
+        ['example list', 'list', 'List examples'][commandPath.length],
       );
       expect(output).not.toContain('Invalid command');
       expect(process.exit).not.toHaveBeenCalled();
@@ -269,7 +269,10 @@ describe('runCli', () => {
         .trim()
         .split('\n')
         .map(line => line.trim().replace(/\s+/g, ' ')),
-    ).toEqual(['package example/', 'repo build, clean, fix, lint, start, …']);
+    ).toEqual([
+      'package example list',
+      'repo build, clean, fix, lint, start, test',
+    ]);
     expect(
       commands
         .trim()
@@ -281,6 +284,63 @@ describe('runCli', () => {
       'zulu Run zulu',
     ]);
     expect(output).not.toContain('hidden');
+  });
+
+  it('fits previews to terminal width and expands groups breadth-first', async () => {
+    const columnsDescriptor = Object.getOwnPropertyDescriptor(
+      process.stdout,
+      'columns',
+    );
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const loader = jest.fn();
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['repo', 'a', 'x', 'one'],
+          ['repo', 'a', 'x', 'two'],
+          ['repo', 'b', 'one'],
+          ['repo', 'b', 'two'],
+          ['repo', 'z'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Example command',
+            execute: { loader },
+          });
+        }
+      },
+    });
+    try {
+      for (const [width, expected] of [
+        [1, '…'],
+        [8, 'a/, …'],
+        [9, 'a/, b/, z'],
+        [11, 'a x/, b/, z'],
+        [24, 'a x/, b one, b two, z'],
+        [33, 'a x one, a x two, b one, b two, z'],
+        [undefined, 'a x one, a x two, b one, b two, z'],
+      ] as const) {
+        Object.defineProperty(process.stdout, 'columns', {
+          configurable: true,
+          value: width === undefined ? undefined : width + 14,
+        });
+        process.argv = ['node', 'cli'];
+        logSpy.mockClear();
+        await runCli({ modules: [testModule], name: 'example-cli' });
+        const output = logSpy.mock.calls.flat().join('\n');
+        expect(output.split('GROUPS:')[1].split('COMMANDS:')[0].trim()).toBe(
+          `repo        ${expected}`,
+        );
+      }
+      expect(loader).not.toHaveBeenCalled();
+    } finally {
+      if (columnsDescriptor) {
+        Object.defineProperty(process.stdout, 'columns', columnsDescriptor);
+      } else {
+        Reflect.deleteProperty(process.stdout, 'columns');
+      }
+    }
   });
 
   it('supports the short version flag', async () => {
