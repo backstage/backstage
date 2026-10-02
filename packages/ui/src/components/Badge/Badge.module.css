@@ -25,6 +25,7 @@
     align-items: center;
     justify-content: center;
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
     gap: var(--bui-space-1);
 
     &[data-on-bg='neutral-1'] {

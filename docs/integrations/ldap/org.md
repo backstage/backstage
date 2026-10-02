@@ -333,7 +333,7 @@ vendor:
 
 ## Customize the Provider
 
-In case you want to customize the ingested entities, the provider allows to pass
+In case you want to customize the ingested entities, the provider allows you to pass
 transformers for users and groups.
 
 Transformers can be configured by extending `ldapOrgEntityProviderTransformsExtensionPoint`. Here is an example:

@@ -216,7 +216,11 @@ describe('DefaultCatalogCollatorFactory', () => {
       expect(documents).toHaveLength(0);
     });
 
-    it('paginates through catalog entities using batchSize', async () => {
+    it('paginates without requesting total item counts', async () => {
+      const paginationCatalog = catalogServiceMock({
+        entities: expectedEntities,
+      });
+      const queryEntitiesSpy = jest.spyOn(paginationCatalog, 'queryEntities');
       factory = DefaultCatalogCollatorFactory.fromConfig(
         mockServices.rootConfig({
           data: {
@@ -227,7 +231,7 @@ describe('DefaultCatalogCollatorFactory', () => {
         }),
         {
           auth,
-          catalog,
+          catalog: paginationCatalog,
         },
       );
       collator = await factory.getCollator();
@@ -242,6 +246,17 @@ describe('DefaultCatalogCollatorFactory', () => {
       expect(documents[1].location).toBe(
         '/catalog/default/component/test-entity-2',
       );
+      expect(queryEntitiesSpy).toHaveBeenNthCalledWith(
+        1,
+        { filter: undefined, limit: 1, totalItems: 'exclude' },
+        { credentials: expect.anything() },
+      );
+      expect(queryEntitiesSpy).toHaveBeenNthCalledWith(
+        2,
+        { cursor: expect.any(String), limit: 1 },
+        { credentials: expect.anything() },
+      );
+      expect(queryEntitiesSpy).toHaveBeenCalledTimes(2);
     });
   });
 });

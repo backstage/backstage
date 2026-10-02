@@ -82,6 +82,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
           ctrlKey: e.ctrlKey,
           metaKey: e.metaKey,
           shiftKey: e.shiftKey,
+          altKey: e.altKey,
         }),
       );
     },

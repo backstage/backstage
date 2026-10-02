@@ -17,6 +17,7 @@
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { IncrementalEntityProvider } from '../types';
 import {
   catalogModuleIncrementalIngestionEntityProvider,
@@ -38,13 +39,14 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
     const addEntityProvider = jest.fn();
 
     const httpRouterMock = mockServices.httpRouter.mock();
-
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
       features: [
         httpRouterMock.factory,
+        mockServices.httpAuth.factory(),
+        mockServices.permissions.factory({ result: AuthorizeResult.ALLOW }),
         catalogModuleIncrementalIngestionEntityProvider,
         createBackendModule({
           pluginId: 'catalog',

@@ -391,7 +391,12 @@ export class OidcService {
       enabled,
       allowedClientIdPatterns: configuredClientIdPatterns
         ? [...new Set([...configuredClientIdPatterns, cliClientId])]
-        : ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
+        : [
+            'https://claude.ai/*',
+            'https://vscode.dev/*',
+            'https://chatgpt.com/oauth/codex/*/client.json',
+            cliClientId,
+          ],
       allowedRedirectUriPatterns:
         this.config.getOptionalStringArray(
           `${configPath}.allowedRedirectUriPatterns`,
@@ -743,7 +748,7 @@ export class OidcService {
       return (
         cimd.enabled &&
         cimd.allowedClientIdPatterns.some(pattern =>
-          matcher.isMatch(clientId, pattern),
+          createUrlPatternMatcher(pattern)(cimdUrl),
         )
       );
     }

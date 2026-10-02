@@ -16,6 +16,8 @@
 
 import { HumanDuration } from '@backstage/types';
 
+import { ContainerRunnerPullOptions } from '@backstage/plugin-techdocs-node';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
@@ -48,6 +50,12 @@ export interface Config {
       pullImage?: boolean;
 
       /**
+       * Credentials for private registries
+       * @visibility secret
+       */
+      pullOptions?: ContainerRunnerPullOptions;
+
+      /**
        * Override behavior specific to mkdocs.
        */
       mkdocs?: {
@@ -76,6 +84,18 @@ export interface Config {
          * @see https://www.mkdocs.org/user-guide/configuration/#hooks
          */
         dangerouslyAllowAdditionalKeys?: string[];
+
+        /**
+         * List of additional MkDocs plugins to allow beyond the default set.
+         * Plugins not in this list or the default set will be removed from
+         * mkdocs.yml before documentation generation.
+         *
+         * WARNING: Some MkDocs plugins can make outbound HTTP requests or execute
+         * arbitrary code during documentation generation. Only allow plugins that
+         * have been audited for use in your environment, including the configuration
+         * options that documentation authors can supply.
+         */
+        dangerouslyAllowAdditionalPlugins?: string[];
 
         /**
          * Disable external fonts for all TechDocs sites.

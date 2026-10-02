@@ -91,6 +91,7 @@
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
     color: var(--bui-fg-primary);
     width: 100%;
     height: 100%;
@@ -212,6 +213,7 @@
     cursor: default;
     color: var(--bui-fg-primary);
     font-size: var(--bui-font-size-3);
+    line-height: 1.15;
   }
 
   .bui-SearchAutocompleteLoadingState,
@@ -222,5 +224,6 @@
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
   }
 }

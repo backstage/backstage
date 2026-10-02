@@ -14,16 +14,61 @@
  * limitations under the License.
  */
 import request from 'supertest';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogPlugin } from './CatalogPlugin';
 import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { createCatalogPermissionRule } from '../permissions';
+import { catalogAnalysisExtensionPoint } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('catalogPlugin', () => {
-  it('should support custom permission rules', async () => {
+  it('applies permissions to a custom location analyzer', async () => {
+    const customLocationAnalyzer = {
+      analyzeLocation: jest.fn().mockResolvedValue({
+        existingEntityFiles: [],
+        generateEntities: [],
+      }),
+    };
+    const { server } = await startTestBackend({
+      features: [
+        mockServices.permissions.factory({
+          result: AuthorizeResult.DENY,
+        }),
+        catalogPlugin,
+        createBackendModule({
+          pluginId: 'catalog',
+          moduleId: 'custom-location-analyzer',
+          register(reg) {
+            reg.registerInit({
+              deps: {
+                analysis: catalogAnalysisExtensionPoint,
+              },
+              async init({ analysis }) {
+                analysis.setLocationAnalyzer(customLocationAnalyzer);
+              },
+            });
+          },
+        }),
+      ],
+    });
+
+    const response = await request(server)
+      .post('/api/catalog/analyze-location')
+      .send({
+        location: {
+          type: 'url',
+          target: 'https://example.com/catalog-info.yaml',
+        },
+      });
+
+    expect(response.status).toBe(403);
+    expect(customLocationAnalyzer.analyzeLocation).not.toHaveBeenCalled();
+  });
+
+  it('should register permissions and support custom permission rules', async () => {
     const { server } = await startTestBackend({
       features: [
         catalogPlugin,
@@ -61,6 +106,12 @@ describe('catalogPlugin', () => {
     );
 
     expect(res.status).toBe(200);
+    expect(res.body.permissions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'catalog.ingestion.read' }),
+        expect.objectContaining({ name: 'catalog.ingestion.manage' }),
+      ]),
+    );
     expect(res.body.rules).toContainEqual({
       name: 'test',
       resourceType: 'catalog-entity',

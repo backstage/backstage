@@ -34,8 +34,10 @@ import { examples } from './githubIssuesCreate.examples';
 export function createGithubIssuesCreateAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:issues:create',
@@ -119,6 +121,7 @@ export function createGithubIssuesCreateAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         host,
         owner,

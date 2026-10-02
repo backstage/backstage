@@ -54,6 +54,7 @@ export const runMkdocsServer = (options: {
         'serve',
         '--dev-addr',
         `0.0.0.0:${port}`,
+        '--livereload',
         ...(options.mkdocsConfigFileName
           ? ['--config-file', options.mkdocsConfigFileName]
           : []),
@@ -74,6 +75,7 @@ export const runMkdocsServer = (options: {
       'serve',
       '--dev-addr',
       `127.0.0.1:${port}`,
+      '--livereload',
       ...(options.mkdocsConfigFileName
         ? ['--config-file', options.mkdocsConfigFileName]
         : []),

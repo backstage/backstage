@@ -121,7 +121,16 @@ async function syncPostgres(
     ON CONFLICT (entity_id, key, value)
     DO UPDATE SET original_value = EXCLUDED.original_value
     `,
-    [keys, values, originalValues, entityId, entityId, entityId],
+    [
+      keys,
+      // Knex's types don't include nullable PostgreSQL array parameters,
+      // even though they are supported by the pg driver.
+      values as Knex.RawBinding,
+      originalValues as Knex.RawBinding,
+      entityId,
+      entityId,
+      entityId,
+    ],
   );
 }
 

@@ -1,0 +1,8 @@
+site_name: Test
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true

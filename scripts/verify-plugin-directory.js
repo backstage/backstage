@@ -48,7 +48,7 @@ async function main() {
       pluginDirectoryFile,
     );
 
-    if (!pluginDirectoryFile.toLocaleLowerCase().includes('.yaml')) {
+    if (!pluginDirectoryFile.toLowerCase().includes('.yaml')) {
       hasErrors = true;
       console.log(
         `${pluginDirectoryFilePath}: The '.yaml' extension is missing`,

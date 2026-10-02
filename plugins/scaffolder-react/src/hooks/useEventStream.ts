@@ -72,6 +72,7 @@ type ReducerAction =
   | { type: 'RECOVERED'; data: ReducerLogEntry }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
   | { type: 'COMPLETED'; data: ReducerLogEntry }
+  | { type: 'RECONNECTING' }
   | { type: 'ERROR'; data: Error };
 
 function reducer(draft: TaskStream, action: ReducerAction) {
@@ -163,6 +164,12 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       return;
     }
 
+    case 'RECONNECTING': {
+      draft.error = undefined;
+      draft.completed = false;
+      return;
+    }
+
     case 'ERROR': {
       draft.error = action.data;
       draft.loading = false;
@@ -194,108 +201,164 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let didCancel = false;
     let subscription: Subscription | undefined;
     let logPusher: NodeJS.Timeout | undefined;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
     let retryCount = 1;
     let isTaskRecoverable = false;
-    const startStreamLogProcess = () =>
-      scaffolderApi.getTask(taskId).then(
+    let lastSeenEventId: number | undefined;
+    let isStreamComplete = false;
+    let hasInitialized = false;
+    let startGeneration = 0;
+    let currentEmitLogs: (() => void) | undefined;
+
+    const cleanUpStream = () => {
+      currentEmitLogs?.();
+      currentEmitLogs = undefined;
+      if (subscription) {
+        subscription.unsubscribe();
+        subscription = undefined;
+      }
+      if (logPusher) {
+        clearInterval(logPusher);
+        logPusher = undefined;
+      }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = undefined;
+      }
+    };
+
+    function reconnectStream() {
+      dispatch({ type: 'RECONNECTING' });
+      const generation = ++startGeneration;
+      cleanUpStream();
+      subscribeToStream(generation);
+    }
+
+    function subscribeToStream(generation: number) {
+      const observable = scaffolderApi.streamLogs({
+        isTaskRecoverable,
+        taskId,
+        after: lastSeenEventId,
+      });
+
+      const collectedLogEvents = new Array<LogEvent>();
+
+      function emitLogs() {
+        if (collectedLogEvents.length) {
+          const logs = collectedLogEvents.splice(0, collectedLogEvents.length);
+          dispatch({ type: 'LOGS', data: logs });
+        }
+      }
+
+      currentEmitLogs = emitLogs;
+      logPusher = setInterval(emitLogs, 500);
+
+      subscription = observable.subscribe({
+        next: event => {
+          retryCount = 1;
+          if (event.id !== undefined) {
+            lastSeenEventId = event.id;
+          }
+          switch (event.type) {
+            case 'log':
+              return collectedLogEvents.push(event);
+            case 'cancelled':
+              if (!isTaskRecoverable) {
+                isStreamComplete = true;
+              }
+              emitLogs();
+              dispatch({ type: 'CANCELLED' });
+              if (isStreamComplete) {
+                cleanUpStream();
+              }
+              return undefined;
+            case 'completion':
+              if (!isTaskRecoverable) {
+                isStreamComplete = true;
+              }
+              emitLogs();
+              dispatch({ type: 'COMPLETED', data: event });
+              if (isStreamComplete) {
+                cleanUpStream();
+              }
+              return undefined;
+            case 'recovered':
+              isStreamComplete = false;
+              dispatch({ type: 'RECOVERED', data: event });
+              return undefined;
+            default:
+              throw new Error(`Unhandled event type ${event.type} in observer`);
+          }
+        },
+        error: error => {
+          cleanUpStream();
+
+          if (isStreamComplete || generation !== startGeneration || didCancel) {
+            return;
+          }
+
+          const maxRetries = 3;
+
+          if (!error.message) {
+            error.message = `We cannot connect at the moment, trying again in some seconds... Retrying (${
+              retryCount > maxRetries ? maxRetries : retryCount
+            }/${maxRetries} retries)`;
+          }
+
+          retryTimer = setTimeout(() => {
+            retryTimer = undefined;
+            retryCount += 1;
+            reconnectStream();
+          }, 15000);
+
+          dispatch({ type: 'ERROR', data: error });
+        },
+      });
+    }
+
+    const startStreamLogProcess = () => {
+      const generation = ++startGeneration;
+      cleanUpStream();
+
+      return scaffolderApi.getTask(taskId).then(
         task => {
-          if (didCancel) {
+          if (didCancel || generation !== startGeneration) {
             return;
           }
           isTaskRecoverable =
             task.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
             'startOver';
+
+          hasInitialized = true;
           dispatch({ type: 'INIT', data: task });
-
-          // TODO(blam): Use a normal fetch to fetch the current log for the event stream
-          // and use that for an INIT_EVENTs dispatch event, and then
-          // use the last event ID to subscribe using after option to
-          // stream logs. Without this, if you have a lot of logs, it can look like the
-          // task is being rebuilt on load as it progresses through the steps at a slower
-          // rate whilst it builds the status from the event logs
-          const observable = scaffolderApi.streamLogs({
-            isTaskRecoverable,
-            taskId,
-          });
-
-          const collectedLogEvents = new Array<LogEvent>();
-
-          function emitLogs() {
-            if (collectedLogEvents.length) {
-              const logs = collectedLogEvents.splice(
-                0,
-                collectedLogEvents.length,
-              );
-              dispatch({ type: 'LOGS', data: logs });
-            }
-          }
-
-          logPusher = setInterval(emitLogs, 500);
-
-          subscription = observable.subscribe({
-            next: event => {
-              retryCount = 1;
-              switch (event.type) {
-                case 'log':
-                  return collectedLogEvents.push(event);
-                case 'cancelled':
-                  dispatch({ type: 'CANCELLED' });
-                  return undefined;
-                case 'completion':
-                  emitLogs();
-                  dispatch({ type: 'COMPLETED', data: event });
-                  return undefined;
-                case 'recovered':
-                  dispatch({ type: 'RECOVERED', data: event });
-                  return undefined;
-                default:
-                  throw new Error(
-                    `Unhandled event type ${event.type} in observer`,
-                  );
-              }
-            },
-            error: error => {
-              emitLogs();
-              // in some cases the error is a refused connection from backend
-              // this can happen from internet issues or proxy problems
-              // so we try to reconnect again after some time
-              // just to restart the fetch process
-              // details here https://github.com/backstage/backstage/issues/15002
-
-              const maxRetries = 3;
-
-              if (!error.message) {
-                error.message = `We cannot connect at the moment, trying again in some seconds... Retrying (${
-                  retryCount > maxRetries ? maxRetries : retryCount
-                }/${maxRetries} retries)`;
-              }
-
-              setTimeout(() => {
-                retryCount += 1;
-                void startStreamLogProcess();
-              }, 15000);
-
-              dispatch({ type: 'ERROR', data: error });
-            },
-          });
+          subscribeToStream(generation);
         },
         error => {
-          if (!didCancel) {
+          if (!didCancel && generation === startGeneration) {
             dispatch({ type: 'ERROR', data: error });
           }
         },
       );
+    };
     void startStreamLogProcess();
-    return () => {
-      if (!isTaskRecoverable) {
-        didCancel = true;
-        if (subscription) {
-          subscription.unsubscribe();
-        }
-        if (logPusher) {
-          clearInterval(logPusher);
-        }
+
+    const onVisibilityChange = () => {
+      if (didCancel || isStreamComplete) return;
+      if (document.hidden) {
+        startGeneration++;
+        cleanUpStream();
+      } else if (hasInitialized) {
+        reconnectStream();
+      } else {
+        void startStreamLogProcess();
       }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      didCancel = true;
+      cleanUpStream();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, [scaffolderApi, dispatch, taskId]);
 

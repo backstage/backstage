@@ -209,6 +209,24 @@ describe('AuthorizedSearchEngine', () => {
     );
   });
 
+  it('should return empty results and not query the engine when all types are denied', async () => {
+    mockedPermissionQuery.mockImplementation(async queries =>
+      queries.map(() => ({
+        result: AuthorizeResult.DENY,
+      })),
+    );
+
+    const result = await authorizedSearchEngine.query({ term: '' }, options);
+
+    expect(result).toEqual({
+      results: [],
+      nextPageCursor: undefined,
+      previousPageCursor: undefined,
+      numberOfResults: undefined,
+    });
+    expect(mockedQuery).not.toHaveBeenCalled();
+  });
+
   it('should skip sending request for types that are not allowed', async () => {
     mockedQuery.mockImplementation(async () => ({ results }));
     mockedPermissionQuery.mockImplementation(async queries => {

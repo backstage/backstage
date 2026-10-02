@@ -37,13 +37,65 @@ export class PassportHelpers {
     profile: PassportProfile,
     idToken?: string,
   ): ProfileInfo => {
+    const extendedProfile = profile as PassportProfile & {
+      emails?: Array<{
+        value: string;
+        type?: string;
+        verified?: unknown;
+      }>;
+      _json?: unknown;
+    };
+
     let email: string | undefined = undefined;
-    if (profile.emails && profile.emails.length > 0) {
-      const [firstEmail] = profile.emails;
+    let emailWasRejected = false;
+
+    if (
+      Array.isArray(extendedProfile.emails) &&
+      extendedProfile.emails.length > 0
+    ) {
+      const [firstEmail] = extendedProfile.emails;
       email = firstEmail.value;
+      emailWasRejected = firstEmail.verified === false;
     } else if (profile.email) {
       // This is the case for Atlassian
       email = profile.email;
+    }
+
+    const rawProfileValue = extendedProfile._json;
+    const rawProfile =
+      typeof rawProfileValue === 'object' &&
+      rawProfileValue !== null &&
+      !Array.isArray(rawProfileValue)
+        ? (rawProfileValue as Record<string, unknown>)
+        : undefined;
+    if (
+      email &&
+      rawProfile &&
+      rawProfile.email === email &&
+      rawProfile.email_verified === false
+    ) {
+      emailWasRejected = true;
+    }
+
+    let decoded:
+      | {
+          email?: string;
+          email_verified?: unknown;
+          name?: string;
+          picture?: string;
+        }
+      | undefined;
+    let decodeError: unknown;
+    if (idToken) {
+      try {
+        decoded = decodeJwt(idToken);
+      } catch (error) {
+        decodeError = error;
+      }
+    }
+
+    if (emailWasRejected) {
+      email = undefined;
     }
 
     let picture: string | undefined = undefined;
@@ -60,27 +112,30 @@ export class PassportHelpers {
     let displayName: string | undefined =
       profile.displayName ?? profile.username ?? profile.id;
 
-    if ((!email || !picture || !displayName) && idToken) {
-      try {
-        const decoded = decodeJwt(idToken) as {
-          email?: string;
-          name?: string;
-          picture?: string;
-        };
-        if (!email && decoded.email) {
-          email = decoded.email;
-        }
-        if (!picture && decoded.picture) {
-          picture = decoded.picture;
-        }
-        if (!displayName && decoded.name) {
-          displayName = decoded.name;
-        }
-      } catch (e) {
+    if (
+      ((!email && !emailWasRejected) || !picture || !displayName) &&
+      idToken
+    ) {
+      if (!decoded) {
         throw new ForwardedError(
           `Failed to parse id token and get profile info`,
-          e,
+          decodeError,
         );
+      }
+
+      if (
+        !email &&
+        !emailWasRejected &&
+        decoded.email &&
+        decoded.email_verified !== false
+      ) {
+        email = decoded.email;
+      }
+      if (!picture && decoded.picture) {
+        picture = decoded.picture;
+      }
+      if (!displayName && decoded.name) {
+        displayName = decoded.name;
       }
     }
 

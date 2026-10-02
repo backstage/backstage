@@ -15,10 +15,12 @@
  */
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { AccessRestrictionsMap } from './external/types';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
   BackstageCredentials<TPrincipal> & {
     version: string;
     token?: string;
+    allAccessRestrictions?: AccessRestrictionsMap;
   };

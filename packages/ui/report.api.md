@@ -616,6 +616,9 @@ export const ButtonLinkDefinition: {
   };
   readonly bg: 'consumer';
   readonly analytics: true;
+  readonly navigation: {
+    readonly type: 'anchor';
+  };
   readonly propDefs: {
     readonly noTrack: {};
     readonly size: {
@@ -646,7 +649,7 @@ export type ButtonLinkOwnProps = {
 
 // @public
 export interface ButtonLinkProps
-  extends Omit<LinkProps_2, keyof ButtonLinkOwnProps>,
+  extends Omit<LinkProps_2, keyof ButtonLinkOwnProps | 'render'>,
     ButtonLinkOwnProps {}
 
 // @public (undocumented)
@@ -1223,6 +1226,9 @@ export const ComboboxItemDefinition: {
     readonly indicator: 'bui-ComboboxItemIndicator';
     readonly content: 'bui-ComboboxItemContent';
   };
+  readonly navigation: {
+    readonly type: 'anchor';
+  };
   readonly propDefs: {
     readonly children: {};
     readonly textValue: {};
@@ -1280,7 +1286,8 @@ export type ComboboxItemProfileProps<T extends object = object> =
 
 // @public (undocumented)
 export type ComboboxItemProps<T extends object = object> =
-  ComboboxItemOwnProps & Omit<ListBoxItemProps<T>, keyof ComboboxItemOwnProps>;
+  ComboboxItemOwnProps &
+    Omit<ListBoxItemProps<T>, keyof ComboboxItemOwnProps | 'render'>;
 
 // @public (undocumented)
 export type ComboboxItemSelectionProps<
@@ -2339,6 +2346,9 @@ export const HeaderNavItemDefinition: {
     readonly root: 'bui-HeaderNavItem';
   };
   readonly analytics: true;
+  readonly navigation: {
+    readonly type: 'anchor';
+  };
   readonly propDefs: {
     readonly noTrack: {};
     readonly id: {};
@@ -2516,6 +2526,9 @@ export const LinkDefinition: {
     readonly root: 'bui-Link';
   };
   readonly analytics: true;
+  readonly navigation: {
+    readonly type: 'anchor';
+  };
   readonly propDefs: {
     readonly noTrack: {};
     readonly variant: {
@@ -2560,7 +2573,7 @@ export type LinkOwnProps = {
 
 // @public (undocumented)
 export interface LinkProps
-  extends Omit<LinkProps_2, 'children' | 'className'>,
+  extends Omit<LinkProps_2, 'children' | 'className' | 'render'>,
     LinkOwnProps {}
 
 // @public
@@ -2738,7 +2751,7 @@ export type MenuItemOwnProps = {
 // @public (undocumented)
 export interface MenuItemProps
   extends MenuItemOwnProps,
-    Omit<MenuItemProps_2, keyof MenuItemOwnProps> {}
+    Omit<MenuItemProps_2, keyof MenuItemOwnProps | 'render'> {}
 
 // @public (undocumented)
 export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
@@ -2755,7 +2768,7 @@ export type MenuListBoxItemOwnProps = {
 // @public (undocumented)
 export interface MenuListBoxItemProps
   extends MenuListBoxItemOwnProps,
-    Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+    Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps | 'render'> {}
 
 // @public (undocumented)
 export type MenuListBoxOwnProps = MenuPopoverOwnProps & {
@@ -2958,7 +2971,6 @@ export interface PaginationOptions
       | 'showPaginationLabel'
     >
   > {
-  // (undocumented)
   initialOffset?: number;
 }
 
@@ -3291,7 +3303,7 @@ export type SearchAutocompleteItemOwnProps = {
 // @public (undocumented)
 export interface SearchAutocompleteItemProps
   extends SearchAutocompleteItemOwnProps,
-    Omit<ListBoxItemProps, keyof SearchAutocompleteItemOwnProps> {}
+    Omit<ListBoxItemProps, keyof SearchAutocompleteItemOwnProps | 'render'> {}
 
 // @public (undocumented)
 export type SearchAutocompleteOwnProps = {
@@ -3543,6 +3555,9 @@ export const SelectItemDefinition: {
     readonly indicator: 'bui-SelectItemIndicator';
     readonly content: 'bui-SelectItemContent';
   };
+  readonly navigation: {
+    readonly type: 'anchor';
+  };
   readonly propDefs: {
     readonly children: {};
     readonly showSelectionIndicator: {};
@@ -3600,7 +3615,10 @@ export type SelectItemProfileProps<T extends object = object> =
 
 // @public (undocumented)
 export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
-  Omit<ListBoxItemProps<T>, keyof SelectItemOwnProps | 'textValue'> & {
+  Omit<
+    ListBoxItemProps<T>,
+    keyof SelectItemOwnProps | 'render' | 'textValue'
+  > & {
     textValue: string;
   };
 
@@ -4251,7 +4269,7 @@ export interface TabPanelProps
 // @public
 export interface TabProps
   extends TabOwnProps,
-    Omit<TabProps_2, keyof TabOwnProps> {}
+    Omit<TabProps_2, keyof TabOwnProps | 'render'> {}
 
 // @public
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;

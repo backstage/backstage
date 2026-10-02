@@ -1,5 +1,50 @@
 # @backstage/plugin-auth-backend-module-guest-provider
 
+## 0.2.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+
+## 0.2.24-next.0
+
+### Patch Changes
+
+- c2ea521: Change visibility to auth.providers.guest configuration key to be visible by frontend plugins to align with other authentication providers.
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+
 ## 0.2.22-next.0
 
 ### Patch Changes

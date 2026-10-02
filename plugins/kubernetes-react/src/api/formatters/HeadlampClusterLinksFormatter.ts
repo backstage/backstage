@@ -87,7 +87,7 @@ export class HeadlampClusterLinksFormatter implements ClusterLinksFormatter {
     },
     clusterName: string,
   ): string {
-    const lowercaseKind = kind.toLocaleLowerCase('en-US');
+    const lowercaseKind = kind.toLowerCase();
     const { name } = object.metadata ?? {};
     let { namespace } = object.metadata ?? {};
 

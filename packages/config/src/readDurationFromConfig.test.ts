@@ -53,6 +53,35 @@ describe('readDurationFromConfig', () => {
       });
     });
 
+    it('parses whole-zero durations consistently', () => {
+      const config = new ConfigReader({
+        z1: 'PT0S',
+        z2: 'P0D',
+        z3: 'PT0H0M0S',
+      });
+
+      expect(readDurationFromConfig(config, { key: 'z1' })).toEqual({
+        milliseconds: 0,
+      });
+      expect(readDurationFromConfig(config, { key: 'z2' })).toEqual({
+        milliseconds: 0,
+      });
+      expect(readDurationFromConfig(config, { key: 'z3' })).toEqual({
+        milliseconds: 0,
+      });
+    });
+
+    it('omits zero units within a non-zero duration', () => {
+      const config = new ConfigReader({
+        d1: 'P2DT0H30M',
+      });
+
+      expect(readDurationFromConfig(config, { key: 'd1' })).toEqual({
+        days: 2,
+        minutes: 30,
+      });
+    });
+
     it('throws on errors', () => {
       const config = new ConfigReader({
         d1: 'P 1Y',

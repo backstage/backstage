@@ -252,6 +252,60 @@ describe('publish:bitbucketServer', () => {
     });
   });
 
+  it('requires an explicit token when configured', async () => {
+    const requiredConfig = new ConfigReader({
+      integrations: {
+        bitbucketServer: [
+          {
+            host: 'hosted.bitbucket.com',
+            token: 'thing',
+            apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
+          },
+        ],
+      },
+      scaffolder: { requireScmUserCredentials: true },
+    });
+    const requiredAction = createPublishBitbucketServerAction({
+      integrations: ScmIntegrations.fromConfig(requiredConfig),
+      config: requiredConfig,
+    });
+
+    await expect(requiredAction.handler(mockContext)).rejects.toThrow(
+      'No user credentials provided for host hosted.bitbucket.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    expect.assertions(2);
+    server.use(
+      http.post(
+        'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            'Bearer user-token',
+          );
+          return HttpResponse.json(
+            {
+              links: {
+                self: [{ href: 'https://hosted.bitbucket.com/repo' }],
+                clone: [
+                  {
+                    name: 'http',
+                    href: 'https://hosted.bitbucket.com/scm/project/repo',
+                  },
+                ],
+              },
+            },
+            { status: 201 },
+          );
+        },
+      ),
+    );
+
+    await requiredAction.handler({
+      ...mockContext,
+      input: { ...mockContext.input, token: 'user-token' },
+    });
+  });
+
   describe('LFS for hosted bitbucket', () => {
     const repoCreationResponse = {
       links: {

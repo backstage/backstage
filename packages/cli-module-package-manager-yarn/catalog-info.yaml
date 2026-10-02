@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-package-manager-yarn
+  title: '@backstage/cli-module-package-manager-yarn'
+  description: CLI module for Yarn package manager commands
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

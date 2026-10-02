@@ -17,6 +17,8 @@
 import Ajv from 'ajv';
 import { createCatalogModelLayer } from './createCatalogModelLayer';
 import { compileCatalogModel } from './compileCatalogModel';
+import { defaultCatalogEntityModel } from './defaultCatalogEntityModel';
+import { CatalogModelSources } from './sources/CatalogModelSources';
 
 const layer = createCatalogModelLayer({
   layerId: 'Test',
@@ -135,6 +137,104 @@ describe('compileCatalogModel', () => {
     expect(
       model.getKind({ kind: 'Unknown', apiVersion: 'example.com/v1alpha1' }),
     ).toBeUndefined();
+  });
+});
+
+describe('compileCatalogModel layer identities', () => {
+  const annotationLayer = (layerId: string, annotationName: string) =>
+    createCatalogModelLayer({
+      layerId,
+      builder: model => {
+        model.addAnnotation({
+          name: annotationName,
+          description: `Annotation from ${layerId}`,
+        });
+      },
+    });
+
+  it('deduplicates identical layers emitted by independent model sources', async () => {
+    const sources = [
+      CatalogModelSources.static([
+        annotationLayer('example.com/shared', 'example.com/shared'),
+        annotationLayer('example.com/a', 'example.com/a'),
+      ]),
+      CatalogModelSources.static([
+        annotationLayer('example.com/shared', 'example.com/shared'),
+        annotationLayer('example.com/b', 'example.com/b'),
+      ]),
+    ];
+    const layers = await Promise.all(
+      sources.map(async source => {
+        const iterator = source.read();
+        try {
+          const result = await iterator.next();
+          return result.value?.data.map(entry => entry.layer) ?? [];
+        } finally {
+          await iterator.return(undefined);
+        }
+      }),
+    );
+
+    const annotationNames = compileCatalogModel(layers.flat())
+      .getMetadata()
+      .annotations.map(annotation => annotation.name);
+
+    expect(annotationNames).toEqual(
+      expect.arrayContaining([
+        'backstage.io/managed-by-location',
+        'example.com/shared',
+        'example.com/a',
+        'example.com/b',
+      ]),
+    );
+    expect(
+      annotationNames.filter(name => name === 'example.com/shared'),
+    ).toHaveLength(1);
+    expect(
+      annotationNames.filter(
+        name => name === 'backstage.io/managed-by-location',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('ignores non-semantic opaque fields when comparing layers', () => {
+    const sharedLayer = annotationLayer(
+      'example.com/shared',
+      'example.com/shared',
+    );
+    const sharedLayerWithSource = {
+      ...sharedLayer,
+      source: 'example.com/source',
+    };
+
+    const annotationNames = compileCatalogModel([
+      sharedLayer,
+      sharedLayerWithSource,
+    ])
+      .getMetadata()
+      .annotations.map(annotation => annotation.name);
+
+    expect(
+      annotationNames.filter(name => name === 'example.com/shared'),
+    ).toHaveLength(1);
+  });
+
+  it('rejects conflicting definitions without hiding declaration conflicts', () => {
+    expect(() =>
+      compileCatalogModel([
+        annotationLayer('example.com/conflict', 'example.com/a'),
+        annotationLayer('example.com/conflict', 'example.com/b'),
+      ]),
+    ).toThrow(
+      'Catalog model layer ID "example.com/conflict" has conflicting definitions',
+    );
+
+    expect(() =>
+      compileCatalogModel([
+        annotationLayer('example.com/a', 'example.com/conflict'),
+        annotationLayer('example.com/b', 'example.com/conflict'),
+      ]),
+    ).toThrow('Annotation "example.com/conflict" is declared more than once');
   });
 });
 
@@ -756,5 +856,91 @@ describe('compileCatalogModel integration', () => {
       }),
     ).toBeUndefined();
     expect(model4.getRelations({ kind: 'Widget' })).toBeUndefined();
+  });
+});
+
+describe('compileCatalogModel relation pairs', () => {
+  it('preserves exact kind pairs when extending a relation', () => {
+    const extension = createCatalogModelLayer({
+      layerId: 'example.com/extended-part-of',
+      builder: model => {
+        model.updateRelationPair({
+          fromKind: 'User',
+          toKind: 'Location',
+          forward: { type: 'partOf' },
+          reverse: { type: 'hasPart' },
+        });
+      },
+    });
+
+    const model = compileCatalogModel([defaultCatalogEntityModel, extension]);
+
+    expect(
+      model
+        .getRelations({ kind: 'Component' })
+        ?.find(r => r.forward.type === 'partOf')?.toKind,
+    ).toEqual(['Component', 'System']);
+    expect(
+      model
+        .getRelations({ kind: 'User' })
+        ?.find(r => r.forward.type === 'partOf')?.toKind,
+    ).toEqual(['Location']);
+    expect(
+      model
+        .getRelations({ kind: 'Location' })
+        ?.find(r => r.forward.type === 'hasPart')?.toKind,
+    ).toEqual(['User']);
+
+    expect(
+      model.listRelations().find(r => r.forward.type === 'partOf'),
+    ).toEqual(
+      expect.objectContaining({
+        fromKind: ['Component', 'API', 'Resource', 'System', 'Domain', 'User'],
+        toKind: ['Component', 'System', 'Domain', 'Location'],
+      }),
+    );
+  });
+
+  it('preserves relation summary kind order when extending a relation', () => {
+    const base = createCatalogModelLayer({
+      layerId: 'example.com/base-related-to',
+      builder: model => {
+        model.addRelationPair({
+          fromKind: 'A',
+          toKind: 'X',
+          description: 'A relation used to verify summary ordering.',
+          forward: { type: 'relatedTo', title: 'related to' },
+          reverse: { type: 'relatedFrom', title: 'related from' },
+        });
+      },
+    });
+    const extension = createCatalogModelLayer({
+      layerId: 'example.com/extended-related-to',
+      builder: model => {
+        model.updateRelationPair({
+          fromKind: 'B',
+          toKind: 'Y',
+          forward: { type: 'relatedTo' },
+          reverse: { type: 'relatedFrom' },
+        });
+        model.updateRelationPair({
+          fromKind: 'A',
+          toKind: 'Z',
+          forward: { type: 'relatedTo' },
+          reverse: { type: 'relatedFrom' },
+        });
+      },
+    });
+
+    expect(
+      compileCatalogModel([base, extension])
+        .listRelations()
+        .find(r => r.forward.type === 'relatedTo'),
+    ).toEqual(
+      expect.objectContaining({
+        fromKind: ['A', 'B'],
+        toKind: ['X', 'Y', 'Z'],
+      }),
+    );
   });
 });

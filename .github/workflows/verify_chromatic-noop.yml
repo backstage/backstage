@@ -8,6 +8,7 @@ on:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
       - 'packages/ui/src/**'
+      - 'plugins/app/src/**'
       - '**/*.stories.tsx'
 
 permissions:
@@ -20,7 +21,7 @@ jobs:
     name: Chromatic
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 

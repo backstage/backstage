@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Suspense } from 'react';
 import { z } from 'zod/v4';
 import { RiArticleLine } from '@remixicon/react';
 import {
@@ -39,10 +38,7 @@ import {
   SearchFilterResultTypeBlueprint,
   SearchResultListItemBlueprint,
 } from '@backstage/plugin-search-react/alpha';
-import {
-  AddonBlueprint,
-  attachTechDocsAddonComponentData,
-} from '@backstage/plugin-techdocs-react/alpha';
+import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAddonsApiExtension, techdocsAddonsApiRef } from './addonsApi';
 import { TechDocsClient, TechDocsStorageClient } from '../client';
 import {
@@ -50,15 +46,13 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from '../routes';
-import { TechDocsReaderLayout } from './components/TechDocsReaderLayout';
 import {
-  TechDocsAddons,
   techdocsApiRef,
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
-import { DocsIcon, SupportButton } from '@backstage/core-components';
+import { DocsIcon } from '@backstage/core-components';
 
 /** @alpha */
 const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
@@ -177,6 +171,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   configSchema: {
     withoutSearch: z.boolean().default(false),
     withoutHeader: z.boolean().default(false),
+    withoutFeedbackLink: z.boolean().default(false),
   },
   factory(originalFactory, { apis, inputs, config }) {
     const addonsApi = apis.get(techdocsAddonsApiRef);
@@ -191,26 +186,17 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
           output.get(AddonBlueprint.dataRefs.addon),
         );
         const addonOptions = [...apiAddons, ...directAddons];
-
-        const addons = addonOptions.map(options => {
-          const Addon = options.component;
-          attachTechDocsAddonComponentData(Addon, options);
-          return (
-            <Suspense key={options.name} fallback={null}>
-              <Addon />
-            </Suspense>
-          );
-        });
-
-        return import('../Router').then(({ TechDocsReaderRouter }) => (
-          <TechDocsReaderRouter>
-            <TechDocsReaderLayout
-              withSearch={!config.withoutSearch}
-              withHeader={!config.withoutHeader}
-            />
-            <TechDocsAddons>{addons}</TechDocsAddons>
-          </TechDocsReaderRouter>
-        ));
+        const { TechDocsReaderPage } = await import(
+          './components/TechDocsReaderPage'
+        );
+        return (
+          <TechDocsReaderPage
+            addonOptions={addonOptions}
+            withSearch={!config.withoutSearch}
+            withHeader={!config.withoutHeader}
+            withFeedbackLink={!config.withoutFeedbackLink}
+          />
+        );
       },
     });
   },
@@ -222,6 +208,9 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
  * @alpha
  */
 const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
+  configSchema: {
+    withoutFeedbackLink: z.boolean().default(false),
+  },
   inputs: {
     addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
     emptyState: createExtensionInput(
@@ -248,25 +237,14 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
             output.get(AddonBlueprint.dataRefs.addon),
           );
           const addonOptions = [...apiAddons, ...directAddons];
-
-          const addons = addonOptions.map(options => {
-            const Addon = options.component;
-            attachTechDocsAddonComponentData(Addon, options);
-            return (
-              <Suspense key={options.name} fallback={null}>
-                <Addon />
-              </Suspense>
-            );
-          });
-
-          return import('../Router').then(({ EmbeddedDocsRouter }) => (
-            <EmbeddedDocsRouter
+          return import('./components/TechDocsReaderPage').then(m => (
+            <m.TechDocsEntityContent
+              addonOptions={addonOptions}
               emptyState={context.inputs.emptyState?.get(
                 coreExtensionData.reactElement,
               )}
-            >
-              <TechDocsAddons>{addons}</TechDocsAddons>
-            </EmbeddedDocsRouter>
+              withFeedbackLink={!context.config.withoutFeedbackLink}
+            />
           ));
         },
       },
@@ -286,9 +264,12 @@ const techDocsEntityContentEmptyState = createExtension({
 const techDocsSupportAction = PluginHeaderActionBlueprint.make({
   params: defineParams =>
     defineParams({
-      loader: async () => (
-        <SupportButton>Discover documentation in your ecosystem.</SupportButton>
-      ),
+      loader: () =>
+        import('@backstage/core-components').then(({ SupportButton }) => (
+          <SupportButton>
+            Discover documentation in your ecosystem.
+          </SupportButton>
+        )),
     }),
 });
 

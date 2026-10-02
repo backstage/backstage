@@ -36,7 +36,7 @@ const accessLevelMapping: Record<string, number> = {
 
 function resolveAccessLevel(level: string | number): number {
   if (typeof level === 'number') return level;
-  const resolved = accessLevelMapping[level.toLocaleLowerCase('en-US')];
+  const resolved = accessLevelMapping[level.toLowerCase()];
   if (resolved === undefined) {
     throw new InputError(
       `Invalid access level: "${level}". Valid values are: ${Object.keys(
@@ -54,8 +54,9 @@ function resolveAccessLevel(level: string | number): number {
  */
 export const createGitlabGroupAccessAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'gitlab:group:access',
@@ -175,7 +176,12 @@ export const createGitlabGroupAccessAction = (options: {
 
       const host = parseRepoHost(repoUrl);
 
-      const api = getClient({ host, integrations, token });
+      const api = getClient({
+        host,
+        integrations,
+        token,
+        requireScmUserCredentials,
+      });
 
       // Process users
       for (const userId of userIds) {

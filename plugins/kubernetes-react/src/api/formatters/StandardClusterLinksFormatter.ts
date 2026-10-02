@@ -38,7 +38,7 @@ export class StandardClusterLinksFormatter implements ClusterLinksFormatter {
     const namespace = encodeURIComponent(
       options.object.metadata?.namespace ?? '',
     );
-    const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+    const validKind = kindMappings[options.kind.toLowerCase()];
     if (!result.pathname.endsWith('/')) {
       result.pathname += '/';
     }

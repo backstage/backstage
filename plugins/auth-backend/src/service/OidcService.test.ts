@@ -52,7 +52,7 @@ describe('OidcService', () => {
   const databases = TestDatabases.create();
 
   interface CreateOidcServiceOptions {
-    databaseId: TestDatabaseId;
+    databaseId?: TestDatabaseId;
     config?: JsonObject;
     offlineAccess?: OfflineAccessService;
     baseUrl?: string;
@@ -66,20 +66,25 @@ describe('OidcService', () => {
       baseUrl = 'http://mock-base-url',
     } = options;
 
-    const knex = await databases.init(databaseId);
+    let oidcDatabase: OidcDatabase;
+    if (databaseId) {
+      const knex = await databases.init(databaseId);
 
-    await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
-    });
+      await knex.migrate.latest({
+        directory: resolvePackagePath(
+          '@backstage/plugin-auth-backend',
+          'migrations',
+        ),
+      });
 
-    const oidcDatabase = await OidcDatabase.create({
-      database: AuthDatabase.create({
-        getClient: async () => knex,
-      }),
-    });
+      oidcDatabase = await OidcDatabase.create({
+        database: AuthDatabase.create({
+          getClient: async () => knex,
+        }),
+      });
+    } else {
+      oidcDatabase = {} as OidcDatabase;
+    }
 
     const mockAuth = mockServices.auth.mock();
     const mockTokenIssuer = {
@@ -113,117 +118,170 @@ describe('OidcService', () => {
     };
   }
 
-  describe.each(databases.eachSupportedId())('%p', databaseId => {
-    describe('getConfiguration', () => {
-      it('should return OIDC configuration', async () => {
-        const { service } = await createOidcService({ databaseId });
+  describe('getConfiguration', () => {
+    it('should return OIDC configuration', async () => {
+      const { service } = await createOidcService({});
 
-        const config = service.getConfiguration();
+      const config = service.getConfiguration();
 
-        expect(config).toEqual({
-          issuer: 'http://mock-base-url',
-          token_endpoint: 'http://mock-base-url/v1/token',
-          userinfo_endpoint: 'http://mock-base-url/v1/userinfo',
-          jwks_uri: 'http://mock-base-url/.well-known/jwks.json',
-          response_types_supported: ['code', 'id_token'],
-          subject_types_supported: ['public'],
-          id_token_signing_alg_values_supported: [
-            'RS256',
-            'RS384',
-            'RS512',
-            'ES256',
-            'ES384',
-            'ES512',
-            'PS256',
-            'PS384',
-            'PS512',
-            'EdDSA',
-          ],
-          scopes_supported: ['openid'],
-          token_endpoint_auth_methods_supported: [
-            'client_secret_basic',
-            'client_secret_post',
-          ],
-          claims_supported: ['sub', 'ent'],
-          grant_types_supported: ['authorization_code'],
-          authorization_endpoint: 'http://mock-base-url/v1/authorize',
-          code_challenge_methods_supported: ['S256', 'plain'],
-        });
+      expect(config).toEqual({
+        issuer: 'http://mock-base-url',
+        token_endpoint: 'http://mock-base-url/v1/token',
+        userinfo_endpoint: 'http://mock-base-url/v1/userinfo',
+        jwks_uri: 'http://mock-base-url/.well-known/jwks.json',
+        response_types_supported: ['code', 'id_token'],
+        subject_types_supported: ['public'],
+        id_token_signing_alg_values_supported: [
+          'RS256',
+          'RS384',
+          'RS512',
+          'ES256',
+          'ES384',
+          'ES512',
+          'PS256',
+          'PS384',
+          'PS512',
+          'EdDSA',
+        ],
+        scopes_supported: ['openid'],
+        token_endpoint_auth_methods_supported: [
+          'client_secret_basic',
+          'client_secret_post',
+        ],
+        claims_supported: ['sub', 'ent'],
+        grant_types_supported: ['authorization_code'],
+        authorization_endpoint: 'http://mock-base-url/v1/authorize',
+        code_challenge_methods_supported: ['S256', 'plain'],
       });
     });
+  });
 
-    describe('listPublicKeys', () => {
-      it('should return public keys from token issuer', async () => {
-        const { service, mocks } = await createOidcService({ databaseId });
-        const mockKeys = [{ kid: 'key-1', use: 'sig' }] as AnyJWK[];
-        mocks.tokenIssuer.listPublicKeys.mockResolvedValue({ keys: mockKeys });
+  describe('listPublicKeys', () => {
+    it('should return public keys from token issuer', async () => {
+      const { service, mocks } = await createOidcService({});
+      const mockKeys = [{ kid: 'key-1', use: 'sig' }] as AnyJWK[];
+      mocks.tokenIssuer.listPublicKeys.mockResolvedValue({ keys: mockKeys });
 
-        const { keys } = await service.listPublicKeys();
+      const { keys } = await service.listPublicKeys();
 
-        expect(keys).toEqual(mockKeys);
-        expect(mocks.tokenIssuer.listPublicKeys).toHaveBeenCalledTimes(1);
+      expect(keys).toEqual(mockKeys);
+      expect(mocks.tokenIssuer.listPublicKeys).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getUserInfo', () => {
+    it('should return user info for valid token', async () => {
+      const { service, mocks } = await createOidcService({});
+      const mockCredentials: BackstageCredentials<BackstageUserPrincipal> = {
+        principal: {
+          type: 'user',
+          userEntityRef: 'user:default/test',
+        },
+        $$type: '@backstage/BackstageCredentials',
+      };
+      const mockUserInfo = { sub: 'user:default/test', name: 'Test User' };
+
+      mocks.auth.authenticate.mockResolvedValue(mockCredentials);
+      mocks.auth.isPrincipal.mockReturnValue(true);
+      mocks.userInfo.getUserInfo.mockResolvedValue({
+        claims: mockUserInfo,
       });
+
+      const mockToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
+
+      const userInfo = await service.getUserInfo({ token: mockToken });
+
+      expect(userInfo).toEqual({
+        claims: mockUserInfo,
+      });
+
+      expect(mocks.auth.authenticate).toHaveBeenCalledWith(mockToken, {
+        allowLimitedAccess: true,
+      });
+
+      expect(mocks.userInfo.getUserInfo).toHaveBeenCalledWith(
+        'user:default/test',
+      );
     });
 
-    describe('getUserInfo', () => {
-      it('should return user info for valid token', async () => {
-        const { service, mocks } = await createOidcService({ databaseId });
-        const mockCredentials: BackstageCredentials<BackstageUserPrincipal> = {
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        };
-        const mockUserInfo = { sub: 'user:default/test', name: 'Test User' };
+    it('should throw error for non-user principal', async () => {
+      const { service, mocks } = await createOidcService({});
+      const mockCredentials: BackstageCredentials<BackstageServicePrincipal> = {
+        principal: {
+          type: 'service',
+          subject: 'test-service',
+        },
+        $$type: '@backstage/BackstageCredentials',
+      };
 
-        mocks.auth.authenticate.mockResolvedValue(mockCredentials);
-        mocks.auth.isPrincipal.mockReturnValue(true);
-        mocks.userInfo.getUserInfo.mockResolvedValue({
-          claims: mockUserInfo,
-        });
+      mocks.auth.authenticate.mockResolvedValue(mockCredentials);
+      mocks.auth.isPrincipal.mockReturnValue(false);
 
-        const mockToken =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
+      const mockToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
 
-        const userInfo = await service.getUserInfo({ token: mockToken });
+      await expect(service.getUserInfo({ token: mockToken })).rejects.toThrow(
+        'Userinfo endpoint must be called with a token that represents a user principal',
+      );
+    });
+  });
 
-        expect(userInfo).toEqual({
-          claims: mockUserInfo,
-        });
-
-        expect(mocks.auth.authenticate).toHaveBeenCalledWith(mockToken, {
-          allowLimitedAccess: true,
-        });
-
-        expect(mocks.userInfo.getUserInfo).toHaveBeenCalledWith(
-          'user:default/test',
-        );
-      });
-
-      it('should throw error for non-user principal', async () => {
-        const { service, mocks } = await createOidcService({ databaseId });
-        const mockCredentials: BackstageCredentials<BackstageServicePrincipal> =
-          {
-            principal: {
-              type: 'service',
-              subject: 'test-service',
+  describe('getConfiguration with CIMD', () => {
+    it('should include client_id_metadata_document_supported when CIMD is enabled', async () => {
+      const { service } = await createOidcService({
+        config: {
+          auth: {
+            clientIdMetadataDocuments: {
+              enabled: true,
+              allowedClientIdPatterns: ['*'],
+              allowedRedirectUriPatterns: ['*'],
             },
-            $$type: '@backstage/BackstageCredentials',
-          };
-
-        mocks.auth.authenticate.mockResolvedValue(mockCredentials);
-        mocks.auth.isPrincipal.mockReturnValue(false);
-
-        const mockToken =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
-
-        await expect(service.getUserInfo({ token: mockToken })).rejects.toThrow(
-          'Userinfo endpoint must be called with a token that represents a user principal',
-        );
+          },
+        },
       });
+
+      const config = service.getConfiguration();
+
+      expect(config.client_id_metadata_document_supported).toBe(true);
+      expect(config.revocation_endpoint).toBe('http://mock-base-url/v1/revoke');
+      expect(config).not.toHaveProperty('registration_endpoint');
     });
 
+    it('should support the deprecated experimental CIMD configuration', async () => {
+      const { service } = await createOidcService({
+        config: {
+          auth: {
+            experimentalClientIdMetadataDocuments: {
+              enabled: true,
+            },
+          },
+        },
+      });
+
+      const config = service.getConfiguration();
+
+      expect(config.client_id_metadata_document_supported).toBe(true);
+    });
+
+    it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
+      const { service } = await createOidcService({
+        config: {
+          auth: {
+            clientIdMetadataDocuments: { enabled: false },
+          },
+        },
+      });
+
+      const config = service.getConfiguration();
+
+      expect(config).not.toHaveProperty(
+        'client_id_metadata_document_supported',
+      );
+      expect(config).not.toHaveProperty('revocation_endpoint');
+    });
+  });
+  describe.each(databases.eachSupportedId())('%p', databaseId => {
     describe('registerClient', () => {
       it('should create a new client with generated credentials', async () => {
         const { service } = await createOidcService({ databaseId });
@@ -1097,66 +1155,6 @@ describe('OidcService', () => {
         codeChallengeMethod: 'S256' as const,
       };
 
-      describe('getConfiguration', () => {
-        it('should include client_id_metadata_document_supported when CIMD is enabled', async () => {
-          const { service } = await createOidcService({
-            databaseId,
-            config: {
-              auth: {
-                clientIdMetadataDocuments: {
-                  enabled: true,
-                  allowedClientIdPatterns: ['*'],
-                  allowedRedirectUriPatterns: ['*'],
-                },
-              },
-            },
-          });
-
-          const config = service.getConfiguration();
-
-          expect(config.client_id_metadata_document_supported).toBe(true);
-          expect(config.revocation_endpoint).toBe(
-            'http://mock-base-url/v1/revoke',
-          );
-          expect(config).not.toHaveProperty('registration_endpoint');
-        });
-
-        it('should support the deprecated experimental CIMD configuration', async () => {
-          const { service } = await createOidcService({
-            databaseId,
-            config: {
-              auth: {
-                experimentalClientIdMetadataDocuments: {
-                  enabled: true,
-                },
-              },
-            },
-          });
-
-          const config = service.getConfiguration();
-
-          expect(config.client_id_metadata_document_supported).toBe(true);
-        });
-
-        it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
-          const { service } = await createOidcService({
-            databaseId,
-            config: {
-              auth: {
-                clientIdMetadataDocuments: { enabled: false },
-              },
-            },
-          });
-
-          const config = service.getConfiguration();
-
-          expect(config).not.toHaveProperty(
-            'client_id_metadata_document_supported',
-          );
-          expect(config).not.toHaveProperty('revocation_endpoint');
-        });
-      });
-
       describe('verifyRevocationClient', () => {
         it('should verify CIMD clients by client ID and DCR clients by secret', async () => {
           const { service } = await createOidcService({
@@ -1181,6 +1179,14 @@ describe('OidcService', () => {
           await expect(
             service.verifyRevocationClient({
               clientId: 'https://evil.example.net/oauth-metadata.json',
+            }),
+          ).resolves.toBe(false);
+
+          // Client IDs that match the full URL string but not the hostname
+          // component are rejected
+          await expect(
+            service.verifyRevocationClient({
+              clientId: 'https://other.com/.example.com/client.json',
             }),
           ).resolves.toBe(false);
 
@@ -1223,6 +1229,35 @@ describe('OidcService', () => {
       });
 
       describe('createAuthorizationSession with CIMD', () => {
+        it('should accept ChatGPT Codex client IDs with default CIMD patterns', async () => {
+          const codexClientId =
+            'https://chatgpt.com/oauth/codex/backstage/client.json';
+          mockFetchCimdMetadata.mockResolvedValueOnce({
+            ...cimdMetadata,
+            clientId: codexClientId,
+          });
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: codexClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+              scope: 'openid',
+              ...pkceParams,
+            }),
+          ).resolves.toEqual(
+            expect.objectContaining({ clientName: 'CIMD Test Client' }),
+          );
+        });
+
         it('should accept loopback redirect URIs with default CIMD patterns', async () => {
           const { service } = await createOidcService({
             databaseId,

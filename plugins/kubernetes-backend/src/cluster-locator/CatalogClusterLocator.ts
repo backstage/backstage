@@ -17,7 +17,9 @@
 import {
   AuthService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import {
   ClusterDetails,
   KubernetesClustersSupplier,
@@ -35,6 +37,12 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { JsonObject } from '@backstage/types';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { filterCatalogClusterAuthMetadata } from './catalogClusterAuthMetadata';
+import {
+  CatalogClusterLocatorOptions,
+  readCatalogClusterLocatorOptions,
+} from './CatalogClusterLocatorOptions';
+import { validateClusterApiServerUrl } from './validateClusterApiServerUrl';
 
 function isObject(obj: unknown): obj is JsonObject {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
@@ -43,17 +51,33 @@ function isObject(obj: unknown): obj is JsonObject {
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
   private catalogService: CatalogService;
   private auth: AuthService;
+  private readonly options: CatalogClusterLocatorOptions;
+  private readonly logger: LoggerService;
 
-  constructor(catalogService: CatalogService, auth: AuthService) {
+  constructor(
+    catalogService: CatalogService,
+    auth: AuthService,
+    options: CatalogClusterLocatorOptions,
+    logger: LoggerService,
+  ) {
     this.catalogService = catalogService;
     this.auth = auth;
+    this.options = options;
+    this.logger = logger;
   }
 
   static fromConfig(
     catalogApi: CatalogService,
     auth: AuthService,
+    clusterLocatorConfig: Config,
+    logger: LoggerService,
   ): CatalogClusterLocator {
-    return new CatalogClusterLocator(catalogApi, auth);
+    return new CatalogClusterLocator(
+      catalogApi,
+      auth,
+      readCatalogClusterLocatorOptions(clusterLocatorConfig),
+      logger,
+    );
   }
 
   async getClusters(options?: {
@@ -80,25 +104,70 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
           options?.credentials ?? (await this.auth.getNoneCredentials()),
       },
     );
-    return clusters.items.map(entity => {
-      const annotations = entity.metadata.annotations!;
-      const clusterDetails: ClusterDetails = {
-        name: entity.metadata.name,
-        title: entity.metadata.title,
-        url: annotations[ANNOTATION_KUBERNETES_API_SERVER],
-        authMetadata: annotations,
-        caData: annotations[ANNOTATION_KUBERNETES_API_SERVER_CA],
-        skipMetricsLookup:
-          annotations[ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP] === 'true',
-        skipTLSVerify:
-          annotations[ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY] === 'true',
-        dashboardUrl: annotations[ANNOTATION_KUBERNETES_DASHBOARD_URL],
-        dashboardApp: annotations[ANNOTATION_KUBERNETES_DASHBOARD_APP],
-        dashboardParameters: this.getDashboardParameters(annotations),
-      };
 
-      return clusterDetails;
-    });
+    const clusterDetails: ClusterDetails[] = [];
+    for (const entity of clusters.items) {
+      const details = await this.toClusterDetails(entity);
+      if (details) {
+        clusterDetails.push(details);
+      }
+    }
+    return clusterDetails;
+  }
+
+  private async toClusterDetails(
+    entity: Awaited<ReturnType<CatalogService['getEntities']>>['items'][number],
+  ): Promise<ClusterDetails | undefined> {
+    const name = entity.metadata.name;
+    const annotations = entity.metadata.annotations;
+    if (!annotations) {
+      this.logger.warn(
+        `Ignoring kubernetes-cluster Resource "${name}" without annotations`,
+      );
+      return undefined;
+    }
+
+    const authProvider = annotations[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+    if (authProvider === 'serviceAccount') {
+      this.logger.warn(
+        `Ignoring kubernetes-cluster Resource "${name}": catalog cluster locator does not support the serviceAccount auth provider`,
+      );
+      return undefined;
+    }
+
+    const apiServerUrl = annotations[ANNOTATION_KUBERNETES_API_SERVER];
+    try {
+      await validateClusterApiServerUrl(apiServerUrl, this.options);
+    } catch (error) {
+      this.logger.warn(
+        `Ignoring kubernetes-cluster Resource "${name}": ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      return undefined;
+    }
+
+    const allowSkipTlsVerify =
+      this.options.dangerouslyAllowSkipTLSVerify ?? false;
+    const skipTLSVerify =
+      allowSkipTlsVerify &&
+      annotations[ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY] === 'true';
+
+    const clusterDetails: ClusterDetails = {
+      name,
+      title: entity.metadata.title,
+      url: apiServerUrl,
+      authMetadata: filterCatalogClusterAuthMetadata(annotations),
+      caData: annotations[ANNOTATION_KUBERNETES_API_SERVER_CA],
+      skipMetricsLookup:
+        annotations[ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP] === 'true',
+      skipTLSVerify,
+      dashboardUrl: annotations[ANNOTATION_KUBERNETES_DASHBOARD_URL],
+      dashboardApp: annotations[ANNOTATION_KUBERNETES_DASHBOARD_APP],
+      dashboardParameters: this.getDashboardParameters(annotations),
+    };
+
+    return clusterDetails;
   }
 
   private getDashboardParameters(

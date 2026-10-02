@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+const ABSOLUTE_DESTINATION = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+
+/** @internal */
+export function isBrowserOwnedHref(href: string): boolean {
+  return ABSOLUTE_DESTINATION.test(href);
+}
+
 /**
  * Determines if a link is external.
  * @param href - The href of the link.
@@ -21,24 +28,7 @@
  * @internal
  */
 export function isExternalLink(href?: string): boolean {
-  if (!href) return false;
-
-  // Check if it's an absolute URL with protocol
-  if (href.startsWith('http://') || href.startsWith('https://')) {
-    return true;
-  }
-
-  // Check if it's a protocol-relative URL
-  if (href.startsWith('//')) {
-    return true;
-  }
-
-  // Check if it's a mailto: or tel: link
-  if (href.startsWith('mailto:') || href.startsWith('tel:')) {
-    return true;
-  }
-
-  return false;
+  return href ? isBrowserOwnedHref(href) : false;
 }
 
 /**

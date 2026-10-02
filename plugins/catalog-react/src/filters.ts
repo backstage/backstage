@@ -155,7 +155,7 @@ export class EntityTextFilter implements EntityFilter {
     return value
       .flat()
       .filter((m): m is string => Boolean(m) && typeof m === 'string')
-      .map(m => m.toLocaleUpperCase('en-US'));
+      .map(m => m.toUpperCase());
   }
 }
 

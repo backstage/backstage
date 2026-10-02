@@ -30,6 +30,7 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-common';
 import { SetStateAction } from 'react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
@@ -333,6 +334,65 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'cardHeader.detailBtnTitle': 'Show template entity details';
     readonly 'templateOutputs.title': 'Text Output';
   }
+>;
+
+// @alpha (undocumented)
+export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-template-outputs';
+  params: ScaffolderTemplateOutputsBlueprintParams;
+  output:
+    | ExtensionDataRef<
+        ScaffolderTemplateOutputsComponent,
+        'scaffolder.template-outputs-component',
+        {}
+      >
+    | ExtensionDataRef<
+        string[],
+        'scaffolder.template-output-template-refs',
+        {}
+      >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      ScaffolderTemplateOutputsComponent,
+      'scaffolder.template-outputs-component',
+      {}
+    >;
+    templateRefs: ConfigurableExtensionDataRef<
+      string[],
+      'scaffolder.template-output-template-refs',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface ScaffolderTemplateOutputsBlueprintParams {
+  // (undocumented)
+  component: ScaffolderTemplateOutputsComponent;
+  // (undocumented)
+  templateRefs: string[];
+}
+
+// @alpha (undocumented)
+export type ScaffolderTemplateOutputsComponent = ComponentType<{
+  output?: ScaffolderTaskOutput_2;
+}>;
+
+// @alpha (undocumented)
+export const scaffolderTemplateOutputsComponentRef: ConfigurableExtensionDataRef<
+  ScaffolderTemplateOutputsComponent,
+  'scaffolder.template-outputs-component',
+  {}
+>;
+
+// @alpha (undocumented)
+export const scaffolderTemplateOutputTemplateRefsRef: ConfigurableExtensionDataRef<
+  string[],
+  'scaffolder.template-output-template-refs',
+  {}
 >;
 
 // @alpha (undocumented)

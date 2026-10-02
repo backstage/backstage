@@ -18,6 +18,7 @@ import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as inputProps from './inputProperties';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { InputError } from '@backstage/errors';
 import { getAuthorizationHeader } from './helpers';
 
 const id = 'bitbucket:pipelines:run';
@@ -28,8 +29,9 @@ const id = 'bitbucket:pipelines:run';
  */
 export const createBitbucketPipelinesRunAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id,
     description: 'Run a bitbucket cloud pipeline',
@@ -68,8 +70,16 @@ export const createBitbucketPipelinesRunAction = (options: {
       const host = 'bitbucket.org';
       const integrationConfig = integrations.bitbucketCloud.byHost(host);
 
+      if (requireScmUserCredentials && !token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+
       const authorization = await getAuthorizationHeader(
-        token ? { token } : integrationConfig!.config,
+        token || requireScmUserCredentials
+          ? { token }
+          : integrationConfig!.config,
       );
       let response: Response;
       try {

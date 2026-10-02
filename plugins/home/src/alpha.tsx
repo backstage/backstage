@@ -40,7 +40,6 @@ import {
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
-import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
 import HomeIcon from '@material-ui/icons/Home';
 import LinkIcon from '@material-ui/icons/Link';
@@ -53,6 +52,12 @@ import {
 } from '@backstage/plugin-home-react/alpha';
 
 const rootRouteRef = createRouteRef();
+
+const VisitListener = reactLazy(() =>
+  import('./components/VisitListener').then(m => ({
+    default: m.VisitListener,
+  })),
+);
 
 const defaultConfigItemSchema = z.object({
   component: z.string(),

@@ -18,11 +18,9 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   kubernetesClustersReadPermission,
-  kubernetesPermissions,
   kubernetesResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 
@@ -51,7 +49,7 @@ import { ObjectsByEntityRequest } from '../types/types';
 import { KubernetesProxy } from './KubernetesProxy';
 import { requirePermission } from '../auth/requirePermission';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { resolveProxyMiddlewareCacheOptions } from './ProxyMiddlewareCache';
 
 export interface KubernetesEnvironment {
@@ -189,11 +187,6 @@ export class KubernetesRouter {
     const router = Router();
     router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
-    router.use(
-      createPermissionIntegrationRouter({
-        permissions: kubernetesPermissions,
-      }),
-    );
 
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
@@ -221,12 +214,30 @@ export class KubernetesRouter {
           httpAuth,
           req,
         );
+
+        const credentials = await httpAuth.credentials(req);
+
+        let resolvedEntity = requestBody?.entity;
+        if (requestBody?.entity) {
+          if (!entityRef) {
+            throw new NotAllowedError('Invalid entity reference');
+          }
+          const parsedRef = parseEntityRef(entityRef);
+          const catalogEntity = await catalog.getEntityByRef(parsedRef, {
+            credentials,
+          });
+          if (!catalogEntity) {
+            throw new NotAllowedError(`Entity not found, ${entityRef}`);
+          }
+          resolvedEntity = catalogEntity;
+        }
+
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           {
-            entity: requestBody?.entity,
+            entity: resolvedEntity,
             auth: requestBody?.auth || {},
           },
-          { credentials: await httpAuth.credentials(req) },
+          { credentials },
         );
         res.json(response);
         auditorEvent

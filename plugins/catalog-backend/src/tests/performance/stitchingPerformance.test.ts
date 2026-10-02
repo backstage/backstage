@@ -163,7 +163,6 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const config = {
         backend: { baseUrl: 'http://localhost:7007' },
-        catalog: { stitchingStrategy: { mode: 'deferred' } },
       };
 
       const tracker = new Tracker(knex, load);

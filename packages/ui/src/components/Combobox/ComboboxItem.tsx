@@ -17,7 +17,10 @@
 import { ListBoxItem, Text } from 'react-aria-components';
 import { RiCheckLine } from '@remixicon/react';
 import { Avatar } from '../Avatar';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import {
   ComboboxItemDefinition,
   ComboboxItemProfileDefinition,
@@ -28,20 +31,34 @@ import type {
   ComboboxItemProps,
   ComboboxItemTextProps,
 } from './types';
+import {
+  getReactAriaAnchorProps,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
 
-/**
- * A combobox item wrapper for custom content.
- *
- * @public
- */
-export function ComboboxItem<T extends object = object>(
-  props: ComboboxItemProps<T>,
-) {
-  const { ownProps, restProps } = useDefinition(ComboboxItemDefinition, props);
+type ComboboxItemViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof ComboboxItemDefinition,
+    ComboboxItemProps
+  >;
+  navigation: AnchorNavigation;
+};
+
+function ComboboxItemView({
+  definitionResult,
+  navigation,
+}: ComboboxItemViewProps) {
+  const { ownProps, restProps } = definitionResult;
   const { classes, children, textValue, showSelectionIndicator } = ownProps;
+  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
-    <ListBoxItem {...restProps} className={classes.root} textValue={textValue}>
+    <ListBoxItem
+      {...restProps}
+      className={classes.root}
+      textValue={textValue}
+      {...navigationProps}
+    >
       {values => {
         const content =
           typeof children === 'function' ? children(values) : children;
@@ -60,6 +77,26 @@ export function ComboboxItem<T extends object = object>(
         );
       }}
     </ListBoxItem>
+  );
+}
+
+/**
+ * A combobox item wrapper for custom content.
+ *
+ * @public
+ */
+export function ComboboxItem<T extends object = object>(
+  props: ComboboxItemProps<T>,
+) {
+  const definitionResult = useDefinition(ComboboxItemDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={definitionResult.restProps}
+      view={ComboboxItemView}
+      viewProps={{ definitionResult }}
+    />
   );
 }
 

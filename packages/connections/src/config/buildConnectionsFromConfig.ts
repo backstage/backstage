@@ -17,14 +17,10 @@ import { Config } from '@backstage/config';
 import { InputError, toError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { z } from 'zod/v4';
-import type { ConnectionTypeKey } from '../definitions/types';
+import type { ConnectionType } from '../definitions/types';
 import { combineConnectionSources } from './combineConnectionSources';
 import { getLegacyIntegrations } from './getLegacyIntegrations';
-import {
-  getConnectionType,
-  identityFields,
-  isConnectionTypeKey,
-} from './lookup';
+import { getConnectionType, identityFields, isConnectionType } from './lookup';
 import type { ConfiguredConnection } from './types';
 
 function describeError(error: unknown): string {
@@ -59,7 +55,7 @@ function validateConnection(connection: JsonObject): ConfiguredConnection {
     throw new InputError(`Unrecognised connection type ${connection.type}`);
   }
 
-  if (!isConnectionTypeKey(connection.type)) {
+  if (!isConnectionType(connection.type)) {
     throw new InputError(`Unrecognised connection type ${connection.type}`);
   }
 
@@ -101,7 +97,7 @@ function validateConnection(connection: JsonObject): ConfiguredConnection {
   // Let the connection type check rules that span the whole connection,
   // such as uniqueness across auth entries. Entries keep their plugin
   // `match` so that rules can take scoping into account.
-  const validate = connectionType.validate as
+  const validate = (connectionType as any).validate as
     | ((connection: { config: unknown; auth: unknown[] }) => void)
     | undefined;
   validate?.({ config: parsed, auth });
@@ -158,9 +154,7 @@ function dedupeLegacy(
   const result: ConfiguredConnection[] = [];
 
   for (const connection of legacy) {
-    const connectionType = getConnectionType(
-      connection.type as ConnectionTypeKey,
-    );
+    const connectionType = getConnectionType(connection.type as ConnectionType);
 
     let key = connection.type as string;
     if (connectionType.cardinality !== 'singleton') {
@@ -191,12 +185,12 @@ function dedupeLegacy(
 function assignDefaultTitles(connections: ConfiguredConnection[]): void {
   const typeCounts = new Map<string, number>();
   for (const c of connections) {
-    const type = c.type as ConnectionTypeKey;
+    const type = c.type as ConnectionType;
     typeCounts.set(type, (typeCounts.get(type) ?? 0) + 1);
   }
   for (const c of connections) {
     if (!c.title) {
-      const type = c.type as ConnectionTypeKey;
+      const type = c.type as ConnectionType;
       const connectionType = getConnectionType(type);
       const displayName = connectionType.title;
       const identity = connectionIdentityOf(
@@ -213,7 +207,7 @@ function assignDefaultTitles(connections: ConfiguredConnection[]): void {
 
 function assignDefaultAuthTitles(connections: ConfiguredConnection[]): void {
   for (const c of connections) {
-    const type = c.type as ConnectionTypeKey;
+    const type = c.type as ConnectionType;
     const connectionType = getConnectionType(type);
     for (const auth of c.auth) {
       const authMethod = connectionType.authMethods.find(
@@ -254,7 +248,12 @@ function assignDefaultAuthTitles(connections: ConfiguredConnection[]): void {
  */
 export function buildConnectionsFromConfig(options: {
   config: Config;
-  logger?: { debug(message: string): void; warn(message: string): void };
+  logger?: {
+    error(message: string): void;
+    warn(message: string): void;
+    info(message: string): void;
+    debug(message: string): void;
+  };
 }): ConfiguredConnection[] {
   const { config, logger } = options;
 
@@ -301,7 +300,7 @@ export function buildConnectionsFromConfig(options: {
   const singletonsSeen = new Set<string>();
   const identitiesSeen = new Set<string>();
   for (const c of connections) {
-    const connectionType = getConnectionType(c.type as ConnectionTypeKey);
+    const connectionType = getConnectionType(c.type as ConnectionType);
 
     if (connectionType.cardinality === 'singleton') {
       if (singletonsSeen.has(c.type)) {

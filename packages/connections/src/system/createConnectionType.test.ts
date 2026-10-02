@@ -33,6 +33,12 @@ describe('createConnectionType', () => {
     });
 
     expect(SingleAuthType.type).toBe('single');
+    expect(SingleAuthType).not.toHaveProperty('query');
+    expect(SingleAuthType).not.toHaveProperty('auth');
+    // @ts-expect-error - query is an input to find, not a descriptor property
+    expect(SingleAuthType.query).toBeUndefined();
+    // @ts-expect-error - auth values are derived from the auth method schemas
+    expect(SingleAuthType.auth).toBeUndefined();
     expect(SingleAuthType.authMethods).toEqual([
       expect.objectContaining({ method: 'token', title: 'Token' }),
     ]);
@@ -183,7 +189,7 @@ describe('createConnectionType', () => {
     });
 
     expect(() =>
-      ValidatedType.validate?.({
+      (ValidatedType as any).validate?.({
         config: {},
         auth: [
           { method: 'token', token: 'a', primary: true },
@@ -192,7 +198,7 @@ describe('createConnectionType', () => {
       }),
     ).not.toThrow();
     expect(() =>
-      ValidatedType.validate?.({
+      (ValidatedType as any).validate?.({
         config: {},
         auth: [
           { method: 'token', token: 'a', primary: true },
@@ -201,7 +207,7 @@ describe('createConnectionType', () => {
       }),
     ).toThrow('At most one auth entry may be primary');
     expect(() =>
-      ValidatedType.validate?.({
+      (ValidatedType as any).validate?.({
         config: { defaultToken: 't' },
         auth: [{ method: 'token', token: 'a', primary: true }],
       }),

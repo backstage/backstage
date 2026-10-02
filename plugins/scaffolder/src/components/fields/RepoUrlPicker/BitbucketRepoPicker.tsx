@@ -45,6 +45,8 @@ export const BitbucketRepoPicker = (
     allowedOwners?: string[];
     allowedProjects?: string[];
     accessToken?: string;
+    ownerLabel?: string;
+    ownerDescription?: string;
   }>,
 ) => {
   const theme = useScaffolderTheme();
@@ -56,6 +58,8 @@ export const BitbucketRepoPicker = (
     state,
     accessToken,
     isDisabled,
+    ownerLabel,
+    ownerDescription,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -171,8 +175,13 @@ export const BitbucketRepoPicker = (
         return (
           <BuiSelect
             className={overrides.select}
-            label={t('fields.bitbucketRepoPicker.workspaces.title')}
-            description={t('fields.bitbucketRepoPicker.workspaces.description')}
+            label={
+              ownerLabel ?? t('fields.bitbucketRepoPicker.workspaces.title')
+            }
+            description={
+              ownerDescription ??
+              t('fields.bitbucketRepoPicker.workspaces.description')
+            }
             isDisabled={isDisabled || allowedOwners.length === 1}
             isInvalid={rawErrors?.length > 0 && !workspace}
             selectedKey={workspace ?? null}
@@ -192,8 +201,13 @@ export const BitbucketRepoPicker = (
 
       return (
         <BuiAutocomplete
-          label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
-          description={t('fields.bitbucketRepoPicker.workspaces.description')}
+          label={
+            ownerLabel ?? t('fields.bitbucketRepoPicker.workspaces.inputTitle')
+          }
+          description={
+            ownerDescription ??
+            t('fields.bitbucketRepoPicker.workspaces.description')
+          }
           inputValue={workspace ?? ''}
           onInputChange={value => onChange({ workspace: value })}
           onSelectionChange={(key: Key | null) => {
@@ -280,7 +294,9 @@ export const BitbucketRepoPicker = (
           {allowedOwners?.length ? (
             <MuiSelect
               native
-              label={t('fields.bitbucketRepoPicker.workspaces.title')}
+              label={
+                ownerLabel ?? t('fields.bitbucketRepoPicker.workspaces.title')
+              }
               onChange={s =>
                 onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
               }
@@ -298,7 +314,10 @@ export const BitbucketRepoPicker = (
               renderInput={params => (
                 <MuiTextField
                   {...params}
-                  label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+                  label={
+                    ownerLabel ??
+                    t('fields.bitbucketRepoPicker.workspaces.inputTitle')
+                  }
                   disabled={isDisabled}
                   required
                 />
@@ -309,7 +328,8 @@ export const BitbucketRepoPicker = (
             />
           )}
           <FormHelperText>
-            {t('fields.bitbucketRepoPicker.workspaces.description')}
+            {ownerDescription ??
+              t('fields.bitbucketRepoPicker.workspaces.description')}
           </FormHelperText>
         </FormControl>
       )}

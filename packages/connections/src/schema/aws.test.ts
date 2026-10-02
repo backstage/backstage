@@ -35,7 +35,7 @@ describe('AwsConnectionType', () => {
       const second = account('222222222222');
 
       expect(
-        AwsConnectionType.matchAuth?.([first, mainAccount, second], {
+        (AwsConnectionType as any).matchAuth?.([first, mainAccount, second], {
           accountId: '222222222222',
         }),
       ).toBe(second);
@@ -46,7 +46,7 @@ describe('AwsConnectionType', () => {
       const second = account('222222222222');
 
       expect(
-        AwsConnectionType.matchAuth?.([first, second], {
+        (AwsConnectionType as any).matchAuth?.([first, second], {
           arn: 'arn:aws:iam::111111111111:role/some-role',
         }),
       ).toBe(first);
@@ -56,15 +56,15 @@ describe('AwsConnectionType', () => {
       const first = account('111111111111');
 
       expect(
-        AwsConnectionType.matchAuth?.([first, mainAccount], {
+        (AwsConnectionType as any).matchAuth?.([first, mainAccount], {
           accountId: '999999999999',
         }),
       ).toBe(mainAccount);
-      expect(AwsConnectionType.matchAuth?.([first, mainAccount], {})).toBe(
-        mainAccount,
-      );
       expect(
-        AwsConnectionType.matchAuth?.([first, mainAccount], {
+        (AwsConnectionType as any).matchAuth?.([first, mainAccount], {}),
+      ).toBe(mainAccount);
+      expect(
+        (AwsConnectionType as any).matchAuth?.([first, mainAccount], {
           arn: 'arn:aws:s3:::my-bucket',
         }),
       ).toBe(mainAccount);
@@ -74,15 +74,18 @@ describe('AwsConnectionType', () => {
       const main = { ...mainAccount, accountId: '333333333333' };
 
       expect(
-        AwsConnectionType.matchAuth?.([account('111111111111'), main], {
-          accountId: '333333333333',
-        }),
+        (AwsConnectionType as any).matchAuth?.(
+          [account('111111111111'), main],
+          {
+            accountId: '333333333333',
+          },
+        ),
       ).toBe(main);
     });
 
     it('rejects malformed ARNs instead of falling back', () => {
       expect(() =>
-        AwsConnectionType.matchAuth?.([mainAccount], {
+        (AwsConnectionType as any).matchAuth?.([mainAccount], {
           arn: 'not-an-arn',
         }),
       ).toThrow(/Invalid ARN "not-an-arn"/);
@@ -90,7 +93,7 @@ describe('AwsConnectionType', () => {
 
     it('returns undefined when nothing matches and there is no main account', () => {
       expect(
-        AwsConnectionType.matchAuth?.([account('111111111111')], {
+        (AwsConnectionType as any).matchAuth?.([account('111111111111')], {
           accountId: '999999999999',
         }),
       ).toBeUndefined();
@@ -256,7 +259,7 @@ describe('AwsConnectionType', () => {
   describe('validate', () => {
     it('rejects duplicate account IDs across entries', () => {
       expect(() =>
-        AwsConnectionType.validate?.({
+        (AwsConnectionType as any).validate?.({
           config: {},
           auth: [
             { method: 'account', accountId: '111111111111' },
@@ -269,7 +272,7 @@ describe('AwsConnectionType', () => {
 
     it('rejects multiple main account entries', () => {
       expect(() =>
-        AwsConnectionType.validate?.({
+        (AwsConnectionType as any).validate?.({
           config: {},
           auth: [
             { method: 'account', mainAccount: true },
@@ -281,7 +284,7 @@ describe('AwsConnectionType', () => {
 
     it('requires a main account entry for the connection-level roleName', () => {
       expect(() =>
-        AwsConnectionType.validate?.({
+        (AwsConnectionType as any).validate?.({
           config: { roleName: 'backstage-role' },
           auth: [{ method: 'account', accountId: '111111111111' }],
         }),
@@ -290,7 +293,7 @@ describe('AwsConnectionType', () => {
 
     it('accepts a valid combination of entries', () => {
       expect(() =>
-        AwsConnectionType.validate?.({
+        (AwsConnectionType as any).validate?.({
           config: { roleName: 'backstage-role' },
           auth: [
             { method: 'account', accountId: '111111111111' },

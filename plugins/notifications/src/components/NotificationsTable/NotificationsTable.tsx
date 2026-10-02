@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -59,6 +59,7 @@ export type NotificationsTableProps = Pick<
   isLoading?: boolean;
   isUnread: boolean;
   notifications?: Notification[];
+  highlightedNotificationId?: string;
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
@@ -70,6 +71,7 @@ export const NotificationsTable = ({
   markAsReadOnLinkOpen,
   isLoading,
   notifications = [],
+  highlightedNotificationId,
   isUnread,
   onUpdate,
   setContainsText,
@@ -162,6 +164,36 @@ export const NotificationsTable = ({
     }
   }, [notifications, selectedNotifications]);
 
+  const focusedHighlightedIdRef = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!highlightedNotificationId) {
+      focusedHighlightedIdRef.current = undefined;
+      return;
+    }
+
+    // Only scroll/focus once per deep-linked id so refreshes don't steal focus.
+    if (focusedHighlightedIdRef.current === highlightedNotificationId) {
+      return;
+    }
+
+    const highlightedElement = document.getElementById(
+      `notification-${highlightedNotificationId}`,
+    );
+    if (!highlightedElement) {
+      return;
+    }
+
+    if (typeof highlightedElement.scrollIntoView === 'function') {
+      highlightedElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+    highlightedElement.focus({ preventScroll: true });
+    focusedHighlightedIdRef.current = highlightedNotificationId;
+  }, [highlightedNotificationId, notifications]);
+
   const compactColumns = useMemo((): TableColumn<Notification>[] => {
     const showToolbar = notifications.length > 0;
     return [
@@ -197,64 +229,73 @@ export const NotificationsTable = ({
           true /* Keep sorting&filtering on backend due to pagination. */,
         cellStyle: { paddingLeft: 0 },
         render: (notification: Notification) => {
+          const isHighlighted = highlightedNotificationId === notification.id;
           // Compact content
           return (
-            <Flex gap="4" align="center">
-              <div className={styles.severityItem}>
-                <NotificationIcon notification={notification} />
-              </div>
-              <Flex direction="column" gap="1">
-                <Text variant="body-medium">
-                  {notification.payload.link ? (
-                    <Link
-                      to={notification.payload.link}
-                      onClick={() => {
-                        if (markAsReadOnLinkOpen && !notification.read) {
-                          onSwitchReadStatus([notification.id], true);
-                        }
-                      }}
-                    >
-                      {notification.payload.title}
-                    </Link>
-                  ) : (
-                    notification.payload.title
-                  )}
-                </Text>
-                {notification.payload.description ? (
-                  <NotificationDescription
-                    description={notification.payload.description}
-                  />
-                ) : null}
-
-                <Text variant="body-small" color="secondary">
-                  {!notification.user && (
-                    <RiRssFill size={14} className={styles.broadcastIcon} />
-                  )}
-                  {notification.origin && (
-                    <>
-                      <span className={styles.notificationInfoRow}>
-                        {notification.origin}
-                      </span>
-                      &bull;
-                    </>
-                  )}
-                  {notification.payload.topic && (
-                    <>
-                      <span className={styles.notificationInfoRow}>
-                        {notification.payload.topic}
-                      </span>
-                      &bull;
-                    </>
-                  )}
-                  {notification.created && (
-                    <RelativeTime
-                      value={notification.created}
-                      className={styles.notificationInfoRow}
+            <div
+              id={`notification-${notification.id}`}
+              tabIndex={isHighlighted ? -1 : undefined}
+              className={
+                isHighlighted ? styles.highlightedNotification : undefined
+              }
+            >
+              <Flex gap="4" align="center">
+                <div className={styles.severityItem}>
+                  <NotificationIcon notification={notification} />
+                </div>
+                <Flex direction="column" gap="1">
+                  <Text variant="body-medium">
+                    {notification.payload.link ? (
+                      <Link
+                        to={notification.payload.link}
+                        onClick={() => {
+                          if (markAsReadOnLinkOpen && !notification.read) {
+                            onSwitchReadStatus([notification.id], true);
+                          }
+                        }}
+                      >
+                        {notification.payload.title}
+                      </Link>
+                    ) : (
+                      notification.payload.title
+                    )}
+                  </Text>
+                  {notification.payload.description ? (
+                    <NotificationDescription
+                      description={notification.payload.description}
                     />
-                  )}
-                </Text>
+                  ) : null}
+
+                  <Text variant="body-small" color="secondary">
+                    {!notification.user && (
+                      <RiRssFill size={14} className={styles.broadcastIcon} />
+                    )}
+                    {notification.origin && (
+                      <>
+                        <span className={styles.notificationInfoRow}>
+                          {notification.origin}
+                        </span>
+                        &bull;
+                      </>
+                    )}
+                    {notification.payload.topic && (
+                      <>
+                        <span className={styles.notificationInfoRow}>
+                          {notification.payload.topic}
+                        </span>
+                        &bull;
+                      </>
+                    )}
+                    {notification.created && (
+                      <RelativeTime
+                        value={notification.created}
+                        className={styles.notificationInfoRow}
+                      />
+                    )}
+                  </Text>
+                </Flex>
               </Flex>
-            </Flex>
+            </div>
           );
         },
       },
@@ -290,6 +331,7 @@ export const NotificationsTable = ({
     onMarkAllRead,
     onNotificationsSelectChange,
     markAsReadOnLinkOpen,
+    highlightedNotificationId,
   ]);
 
   return (

@@ -209,7 +209,7 @@ export class DocsSynchronizer {
       ) || false;
     const tripletPath = `${namespace}/${kind}/${name}`;
     const entityTripletPath = `${
-      legacyPathCasing ? tripletPath : tripletPath.toLocaleLowerCase('en-US')
+      legacyPathCasing ? tripletPath : tripletPath.toLowerCase()
     }`;
     try {
       const [sourceMetadata, cachedMetadata] = await Promise.all([

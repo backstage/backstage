@@ -99,27 +99,31 @@ export const mcpPlugin = createBackendPlugin({
 
             router.use(`/v1/${key}`, streamableRouter);
           }
-        } else {
-          const serverConfig = {
-            name: config.getOptionalString('mcpActions.name') ?? 'backstage',
-            description: config.getOptionalString('mcpActions.description'),
-            instructions: config.getOptionalString('mcpActions.instructions'),
-            includeRules: [],
-            excludeRules: [],
-          };
+        }
 
-          const streamableRouter = createStreamableRouter({
+        // The default server is always mounted and never filtered, so named
+        // servers are subsets of it rather than partitions of it. Mounted last
+        // so that the more specific named server paths match first.
+        const defaultServerConfig = {
+          name: config.getOptionalString('mcpActions.name') ?? 'backstage',
+          description: config.getOptionalString('mcpActions.description'),
+          instructions: config.getOptionalString('mcpActions.instructions'),
+          includeRules: [],
+          excludeRules: [],
+        };
+
+        router.use(
+          '/v1',
+          createStreamableRouter({
             mcpService,
             httpAuth,
             logger,
             metrics,
             tracing,
             auditor,
-            serverConfig,
-          });
-
-          router.use('/v1', streamableRouter);
-        }
+            serverConfig: defaultServerConfig,
+          }),
+        );
 
         httpRouter.use(router);
 
@@ -153,36 +157,39 @@ export const mcpPlugin = createBackendPlugin({
             'auth.experimentalRefreshToken.enabled',
           );
 
-          const serverSuffixes = serverConfigs?.size
-            ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
-            : ['/v1'];
+          // Registered once for the whole /v1 prefix, since the root router
+          // rejects a named server path as conflicting with the default one.
+          // The server is therefore resolved from the remaining path.
+          rootRouter.use(
+            '/.well-known/oauth-protected-resource/api/mcp-actions/v1',
+            async (req, res) => {
+              const key = req.path.replace(/^\/+|\/+$/g, '');
+              if (key && !serverConfigs?.has(key)) {
+                res.status(404).end();
+                return;
+              }
 
-          for (const suffix of serverSuffixes) {
-            const mcpBasePath = `/api/mcp-actions${suffix}`;
+              const [authBaseUrl, mcpBaseUrl] = await Promise.all([
+                discovery.getExternalBaseUrl('auth'),
+                discovery.getExternalBaseUrl('mcp-actions'),
+              ]);
 
-            rootRouter.use(
-              `/.well-known/oauth-protected-resource${mcpBasePath}`,
-              async (_req, res) => {
-                const [authBaseUrl, mcpBaseUrl] = await Promise.all([
-                  discovery.getExternalBaseUrl('auth'),
-                  discovery.getExternalBaseUrl('mcp-actions'),
-                ]);
+              const suffix = key ? `/v1/${key}` : '/v1';
 
-                res.json({
-                  resource: `${mcpBaseUrl}${suffix}`,
-                  authorization_servers: [authBaseUrl],
-                  // RFC 9728 §2: clients discover which scope to request from
-                  // this field. Without it, RFC-compliant MCP clients request
-                  // no scope and never receive a refresh token (OIDC Core §11
-                  // requires offline_access to signal refresh token issuance).
-                  scopes_supported: [
-                    'openid',
-                    ...(refreshTokenEnabled ? ['offline_access'] : []),
-                  ],
-                });
-              },
-            );
-          }
+              res.json({
+                resource: `${mcpBaseUrl}${suffix}`,
+                authorization_servers: [authBaseUrl],
+                // RFC 9728 §2: clients discover which scope to request from
+                // this field. Without it, RFC-compliant MCP clients request
+                // no scope and never receive a refresh token (OIDC Core §11
+                // requires offline_access to signal refresh token issuance).
+                scopes_supported: [
+                  'openid',
+                  ...(refreshTokenEnabled ? ['offline_access'] : []),
+                ],
+              });
+            },
+          );
         }
       },
     });

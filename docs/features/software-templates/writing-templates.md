@@ -725,7 +725,8 @@ By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
 [create your own custom actions](./writing-custom-actions.md).
 
-When `each` is provided, the current iteration value is available in the `${{ each }}` input.
+The `each` value must resolve to an array or object. The current iteration value
+is available in the `${{ each }}` input.
 
 Examples:
 

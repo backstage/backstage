@@ -20,8 +20,7 @@ interactions.
   pairs) that may be provided on an event-by-event basis. To continue the above
   example, the URL a user clicked to might look like `{ "to": "/a/page" }`.
 - **Context** represents the broader context in which an event took place. By
-  default, information like `pluginId`, `extension`, and `routeRef` are
-  provided.
+  default, it includes `pluginId` and `extensionId`.
 
 This composition of events aims to allow analysis at different levels of detail,
 enabling very granular questions (like "what is the most clicked on thing on a
@@ -256,9 +255,9 @@ event resembling:
 ```
 
 Note that, for brevity in the example above, the context keys provided by
-Backstage core (`pluginId`, `extension`, and `routeRef`) have been omitted. In
-reality, those details would be included alongside any additional context
-provided by you.
+Backstage core (`pluginId` and `extensionId`) have been omitted. In reality,
+those details would be included alongside any additional context provided by
+you.
 
 Analytics contexts can be nested; their values are merged down the react tree,
 allowing keys to be overwritten.
@@ -272,7 +271,7 @@ it's important to keep each of these levels of detail disaggregated.
 - Avoid providing an overly specific `action`. For example, instead of
   `filterEntityTable`, consider just using `filter` as the action, and allowing
   `EntityTable` to be specified as part of the event's `context` (most likely
-  automatically as part of the `extension` in which the `filter` event was
+  automatically as part of the `extensionId` in which the `filter` event was
   captured).
 
 - On the flip side, when adding `attributes` to or `context` around an event,

@@ -1,0 +1,10 @@
+---
+title: Adoption Analytics
+author: CodeVerse-GP
+authorUrl: https://github.com/CodeVerse-GP
+category: Monitoring
+description: Track and monitor your Backstage instance's usage directly within Backstage.
+documentation: https://github.com/CodeVerse-GP/adoption-analytics
+npmPackageName: '@codeverse-gp/plugin-adoption-analytics'
+addedDate: '2026-08-01'
+status: active

@@ -360,10 +360,6 @@ components:
           type: string
         createdBy:
           type: string
-        secrets:
-          $ref: '#/components/schemas/TaskSecrets'
-        state:
-          $ref: '#/components/schemas/JsonObject'
       required:
         - id
         - spec
@@ -569,6 +565,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListTasksResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -699,6 +697,8 @@ paths:
                       $ref: '#/components/schemas/ValidationError'
                 required:
                   - errors
+        '409':
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []

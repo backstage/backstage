@@ -1,0 +1,11 @@
+---
+title: SWIRL for Backstage
+author: SWIRL AI, Inc.
+authorUrl: https://swirlaiconnect.com
+category: Search
+description: Search backend module that answers search from SWIRL, with a Tantivy index for catalog and TechDocs and live GitHub and Confluence results.
+documentation: https://docs.swirlaiconnect.com/backstage-overview
+iconUrl: /img/swirl-for-backstage.svg
+npmPackageName: '@swirl-search/backstage-plugin-search-backend-module-swirl'
+addedDate: '2026-09-03'
+status: active

@@ -17,7 +17,10 @@
 import { RiCheckLine } from '@remixicon/react';
 import { ListBoxItem, Text } from 'react-aria-components';
 import { Avatar } from '../Avatar';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import {
   SelectItemDefinition,
   SelectItemProfileDefinition,
@@ -28,20 +31,26 @@ import type {
   SelectItemProps,
   SelectItemTextProps,
 } from './types';
+import {
+  getReactAriaAnchorProps,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
 
-/**
- * A low-level Select item wrapper for custom item content.
- *
- * @public
- */
-export function SelectItem<T extends object = object>(
-  props: SelectItemProps<T>,
-) {
-  const { ownProps, restProps } = useDefinition(SelectItemDefinition, props);
+type SelectItemViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof SelectItemDefinition,
+    SelectItemProps
+  >;
+  navigation: AnchorNavigation;
+};
+
+function SelectItemView({ definitionResult, navigation }: SelectItemViewProps) {
+  const { ownProps, restProps } = definitionResult;
   const { classes, children, showSelectionIndicator } = ownProps;
+  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
-    <ListBoxItem className={classes.root} {...restProps}>
+    <ListBoxItem className={classes.root} {...restProps} {...navigationProps}>
       {values => {
         const content =
           typeof children === 'function' ? children(values) : children;
@@ -60,6 +69,26 @@ export function SelectItem<T extends object = object>(
         );
       }}
     </ListBoxItem>
+  );
+}
+
+/**
+ * A low-level Select item wrapper for custom item content.
+ *
+ * @public
+ */
+export function SelectItem<T extends object = object>(
+  props: SelectItemProps<T>,
+) {
+  const definitionResult = useDefinition(SelectItemDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={definitionResult.restProps}
+      view={SelectItemView}
+      viewProps={{ definitionResult }}
+    />
   );
 }
 

@@ -17,9 +17,65 @@
 import { forwardRef, Ref } from 'react';
 import { Link as RALink } from 'react-aria-components';
 import type { ButtonLinkProps } from './types';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import { ButtonLinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
+import {
+  getReactAriaAnchorProps,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
+
+type ButtonLinkViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof ButtonLinkDefinition,
+    ButtonLinkProps
+  >;
+  navigation: AnchorNavigation;
+  forwardedRef: Ref<HTMLAnchorElement>;
+};
+
+function ButtonLinkView({
+  definitionResult,
+  navigation,
+  forwardedRef,
+}: ButtonLinkViewProps) {
+  const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
+  const { classes, iconStart, iconEnd, children } = ownProps;
+  const navigationProps = restProps.isDisabled
+    ? { href: undefined, routerOptions: undefined, render: undefined }
+    : getReactAriaAnchorProps(navigation, restProps);
+
+  const handlePress: typeof restProps.onPress = e => {
+    restProps.onPress?.(e);
+    const text =
+      restProps['aria-label'] ??
+      getNodeText(children) ??
+      String(restProps.href ?? '');
+    analytics.captureEvent('click', text, {
+      attributes: { to: String(restProps.href ?? '') },
+    });
+  };
+
+  return (
+    <RALink
+      className={classes.root}
+      ref={forwardedRef}
+      {...dataAttributes}
+      {...restProps}
+      {...navigationProps}
+      onPress={handlePress}
+    >
+      <span className={classes.content}>
+        {iconStart}
+        {children}
+        {iconEnd}
+      </span>
+    </RALink>
+  );
+}
 
 /**
  * A button-styled anchor element for navigation, supporting optional start and end icon slots and analytics event tracking.
@@ -28,37 +84,15 @@ import { getNodeText } from '../../analytics/getNodeText';
  */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
-    const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
-      ButtonLinkDefinition,
-      props,
-    );
-    const { classes, iconStart, iconEnd, children } = ownProps;
-
-    const handlePress: typeof restProps.onPress = e => {
-      restProps.onPress?.(e);
-      const text =
-        restProps['aria-label'] ??
-        getNodeText(children) ??
-        String(restProps.href ?? '');
-      analytics.captureEvent('click', text, {
-        attributes: { to: String(restProps.href ?? '') },
-      });
-    };
+    const definitionResult = useDefinition(ButtonLinkDefinition, props);
+    const Navigation = definitionResult.navigation;
 
     return (
-      <RALink
-        className={classes.root}
-        ref={ref}
-        {...dataAttributes}
-        {...restProps}
-        onPress={handlePress}
-      >
-        <span className={classes.content}>
-          {iconStart}
-          {children}
-          {iconEnd}
-        </span>
-      </RALink>
+      <Navigation
+        props={definitionResult.restProps}
+        view={ButtonLinkView}
+        viewProps={{ definitionResult, forwardedRef: ref }}
+      />
     );
   },
 );

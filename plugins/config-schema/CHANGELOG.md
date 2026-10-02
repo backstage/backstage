@@ -1,5 +1,45 @@
 # @backstage/plugin-config-schema
 
+## 0.1.85-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+
+## 0.1.84
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.1.84-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 0.1.84-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.1.83
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+
 ## 0.1.83-next.1
 
 ### Patch Changes

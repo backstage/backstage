@@ -40,6 +40,7 @@ import { useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
 import { TableBodySkeleton } from './TableBodySkeleton';
+import { Text } from '../../Text';
 
 function isRowRenderFn<T extends TableItem>(
   rowConfig: RowConfig<T> | RowRenderFn<T> | undefined,
@@ -144,7 +145,7 @@ export function Table<T extends TableItem>({
   if (error) {
     return (
       <div className={classes.root} style={style}>
-        Error: {error.message}
+        <Text variant="body-medium">Error: {error.message}</Text>
       </div>
     );
   }

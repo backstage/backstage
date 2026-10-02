@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AiResourceV1alpha1Plugin",
+  "description": "An AI resource of type 'plugin', representing a packaged collection of skills distributed as a unit.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "AiResource",
+      "metadata": {
+        "name": "code-review-plugin",
+        "description": "A plugin for automated code review"
+      },
+      "spec": {
+        "type": "plugin",
+        "lifecycle": "production",
+        "owner": "ai-platform-team",
+        "system": "ai-tooling",
+        "skills": ["airesource:default/typescript-best-practices"],
+        "version": "1.0.0"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1"]
+        },
+        "kind": {
+          "enum": ["AiResource"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner", "skills"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["plugin"],
+              "description": "The type of AI resource."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the AI resource.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the AI resource.",
+              "examples": ["ai-platform-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the AI resource belongs to.",
+              "minLength": 1
+            },
+            "skills": {
+              "type": "array",
+              "description": "Entity references to skills this plugin contains.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "version": {
+              "type": "string",
+              "description": "The version of the plugin.",
+              "examples": ["1.0.0", "2.1.0-beta.1"],
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

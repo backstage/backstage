@@ -26,11 +26,11 @@ import { GithubConnectionType } from '../schema/github';
 import { GitlabConnectionType } from '../schema/gitlab';
 import { GoogleGcsConnectionType } from '../schema/googleGcs';
 import { HarnessConnectionType } from '../schema/harness';
-import type { ConnectionType } from '../api/ConnectionType';
+import type { ConnectionTypeDefinition } from '../api/ConnectionType';
 
 function createConnectionTypes<
   const T extends {
-    [K in keyof T]: ConnectionType & { type: K };
+    [K in keyof T]: ConnectionTypeDefinition & { type: K };
   },
 >(types: T): T {
   return types;
@@ -54,8 +54,9 @@ export const connectionTypes = createConnectionTypes({
 });
 
 /** @public */
-export type ConnectionTypeKey = keyof typeof connectionTypes;
+export type ConnectionType = keyof typeof connectionTypes;
 
 /** @public */
-export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
-  T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
+export type LookupConnectionType<
+  T extends ConnectionType | ConnectionTypeDefinition,
+> = T extends ConnectionType ? (typeof connectionTypes)[T] : T;

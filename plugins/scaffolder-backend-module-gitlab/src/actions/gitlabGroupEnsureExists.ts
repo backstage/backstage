@@ -27,8 +27,9 @@ import { examples } from './gitlabGroupEnsureExists.examples';
  */
 export const createGitlabGroupEnsureExistsAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'gitlab:group:ensureExists',
@@ -87,7 +88,12 @@ export const createGitlabGroupEnsureExistsAction = (options: {
 
       const { host } = parseRepoUrl(repoUrl, integrations);
 
-      const api = getClient({ host, integrations, token });
+      const api = getClient({
+        host,
+        integrations,
+        token,
+        requireScmUserCredentials,
+      });
 
       let currentPath: string | null = null;
       let parentId: number | null = null;

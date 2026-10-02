@@ -111,7 +111,7 @@ This creates two MCP server endpoints:
 
 Each server uses include filter rules with glob patterns on action IDs to control which actions are exposed. For example, `id: 'catalog:*'` matches all actions registered by the catalog plugin.
 
-When `mcpActions.servers` is not configured, the plugin behaves exactly as before with a single server at `/api/mcp-actions/v1`.
+The default server at `/api/mcp-actions/v1` is always available and always exposes every registered action, whether or not `mcpActions.servers` is configured. Named servers are subsets of it, so an action can be exposed on the default server and on any number of named servers at the same time.
 
 ### Filter Rules
 
@@ -214,13 +214,14 @@ auth:
   clientIdMetadataDocuments:
     enabled: true
     # Optional: override which client_id URLs are allowed.
-    # Defaults to Claude, VS Code, and the built-in Backstage CLI.
-    # Note: setting this replaces the Claude and VS Code defaults entirely.
-    # The built-in CLI client is always allowed, since this backend serves
-    # its metadata document itself.
+    # Defaults to Claude, VS Code, ChatGPT Codex, and the built-in Backstage CLI.
+    # Note: setting this replaces the Claude, VS Code, and ChatGPT Codex
+    # defaults entirely. The built-in CLI client is always allowed, since
+    # this backend serves its metadata document itself.
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
+    #   - 'https://chatgpt.com/oauth/codex/*/client.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).

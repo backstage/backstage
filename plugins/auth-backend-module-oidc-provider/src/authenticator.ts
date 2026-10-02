@@ -61,7 +61,9 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     input: OAuthAuthenticatorResult<OidcAuthResult>,
   ) => ({
     profile: {
-      email: input.fullProfile.userinfo.email,
+      ...(input.fullProfile.userinfo.email_verified === true && {
+        email: input.fullProfile.userinfo.email,
+      }),
       picture: input.fullProfile.userinfo.picture,
       displayName: input.fullProfile.userinfo.name,
     },

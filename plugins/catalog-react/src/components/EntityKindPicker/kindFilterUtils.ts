@@ -35,9 +35,7 @@ export function useAllKinds(): {
   } = useAsync(async () => {
     const { facets } = await catalogApi.getEntityFacets({ facets: ['kind'] });
     const kindFacets = (facets.kind ?? []).map(f => f.value);
-    return new Map(
-      kindFacets.map(kind => [kind.toLocaleLowerCase('en-US'), kind]),
-    );
+    return new Map(kindFacets.map(kind => [kind.toLowerCase(), kind]));
   }, [catalogApi]);
 
   return { loading, error, allKinds: allKinds ?? new Map() };
@@ -59,7 +57,7 @@ export function filterKinds(
   let availableKinds = Array.from(allKinds.keys());
   if (allowedKinds) {
     availableKinds = allowedKinds
-      .map(k => k.toLocaleLowerCase('en-US'))
+      .map(k => k.toLowerCase())
       .filter(k => allKinds.has(k));
   }
 
@@ -69,7 +67,7 @@ export function filterKinds(
 
   if (forcedKinds && !kindsMap.has(forcedKinds)) {
     // this is the only time we set a label for a kind which is not properly capitalized
-    kindsMap.set(forcedKinds.toLocaleLowerCase('en-US'), forcedKinds);
+    kindsMap.set(forcedKinds.toLowerCase(), forcedKinds);
   }
 
   return kindsMap;

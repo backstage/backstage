@@ -201,9 +201,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       authProvider,
     } = options;
     const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
+    const esConfig = config.getConfig('search.elasticsearch');
+    const awsAccountId = esConfig.getOptionalString('accountId');
     const clientOptions = await this.createElasticSearchClientOptions(
-      await credentialProvider?.getCredentialProvider(),
-      config.getConfig('search.elasticsearch'),
+      await credentialProvider?.getCredentialProvider(
+        awsAccountId ? { accountId: awsAccountId } : undefined,
+      ),
+      esConfig,
       authProvider,
     );
     if (clientOptions.provider === 'elastic') {
@@ -446,6 +450,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         queryOptions: this.queryOptions,
       },
     );
+    if (documentTypes && documentTypes.length === 0) {
+      return {
+        results: [],
+        nextPageCursor: undefined,
+        previousPageCursor: undefined,
+        numberOfResults: undefined,
+      };
+    }
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
       : this.constructSearchAlias('*');

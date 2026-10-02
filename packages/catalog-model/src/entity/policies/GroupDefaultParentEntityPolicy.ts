@@ -37,7 +37,7 @@ export class GroupDefaultParentEntityPolicy implements EntityPolicy {
       defaultNamespace: DEFAULT_NAMESPACE,
     });
 
-    if (kind.toLocaleUpperCase('en-US') !== 'GROUP') {
+    if (kind.toUpperCase() !== 'GROUP') {
       throw new TypeError('group parent must be a group');
     }
 

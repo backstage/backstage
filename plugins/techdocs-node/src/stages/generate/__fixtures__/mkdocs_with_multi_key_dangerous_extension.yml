@@ -1,0 +1,7 @@
+site_name: Test
+markdown_extensions:
+  - toc:
+      permalink: true
+    'os:system':
+      name: 'pwned'
+  - admonition

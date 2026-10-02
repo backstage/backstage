@@ -135,9 +135,7 @@ export class DefaultGithubCredentialsProvider
           );
         }
         const normalizedOrgs = auth.orgs?.length
-          ? Array.from(
-              new Set(auth.orgs.map(org => org.toLocaleLowerCase('en-US'))),
-            ).sort()
+          ? Array.from(new Set(auth.orgs.map(org => org.toLowerCase()))).sort()
           : undefined;
         config.apps = [
           {

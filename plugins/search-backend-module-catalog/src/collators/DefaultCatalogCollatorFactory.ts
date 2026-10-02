@@ -98,20 +98,19 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   }
 
   private async *execute(): AsyncGenerator<CatalogEntityDocument> {
-    let entitiesRetrieved = 0;
     let cursor: string | undefined = undefined;
+    const initialRequest: QueryEntitiesInitialRequest = {
+      filter: this.filter,
+      limit: this.batchSize,
+      totalItems: 'exclude',
+    };
 
     do {
       const response = await this.catalog.queryEntities(
-        {
-          filter: this.filter,
-          limit: this.batchSize,
-          ...(cursor ? { cursor } : {}),
-        },
+        cursor ? { cursor, limit: this.batchSize } : initialRequest,
         { credentials: await this.auth.getOwnServiceCredentials() },
       );
       cursor = response.pageInfo.nextCursor;
-      entitiesRetrieved += response.items.length;
 
       for (const entity of response.items) {
         yield {

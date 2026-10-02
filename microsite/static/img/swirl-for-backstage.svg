@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SWIRL mark — DS-5588.
+  Icon-only lockup (no wordmark). Designed to read clearly from 16px
+  (favicon) up to 512px (app icon). Same family as swirl-galaxy-logo.svg
+  but simplified for small sizes: three primary spiral arms, nebula core
+  glow, bright nucleus; secondary arms and star field omitted.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"
+     width="128" height="128"
+     role="img" aria-label="SWIRL">
+  <defs>
+    <radialGradient id="swirl-core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="28%" stop-color="#BFE1FF" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#0060A8" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0060A8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="swirl-arm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0060A8"/>
+      <stop offset="70%" stop-color="#4D9FFF"/>
+      <stop offset="100%" stop-color="#86BDFF"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(64, 64)">
+    <!-- Nebula core -->
+    <circle r="52" fill="url(#swirl-core)"/>
+
+    <!-- Three spiral arms, rotated 120° -->
+    <g stroke="url(#swirl-arm)" stroke-width="9" fill="none"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 0 -42 C 22 -40, 40 -24, 42 0 C 42 22, 26 32, 12 28"/>
+      <path d="M 0 -42 C 22 -40, 40 -24, 42 0 C 42 22, 26 32, 12 28"
+            transform="rotate(120)"/>
+      <path d="M 0 -42 C 22 -40, 40 -24, 42 0 C 42 22, 26 32, 12 28"
+            transform="rotate(240)"/>
+    </g>
+
+    <!-- Bright nucleus -->
+    <circle r="6" fill="#BFE1FF" opacity="0.75"/>
+    <circle r="3" fill="#ffffff"/>
+    <circle r="1.4" fill="#0060A8"/>
+  </g>
+</svg>

@@ -1,5 +1,18 @@
 # @backstage/cli-common
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+
 ## 0.3.0
 
 ### Minor Changes

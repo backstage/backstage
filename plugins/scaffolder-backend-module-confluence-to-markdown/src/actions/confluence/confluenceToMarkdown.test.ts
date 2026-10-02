@@ -195,6 +195,281 @@ describe('confluence:transform:markdown', () => {
     });
   });
 
+  it('should reject repository file paths outside the workspace', async () => {
+    const options = {
+      reader,
+      integrations,
+      config,
+    };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = {
+      results: [],
+    };
+
+    worker.use(
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+      ),
+    );
+
+    mockContext.input.repoUrl =
+      'git@github.com:space/backstage/blob/main/../../outside/mkdocs.yml';
+    const action = createConfluenceToMarkdownAction(options);
+
+    await expect(action.handler(mockContext)).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
+    );
+    expect(reader.readTree).not.toHaveBeenCalled();
+  });
+
+  it('should support repository files in nested workspace directories', async () => {
+    const options = {
+      reader,
+      integrations,
+      config,
+    };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = {
+      results: [],
+    };
+
+    worker.use(
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+      ),
+    );
+
+    mockDir.setContent({
+      'workspace/docs/mkdocs.yml': 'File contents',
+    });
+    mockContext.input.repoUrl =
+      'git@github.com:space/backstage/blob/main/docs/mkdocs.yml';
+    const action = createConfluenceToMarkdownAction(options);
+
+    await action.handler(mockContext);
+
+    expect(mockDir.content({ path: 'workspace/docs/docs' })).toEqual({
+      'mkdocs.md': 'hello world',
+    });
+  });
+
+  it('should write attachments to the validated documentation directory', async () => {
+    const options = {
+      reader,
+      integrations,
+      config,
+    };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = {
+      results: [
+        {
+          id: '4444444',
+          type: 'attachment',
+          title: 'testing.pdf',
+          metadata: {
+            mediaType: 'application/pdf',
+          },
+          _links: {
+            download: '/download/attachments/4444444/testing.pdf',
+          },
+        },
+      ],
+    };
+
+    worker.use(
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/download/attachments/4444444/testing.pdf`, () =>
+        HttpResponse.text('hello', { status: 200, statusText: 'OK' }),
+      ),
+    );
+
+    mockDir.addContent({
+      'outside/linked': {},
+      'outside/docs/img': {},
+      'workspace/link': ({ symlink }) =>
+        symlink(mockDir.resolve('outside/linked')),
+    });
+    mockContext.input.repoUrl =
+      'git@github.com:space/backstage/blob/main/link/../mkdocs.yml';
+    const action = createConfluenceToMarkdownAction(options);
+
+    await action.handler(mockContext);
+
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
+      img: { 'testing.pdf': Buffer.from('hello') },
+      'mkdocs.md': 'hello world',
+    });
+    expect(mockDir.content({ path: 'outside/docs/img' })).toEqual({});
+  });
+
+  it('should reject attachment titles outside the image directory', async () => {
+    const options = {
+      reader,
+      integrations,
+      config,
+    };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = {
+      results: [
+        {
+          id: '4444444',
+          type: 'attachment',
+          title: '../outside.pdf',
+          metadata: {
+            mediaType: 'application/pdf',
+          },
+          _links: {
+            download: '/download/attachments/4444444/outside.pdf',
+          },
+        },
+      ],
+    };
+
+    worker.use(
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/download/attachments/4444444/outside.pdf`, () =>
+        HttpResponse.text('hello', { status: 200, statusText: 'OK' }),
+      ),
+    );
+
+    const action = createConfluenceToMarkdownAction(options);
+
+    await expect(action.handler(mockContext)).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
+    );
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({ img: {} });
+  });
+
+  it.each([
+    [
+      'repository file',
+      'git@github.com:space/backstage/blob/main/docs/mkdocs.yml',
+    ],
+    [
+      'documentation directory',
+      'git@github.com:space/backstage/blob/main/mkdocs.yml',
+    ],
+  ])(
+    'should reject an unsafe %s after repository contents are fetched',
+    async (_description, repoUrl) => {
+      const options = {
+        reader,
+        integrations,
+        config,
+      };
+      const responseBody = {
+        results: [
+          {
+            id: '4444444',
+            type: 'page',
+            title: 'Testing',
+            body: {
+              export_view: {
+                value: '<p>hello world</p>',
+              },
+            },
+          },
+        ],
+      };
+      const responseBodyTwo = {
+        results: [],
+      };
+
+      worker.use(
+        http.get(`${baseUrl}/rest/api/content`, () =>
+          HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+        ),
+        http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+          HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+        ),
+      );
+
+      reader.readTree = jest.fn().mockResolvedValue({
+        dir: jest.fn(async () => {
+          mockDir.addContent({
+            'outside/mkdocs.yml': 'File contents',
+            'workspace/docs': ({ symlink }) =>
+              symlink(mockDir.resolve('outside')),
+          });
+        }),
+      });
+      mockContext.input.repoUrl = repoUrl;
+      const action = createConfluenceToMarkdownAction(options);
+
+      await expect(action.handler(mockContext)).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    },
+  );
+
   it('should fail on the first fetch call with response.ok set to false', async () => {
     const options = {
       reader,
@@ -236,6 +511,62 @@ describe('confluence:transform:markdown', () => {
       await action.handler(mockContext);
     }).rejects.toThrow(
       'Could not find document https://nodomain.confluence.com/display/testing/mkdocs. Please check your input.',
+    );
+  });
+
+  it('should reject attachment titles that resolve outside the image directory', async () => {
+    const options = {
+      reader,
+      integrations,
+      config,
+    };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = {
+      results: [
+        {
+          id: '4444444',
+          type: 'attachment',
+          title: '../../screenshot.png',
+          metadata: {
+            mediaType: 'image/png',
+          },
+          _links: {
+            download: '/download/attachments/4444444/screenshot.png',
+          },
+        },
+      ],
+    };
+
+    worker.use(
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/download/attachments/4444444/screenshot.png`, () =>
+        HttpResponse.text('content', { status: 200, statusText: 'OK' }),
+      ),
+    );
+
+    const action = createConfluenceToMarkdownAction(options);
+    await expect(async () => {
+      await action.handler(mockContext);
+    }).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
     );
   });
 

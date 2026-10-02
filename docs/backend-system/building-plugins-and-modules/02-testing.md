@@ -143,7 +143,7 @@ Example:
 
 ```ts
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 describe('read from remote', () => {
@@ -154,13 +154,9 @@ describe('read from remote', () => {
     expect.assertions(1);
 
     worker.use(
-      rest.get('https://remote-server.com/api/v3/foo', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe('Bearer fake');
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(JSON.stringify({ value: 7 })),
-        );
+      http.get('https://remote-server.com/api/v3/foo', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe('Bearer fake');
+        return HttpResponse.json({ value: 7 }, { status: 200 });
       }),
     );
 

@@ -15,9 +15,10 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { DatabaseManagerImpl } from './DatabaseManager';
+import { DatabaseManager, DatabaseManagerImpl } from './DatabaseManager';
 import { Connector } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
+import knexFactory from 'knex';
 
 describe('DatabaseManagerImpl', () => {
   afterEach(() => {
@@ -61,6 +62,108 @@ describe('DatabaseManagerImpl', () => {
     expect(connector1.getClient).toHaveBeenCalledTimes(2);
     expect(connector1.getClient).toHaveBeenLastCalledWith('plugin2', deps);
     expect(connector2.getClient).toHaveBeenCalledTimes(0);
+  });
+
+  it('does not query idle database clients', async () => {
+    jest.useFakeTimers();
+    const env = process.env as Record<string, string | undefined>;
+    const nodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    const raw = jest.fn();
+    const connector = {
+      getClient: jest.fn().mockResolvedValue({ raw }),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(new ConfigReader({ client: 'pg' }), {
+      pg: connector,
+    });
+
+    try {
+      await impl.forPlugin('plugin1', deps).getClient();
+      await jest.advanceTimersByTimeAsync(60_000);
+
+      expect(raw).not.toHaveBeenCalled();
+    } finally {
+      env.NODE_ENV = nodeEnv;
+      jest.useRealTimers();
+    }
+  });
+
+  it('queries idle database clients when keepalive is enabled', async () => {
+    jest.useFakeTimers();
+    const env = process.env as Record<string, string | undefined>;
+    const nodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    const raw = jest.fn().mockResolvedValue(undefined);
+    const destroy = jest.fn().mockResolvedValue(undefined);
+    const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
+    const connector = {
+      getClient: jest.fn().mockResolvedValue({
+        raw,
+        destroy,
+        client: { config: 'pg' },
+      }),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({ client: 'pg', keepalive: true }),
+      { pg: connector },
+      { rootLifecycle },
+    );
+
+    try {
+      await impl.forPlugin('plugin1', deps).getClient();
+      await jest.advanceTimersByTimeAsync(60_000);
+      expect(raw).toHaveBeenCalledWith('select 1');
+
+      await rootLifecycle.addShutdownHook.mock.calls[0][0]();
+      await jest.advanceTimersByTimeAsync(60_000);
+      expect(raw).toHaveBeenCalledTimes(1);
+      expect(destroy).toHaveBeenCalledTimes(1);
+    } finally {
+      env.NODE_ENV = nodeEnv;
+      jest.useRealTimers();
+    }
+  });
+
+  it('reconnects after an idle connection pool drains to zero', async () => {
+    const database = knexFactory({
+      client: 'better-sqlite3',
+      connection: { filename: ':memory:' },
+      useNullAsDefault: true,
+      pool: {
+        min: 0,
+        max: 1,
+        idleTimeoutMillis: 20,
+        reapIntervalMillis: 10,
+      },
+    });
+    const pool = database.client.pool;
+    const created = jest.fn();
+    pool.on('createSuccess', created);
+    const connector = {
+      getClient: jest.fn().mockResolvedValue(database),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(new ConfigReader({ client: 'pg' }), {
+      pg: connector,
+    });
+
+    try {
+      const client = await impl.forPlugin('plugin1', deps).getClient();
+      await client.raw('select 1');
+      expect(created).toHaveBeenCalledTimes(1);
+      expect(pool.numFree()).toBe(1);
+
+      const deadline = Date.now() + 1000;
+      while (pool.numFree() !== 0 && Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      expect(pool.numFree()).toBe(0);
+      expect(pool.numUsed()).toBe(0);
+
+      await client.raw('select 1');
+      expect(created).toHaveBeenCalledTimes(2);
+    } finally {
+      await database.destroy();
+    }
   });
 
   it('respects per-plugin overridden connectors', async () => {
@@ -171,11 +274,13 @@ describe('DatabaseManagerImpl', () => {
     // Given a database manager that is provided a rootLifecycle service
     const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
     const destroy = jest.fn();
+    const shutdownConnector = jest.fn().mockResolvedValue(undefined);
     const connector1 = {
       getClient: jest
         .fn()
         .mockResolvedValue({ destroy, client: { config: 'pg' } }),
-    } satisfies Connector;
+      shutdown: shutdownConnector,
+    } satisfies Connector & { shutdown(): Promise<void> };
     const impl = new DatabaseManagerImpl(
       new ConfigReader({
         client: 'pg',
@@ -198,6 +303,7 @@ describe('DatabaseManagerImpl', () => {
 
     // Then the destroy method should have been called on the resolved client
     expect(destroy).toHaveBeenCalled();
+    expect(shutdownConnector).toHaveBeenCalled();
   });
 
   it('does not attempt to destroy connection when using SQLite', async () => {
@@ -238,5 +344,57 @@ describe('DatabaseManagerImpl', () => {
     // Destroy should not have been called, but we should have read the config
     expect(destroy).not.toHaveBeenCalled();
     expect(getConfig).toHaveBeenCalled();
+  });
+});
+
+describe('DatabaseManager.fromConfig', () => {
+  describe('schemaPrefix validation', () => {
+    it('throws error when schemaPrefix contains invalid characters', () => {
+      const invalidPrefixes = ['test"--', 'test-prefix', '123test', 'test@'];
+
+      invalidPrefixes.forEach(schemaPrefix => {
+        const config = new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              schemaPrefix,
+            },
+          },
+        });
+
+        expect(() => DatabaseManager.fromConfig(config)).toThrow(
+          /Invalid schemaPrefix/,
+        );
+      });
+    });
+
+    it('accepts valid schemaPrefix values', () => {
+      const validPrefixes = ['test_prefix_', '_test_prefix', 'backstage_'];
+
+      validPrefixes.forEach(schemaPrefix => {
+        const config = new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              schemaPrefix,
+            },
+          },
+        });
+
+        expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+      });
+    });
+
+    it('accepts when schemaPrefix is not configured', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+    });
   });
 });

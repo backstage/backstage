@@ -34,8 +34,10 @@ import { examples } from './githubIssuesLabel.examples';
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:issues:label',
@@ -77,6 +79,7 @@ export function createGithubIssuesLabelAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         host,
         owner,

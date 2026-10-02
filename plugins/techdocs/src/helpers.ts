@@ -22,5 +22,5 @@ export function toLowerMaybe(str: string, config: Config) {
     'techdocs.legacyUseCaseSensitiveTripletPaths',
   )
     ? str
-    : str.toLocaleLowerCase('en-US');
+    : str.toLowerCase();
 }

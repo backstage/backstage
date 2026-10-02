@@ -93,6 +93,39 @@ describe('RealLogViewer', () => {
     expect(onDownloadLog).toHaveBeenCalledTimes(1);
   });
 
+  it('should render copy button and show copy confirmation', async () => {
+    const onCopyLog = jest.fn();
+    const rendered = await renderInTestApp(
+      <RealLogViewer text={testText} onCopyLog={onCopyLog} />,
+    );
+
+    const copyButton = rendered.getByRole('button', {
+      name: /copy logs to clipboard/i,
+    });
+    await userEvent.click(copyButton);
+
+    expect(onCopyLog).toHaveBeenCalledTimes(1);
+    expect(
+      await rendered.findByText('Lines copied to clipboard'),
+    ).toBeInTheDocument();
+  });
+
+  it('should not show copy confirmation when copying fails', async () => {
+    const onCopyLog = jest.fn().mockRejectedValue(new Error('Copy failed'));
+    const rendered = await renderInTestApp(
+      <RealLogViewer text={testText} onCopyLog={onCopyLog} />,
+    );
+
+    await userEvent.click(
+      rendered.getByRole('button', { name: /copy logs to clipboard/i }),
+    );
+
+    expect(onCopyLog).toHaveBeenCalledTimes(1);
+    expect(
+      rendered.queryByText('Lines copied to clipboard'),
+    ).not.toBeInTheDocument();
+  });
+
   it('should not render download button when showDownloadButton is false', async () => {
     const rendered = await renderInTestApp(
       <RealLogViewer text={testText} showDownloadButton={false} />,

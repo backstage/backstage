@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plainFile.examples';
+import { assertScmUserCredentials } from './assertScmUserCredentials';
 
 import {
   createTemplateAction,
@@ -33,8 +34,9 @@ import {
 export function createFetchPlainFileAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { reader, integrations } = options;
+  const { reader, integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'fetch:plain:file',
@@ -70,6 +72,14 @@ export function createFetchPlainFileAction(options: {
         ctx.workspacePath,
         ctx.input.targetPath,
       );
+
+      assertScmUserCredentials({
+        integrations,
+        requireScmUserCredentials,
+        url: ctx.input.url,
+        baseUrl: ctx.templateInfo?.baseUrl,
+        token: ctx.input.token,
+      });
 
       await fetchFile({
         reader,

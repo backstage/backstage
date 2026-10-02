@@ -102,7 +102,6 @@ export const RowDefinition = defineComponent<RowOwnProps>()({
   propDefs: {
     columns: {},
     children: {},
-    href: {},
     noTrack: {},
   },
 });

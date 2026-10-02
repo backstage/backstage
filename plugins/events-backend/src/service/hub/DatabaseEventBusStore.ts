@@ -33,6 +33,9 @@ const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
 const WINDOW_MAX_AGE_DEFAULT = { days: 1 };
 
 const MAX_BATCH_SIZE = 10;
+const CLEANUP_BATCH_SIZE = 1_000;
+const CLEANUP_STATEMENT_TIMEOUT_MS = 20_000;
+const CLEANUP_RUN_DURATION_MS = 50_000;
 const LISTENER_CONNECTION_TIMEOUT_MS = 60_000;
 const KEEPALIVE_INTERVAL_MS = 60_000;
 
@@ -311,10 +314,11 @@ export class DatabaseEventBusStore implements EventBusStore {
 
     await options.scheduler.scheduleTask({
       id: 'event-bus-cleanup',
-      frequency: { seconds: 10 },
+      scope: 'global',
+      frequency: { minutes: 1 },
       timeout: { minutes: 1 },
       initialDelay: { seconds: 10 },
-      fn: () => store.#cleanup(),
+      fn: signal => store.#cleanup(signal),
     });
 
     options.lifecycle.addShutdownHook(async () => {
@@ -347,7 +351,9 @@ export class DatabaseEventBusStore implements EventBusStore {
       maxAge,
     );
 
-    return Object.assign(store, { clean: () => store.#cleanup() });
+    return Object.assign(store, {
+      clean: (signal?: AbortSignal) => store.#cleanup(signal),
+    });
   }
 
   readonly #db: Knex;
@@ -486,20 +492,30 @@ export class DatabaseEventBusStore implements EventBusStore {
         FOR UPDATE
       ),
       selected_events AS (
-        SELECT event_bus_events.*
-        FROM event_bus_events
-        INNER JOIN subscription
-        ON event_bus_events.topic = ANY(subscription.topics)
-        WHERE event_bus_events.id > subscription.read_until
-        AND NOT :id = ANY(event_bus_events.notified_subscribers)
-        ORDER BY event_bus_events.id ASC LIMIT :limit
+        SELECT event.*
+        FROM subscription
+        CROSS JOIN LATERAL (
+          SELECT DISTINCT topic
+          FROM unnest(subscription.topics) AS subscribed(topic)
+        ) AS subscribed_topics
+        CROSS JOIN LATERAL (
+          SELECT event_bus_events.*
+          FROM event_bus_events
+          WHERE event_bus_events.topic = subscribed_topics.topic
+            AND event_bus_events.id > subscription.read_until
+            AND NOT :id = ANY(event_bus_events.notified_subscribers)
+          ORDER BY event_bus_events.id ASC
+          LIMIT :limit
+        ) AS event
+        ORDER BY event.id ASC
+        LIMIT :limit
       ),
       last_event_id AS (
         SELECT max(id) AS last_event_id
         FROM selected_events
       ),
       events_array AS (
-        SELECT json_agg(row_to_json(selected_events)) AS events
+        SELECT json_agg(row_to_json(selected_events) ORDER BY id) AS events
         FROM selected_events
       )
       UPDATE event_bus_subscriptions
@@ -561,64 +577,164 @@ export class DatabaseEventBusStore implements EventBusStore {
     );
   }
 
-  async #cleanup() {
-    try {
-      const eventCount = await this.#db(TABLE_EVENTS)
-        .delete()
-        // Delete any events that are outside both the min age and size window
-        .orWhere(inner =>
-          inner
-            .whereIn(
-              'id',
-              this.#db
-                .select('id')
-                .from(TABLE_EVENTS)
-                .orderBy('id', 'desc')
-                .offset(this.#windowMaxCount),
-            )
-            .andWhere(
-              'created_at',
-              '<',
-              new Date(Date.now() - this.#windowMinAge),
-            ),
-        )
-        // If events are outside the max age they will always be deleted
-        .orWhere('created_at', '<', new Date(Date.now() - this.#windowMaxAge));
-
-      if (eventCount > 0) {
-        this.#logger.info(
-          `Event cleanup resulted in ${eventCount} old events being deleted`,
-        );
-      }
-    } catch (error) {
-      this.#logger.error('Event cleanup failed', error);
+  async #cleanup(signal?: AbortSignal) {
+    if (signal?.aborted) {
+      return;
     }
 
-    try {
-      // Delete any subscribers that aren't keeping up with current events
-      const [{ min: minId }] = await this.#db(TABLE_EVENTS).min('id');
+    const stopAt = Date.now() + CLEANUP_RUN_DURATION_MS;
+    let eventCount = 0;
+    let subscriberCount = 0;
 
-      let subscriberCount;
-      if (minId === null) {
-        // No events left, remove all subscribers. This can happen if no events
-        // are published within the max age window.
-        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
-          .where('updated_at', '<', new Date(Date.now() - this.#windowMaxAge))
-          .delete();
-      } else {
-        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
-          .delete()
-          // Read pointer points to the ID that has been read, so we need an additional offset
-          .where('read_until', '<', minId - 1);
+    const setStatementTimeout = async (trx: Knex.Transaction) => {
+      const remainingMs = stopAt - Date.now();
+      if (remainingMs <= 0) {
+        return false;
       }
 
-      if (subscriberCount > 0) {
-        this.#logger.info(
-          `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
+      await trx.raw(
+        `SET LOCAL statement_timeout = '${Math.min(
+          CLEANUP_STATEMENT_TIMEOUT_MS,
+          remainingMs,
+        )}ms'`,
+      );
+      return true;
+    };
+
+    const deleteEventBatch = (createdBefore: Date, maxId?: string) => {
+      const bindings: (Date | string | number)[] = [createdBefore];
+      if (maxId !== undefined) {
+        bindings.push(maxId);
+      }
+      bindings.push(CLEANUP_BATCH_SIZE);
+
+      return this.#db.transaction(async trx => {
+        if (!(await setStatementTimeout(trx))) {
+          return 0;
+        }
+        const result = await trx.raw<{ rowCount: number }>(
+          `WITH candidates AS (
+              SELECT id FROM event_bus_events
+              WHERE created_at < ? ${maxId === undefined ? '' : 'AND id <= ?'}
+              ORDER BY created_at, id
+              LIMIT ? FOR UPDATE SKIP LOCKED
+            )
+            DELETE FROM event_bus_events
+            WHERE id = ANY (ARRAY(SELECT id FROM candidates))`,
+          bindings,
         );
+        return result.rowCount;
+      });
+    };
+
+    const deleteSubscriberBatch = () =>
+      this.#db.transaction<number>(async trx => {
+        if (!(await setStatementTimeout(trx))) {
+          return 0;
+        }
+        const [{ min: minId }] = await trx(TABLE_EVENTS).min('id');
+
+        if (!(await setStatementTimeout(trx))) {
+          return 0;
+        }
+
+        const where =
+          minId === null
+            ? 'updated_at < ?'
+            : 'read_until < CAST(? AS bigint) - 1';
+        const binding =
+          minId === null ? new Date(Date.now() - this.#windowMaxAge) : minId;
+        const result = await trx.raw<{ rowCount: number }>(
+          `WITH candidates AS (
+            SELECT id FROM event_bus_subscriptions
+            WHERE ${where}
+            ORDER BY id
+            LIMIT ? FOR UPDATE SKIP LOCKED
+          )
+          DELETE FROM event_bus_subscriptions
+          WHERE id = ANY (ARRAY(SELECT id FROM candidates))`,
+          [binding, CLEANUP_BATCH_SIZE],
+        );
+        return result.rowCount;
+      });
+
+    // Expire events past maxAge first, then trim older events past maxCount.
+    let eventCleanupPhase: 'maxAge' | 'maxCount' | 'complete' = 'maxAge';
+    let countCutoff: string | undefined;
+    let failed = false;
+
+    // Finish one bounded event batch and one bounded subscriber batch before
+    // checking cancellation or the run budget, so neither can starve the other.
+    while (!failed && !signal?.aborted && Date.now() < stopAt) {
+      let subscriberDeleted = 0;
+
+      try {
+        if (eventCleanupPhase === 'maxAge') {
+          const deleted = await deleteEventBatch(
+            new Date(Date.now() - this.#windowMaxAge),
+          );
+          eventCount += deleted;
+          if (deleted < CLEANUP_BATCH_SIZE) {
+            eventCleanupPhase = 'maxCount';
+          }
+        } else if (eventCleanupPhase === 'maxCount') {
+          if (countCutoff === undefined) {
+            const cutoff = await this.#db.transaction(async trx => {
+              if (!(await setStatementTimeout(trx))) {
+                return undefined;
+              }
+              return trx<EventsRow>(TABLE_EVENTS)
+                .select('id')
+                .orderBy('id', 'desc')
+                .offset(this.#windowMaxCount)
+                .first();
+            });
+            countCutoff = cutoff?.id;
+          }
+
+          if (countCutoff === undefined) {
+            eventCleanupPhase = 'complete';
+          } else {
+            const deleted = await deleteEventBatch(
+              new Date(Date.now() - this.#windowMinAge),
+              countCutoff,
+            );
+            eventCount += deleted;
+            if (deleted < CLEANUP_BATCH_SIZE) {
+              eventCleanupPhase = 'complete';
+            }
+          }
+        }
+      } catch (error) {
+        this.#logger.error('Event cleanup failed', error);
+        failed = true;
       }
-    } catch (error) {
-      this.#logger.error('Subscription cleanup failed', error);
+
+      try {
+        subscriberDeleted = await deleteSubscriberBatch();
+        subscriberCount += subscriberDeleted;
+      } catch (error) {
+        this.#logger.error('Subscription cleanup failed', error);
+        failed = true;
+      }
+
+      if (
+        eventCleanupPhase === 'complete' &&
+        subscriberDeleted < CLEANUP_BATCH_SIZE
+      ) {
+        break;
+      }
+    }
+
+    if (eventCount > 0) {
+      this.#logger.info(
+        `Event cleanup resulted in ${eventCount} old events being deleted`,
+      );
+    }
+    if (subscriberCount > 0) {
+      this.#logger.info(
+        `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
+      );
     }
   }
 }

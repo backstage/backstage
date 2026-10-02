@@ -61,7 +61,7 @@ export class GkeClusterLinksFormatter implements ClusterLinksFormatter {
     const namespace = encodeURIComponent(
       options.object.metadata?.namespace ?? '',
     );
-    const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+    const validKind = kindMappings[options.kind.toLowerCase()];
     let path: string;
     if (namespace && name && validKind) {
       const kindsWithDetails = ['ingress', 'pod'];

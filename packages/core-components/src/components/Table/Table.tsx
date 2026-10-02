@@ -68,7 +68,7 @@ import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 import { TableLoadingBody } from './TableLoadingBody';
 
-// Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
+// Material-table is not using the standard icons available in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
   Add: forwardRef<SVGSVGElement>((props, ref) => (
     <AddBox {...props} ref={ref} />

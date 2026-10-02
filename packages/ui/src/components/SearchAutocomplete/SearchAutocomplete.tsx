@@ -28,7 +28,10 @@ import {
 } from 'react-aria-components';
 import { useOverlayTriggerState } from 'react-stately';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import {
   SearchAutocompleteDefinition,
   SearchAutocompleteItemDefinition,
@@ -36,6 +39,10 @@ import {
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 import { VisuallyHidden } from '../VisuallyHidden';
+import {
+  getReactAriaAnchorProps,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
 
 import type {
   SearchAutocompleteProps,
@@ -188,25 +195,51 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
   );
 }
 
-/**
- * An individual option item within a SearchAutocomplete dropdown.
- *
- * @public
- */
-export function SearchAutocompleteItem(props: SearchAutocompleteItemProps) {
-  const { ownProps, restProps } = useDefinition(
-    SearchAutocompleteItemDefinition,
-    props,
-  );
+type SearchAutocompleteItemViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof SearchAutocompleteItemDefinition,
+    SearchAutocompleteItemProps
+  >;
+  navigation: AnchorNavigation;
+};
+
+function SearchAutocompleteItemView({
+  definitionResult,
+  navigation,
+}: SearchAutocompleteItemViewProps) {
+  const { ownProps, restProps } = definitionResult;
   const { classes, children } = ownProps;
+  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
     <ListBoxItem
       textValue={typeof children === 'string' ? children : undefined}
       className={classes.root}
       {...restProps}
+      {...navigationProps}
     >
       <div className={classes.itemContent}>{children}</div>
     </ListBoxItem>
+  );
+}
+
+/**
+ * An individual option item within a SearchAutocomplete dropdown.
+ *
+ * @public
+ */
+export function SearchAutocompleteItem(props: SearchAutocompleteItemProps) {
+  const definitionResult = useDefinition(
+    SearchAutocompleteItemDefinition,
+    props,
+  );
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={definitionResult.restProps}
+      view={SearchAutocompleteItemView}
+      viewProps={{ definitionResult }}
+    />
   );
 }

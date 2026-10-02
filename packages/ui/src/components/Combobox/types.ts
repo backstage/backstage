@@ -346,7 +346,7 @@ export type ComboboxItemOwnProps = {
 /** @public */
 export type ComboboxItemProps<T extends object = object> =
   ComboboxItemOwnProps &
-    Omit<AriaListBoxItemProps<T>, keyof ComboboxItemOwnProps>;
+    Omit<AriaListBoxItemProps<T>, keyof ComboboxItemOwnProps | 'render'>;
 
 /** @public */
 export type ComboboxItemTextOwnProps = {

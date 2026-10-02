@@ -20,7 +20,7 @@ import { Link } from '../Link';
 import styles from './HeaderMetadataStatus.module.css';
 
 /**
- * Displays a single status indicator as a coloured dot with a label inside a
+ * Displays a single status indicator as a colored dot with a label inside a
  * Header metadata value. Optionally renders the label as a link when href is provided.
  *
  * @public

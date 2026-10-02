@@ -98,7 +98,7 @@ export type MenuItemOwnProps = {
 /** @public */
 export interface MenuItemProps
   extends MenuItemOwnProps,
-    Omit<RAMenuItemProps, keyof MenuItemOwnProps> {}
+    Omit<RAMenuItemProps, keyof MenuItemOwnProps | 'render'> {}
 
 /** @public */
 export type MenuListBoxItemOwnProps = {
@@ -109,7 +109,7 @@ export type MenuListBoxItemOwnProps = {
 /** @public */
 export interface MenuListBoxItemProps
   extends MenuListBoxItemOwnProps,
-    Omit<RAListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+    Omit<RAListBoxItemProps, keyof MenuListBoxItemOwnProps | 'render'> {}
 
 /** @public */
 export type MenuSectionOwnProps = {

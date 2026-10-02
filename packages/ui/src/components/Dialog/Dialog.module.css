@@ -96,6 +96,7 @@
 
   .bui-DialogHeaderTitle {
     font-size: var(--bui-font-size-3);
+    line-height: 1.15;
     font-weight: var(--bui-font-weight-bold);
     margin: 0;
   }

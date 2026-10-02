@@ -15,7 +15,10 @@
  */
 
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { isKubernetesAvailable } from '../Router';
+import {
+  KUBERNETES_ANNOTATION,
+  KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
+} from '@backstage/plugin-kubernetes-common';
 
 export const entityKubernetesContent = EntityContentBlueprint.make({
   name: 'kubernetes',
@@ -23,7 +26,17 @@ export const entityKubernetesContent = EntityContentBlueprint.make({
     path: '/kubernetes',
     title: 'Kubernetes',
     group: 'deployment',
-    filter: isKubernetesAvailable,
+    filter: {
+      $any: [
+        {
+          [`metadata.annotations.${KUBERNETES_ANNOTATION}`]: { $exists: true },
+        },
+        {
+          [`metadata.annotations.${KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION}`]:
+            { $exists: true },
+        },
+      ],
+    },
     loader: () =>
       import('./KubernetesContentPage').then(m => <m.KubernetesContentPage />),
   },

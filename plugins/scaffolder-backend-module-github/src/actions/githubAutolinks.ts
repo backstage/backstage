@@ -34,8 +34,10 @@ import { getOctokitOptions } from '../util';
 export function createGithubAutolinksAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:autolinks:create',
@@ -88,6 +90,7 @@ export function createGithubAutolinksAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         host,
         owner,
         repo,

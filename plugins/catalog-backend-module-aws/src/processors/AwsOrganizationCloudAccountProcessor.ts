@@ -130,12 +130,12 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   private normalizeName(name: string): string {
     return name
       .trim()
-      .toLocaleLowerCase('en-US')
+      .toLowerCase()
       .replace(/[^a-zA-Z0-9\-]/g, '-');
   }
 
   private normalizeAccountStatus(name: string): string {
-    return name.toLocaleLowerCase('en-US');
+    return name.toLowerCase();
   }
 
   private extractInformationFromArn(arn: string): {

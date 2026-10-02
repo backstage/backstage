@@ -1,5 +1,60 @@
 # @backstage/plugin-search-react
 
+## 1.11.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
+## 1.11.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-search-common@1.2.25
+
+## 1.11.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-search-common@1.2.25-next.0
+
+## 1.11.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 1.11.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+
+## 1.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/frontend-plugin-api@0.18.0
+
 ## 1.11.7-next.1
 
 ### Patch Changes

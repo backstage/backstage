@@ -159,7 +159,13 @@ describe('sentry:fetch:dsn action', () => {
       console.error('Failed to parse YAML:', error);
     }
 
-    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const action = createSentryFetchDSNAction(
+      createScaffolderConfig({
+        sentry: {
+          apiBaseUrl: input.apiBaseUrl,
+        },
+      }),
+    );
     const actionContext = getActionContext(null);
 
     worker.use(

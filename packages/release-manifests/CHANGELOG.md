@@ -1,5 +1,17 @@
 # @backstage/release-manifests
 
+## 0.0.15-next.0
+
+### Patch Changes
+
+- 5834faa: Release manifests now include requirements such as supported Node.js versions when that information is available from the release.
+
+## 0.0.14
+
+### Patch Changes
+
+- 0ebb1f9: Migrated tests from MSW v1 to MSW v2.
+
 ## 0.0.13
 
 ### Patch Changes

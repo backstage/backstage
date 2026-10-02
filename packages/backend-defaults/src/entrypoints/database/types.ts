@@ -25,4 +25,6 @@ export interface Connector {
       lifecycle: LifecycleService;
     },
   ): Promise<Knex>;
+
+  shutdown?(): Promise<void>;
 }

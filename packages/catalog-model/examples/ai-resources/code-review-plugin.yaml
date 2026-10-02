@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: AiResource
+metadata:
+  name: code-review-plugin
+  description: Plugin for automated code review that bundles review skills for multiple languages
+spec:
+  type: plugin
+  lifecycle: production
+  owner: team-a
+  system: artist-engagement-portal
+  skills:
+    - airesource:default/typescript-best-practices
+    - airesource:default/security-review
+  version: '1.0.0'

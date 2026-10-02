@@ -194,12 +194,12 @@ export interface Config {
       /**
        * A list of allowed URI patterns for client_id URLs.
        * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', 'https://chatgpt.com/oauth/codex/*\/client.json', '{baseUrl}/.well-known/oauth-client/cli.json']`
        * where `{baseUrl}` is the auth backend's base URL.
        *
-       * Setting this replaces the Claude and VS Code defaults. The built-in
-       * CLI client is always allowed, since this backend serves its metadata
-       * document itself.
+       * Setting this replaces the Claude, VS Code, and ChatGPT Codex defaults.
+       * The built-in CLI client is always allowed, since this backend serves
+       * its metadata document itself.
        *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */
@@ -233,12 +233,12 @@ export interface Config {
        * path only matches within that component, and a `:*` port matches
        * any port. Patterns must include an explicit protocol.
        *
-       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', 'https://chatgpt.com/oauth/codex/*\/client.json', '{baseUrl}/.well-known/oauth-client/cli.json']`
        * where `{baseUrl}` is the auth backend's base URL.
        *
-       * Setting this replaces the Claude and VS Code defaults. The built-in
-       * CLI client is always allowed, since this backend serves its metadata
-       * document itself.
+       * Setting this replaces the Claude, VS Code, and ChatGPT Codex defaults.
+       * The built-in CLI client is always allowed, since this backend serves
+       * its metadata document itself.
        *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */

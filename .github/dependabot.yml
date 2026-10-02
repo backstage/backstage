@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directories:
+      - '/'
+      - '/docs-ui'
+      - '/microsite'
+    schedule:
+      interval: 'weekly'
+    # Disable version updates since we use Renovate for those.
+    open-pull-requests-limit: 0
+    # Leave package ranges unchanged when they already include the patched version.
+    versioning-strategy: 'increase-if-necessary'

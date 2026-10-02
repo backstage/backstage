@@ -19,6 +19,19 @@ import * as winston from 'winston';
 import { Writable } from 'node:stream';
 
 // @public
+export type ContainerRunnerPullOptions = {
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+// @public
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
@@ -277,17 +290,7 @@ export interface TechDocsContainerRunner {
     envVars?: Record<string, string>;
     pullImage?: boolean;
     defaultUser?: boolean;
-    pullOptions?: {
-      authconfig?: {
-        username?: string;
-        password?: string;
-        auth?: string;
-        email?: string;
-        serveraddress?: string;
-        [key: string]: unknown;
-      };
-      [key: string]: unknown;
-    };
+    pullOptions?: ContainerRunnerPullOptions;
   }): Promise<void>;
 }
 

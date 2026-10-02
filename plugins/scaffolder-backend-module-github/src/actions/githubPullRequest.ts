@@ -83,6 +83,10 @@ export interface CreateGithubPullRequestActionOptions {
    */
   githubCredentialsProvider?: GithubCredentialsProvider;
   /**
+   * Whether this action must use credentials provided through its input.
+   */
+  requireScmUserCredentials?: boolean;
+  /**
    * A method to return the Octokit client with the Pull Request Plugin.
    */
   clientFactory?: (input: {
@@ -129,6 +133,7 @@ export const createPublishGithubPullRequestAction = (
     githubCredentialsProvider,
     clientFactory = defaultClientFactory,
     config,
+    requireScmUserCredentials,
   } = options;
 
   return createTemplateAction({
@@ -303,6 +308,12 @@ export const createPublishGithubPullRequestAction = (
       if (!owner) {
         throw new InputError(
           `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
+
+      if (requireScmUserCredentials && !providedToken) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
         );
       }
 
