@@ -57,6 +57,16 @@ Additional steps for the main line release
 
 Once the release has been published edit the newly created release in the [GitHub repository](https://github.com/backstage/backstage/releases) and replace the text content with the release notes.
 
+- Create Patch Branch
+  - The [deploy microsite workflow](https://github.com/backstage/backstage/blob/master/.github/workflows/deploy_microsite.yml) uses the latest `patch/v*` branch to build the stable docs at `backstage.io/docs/`. Without this branch, the stable docs will continue to reflect the previous release.
+  - Create and push the branch from the release tag:
+    ```bash
+    git checkout v1.x.0
+    git checkout -b patch/v1.x.0
+    git push --set-upstream origin patch/v1.x.0
+    ```
+  - The next deploy microsite run will automatically pick up the new branch and update the stable docs.
+
 ## Switching Release Modes
 
 - To enter pre-release mode: `yarn changeset pre enter next` & create PR + merge changes
