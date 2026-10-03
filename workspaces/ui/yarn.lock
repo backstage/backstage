@@ -12963,6 +12963,15 @@ __metadata:
     node-gyp: "npm:^12.0.0"
     prettier: "npm:^2.3.2"
     typescript: "npm:~5.8.0"
+  dependenciesMeta:
+    "@swc/core":
+      built: true
+    esbuild:
+      built: true
+    keytar:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 
