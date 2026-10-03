@@ -274,5 +274,6 @@ Options:
 Usage: backstage-repo-tools type-deps [options]
 
 Options:
+  --allow-empty
   -h, --help
 ```
