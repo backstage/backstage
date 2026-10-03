@@ -33,7 +33,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { Minimatch } from 'minimatch';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -210,7 +210,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
+    const treeUrl = lodash.trimEnd(url.replace(filepath, ''), '/');
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,

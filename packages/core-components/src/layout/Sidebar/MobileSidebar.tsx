@@ -23,7 +23,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
-import { orderBy } from 'lodash';
+import lodash from 'lodash';
 import {
   useEffect,
   useState,
@@ -102,7 +102,7 @@ const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
 );
 
 const sortSidebarGroupsForPriority = (children: ReactElement[]) =>
-  orderBy(
+  lodash.orderBy(
     children,
     ({ props: { priority } }) => (Number.isInteger(priority) ? priority : -1),
     'desc',

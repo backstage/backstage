@@ -23,7 +23,7 @@ import {
 import { TSDocTagSyntaxKind } from '@microsoft/tsdoc';
 import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import fs from 'fs-extra';
-import { groupBy } from 'lodash';
+import lodash from 'lodash';
 import { minimatch } from 'minimatch';
 import {
   join,
@@ -159,7 +159,7 @@ export async function runApiExtraction({
   const warnings = new Array<string>();
 
   for (const [packageDir, packageEntryPoints] of Object.entries(
-    groupBy(allEntryPoints, ep => ep.packageDir),
+    lodash.groupBy(allEntryPoints, ep => ep.packageDir),
   )) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)

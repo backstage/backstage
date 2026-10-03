@@ -20,7 +20,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
-import { merge, omit } from 'lodash';
+import lodash from 'lodash';
 import path from 'node:path';
 import { Connector } from '../types';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
@@ -291,7 +291,7 @@ export class Sqlite3Connector implements Connector {
       .getOptionalConfig('knexConfig')
       ?.get<JsonObject>();
 
-    return merge(baseConfig, pluginConfig);
+    return lodash.merge(baseConfig, pluginConfig);
   }
 
   private getPluginDivisionModeConfig(): string {
@@ -329,7 +329,7 @@ export class Sqlite3Connector implements Connector {
     // is set to `schema`. SQLite3's `filename` property is an exception as this is used as a
     // directory elsewhere so we preserve `filename`.
     if (this.getPluginDivisionModeConfig() !== 'schema') {
-      baseConnection = omit(baseConnection, 'database');
+      baseConnection = lodash.omit(baseConnection, 'database');
     }
 
     // get and normalize optional plugin specific database connection

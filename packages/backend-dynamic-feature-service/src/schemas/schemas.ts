@@ -25,7 +25,7 @@ import { targetPaths } from '@backstage/cli-common';
 import fs from 'fs-extra';
 import * as path from 'node:path';
 import * as url from 'node:url';
-import { isEmpty } from 'lodash';
+import lodash from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { PluginScanner } from '../scanner/plugin-scanner';
@@ -178,7 +178,7 @@ async function gatherDynamicPluginsSchemas(
       continue;
     }
 
-    if (isEmpty(serialized)) {
+    if (lodash.isEmpty(serialized)) {
       continue;
     }
 
