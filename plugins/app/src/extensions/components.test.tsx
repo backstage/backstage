@@ -15,6 +15,7 @@
  */
 
 import { screen, waitFor, within } from '@testing-library/react';
+import { Helmet } from 'react-helmet';
 import { Route, Routes, useParams } from 'react-router-dom';
 import {
   renderTestApp,
@@ -88,6 +89,80 @@ describe('PageLayout', () => {
       expect(
         screen.getByRole('heading', { name: 'My Plugin' }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('document title', () => {
+    const pageWithTitle = (options: { noHeader?: boolean } = {}) =>
+      createFrontendPlugin({
+        pluginId: 'my-plugin',
+        extensions: [
+          PageBlueprint.make({
+            name: 'index-page',
+            params: {
+              ...options,
+              title: 'My Plugin',
+              path: '/my-plugin',
+              loader: async () => (
+                <div data-testid="test-content">Plugin content</div>
+              ),
+            },
+          }),
+        ],
+      });
+
+    it('should be composed from the page title and the app title', async () => {
+      renderTestApp({
+        features: [pageWithTitle()],
+        initialRouteEntries: ['/my-plugin'],
+        config: { app: { title: 'Custom app' } },
+      });
+
+      await waitFor(() =>
+        expect(document.title).toBe('My Plugin | Custom app'),
+      );
+    });
+
+    it('should be set for pages that render their own header', async () => {
+      renderTestApp({
+        features: [pageWithTitle({ noHeader: true })],
+        initialRouteEntries: ['/my-plugin'],
+        config: { app: { title: 'Custom app' } },
+      });
+
+      await waitFor(() =>
+        expect(document.title).toBe('My Plugin | Custom app'),
+      );
+    });
+
+    it('should be overridden and composed by titles rendered within the page', async () => {
+      const myPlugin = createFrontendPlugin({
+        pluginId: 'my-plugin',
+        extensions: [
+          PageBlueprint.make({
+            name: 'index-page',
+            params: {
+              title: 'My Plugin',
+              path: '/my-plugin',
+              loader: async () => (
+                <Helmet title="Inner">
+                  <meta name="test" content="inner" />
+                </Helmet>
+              ),
+            },
+          }),
+        ],
+      });
+
+      renderTestApp({
+        features: [myPlugin],
+        initialRouteEntries: ['/my-plugin'],
+        config: { app: { title: 'Custom app' } },
+      });
+
+      await waitFor(() =>
+        expect(document.title).toBe('My Plugin | Inner | Custom app'),
+      );
     });
   });
 

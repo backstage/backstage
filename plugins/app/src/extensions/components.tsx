@@ -31,8 +31,10 @@ import {
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
 import { PluginHeader } from '@backstage/ui';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
@@ -104,12 +106,32 @@ export const PageLayout = SwappableComponentBlueprint.make({
 
         const { items: breadcrumbs } = useBreadcrumbEntries();
 
+        const appTitle =
+          useApi(configApiRef).getOptionalString('app.title') || 'Backstage';
+
+        // Sets the document title for the page, e.g. "Catalog | Backstage".
+        // Only a template and a default are declared, which means that any
+        // Helmet title rendered deeper in the page, for example an entity name
+        // or a selected tab, overrides this and is composed into the template.
+        const documentTitle = title ? (
+          <Helmet
+            titleTemplate={`${title} | %s | ${appTitle}`}
+            defaultTitle={`${title} | ${appTitle}`}
+          />
+        ) : null;
+
         if (noHeader) {
-          return <>{children}</>;
+          return (
+            <>
+              {documentTitle}
+              {children}
+            </>
+          );
         }
 
         const content = (
           <>
+            {documentTitle}
             <PluginHeader
               title={title}
               icon={icon}
