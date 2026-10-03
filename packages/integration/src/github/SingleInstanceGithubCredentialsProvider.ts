@@ -19,7 +19,7 @@ import { GithubAppConfig, GithubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
-import { cloneDeep } from 'lodash';
+import lodash from 'lodash';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
@@ -245,7 +245,7 @@ class GithubAppManager {
   }
 
   async getInstallations(): Promise<Installations> {
-    return cloneDeep(await this.getCachedInstallations());
+    return lodash.cloneDeep(await this.getCachedInstallations());
   }
 
   private async getCachedInstallations(
