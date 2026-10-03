@@ -39,6 +39,40 @@ describe('CatalogAuthResolverContext', () => {
     }),
   } as unknown as jest.Mocked<UserInfoDatabase>;
 
+  it('forwards identity context when issuing a token', async () => {
+    const tokenIssuer = {
+      issueToken: jest.fn().mockResolvedValue({ token: 'token' }),
+    } as unknown as jest.Mocked<TokenIssuer>;
+    const context = CatalogAuthResolverContext.create({
+      logger: mockServices.logger.mock(),
+      catalog,
+      tokenIssuer,
+      auth: mockServices.auth(),
+      userInfo: mockUserInfo,
+    });
+    const identityContext = {
+      issuer: 'https://portal.example.com/',
+      attributes: { profileId: 'org_a' },
+    };
+
+    await context.issueToken({
+      claims: {
+        sub: 'user:default/user',
+        custom: 'claim',
+      },
+      identityContext,
+    });
+
+    expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
+      claims: {
+        sub: 'user:default/user',
+        ent: ['user:default/user'],
+        custom: 'claim',
+      },
+      identityContext,
+    });
+  });
+
   it('adds kind to filter when missing', async () => {
     const auth = mockServices.auth();
     const context = CatalogAuthResolverContext.create({
