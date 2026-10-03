@@ -1,0 +1,83 @@
+/* Color swatch with a checkerboard behind it so translucent tokens are visible */
+.swatch {
+  position: relative;
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  vertical-align: middle;
+  overflow: hidden;
+  background-image: conic-gradient(
+    #d0d0d0 25%,
+    transparent 0 50%,
+    #d0d0d0 0 75%,
+    transparent 0
+  );
+  background-size: 10px 10px;
+  background-color: #fff;
+}
+
+.swatchColor {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme-mode='dark'] .swatchColor {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+/* Spacing bar: width maps to the token value */
+.spaceTrack {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.spaceBar {
+  display: inline-block;
+  height: 12px;
+  border-radius: 3px;
+  background-color: var(--bui-accent-bg);
+}
+
+/* Radius box: shows the corner rounding of the token */
+.radiusBox {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  vertical-align: middle;
+  border: 0.25rem solid var(--bui-accent-bg);
+}
+
+/* Shadow box */
+.shadowBox {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  vertical-align: middle;
+  background-color: var(--bui-bg-neutral-1);
+}
+
+/* Animation preview dot (pulses via the token) */
+.animationDot {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  vertical-align: middle;
+  background-color: var(--bui-accent-bg);
+}
+
+/* Typography sample */
+.text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  line-height: 1;
+  color: var(--bui-fg-primary);
+  vertical-align: middle;
+}

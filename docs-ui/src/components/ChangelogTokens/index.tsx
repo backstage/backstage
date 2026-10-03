@@ -2,12 +2,21 @@ import { changelog } from '@/utils/changelog';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import remarkGfm from 'remark-gfm';
 import { formattedMDXComponents } from '@/mdx-components';
-import { Badge, BreakingBadge, generateChangelogMarkdown } from './utils';
+import {
+  Badge,
+  BreakingBadge,
+  generateChangelogMarkdown,
+} from '../Changelog/utils';
 
-export function Changelog() {
-  const content = generateChangelogMarkdown(changelog, {
-    showComponentBadges: true,
-  });
+export const ChangelogTokens = () => {
+  const tokenChangelog = changelog.filter(entry => entry.tokens);
+
+  const content = `## Changelog
+
+${generateChangelogMarkdown(tokenChangelog, {
+  showComponentBadges: false,
+  headingLevel: 3,
+})}`;
 
   return (
     <MDXRemote
@@ -20,4 +29,4 @@ export function Changelog() {
       source={content}
     />
   );
-}
+};

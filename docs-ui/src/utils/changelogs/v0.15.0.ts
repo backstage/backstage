@@ -39,6 +39,7 @@ export const changelog_0_15_0: ChangelogProps[] = [
     components: [],
     version: '0.15.0',
     prs: ['34124'],
+    tokens: true,
     description: `Added a public \`--bui-bg-inherit\` CSS variable that resolves to the background
   color of the nearest enclosing bg provider (\`Box\`, \`Flex\`, \`Grid\`, \`Card\`,
   \`Accordion\`, or any element with a \`data-bg\` attribute), falling back to
