@@ -44,6 +44,7 @@ import {
   tableCursorPaginationSnippet,
   tableColumnWidthsWithFrSnippet,
   tableColumnWidthsWithConstraintsSnippet,
+  tableResizableColumnsSnippet,
   tableCombinedSnippet,
   tableCustomRowSnippet,
   tablePrimitivesSnippet,
@@ -200,12 +201,18 @@ Columns with larger `fr` values take more space — for example, a `3fr` column 
 
 #### With Constraints
 
-Use `defaultWidth` with `fr` units for the initial proportional layout, then add `minWidth` and `maxWidth` in pixels to prevent columns from becoming too narrow or too wide when the table is resized.
+Use `defaultWidth` with `fr` units for the initial proportional layout, then add `minWidth` and `maxWidth` in pixels to prevent columns from becoming too narrow or too wide.
 
 <Snippet
   preview={<ColumnWidthsWithConstraintsExample />}
   code={tableColumnWidthsWithConstraintsSnippet}
 />
+
+#### Resizable Columns
+
+Set `isResizable` to let users resize a column with a pointer or keyboard. It can be combined with `defaultWidth`, `minWidth`, and `maxWidth` to configure the initial size and constraints.
+
+<CodeBlock code={tableResizableColumnsSnippet} />
 
 ## Server-Side Data
 
