@@ -1,0 +1,10 @@
+---
+title: Catalog Cleanup
+author: Rui Valim
+authorUrl: https://github.com/Ruivalim
+category: Catalog
+description: Page that lists every location registered in the software catalog and deletes orphaned ones with confirmation, respecting the catalog location permissions.
+documentation: https://github.com/Ruivalim/catalog-cleanup#readme
+npmPackageName: '@ruivalim/catalog-cleanup'
+addedDate: '2026-09-23'
+status: active
