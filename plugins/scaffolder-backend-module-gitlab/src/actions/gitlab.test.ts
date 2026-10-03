@@ -29,6 +29,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 import { createPublishGitlabAction } from './gitlab';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
+import { ConflictError } from '@backstage/errors';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
@@ -359,6 +360,48 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
     expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
     expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
+  });
+
+  it('should throw ConflictError when the repository already exists in a group namespace', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([
+      {
+        path: 'repo',
+        http_url_to_repo: 'http://mockurl.git',
+      },
+    ]);
+
+    const result = action.handler(mockContext);
+    await expect(result).rejects.toThrow(ConflictError);
+    await expect(result).rejects.toThrow(
+      /Repository 'repo' already exists in namespace 'owner'/,
+    );
+    expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
+  });
+
+  it('should throw ConflictError when the repository already exists in a user namespace', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 12345,
+      kind: 'user',
+    });
+    mockGitlabClient.Users.allProjects.mockResolvedValue([
+      {
+        path: 'repo',
+        http_url_to_repo: 'http://mockurl.git',
+      },
+    ]);
+
+    const result = action.handler(mockContext);
+    await expect(result).rejects.toThrow(ConflictError);
+    await expect(result).rejects.toThrow(
+      /Repository 'repo' already exists in namespace 'owner'/,
+    );
+    expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
   });
 
   it('should call the creation Gitlab APIs when the repository does not yet exists', async () => {
