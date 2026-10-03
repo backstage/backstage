@@ -52,6 +52,7 @@ export interface ClusterDetails {
   dashboardApp?: string;
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
+  entityRef?: string;
   name: string;
   skipMetricsLookup?: boolean;
   // (undocumented)
