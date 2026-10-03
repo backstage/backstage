@@ -434,6 +434,73 @@ describe.each(databases.eachSupportedId())(
       const freshEntity = JSON.parse(afterFresh[0].final_entity!);
       expect(freshEntity.spec).toEqual({ original: false, stale: true });
     });
+
+    it('abandons a malformed processed entity and cleans up the queue', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: 'null', // simulate unexpected entity shape from database
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+
+      const stitchLogger = mockServices.logger.mock();
+
+      const result = await performStitching({
+        knex,
+        logger: stitchLogger,
+        entityRef: 'k:ns/n',
+        stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+      });
+      expect(result).toBe('abandoned');
+      expect(stitchLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Unable to stitch k:ns/n: unexpected entity shape found in processed_entity column`,
+        ),
+      );
+      const queue = await knex('stitch_queue').where('entity_ref', 'k:ns/n');
+      expect(queue).toHaveLength(0);
+    });
+    it('abandons a processed entity with invalid JSON and cleans up the queue', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: '{', // invalid JSON
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const stitchLogger = mockServices.logger.mock();
+      const result = await performStitching({
+        knex,
+        logger: stitchLogger,
+        entityRef: 'k:ns/n',
+        stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+      });
+      expect(result).toBe('abandoned');
+      expect(stitchLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Unable to stitch k:ns/n: failed to parse processed_entity column`,
+        ),
+      );
+      const queue = await knex('stitch_queue').where('entity_ref', 'k:ns/n');
+      expect(queue).toHaveLength(0);
+    });
   },
 );
 
