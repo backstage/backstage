@@ -45,6 +45,7 @@ describe('metricsServiceFactory', () => {
       name: 'backstage-plugin-my-plugin',
       version: undefined,
       schemaUrl: undefined,
+      logger: expect.anything(),
     });
   });
 
@@ -74,6 +75,7 @@ describe('metricsServiceFactory', () => {
       name: 'custom-metrics-name',
       version: undefined,
       schemaUrl: undefined,
+      logger: expect.anything(),
     });
   });
 
@@ -105,6 +107,7 @@ describe('metricsServiceFactory', () => {
       name: 'my-plugin-metrics',
       version: '1.2.3',
       schemaUrl: 'https://example.com/schema',
+      logger: expect.anything(),
     });
   });
 
@@ -117,6 +120,7 @@ describe('metricsServiceFactory', () => {
       name: 'backstage-plugin-test-plugin',
       version: undefined,
       schemaUrl: undefined,
+      logger: expect.anything(),
     });
 
     expect(subject.createCounter).toBeDefined();
