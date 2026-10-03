@@ -57,6 +57,7 @@ export * from '../models/TemplateGlobalFunctionSchema.model';
 export * from '../models/TemplateGlobalValue.model';
 export * from '../models/TemplateParameterSchema.model';
 export * from '../models/TemplateParameterSchemaStepsInner.model';
+export * from '../models/TemplateParameterSchemaStepsInnerWhen.model';
 export * from '../models/ValidationError.model';
 export * from '../models/ValidationErrorArgument.model';
 export * from '../models/ValidationErrorPathInner.model';
