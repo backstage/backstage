@@ -30,6 +30,7 @@ import {
 } from './http';
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 import { createHealthRouter } from './createHealthRouter';
+import { createActionsSourcesRouter } from './createActionsSourcesRouter';
 import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
 
@@ -45,6 +46,7 @@ export interface RootHttpRouterConfigureContext {
   logger: LoggerService;
   lifecycle: LifecycleService;
   healthRouter: RequestHandler;
+  actionsSourcesRouter: RequestHandler;
   applyDefaults: () => void;
 }
 
@@ -94,6 +96,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const routes = router.handler();
 
       const healthRouter = createHealthRouter({ config, health });
+      const actionsSourcesRouter = createActionsSourcesRouter({ config });
 
       const server = await createHttpServer(
         app,
@@ -110,6 +113,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
         logger,
         lifecycle,
         healthRouter,
+        actionsSourcesRouter,
         applyDefaults() {
           if (process.env.NODE_ENV === 'development') {
             app.set('json spaces', 2);
@@ -192,6 +196,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
           app.use(middleware.logging());
           app.use(middleware.rateLimit());
           app.use(healthRouter);
+          app.use(actionsSourcesRouter);
           app.use(routes);
           app.use(middleware.notFound());
           app.use(middleware.error());
