@@ -17,6 +17,7 @@
 import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { cli } from 'cleye';
+import { fixYarnPatches } from '../../lib/fixYarnPatches';
 import {
   verifyYarnPatches,
   type PatchVerificationError,
@@ -32,14 +33,47 @@ function formatError(error: PatchVerificationError): string {
 }
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ name: info.usage }, undefined, args);
+  const { flags } = cli(
+    {
+      name: info.usage,
+      flags: {
+        fix: {
+          type: Boolean,
+          description: 'Safely retarget outdated Backstage package patches',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
   const result = await verifyYarnPatches({
     rootDir: targetPaths.dir,
     env: process.env,
   });
 
+  let fixFailureMessage: string | undefined;
+  if (
+    flags.fix &&
+    result.errors.length > 0 &&
+    result.errors.every(error => error.kind === 'backstage-patch-holdback')
+  ) {
+    const fixResult = await fixYarnPatches({
+      rootDir: targetPaths.dir,
+      env: process.env,
+      verificationResult: result,
+    });
+    if (fixResult.status === 'fixed') {
+      process.stdout.write(`${fixResult.message}.\n`);
+      return;
+    }
+    fixFailureMessage = fixResult.message;
+  }
+
   if (result.errors.length > 0) {
+    if (fixFailureMessage) {
+      process.stderr.write(`${fixFailureMessage}.\n`);
+    }
     process.stderr.write('Yarn patch verification failed:\n');
     for (const error of result.errors) {
       process.stderr.write(formatError(error));

@@ -1,0 +1,336 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { run, runOutput } from '@backstage/cli-common';
+import { semverUtils, structUtils } from '@yarnpkg/core';
+import { patchUtils } from '@yarnpkg/plugin-patch';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {
+  verifyYarnPatches,
+  type PatchDeclaration,
+  type PatchHoldbackFix,
+  type VerifyYarnPatchesOptions,
+  type VerifyYarnPatchesResult,
+} from './verifyYarnPatches';
+
+export type FixYarnPatchesOptions = VerifyYarnPatchesOptions & {
+  install?: (rootDir: string) => Promise<void>;
+  verificationResult?: VerifyYarnPatchesResult;
+  writeFile?: (filePath: string, content: string) => Promise<void>;
+};
+
+export type FixYarnPatchesResult = {
+  status: 'fixed' | 'not-fixable';
+  message: string;
+};
+
+function hasExactPatchSource(
+  declaration: PatchDeclaration,
+  packageName: string,
+  version: string,
+): boolean {
+  try {
+    const source = structUtils.parseDescriptor(declaration.source, true);
+    const range = structUtils.parseRange(source.range);
+    return (
+      structUtils.stringifyIdent(source) === packageName &&
+      range.protocol === 'npm:' &&
+      range.selector === version &&
+      semverUtils.clean(range.selector) === version
+    );
+  } catch {
+    return false;
+  }
+}
+
+function getRepairableHoldbacks(
+  result: VerifyYarnPatchesResult,
+): PatchHoldbackFix[] | undefined {
+  if (result.errors.length === 0) {
+    return undefined;
+  }
+  const holdbacks: PatchHoldbackFix[] = [];
+  for (const error of result.errors) {
+    const holdback = error.repairHint;
+    if (
+      error.kind !== 'backstage-patch-holdback' ||
+      !holdback ||
+      !semverUtils.satisfiesWithPrereleases(
+        holdback.targetVersion,
+        `>${holdback.currentVersion}`,
+      )
+    ) {
+      return undefined;
+    }
+    holdbacks.push(holdback);
+  }
+  return holdbacks;
+}
+
+function createRetargetedPatchReference(options: {
+  packageName: string;
+  targetVersion: string;
+  reference: string;
+}): string {
+  const ident = structUtils.parseIdent(options.packageName);
+  const descriptor = structUtils.makeDescriptor(ident, options.reference);
+  const parsed = patchUtils.parseDescriptor(descriptor);
+  return patchUtils.makeDescriptor(ident, {
+    ...parsed,
+    sourceDescriptor: structUtils.makeDescriptor(
+      ident,
+      `npm:${options.targetVersion}`,
+    ),
+  }).range;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function createTargetManifest(options: {
+  originalManifest: string;
+  holdbacks: PatchHoldbackFix[];
+}): { content: string; transitions: string[] } | undefined {
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(options.originalManifest);
+  } catch {
+    return undefined;
+  }
+  if (!isRecord(manifest) || !isRecord(manifest.resolutions)) {
+    return undefined;
+  }
+
+  let content = options.originalManifest;
+  const transitions: string[] = [];
+  for (const holdback of options.holdbacks) {
+    const declaration = holdback.declaration;
+    if (
+      declaration.location !==
+        `package.json#resolutions.${holdback.packageName}` ||
+      declaration.patchedIdent !== holdback.packageName ||
+      manifest.resolutions[holdback.packageName] !== declaration.reference ||
+      !hasExactPatchSource(
+        declaration,
+        holdback.packageName,
+        holdback.currentVersion,
+      ) ||
+      declaration.paths.length !== 1 ||
+      declaration.components.length !== 1 ||
+      declaration.components[0] !== `local<${declaration.paths[0].absolute}>` ||
+      !declaration.projectOwned
+    ) {
+      return undefined;
+    }
+
+    const currentLiteral = JSON.stringify(declaration.reference);
+    const firstReference = content.indexOf(currentLiteral);
+    if (
+      firstReference === -1 ||
+      content.indexOf(
+        currentLiteral,
+        firstReference + currentLiteral.length,
+      ) !== -1
+    ) {
+      return undefined;
+    }
+    let targetReference: string;
+    try {
+      targetReference = createRetargetedPatchReference({
+        packageName: holdback.packageName,
+        targetVersion: holdback.targetVersion,
+        reference: declaration.reference,
+      });
+    } catch {
+      return undefined;
+    }
+    content = `${content.slice(0, firstReference)}${JSON.stringify(
+      targetReference,
+    )}${content.slice(firstReference + currentLiteral.length)}`;
+    transitions.push(
+      `Retargeted patch for '${holdback.packageName}' from '${holdback.currentVersion}' to '${holdback.targetVersion}'`,
+    );
+  }
+  return { content, transitions };
+}
+
+async function defaultInstall(
+  rootDir: string,
+  env: NodeJS.ProcessEnv | undefined,
+): Promise<void> {
+  const child = run(['yarn', 'install', '--mode=update-lockfile'], {
+    cwd: rootDir,
+    env: createYarnEnvironment(env),
+  });
+  await child.waitForExit();
+  // A signal-terminated process has no exit code, so waitForExit resolves.
+  if (child.signalCode) {
+    throw new Error(`Yarn install was terminated by ${child.signalCode}`);
+  }
+}
+
+function createYarnEnvironment(
+  env: NodeJS.ProcessEnv | undefined,
+): Partial<NodeJS.ProcessEnv> {
+  return {
+    ...Object.fromEntries(
+      Object.entries(env ?? process.env).map(([name, value]) =>
+        name.startsWith('npm_') ? [name, undefined] : [name, value],
+      ),
+    ),
+    YARN_ENABLE_IMMUTABLE_INSTALLS: 'false',
+    YARN_ENABLE_SCRIPTS: 'false',
+  };
+}
+
+async function getYarnVersion(
+  rootDir: string,
+  env: NodeJS.ProcessEnv | undefined,
+): Promise<string> {
+  return runOutput(['yarn', '--version'], {
+    cwd: rootDir,
+    env: createYarnEnvironment(env),
+  });
+}
+
+async function restoreOriginals(options: {
+  manifestPath: string;
+  lockfilePath: string;
+  originalManifest: string;
+  originalLockfile: string;
+  writeFile: (filePath: string, content: string) => Promise<void>;
+}): Promise<boolean> {
+  let restored = true;
+  for (const [filePath, content] of [
+    [options.manifestPath, options.originalManifest],
+    [options.lockfilePath, options.originalLockfile],
+  ] as const) {
+    try {
+      await options.writeFile(filePath, content);
+    } catch {
+      restored = false;
+    }
+  }
+  return restored;
+}
+
+/**
+ * Attempts to repair forward-only Backstage patch holdbacks.
+ *
+ * @internal
+ */
+export async function fixYarnPatches(
+  options: FixYarnPatchesOptions,
+): Promise<FixYarnPatchesResult> {
+  const rootDir = path.resolve(options.rootDir);
+  const initialResult =
+    options.verificationResult ?? (await verifyYarnPatches(options));
+  const holdbacks = getRepairableHoldbacks(initialResult);
+  if (!holdbacks) {
+    return {
+      status: 'not-fixable',
+      message: 'No patch holdback could be repaired safely',
+    };
+  }
+
+  const manifestPath = path.join(rootDir, 'package.json');
+  const lockfilePath = path.join(rootDir, 'yarn.lock');
+  const originalManifest = await fs.readFile(manifestPath, 'utf8');
+  const originalLockfile = await fs.readFile(lockfilePath, 'utf8');
+  const target = createTargetManifest({ originalManifest, holdbacks });
+  if (!target) {
+    return {
+      status: 'not-fixable',
+      message:
+        'The patch resolutions changed or could not be retargeted safely',
+    };
+  }
+
+  if (!options.install) {
+    let reportedVersion: string;
+    try {
+      reportedVersion = await getYarnVersion(rootDir, options.env);
+    } catch (error) {
+      return {
+        status: 'not-fixable',
+        message: `Could not determine the repository Yarn version: ${String(
+          error,
+        )}`,
+      };
+    }
+    const yarnVersion = semverUtils.clean(reportedVersion);
+    if (
+      !yarnVersion ||
+      !semverUtils.satisfiesWithPrereleases(yarnVersion, '>=3.0.0')
+    ) {
+      return {
+        status: 'not-fixable',
+        message: `Automatic patch repair requires Yarn 3 or later, but the repository uses Yarn '${reportedVersion}'`,
+      };
+    }
+  }
+
+  const writeFile =
+    options.writeFile ??
+    ((filePath: string, content: string) => fs.writeFile(filePath, content));
+  const restoreFailure = async (
+    reason: string,
+  ): Promise<FixYarnPatchesResult> => {
+    const restored = await restoreOriginals({
+      manifestPath,
+      lockfilePath,
+      originalManifest,
+      originalLockfile,
+      writeFile,
+    });
+    return {
+      status: 'not-fixable',
+      message: restored
+        ? `${reason}; the original project files were restored`
+        : `${reason}; project files may contain a partial repair`,
+    };
+  };
+
+  try {
+    await writeFile(manifestPath, target.content);
+    await (options.install ?? (dir => defaultInstall(dir, options.env)))(
+      rootDir,
+    );
+    const finalManifest = await fs.readFile(manifestPath, 'utf8');
+    if (finalManifest !== target.content) {
+      return restoreFailure('Yarn changed package.json unexpectedly');
+    }
+    const verified = await verifyYarnPatches({
+      rootDir,
+      env: options.env,
+      fetch: options.fetch,
+    });
+    if (verified.errors.length > 0) {
+      return restoreFailure(
+        `The repaired project did not pass patch verification: ${verified.errors
+          .map(error => error.message)
+          .join('; ')}`,
+      );
+    }
+    return { status: 'fixed', message: target.transitions.join('; ') };
+  } catch (error) {
+    return restoreFailure(
+      `Yarn could not repair the patches: ${String(error)}`,
+    );
+  }
+}

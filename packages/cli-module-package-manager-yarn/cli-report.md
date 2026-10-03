@@ -36,5 +36,6 @@ Commands:
 Usage: @backstage/cli-module-package-manager-yarn pm verify-patches [flags...]
 
 Options:
+  --fix
   -h, --help
 ```

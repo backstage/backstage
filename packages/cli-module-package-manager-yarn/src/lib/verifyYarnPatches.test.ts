@@ -1774,9 +1774,16 @@ plugins:
         status: 200,
       });
 
-    await expect(
-      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
-    ).resolves.toEqual({
+    const result = await verifyYarnPatches({ rootDir: mockDir.path, fetch });
+    const [holdbackError] = result.errors;
+    const holdbackFix = holdbackError?.repairHint;
+
+    expect({
+      ...result,
+      errors: result.errors.map(
+        ({ repairHint: _repairHint, ...error }) => error,
+      ),
+    }).toEqual({
       patchCount: 1,
       backstageCheck: 'verified',
       errors: [
@@ -1787,6 +1794,16 @@ plugins:
           location: 'package.json#resolutions.alias',
         },
       ],
+    });
+    expect(holdbackFix).toMatchObject({
+      packageName: '@backstage/example',
+      currentVersion: '1.0.0',
+      targetVersion: '1.0.1',
+      declaration: {
+        reference:
+          'patch:alias@npm%3A@backstage/example@1.0.0#~/.yarn/patches/example.patch',
+        location: 'package.json#resolutions.alias',
+      },
     });
   });
 
@@ -1873,9 +1890,14 @@ plugins:
         status: 200,
       });
 
-    await expect(
-      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
-    ).resolves.toEqual({
+    const result = await verifyYarnPatches({ rootDir: mockDir.path, fetch });
+
+    expect({
+      ...result,
+      errors: result.errors.map(
+        ({ repairHint: _repairHint, ...error }) => error,
+      ),
+    }).toEqual({
       patchCount: 1,
       backstageCheck: 'verified',
       errors: [
