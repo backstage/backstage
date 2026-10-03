@@ -55,6 +55,14 @@ export async function retryOnDeadlock<T>(
   retries = 3,
   baseMs = 25,
 ): Promise<T> {
+  // Retrying a statement inside an existing transaction is unsafe. In
+  // PostgreSQL a deadlock aborts the entire transaction, while in MySQL it
+  // rolls the transaction back. Let the caller retry the whole transaction
+  // instead.
+  if (knex.isTransaction) {
+    return fn();
+  }
+
   let attempt = 0;
   for (;;) {
     try {
