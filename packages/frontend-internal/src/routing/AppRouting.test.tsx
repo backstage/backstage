@@ -20,9 +20,11 @@
 // against React Router's own in
 // `@backstage/frontend-app-api`'s `appRouting.parity.test.ts`, next to the
 // `routePattern` parity test that exists for the same reason.
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
 import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
-import { PageMountProvider, type PageMount } from './PageMountContext';
+import { type PageMount } from '@internal/frontend';
 import {
   createPath,
   normalizeBasePath,
