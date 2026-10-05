@@ -21,6 +21,7 @@ export type {
   GitLabGroup,
   GitLabGroupSamlIdentity,
   GitLabProject,
+  GitLabRepositoryTreeItem,
   GitLabUser,
   GitlabGroupDescription,
   GitlabProviderConfig,
