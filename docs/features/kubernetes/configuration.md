@@ -366,6 +366,18 @@ field is omitted, Backstage will ignore the configured URL and certificate data,
 instead attempting to access the Kubernetes API via an in-cluster client as in
 [this example](https://github.com/kubernetes-client/javascript/blob/master/examples/in-cluster.js).
 
+##### `clusters.\*.assumeRole` (optional)
+
+The IAM role ARN to assume when using the `aws` auth provider. Each cluster can
+use a different role. This is equivalent to setting
+`kubernetes.io/aws-assume-role` in the cluster's `authMetadata`.
+
+##### `clusters.\*.externalId` (optional)
+
+The external ID to supply when assuming the IAM role, if required by its trust
+policy. This value is treated as a secret and is equivalent to setting
+`kubernetes.io/aws-external-id` in the cluster's `authMetadata`.
+
 ##### `clusters.\*.oidcTokenProvider` (optional)
 
 This field is to be used when using the `oidc` auth provider. It will use the id tokens
