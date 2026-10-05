@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  appHistoryApiRef,
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef, type AppNode } from '@backstage/frontend-plugin-api';
 import {
   act,
   fireEvent,
@@ -26,8 +22,11 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import {
+  TestApiProvider,
+  mockApis,
+  createMockAppHistory,
+} from '@backstage/frontend-test-utils';
 
 import { useBUIRouter } from './useBUIRouter';
 import { Link, RouterProvider } from 'react-aria-components';
@@ -63,22 +62,17 @@ describe('useBUIRouter', () => {
         >
           <TestApiProvider
             apis={[
-              [
-                routeResolutionApiRef,
-                {
-                  resolvePath: () => ({
-                    matches: [
-                      {
-                        params: {},
-                        contributesPath: true,
-                        basePath: '/catalog/entity',
-                        routePattern: '/catalog/:name',
-                        node: mockRouteNode,
-                      },
-                    ],
-                  }),
+              mockApis.routeResolution({
+                resolvePath: {
+                  matches: [
+                    {
+                      basePath: '/catalog/entity',
+                      routePattern: '/catalog/:name',
+                      node: mockRouteNode,
+                    },
+                  ],
                 },
-              ],
+              }),
             ]}
           >
             <Link href="details?view=docs#intro">Details</Link>
@@ -90,22 +84,16 @@ describe('useBUIRouter', () => {
       <TestApiProvider
         apis={[
           [appHistoryApiRef, history],
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: () => ({
-                matches: [
-                  {
-                    params: {},
-                    contributesPath: true,
-                    basePath: '/catalog',
-                    routePattern: '/catalog',
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
+          mockApis.routeResolution({
+            resolvePath: {
+              matches: [
+                {
+                  basePath: '/catalog',
+                  node: mockRouteNode,
+                },
+              ],
             },
-          ],
+          }),
         ]}
       >
         <Content />
@@ -135,25 +123,17 @@ describe('useBUIRouter', () => {
         <TestApiProvider
           apis={[
             [appHistoryApiRef, history],
-            [
-              routeResolutionApiRef,
-              {
-                resolvePath: () => ({
-                  matches: [
-                    { basePath: '/catalog', routePattern: '/catalog' },
-                    {
-                      basePath: '/catalog/entity',
-                      routePattern: '/catalog/:name',
-                    },
-                  ].map(mount => ({
-                    params: {},
-                    contributesPath: true,
-                    ...mount,
-                    node: mockRouteNode,
-                  })),
-                }),
+            mockApis.routeResolution({
+              resolvePath: {
+                matches: [
+                  { basePath: '/catalog' },
+                  {
+                    basePath: '/catalog/entity',
+                    routePattern: '/catalog/:name',
+                  },
+                ].map(mount => ({ ...mount, node: mockRouteNode })),
               },
-            ],
+            }),
           ]}
         >
           {children}
