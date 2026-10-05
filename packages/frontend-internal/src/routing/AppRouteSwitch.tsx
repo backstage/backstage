@@ -23,10 +23,19 @@ import {
   type ReactNode,
 } from 'react';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-import { AppNodeRouteProvider, useAppRouteMatches } from './PageMountContext';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
+import type { AppNode } from '@backstage/frontend-plugin-api';
+
+import { useAppRouteMatches } from './usePageMount';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 import { generatePath, matchPath } from './routePattern';
 
+const AppNodeContext = createVersionedContext<{ 1: { node?: AppNode } }>(
+  'app-node-context',
+);
 interface PluginErrorBoundaryProps {
   basePath: string;
   children: ReactNode;
@@ -199,7 +208,9 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
     return fallback;
   }
   return (
-    <AppNodeRouteProvider node={match.node}>
+    <AppNodeContext.Provider
+      value={createVersionedValueMap({ 1: { node: match.node } })}
+    >
       <PluginErrorBoundary
         key={match.node.spec.id}
         basePath={match.basePath}
@@ -207,6 +218,6 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
       >
         <PageComponent />
       </PluginErrorBoundary>
-    </AppNodeRouteProvider>
+    </AppNodeContext.Provider>
   );
 }

@@ -170,6 +170,7 @@ describe('useRouteRef', () => {
       const mockRouteFunc: RouteFunc<any> = jest.fn(() => '/new-route');
 
       const mockRouteResolutionApi: RouteResolutionApi = {
+        resolvePath: jest.fn(() => ({ matches: [] })),
         resolve: jest.fn(() => mockRouteFunc),
       };
 
@@ -199,6 +200,7 @@ describe('useRouteRef', () => {
       });
 
       const mockRouteResolutionApi: RouteResolutionApi = {
+        resolvePath: jest.fn(() => ({ matches: [] })),
         resolve: jest.fn(() => undefined),
       };
 
