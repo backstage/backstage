@@ -21,6 +21,7 @@ import {
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
+  AppNode,
 } from '@backstage/frontend-plugin-api';
 import {
   BackstagePlugin,
@@ -58,6 +59,114 @@ function src(sourcePath: string) {
 const emptyResolver = createExactRouteAliasResolver(new Map());
 
 describe('RouteResolver', () => {
+  it('resolves node ancestry from the selected branch and shares matches across consumers', () => {
+    function node(id: string, parent?: AppNode): AppNode {
+      const result: AppNode = {
+        spec: { id } as AppNode['spec'],
+        edges: {
+          attachedTo: parent ? { node: parent, input: 'children' } : undefined,
+          attachments: new Map([['children', []]]),
+        },
+      };
+      parent?.edges.attachments.get('children')!.push(result);
+      return result;
+    }
+    const root = node('root');
+    const page = node('page', root);
+    const layout = node('layout', page);
+    const edit = node('edit', layout);
+    const content = node('content', edit);
+    const sibling = node('sibling', page);
+    const unrelated = node('unrelated', root);
+    const resolver = new RouteResolver(
+      new Map(),
+      new Map(),
+      [
+        {
+          ...rest,
+          routeRefs: new Set(),
+          path: 'a/:id?',
+          appNode: page,
+          children: [
+            {
+              ...rest,
+              routeRefs: new Set(),
+              path: '',
+              appNode: layout,
+              children: [
+                { ...rest, routeRefs: new Set(), path: 'edit', appNode: edit },
+              ],
+            },
+            { ...rest, routeRefs: new Set(), path: 'view', appNode: sibling },
+          ],
+        },
+      ],
+      new Map(),
+      '/backstage',
+      emptyResolver,
+      new Map(),
+    );
+
+    // The child wins over consuming "edit" as the parent's optional id.
+    const pathname = '/a/edit';
+    const branch = resolver.resolvePath({ pathname });
+    expect(branch.matches).toEqual([
+      {
+        node: page,
+        basePath: '/a',
+        routePattern: '/a/:id?',
+        params: {},
+        contributesPath: true,
+      },
+      {
+        node: layout,
+        basePath: '/a',
+        routePattern: '/a/:id?/',
+        params: {},
+        contributesPath: false,
+      },
+      {
+        node: edit,
+        basePath: '/a/edit',
+        routePattern: '/a/:id?/edit',
+        params: {},
+        contributesPath: true,
+      },
+    ]);
+    const scoped = resolver.resolvePath({ pathname, node: content });
+    expect(scoped.matches).toEqual(branch.matches);
+    expect(scoped.matches[0]).toBe(branch.matches[0]);
+    expect(resolver.resolvePath({ pathname, node: content })).toBe(scoped);
+    expect(resolver.resolvePath({ pathname })).toBe(branch);
+    expect(resolver.resolvePath({ pathname, node: page }).matches).toEqual(
+      branch.matches.slice(0, 1),
+    );
+    expect(resolver.resolvePath({ pathname, node: sibling }).matches).toEqual(
+      branch.matches.slice(0, 1),
+    );
+    expect(resolver.resolvePath({ pathname, node: root }).matches).toEqual([]);
+    expect(resolver.resolvePath({ pathname, node: unrelated }).matches).toEqual(
+      [],
+    );
+
+    // Resolve another location without browser history or a React render.
+    const next = resolver.resolvePath({
+      pathname: '/a/foo%20bar/edit',
+      node: content,
+    });
+    expect(next.matches.at(-1)).toMatchObject({
+      basePath: '/a/foo%20bar/edit',
+      params: { id: 'foo bar' },
+    });
+    expect(scoped.matches.at(-1)?.params).toEqual({});
+    expect(
+      resolver.resolvePath({ pathname: '/elsewhere', node: content }).matches,
+    ).toEqual([]);
+    expect(resolver.resolvePath({ pathname, node: content }).matches).toEqual(
+      scoped.matches,
+    );
+  });
+
   it('should not resolve anything with an empty resolver', () => {
     const r = new RouteResolver(
       new Map(),

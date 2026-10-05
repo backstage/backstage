@@ -69,7 +69,7 @@ The app also retains a root React Router v6 projection for shared components;
 page content that uses v6 needs its own adapter for page-relative routing.
 
 Rendering it in a sub-page's component scopes it to that sub-page, because the
-sub-page's own mount is what is in context there. Sibling tabs may declare
+sub-page's app node determines its routing scope. Sibling tabs may declare
 different libraries, or none at all.
 
 Declare it in the component that owns the page or sub-page route mount. An

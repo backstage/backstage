@@ -43,6 +43,7 @@ import {
   useInRouterContext,
   Link,
 } from 'react-router-dom';
+import { usePageMount } from '@internal/frontend';
 import { renderInTestApp } from './renderInTestApp';
 
 /**
@@ -407,10 +408,21 @@ describe('renderInTestApp', () => {
     it.each(['/', '/*'])(
       'hosts a deeper location when mounted at the app root with %s',
       async mountPath => {
-        renderInTestApp(<HrefProbe to="techdocs" />, {
+        function Content() {
+          const mount = usePageMount();
+          return (
+            <>
+              <span>Mount: {mount?.basePath ?? 'none'}</span>
+              <HrefProbe to="techdocs" />
+            </>
+          );
+        }
+        renderInTestApp(<Content />, {
           mountPath,
           initialRouteEntries: ['/deeper/path'],
+          mountedRoutes: { '/deeper/path': createRouteRef() },
         });
+        expect(screen.getByText('Mount: /')).toBeInTheDocument();
 
         expect(screen.getByTestId('probe')).toHaveAttribute(
           'href',

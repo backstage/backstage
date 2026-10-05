@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { matchRouteRefs } from './matchRouteRefs';
+import { createRouteMatcher, matchRouteRefs } from './matchRouteRefs';
 import {
   RouteRef,
   ExternalRouteRef,
@@ -22,6 +22,8 @@ import {
   AnyRouteRefParams,
   RouteFunc,
   RouteResolutionApi,
+  RouteResolutionMatch,
+  AppNode,
 } from '@backstage/frontend-plugin-api';
 import { AnyRouteRef, BackstageRouteObject } from './types';
 import {
@@ -170,6 +172,16 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly routeAliasResolver: RouteAliasResolver;
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
 
+  private readonly nodeAncestors = new WeakMap<AppNode, ReadonlySet<AppNode>>();
+  private matchedPathname: string | undefined;
+  private matchedRoutes: { matches: readonly RouteResolutionMatch[] } = {
+    matches: [],
+  };
+  private scopedMatches = new WeakMap<
+    AppNode,
+    { matches: readonly RouteResolutionMatch[] }
+  >();
+
   constructor(
     routePaths: Map<RouteRef, string>,
     routeParents: Map<RouteRef, RouteRef | undefined>,
@@ -182,10 +194,77 @@ export class RouteResolver implements RouteResolutionApi {
     this.routePaths = routePaths;
     this.routeParents = routeParents;
     this.routeObjects = routeObjects;
+    createRouteMatcher(routeObjects);
     this.routeBindings = routeBindings;
     this.appBasePath = appBasePath;
     this.routeAliasResolver = routeAliasResolver;
     this.routeRefsById = routeRefsById;
+
+    // Route-bearing nodes identify the app trees. Index every descendant as
+    // well, so non-routing extensions inherit scope without walking at render.
+    const roots = new Set<AppNode>();
+    for (const route of routeObjects) {
+      if (route.appNode) {
+        let root = route.appNode;
+        while (root.edges.attachedTo) {
+          root = root.edges.attachedTo.node;
+        }
+        roots.add(root);
+      }
+    }
+    const indexNode = (node: AppNode, ancestors: ReadonlySet<AppNode>) => {
+      const chain = new Set([...ancestors, node]);
+      this.nodeAncestors.set(node, chain);
+      for (const children of node.edges.attachments.values()) {
+        for (const child of children) {
+          indexNode(child, chain);
+        }
+      }
+    };
+    for (const root of roots) {
+      indexNode(root, new Set());
+    }
+  }
+
+  resolvePath(options: { pathname: string; node?: AppNode }): {
+    matches: readonly RouteResolutionMatch[];
+  } {
+    if (options.pathname !== this.matchedPathname) {
+      this.matchedRoutes = {
+        matches: (
+          matchRouteRefs(this.routeObjects, options.pathname) ?? []
+        ).flatMap(match => {
+          const node = match.routeObject.appNode;
+          return node
+            ? [
+                {
+                  node,
+                  basePath: match.pathnameBase,
+                  routePattern: match.routePattern,
+                  params: match.params,
+                  contributesPath: match.routeObject.path.length > 0,
+                },
+              ]
+            : [];
+        }),
+      };
+      this.matchedPathname = options.pathname;
+      this.scopedMatches = new WeakMap();
+    }
+    if (!options.node) {
+      return this.matchedRoutes;
+    }
+    let result = this.scopedMatches.get(options.node);
+    if (!result) {
+      const ancestors = this.nodeAncestors.get(options.node);
+      result = {
+        matches: this.matchedRoutes.matches.filter(match =>
+          ancestors?.has(match.node),
+        ),
+      };
+      this.scopedMatches.set(options.node, result);
+    }
+    return result;
   }
 
   resolve<TParams extends AnyRouteRefParams>(

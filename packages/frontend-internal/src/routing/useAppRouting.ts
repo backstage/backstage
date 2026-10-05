@@ -21,7 +21,7 @@ import type {
 } from '@backstage/frontend-plugin-api';
 import { createPath, resolveAppPath } from './AppRouting';
 import { isExternalTarget } from './isExternalTarget';
-import { usePageMountBasePaths } from './PageMountContext';
+import { usePageMountBasePaths } from './usePageMount';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 
 /**

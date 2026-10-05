@@ -143,6 +143,15 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#delegate.resolve(anyRouteRef, options);
   }
 
+  resolvePath(options: Parameters<RouteResolutionApi['resolvePath']>[0]) {
+    if (!this.#delegate) {
+      throw new Error(
+        `You can't access the RouteResolver during initialization of the app tree. Please move occurrences of this out of the initialization of the factory`,
+      );
+    }
+    return this.#delegate.resolvePath(options);
+  }
+
   initialize(
     routeInfo: RouteInfo,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,

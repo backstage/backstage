@@ -663,7 +663,7 @@ special than the page is. The framework matches them through the same route tree
 page chooses which child to render. An adapter does not need to know that
 sub-pages exist. A
 sub-page declares its adapter in its lazily loaded component, which scopes it to the
-sub-page, because the sub-page's mount is what is in context there. Sibling tabs
+sub-page, because the sub-page's app node determines its routing scope. Sibling tabs
 may use different libraries, or none.
 
 A page that has sub-pages owns no content region of its own, so there is nothing
@@ -683,8 +683,19 @@ own tabs.
 
 Whatever the active page or sub-page produces is opaque to any adapter around
 it, and an adapter component receives only `children`. First-party adapters read
-the page mount from a framework-private context, which keeps concrete mount
-paths and route patterns out of the adapter contract.
+their routing scope through `RouteResolutionApi.resolvePath`, using the current
+app node and an app-relative pathname. The app compiles the routing tree and
+indexes node ancestry once, then shares matching results across consumers.
+Concrete mount paths and route patterns do not need a separate React context
+or adapter props.
+
+Calling `resolvePath({ pathname })` returns the selected branch, ordered from
+outermost to innermost. Supplying `node` limits the result to that node and its
+app-tree ancestors, including routing scope inherited by extensions without a
+path. Each match includes its node, concrete base path, accumulated route
+pattern, decoded parameters, and whether the route contributes a path.
+The pathname excludes the deployment basename and can differ from the current
+location, allowing adapters to resolve navigation before React renders it.
 
 For the steps to attach one, see [Choose a router for a page](../building-plugins/10-page-routers.md).
 

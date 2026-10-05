@@ -46,13 +46,9 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  * does — but *how loudly*. The two directions are very different, and the
  * difference decides what an adopter debugging a white page has to go on.
  *
- * The contrast that matters is with `PageMountContext`, which is deliberately
- * not identified by object: it goes through `@backstage/version-bridge`'s
- * global singleton precisely so it survives this. Page router adapters are
- * separately built packages that read the mount from it, so a duplicated copy
- * of the framework has to keep answering. Both halves are asserted below,
- * because the whole design rests on exactly one of these two contexts being
- * copy-proof.
+ * App-node and API contexts use the version bridge, so independently compiled
+ * adapters can resolve the same routing scope despite duplicated framework
+ * modules. React Router context identity remains local to the library copy.
  */
 
 const sharedReact = jest.requireActual('react');

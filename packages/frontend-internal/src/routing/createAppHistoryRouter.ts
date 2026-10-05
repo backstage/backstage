@@ -27,7 +27,7 @@ import type {
   AppHistoryApi,
   AppLocation,
 } from '@backstage/frontend-plugin-api';
-import { usePageMountChain, type PageMount } from './PageMountContext';
+import { usePageMountChain, type PageMount } from './usePageMount';
 import {
   readAppHistoryMetadata,
   type AppHistoryAction,

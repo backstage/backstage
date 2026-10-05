@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
 import { default as React, PropsWithChildren } from 'react';
 import { default as tlr, render, renderHook } from '@testing-library/react';
 import {
@@ -26,7 +28,7 @@ import {
 } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
-import { PageMountProvider, type PageMount } from '@internal/frontend';
+import { type PageMount } from '@internal/frontend';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppHref, useHref } from './useHref';
 import { useApiHolder } from '../apis/system';
@@ -674,9 +676,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     });
     const mount: PageMount = { basePath: '/catalog', routePattern: '/catalog' };
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
-      <versioned.PageMountProvider mount={mount}>
-        {children}
-      </versioned.PageMountProvider>
+      <PageMountProvider mount={mount}>{children}</PageMountProvider>
     );
     const href = (to: string) =>
       renderHook(() => versioned.useAppHref(appHistory, to), { wrapper }).result

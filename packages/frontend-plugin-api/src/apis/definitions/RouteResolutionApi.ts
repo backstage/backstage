@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { routeResolutionApiRef as internalApiRef } from '@internal/frontend';
+import type { ApiRef } from '../system';
 import {
   AnyRouteRefParams,
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
 } from '../../routing';
-import { createApiRef } from '../system';
+import type { AppNode } from './AppTreeApi';
 
 /**
  * TS magic for handling route parameters.
@@ -42,9 +44,43 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 ) => string;
 
 /**
+ * A route-bearing app node matched against a pathname.
+ *
+ * @public
+ */
+export interface RouteResolutionMatch {
+  /** The extension that declares this route. */
+  node: AppNode;
+  /** Matched app-relative URL prefix, excluding the splat tail. */
+  basePath: string;
+  /** Accumulated route pattern, retaining optional segments and splats. */
+  routePattern: string;
+  /** Decoded parameters contributed by this route and its ancestors. */
+  params: Record<string, string>;
+  /** Whether this route declares a non-empty path, even if optional segments are omitted. */
+  contributesPath: boolean;
+}
+
+/**
  * @public
  */
 export interface RouteResolutionApi {
+  /**
+   * Matches an app-relative pathname against the app's route tree.
+   *
+   * Matches are ordered from outermost to innermost. When a node is supplied,
+   * only matches belonging to that node or its app-tree ancestors are returned.
+   * Nodes without a route inherit their ancestors' routing scope. An unmatched
+   * pathname returns an empty array of matches.
+   *
+   * The pathname excludes the deployment basename. It can differ from the
+   * current browser location, allowing adapters to resolve navigation before
+   * React renders the destination.
+   */
+  resolvePath(options: { pathname: string; node?: AppNode }): {
+    matches: readonly RouteResolutionMatch[];
+  };
+
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
@@ -65,7 +101,9 @@ export interface RouteResolutionApi {
  *
  * @public
  */
-export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
-  id: 'core.route-resolution',
-  pluginId: 'app',
-});
+export const routeResolutionApiRef: ApiRef<
+  RouteResolutionApi,
+  'core.route-resolution'
+> & {
+  readonly $$type: '@backstage/ApiRef';
+} = internalApiRef;

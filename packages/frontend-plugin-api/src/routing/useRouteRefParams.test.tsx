@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
 import { PropsWithChildren, ReactNode } from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -21,7 +23,7 @@ import {
   createMockAppHistory,
   type MockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { PageMountProvider, type PageMount } from '@internal/frontend';
+import { type PageMount } from '@internal/frontend';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { useRouteRefParams } from './useRouteRefParams';

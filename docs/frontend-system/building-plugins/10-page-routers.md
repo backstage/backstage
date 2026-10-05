@@ -31,8 +31,8 @@ still owns browser history, and navigation between plugins still goes through
 
 A page router is declared by rendering it, inside the lazily loaded page component. This keeps the adapter import and its
 routing library out of the blueprint module. There is no extension to attach and no input to fill: this is
-ordinary React, and the adapter picks up the page's mount from the context it is
-already rendered in.
+ordinary React, and the adapter resolves its routing scope from the app node
+it is rendered inside.
 
 ```tsx title="plugins/tools/src/alpha.tsx"
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
@@ -280,8 +280,7 @@ export function Overview() {
 ```
 
 An adapter declared here scopes itself to the **sub-page**, because the
-sub-page's own mount is what is in context by the time the loader's element
-renders. A React Router `<Routes>` tree inside that content is therefore written
+sub-page's app node is in context when its content renders. A React Router `<Routes>` tree inside that content is therefore written
 relative to the sub-page, not to the page, and a relative `Link` resolves from
 the sub-page.
 

@@ -214,7 +214,7 @@ export interface AppHistoryApi {
 }
 
 // @public
-export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
+export const appHistoryApiRef: ApiRef<AppHistoryApi, 'core.app-history'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2144,15 +2144,27 @@ export interface RouteResolutionApi {
       sourcePath?: string;
     },
   ): RouteFunc<TParams> | undefined;
+  resolvePath(options: { pathname: string; node?: AppNode }): {
+    matches: readonly RouteResolutionMatch[];
+  };
 }
 
 // @public
-export const routeResolutionApiRef: ApiRef_2<
+export const routeResolutionApiRef: ApiRef<
   RouteResolutionApi,
   'core.route-resolution'
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
+
+// @public
+export interface RouteResolutionMatch {
+  basePath: string;
+  contributesPath: boolean;
+  node: AppNode;
+  params: Record<string, string>;
+  routePattern: string;
+}
 
 // @public
 export type SessionApi = {

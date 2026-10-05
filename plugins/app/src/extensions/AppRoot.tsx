@@ -51,8 +51,6 @@ import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProt
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppRouteProvider } from '../../../../packages/frontend-app-api/src/routing/AppRouteProvider';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/routing/RootHistoryRouter';
@@ -273,26 +271,24 @@ export function AppRouter(props: AppRouterProps) {
   }
 
   return (
-    <AppRouteProvider history={appHistory} routeObjects={routeObjects}>
-      <RootHistoryRouter history={appHistory}>
-        <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
-          <BreadcrumbsRegistryProvider>
-            {...extraElements}
-            <RouteTracker routeObjects={routeObjects} />
-            {SignInPageComponent ? (
-              <SignInPageWrapper
-                component={SignInPageComponent}
-                appIdentityProxy={appIdentityProxy}
-              >
-                {children}
-              </SignInPageWrapper>
-            ) : (
-              children
-            )}
-          </BreadcrumbsRegistryProvider>
-        </BUIProvider>
-      </RootHistoryRouter>
-    </AppRouteProvider>
+    <RootHistoryRouter history={appHistory}>
+      <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
+        <BreadcrumbsRegistryProvider>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          {SignInPageComponent ? (
+            <SignInPageWrapper
+              component={SignInPageComponent}
+              appIdentityProxy={appIdentityProxy}
+            >
+              {children}
+            </SignInPageWrapper>
+          ) : (
+            children
+          )}
+        </BreadcrumbsRegistryProvider>
+      </BUIProvider>
+    </RootHistoryRouter>
   );
 }
 

@@ -100,7 +100,10 @@ describe('RouteRef', () => {
   });
 
   describe('with new frontend system', () => {
-    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+    const routeResolutionApi = {
+      resolve: jest.fn(),
+      resolvePath: jest.fn(() => ({ matches: [] })),
+    } as RouteResolutionApi;
 
     function expectType<T>(): <U>(
       v: U,

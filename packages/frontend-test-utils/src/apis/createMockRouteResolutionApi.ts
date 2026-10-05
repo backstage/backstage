@@ -60,6 +60,8 @@ export interface MockRouteResolutionApiOptions {
    * over {@link MockRouteResolutionApiOptions.routes}.
    */
   resolve?: RouteResolutionApi['resolve'];
+  /** Optional path-matching implementation; defaults to no matches. */
+  resolvePath?: RouteResolutionApi['resolvePath'];
 }
 
 /**
@@ -74,6 +76,8 @@ export interface MockRouteResolutionApi extends RouteResolutionApi {
    * The underlying jest mock for `resolve`, useful for call assertions.
    */
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+  /** The underlying mock for pathname resolution. */
+  resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
 }
 
 function substitutePath(
@@ -176,5 +180,8 @@ export function createMockRouteResolutionApi(
     RouteResolutionApi['resolve']
   >;
 
-  return { resolve };
+  return {
+    resolve,
+    resolvePath: jest.fn(options.resolvePath ?? (() => ({ matches: [] }))),
+  };
 }

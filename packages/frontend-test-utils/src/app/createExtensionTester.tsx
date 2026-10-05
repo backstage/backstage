@@ -41,8 +41,7 @@ import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/read
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
 import { OpaqueExtensionDefinition, usePageMount } from '@internal/frontend';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppRouteProvider } from '../../../frontend-app-api/src/routing/AppRouteProvider';
+import { TestRouteResolver } from '../internal/TestRouteResolver';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   extractRouteInfoFromAppNode,
@@ -69,9 +68,9 @@ function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
     }));
   }, [props.node, routePattern]);
   return history ? (
-    <AppRouteProvider history={history} routeObjects={routeObjects}>
+    <TestRouteResolver routeObjects={routeObjects}>
       {props.children}
-    </AppRouteProvider>
+    </TestRouteResolver>
   ) : (
     <>{props.children}</>
   );
