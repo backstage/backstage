@@ -15,6 +15,8 @@
  */
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PageMountProvider } from '../../../packages/frontend-test-utils/src/internal/TestPageMount';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../../packages/frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
@@ -24,7 +26,7 @@ import {
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { PageMountProvider } from '@internal/frontend';
+
 import {
   Link,
   MemoryRouter,

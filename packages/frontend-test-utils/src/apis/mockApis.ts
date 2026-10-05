@@ -894,6 +894,10 @@ export namespace mockApis {
      */
     export const mock = createApiMock(routeResolutionApiRef, () => ({
       resolve: jest.fn(),
+      resolvePath: jest.fn<
+        ReturnType<RouteResolutionApi['resolvePath']>,
+        Parameters<RouteResolutionApi['resolvePath']>
+      >(() => ({ matches: [] })),
     }));
   }
 
