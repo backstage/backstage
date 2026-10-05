@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
+import {
+  routeResolutionApiRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import { default as React, PropsWithChildren, ReactNode } from 'react';
 import {
   MemoryRouter,
@@ -41,6 +43,16 @@ import { type PageMount } from '@internal/frontend';
 import { useAppGoBack, useAppLocation, useAppResolvedPath } from './appRouting';
 import { useOptionalAppHistory } from '../hooks/useOptionalAppHistory';
 
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock('../../../frontend-plugin-api/src/components/AppNodeProvider', () => {
+  const actual = jest.requireActual(
+    '../../../frontend-plugin-api/src/components/AppNodeProvider',
+  );
+  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
+});
+
 type MockAppHistory = ReturnType<typeof createMockAppHistory>;
 
 function frameworkWrapper(options: {
@@ -60,7 +72,27 @@ function frameworkWrapper(options: {
     <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
       <MemoryRouter initialEntries={[options.location ?? '/']}>
         {pageMount ? (
-          <PageMountProvider mount={pageMount}>{children}</PageMountProvider>
+          <TestApiProvider
+            apis={[
+              [
+                routeResolutionApiRef,
+                {
+                  resolvePath: () => ({
+                    matches: [
+                      {
+                        params: {},
+                        contributesPath: true,
+                        ...pageMount,
+                        node: mockRouteNode,
+                      },
+                    ],
+                  }),
+                },
+              ],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
         ) : (
           children
         )}
@@ -110,19 +142,34 @@ it('resolves parent hrefs from route mounts rather than URL segments', () => {
   );
   unmount();
   render(
-    <TestApiProvider apis={[[appHistoryApiRef, history]]}>
-      <PageMountProvider
-        mount={{ basePath: '/catalog/foo', routePattern: '/catalog/:name' }}
-      >
-        <PageMountProvider
-          mount={{
-            basePath: '/catalog/foo/tab/123',
-            routePattern: '/catalog/:name/tab/:id',
-          }}
-        >
-          <ChromeStandIn to=".." />
-        </PageMountProvider>
-      </PageMountProvider>
+    <TestApiProvider
+      apis={[
+        [appHistoryApiRef, history],
+        [
+          routeResolutionApiRef,
+          {
+            resolvePath: () => ({
+              matches: [
+                {
+                  basePath: '/catalog/foo',
+                  routePattern: '/catalog/:name',
+                },
+                {
+                  basePath: '/catalog/foo/tab/123',
+                  routePattern: '/catalog/:name/tab/:id',
+                },
+              ].map(mount => ({
+                params: {},
+                contributesPath: true,
+                ...mount,
+                node: mockRouteNode,
+              })),
+            }),
+          },
+        ],
+      ]}
+    >
+      <ChromeStandIn to=".." />
     </TestApiProvider>,
   );
   expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
@@ -623,7 +670,27 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     });
     const mount: PageMount = { basePath: '/catalog', routePattern: '/catalog' };
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
-      <PageMountProvider mount={mount}>{children}</PageMountProvider>
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: () => ({
+                matches: [
+                  {
+                    params: {},
+                    contributesPath: true,
+                    ...mount,
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
+            },
+          ],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
     );
 
     const { result } = renderHook(

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
-import { PropsWithChildren, ReactNode } from 'react';
+import { matchPath } from '@internal/frontend';
+import {
+  routeResolutionApiRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
+import { PropsWithChildren } from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import {
@@ -29,6 +32,14 @@ import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
 import { createSubRouteRef } from './SubRouteRef';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock('../components/AppNodeProvider', () => {
+  const actual = jest.requireActual('../components/AppNodeProvider');
+  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
+});
 
 /*
  * Nothing in this file renders a React Router provider, deliberately: the
@@ -54,22 +65,35 @@ const subPageMount: PageMount = {
   routePattern: '/catalog/:namespace/:kind/:name/:tab',
 };
 
-/** Nests the given mounts, outermost first, under a framework app history. */
+/** Supplies fixed routing ancestry and app history for isolated hook tests. */
 function createWrapper(options: {
   appHistory: MockAppHistory;
   mounts?: PageMount[];
 }) {
   const { appHistory, mounts = [] } = options;
   return function Wrapper({ children }: PropsWithChildren<{}>) {
-    const nested = mounts.reduceRight<ReactNode>(
-      (inner, mount) => (
-        <PageMountProvider mount={mount}>{inner}</PageMountProvider>
-      ),
-      children,
-    );
     return (
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        {nested}
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, appHistory],
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: ({ pathname }) => ({
+                matches: mounts.map(mount => ({
+                  params:
+                    matchPath(mount.routePattern, pathname, false)?.params ??
+                    {},
+                  contributesPath: true,
+                  ...mount,
+                  node: mockRouteNode,
+                })),
+              }),
+            },
+          ],
+        ]}
+      >
+        {children}
       </TestApiProvider>
     );
   };

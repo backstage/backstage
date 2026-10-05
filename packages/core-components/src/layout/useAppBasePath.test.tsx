@@ -14,19 +14,52 @@
  * limitations under the License.
  */
 
+import {
+  routeResolutionApiRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
+import { TestApiProvider } from '@backstage/frontend-test-utils';
 import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 import { type PageMount } from '@internal/frontend';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
 import { useAppBasePath } from './appRouting';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock('../../../frontend-plugin-api/src/components/AppNodeProvider', () => {
+  const actual = jest.requireActual(
+    '../../../frontend-plugin-api/src/components/AppNodeProvider',
+  );
+  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
+});
 
 describe('useAppBasePath', () => {
   const wrapper =
     (mount?: PageMount) =>
     ({ children }: PropsWithChildren<{}>) =>
       mount ? (
-        <PageMountProvider mount={mount}>{children}</PageMountProvider>
+        <TestApiProvider
+          apis={[
+            [
+              routeResolutionApiRef,
+              {
+                resolvePath: () => ({
+                  matches: [
+                    {
+                      params: {},
+                      contributesPath: true,
+                      ...mount,
+                      node: mockRouteNode,
+                    },
+                  ],
+                }),
+              },
+            ],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
       ) : (
         <>{children}</>
       );
