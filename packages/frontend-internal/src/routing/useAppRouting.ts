@@ -21,7 +21,6 @@ import type {
 } from '@backstage/frontend-plugin-api';
 import { createPath, resolveAppPath } from './AppRouting';
 import { isExternalTarget } from './isExternalTarget';
-import { usePageMountBasePaths } from './usePageMount';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 
 /**
@@ -29,8 +28,10 @@ import { useAppHistoryLocation } from './useAppHistoryLocation';
  * ancestry. Both operations resolve the same logical destination before the
  * host history applies its deployment basename.
  */
-export function useAppRouting(appHistory: AppHistoryApi | undefined) {
-  const basePaths = usePageMountBasePaths();
+export function useAppRouting(
+  appHistory: AppHistoryApi | undefined,
+  basePaths: readonly string[],
+) {
   const location = useAppHistoryLocation(appHistory);
   return useMemo(() => {
     if (!appHistory || !location) {

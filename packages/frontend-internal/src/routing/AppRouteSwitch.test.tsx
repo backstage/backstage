@@ -21,13 +21,13 @@ import {
   coreExtensionData,
   createExtension,
   createRouteRef,
-  useRouteRefParams,
+  useAppLocation,
 } from '@backstage/frontend-plugin-api';
 
 const entityRef = createRouteRef({ params: ['name'] });
 
 function EntityPage() {
-  const { name } = useRouteRefParams(entityRef);
+  const name = useAppLocation().pathname.split('/')[2];
   const [count, setCount] = useState(0);
   if (name === 'broken') {
     throw new Error('Entity page crashed');
