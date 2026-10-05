@@ -28,7 +28,7 @@ import {
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { usePageMount } from '@internal/frontend';
+import { usePageMount } from '../routing/usePageMount';
 import { useAppNode } from '../components/AppNodeProvider';
 import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';

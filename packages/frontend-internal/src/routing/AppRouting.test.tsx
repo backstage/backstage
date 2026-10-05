@@ -20,18 +20,12 @@
 // against React Router's own in
 // `@backstage/frontend-app-api`'s `appRouting.parity.test.ts`, next to the
 // `routePattern` parity test that exists for the same reason.
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
-import { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react';
-import { type PageMount } from '@internal/frontend';
 import {
   createPath,
   normalizeBasePath,
   parsePath,
   resolveAppPath,
   resolvePath,
-  useAppBasePath,
 } from './AppRouting';
 
 describe('normalizeBasePath', () => {
@@ -220,32 +214,5 @@ describe('resolveAppPath', () => {
       expect(resolveAppPath('..', stack, '/x').pathname).toBe('/');
       expect(resolveAppPath('', stack, '/x').pathname).toBe('/');
     }
-  });
-});
-
-describe('useAppBasePath', () => {
-  const wrapper =
-    (mount?: PageMount) =>
-    ({ children }: PropsWithChildren<{}>) =>
-      mount ? (
-        <PageMountProvider mount={mount}>{children}</PageMountProvider>
-      ) : (
-        <>{children}</>
-      );
-
-  it('reports the page mount as a concatenable prefix, and nothing outside a page', () => {
-    expect(renderHook(() => useAppBasePath()).result.current).toBe('');
-    expect(
-      renderHook(() => useAppBasePath(), {
-        wrapper: wrapper({ basePath: '/catalog', routePattern: '/catalog' }),
-      }).result.current,
-    ).toBe('/catalog');
-    // The app root normalizes to an empty prefix rather than to `/`, so it can
-    // be concatenated with a `/`-prefixed suffix without doubling.
-    expect(
-      renderHook(() => useAppBasePath(), {
-        wrapper: wrapper({ basePath: '/', routePattern: '/' }),
-      }).result.current,
-    ).toBe('');
   });
 });
