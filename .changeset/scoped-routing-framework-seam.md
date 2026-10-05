@@ -2,7 +2,7 @@
 '@backstage/frontend-plugin-api': minor
 ---
 
-Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` and `useNavigateRouteRef` support route-reference navigation, and `useAppRouting` provides matching href and navigation callbacks for React Aria integration.
+Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` supports route-reference links, while `useRouteRef` and `useAppNavigate` can be combined for programmatic navigation.
 
 Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location. The `useRouteResolution` hook provides the current extension’s matched routing ancestry at the current location.
 

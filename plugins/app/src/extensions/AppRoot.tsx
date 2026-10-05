@@ -27,14 +27,14 @@ import {
   pluginWrapperApiRef,
   appHistoryApiRef,
   useAnalytics,
-  useAppRouting,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
-import { BUIProvider, type BUIRouter } from '@backstage/ui';
+import { BUIProvider } from '@backstage/ui';
+import { useBUIRouter } from './useBUIRouter';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -290,16 +290,4 @@ export function AppRouter(props: AppRouterProps) {
       </BUIProvider>
     </RootHistoryRouter>
   );
-}
-
-function useBUIRouter(): BUIRouter {
-  const routing = useAppRouting();
-  return {
-    navigate: routing.navigate,
-    resolveHref: routing.createHref,
-    pathname: new URL(
-      routing.createHref(routing.location.pathname),
-      'http://backstage.local',
-    ).pathname,
-  };
 }

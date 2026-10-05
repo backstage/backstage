@@ -486,7 +486,7 @@ export namespace mockApis {
    * ```tsx
    * const navigate = jest.fn();
    * const appHistory = mockApis.appHistory({ navigate });
-   * // Pair with mockApis.routeResolution() for RouteLink / useNavigateRouteRef
+   * // Pair with mockApis.routeResolution() for RouteLink / useRouteRef
    * ```
    */
   export function appHistory(

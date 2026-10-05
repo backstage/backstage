@@ -534,8 +534,7 @@ and fall back to React Router in the old frontend system.
 `AppHistoryApi.navigate` accepts app-relative destinations or a numeric history
 delta for Back and Forward navigation. It rejects external destinations.
 `AppHistoryApi.createHref` adds the deployment basename and preserves external
-URLs. For scoped destinations, use `useHref` or the matching href and navigation
-callbacks returned by `useAppRouting`.
+URLs. For scoped link destinations, use `useHref`.
 
 `useHref` resolves relative paths against the matched extension ancestry. Each
 leading `..` climbs one route, even when that route spans multiple URL segments.
@@ -597,7 +596,7 @@ export function EntityNameLink(props: {
 }
 ```
 
-`useNavigateRouteRef` is the programmatic equivalent. If your plugin already depends on `EntityRefLink` from `@backstage/plugin-catalog-react`, its links use app history in the new frontend system and retain React Router navigation in the old frontend system.
+`useRouteRef` combined with `useAppNavigate` supports programmatic navigation. If your plugin already depends on `EntityRefLink` from `@backstage/plugin-catalog-react`, its links use app history in the new frontend system and retain React Router navigation in the old frontend system.
 
 ### Page routers
 
@@ -713,9 +712,8 @@ Backstage UI receives a `useRouter` hook through `BUIProvider`. The hook runs at
 
 BUI controls bind that integration to a local React Aria provider. React Aria
 owns link activation and native browser behavior; BUI does not detect a routing
-library or handle modified clicks itself. Plugins using React Aria directly can
-use the same captured pair through `useAppRouting` and a provider from their own
-React Aria installation. See [React Aria integration](../building-plugins/10-page-routers.md#use-react-aria-components-directly).
+library or handle modified clicks itself. This integration applies to BUI controls;
+plugins using React Aria directly must configure their own routing provider.
 
 An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
 

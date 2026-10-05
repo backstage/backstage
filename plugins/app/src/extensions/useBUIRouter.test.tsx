@@ -15,6 +15,7 @@
  */
 
 import {
+  appHistoryApiRef,
   routeResolutionApiRef,
   type AppNode,
 } from '@backstage/frontend-plugin-api';
@@ -28,30 +29,37 @@ import {
 import { TestApiProvider } from '@backstage/test-utils';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 
-import { appHistoryApiRef } from './AppHistoryApi';
-import { useAppRouting } from './useAppRouting';
+import { useBUIRouter } from './useBUIRouter';
 import { Link, RouterProvider } from 'react-aria-components';
 
 const mockRouteNode = {} as AppNode;
 
 // Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../components/AppNodeProvider', () => {
-  const actual = jest.requireActual('../components/AppNodeProvider');
-  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
-});
+jest.mock(
+  '../../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+  () => {
+    const actual = jest.requireActual(
+      '../../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+    );
+    return {
+      ...actual,
+      useAppNode: () => actual.useAppNode() ?? mockRouteNode,
+    };
+  },
+);
 
-describe('useAppRouting', () => {
+describe('useBUIRouter', () => {
   it('keeps direct React Aria hrefs and clicks in the provider scope across a deeper mount', () => {
     const history = createMockAppHistory({
       basename: '/app',
       initialLocation: '/app/catalog/entity',
     });
     function Content() {
-      const routing = useAppRouting();
+      const routing = useBUIRouter();
       return (
         <RouterProvider
           navigate={routing.navigate}
-          useHref={routing.createHref}
+          useHref={routing.resolveHref}
         >
           <TestApiProvider
             apis={[
@@ -122,7 +130,7 @@ describe('useAppRouting', () => {
       basename: '/app',
       initialLocation: '/app/catalog/entity/docs',
     });
-    const { result } = renderHook(() => useAppRouting(), {
+    const { result } = renderHook(() => useBUIRouter(), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
@@ -152,13 +160,13 @@ describe('useAppRouting', () => {
         </TestApiProvider>
       ),
     });
-    expect(result.current.createHref('../create?view=docs#intro')).toBe(
+    expect(result.current.resolveHref('../create?view=docs#intro')).toBe(
       '/app/catalog/create?view=docs#intro',
     );
-    expect(result.current.createHref('?view=docs')).toBe(
+    expect(result.current.resolveHref('?view=docs')).toBe(
       '/app/catalog/entity/docs?view=docs',
     );
-    expect(result.current.createHref('https://example.com/docs')).toBe(
+    expect(result.current.resolveHref('https://example.com/docs')).toBe(
       'https://example.com/docs',
     );
     act(() =>
@@ -173,12 +181,12 @@ describe('useAppRouting', () => {
       hash: '#intro',
       state: { source: 'aria' },
     });
-    expect(result.current.location).toEqual(history.location);
+    expect(result.current.pathname).toBe('/app/catalog/create');
   });
 
   it('keeps browser destinations out of app history and sanitizes executable hrefs', () => {
     const history = createMockAppHistory();
-    const { result } = renderHook(() => useAppRouting(), {
+    const { result } = renderHook(() => useBUIRouter(), {
       wrapper: ({ children }) => (
         <TestApiProvider apis={[[appHistoryApiRef, history]]}>
           {children}
@@ -187,7 +195,7 @@ describe('useAppRouting', () => {
     });
     const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
-      expect(result.current.createHref('java\tscript:alert(1)')).toBe(
+      expect(result.current.resolveHref('java\tscript:alert(1)')).toBe(
         'about:blank',
       );
       expect(warning).toHaveBeenCalledTimes(1);
