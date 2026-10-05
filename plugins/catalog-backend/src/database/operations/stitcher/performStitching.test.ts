@@ -374,6 +374,48 @@ it.each(databases.eachSupportedId())(
 describe.each(databases.eachSupportedId())(
   'performStitching edge cases, %p',
   databaseId => {
+    it('retains failed work for a fenced retry and settles unprocessed work', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: 'my-id',
+        entity_ref: 'k:ns/n',
+        unprocessed_entity: '{}',
+        processed_entity: '{invalid json',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const [claim] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { seconds: 0 },
+      });
+      const before = await knex('stitch_queue');
+      const logger = mockServices.logger.mock();
+      await expect(
+        performStitching({ knex, logger, ...claim }),
+      ).rejects.toThrow(SyntaxError);
+      await expect(knex('stitch_queue')).resolves.toEqual(before);
+      await expect(knex('final_entities')).resolves.toEqual([]);
+      await expect(knex('search')).resolves.toEqual([]);
+      const [retry] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(retry.stitchTicket).not.toBe(claim.stitchTicket);
+      await knex('refresh_state')
+        .where('entity_id', 'my-id')
+        .update({ processed_entity: null });
+      await expect(performStitching({ knex, logger, ...retry })).resolves.toBe(
+        'abandoned',
+      );
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+      await expect(knex('final_entities')).resolves.toEqual([]);
+    });
+
     it('stitches when final_entities row already exists', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);

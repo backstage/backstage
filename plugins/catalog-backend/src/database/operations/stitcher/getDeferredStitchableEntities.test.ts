@@ -26,6 +26,149 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(
   'getDeferredStitchableEntities, %p',
   databaseId => {
+    it('claims a batch with per-ref leases and leaves future work untouched', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbStitchQueueRow>('stitch_queue').insert([
+        {
+          entity_ref: 'k:ns/a',
+          stitch_ticket: 'a',
+          next_stitch_at: '1971-01-01T00:00:00.000',
+        },
+        {
+          entity_ref: 'k:ns/b',
+          stitch_ticket: 'b',
+          next_stitch_at: '1972-01-01T00:00:00.000',
+        },
+        {
+          entity_ref: 'k:ns/future',
+          stitch_ticket: 'future',
+          next_stitch_at: '2099-01-01T00:00:00.000',
+        },
+      ]);
+      const futureBefore = await knex('stitch_queue')
+        .where('entity_ref', 'k:ns/future')
+        .first();
+      const items = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 10,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(items.map(i => i.entityRef)).toEqual(['k:ns/a', 'k:ns/b']);
+      expect(items.map(i => i.stitchRequestedAt.year)).toEqual([1971, 1972]);
+      for (const item of items) {
+        const row = await knex('stitch_queue')
+          .where('entity_ref', item.entityRef)
+          .first();
+        expect(item.stitchTicket).toBe(row.stitch_ticket);
+        expect(['a', 'b']).not.toContain(item.stitchTicket);
+        expect(+new Date(item.stitchLeaseExpiresAt)).toBe(
+          +new Date(row.next_stitch_at),
+        );
+        const exact = await knex('stitch_queue')
+          .select(
+            knex.raw(
+              databaseId.startsWith('POSTGRES')
+                ? 'next_stitch_at::text as lease'
+                : 'next_stitch_at as lease',
+            ),
+          )
+          .where('entity_ref', item.entityRef)
+          .first();
+        expect(item.stitchLeaseExpiresAt).toEqual(exact.lease);
+      }
+      await expect(
+        knex('stitch_queue').where('entity_ref', 'k:ns/future').first(),
+      ).resolves.toEqual(futureBefore);
+      const beforeEmpty = await knex('stitch_queue').orderBy('entity_ref');
+      await expect(
+        getDeferredStitchableEntities({
+          knex,
+          batchSize: 10,
+          stitchTimeout: { minutes: 1 },
+        }),
+      ).resolves.toEqual([]);
+      await expect(knex('stitch_queue').orderBy('entity_ref')).resolves.toEqual(
+        beforeEmpty,
+      );
+    });
+
+    it('does not persist a claim when its caller transaction rolls back', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex('stitch_queue').insert({
+        entity_ref: 'k:ns/n',
+        stitch_ticket: 'original',
+        next_stitch_at: '1971-01-01T00:00:00.000',
+      });
+      const before = await knex('stitch_queue');
+      await expect(
+        knex.transaction(async tx => {
+          const [claim] = await getDeferredStitchableEntities({
+            knex: tx,
+            batchSize: 1,
+            stitchTimeout: { minutes: 1 },
+          });
+          expect(claim.stitchTicket).not.toBe('original');
+          expect((await tx('stitch_queue').first()).stitch_ticket).toBe(
+            claim.stitchTicket,
+          );
+          throw new Error('abort caller transaction');
+        }),
+      ).rejects.toThrow('abort caller transaction');
+      await expect(knex('stitch_queue')).resolves.toEqual(before);
+      const [retried] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(retried.entityRef).toBe('k:ns/n');
+    });
+
+    if (databaseId.startsWith('POSTGRES')) {
+      it("skips another worker's locked row and claims it after release", async () => {
+        const knex = await databases.init(databaseId);
+        await applyDatabaseMigrations(knex);
+        await knex('stitch_queue').insert([
+          {
+            entity_ref: 'k:ns/a',
+            stitch_ticket: 'a',
+            next_stitch_at: '1971-01-01T00:00:00.000',
+          },
+          {
+            entity_ref: 'k:ns/b',
+            stitch_ticket: 'b',
+            next_stitch_at: '1972-01-01T00:00:00.000',
+          },
+        ]);
+        const owner = await knex.transaction();
+        try {
+          await owner('stitch_queue').where('entity_ref', 'k:ns/a').forUpdate();
+          const items = await knex.transaction(async tx => {
+            await tx.raw("set local statement_timeout = '2s'");
+            return getDeferredStitchableEntities({
+              knex: tx,
+              batchSize: 2,
+              stitchTimeout: { minutes: 1 },
+            });
+          });
+          expect(items.map(i => i.entityRef)).toEqual(['k:ns/b']);
+          expect(
+            (await owner('stitch_queue').where('entity_ref', 'k:ns/a').first())
+              .stitch_ticket,
+          ).toBe('a');
+        } finally {
+          await owner.rollback();
+        }
+        const items = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 2,
+          stitchTimeout: { minutes: 1 },
+        });
+        expect(items.map(i => i.entityRef)).toEqual(['k:ns/a']);
+      });
+    }
+
     it('selects the right rows', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
