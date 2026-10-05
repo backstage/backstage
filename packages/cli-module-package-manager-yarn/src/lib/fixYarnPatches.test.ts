@@ -570,6 +570,57 @@ describe('fixYarnPatches', () => {
     ).resolves.toBe(originalLockfile);
   });
 
+  it('rejects a signal-terminated Yarn version check before changing project files', async () => {
+    mockDir.setContent(repository());
+    const originalManifest = await fs.readFile(
+      mockDir.resolve('package.json'),
+      'utf8',
+    );
+    const originalLockfile = await fs.readFile(
+      mockDir.resolve('yarn.lock'),
+      'utf8',
+    );
+    await fs.mkdir(mockDir.resolve('bin'));
+    await fs.writeFile(
+      mockDir.resolve('bin/yarn'),
+      `#!/usr/bin/env node
+if (process.argv.includes('--version')) {
+  process.stdout.write('4.0.0', () => process.kill(process.pid, 'SIGTERM'));
+} else {
+  require('node:fs').writeFileSync('install-ran', '');
+}`,
+      { mode: 0o755 },
+    );
+    const writeFile = jest.fn();
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: fetchRelease,
+        writeFile,
+        env: {
+          ...process.env,
+          PATH: `${mockDir.resolve('bin')}${path.delimiter}${process.env.PATH}`,
+        },
+      }),
+    ).resolves.toMatchObject({
+      status: 'not-fixable',
+      message: expect.stringContaining('terminated by SIGTERM'),
+    });
+    expect(writeFile).not.toHaveBeenCalled();
+    await expect(fs.stat(mockDir.resolve('install-ran'))).rejects.toMatchObject(
+      {
+        code: 'ENOENT',
+      },
+    );
+    await expect(
+      fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+    ).resolves.toBe(originalManifest);
+    await expect(
+      fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
+    ).resolves.toBe(originalLockfile);
+  });
+
   it('restores project files when Yarn is terminated by a signal', async () => {
     mockDir.setContent(repository());
     const originalManifest = await fs.readFile(
