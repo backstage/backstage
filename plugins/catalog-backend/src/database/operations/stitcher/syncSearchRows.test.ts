@@ -274,4 +274,117 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
       expect.objectContaining({ value: 'group:default/team-b' }),
     );
   });
+
+  if (databaseId === 'MYSQL_8') {
+    it('still retries a deadlock when it owns the transaction', async () => {
+      const deadlock = Object.assign(new Error('Deadlock found'), {
+        errno: 1213,
+      });
+      // Inject one failure at the transaction boundary; the retry performs
+      // real search synchronization against MySQL.
+      const transaction = jest.spyOn(knex.client, 'transaction');
+      transaction.mockImplementationOnce(() => {
+        throw deadlock;
+      });
+      try {
+        await syncSearchRows(knex, 'e1', [row('a', 'new')]);
+        expect(await getSearchRows()).toEqual([row('a', 'new')]);
+      } finally {
+        transaction.mockRestore();
+      }
+    });
+
+    it('propagates a deadlock instead of retrying inside an aborted publication transaction', async () => {
+      await syncSearchRows(knex, 'e1', [row('a', 'old')]);
+      await knex('final_entities').where({ entity_id: 'e1' }).update({
+        hash: 'old',
+        final_entity: '{"version":"old"}',
+      });
+
+      // Give the competing transaction more work so InnoDB chooses the
+      // publication transaction as its deadlock victim.
+      await knex.schema.createTable('deadlock_weight', table => {
+        table.integer('id').primary();
+        table.integer('value').notNullable();
+      });
+      await knex('deadlock_weight').insert(
+        Array.from({ length: 100 }, (_, id) => ({ id, value: 0 })),
+      );
+      const blocker = await knex.transaction();
+      let blockerFinished: Promise<void> | undefined;
+
+      try {
+        await blocker('deadlock_weight').update({ value: 1 });
+        await blocker('search')
+          .where({ entity_id: 'e1', key: 'a', value: 'old' })
+          .update({ original_value: 'old' });
+
+        const publication = knex.transaction(async tx => {
+          await tx('final_entities').where({ entity_id: 'e1' }).update({
+            hash: 'new',
+            final_entity: '{"version":"new"}',
+          });
+
+          // Wait for final_entities while holding the search row. The
+          // publication then waits for search, completing a real deadlock.
+          blockerFinished = blocker('final_entities')
+            .where({ entity_id: 'e1' })
+            .update({ hash: blocker.ref('hash') })
+            .then(async () => {
+              await blocker.commit();
+            });
+          // Handle rejection immediately, even while publication is pending.
+          blockerFinished.catch(() => {});
+
+          const deadline = Date.now() + 10_000;
+          for (;;) {
+            const [waits] = await knex.raw(
+              `SELECT 1 FROM performance_schema.data_lock_waits w
+               JOIN performance_schema.data_locks l
+                 ON l.ENGINE_LOCK_ID = w.REQUESTING_ENGINE_LOCK_ID
+               WHERE l.OBJECT_SCHEMA = DATABASE()
+                 AND l.OBJECT_NAME = 'final_entities' LIMIT 1`,
+            );
+            if (waits.length) {
+              break;
+            }
+            if (Date.now() >= deadline) {
+              throw new Error(
+                'Competing transaction did not wait for publication',
+              );
+            }
+            await new Promise(resolve => setTimeout(resolve, 10));
+          }
+
+          await syncSearchRows(tx, 'e1', [row('a', 'new')]);
+        });
+
+        await expect(publication).rejects.toMatchObject({ errno: 1213 });
+        await blockerFinished;
+        expect(
+          await knex('final_entities').where({ entity_id: 'e1' }).first(),
+        ).toMatchObject({ hash: 'old', final_entity: '{"version":"old"}' });
+        expect(await getSearchRows()).toEqual([row('a', 'old')]);
+
+        // Retrying the complete publication, rather than just its search
+        // savepoint, keeps both representations in agreement.
+        await knex.transaction(async tx => {
+          await tx('final_entities').where({ entity_id: 'e1' }).update({
+            hash: 'new',
+            final_entity: '{"version":"new"}',
+          });
+          await syncSearchRows(tx, 'e1', [row('a', 'new')]);
+        });
+        expect(
+          await knex('final_entities').where({ entity_id: 'e1' }).first(),
+        ).toMatchObject({ hash: 'new', final_entity: '{"version":"new"}' });
+        expect(await getSearchRows()).toEqual([row('a', 'new')]);
+      } finally {
+        if (!blocker.isCompleted()) {
+          await blocker.rollback();
+        }
+        await blockerFinished?.catch(() => {});
+      }
+    });
+  }
 });

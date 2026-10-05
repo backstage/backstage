@@ -62,9 +62,8 @@ describe.each(databases.eachSupportedId())(
           .first();
         expect(item.stitchTicket).toBe(row.stitch_ticket);
         expect(['a', 'b']).not.toContain(item.stitchTicket);
-        expect(+new Date(item.stitchLeaseExpiresAt)).toBe(
-          +new Date(row.next_stitch_at),
-        );
+        // Compare the exact database representation, not JavaScript Dates:
+        // PostgreSQL's driver and Date parsing can round microseconds differently.
         const exact = await knex('stitch_queue')
           .select(
             knex.raw(
