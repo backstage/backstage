@@ -125,6 +125,57 @@ describe.each(databases.eachSupportedId())(
       await expect(knex('stitch_queue')).resolves.toEqual([]);
     });
 
+    it('can stitch a reintroduced ref from work retained through deletion', async () => {
+      const knex = await createDatabase();
+      const entityRef = 'k:ns/n';
+      await insertEntity(knex, entityRef);
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: entityRef,
+      });
+      await markForStitching({ knex, entityRefs: [entityRef] });
+      const queued = await knex('stitch_queue').first();
+      expect(
+        await deleteWithEagerPruningOfChildren({
+          knex,
+          sourceKey: 'P1',
+          entityRefs: [entityRef],
+        }),
+      ).toBe(1);
+      await insertEntity(knex, entityRef);
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: entityRef,
+      });
+      await knex('refresh_state')
+        .where('entity_ref', entityRef)
+        .update({
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { reintroduced: true },
+          }),
+        });
+      const replacement = await knex('refresh_state')
+        .where('entity_ref', entityRef)
+        .first();
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          entityRef,
+          stitchTicket: queued.stitch_ticket,
+        }),
+      ).resolves.toBe('changed');
+      const final = await knex('final_entities').first();
+      expect(JSON.parse(final.final_entity)).toMatchObject({
+        metadata: { uid: replacement.entity_id },
+        spec: { reintroduced: true },
+      });
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+    });
+
     it('works for the simple path', async () => {
       /*
           P1 - E1 - E2

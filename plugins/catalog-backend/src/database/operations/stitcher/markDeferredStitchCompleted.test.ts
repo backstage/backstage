@@ -48,10 +48,23 @@ describe.each(databases.eachSupportedId())(
       await expect(knex<DbStitchQueueRow>('stitch_queue')).resolves.toEqual(
         before,
       );
+      // Even another request for the successor must not give an expired worker
+      // permission to shorten that successor's lease.
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const afterRequest = await knex('stitch_queue');
+      await markDeferredStitchCompleted({ knex, ...expired });
+      await expect(knex('stitch_queue')).resolves.toEqual(afterRequest);
       await markDeferredStitchCompleted({
         knex,
         ...successor,
       });
+      const [followUp] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(followUp).toBeDefined();
+      await markDeferredStitchCompleted({ knex, ...followUp });
       await expect(knex('stitch_queue')).resolves.toEqual([]);
     });
 
@@ -65,6 +78,8 @@ describe.each(databases.eachSupportedId())(
         stitchTimeout: { minutes: 1 },
       });
       await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const requested = await knex('stitch_queue').first();
       await markDeferredStitchCompleted({
         knex,
         ...claim,
@@ -76,6 +91,41 @@ describe.each(databases.eachSupportedId())(
       });
       expect(followUp).toBeDefined();
       expect(followUp.stitchTicket).not.toBe(claim.stitchTicket);
+      expect(followUp.stitchTicket).not.toBe(requested.stitch_ticket);
+      await markDeferredStitchCompleted({ knex, ...followUp });
+      await markDeferredStitchCompleted({ knex, ...followUp });
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+    });
+
+    it('scopes completion by ref even when tickets are shared', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex('stitch_queue').insert([
+        {
+          entity_ref: 'k:ns/a',
+          stitch_ticket: 'shared',
+          next_stitch_at: '2099-01-01T00:00:00.000',
+        },
+        {
+          entity_ref: 'k:ns/b',
+          stitch_ticket: 'shared',
+          next_stitch_at: '2099-01-01T00:00:00.000',
+        },
+      ]);
+      const other = await knex('stitch_queue')
+        .where('entity_ref', 'k:ns/b')
+        .first();
+      await markDeferredStitchCompleted({
+        knex,
+        entityRef: 'k:ns/a',
+        stitchTicket: 'shared',
+      });
+      await markDeferredStitchCompleted({
+        knex,
+        entityRef: 'k:ns/a',
+        stitchTicket: 'shared',
+      });
+      await expect(knex('stitch_queue')).resolves.toEqual([other]);
     });
 
     it('completes only if unchanged', async () => {
