@@ -163,6 +163,42 @@ describe('StorageTaskBroker', () => {
     expect(task.secrets).toEqual({ ...fakeSecrets });
   }, 10000);
 
+  it('should restore allAccessRestrictions as a Map when reading back initiator credentials', async () => {
+    const isolatedStorage = await createStore();
+    const broker = new StorageTaskBroker(isolatedStorage, logger);
+    // Mirrors what the scaffolder router now writes to __initiatorCredentials
+    // for a restricted service principal: allAccessRestrictions serialized
+    // as an array of entries, since JSON can't represent a Map directly.
+    const initiatorCredentials = {
+      $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
+      principal: {
+        type: 'service',
+        subject: 'external:test-service',
+        accessRestrictions: {},
+      },
+      token: 'mock-restricted-service-token',
+      allAccessRestrictions: [
+        ['catalog', {}],
+        ['scaffolder', {}],
+      ],
+    };
+    await broker.dispatch({
+      spec: { steps: [] } as unknown as TaskSpec,
+      secrets: {
+        backstageToken: 'mock-restricted-service-token',
+        __initiatorCredentials: JSON.stringify(initiatorCredentials),
+      } as TaskSecrets,
+    });
+    const task = await broker.claim();
+
+    const credentials = (await task.getInitiatorCredentials()) as any;
+
+    expect(credentials.allAccessRestrictions).toBeInstanceOf(Map);
+    expect(credentials.allAccessRestrictions.get('catalog')).toEqual({});
+    expect(credentials.allAccessRestrictions.get('scaffolder')).toEqual({});
+  }, 10000);
+
   it('should complete a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskSpec);
