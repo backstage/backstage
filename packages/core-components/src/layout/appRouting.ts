@@ -33,11 +33,14 @@ import {
   UNSAFE_NavigationContext,
   UNSAFE_RouteContext,
 } from 'react-router-dom';
-import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
+import {
+  useRouteResolution,
+  type AppHistoryApi,
+} from '@backstage/frontend-plugin-api';
 import {
   APP_ROOT_PATH,
   resolveAppPath,
-  usePageMountBasePaths,
+  normalizeBasePath,
   useAppHistoryLocation,
   type AppPath,
   type AppTo,
@@ -189,7 +192,11 @@ export function useAppResolvedPath(
   appHistory: AppHistoryApi | undefined,
   to: AppTo,
 ): AppPath {
-  const mountBasePaths = usePageMountBasePaths();
+  const mountBasePaths = useRouteResolution()
+    .matches.filter(
+      (match, index) => index === 0 || match.contributesPath !== false,
+    )
+    .map(match => match.basePath);
   const routeBasePaths = useRouteBasePaths();
   // Whichever authority answers, it is the same one that answers for the
   // location, so a target with no pathname of its own — `?tab=readme`,
@@ -239,4 +246,9 @@ export function useAppGoBack(
     }
     window.history.back();
   }, [appHistory, navigator]);
+}
+
+/** The current extension route base, without a trailing slash. */
+export function useAppBasePath(): string {
+  return normalizeBasePath(useRouteResolution().matches.at(-1)?.basePath);
 }

@@ -42,3 +42,4 @@ export {
   type AppSearchParamsInit,
   type SetAppSearchParams,
 } from './useAppSearchParams';
+export { useRouteResolution } from './useRouteResolution';
