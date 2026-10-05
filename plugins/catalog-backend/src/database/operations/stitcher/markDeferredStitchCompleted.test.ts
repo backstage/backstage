@@ -18,6 +18,8 @@ import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { DbStitchQueueRow } from '../../tables';
+import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
+import { markForStitching } from './markForStitching';
 
 jest.setTimeout(60_000);
 
@@ -26,6 +28,61 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(
   'markDeferredStitchCompleted, %p',
   databaseId => {
+    it.each(['succeeded', 'abandoned'] as const)(
+      'does not disturb a successor after a stale %s completion',
+      async result => {
+        const knex = await databases.init(databaseId);
+        await applyDatabaseMigrations(knex);
+        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+        const [expired] = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 1,
+          stitchTimeout: { seconds: 0 },
+        });
+        const [successor] = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 1,
+          stitchTimeout: { minutes: 1 },
+        });
+        expect(successor.stitchTicket).not.toBe(expired.stitchTicket);
+        const before = await knex<DbStitchQueueRow>('stitch_queue');
+        await markDeferredStitchCompleted({ knex, ...expired, result });
+        await expect(knex<DbStitchQueueRow>('stitch_queue')).resolves.toEqual(
+          before,
+        );
+        await markDeferredStitchCompleted({
+          knex,
+          ...successor,
+          result: 'succeeded',
+        });
+        await expect(knex('stitch_queue')).resolves.toEqual([]);
+      },
+    );
+
+    it('makes a new request eligible when the same lease finishes', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const [claim] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await markDeferredStitchCompleted({
+        knex,
+        ...claim,
+        result: 'abandoned',
+      });
+      const [followUp] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(followUp).toBeDefined();
+      expect(followUp.stitchTicket).not.toBe(claim.stitchTicket);
+    });
+
     it('completes only if unchanged', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
@@ -90,6 +147,24 @@ describe.each(databases.eachSupportedId())(
           result: 'succeeded',
         }),
       ).resolves.toBeUndefined();
+    });
+
+    it('does not shorten an unknown future lease', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbStitchQueueRow>('stitch_queue').insert({
+        entity_ref: 'k:ns/n',
+        stitch_ticket: 'new-ticket',
+        next_stitch_at: '2099-01-01T00:00:00.000',
+      });
+      const before = await knex('stitch_queue');
+      await markDeferredStitchCompleted({
+        knex,
+        entityRef: 'k:ns/n',
+        stitchTicket: 'old-ticket',
+        result: 'succeeded',
+      });
+      await expect(knex('stitch_queue')).resolves.toEqual(before);
     });
   },
 );

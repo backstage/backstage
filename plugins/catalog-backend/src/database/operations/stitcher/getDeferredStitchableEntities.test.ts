@@ -63,8 +63,9 @@ describe.each(databases.eachSupportedId())(
       expect(items).toEqual([
         {
           entityRef: 'k:ns/past_stitch_time',
-          stitchTicket: 't3',
+          stitchTicket: expect.any(String),
           stitchRequestedAt: expect.anything(),
+          stitchLeaseExpiresAt: expect.anything(),
         },
       ]);
 
@@ -83,6 +84,14 @@ describe.each(databases.eachSupportedId())(
 
       expect(+new Date(hitRowAfter!)).toBeGreaterThan(+new Date(hitRowBefore!));
       expect(+new Date(missRowAfter!)).toEqual(+new Date(missRowBefore!));
+      expect(items[0].stitchTicket).not.toBe('t3');
+      expect(
+        rowsAfter.find(r => r.entity_ref === items[0].entityRef)?.stitch_ticket,
+      ).toBe(items[0].stitchTicket);
+      expect(
+        rowsAfter.find(r => r.entity_ref === 'k:ns/past_stitch_time_again')
+          ?.stitch_ticket,
+      ).toBe('t4');
     });
   },
 );

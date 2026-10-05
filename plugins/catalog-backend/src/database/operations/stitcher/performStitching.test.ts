@@ -36,10 +36,74 @@ jest.mock('./syncSearchRows', () => {
 const syncSearchRowsMock = syncSearchRows as jest.MockedFunction<
   typeof syncSearchRows
 >;
+import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
 
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
+
+it.each(databases.eachSupportedId())(
+  'rejects an expired claim without disturbing its successor for %p',
+  async databaseId => {
+    const knex = await databases.init(databaseId);
+    await applyDatabaseMigrations(knex);
+    await knex<DbRefreshStateRow>('refresh_state').insert({
+      entity_id: 'my-id',
+      entity_ref: 'k:ns/n',
+      unprocessed_entity: '{}',
+      processed_entity: JSON.stringify({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n', namespace: 'ns' },
+      }),
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+    await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+    const logger = mockServices.logger.mock();
+    await performStitching({
+      knex,
+      logger,
+      entityRef: 'k:ns/n',
+      stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+    });
+    const original = await knex('final_entities');
+    const originalSearch = await knex('search');
+    await knex('refresh_state').update({
+      processed_entity: JSON.stringify({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n', namespace: 'ns', description: 'Updated' },
+      }),
+    });
+    await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+    const [expired] = await getDeferredStitchableEntities({
+      knex,
+      batchSize: 1,
+      stitchTimeout: { seconds: 0 },
+    });
+    const [successor] = await getDeferredStitchableEntities({
+      knex,
+      batchSize: 1,
+      stitchTimeout: { minutes: 1 },
+    });
+    const queued = await knex('stitch_queue');
+    await expect(performStitching({ knex, logger, ...expired })).resolves.toBe(
+      'abandoned',
+    );
+    await expect(knex('final_entities')).resolves.toEqual(original);
+    await expect(knex('search')).resolves.toEqual(originalSearch);
+    await expect(knex('stitch_queue')).resolves.toEqual(queued);
+    await expect(
+      performStitching({ knex, logger, ...successor }),
+    ).resolves.toBe('changed');
+    expect(await knex('final_entities')).toHaveLength(1);
+    expect(await knex('final_entities')).not.toEqual(original);
+    expect(await knex('search')).not.toHaveLength(0);
+    await expect(knex('stitch_queue')).resolves.toEqual([]);
+  },
+);
 
 it.each(databases.eachSupportedId())(
   'runs the happy path for %p',
