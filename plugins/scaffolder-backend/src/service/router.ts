@@ -640,8 +640,11 @@ export async function createRouter(
           backstageToken: (credentials as any).token,
           __initiatorCredentials: JSON.stringify({
             ...credentials,
-            // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+            // the following fields are nonenumerable and will not be serialized, so we need to add them explicitly
             token: (credentials as any).token,
+            allAccessRestrictions: (credentials as any).allAccessRestrictions
+              ? [...(credentials as any).allAccessRestrictions.entries()]
+              : undefined,
           }),
         };
 
@@ -869,8 +872,11 @@ export async function createRouter(
           backstageToken: token,
           __initiatorCredentials: JSON.stringify({
             ...credentials,
-            // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+            // the following fields are nonenumerable and will not be serialized, so we need to add them explicitly
             token: (credentials as any).token,
+            allAccessRestrictions: (credentials as any).allAccessRestrictions
+              ? [...(credentials as any).allAccessRestrictions.entries()]
+              : undefined,
           }),
         };
 

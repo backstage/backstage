@@ -247,6 +247,7 @@ const createTestRouter = async (
     taskBroker,
     permissions,
     catalog,
+    httpAuth,
   };
 };
 
@@ -851,6 +852,62 @@ describe('scaffolder router', () => {
               },
             },
           },
+        }),
+      );
+    });
+
+    it('should preserve allAccessRestrictions on the initiator credentials of a restricted service principal', async () => {
+      const { router, taskBroker, httpAuth } = await createTestRouter();
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      // Mirrors a service principal created from a restricted externalAccess
+      // token: allAccessRestrictions is nonenumerable on the real credentials
+      // object, just like token, so it's defined here the same way.
+      const allAccessRestrictions = new Map([
+        ['catalog', {}],
+        ['scaffolder', {}],
+      ]);
+      const restrictedCredentials = mockCredentials.service(
+        'external:test-service',
+        {},
+      );
+      Object.defineProperties(restrictedCredentials, {
+        token: {
+          value: 'mock-restricted-service-token',
+          enumerable: false,
+        },
+        allAccessRestrictions: {
+          value: allAccessRestrictions,
+          enumerable: false,
+        },
+      });
+      jest
+        .spyOn(httpAuth, 'credentials')
+        .mockResolvedValueOnce(restrictedCredentials);
+
+      await request(router)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${(restrictedCredentials as any).token}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+        });
+
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          secrets: expect.objectContaining({
+            __initiatorCredentials: JSON.stringify({
+              ...restrictedCredentials,
+              token: (restrictedCredentials as any).token,
+              allAccessRestrictions: [...allAccessRestrictions.entries()],
+            }),
+          }),
         }),
       );
     });
