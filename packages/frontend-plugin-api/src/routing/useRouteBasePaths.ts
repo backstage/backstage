@@ -17,22 +17,12 @@
 import { useMemo } from 'react';
 import { useRouteResolution } from './useRouteResolution';
 
-export function usePageMountChain() {
-  return useRouteResolution().matches;
-}
-
-export function usePageMount() {
-  return usePageMountChain().at(-1);
-}
-
-export function usePageMountBasePaths() {
-  const matches = usePageMountChain();
+export function useRouteBasePaths() {
+  const matches = useRouteResolution().matches;
   return useMemo(
     () =>
       matches
-        .filter(
-          (match, index) => index === 0 || match.contributesPath !== false,
-        )
+        .filter((match, index) => index === 0 || match.contributesPath)
         .map(match => match.basePath),
     [matches],
   );

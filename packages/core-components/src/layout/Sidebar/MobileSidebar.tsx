@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useElementFilter } from '@backstage/core-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { useApiHolder, useElementFilter } from '@backstage/core-plugin-api';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -37,7 +38,6 @@ import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { useAppLocation } from '../appRouting';
-import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**
  * Props of MobileSidebar
@@ -161,7 +161,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
   const classes = useStyles({ sidebarConfig });
-  const { pathname } = useAppLocation(useOptionalAppHistory());
+  const { pathname } = useAppLocation(useApiHolder().get(appHistoryApiRef));
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);
 
