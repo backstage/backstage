@@ -26,7 +26,7 @@ import {
   createAppHistoryRouter,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
-import { usePageMountChain } from '../routing/usePageMount';
+import { useRouteResolution } from '../routing/useRouteResolution';
 import { useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
@@ -52,7 +52,7 @@ export function LegacyPageRouter(props: {
   const { node, children } = props;
   const parentNode = useContext(LegacyPageRouterContext);
   const history = useApiHolder().get(appHistoryApiRef);
-  const mounts = usePageMountChain();
+  const mounts = useRouteResolution().matches;
   const routePattern = mounts.at(-1)?.routePattern;
   const ownsMount = mounts.some(match => match.node === node);
   const router = useMemo(() => {

@@ -18,7 +18,7 @@ import { JSX, ReactNode, lazy, useEffect } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { joinRoutePath, useAppHistoryLocation } from '@internal/frontend';
-import { usePageMount } from '../routing/usePageMount';
+import { useRouteResolution } from '../routing/useRouteResolution';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -79,7 +79,7 @@ function PageContent(props: {
   children?: ReactNode;
 }) {
   const { subPages, children } = props;
-  const pageMount = usePageMount();
+  const pageMount = useRouteResolution().matches.at(-1);
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
   const routes = useApiHolder().get(routeResolutionApiRef);
