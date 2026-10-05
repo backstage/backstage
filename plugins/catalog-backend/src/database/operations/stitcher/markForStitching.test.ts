@@ -182,114 +182,108 @@ it.each(databases.eachSupportedId())(
   },
 );
 
-it.each(databases.eachSupportedId())(
-  'reproduces deadlock scenario when concurrent transactions update overlapping entity sets %p',
-  async databaseId => {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-
-    // Setup test data with multiple entities
-    const entityRefs = [
-      'k:ns/entity-a',
-      'k:ns/entity-b',
-      'k:ns/entity-c',
-      'k:ns/entity-d',
-      'k:ns/entity-e',
-      'k:ns/entity-f',
-    ];
-
-    await knex<DbRefreshStateRow>('refresh_state').insert(
-      entityRefs.map((ref, i) => ({
-        entity_id: `${i + 1}`,
-        entity_ref: ref,
-        unprocessed_entity: '{}',
-        processed_entity: '{}',
-        errors: '[]',
-        next_update_at: knex.fn.now(),
-        last_discovery_at: knex.fn.now(),
-      })),
-    );
-
-    // This test attempts to reproduce the deadlock by running concurrent transactions
-    // that update overlapping sets of entities in different orders
-    const errorResults = [];
-
-    for (let attempt = 0; attempt < 10; attempt++) {
-      // Transaction 1: Update entities A, B, C, D, E
-      const transaction1 = retryOnDeadlock(
-        () =>
-          knex.transaction(async trx => {
-            await markForStitching({
-              knex: trx,
-              entityRefs: [
-                'k:ns/entity-a',
-                'k:ns/entity-b',
-                'k:ns/entity-c',
-                'k:ns/entity-d',
-                'k:ns/entity-e',
-              ],
-            });
-
-            // Add a small delay to increase chance of collision
-            await new Promise(resolve => setTimeout(resolve, 10));
-
-            await markForStitching({
-              knex: trx,
-              entityRefs: ['k:ns/entity-f'],
-            });
-          }),
-        knex,
-      );
-
-      // Transaction 2: Update entities F, E, D, C, B (reverse order)
-      const transaction2 = retryOnDeadlock(
-        () =>
-          knex.transaction(async trx => {
-            await markForStitching({
-              knex: trx,
-              entityRefs: [
-                'k:ns/entity-f',
-                'k:ns/entity-e',
-                'k:ns/entity-d',
-                'k:ns/entity-c',
-                'k:ns/entity-b',
-              ],
-            });
-
-            // Add a small delay to increase chance of collision
-            await new Promise(resolve => setTimeout(resolve, 10));
-
-            await markForStitching({
-              knex: trx,
-              entityRefs: ['k:ns/entity-a'],
-            });
-          }),
-        knex,
-      );
-
-      // Run both transactions concurrently to create potential deadlock
-      errorResults.push(
-        Promise.allSettled([transaction1, transaction2]).then(results =>
-          results
-            .filter(r => r.status === 'rejected')
-            .map(r => (r as PromiseRejectedResult).reason),
-        ),
-      );
+describe.each(databases.eachSupportedId())(
+  'stitch enqueue deadlock recovery, %p',
+  databaseId => {
+    // SQLite has no concurrent row-locking transactions to exercise here.
+    if (databaseId === 'SQLITE_3') {
+      return;
     }
+    it('retries the whole transaction after a deadlock', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
 
-    const allResults = await Promise.all(errorResults);
+      const entityRefs = ['k:ns/entity-a', 'k:ns/entity-b'];
 
-    expect(allResults.flat()).toEqual([]);
+      await knex<DbRefreshStateRow>('refresh_state').insert(
+        entityRefs.map((ref, i) => ({
+          entity_id: `${i + 1}`,
+          entity_ref: ref,
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        })),
+      );
 
-    // Verify final state - all entities should have been marked for stitching
-    const finalState = await knex<DbStitchQueueRow>('stitch_queue')
-      .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
-      .orderBy('entity_ref');
+      // Use existing rows to avoid making MySQL gap locks part of the test.
+      await knex<DbStitchQueueRow>('stitch_queue').insert(
+        entityRefs.map(ref => ({
+          entity_ref: ref,
+          stitch_ticket: 'old-ticket',
+          next_stitch_at: knex.fn.now(),
+        })),
+      );
 
-    expect(finalState.length).toBeGreaterThan(0);
-    finalState.forEach(row => {
-      expect(row.next_stitch_at).not.toBeNull();
-      expect(row.stitch_ticket).not.toBeNull();
+      let releaseFirstAttempts!: () => void;
+      const firstAttemptsReady = new Promise<void>(resolve => {
+        releaseFirstAttempts = resolve;
+      });
+      let arrivals = 0;
+      const attempts = [0, 0];
+      const committedTickets: string[] = [];
+      const run = (index: number) =>
+        retryOnDeadlock(
+          () =>
+            knex.transaction(async trx => {
+              attempts[index]++;
+              await markForStitching({
+                knex: trx,
+                entityRefs: [entityRefs[index]],
+              });
+
+              // Both first attempts hold different row locks before requesting
+              // each other's row. The retry skips this barrier so the surviving
+              // transaction can commit and release its locks.
+              if (attempts[index] === 1) {
+                arrivals++;
+                if (arrivals === 2) {
+                  releaseFirstAttempts();
+                }
+                await firstAttemptsReady;
+              }
+
+              // Save the first write's ticket so the final rows prove that the
+              // retried attempt persisted both of its enqueue requests.
+              const firstRow = await trx<DbStitchQueueRow>('stitch_queue')
+                .where({ entity_ref: entityRefs[index] })
+                .first();
+              await markForStitching({
+                knex: trx,
+                entityRefs: [entityRefs[1 - index]],
+              });
+              return firstRow!.stitch_ticket!;
+            }),
+          knex,
+        ).then(ticket => {
+          committedTickets[index] = ticket;
+        });
+
+      const results = await Promise.allSettled([run(0), run(1)]);
+      expect(results).toEqual([
+        { status: 'fulfilled', value: undefined },
+        { status: 'fulfilled', value: undefined },
+      ]);
+      expect(attempts.slice().sort()).toEqual([1, 2]);
+
+      const finalState = await knex<DbStitchQueueRow>('stitch_queue')
+        .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
+        .orderBy('entity_ref');
+
+      expect(finalState.map(row => row.entity_ref)).toEqual(entityRefs);
+      const retriedIndex = attempts.indexOf(2);
+      expect(finalState[retriedIndex].stitch_ticket).toBe(
+        committedTickets[retriedIndex],
+      );
+      finalState.forEach(row => {
+        expect(row.next_stitch_at).not.toBeNull();
+        expect(row.stitch_ticket).not.toBeNull();
+        expect(row.stitch_ticket).not.toBe('old-ticket');
+      });
+      expect(finalState[1 - retriedIndex].stitch_ticket).not.toBe(
+        committedTickets[1 - retriedIndex],
+      );
     });
   },
 );
@@ -308,6 +302,9 @@ describe.each(databases.eachSupportedId())(
         stitch_ticket: 'in-progress-ticket',
         next_stitch_at: futureTimestamp,
       });
+      const before = await knex<DbStitchQueueRow>('stitch_queue')
+        .where({ entity_ref: 'k:ns/target' })
+        .first();
 
       // A new stitch request comes in while the stitch is in progress
       await markForStitching({ knex, entityRefs: ['k:ns/target'] });
@@ -321,8 +318,7 @@ describe.each(databases.eachSupportedId())(
       expect(row.stitch_ticket).not.toBe('in-progress-ticket');
       // Timestamp should NOT be yanked back to now — the in-progress
       // worker's timeout must be respected
-      const nextStitch = new Date(row.next_stitch_at as string);
-      expect(nextStitch.getFullYear()).toBe(2099);
+      expect(row.next_stitch_at).toEqual(before!.next_stitch_at);
     });
 
     it('sets next_stitch_at to now for new entries', async () => {
