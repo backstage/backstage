@@ -28,7 +28,7 @@ import { targetPaths } from '@backstage/cli-common';
 import { generateCliReport } from './generateCliReport';
 import { logApiReportInstructions } from '../common';
 
-function parseHelpPage(helpPageContent: string) {
+export function parseHelpPage(helpPageContent: string) {
   let usage: string | undefined;
 
   // Commander format: "Usage: backstage-cli ..."
@@ -40,7 +40,7 @@ function parseHelpPage(helpPageContent: string) {
   const lines = helpPageContent.split(/\r?\n/);
 
   let options = new Array<string>();
-  let commands = new Array<string>();
+  const commands = new Array<string>();
   let commandArguments = new Array<string>();
 
   while (lines.length > 0) {
@@ -64,8 +64,8 @@ function parseHelpPage(helpPageContent: string) {
 
       if (sectionName === 'options:' || sectionName === 'flags:') {
         options = sectionItems;
-      } else if (sectionName === 'commands:') {
-        commands = sectionItems;
+      } else if (sectionName === 'commands:' || sectionName === 'groups:') {
+        commands.push(...sectionItems);
       } else if (sectionName === 'arguments:') {
         commandArguments = sectionItems;
       } else if (sectionName === 'usage:') {
