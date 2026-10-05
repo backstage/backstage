@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { stripVTControlCharacters } from 'node:util';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
 
@@ -179,6 +180,179 @@ describe('runCli', () => {
     expect(helpOutput).not.toContain('secret');
     expect(process.exit).toHaveBeenCalledWith(0);
     logSpy.mockRestore();
+  });
+
+  it.each([
+    { commandPath: [] },
+    { commandPath: ['repo'] },
+    { commandPath: ['repo', 'example'] },
+  ])(
+    'renders current-level help without a subcommand for %j',
+    async ({ commandPath }) => {
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const execute = jest.fn(async () => {});
+      const loader = jest.fn(async () => ({ default: execute }));
+      const testModule = createCliModule({
+        packageJson: { name: '@example/test' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['repo', 'example', 'list'],
+            description: 'List examples',
+            execute: { loader },
+          });
+        },
+      });
+      const options = { modules: [testModule], name: 'example-cli' };
+
+      process.argv = ['node', 'cli', ...commandPath];
+      await runCli(options);
+      const output = stripVTControlCharacters(
+        logSpy.mock.calls.flat().join('\n'),
+      );
+      expect(output).toContain(['example-cli', ...commandPath].join(' '));
+      expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
+      expect(output).toContain(
+        ['example list', 'list', 'List examples'][commandPath.length],
+      );
+      expect(output).not.toContain('Invalid command');
+      expect(process.exit).not.toHaveBeenCalled();
+
+      logSpy.mockClear();
+      process.argv = ['node', 'cli', ...commandPath, '--help'];
+      await runCli(options);
+      expect(
+        stripVTControlCharacters(logSpy.mock.calls.flat().join('\n')),
+      ).toBe(output);
+      expect(process.exit).toHaveBeenCalledWith(0);
+      expect(loader).not.toHaveBeenCalled();
+      expect(execute).not.toHaveBeenCalled();
+    },
+  );
+
+  it('separates and sorts groups and commands with visible child previews', async () => {
+    process.argv = ['node', 'cli'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['zulu'],
+          ['repo', 'test'],
+          ['repo', 'start'],
+          ['repo', 'lint'],
+          ['repo', 'fix'],
+          ['repo', 'clean'],
+          ['repo', 'build'],
+          ['package', 'example', 'list'],
+          ['alpha'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: `Run ${path.join(' ')}`,
+            execute: async () => {},
+          });
+        }
+        for (const path of [
+          ['repo', 'hidden'],
+          ['hidden', 'test'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Hidden command',
+            experimental: true,
+            execute: async () => {},
+          });
+        }
+      },
+    });
+    await runCli({ modules: [testModule], name: 'example-cli' });
+    const output = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    const groups = output.split(/groups:/i)[1].split(/commands:/i)[0];
+    const commands = output.split(/commands:/i)[1].split(/flags:/i)[0];
+    expect(
+      groups
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'package example list',
+      'repo build, clean, fix, lint, start, test',
+    ]);
+    expect(
+      commands
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'alpha Run alpha',
+      'help Display help for command',
+      'zulu Run zulu',
+    ]);
+    expect(output).not.toContain('hidden');
+  });
+
+  it('fits previews to terminal width and expands groups breadth-first', async () => {
+    const columnsDescriptor = Object.getOwnPropertyDescriptor(
+      process.stdout,
+      'columns',
+    );
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const loader = jest.fn();
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['repo', 'a', 'x', 'one'],
+          ['repo', 'a', 'x', 'two'],
+          ['repo', 'b', 'one'],
+          ['repo', 'b', 'two'],
+          ['repo', 'z'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Example command',
+            execute: { loader },
+          });
+        }
+      },
+    });
+    try {
+      for (const [width, expected] of [
+        [1, '…'],
+        [8, 'a/, …'],
+        [9, 'a/, b/, z'],
+        [11, 'a x/, b/, z'],
+        [24, 'a x/, b one, b two, z'],
+        [33, 'a x one, a x two, b one, b two, z'],
+        [undefined, 'a x one, a x two, b one, b two, z'],
+      ] as const) {
+        Object.defineProperty(process.stdout, 'columns', {
+          configurable: true,
+          value: width === undefined ? undefined : width + 14,
+        });
+        process.argv = ['node', 'cli'];
+        logSpy.mockClear();
+        await runCli({ modules: [testModule], name: 'example-cli' });
+        const output = stripVTControlCharacters(
+          logSpy.mock.calls.flat().join('\n'),
+        );
+        expect(
+          output
+            .split(/groups:/i)[1]
+            .split(/commands:/i)[0]
+            .trim(),
+        ).toBe(`repo        ${expected}`);
+      }
+      expect(loader).not.toHaveBeenCalled();
+    } finally {
+      if (columnsDescriptor) {
+        Object.defineProperty(process.stdout, 'columns', columnsDescriptor);
+      } else {
+        Reflect.deleteProperty(process.stdout, 'columns');
+      }
+    }
   });
 
   it('supports the short version flag', async () => {

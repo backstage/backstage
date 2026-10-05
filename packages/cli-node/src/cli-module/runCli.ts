@@ -34,14 +34,6 @@ interface HelpNode {
   data: unknown;
 }
 
-interface CommandsHelpData {
-  body: {
-    data: {
-      tableData: string[][];
-    };
-  };
-}
-
 function exit(message: string, code: number = 1): never {
   process.stderr.write(`\n${chalk.red(message)}\n\n`);
   process.exit(code);
@@ -96,11 +88,52 @@ function getNodeName(node: CommandNode): string {
   return OpaqueCommandLeafNode.toInternal(node).name;
 }
 
-function getNodeDescription(node: CommandNode): string {
-  if (OpaqueCommandTreeNode.isType(node)) {
-    return OpaqueCommandTreeNode.toInternal(node).name;
+function createGroupPreview(
+  children: ReadonlyArray<CommandNode>,
+  width: number,
+): string {
+  const entries = children
+    .filter(node => !isCommandNodeHidden(node))
+    .sort((a, b) => getNodeName(a).localeCompare(getNodeName(b), 'en'))
+    .map(node => ({ node, path: getNodeName(node) }));
+  const format = (items: typeof entries) =>
+    items
+      .map(
+        ({ node, path }) =>
+          path + (OpaqueCommandTreeNode.isType(node) ? '/' : ''),
+      )
+      .join(', ');
+
+  if (format(entries).length > width) {
+    while (entries.length > 0) {
+      entries.pop();
+      const preview = format(entries);
+      if (preview.length + 3 <= width) {
+        return preview ? `${preview}, …` : '…';
+      }
+    }
+    return '…';
   }
-  return OpaqueCommandLeafNode.toInternal(node).command.description;
+
+  // Expand breadth-first, preserving every sibling before adding more detail.
+  const queue = [...entries];
+  for (const entry of queue) {
+    if (!OpaqueCommandTreeNode.isType(entry.node)) {
+      continue;
+    }
+    const expanded = OpaqueCommandTreeNode.toInternal(entry.node)
+      .children.filter(node => !isCommandNodeHidden(node))
+      .sort((a, b) => getNodeName(a).localeCompare(getNodeName(b), 'en'))
+      .map(node => ({ node, path: `${entry.path} ${getNodeName(node)}` }));
+    const index = entries.indexOf(entry);
+    const candidate = [...entries];
+    candidate.splice(index, 1, ...expanded);
+    if (format(candidate).length <= width) {
+      entries.splice(index, 1, ...expanded);
+      queue.push(...expanded);
+    }
+  }
+  return format(entries);
 }
 
 function createHelpOptions(options: {
@@ -110,23 +143,70 @@ function createHelpOptions(options: {
 }) {
   const { nodes, includeHelpCommand, version } = options;
   const visibleNodes = nodes.filter(node => !isCommandNodeHidden(node));
+  const groups = visibleNodes.filter(OpaqueCommandTreeNode.isType);
+  // Match the table's name column and padding, with 80 columns for piped output.
+  const previewWidth = Math.max(
+    1,
+    (process.stdout.columns || 80) -
+      Math.max(0, ...groups.map(node => getNodeName(node).length)) -
+      10,
+  );
+  const groupRows: string[][] = [];
+  const commandRows: string[][] = [];
+
+  for (const node of visibleNodes) {
+    if (OpaqueCommandTreeNode.isType(node)) {
+      const { name, children } = OpaqueCommandTreeNode.toInternal(node);
+      groupRows.push([name, createGroupPreview(children, previewWidth)]);
+    } else {
+      const { name, command: cmd } = OpaqueCommandLeafNode.toInternal(node);
+      commandRows.push([name, cmd.description]);
+    }
+  }
+  if (includeHelpCommand) {
+    commandRows.push(['help', 'Display help for command']);
+  }
+  for (const rows of [groupRows, commandRows]) {
+    rows.sort(([a], [b]) => a.localeCompare(b, 'en'));
+  }
 
   return {
     version,
     render(nodesToRender: HelpNode[], renderers: Renderers) {
-      const commandsNode = nodesToRender.find(node => node.id === 'commands');
-      if (commandsNode) {
-        const commandRows = visibleNodes.map(node => [
-          getNodeName(node),
-          getNodeDescription(node),
-        ]);
-        if (includeHelpCommand) {
-          commandRows.push(['help', 'Display help for command']);
-        }
-        (commandsNode.data as CommandsHelpData).body.data.tableData =
-          commandRows;
-      }
-      return renderers.render(nodesToRender);
+      return renderers.render(
+        nodesToRender.flatMap(node => {
+          if (node.id !== 'commands') {
+            return [node];
+          }
+          return [
+            { title: 'Groups:', rows: groupRows },
+            { title: 'Commands:', rows: commandRows },
+          ]
+            .filter(section => section.rows.length > 0)
+            .map(
+              ({ title, rows }): HelpNode => ({
+                type: 'section',
+                data: {
+                  title,
+                  indentBody: 0,
+                  body: {
+                    type: 'table',
+                    data: {
+                      tableData: rows,
+                      tableOptions: [
+                        {
+                          width: 'content-width',
+                          paddingLeft: 2,
+                          paddingRight: 8,
+                        },
+                      ],
+                    },
+                  },
+                },
+              }),
+            );
+        }),
+      );
     },
   };
 }
@@ -246,6 +326,7 @@ async function runCommandLevel(options: {
       }
 
       if (argv.length === 0) {
+        parsed.showHelp();
         return;
       }
 
@@ -277,6 +358,12 @@ function hasVersionFlag(args: string[]): boolean {
  * This is intended for creating custom CLI packages from a fixed set of
  * directly imported modules. Module discovery and override behavior are left
  * to the caller.
+ *
+ * Invoking the program or a command group without a subcommand displays
+ * help for that level and completes successfully. Command groups and commands
+ * are listed separately in alphabetical order. Group previews fit the terminal width
+ * (80 columns when unavailable), expanding nested groups breadth-first when space
+ * permits. Unexpanded groups have a trailing slash; truncated previews end in an ellipsis.
  *
  * @example
  * ```ts
