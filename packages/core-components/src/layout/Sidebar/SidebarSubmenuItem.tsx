@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '../../components/Link';
-import { useApiHolder, IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -34,6 +33,7 @@ import {
   useAppResolvedPath,
   useAppBasePath,
 } from '../appRouting';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /** @public */
 export type SidebarSubmenuItemClassKey =
@@ -168,7 +168,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
-  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const appHistory = useOptionalAppHistory();
   const basePath = useAppBasePath();
   const toLocation = useAppResolvedPath(appHistory, to ?? '');
   const currentLocation = useAppLocation(appHistory);
