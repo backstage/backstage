@@ -220,8 +220,11 @@ async function syncMysql(
       });
       return;
     } catch (error) {
-      // MySQL error 1213: ER_LOCK_DEADLOCK
+      // MySQL error 1213 rolls back the entire transaction, not just a
+      // savepoint. Only retry transactions we own; an enclosing publication
+      // must fail so its final entity write is retried together with search.
       if (
+        !knex.isTransaction &&
         (error as any)?.errno === 1213 &&
         attempt < MYSQL_DEADLOCK_MAX_RETRIES
       ) {

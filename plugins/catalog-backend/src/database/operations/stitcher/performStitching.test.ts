@@ -27,6 +27,7 @@ import {
 import { markForStitching } from './markForStitching';
 import { performStitching } from './performStitching';
 import { syncSearchRows } from './syncSearchRows';
+import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
 
 jest.mock('./syncSearchRows', () => {
   const actual = jest.requireActual('./syncSearchRows');
@@ -36,7 +37,6 @@ jest.mock('./syncSearchRows', () => {
 const syncSearchRowsMock = syncSearchRows as jest.MockedFunction<
   typeof syncSearchRows
 >;
-import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
 
 jest.setTimeout(60_000);
 
