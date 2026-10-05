@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApiHolder } from '@backstage/core-plugin-api';
+import { useOptionalAppHistory } from '../hooks/useOptionalAppHistory';
 import {
   appHistoryApiRef,
   routeResolutionApiRef,
@@ -108,7 +108,7 @@ function frameworkWrapper(options: {
  * than as a hook that happened not to throw.
  */
 function ChromeStandIn(props: { to: string }) {
-  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const appHistory = useOptionalAppHistory();
   const location = useAppLocation(appHistory);
   const resolved = useAppResolvedPath(appHistory, props.to);
 
@@ -245,12 +245,9 @@ describe('useAppResolvedPath', () => {
       location: string,
       pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>,
     ) =>
-      renderHook(
-        () => useAppResolvedPath(useApiHolder().get(appHistoryApiRef), to),
-        {
-          wrapper: frameworkWrapper({ location, pageMount }),
-        },
-      ).result.current.pathname;
+      renderHook(() => useAppResolvedPath(useOptionalAppHistory(), to), {
+        wrapper: frameworkWrapper({ location, pageMount }),
+      }).result.current.pathname;
 
     // App chrome renders outside the route tree, so there is no page mount and
     // relative targets resolve against the app root - the same answer React
@@ -273,10 +270,7 @@ describe('useAppResolvedPath', () => {
   it('keeps absolute targets and their search string intact (framework)', () => {
     const { result } = renderHook(
       () =>
-        useAppResolvedPath(
-          useApiHolder().get(appHistoryApiRef),
-          '/catalog?kind=component',
-        ),
+        useAppResolvedPath(useOptionalAppHistory(), '/catalog?kind=component'),
       { wrapper: frameworkWrapper({ location: '/docs' }) },
     );
 
@@ -296,13 +290,13 @@ describe('useAppResolvedPath', () => {
     );
 
     const { result } = renderHook(
-      () => useAppResolvedPath(useApiHolder().get(appHistoryApiRef), 'widgets'),
+      () => useAppResolvedPath(useOptionalAppHistory(), 'widgets'),
       {
         wrapper,
       },
     );
     const { result: emptyResult } = renderHook(
-      () => useAppResolvedPath(useApiHolder().get(appHistoryApiRef), ''),
+      () => useAppResolvedPath(useOptionalAppHistory(), ''),
       {
         wrapper,
       },
@@ -440,7 +434,7 @@ describe('useAppLocation', () => {
     });
 
     const { result } = renderHook(
-      () => useAppLocation(useApiHolder().get(appHistoryApiRef)),
+      () => useAppLocation(useOptionalAppHistory()),
       {
         wrapper: frameworkWrapper({ location: '/from-router', appHistory }),
       },
@@ -464,7 +458,7 @@ describe('useAppLocation', () => {
 
   it('falls back to React Router when there is no app history', () => {
     const { result } = renderHook(
-      () => useAppLocation(useApiHolder().get(appHistoryApiRef)),
+      () => useAppLocation(useOptionalAppHistory()),
       {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <MemoryRouter initialEntries={['/explore?filter=all']}>

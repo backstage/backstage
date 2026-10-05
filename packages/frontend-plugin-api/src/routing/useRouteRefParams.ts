@@ -53,6 +53,27 @@ function declaredParamNames(
 }
 
 /**
+ * The params a single route pattern binds at the current location.
+ *
+ * Matched against the location rather than against the mount's own base path,
+ * because a base path stops where the match's pattern stops spelling segments
+ * out: a page mounted at `/docs/*` has `/docs` as its base, and only the
+ * location carries the splat tail. The base path is the fallback for the one
+ * render where the two disagree — the app has navigated away and the page has
+ * not unmounted yet — where the mount is the more honest of the two answers.
+ */
+function patternParams(
+  routePattern: string,
+  basePath: string,
+  pathname: string,
+): Record<string, string> | undefined {
+  const match =
+    matchPath(routePattern, pathname, false) ??
+    matchPath(routePattern, basePath, false);
+  return match?.params;
+}
+
+/**
  * Every param the mounts this content is rendered inside bind, outermost mount
  * first so that a deeper mount wins a name its page also binds — the same
  * precedence React Router's own `useParams` applies across its match stack.
@@ -71,7 +92,11 @@ function resolveParams(
   const params: Record<string, string> = {};
 
   for (const mount of mountChain) {
-    Object.assign(params, mount.params);
+    Object.assign(
+      params,
+      mount.params ??
+        patternParams(mount.routePattern, mount.basePath, pathname),
+    );
   }
 
   if (OpaqueSubRouteRef.isType(routeRef)) {
