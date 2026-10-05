@@ -53,13 +53,14 @@ export async function performStitching(options: {
   logger: LoggerService;
   entityRef: string;
   stitchTicket: string;
+  stitchLeaseExpiresAt?: DbStitchQueueRow['next_stitch_at'];
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
-  const { knex, logger, entityRef, stitchTicket } = options;
+  const { knex, logger, entityRef, stitchTicket, stitchLeaseExpiresAt } =
+    options;
 
-  // The stitch queue is cleaned up on ANY completion — either by deleting
-  // the entry (ticket unchanged) or bumping next_stitch_at (re-stitch
-  // requested). Exceptions are the only case where we skip cleanup, so
-  // the entity gets retried at a later time.
+  // Settle the claim on any completion, without disturbing a successor's
+  // lease. A new request during this lease becomes eligible immediately.
+  // Exceptions skip cleanup so the entity gets retried at a later time.
   let stitchResult: 'succeeded' | 'abandoned' | undefined;
 
   try {
@@ -287,6 +288,7 @@ export async function performStitching(options: {
         knex: knex,
         entityRef,
         stitchTicket,
+        stitchLeaseExpiresAt,
         result: stitchResult,
       });
     }

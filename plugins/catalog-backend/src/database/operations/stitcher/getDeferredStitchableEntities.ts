@@ -17,6 +17,7 @@
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
+import { randomUUID } from 'node:crypto';
 import { timestampToDateTime } from '../../conversion';
 import { DbStitchQueueRow } from '../../tables';
 
@@ -31,8 +32,9 @@ import { DbStitchQueueRow } from '../../tables';
  *
  * This assumes that the stitching strategy is set to deferred.
  *
- * They are expected to already have the stitch_ticket set (by
- * markForStitching) so that their tickets can be returned with each item.
+ * Each claim replaces stitch_ticket, fencing workers whose leases expired even
+ * when no new stitch request was made. A ticket may be shared across a batch;
+ * it is always checked together with entity_ref.
  *
  * All returned items have their next_stitch_at updated to be moved forward by
  * the given timeout duration. This has the effect that they will be picked up
@@ -48,6 +50,7 @@ export async function getDeferredStitchableEntities(options: {
     entityRef: string;
     stitchTicket: string;
     stitchRequestedAt: DateTime; // the time BEFORE moving it forward by the timeout
+    stitchLeaseExpiresAt: DbStitchQueueRow['next_stitch_at'];
   }>
 > {
   const { knex, batchSize, stitchTimeout } = options;
@@ -76,25 +79,49 @@ export async function getDeferredStitchableEntities(options: {
       return [];
     }
 
-    await tx('stitch_queue')
+    const stitchTicket = randomUUID();
+    const update = tx<DbStitchQueueRow>('stitch_queue')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
         next_stitch_at: nowPlus(tx, stitchTimeout),
+        stitch_ticket: stitchTicket,
       });
+
+    // Preserve PostgreSQL's full timestamp precision for the completion guard;
+    // converting it to a JavaScript Date would truncate microseconds.
+    let leases: Pick<DbStitchQueueRow, 'entity_ref' | 'next_stitch_at'>[];
+    if (tx.client.config.client === 'pg') {
+      leases = await update.returning([
+        'entity_ref',
+        tx.raw('next_stitch_at::text as next_stitch_at'),
+      ]);
+    } else if (String(tx.client.config.client).includes('mysql')) {
+      await update;
+      leases = await tx<DbStitchQueueRow>('stitch_queue')
+        .select('entity_ref', 'next_stitch_at')
+        .whereIn(
+          'entity_ref',
+          items.map(i => i.entity_ref),
+        );
+    } else {
+      leases = await update.returning(['entity_ref', 'next_stitch_at']);
+    }
+    const leaseByRef = new Map(
+      leases.map(i => [i.entity_ref, i.next_stitch_at]),
+    );
 
     return items.map(i => ({
       entityRef: i.entity_ref,
-      stitchTicket: i.stitch_ticket,
+      stitchTicket,
       stitchRequestedAt: timestampToDateTime(i.next_stitch_at),
+      stitchLeaseExpiresAt: leaseByRef.get(i.entity_ref)!,
     }));
   };
 
-  return knex.isTransaction || !useLocking
-    ? await run(knex)
-    : await knex.transaction(run);
+  return knex.isTransaction ? await run(knex) : await knex.transaction(run);
 }
 
 function nowPlus(knex: Knex, duration: HumanDuration): Knex.Raw {
