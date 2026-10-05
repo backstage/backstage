@@ -20,6 +20,7 @@ import {
   RouteFunc,
   RouteRef,
   RouteResolutionApi,
+  RouteResolutionMatch,
   SubRouteRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -60,8 +61,20 @@ export interface MockRouteResolutionApiOptions {
    * over {@link MockRouteResolutionApiOptions.routes}.
    */
   resolve?: RouteResolutionApi['resolve'];
-  /** Optional path-matching implementation; defaults to no matches. */
-  resolvePath?: RouteResolutionApi['resolvePath'];
+  /**
+   * Fixed matches or a custom path-matching implementation. Defaults to no
+   * matches. Fixed matches ignore the requested pathname and node, defaulting
+   * `routePattern` to `basePath`, `params` to `{}`, and `contributesPath` to
+   * `true`. Callbacks return complete matches without applying these defaults.
+   */
+  resolvePath?:
+    | {
+        matches: ReadonlyArray<
+          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+        >;
+      }
+    | RouteResolutionApi['resolvePath'];
 }
 
 /**
@@ -180,8 +193,20 @@ export function createMockRouteResolutionApi(
     RouteResolutionApi['resolve']
   >;
 
+  const pathResolution = options.resolvePath;
   return {
     resolve,
-    resolvePath: jest.fn(options.resolvePath ?? (() => ({ matches: [] }))),
+    resolvePath: jest.fn(
+      typeof pathResolution === 'function'
+        ? pathResolution
+        : () => ({
+            matches: (pathResolution?.matches ?? []).map(match => ({
+              ...match,
+              routePattern: match.routePattern ?? match.basePath,
+              params: match.params ?? {},
+              contributesPath: match.contributesPath ?? true,
+            })),
+          }),
+    ),
   };
 }
