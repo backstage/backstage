@@ -4,6 +4,8 @@
 
 Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` and `useNavigateRouteRef` support route-reference navigation, and `useAppRouting` provides matching href and navigation callbacks for React Aria integration.
 
+Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location.
+
 Framework routing hooks work without a page adapter and retain old frontend compatibility. Existing pages keep implicit React Router v6 routing, with development warnings to guide migration to explicit adapters. Page headers remain visible during content loading and errors, and sub-page breadcrumbs point to their matched routes.
 
 **BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters. It no longer includes the undeclared splat `*`; use your page router's APIs if you need that value.
