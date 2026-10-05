@@ -23,9 +23,9 @@ import {
   joinRoutePath,
   matchPath,
   useAppHistoryLocation,
-  usePageMountChain,
   type PageMount,
 } from '@internal/frontend';
+import { usePageMountChain } from './usePageMount';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';

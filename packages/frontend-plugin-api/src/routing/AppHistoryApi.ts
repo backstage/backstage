@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { appHistoryApiRef as internalApiRef } from '@internal/frontend';
-import type { ApiRef } from '../apis/system';
+import { createApiRef } from '../apis/system';
 import type { Observable } from '@backstage/types';
 import type { AppLocation, AppNavigateOptions } from './AppLocation';
 
@@ -89,6 +88,7 @@ export interface AppHistoryApi {
  *
  * @public
  */
-export const appHistoryApiRef: ApiRef<AppHistoryApi, 'core.app-history'> & {
-  readonly $$type: '@backstage/ApiRef';
-} = internalApiRef;
+export const appHistoryApiRef = createApiRef<AppHistoryApi>().with({
+  id: 'core.app-history',
+  pluginId: 'app',
+});

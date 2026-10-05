@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { routeResolutionApiRef as internalApiRef } from '@internal/frontend';
-import type { ApiRef } from '../system';
+import { createApiRef } from '../system';
 import {
   AnyRouteRefParams,
   RouteRef,
@@ -101,9 +100,7 @@ export interface RouteResolutionApi {
  *
  * @public
  */
-export const routeResolutionApiRef: ApiRef<
-  RouteResolutionApi,
-  'core.route-resolution'
-> & {
-  readonly $$type: '@backstage/ApiRef';
-} = internalApiRef;
+export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
+  id: 'core.route-resolution',
+  pluginId: 'app',
+});
