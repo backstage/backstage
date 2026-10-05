@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs
 
+## 1.19.0-next.1
+
+### Minor Changes
+
+- 4a5b52d: TechDocs now uses the default `NotFoundErrorPage` when documentation is missing, instead of its own TechDocs-specific page.
+
+  This means if you have provided an override to the `NotFoundErrorPage` component it will now be used within TechDocs when documentation is missing as well.
+
+  One thing to note is that the default not found page shows "PAGE NOT FOUND" rather than "Documentation not found".
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.4-next.1
+  - @backstage/plugin-techdocs-react@1.3.16-next.2
+  - @backstage/core-components@0.18.15-next.2
+  - @backstage/integration@2.1.3-next.1
+  - @backstage/plugin-techdocs-common@0.1.2-next.0
+
 ## 1.19.0-next.0
 
 ### Minor Changes

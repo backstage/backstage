@@ -1,5 +1,11 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.20-next.2
+
+### Patch Changes
+
+- 3873113: The signals WebSocket endpoint now requires a valid user identity token. The token can appear anywhere in the requested WebSocket protocols. Connections without a token, with an invalid token, or with a non-user (service) token are rejected, and unauthenticated guest connections are no longer accepted.
+
 ## 0.3.20-next.1
 
 ### Patch Changes

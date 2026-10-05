@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7c6ab3d: Commands run through `runCli` now wait for `stdout` and `stderr` to be flushed before exiting, so large command output is no longer truncated on platforms where writes to `stdout` and `stderr` are asynchronous.
+
 ## 0.3.5-next.0
 
 ### Patch Changes
