@@ -263,6 +263,104 @@ describe('DefaultCatalogProcessingEngine', () => {
     await engine.stop();
   });
 
+  it('recomputes changed relation sources when retrying a successful processing transaction', async () => {
+    const entity = {
+      apiVersion: '1',
+      kind: 'Location',
+      metadata: { name: 'test' },
+    };
+    orchestrator.process.mockResolvedValue({
+      ok: true,
+      completedEntity: entity,
+      relations: [],
+      errors: [],
+      deferredEntities: [],
+      state: {},
+      refreshKeys: [],
+    });
+    hash.digest.mockReturnValue('new-result-hash');
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: mockServices.logger.mock(),
+      processingDatabase: db,
+      knex: { client: { config: { client: 'pg' } } } as any,
+      orchestrator,
+      createHash: () => hash,
+      scheduler: mockServices.scheduler(),
+      events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
+    });
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    const relation = (source: string) => ({
+      source_entity_ref: source,
+      target_entity_ref: 'location:default/test',
+      type: 'hasPart',
+    });
+    db.updateProcessedEntity
+      .mockResolvedValueOnce({
+        relationsChange: {
+          deleted: [relation('component:default/rolled-back')],
+          inserted: [],
+        },
+      })
+      .mockResolvedValueOnce({
+        relationsChange: {
+          deleted: [relation('component:default/removed')],
+          inserted: [relation('component:default/added')],
+        },
+      });
+    db.markForStitching
+      .mockRejectedValueOnce(
+        Object.assign(new Error('deadlock detected'), { code: '40P01' }),
+      )
+      .mockResolvedValue(undefined);
+    db.getProcessableEntities
+      .mockImplementation(async () => {
+        await engine.stop();
+        return { items: [] };
+      })
+      .mockResolvedValueOnce({
+        items: [
+          {
+            entityRef: 'location:default/test',
+            id: '1',
+            unprocessedEntity: entity,
+            resultHash: 'old-result-hash',
+            state: {},
+            nextUpdateAt: DateTime.now(),
+          },
+        ],
+      });
+
+    try {
+      await engine.start();
+      await waitForExpect(() => {
+        expect(db.markForStitching).toHaveBeenCalledTimes(2);
+        expect(db.updateProcessedEntity).toHaveBeenCalledTimes(2);
+        const tx1 = db.updateProcessedEntity.mock.calls[0][0];
+        const tx2 = db.updateProcessedEntity.mock.calls[1][0];
+        expect(tx1).not.toBe(tx2);
+        expect(db.markForStitching).toHaveBeenNthCalledWith(1, tx1, {
+          entityRefs: new Set([
+            'location:default/test',
+            'component:default/rolled-back',
+          ]),
+        });
+        expect(db.markForStitching).toHaveBeenNthCalledWith(2, tx2, {
+          entityRefs: new Set([
+            'location:default/test',
+            'component:default/removed',
+            'component:default/added',
+          ]),
+        });
+        expect(orchestrator.process).toHaveBeenCalledTimes(1);
+      });
+    } finally {
+      await engine.stop();
+    }
+  });
+
   it('runs fully when hash mismatches, early-outs when hash matches', async () => {
     const entity = {
       apiVersion: '1',
@@ -323,6 +421,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect(hash.digest).toHaveBeenCalledTimes(1);
       expect(db.updateProcessedEntity).toHaveBeenCalledTimes(1);
       expect(db.listParents).toHaveBeenCalledTimes(1);
+      expect(db.markForStitching).toHaveBeenCalledTimes(1);
     });
     expect(db.updateEntityCache).not.toHaveBeenCalled();
 
@@ -339,6 +438,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect(db.updateProcessedEntity).toHaveBeenCalledTimes(1);
       expect(db.updateEntityCache).toHaveBeenCalledTimes(1);
       expect(db.listParents).toHaveBeenCalledTimes(2);
+      expect(db.markForStitching).toHaveBeenCalledTimes(1);
     });
     expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
       id: '',

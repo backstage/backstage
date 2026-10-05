@@ -273,6 +273,90 @@ describe.each(databases.eachSupportedId())(
         );
       });
 
+      it.each(['success', 'errors'] as const)(
+        'rolls back %s persistence when stitch scheduling fails',
+        async result => {
+          const { knex, db } = await createDatabase();
+          await insertRefreshStateRow(knex, {
+            entity_id: id,
+            entity_ref: 'location:default/fakelocation',
+            unprocessed_entity: '{}',
+            processed_entity: '{}',
+            errors: '[]',
+            next_update_at: '2021-04-01 13:37:00',
+            last_discovery_at: '2021-04-01 13:37:00',
+          });
+
+          await expect(
+            db.transaction(async tx => {
+              if (result === 'success') {
+                await db.updateProcessedEntity(tx, {
+                  id,
+                  processedEntity,
+                  resultHash: 'new-result-hash',
+                  errors: '["processing error"]',
+                  relations: [],
+                  deferredEntities: [],
+                  refreshKeys: [],
+                });
+              } else {
+                await db.updateProcessedEntityErrors(tx, {
+                  id,
+                  processedEntity,
+                  relations: [],
+                  deferredEntities: [],
+                  refreshKeys: [],
+                  resultHash: 'new-result-hash',
+                  errors: '["processing error"]',
+                });
+              }
+              await expect(
+                (tx as Knex.Transaction)<DbRefreshStateRow>('refresh_state')
+                  .where({ entity_id: id })
+                  .first(),
+              ).resolves.toEqual(
+                expect.objectContaining({
+                  processed_entity:
+                    result === 'success'
+                      ? JSON.stringify(processedEntity)
+                      : '{}',
+                  result_hash: 'new-result-hash',
+                  errors: '["processing error"]',
+                }),
+              );
+              // Exercise a real enqueue failure: entity_ref is NOT NULL.
+              // The first chunk is valid, so its inserts must roll back too.
+              await db.markForStitching(tx, {
+                entityRefs: [
+                  ...Array.from(
+                    { length: 100 },
+                    (_, i) => `component:default/item-${i}`,
+                  ),
+                  null as unknown as string,
+                ],
+              });
+            }),
+          ).rejects.toMatchObject({
+            message: expect.stringMatching(/not[- ]null|cannot be null/i),
+          });
+
+          await expect(
+            knex<DbRefreshStateRow>('refresh_state')
+              .where({ entity_id: id })
+              .first(),
+          ).resolves.toEqual(
+            expect.objectContaining({
+              processed_entity: '{}',
+              result_hash: null,
+              errors: '[]',
+            }),
+          );
+          await expect(knex<DbStitchQueueRow>('stitch_queue')).resolves.toEqual(
+            [],
+          );
+        },
+      );
+
       it('removes old relations and stores the new relationships', async () => {
         const { knex, db } = await createDatabase();
         await insertRefreshStateRow(knex, {
