@@ -18,14 +18,7 @@ export { unwrapReactRouterContext } from './legacyRouterContext';
 export { OpaqueRouteRef } from './OpaqueRouteRef';
 export { OpaqueSubRouteRef } from './OpaqueSubRouteRef';
 export { OpaqueExternalRouteRef } from './OpaqueExternalRouteRef';
-export {
-  useAppRouteMatches,
-  usePageMount,
-  usePageMountChain,
-  usePageMountBasePaths,
-  usePageMountResolver,
-  type PageMount,
-} from './usePageMount';
+export type { PageMount } from './types';
 export {
   APP_ROOT_PATH,
   createPath,
@@ -33,7 +26,6 @@ export {
   parsePath,
   resolveAppPath,
   resolvePath,
-  useAppBasePath,
   type AppPath,
   type AppTo,
 } from './AppRouting';
@@ -71,5 +63,3 @@ export {
   type AppRouteSwitchProps,
   type AppRouteRedirect,
 } from './AppRouteSwitch';
-
-export { appHistoryApiRef, routeResolutionApiRef } from './routingApiRefs';

@@ -60,8 +60,12 @@ import {
 // behavioral gain.
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { NavLinkProps } from 'react-router-dom';
-import { resolvePath, useAppBasePath, type AppPath } from '@internal/frontend';
-import { useAppLocation, useAppResolvedPath } from '../appRouting';
+import { resolvePath, type AppPath } from '@internal/frontend';
+import {
+  useAppLocation,
+  useAppResolvedPath,
+  useAppBasePath,
+} from '../appRouting';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import { Link, type LinkProps } from '../../components/Link';
 

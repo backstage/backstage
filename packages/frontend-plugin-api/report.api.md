@@ -214,7 +214,7 @@ export interface AppHistoryApi {
 }
 
 // @public
-export const appHistoryApiRef: ApiRef<AppHistoryApi, 'core.app-history'> & {
+export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2150,7 +2150,7 @@ export interface RouteResolutionApi {
 }
 
 // @public
-export const routeResolutionApiRef: ApiRef<
+export const routeResolutionApiRef: ApiRef_2<
   RouteResolutionApi,
   'core.route-resolution'
 > & {
@@ -2575,6 +2575,11 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
+
+// @public
+export function useRouteResolution(): {
+  matches: readonly RouteResolutionMatch[];
+};
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

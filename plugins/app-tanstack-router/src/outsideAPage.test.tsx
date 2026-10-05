@@ -22,8 +22,10 @@ import {
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
+import {
+  useRouteResolution,
+  appHistoryApiRef,
+} from '@backstage/frontend-plugin-api';
 import { useRouter } from '@tanstack/react-router';
 import {
   TanStackPageRouter,
@@ -55,7 +57,7 @@ function TanStackProbe() {
   // back `undefined` rather than throwing, so the absence has to be read from
   // the return value.
   const hasTanStackRouter = Boolean(useRouter({ warn: false }));
-  const mount = usePageMount();
+  const mount = useRouteResolution().matches.at(-1);
   return (
     <span data-testid="probe">
       {JSON.stringify({ hasTanStackRouter, mount: mount ?? null })}

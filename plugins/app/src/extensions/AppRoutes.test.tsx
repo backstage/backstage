@@ -17,6 +17,7 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  useRouteResolution,
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
@@ -29,7 +30,6 @@ import {
   useRouteRefParams,
   useHref,
 } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
 import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
@@ -550,7 +550,7 @@ describe('AppRoutes', () => {
         path: '/catalog/:namespace/:kind/:name',
         loader: async () => {
           const MountProbe = () => {
-            const mount = usePageMount();
+            const mount = useRouteResolution().matches.at(-1);
             return (
               <div data-testid="catalog-entity-page">
                 Catalog Entity Page
@@ -584,7 +584,7 @@ describe('AppRoutes', () => {
         path: '/catalog',
         loader: async () => {
           const MountProbe = () => {
-            const mount = usePageMount();
+            const mount = useRouteResolution().matches.at(-1);
             return (
               <div data-testid="catalog-page">
                 Catalog Page
@@ -610,7 +610,7 @@ describe('AppRoutes', () => {
 
   it('should resolve pages correctly when the app is served under a basename', async () => {
     const CatalogWithLinks = () => {
-      const mount = usePageMount();
+      const mount = useRouteResolution().matches.at(-1);
       return (
         <div data-testid="catalog-page">
           Catalog Page

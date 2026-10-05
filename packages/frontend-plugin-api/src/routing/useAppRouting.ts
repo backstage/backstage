@@ -19,6 +19,7 @@ import {
   sanitizeHref,
   useAppRouting as useInternalAppRouting,
 } from '@internal/frontend';
+import { usePageMountBasePaths } from './usePageMount';
 import { useApi } from '../apis/system';
 import { appHistoryApiRef } from './AppHistoryApi';
 import type { AppLocation, AppNavigateOptions } from './AppLocation';
@@ -46,7 +47,10 @@ export function useAppRouting(): {
   navigate: (to: string, options?: AppNavigateOptions) => void;
   location: AppLocation;
 } {
-  const routing = useInternalAppRouting(useApi(appHistoryApiRef))!;
+  const routing = useInternalAppRouting(
+    useApi(appHistoryApiRef),
+    usePageMountBasePaths(),
+  )!;
   return {
     location: routing.location,
     createHref: to => routing.createHref(sanitizeHref(to)),

@@ -27,7 +27,7 @@ import type {
   AppHistoryApi,
   AppLocation,
 } from '@backstage/frontend-plugin-api';
-import { usePageMountChain, type PageMount } from './usePageMount';
+import type { PageMount } from './types';
 import {
   readAppHistoryMetadata,
   type AppHistoryAction,
@@ -120,8 +120,10 @@ export interface CreateAppHistoryRouterOptions {
  */
 export interface AppHistoryRouterResult {
   /** React component that provides React Router context for its children. */
-  Router: ComponentType<{ children: ReactNode }>;
+  Router: ComponentType<{ children: ReactNode; mounts?: readonly PageMount[] }>;
 }
+
+const EMPTY_MOUNTS: readonly PageMount[] = [];
 
 /** The neutral "not on this page" RouteContext, shared so it stays stable. */
 const EMPTY_ROUTE_CONTEXT = {
@@ -484,7 +486,13 @@ export function createAppHistoryRouter(
     };
   }
 
-  function AppHistoryRouter({ children }: { children: ReactNode }) {
+  function AppHistoryRouter({
+    children,
+    mounts = EMPTY_MOUNTS,
+  }: {
+    children: ReactNode;
+    mounts?: readonly PageMount[];
+  }) {
     const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
     // The route context this router is mounted inside, if any — the parent
@@ -510,7 +518,7 @@ export function createAppHistoryRouter(
     );
     // The framework's own record of the mounts above this one, for the mounts
     // whose adapters do not publish this library's route context at all.
-    const mountChain = usePageMountChain();
+    const mountChain = mounts;
 
     const locationContextValue = useMemo(
       () =>
