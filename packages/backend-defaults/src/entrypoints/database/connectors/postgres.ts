@@ -526,8 +526,6 @@ export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
     ['type', 'region'],
   ) as Partial<Knex.StaticConnectionConfig>;
 
-  const signer = new Signer({ hostname, port, username, region });
-
   // RDS IAM auth tokens are valid for 15 minutes. Renew 1 minute early so
   // that pooled connections are refreshed before the token actually expires.
   const tokenTtlMs = 15 * 60 * 1000;
@@ -535,6 +533,11 @@ export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
 
   async function getConnectionConfig() {
     try {
+      // A fresh Signer per token mint forces a fresh credential resolution.
+      // A Signer held for the pool's lifetime keeps signing tokens with its
+      // cached session after the 1-hour STS expiry under EKS IRSA, and RDS
+      // rejects those tokens (28P01) until the credentials are re-resolved.
+      const signer = new Signer({ hostname, port, username, region });
       const password = await signer.getAuthToken();
       const tokenExpiration = Date.now() + tokenTtlMs - renewalOffsetMs;
       return {

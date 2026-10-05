@@ -1004,6 +1004,45 @@ describe('postgres', () => {
       expect(conn2.password).toBe('token-2');
     });
 
+    it('constructs a fresh Signer for each token mint', async () => {
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+
+      Signer.mockClear();
+      Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'rds',
+            host: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
+            port: 5432,
+            user: 'postgres',
+            region: 'eu-west-1',
+          },
+        }),
+      );
+
+      // A Signer constructed per mint guarantees credentials are resolved
+      // per mint. One Signer shared across the pool's lifetime keeps
+      // signing with its cached session after the 1-hour STS expiry under
+      // EKS IRSA, which RDS rejects with 28P01.
+      expect(Signer).not.toHaveBeenCalled();
+
+      await (configResult.connection as () => Promise<any>)();
+      await (configResult.connection as () => Promise<any>)();
+
+      expect(Signer).toHaveBeenCalledTimes(2);
+      expect(Signer).toHaveBeenCalledWith({
+        hostname: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
+        port: 5432,
+        username: 'postgres',
+        region: 'eu-west-1',
+      });
+    });
+
     it('returns an expirationChecker that reflects the token TTL', async () => {
       const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
         typeof import('@aws-sdk/rds-signer')
