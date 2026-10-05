@@ -58,7 +58,7 @@
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.4",
-    "@remixicon/react": ">=4.6.0 <4.9.0"
+    "@remixicon/react": "<4.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

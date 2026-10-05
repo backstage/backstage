@@ -1203,12 +1203,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remixicon/react@npm:>=4.6.0 <4.9.0":
-  version: 4.8.0
-  resolution: "@remixicon/react@npm:4.8.0"
+"@remixicon/react@npm:<4.10.0":
+  version: 4.9.0
+  resolution: "@remixicon/react@npm:4.9.0"
   peerDependencies:
     react: ">=18.2.0"
-  checksum: 10/10241f2e07826ce7d595cf9687a35c96cc9cf9eb68a9431d7dfa1b9df479dbef302874d28c0502cee2a536cf34722de7c49ed12d10a2b071e4e42ba4a278c516
+  checksum: 10/3d8f1d86b2bb20ab5e44d15f18811e928b0886f7710eb7a1516afb9913ba72e46facec5dfee382825139d800bcbb6704c15d0c760d0f977c12257d4af8db3295
   languageName: node
   linkType: hard
 
@@ -2366,7 +2366,7 @@ __metadata:
     "@mdx-js/react": "npm:^3.1.0"
     "@next/mdx": "npm:16.2.6"
     "@octokit/rest": "npm:^22.0.1"
-    "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@remixicon/react": "npm:<4.10.0"
     "@shikijs/transformers": "npm:^3.13.0"
     "@types/mdx": "npm:^2.0.13"
     "@types/node": "npm:^22.13.14"
