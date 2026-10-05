@@ -374,6 +374,147 @@ it.each(databases.eachSupportedId())(
 describe.each(databases.eachSupportedId())(
   'performStitching edge cases, %p',
   databaseId => {
+    if (databaseId.startsWith('POSTGRES')) {
+      it.each(['commit', 'rollback'] as const)(
+        'publishes without a lock inversion while cascading deletion waits, then %s deletion',
+        async deletionOutcome => {
+          const knex = await databases.init(databaseId);
+          await applyDatabaseMigrations(knex);
+          const logger = mockServices.logger.mock();
+          const initial = {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { old: 'value' },
+          };
+          await knex<DbRefreshStateRow>('refresh_state').insert({
+            entity_id: 'my-id',
+            entity_ref: 'k:ns/n',
+            unprocessed_entity: '{}',
+            processed_entity: JSON.stringify(initial),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          });
+          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+          await performStitching({
+            knex,
+            logger,
+            entityRef: 'k:ns/n',
+            stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+          });
+          const beforeFinal = await knex<DbFinalEntitiesRow>('final_entities');
+          await knex<DbRefreshStateRow>('refresh_state')
+            .where('entity_id', 'my-id')
+            .update({
+              processed_entity: JSON.stringify({
+                ...initial,
+                spec: { new: 'value' },
+              }),
+            });
+          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+          const [claim] = await getDeferredStitchableEntities({
+            knex,
+            batchSize: 1,
+            stitchTimeout: { minutes: 1 },
+          });
+          const deletion = await knex.transaction();
+          let deleted: Promise<number> | undefined;
+          const actualSync =
+            jest.requireActual<typeof import('./syncSearchRows')>(
+              './syncSearchRows',
+            ).syncSearchRows;
+
+          try {
+            const {
+              rows: [{ pid: deletionPid }],
+            } = await deletion.raw('SELECT pg_backend_pid() AS pid');
+            syncSearchRowsMock.mockImplementationOnce(
+              async (tx, id, entries) => {
+                const {
+                  rows: [{ pid: publicationPid }],
+                } = await tx.raw('SELECT pg_backend_pid() AS pid');
+                // Publication already owns the final row. Deletion locks refresh
+                // state and then waits on the final row through ON DELETE CASCADE.
+                deleted = deletion('refresh_state')
+                  .where('entity_id', 'my-id')
+                  .delete()
+                  .then(count => count);
+                // Attach a rejection handler immediately, including when a broken
+                // implementation changes the intended ordering.
+                void deleted.catch(() => {});
+                const deadline = Date.now() + 5_000;
+                for (;;) {
+                  const {
+                    rows: [{ blocked }],
+                  } = await knex.raw(
+                    'SELECT ? = ANY(pg_blocking_pids(?)) AS blocked',
+                    [publicationPid, deletionPid],
+                  );
+                  if (blocked) break;
+                  if (Date.now() >= deadline) {
+                    throw new Error('Deletion did not wait for publication');
+                  }
+                  await new Promise(resolve => setTimeout(resolve, 10));
+                }
+                // Search references final_entities, not refresh_state. Its FK
+                // check must not wait on the deleting transaction's refresh row,
+                // which would complete a deadlock cycle.
+                await actualSync(tx, id, entries);
+              },
+            );
+            await expect(
+              performStitching({ knex, logger, ...claim }),
+            ).resolves.toBe('changed');
+            await expect(deleted).resolves.toBe(1);
+            await deletion[deletionOutcome]();
+          } finally {
+            syncSearchRowsMock.mockReset().mockImplementation(actualSync);
+            if (!deletion.isCompleted()) await deletion.rollback();
+            if (deleted) await deleted.catch(() => {});
+          }
+
+          expect(await knex('stitch_queue')).toEqual([]);
+          const committedDeletion = deletionOutcome === 'commit';
+          const refreshRows = await knex<DbRefreshStateRow>('refresh_state');
+          expect(refreshRows.map(row => row.entity_ref)).toEqual(
+            committedDeletion ? [] : ['k:ns/n'],
+          );
+          const finalRows = await knex<DbFinalEntitiesRow>('final_entities');
+          expect(
+            finalRows.map(row => ({
+              spec: JSON.parse(row.final_entity!).spec,
+              changed: row.hash !== beforeFinal[0].hash,
+            })),
+          ).toEqual(
+            committedDeletion
+              ? []
+              : [{ spec: { new: 'value' }, changed: true }],
+          );
+          expect((await knex<DbSearchRow>('search')).length > 0).toBe(
+            !committedDeletion,
+          );
+          expect(
+            await knex<DbSearchRow>('search').where('key', 'spec.old'),
+          ).toEqual([]);
+          expect(
+            await knex<DbSearchRow>('search').where('key', 'spec.new'),
+          ).toEqual(
+            committedDeletion
+              ? []
+              : [
+                  {
+                    entity_id: 'my-id',
+                    key: 'spec.new',
+                    value: 'value',
+                    original_value: 'value',
+                  },
+                ],
+          );
+        },
+      );
+    }
+
     it('retains failed work for a fenced retry and settles unprocessed work', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
