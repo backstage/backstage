@@ -27,8 +27,12 @@ import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import { resolvePath, useAppBasePath } from '@internal/frontend';
-import { useAppLocation, useAppResolvedPath } from '../appRouting';
+import { resolvePath } from '@internal/frontend';
+import {
+  useAppLocation,
+  useAppResolvedPath,
+  useAppBasePath,
+} from '../appRouting';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /** @public */
