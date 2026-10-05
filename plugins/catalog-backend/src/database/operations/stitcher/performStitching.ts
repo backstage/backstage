@@ -289,7 +289,6 @@ export async function performStitching(options: {
         entityRef,
         stitchTicket,
         stitchLeaseExpiresAt,
-        result: stitchResult,
       });
     }
   }
