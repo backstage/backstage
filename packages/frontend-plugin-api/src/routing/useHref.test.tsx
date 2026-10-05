@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 import { default as React, PropsWithChildren } from 'react';
 import { default as tlr, render, renderHook } from '@testing-library/react';
 import {
@@ -28,8 +25,11 @@ import {
   Routes,
   useHref as useRouterHref,
 } from 'react-router-dom';
-import { TestApiProvider } from '@backstage/test-utils';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import {
+  TestApiProvider,
+  mockApis,
+  createMockAppHistory,
+} from '@backstage/frontend-test-utils';
 import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppHref, useHref } from './useHref';
@@ -362,23 +362,15 @@ describe('the framework authority', () => {
       const MountedContent = ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider
           apis={[
-            [
-              routeResolutionApiRef,
-              {
-                resolvePath: () => ({
-                  matches: [parentMount, pageMount]
-                    .filter((mount): mount is NonNullable<typeof mount> =>
-                      Boolean(mount),
-                    )
-                    .map(mount => ({
-                      params: {},
-                      contributesPath: true,
-                      ...mount,
-                      node: mockRouteNode,
-                    })),
-                }),
+            mockApis.routeResolution({
+              resolvePath: {
+                matches: [parentMount, pageMount]
+                  .filter((mount): mount is NonNullable<typeof mount> =>
+                    Boolean(mount),
+                  )
+                  .map(mount => ({ ...mount, node: mockRouteNode })),
               },
-            ],
+            }),
           ]}
         >
           {children}
@@ -429,21 +421,11 @@ describe('the framework authority', () => {
         <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
           <TestApiProvider
             apis={[
-              [
-                routeResolutionApiRef,
-                {
-                  resolvePath: () => ({
-                    matches: [
-                      {
-                        params: {},
-                        contributesPath: true,
-                        ...pageMount,
-                        node: mockRouteNode,
-                      },
-                    ],
-                  }),
+              mockApis.routeResolution({
+                resolvePath: {
+                  matches: [{ ...pageMount, node: mockRouteNode }],
                 },
-              ],
+              }),
             ]}
           >
             {children}
@@ -462,21 +444,11 @@ describe('the framework authority', () => {
               element={
                 <TestApiProvider
                   apis={[
-                    [
-                      routeResolutionApiRef,
-                      {
-                        resolvePath: () => ({
-                          matches: [
-                            {
-                              params: {},
-                              contributesPath: true,
-                              ...pageMount,
-                              node: mockRouteNode,
-                            },
-                          ],
-                        }),
+                    mockApis.routeResolution({
+                      resolvePath: {
+                        matches: [{ ...pageMount, node: mockRouteNode }],
                       },
-                    ],
+                    }),
                   ]}
                 >
                   {children}
@@ -572,25 +544,17 @@ describe('the framework authority', () => {
             {subPageTree(
               <TestApiProvider
                 apis={[
-                  [
-                    routeResolutionApiRef,
-                    {
-                      resolvePath: () => ({
-                        matches: [
-                          {
-                            basePath: '/catalog/foo',
-                            routePattern: '/catalog/:name',
-                          },
-                          subPageMount,
-                        ].map(mount => ({
-                          params: {},
-                          contributesPath: true,
-                          ...mount,
-                          node: mockRouteNode,
-                        })),
-                      }),
+                  mockApis.routeResolution({
+                    resolvePath: {
+                      matches: [
+                        {
+                          basePath: '/catalog/foo',
+                          routePattern: '/catalog/:name',
+                        },
+                        subPageMount,
+                      ].map(mount => ({ ...mount, node: mockRouteNode })),
                     },
-                  ],
+                  }),
                 ]}
               >
                 {children}
@@ -652,23 +616,15 @@ describe('the seam between the two', () => {
       const MountedContent = ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider
           apis={[
-            [
-              routeResolutionApiRef,
-              {
-                resolvePath: () => ({
-                  matches: [parentMount, pageMount]
-                    .filter((mount): mount is NonNullable<typeof mount> =>
-                      Boolean(mount),
-                    )
-                    .map(mount => ({
-                      params: {},
-                      contributesPath: true,
-                      ...mount,
-                      node: mockRouteNode,
-                    })),
-                }),
+            mockApis.routeResolution({
+              resolvePath: {
+                matches: [parentMount, pageMount]
+                  .filter((mount): mount is NonNullable<typeof mount> =>
+                    Boolean(mount),
+                  )
+                  .map(mount => ({ ...mount, node: mockRouteNode })),
               },
-            ],
+            }),
           ]}
         >
           {children}
@@ -772,21 +728,11 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
       <TestApiProvider
         apis={[
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: () => ({
-                matches: [
-                  {
-                    params: {},
-                    contributesPath: true,
-                    ...mount,
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
+          mockApis.routeResolution({
+            resolvePath: {
+              matches: [{ ...mount, node: mockRouteNode }],
             },
-          ],
+          }),
         ]}
       >
         {children}
