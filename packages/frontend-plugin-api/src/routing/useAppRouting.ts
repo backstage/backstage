@@ -19,7 +19,7 @@ import {
   sanitizeHref,
   useAppRouting as useInternalAppRouting,
 } from '@internal/frontend';
-import { usePageMountBasePaths } from './usePageMount';
+import { useRouteBasePaths } from './useRouteBasePaths';
 import { useApi } from '../apis/system';
 import { appHistoryApiRef } from './AppHistoryApi';
 import type { AppLocation, AppNavigateOptions } from './AppLocation';
@@ -49,7 +49,7 @@ export function useAppRouting(): {
 } {
   const routing = useInternalAppRouting(
     useApi(appHistoryApiRef),
-    usePageMountBasePaths(),
+    useRouteBasePaths(),
   )!;
   return {
     location: routing.location,
