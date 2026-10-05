@@ -26,8 +26,8 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import type {
   AppHistoryApi,
   AppLocation,
+  RouteResolutionMatch,
 } from '@backstage/frontend-plugin-api';
-import type { PageMount } from './types';
 import {
   readAppHistoryMetadata,
   type AppHistoryAction,
@@ -120,10 +120,13 @@ export interface CreateAppHistoryRouterOptions {
  */
 export interface AppHistoryRouterResult {
   /** React component that provides React Router context for its children. */
-  Router: ComponentType<{ children: ReactNode; mounts?: readonly PageMount[] }>;
+  Router: ComponentType<{
+    children: ReactNode;
+    mounts?: readonly RouteResolutionMatch[];
+  }>;
 }
 
-const EMPTY_MOUNTS: readonly PageMount[] = [];
+const EMPTY_MOUNTS: readonly RouteResolutionMatch[] = [];
 
 /** The neutral "not on this page" RouteContext, shared so it stays stable. */
 const EMPTY_ROUTE_CONTEXT = {
@@ -153,7 +156,7 @@ const projectedMountSymbol = Symbol.for(
 function takeAncestorMatches(
   parentMatches: readonly any[],
   pathnameBase: string,
-  ancestorMounts: readonly PageMount[],
+  ancestorMounts: readonly RouteResolutionMatch[],
 ): any[] {
   let count = 0;
   while (
@@ -329,9 +332,9 @@ export function createAppHistoryRouter(
   function matchMount(
     normalized: string,
     pathname: string,
-    mount?: PageMount,
+    mount?: RouteResolutionMatch,
   ): AdapterPathMatch | null {
-    if (mount?.contributesPath !== undefined) {
+    if (mount) {
       // The framework already selected this branch and decoded its params.
       // Only the splat tail belongs to the library projection.
       if (
@@ -375,7 +378,7 @@ export function createAppHistoryRouter(
   function toRouteMatch(
     match: AdapterPathMatch,
     id: string,
-    mount?: PageMount,
+    mount?: RouteResolutionMatch,
   ) {
     return {
       params: match.params,
@@ -403,7 +406,7 @@ export function createAppHistoryRouter(
    * than a guess.
    */
   function projectAncestorMounts(
-    mountChain: readonly PageMount[],
+    mountChain: readonly RouteResolutionMatch[],
     pathname: string,
   ): any[] {
     const matches: any[] = [];
@@ -423,7 +426,7 @@ export function createAppHistoryRouter(
   function buildRouteMatches(
     location: AdapterLocation,
     parentMatches: readonly any[],
-    mountChain: readonly PageMount[],
+    mountChain: readonly RouteResolutionMatch[],
   ) {
     // At app root scope there is no route to be mounted under, so there is
     // never a match to project.
@@ -491,7 +494,7 @@ export function createAppHistoryRouter(
     mounts = EMPTY_MOUNTS,
   }: {
     children: ReactNode;
-    mounts?: readonly PageMount[];
+    mounts?: readonly RouteResolutionMatch[];
   }) {
     const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 

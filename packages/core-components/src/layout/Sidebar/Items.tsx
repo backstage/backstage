@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import {
+  useApiHolder,
   IconComponent,
   useAnalytics,
   useElementFilter,
@@ -69,7 +71,6 @@ import {
   useAppResolvedPath,
   useAppBasePath,
 } from '../appRouting';
-import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import { Link, type LinkProps } from '../../components/Link';
 
 import {
@@ -370,7 +371,7 @@ export const WorkaroundNavLink = forwardRef<
   },
   ref,
 ) {
-  const appHistory = useOptionalAppHistory();
+  const appHistory = useApiHolder().get(appHistoryApiRef);
   let { pathname: locationPathname } = useAppLocation(appHistory);
   let { pathname: toPathname } = useAppResolvedPath(appHistory, to);
 
@@ -491,7 +492,7 @@ const SidebarItemBase = forwardRef<
 
   const analyticsApi = useAnalytics();
   const { pathname: to } = useAppResolvedPath(
-    useOptionalAppHistory(),
+    useApiHolder().get(appHistoryApiRef),
     !isButtonItem(props) && props.to ? props.to : '',
   );
 
@@ -546,7 +547,7 @@ const SidebarItemWithSubmenu = ({
   const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const location = useAppLocation(useOptionalAppHistory());
+  const location = useAppLocation(useApiHolder().get(appHistoryApiRef));
   const isActive = useLocationMatch(children, location, useAppBasePath());
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),

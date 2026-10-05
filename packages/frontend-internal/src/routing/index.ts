@@ -18,7 +18,6 @@ export { unwrapReactRouterContext } from './legacyRouterContext';
 export { OpaqueRouteRef } from './OpaqueRouteRef';
 export { OpaqueSubRouteRef } from './OpaqueSubRouteRef';
 export { OpaqueExternalRouteRef } from './OpaqueExternalRouteRef';
-export type { PageMount } from './types';
 export {
   APP_ROOT_PATH,
   createPath,
