@@ -18,6 +18,9 @@ import {
   azureEasyAuthAuthenticator,
   ID_TOKEN_HEADER,
   ACCESS_TOKEN_HEADER,
+  ACA_PRINCIPAL_ID_HEADER,
+  ACA_PRINCIPAL_NAME_HEADER,
+  ACA_CLIENT_PRINCIPAL_HEADER,
 } from './authenticator';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request } from 'express';
@@ -111,6 +114,114 @@ describe('EasyAuthAuthProvider', () => {
       await expect(
         azureEasyAuthAuthenticator.authenticate({ req: request }, ctx),
       ).rejects.toThrow('id_token is not version 2.0');
+    });
+  });
+
+  describe('Azure Container Apps support', () => {
+    const acaPrincipal = {
+      auth_typ: 'aad',
+      name_typ: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+      role_typ: 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
+      claims: [
+        {
+          typ: 'http://schemas.microsoft.com/identity/claims/objectidentifier',
+          val: 'c43063d4-0650-4f3e-ba6b-307473d24dfd',
+        },
+        {
+          typ: 'name',
+          val: 'Alice Bob',
+        },
+        {
+          typ: 'preferred_username',
+          val: 'Another name',
+        },
+        {
+          typ: 'email',
+          val: 'alice@bob.com',
+        },
+      ],
+    };
+    const encodedPrincipal = Buffer.from(JSON.stringify(acaPrincipal)).toString(
+      'base64',
+    );
+
+    it('should succeed with valid client principal header and claims', async () => {
+      const request = mockRequest({
+        [ACA_CLIENT_PRINCIPAL_HEADER]: encodedPrincipal,
+        [ACA_PRINCIPAL_ID_HEADER]: 'c43063d4-0650-4f3e-ba6b-307473d24dfd',
+        [ACA_PRINCIPAL_NAME_HEADER]: 'alice@bob.com',
+        [ACCESS_TOKEN_HEADER]: 'ACCESS_TOKEN',
+      });
+
+      await expect(
+        azureEasyAuthAuthenticator.authenticate({ req: request }, ctx),
+      ).resolves.toEqual({
+        result: {
+          fullProfile: {
+            provider: 'easyauth',
+            id: 'c43063d4-0650-4f3e-ba6b-307473d24dfd',
+            displayName: 'Alice Bob',
+            emails: [{ value: 'alice@bob.com' }],
+            username: 'Another name',
+          },
+          accessToken: 'ACCESS_TOKEN',
+        },
+        providerInfo: {
+          accessToken: 'ACCESS_TOKEN',
+        },
+      });
+    });
+
+    it('should succeed and fallback when client principal header is missing but id/name are present', async () => {
+      const request = mockRequest({
+        [ACA_PRINCIPAL_ID_HEADER]: 'c43063d4-0650-4f3e-ba6b-307473d24dfd',
+        [ACA_PRINCIPAL_NAME_HEADER]: 'alice@bob.com',
+      });
+
+      await expect(
+        azureEasyAuthAuthenticator.authenticate({ req: request }, ctx),
+      ).resolves.toEqual({
+        result: {
+          fullProfile: {
+            provider: 'easyauth',
+            id: 'c43063d4-0650-4f3e-ba6b-307473d24dfd',
+            displayName: 'alice@bob.com',
+            emails: [{ value: 'alice@bob.com' }],
+            username: 'alice@bob.com',
+          },
+          accessToken: undefined,
+        },
+        providerInfo: {
+          accessToken: undefined,
+        },
+      });
+    });
+
+    it('should fail when principal ID is missing and client principal claims lack ID', async () => {
+      const invalidPrincipal = Buffer.from(
+        JSON.stringify({
+          claims: [{ typ: 'name', val: 'Alice Bob' }],
+        }),
+      ).toString('base64');
+      const request = mockRequest({
+        [ACA_CLIENT_PRINCIPAL_HEADER]: invalidPrincipal,
+      });
+
+      await expect(
+        azureEasyAuthAuthenticator.authenticate({ req: request }, ctx),
+      ).rejects.toThrow(
+        'Missing user identity in Azure Container Apps authentication headers',
+      );
+    });
+
+    it('should fail when client principal header is malformed base64/JSON', async () => {
+      const request = mockRequest({
+        [ACA_CLIENT_PRINCIPAL_HEADER]: 'not-base64-json!',
+      });
+
+      await expect(
+        azureEasyAuthAuthenticator.authenticate({ req: request }, ctx),
+      ).rejects.toThrow(/Invalid x-ms-client-principal header/);
     });
   });
 });
