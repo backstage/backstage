@@ -1,5 +1,15 @@
 # example-backend
 
+## 0.0.55-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-backend@2.4.0-next.2
+  - @backstage/backend-defaults@0.18.1-next.2
+  - @backstage/plugin-signals-backend@0.3.20-next.2
+  - @backstage/plugin-events-backend@0.6.7-next.2
+
 ## 0.0.55-next.1
 
 ### Patch Changes

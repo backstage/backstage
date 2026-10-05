@@ -1,5 +1,14 @@
 # @backstage/backend-defaults
 
+## 0.18.1-next.2
+
+### Patch Changes
+
+- a6bc5e4: Stopped issuing periodic per-plugin database keepalive queries by default and changed the default minimum PostgreSQL and MySQL connection pool size to zero. Idle connections can now be retired after the configured timeout, while explicitly configured pool minimums are preserved. Set `backend.database.keepalive: true` to continue issuing the periodic queries.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.1
+  - @backstage/integration@2.1.3-next.1
+
 ## 0.18.1-next.1
 
 ### Patch Changes
