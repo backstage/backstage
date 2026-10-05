@@ -30,6 +30,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 jest.mock('@google-cloud/cloud-sql-connector');
 jest.mock('@azure/identity');
 jest.mock('@aws-sdk/rds-signer');
+jest.mock('@aws-sdk/credential-providers');
 
 describe('postgres', () => {
   const deps = {
@@ -251,6 +252,34 @@ describe('postgres', () => {
     new ConfigReader({ client: 'pg', connection });
 
   describe('buildPgDatabaseConfig', () => {
+    const rdsCredentials = {
+      accessKeyId: 'test-access-key',
+      secretAccessKey: 'test-secret-key',
+    };
+    const rdsCredentialsProvider = jest.fn();
+    const rdsConfig = () =>
+      new ConfigReader({
+        client: 'pg',
+        connection: {
+          type: 'rds',
+          host: 'rds.example.com',
+          port: 5432,
+          user: 'portal',
+          region: 'eu-west-1',
+        },
+      });
+
+    beforeEach(() => {
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+      Signer.mockClear();
+      const { fromNodeProviderChain } = jest.requireMock(
+        '@aws-sdk/credential-providers',
+      ) as jest.Mocked<typeof import('@aws-sdk/credential-providers')>;
+      rdsCredentialsProvider.mockReset().mockResolvedValue(rdsCredentials);
+      fromNodeProviderChain.mockReturnValue(rdsCredentialsProvider);
+    });
     afterEach(() => {
       jest.useRealTimers();
       jest.restoreAllMocks();
@@ -949,12 +978,6 @@ describe('postgres', () => {
         }),
       );
 
-      expect(Signer).toHaveBeenCalledWith({
-        hostname: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
-        port: 5432,
-        username: 'postgres',
-        region: 'eu-west-1',
-      });
       expect(configResult).toMatchObject({
         client: 'pg',
         connection: expect.any(Function),
@@ -964,6 +987,14 @@ describe('postgres', () => {
       const connectionResult = await (
         configResult.connection as () => Promise<any>
       )();
+
+      expect(Signer).toHaveBeenCalledWith({
+        hostname: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
+        port: 5432,
+        username: 'postgres',
+        region: 'eu-west-1',
+        credentials: rdsCredentials,
+      });
 
       expect(connectionResult).toMatchObject({
         host: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
@@ -1004,31 +1035,105 @@ describe('postgres', () => {
       expect(conn2.password).toBe('token-2');
     });
 
-    it('returns an expirationChecker that reflects the token TTL', async () => {
+    it.each([
+      { credentialTtl: undefined, renewalAfter: 14 * 60_000 },
+      { credentialTtl: 60 * 60_000, renewalAfter: 14 * 60_000 },
+      { credentialTtl: 6 * 60_000, renewalAfter: 5 * 60_000 },
+    ])(
+      'renews after $renewalAfter ms for credential TTL $credentialTtl',
+      async ({ credentialTtl, renewalAfter }) => {
+        jest.useFakeTimers();
+        const { Signer } = jest.requireMock(
+          '@aws-sdk/rds-signer',
+        ) as jest.Mocked<typeof import('@aws-sdk/rds-signer')>;
+        Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
+        const credentials = {
+          ...rdsCredentials,
+          expiration:
+            credentialTtl === undefined
+              ? undefined
+              : new Date(Date.now() + credentialTtl),
+        };
+        rdsCredentialsProvider.mockResolvedValue(credentials);
+        const config = await buildPgDatabaseConfig(rdsConfig());
+        const connection = await (config.connection as () => Promise<any>)();
+
+        expect(connection.expirationChecker()).toBe(false);
+        jest.advanceTimersByTime(renewalAfter - 1);
+        expect(connection.expirationChecker()).toBe(false);
+        jest.advanceTimersByTime(1);
+        expect(connection.expirationChecker()).toBe(true);
+        expect(Signer).toHaveBeenCalledWith(
+          expect.objectContaining({ credentials }),
+        );
+        expect(rdsCredentialsProvider).toHaveBeenCalledTimes(1);
+      },
+    );
+
+    it('waits for credentials inside the renewal margin to refresh before signing', async () => {
+      jest.useFakeTimers();
       const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
         typeof import('@aws-sdk/rds-signer')
       >;
-
-      Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
-
-      const configResult = await buildPgDatabaseConfig(
-        new ConfigReader({
-          client: 'pg',
-          connection: {
-            type: 'rds',
-            host: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
-            port: 5432,
-            user: 'postgres',
-            region: 'eu-west-1',
-          },
-        }),
+      Signer.prototype.getAuthToken.mockResolvedValue('fresh-token');
+      const cachedCredentials = {
+        ...rdsCredentials,
+        expiration: new Date(Date.now() + 60_000),
+      };
+      const freshCredentials = {
+        ...rdsCredentials,
+        accessKeyId: 'fresh-access-key',
+        expiration: new Date(Date.now() + 60 * 60_000),
+      };
+      rdsCredentialsProvider
+        .mockResolvedValueOnce(cachedCredentials)
+        .mockResolvedValueOnce(freshCredentials);
+      const config = await buildPgDatabaseConfig(rdsConfig());
+      const connection = await (config.connection as () => Promise<any>)();
+      expect(rdsCredentialsProvider).toHaveBeenNthCalledWith(2, {
+        forceRefresh: true,
+      });
+      expect(Signer).toHaveBeenCalledWith(
+        expect.objectContaining({ credentials: freshCredentials }),
       );
+      expect(connection.password).toBe('fresh-token');
+      jest.advanceTimersByTime(14 * 60_000);
+      expect(connection.expirationChecker()).toBe(true);
+    });
 
-      const conn = await (configResult.connection as () => Promise<any>)();
+    it('propagates a credential refresh failure without signing a token', async () => {
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+      rdsCredentialsProvider
+        .mockResolvedValueOnce({
+          ...rdsCredentials,
+          expiration: new Date(Date.now() + 30_000),
+        })
+        .mockRejectedValueOnce(new Error('credential refresh failed'));
+      const config = await buildPgDatabaseConfig(rdsConfig());
+      await expect((config.connection as () => Promise<any>)()).rejects.toThrow(
+        'AWS RDS IAM auth token acquisition failed',
+      );
+      expect(Signer).not.toHaveBeenCalled();
+    });
 
-      expect(conn.expirationChecker).toBeInstanceOf(Function);
-      // Token was just issued, so it should not yet be considered expired.
-      expect(conn.expirationChecker()).toBe(false);
+    it('does not extend token lifetime by the time spent signing', async () => {
+      jest.useFakeTimers();
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+      Signer.prototype.getAuthToken.mockImplementation(async () => {
+        jest.advanceTimersByTime(30_000);
+        return 'mock-iam-token';
+      });
+      const config = await buildPgDatabaseConfig(rdsConfig());
+      const connection = await (config.connection as () => Promise<any>)();
+      jest.advanceTimersByTime(14 * 60_000 - 30_000 - 1);
+      expect(connection.expirationChecker()).toBe(false);
+      jest.advanceTimersByTime(1);
+      expect(connection.expirationChecker()).toBe(true);
+      Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
     });
 
     it('throws when port is missing for rds connection', async () => {
@@ -1058,7 +1163,7 @@ describe('postgres', () => {
       process.env.AWS_REGION = 'us-east-1';
 
       try {
-        await buildPgDatabaseConfig(
+        const configResult = await buildPgDatabaseConfig(
           new ConfigReader({
             client: 'pg',
             connection: {
@@ -1070,6 +1175,7 @@ describe('postgres', () => {
           }),
         );
 
+        await (configResult.connection as () => Promise<any>)();
         expect(Signer).toHaveBeenCalledWith(
           expect.objectContaining({ region: 'us-east-1' }),
         );
