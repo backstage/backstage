@@ -341,7 +341,10 @@ export function createPublishGitlabAction(options: {
       const existingProjects =
         targetNamespaceKind === 'user'
           ? await client.Users.allProjects(owner, { search: repo })
-          : await client.Groups.allProjects(owner, { search: repo });
+          : await client.Groups.allProjects(owner, {
+              search: repo,
+              withShared: false,
+            });
 
       const existingProject = existingProjects.find(
         project => project.path === repo,

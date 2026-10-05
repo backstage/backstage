@@ -404,6 +404,27 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
   });
 
+  it('should create the repository when a same-name project is shared from another namespace', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContext);
+
+    expect(mockGitlabClient.Groups.allProjects).toHaveBeenCalledWith('owner', {
+      search: 'repo',
+      withShared: false,
+    });
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalled();
+  });
+
   it('should call the creation Gitlab APIs when the repository does not yet exists', async () => {
     mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({
