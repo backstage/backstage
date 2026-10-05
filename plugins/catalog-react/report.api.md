@@ -248,8 +248,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.owner': 'Owner';
-    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
