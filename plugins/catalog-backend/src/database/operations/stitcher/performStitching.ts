@@ -30,6 +30,7 @@ import { DbFinalEntitiesRow, DbStitchQueueRow } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { syncSearchRows } from './syncSearchRows';
+import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 function generateStableHash(entity: Entity) {
@@ -53,7 +54,7 @@ export async function performStitching(options: {
   logger: LoggerService;
   entityRef: string;
   stitchTicket: string;
-  stitchLeaseExpiresAt?: DbStitchQueueRow['next_stitch_at'];
+  stitchLeaseExpiresAt?: StitchLeaseExpiresAt;
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
   const { knex, logger, entityRef, stitchTicket, stitchLeaseExpiresAt } =
     options;

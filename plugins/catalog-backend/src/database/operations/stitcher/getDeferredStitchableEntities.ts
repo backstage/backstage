@@ -21,6 +21,16 @@ import { randomUUID } from 'node:crypto';
 import { timestampToDateTime } from '../../conversion';
 import { DbStitchQueueRow } from '../../tables';
 
+/**
+ * Opaque lease value captured by a deferred stitch claim. Pass it unchanged
+ * back to completion using the same database. Do not parse or normalize it:
+ * PostgreSQL requires its exact timestamp text to retain microsecond precision,
+ * while other drivers use their native timestamp parameter representation.
+ */
+export type StitchLeaseExpiresAt = DbStitchQueueRow['next_stitch_at'] & {
+  readonly __stitchLeaseExpiresAt: unique symbol;
+};
+
 // TODO(freben): There is no retry counter or similar. If items start
 // perpetually crashing during stitching, they'll just get silently retried over
 // and over again, for better or worse. This will be visible in metrics though.
@@ -50,7 +60,7 @@ export async function getDeferredStitchableEntities(options: {
     entityRef: string;
     stitchTicket: string;
     stitchRequestedAt: DateTime; // the time BEFORE moving it forward by the timeout
-    stitchLeaseExpiresAt: DbStitchQueueRow['next_stitch_at'];
+    stitchLeaseExpiresAt: StitchLeaseExpiresAt;
   }>
 > {
   const { knex, batchSize, stitchTimeout } = options;
@@ -119,7 +129,9 @@ export async function getDeferredStitchableEntities(options: {
       entityRef: i.entity_ref,
       stitchTicket,
       stitchRequestedAt: timestampToDateTime(i.next_stitch_at),
-      stitchLeaseExpiresAt: leaseByRef.get(i.entity_ref)!,
+      stitchLeaseExpiresAt: leaseByRef.get(
+        i.entity_ref,
+      )! as StitchLeaseExpiresAt,
     }));
   };
 
