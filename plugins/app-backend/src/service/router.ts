@@ -166,38 +166,55 @@ export async function createRouter(
 
     const publicRouter = Router();
 
-    publicRouter.use(async (req, res, next) => {
+    const getRequestCredentials = async (
+      req: express.Request,
+      res: express.Response,
+    ) => {
       try {
-        const credentials = await httpAuth.credentials(req, {
+        return await httpAuth.credentials(req, {
           allow: ['user', 'service', 'none'],
           allowLimitedAccess: true,
         });
-
-        if (credentials.principal.type === 'none') {
-          next();
-        } else {
-          next('router');
-        }
       } catch {
         // If we fail to authenticate, make sure the session cookie is cleared
         // and continue as unauthenticated. If the user is logged in they will
         // immediately be redirected back to the protected app via the POST.
+        const credentials = await auth.getNoneCredentials();
         await httpAuth.issueUserCookie(res, {
-          credentials: await auth.getNoneCredentials(),
+          credentials,
         });
-        next();
+        return credentials;
       }
-    });
+    };
 
+    // Handle sign-in before checking the existing session cookie so repeated
+    // handoffs remain idempotent for users that are already authenticated.
     publicRouter.post(
       '*',
       express.urlencoded({ extended: true }),
       async (req, res, next) => {
         if (req.body.type === 'sign-in') {
+          const existingCredentials = await getRequestCredentials(req, res);
+
+          if (auth.isPrincipal(existingCredentials, 'service')) {
+            next('router');
+            return;
+          }
+
           const credentials = await auth.authenticate(req.body.token);
 
           if (!auth.isPrincipal(credentials, 'user')) {
             throw new AuthenticationError('Invalid token, not a user');
+          }
+
+          if (
+            auth.isPrincipal(existingCredentials, 'user') &&
+            existingCredentials.principal.userEntityRef !==
+              credentials.principal.userEntityRef
+          ) {
+            throw new AuthenticationError(
+              'Refused to replace an existing authenticated session',
+            );
           }
 
           await httpAuth.issueUserCookie(res, {
@@ -214,6 +231,16 @@ export async function createRouter(
         }
       },
     );
+
+    publicRouter.use(async (req, res, next) => {
+      const credentials = await getRequestCredentials(req, res);
+
+      if (credentials.principal.type === 'none') {
+        next();
+      } else {
+        next('router');
+      }
+    });
 
     publicRouter.use(
       await createEntryPointRouter({
