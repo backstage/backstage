@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { run, runOutput } from '@backstage/cli-common';
+import { run } from '@backstage/cli-common';
 import { semverUtils, structUtils } from '@yarnpkg/core';
 import { patchUtils } from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
@@ -202,10 +202,17 @@ async function getYarnVersion(
   rootDir: string,
   env: NodeJS.ProcessEnv | undefined,
 ): Promise<string> {
-  return runOutput(['yarn', '--version'], {
+  const stdoutChunks: Buffer[] = [];
+  const child = run(['yarn', '--version'], {
     cwd: rootDir,
     env: createYarnEnvironment(env),
+    onStdout: data => stdoutChunks.push(data),
   });
+  await child.waitForExit();
+  if (child.signalCode) {
+    throw new Error(`Yarn version check was terminated by ${child.signalCode}`);
+  }
+  return Buffer.concat(stdoutChunks).toString().trim();
 }
 
 async function restoreOriginals(options: {
