@@ -21,7 +21,7 @@ import {
 import { TestApiProvider } from '@backstage/frontend-test-utils';
 import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
-import { type PageMount } from '@internal/frontend';
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { useAppBasePath } from './appRouting';
 
 const mockRouteNode = {} as AppNode;
@@ -36,7 +36,7 @@ jest.mock('../../../frontend-plugin-api/src/components/AppNodeProvider', () => {
 
 describe('useAppBasePath', () => {
   const wrapper =
-    (mount?: PageMount) =>
+    (mount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>) =>
     ({ children }: PropsWithChildren<{}>) =>
       mount ? (
         <TestApiProvider

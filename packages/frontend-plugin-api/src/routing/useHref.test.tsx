@@ -30,7 +30,7 @@ import {
 } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
-import { type PageMount } from '@internal/frontend';
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppHref, useHref } from './useHref';
 import { useApiHolder } from '../apis/system';
@@ -42,11 +42,6 @@ jest.mock('../components/AppNodeProvider', () => {
   const actual = jest.requireActual('../components/AppNodeProvider');
   return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
 });
-
-/** Chrome resolves the app history from the API holder; tests do it inline. */
-function useOptionalAppHistory() {
-  return useApiHolder().get(appHistoryApiRef);
-}
 
 describe('useHref', () => {
   const appHistory = createMockAppHistory({ basename: '/backstage' });
@@ -173,8 +168,8 @@ const trees: Array<{
   url: string;
   basename?: string;
   /** The mount a framework app publishes where this tree has route matches. */
-  pageMount?: PageMount;
-  parentMount?: PageMount;
+  pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>;
+  parentMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>;
   wrapper: (p: PropsWithChildren) => any;
 }> = [
   {
@@ -368,7 +363,9 @@ describe('the framework authority', () => {
               {
                 resolvePath: () => ({
                   matches: [parentMount, pageMount]
-                    .filter((mount): mount is PageMount => Boolean(mount))
+                    .filter((mount): mount is NonNullable<typeof mount> =>
+                      Boolean(mount),
+                    )
                     .map(mount => ({
                       params: {},
                       contributesPath: true,
@@ -395,7 +392,7 @@ describe('the framework authority', () => {
         const { result } = renderHook(
           () => ({
             routerHref: useRouterHref(to),
-            appHref: useAppHref(useOptionalAppHistory(), to),
+            appHref: useAppHref(useApiHolder().get(appHistoryApiRef), to),
           }),
           { wrapper },
         );
@@ -411,7 +408,7 @@ describe('the framework authority', () => {
   // A page registered at `/catalog`, currently rendering `/catalog/foo`, in an
   // app deployed under `/backstage`.
   const PAGE_URL = '/backstage/catalog/foo';
-  const pageMount: PageMount = {
+  const pageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
     basePath: '/catalog',
     routePattern: '/catalog',
   };
@@ -510,8 +507,10 @@ describe('the framework authority', () => {
           'https://example.com/x',
         ].map(to => [
           to,
-          renderHook(() => useAppHref(useOptionalAppHistory(), to), { wrapper })
-            .result.current,
+          renderHook(
+            () => useAppHref(useApiHolder().get(appHistoryApiRef), to),
+            { wrapper },
+          ).result.current,
         ]),
       );
 
@@ -544,7 +543,10 @@ describe('the framework authority', () => {
       initialLocation: SUB_PAGE_URL,
       basename: '/backstage',
     });
-    const subPageMount: PageMount = {
+    const subPageMount: Pick<
+      RouteResolutionMatch,
+      'basePath' | 'routePattern'
+    > = {
       basePath: '/catalog/foo/tab-1',
       routePattern: '/catalog/:name/tab-1',
     };
@@ -562,7 +564,7 @@ describe('the framework authority', () => {
     );
 
     const framework = (to: string) =>
-      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
+      renderHook(() => useAppHref(useApiHolder().get(appHistoryApiRef), to), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
             {subPageTree(
@@ -597,7 +599,7 @@ describe('the framework authority', () => {
       }).result.current;
 
     const legacy = (to: string) =>
-      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
+      renderHook(() => useAppHref(useApiHolder().get(appHistoryApiRef), to), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[]}>{subPageTree(children)}</TestApiProvider>
         ),
@@ -653,7 +655,9 @@ describe('the seam between the two', () => {
               {
                 resolvePath: () => ({
                   matches: [parentMount, pageMount]
-                    .filter((mount): mount is PageMount => Boolean(mount))
+                    .filter((mount): mount is NonNullable<typeof mount> =>
+                      Boolean(mount),
+                    )
                     .map(mount => ({
                       params: {},
                       contributesPath: true,
@@ -759,7 +763,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       initialLocation: '/backstage/catalog/foo',
       basename: '/backstage',
     });
-    const mount: PageMount = { basePath: '/catalog', routePattern: '/catalog' };
+    const mount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
+      basePath: '/catalog',
+      routePattern: '/catalog',
+    };
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
       <TestApiProvider
         apis={[
