@@ -16,6 +16,7 @@
 
 import {
   FeatureFlagState,
+  AppNode,
   AppLocation,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
@@ -250,6 +251,56 @@ describe('mockApis', () => {
         routes: [[home, '/home']],
       });
       expect(routeResolution.resolve(home)?.()).toBe('/home');
+    });
+
+    it('supports fixed path matches with defaults and custom resolution callbacks', () => {
+      const node = {} as AppNode;
+      const options = { pathname: '/catalog/entity', node };
+      expect(mockApis.routeResolution().resolvePath(options)).toEqual({
+        matches: [],
+      });
+      const api = mockApis.routeResolution({
+        resolvePath: {
+          matches: [
+            { node, basePath: '/catalog' },
+            {
+              node,
+              basePath: '/catalog/entity',
+              routePattern: '/catalog/:name',
+              params: { name: 'entity' },
+              contributesPath: false,
+            },
+          ],
+        },
+      });
+      const result = api.resolvePath(options);
+      expect(result.matches).toEqual([
+        {
+          node,
+          basePath: '/catalog',
+          routePattern: '/catalog',
+          params: {},
+          contributesPath: true,
+        },
+        {
+          node,
+          basePath: '/catalog/entity',
+          routePattern: '/catalog/:name',
+          params: { name: 'entity' },
+          contributesPath: false,
+        },
+      ]);
+      expect(api.resolvePath({ pathname: '/unrelated' })).toEqual(result);
+      expect(api.resolvePath).toHaveBeenCalledWith(options);
+      const resolvePath = jest.fn(({ pathname }) =>
+        pathname === options.pathname ? result : { matches: [] },
+      );
+      const dynamic = mockApis.routeResolution({ resolvePath });
+      expect(dynamic.resolvePath(options)).toBe(result);
+      expect(dynamic.resolvePath({ pathname: '/unrelated' })).toEqual({
+        matches: [],
+      });
+      expect(resolvePath).toHaveBeenCalledWith(options);
     });
 
     it('can create a mock and make assertions on it', () => {

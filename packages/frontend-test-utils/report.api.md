@@ -49,6 +49,7 @@ import { registerMswTestHooks } from '@backstage/test-utils';
 import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
+import { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
@@ -439,7 +440,14 @@ export interface MockRouteResolutionApi extends RouteResolutionApi {
 // @public
 export interface MockRouteResolutionApiOptions {
   resolve?: RouteResolutionApi['resolve'];
-  resolvePath?: RouteResolutionApi['resolvePath'];
+  resolvePath?:
+    | {
+        matches: ReadonlyArray<
+          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+        >;
+      }
+    | RouteResolutionApi['resolvePath'];
   routes?:
     | ReadonlyMap<MockRouteResolutionRouteRef, string>
     | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;

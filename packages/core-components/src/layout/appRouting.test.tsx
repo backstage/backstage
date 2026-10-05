@@ -15,11 +15,7 @@
  */
 
 import { useOptionalAppHistory } from '../hooks/useOptionalAppHistory';
-import {
-  appHistoryApiRef,
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef, type AppNode } from '@backstage/frontend-plugin-api';
 import { default as React, PropsWithChildren, ReactNode } from 'react';
 import {
   MemoryRouter,
@@ -38,8 +34,11 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
-import { TestApiProvider } from '@backstage/test-utils';
+import {
+  TestApiProvider,
+  mockApis,
+  createMockAppHistory,
+} from '@backstage/frontend-test-utils';
 import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { useAppGoBack, useAppLocation, useAppResolvedPath } from './appRouting';
 
@@ -74,21 +73,11 @@ function frameworkWrapper(options: {
         {pageMount ? (
           <TestApiProvider
             apis={[
-              [
-                routeResolutionApiRef,
-                {
-                  resolvePath: () => ({
-                    matches: [
-                      {
-                        params: {},
-                        contributesPath: true,
-                        ...pageMount,
-                        node: mockRouteNode,
-                      },
-                    ],
-                  }),
+              mockApis.routeResolution({
+                resolvePath: {
+                  matches: [{ ...pageMount, node: mockRouteNode }],
                 },
-              ],
+              }),
             ]}
           >
             {children}
@@ -145,28 +134,20 @@ it('resolves parent hrefs from route mounts rather than URL segments', () => {
     <TestApiProvider
       apis={[
         [appHistoryApiRef, history],
-        [
-          routeResolutionApiRef,
-          {
-            resolvePath: () => ({
-              matches: [
-                {
-                  basePath: '/catalog/foo',
-                  routePattern: '/catalog/:name',
-                },
-                {
-                  basePath: '/catalog/foo/tab/123',
-                  routePattern: '/catalog/:name/tab/:id',
-                },
-              ].map(mount => ({
-                params: {},
-                contributesPath: true,
-                ...mount,
-                node: mockRouteNode,
-              })),
-            }),
+        mockApis.routeResolution({
+          resolvePath: {
+            matches: [
+              {
+                basePath: '/catalog/foo',
+                routePattern: '/catalog/:name',
+              },
+              {
+                basePath: '/catalog/foo/tab/123',
+                routePattern: '/catalog/:name/tab/:id',
+              },
+            ].map(mount => ({ ...mount, node: mockRouteNode })),
           },
-        ],
+        }),
       ]}
     >
       <ChromeStandIn to=".." />
@@ -679,21 +660,11 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
       <TestApiProvider
         apis={[
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: () => ({
-                matches: [
-                  {
-                    params: {},
-                    contributesPath: true,
-                    ...mount,
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
+          mockApis.routeResolution({
+            resolvePath: {
+              matches: [{ ...mount, node: mockRouteNode }],
             },
-          ],
+          }),
         ]}
       >
         {children}

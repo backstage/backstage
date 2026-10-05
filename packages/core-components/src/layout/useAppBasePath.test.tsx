@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
-import { TestApiProvider } from '@backstage/frontend-test-utils';
+import { type AppNode } from '@backstage/frontend-plugin-api';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
@@ -41,21 +38,11 @@ describe('useAppBasePath', () => {
       mount ? (
         <TestApiProvider
           apis={[
-            [
-              routeResolutionApiRef,
-              {
-                resolvePath: () => ({
-                  matches: [
-                    {
-                      params: {},
-                      contributesPath: true,
-                      ...mount,
-                      node: mockRouteNode,
-                    },
-                  ],
-                }),
+            mockApis.routeResolution({
+              resolvePath: {
+                matches: [{ ...mount, node: mockRouteNode }],
               },
-            ],
+            }),
           ]}
         >
           {children}
