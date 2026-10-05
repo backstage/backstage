@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { usePageMount } from './PageMountContext';
+import { usePageMount } from './usePageMount';
 
 /**
  * Shared path resolution for AppHistory and legacy React Router consumers.

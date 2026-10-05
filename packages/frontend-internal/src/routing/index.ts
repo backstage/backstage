@@ -19,17 +19,13 @@ export { OpaqueRouteRef } from './OpaqueRouteRef';
 export { OpaqueSubRouteRef } from './OpaqueSubRouteRef';
 export { OpaqueExternalRouteRef } from './OpaqueExternalRouteRef';
 export {
-  AppNodeRouteProvider,
-  AppRouteMatchesProvider,
   useAppRouteMatches,
-  type AppRouteMatch,
-  PageMountProvider,
   usePageMount,
   usePageMountChain,
   usePageMountBasePaths,
   usePageMountResolver,
   type PageMount,
-} from './PageMountContext';
+} from './usePageMount';
 export {
   APP_ROOT_PATH,
   createPath,
@@ -75,3 +71,5 @@ export {
   type AppRouteSwitchProps,
   type AppRouteRedirect,
 } from './AppRouteSwitch';
+
+export { appHistoryApiRef, routeResolutionApiRef } from './routingApiRefs';
