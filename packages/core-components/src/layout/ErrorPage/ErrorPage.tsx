@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -21,7 +23,6 @@ import { ReactNode } from 'react';
 import { Link } from '../../components/Link';
 import { useAppGoBack } from '../appRouting';
 import { useSupportConfig } from '../../hooks';
-import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import { MicDrop } from './MicDrop';
 import { StackDetails } from './StackDetails';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -75,7 +76,7 @@ export function ErrorPage(props: IErrorPageProps) {
     stack,
   } = props;
   const classes = useStyles();
-  const goBack = useAppGoBack(useOptionalAppHistory());
+  const goBack = useAppGoBack(useApiHolder().get(appHistoryApiRef));
   const support = useSupportConfig();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 

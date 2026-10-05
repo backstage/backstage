@@ -26,7 +26,7 @@ import {
   createMockAppHistory,
   type MockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { type PageMount } from '@internal/frontend';
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { useRouteRefParams } from './useRouteRefParams';
@@ -56,11 +56,11 @@ const entityTabRouteRef = createSubRouteRef({
 });
 const rootRouteRef = createRouteRef();
 
-const pageMount: PageMount = {
+const pageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
   basePath: '/catalog/default/component/foo',
   routePattern: '/catalog/:namespace/:kind/:name',
 };
-const subPageMount: PageMount = {
+const subPageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
   basePath: '/catalog/default/component/foo/ci-cd',
   routePattern: '/catalog/:namespace/:kind/:name/:tab',
 };
@@ -68,7 +68,7 @@ const subPageMount: PageMount = {
 /** Supplies fixed routing ancestry and app history for isolated hook tests. */
 function createWrapper(options: {
   appHistory: MockAppHistory;
-  mounts?: PageMount[];
+  mounts?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>[];
 }) {
   const { appHistory, mounts = [] } = options;
   return function Wrapper({ children }: PropsWithChildren<{}>) {

@@ -26,7 +26,7 @@ import {
 import { useHref } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { usePageMount } from '../routing/usePageMount';
+import { useRouteResolution } from '../routing/useRouteResolution';
 import { ReactNode, createContext, useContext, useState } from 'react';
 
 const RouterStack = createContext<readonly string[]>([]);
@@ -43,7 +43,7 @@ const RouterStack = createContext<readonly string[]>([]);
 function createRouter(name: string) {
   return function Router(props: { children?: ReactNode }) {
     const stack = useContext(RouterStack);
-    const mount = usePageMount();
+    const mount = useRouteResolution().matches.at(-1);
     const [state, setState] = useState(0);
     return (
       <RouterStack.Provider value={[...stack, name]}>
@@ -61,7 +61,7 @@ function createRouter(name: string) {
 }
 
 describe('SubPageBlueprint', () => {
-  it('should give each subpage its own PageMount at parentBase + / + subPath', async () => {
+  it('should give each subpage its own matched base path', async () => {
     // Unnamed parent → page:test; named subpages attach relatively (same as
     // production plugins such as app-visualizer).
     const parentPage = PageBlueprint.make({
@@ -78,7 +78,7 @@ describe('SubPageBlueprint', () => {
         title: 'Info',
         loader: async () => {
           const Probe = () => {
-            const mount = usePageMount();
+            const mount = useRouteResolution().matches.at(-1);
             return (
               <div data-testid="info-page">
                 <div data-testid="mount-base">{mount?.basePath}</div>
@@ -97,7 +97,7 @@ describe('SubPageBlueprint', () => {
         title: 'Config',
         loader: async () => {
           const Probe = () => {
-            const mount = usePageMount();
+            const mount = useRouteResolution().matches.at(-1);
             return (
               <div data-testid="config-page">
                 <div data-testid="mount-base">{mount?.basePath}</div>
@@ -152,7 +152,7 @@ describe('SubPageBlueprint', () => {
         loader: async () => {
           const Probe = () => {
             const location = useLocation();
-            const mount = usePageMount();
+            const mount = useRouteResolution().matches.at(-1);
             return (
               <div data-testid="general-page">
                 <div data-testid="pathname">{location.pathname}</div>
@@ -191,7 +191,9 @@ describe('SubPageBlueprint', () => {
         <span data-testid="router-stack">
           {useContext(RouterStack).join('>')}
         </span>
-        <span data-testid="content-mount">{usePageMount()?.basePath}</span>
+        <span data-testid="content-mount">
+          {useRouteResolution().matches.at(-1)?.basePath}
+        </span>
       </div>
     );
     // The adapter is declared by the loader, which is where the subpage's own
@@ -303,7 +305,9 @@ describe('SubPageBlueprint', () => {
         <span data-testid="router-stack">
           {useContext(RouterStack).join('>')}
         </span>
-        <span data-testid="content-mount">{usePageMount()?.basePath}</span>
+        <span data-testid="content-mount">
+          {useRouteResolution().matches.at(-1)?.basePath}
+        </span>
       </div>
     );
 
@@ -377,7 +381,7 @@ describe('SubPageBlueprint', () => {
         loader: async () => {
           const Templates = () => {
             const location = useLocation();
-            const mount = usePageMount();
+            const mount = useRouteResolution().matches.at(-1);
             return (
               <div data-testid="templates-page">
                 <div data-testid="pathname">{location.pathname}</div>
@@ -445,7 +449,7 @@ describe('SubPageBlueprint', () => {
     // Read from a location one level below the sub-page's own base, which is
     // the only place the base can be told apart from the current pathname.
     const Probe = () => {
-      const mount = usePageMount();
+      const mount = useRouteResolution().matches.at(-1);
       return (
         <div data-testid="intro-page">
           <div data-testid="mount-base">{mount?.basePath}</div>

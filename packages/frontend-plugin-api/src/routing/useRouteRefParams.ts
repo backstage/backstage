@@ -23,13 +23,13 @@ import {
   joinRoutePath,
   matchPath,
   useAppHistoryLocation,
-  type PageMount,
 } from '@internal/frontend';
-import { usePageMountChain } from './usePageMount';
+import { useRouteResolution } from './useRouteResolution';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { useApiHolder } from '../apis/system';
+import type { RouteResolutionMatch } from '../apis/definitions/RouteResolutionApi';
 import { appHistoryApiRef } from './AppHistoryApi';
 
 /**
@@ -53,27 +53,6 @@ function declaredParamNames(
 }
 
 /**
- * The params a single route pattern binds at the current location.
- *
- * Matched against the location rather than against the mount's own base path,
- * because a base path stops where the match's pattern stops spelling segments
- * out: a page mounted at `/docs/*` has `/docs` as its base, and only the
- * location carries the splat tail. The base path is the fallback for the one
- * render where the two disagree — the app has navigated away and the page has
- * not unmounted yet — where the mount is the more honest of the two answers.
- */
-function patternParams(
-  routePattern: string,
-  basePath: string,
-  pathname: string,
-): Record<string, string> | undefined {
-  const match =
-    matchPath(routePattern, pathname, false) ??
-    matchPath(routePattern, basePath, false);
-  return match?.params;
-}
-
-/**
  * Every param the mounts this content is rendered inside bind, outermost mount
  * first so that a deeper mount wins a name its page also binds — the same
  * precedence React Router's own `useParams` applies across its match stack.
@@ -86,17 +65,13 @@ function patternParams(
  */
 function resolveParams(
   routeRef: RouteRef<any> | SubRouteRef<any>,
-  mountChain: readonly PageMount[],
+  mountChain: readonly RouteResolutionMatch[],
   pathname: string,
 ): Record<string, string> {
   const params: Record<string, string> = {};
 
   for (const mount of mountChain) {
-    Object.assign(
-      params,
-      mount.params ??
-        patternParams(mount.routePattern, mount.basePath, pathname),
-    );
+    Object.assign(params, mount.params);
   }
 
   if (OpaqueSubRouteRef.isType(routeRef)) {
@@ -138,7 +113,7 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
   // Subscribes to the app history: the params are read out of the location, so
   // they have to be recomputed when the app navigates.
   const location = useAppHistoryLocation(appHistory);
-  const mountChain = usePageMountChain();
+  const mountChain = useRouteResolution().matches;
   const legacyParams = useRouterContext(RouteContext)?.matches.at(-1)?.params;
   const pathname = location?.pathname ?? APP_ROOT_PATH.pathname;
 
