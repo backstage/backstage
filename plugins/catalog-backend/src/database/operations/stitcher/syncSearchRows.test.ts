@@ -325,8 +325,10 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
             final_entity: '{"version":"new"}',
           });
 
-          // Wait for final_entities while holding the search row. The
-          // publication then waits for search, completing a real deadlock.
+          // Both transactions already hold the other's required row lock.
+          // Start the competing write before search synchronization; either
+          // arrival order completes the cycle, without performance_schema
+          // access or a timing-dependent delay.
           blockerFinished = blocker('final_entities')
             .where({ entity_id: 'e1' })
             .update({ hash: blocker.ref('hash') })
@@ -335,26 +337,6 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
             });
           // Handle rejection immediately, even while publication is pending.
           blockerFinished.catch(() => {});
-
-          const deadline = Date.now() + 10_000;
-          for (;;) {
-            const [waits] = await knex.raw(
-              `SELECT 1 FROM performance_schema.data_lock_waits w
-               JOIN performance_schema.data_locks l
-                 ON l.ENGINE_LOCK_ID = w.REQUESTING_ENGINE_LOCK_ID
-               WHERE l.OBJECT_SCHEMA = DATABASE()
-                 AND l.OBJECT_NAME = 'final_entities' LIMIT 1`,
-            );
-            if (waits.length) {
-              break;
-            }
-            if (Date.now() >= deadline) {
-              throw new Error(
-                'Competing transaction did not wait for publication',
-              );
-            }
-            await new Promise(resolve => setTimeout(resolve, 10));
-          }
 
           await syncSearchRows(tx, 'e1', [row('a', 'new')]);
         });

@@ -16,6 +16,7 @@
 
 import { Knex } from 'knex';
 import { DbStitchQueueRow } from '../../tables';
+import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 
 /**
  * Marks a single entity as having been stitched.
@@ -29,12 +30,14 @@ import { DbStitchQueueRow } from '../../tables';
  * attempt. Make it immediately eligible, whether this attempt succeeded or was
  * abandoned. A changed lease belongs to a successor and must not be disturbed.
  * Without a captured lease, only already-due entries can be rescheduled.
+ * The captured lease is opaque and must be passed through unchanged from
+ * getDeferredStitchableEntities, not reconstructed from a Date or ISO string.
  */
 export async function markDeferredStitchCompleted(option: {
   knex: Knex | Knex.Transaction;
   entityRef: string;
   stitchTicket: string;
-  stitchLeaseExpiresAt?: DbStitchQueueRow['next_stitch_at'];
+  stitchLeaseExpiresAt?: StitchLeaseExpiresAt;
 }): Promise<void> {
   const { knex, entityRef, stitchTicket, stitchLeaseExpiresAt } = option;
 
