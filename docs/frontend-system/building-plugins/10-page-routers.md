@@ -295,56 +295,6 @@ rebuilt when the active tab changes. The surrounding page shell — header, tabs
 breadcrumbs — stays mounted throughout, and is framework-owned, so it needs no
 routing library at all.
 
-## Use React Aria components directly
-
-React Aria controls can use Backstage navigation without a page routing library.
-Call `useAppRouting` inside the page or sub-page and pass its callbacks to
-React Aria's own provider:
-
-```tsx
-import { useAppRouting } from '@backstage/frontend-plugin-api';
-import { Link, RouterProvider } from 'react-aria-components';
-
-export function ToolsContent() {
-  const routing = useAppRouting();
-  return (
-    <RouterProvider navigate={routing.navigate} useHref={routing.createHref}>
-      <Link href="details">Tool details</Link>
-    </RouterProvider>
-  );
-}
-```
-
-Both callbacks capture the scope where the hook runs. For a page mounted at
-`/tools`, `details` renders and navigates to `/tools/details`, with the deployment
-basename added once. Each leading `..` climbs one page or sub-page, and query-only
-or hash-only targets stay on the current location. To type React Aria's
-`routerOptions` in your app, configure its routing types:
-
-```tsx
-import type { AppNavigateOptions } from '@backstage/frontend-plugin-api';
-
-declare module 'react-aria-components' {
-  interface RouterConfig {
-    routerOptions: AppNavigateOptions;
-  }
-}
-```
-
-The options support `replace` and `state`. This declaration belongs to your app;
-BUI does not set React Aria's global router types for plugins.
-
-Import the provider and controls from the same React Aria installation. To use a
-nested sub-page's scope, mount another provider inside that sub-page. A provider
-outside it keeps its original scope for both callbacks, so hrefs and clicks agree.
-React Aria handles native browser interactions, including modified clicks and
-downloads. Absolute URLs use browser navigation.
-
-BUI controls already receive this integration from the app. `BUIProvider` does
-not configure unrelated React Aria controls. The separate `useAppNavigate` hook
-continues to accept app-absolute destinations; use the captured pair above for
-React Aria links that include relative destinations.
-
 ## Migrate Backstage UI routing
 
 Backstage apps configure Backstage UI (BUI) navigation automatically. Standalone
@@ -370,8 +320,8 @@ When upgrading an existing integration:
    `state` options.
 1. Use `href="."` to navigate to the current route. Empty hrefs follow React
    Aria's native behavior and are not resolved by the host router.
-1. Give directly used React Aria components their own scoped provider, as
-   described in [React Aria integration](#use-react-aria-components-directly).
+1. Give directly used React Aria components their own routing provider. The
+   app-provided integration applies only to BUI controls.
 
 BUI links treat URL schemes, including custom and mixed-case schemes, as
 external destinations. A scheme appearing only in a query string or fragment
