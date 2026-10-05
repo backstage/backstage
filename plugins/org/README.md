@@ -6,18 +6,6 @@
 - Show User Profile
 - Quick access to Groups
 
-### Group Page
-
-Here's an example of what the Group Page looks like:
-
-![Group Page example](./docs/group-page-example.png)
-
-### User Profile
-
-Here's an example of what the User Profile looks like:
-
-![Group Page example](./docs/user-profile-example.png)
-
 ## Installation
 
 ```bash
@@ -76,13 +64,8 @@ To use the MyGroupsSidebarItem you'll need to add it to your `Root.tsx` - found 
 Once added MyGroupsSidebarItem will work in three ways:
 
 1. The user is not logged in or the logged in user is not a member of any group: the MyGroupsSidebarItem will not display anything in the sidebar
-2. The user is logged in and a member of only one group: the MyGroupsSidebarItem will display a single item in the sidebar like this:
-
-   ![MyGroupsSidebarItem single example](./docs/mygroupssidebaritem-single.png)
-
-3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a sub-menu with all the related groups like this:
-
-   ![MyGroupsSidebarItem multiple example](./docs/mygroupssidebaritem-multiple.png)
+2. The user is logged in and a member of only one group: the MyGroupsSidebarItem will display a single item in the sidebar
+3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a sub-menu with all the related groups
 
 ### UserAvatar and custom member avatars
 

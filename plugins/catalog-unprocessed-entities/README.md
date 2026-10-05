@@ -2,25 +2,19 @@
 
 ## Features
 
-Frontend plugin to view unprocessed entities.
+Frontend plugin to view unprocessed entities. Screenshots of each view are available in the [Unprocessed Entities](https://backstage.io/docs/features/software-catalog/#unprocessed-entities) section of the Backstage documentation.
 
 ### Failed Entities
 
-You can see entities that are in a failed state:
-
-![Example of failed entities tab](./docs/catalog-unprocessed-entities-failed.png)
+You can see entities that are in a failed state.
 
 ### Pending Entities
 
-You can see entities that are in a pending state:
-
-![Example of pending entities tab](./docs/catalog-unprocessed-entities-pending.png)
+You can see entities that are in a pending state.
 
 ### Raw View
 
-In either of the failed or pending tabs you have the option to see the raw entity as JSON:
-
-![Example of raw entity](./docs/catalog-unprocessed-entities-raw.png)
+In either of the failed or pending tabs you have the option to see the raw entity as JSON.
 
 ## Requirements
 
