@@ -18,6 +18,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import {
   DocsBuildStrategy,
   Generators,
@@ -38,6 +39,7 @@ import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { techDocsPermissions } from '@backstage/plugin-techdocs-common';
 import * as winston from 'winston';
 import { createRouter } from './service/router';
+import { createTechdocsActions } from './actions';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
@@ -116,6 +118,7 @@ export const techdocsPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         permissionsRegistry: coreServices.permissionsRegistry,
         catalog: catalogServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         config,
@@ -129,6 +132,7 @@ export const techdocsPlugin = createBackendPlugin({
         permissions,
         permissionsRegistry,
         catalog,
+        actionsRegistry,
       }) {
         // Preparers are responsible for fetching source files for documentation.
         const preparers = await Preparers.fromConfig(config, {
@@ -183,6 +187,13 @@ export const techdocsPlugin = createBackendPlugin({
         http.addAuthPolicy({
           path: '/static',
           allow: 'user-cookie',
+        });
+
+        // Register MCP actions for techdocs
+        createTechdocsActions({
+          actionsRegistry,
+          auth,
+          discovery,
         });
       },
     });

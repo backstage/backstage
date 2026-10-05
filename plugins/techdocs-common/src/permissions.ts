@@ -42,3 +42,26 @@ export const techDocsEntityReadPermission = createPermission({
  * @public
  */
 export const techDocsPermissions = [techDocsEntityReadPermission];
+
+/**
+ * This permission is used to authorize the TechDocs actions that are registered
+ * with the Actions Registry.
+ *
+ * If this permission is not authorized, the actions are hidden from action
+ * listings and appear as if they do not exist when invoked.
+ *
+ * @alpha
+ */
+export const techdocsActionsReadPermission = createPermission({
+  name: 'techdocs.actions.read',
+  attributes: {
+    action: 'read',
+  },
+});
+
+/**
+ * The full list of permissions registered by the TechDocs plugin.
+ *
+ * @alpha
+ */
+export const techdocsPermissions = [techdocsActionsReadPermission];

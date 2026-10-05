@@ -68,6 +68,13 @@ for any applicable updates when upgrading packages. As an alternative, the
 a consolidated view of all the changes between two versions of Backstage. You
 can find the current version of your Backstage installation in `backstage.json` located in the root of your backstage repository.
 
+## Applying automated codemods
+
+After package bumps and create-app / Upgrade Helper diffs, run _versioned_
+Codemod Registry recipes for that release. For larger work such as Material-UI
+to Backstage UI, use a _misc_ recipe when you are ready. Commands and details
+are in [Codemods](../../tooling/codemods.md).
+
 ## Managing package versions with the Backstage yarn plugin
 
 The Backstage yarn plugin makes it easier to manage Backstage package versions,

@@ -69,6 +69,18 @@ describe('bitbucketCloud core', () => {
       ).toBeUndefined();
     });
 
+    it('authenticates with Bearer token when token only is provided', async () => {
+      const withTokenOnly: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        token: 'my-bearer-token',
+      };
+      expect(
+        (await getBitbucketCloudRequestOptions(withTokenOnly)).headers
+          .Authorization,
+      ).toEqual('Bearer my-bearer-token');
+    });
+
     it('handles OAuth token fetch errors', async () => {
       // Test error handling
       worker.use(

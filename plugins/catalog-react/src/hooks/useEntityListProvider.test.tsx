@@ -339,6 +339,46 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
   });
 
+  it('does not rewrite the URL when the serialized filters are unchanged', async () => {
+    // Delegate to the real implementation so window.location actually
+    // reflects the rewritten URL, which is what the guard compares against.
+    const replaceStateSpy = jest.fn(
+      (...args: Parameters<History['replaceState']>) =>
+        origReplaceState.apply(window.history, args),
+    );
+    window.history.replaceState = replaceStateSpy;
+
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    // Applying the user filter changes the URL, so the URL is rewritten once.
+    act(() => {
+      result.current.updateFilters({ user: EntityUserFilter.all() });
+    });
+
+    await waitFor(() => {
+      expect(replaceStateSpy).toHaveBeenCalled();
+    });
+    const callsAfterChange = replaceStateSpy.mock.calls.length;
+
+    // Re-applying an equivalent filter produces a fresh requestedFilters
+    // object that serializes to the same URL (mirrors the UserListPicker
+    // `?filters[user]=all` churn). The URL must not be rewritten again,
+    // since repeated replaceState calls crash Safari with a SecurityError.
+    act(() => {
+      result.current.updateFilters({ user: EntityUserFilter.all() });
+    });
+
+    await expect(
+      waitFor(() => {
+        expect(replaceStateSpy.mock.calls.length).toBeGreaterThan(
+          callsAfterChange,
+        );
+      }),
+    ).rejects.toThrow();
+  });
+
   it('returns an error on catalogApi failure', async () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({ pagination }),

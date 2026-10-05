@@ -426,7 +426,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       { addQueryPrefix: true, arrayFormat: 'repeat' },
     );
     const newUrl = `${window.location.pathname}${newParams}`;
-    window.history?.replaceState(null, document.title, newUrl);
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    // Only rewrite the URL when it actually changes. Some filters (e.g. the
+    // user filter with `?filters[user]=all`) produce a new requestedFilters
+    // object on every render while serializing to the same URL; without this
+    // guard replaceState is called repeatedly, which crashes Safari with a
+    // SecurityError once it exceeds its replaceState rate limit.
+    if (newUrl !== currentUrl) {
+      window.history?.replaceState(null, document.title, newUrl);
+    }
   }, [
     cursor,
     isMounted,

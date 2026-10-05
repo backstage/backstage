@@ -42,8 +42,37 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
-  ids: ['POSTGRES_9', 'POSTGRES_14', 'POSTGRES_16'],
+  ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
+
+const nonPostgresDatabases = TestDatabases.create({
+  ids: ['SQLITE_3', 'MYSQL_8'],
+});
+
+it('runs the event index migration outside a transaction', () => {
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../migrations/20260930120000_event_bus_cleanup_indices');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
+describe.each(nonPostgresDatabases.eachSupportedId())(
+  'migrations, %p',
+  databaseId => {
+    it('does not create PostgreSQL-only event tables or indexes', async () => {
+      const knex = await nonPostgresDatabases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      await expect(knex.schema.hasTable('event_bus_events')).resolves.toBe(
+        false,
+      );
+      await expect(
+        knex.schema.hasTable('event_bus_subscriptions'),
+      ).resolves.toBe(false);
+    });
+  },
+);
 
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
   it('20240523100528_init.js', async () => {
@@ -92,5 +121,42 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     // actually is flaky for some reason specifically on sqlite when
     // performing multiple runs in sequence
     await expect(knex('event_bus_events')).rejects.toEqual(expect.anything());
+  });
+
+  it('20260930120000_event_bus_cleanup_indices.js', async () => {
+    const knex = await databases.init(databaseId);
+
+    await migrateUntilBefore(
+      knex,
+      '20260930120000_event_bus_cleanup_indices.js',
+    );
+
+    const indexNames = async () => {
+      const { rows } = await knex.raw(
+        `SELECT indexname FROM pg_indexes
+         WHERE schemaname = current_schema()
+           AND tablename = 'event_bus_events'
+         ORDER BY indexname`,
+      );
+      return rows.map((row: { indexname: string }) => row.indexname);
+    };
+
+    await expect(indexNames()).resolves.toEqual([
+      'event_bus_events_pkey',
+      'event_bus_events_topic_idx',
+    ]);
+
+    await migrateUpOnce(knex);
+    await expect(indexNames()).resolves.toEqual([
+      'event_bus_events_created_at_id_idx',
+      'event_bus_events_pkey',
+      'event_bus_events_topic_id_idx',
+    ]);
+
+    await migrateDownOnce(knex);
+    await expect(indexNames()).resolves.toEqual([
+      'event_bus_events_pkey',
+      'event_bus_events_topic_idx',
+    ]);
   });
 });
