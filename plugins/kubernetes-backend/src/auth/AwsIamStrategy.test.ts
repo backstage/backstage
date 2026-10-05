@@ -15,6 +15,7 @@
  */
 import { ConfigReader } from '@backstage/config';
 import {
+  ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_CLUSTER_ID,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
@@ -108,6 +109,58 @@ describe('AwsIamStrategy#getCredential', () => {
       }),
       expect.anything(),
     );
+  });
+
+  it('uses account credentials directly without assuming another role', async () => {
+    const strategy = new AwsIamStrategy({ config });
+    const accountCredentials = { AccessKeyId: 'account-specific' };
+    credsManager.getCredentialProvider.mockResolvedValue({
+      sdkCredentialProvider: accountCredentials,
+    });
+
+    await strategy.getCredential({
+      name: 'test-cluster',
+      url: '',
+      authMetadata: { [ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID]: '123456789012' },
+    });
+
+    expect(credsManager.getCredentialProvider).toHaveBeenCalledWith({
+      accountId: '123456789012',
+    });
+    expect(credsManager.getCredentialProvider).toHaveBeenCalledTimes(1);
+    expect(fromTemporaryCredentials).not.toHaveBeenCalled();
+    expect(signer.presign).toHaveBeenCalled();
+  });
+
+  it('uses account credentials to assume a separate cluster role', async () => {
+    const strategy = new AwsIamStrategy({ config });
+    const accountCredentials = { AccessKeyId: 'account-specific' };
+    credsManager.getCredentialProvider.mockResolvedValue({
+      sdkCredentialProvider: accountCredentials,
+    });
+
+    await strategy.getCredential({
+      name: 'test-cluster',
+      url: '',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID]: '123456789012',
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]:
+          'arn:aws:iam::234567890123:role/ClusterAccess',
+      },
+    });
+
+    expect(credsManager.getCredentialProvider).toHaveBeenCalledWith({
+      accountId: '123456789012',
+    });
+    expect(credsManager.getCredentialProvider).toHaveBeenCalledTimes(1);
+    expect(fromTemporaryCredentials).toHaveBeenCalledWith({
+      clientConfig: { region: 'us-east-1' },
+      masterCredentials: accountCredentials,
+      params: {
+        ExternalId: undefined,
+        RoleArn: 'arn:aws:iam::234567890123:role/ClusterAccess',
+      },
+    });
   });
 
   it('returns a presigned url for AWS credentials with assumed role when no account config exists', async () => {
