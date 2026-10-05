@@ -80,7 +80,8 @@ import {
  * disable `react-hooks/rules-of-hooks`, and with neither authority present the
  * answers degrade to the app root instead of blanking the app.
  *
- * Callers supply the app history from their API holder.
+ * The app history is passed in rather than resolved here, the same way
+ * `useOptionalAppHistory` hands it to every other call site in this package.
  *
  * Consumers are the `Sidebar` (`Items`, `SidebarGroup`, `MobileSidebar`,
  * `SidebarSubmenuItem`) and `ErrorPage`. `Link` needs none of this: it hands

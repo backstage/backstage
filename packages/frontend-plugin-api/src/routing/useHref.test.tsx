@@ -43,6 +43,10 @@ jest.mock('../components/AppNodeProvider', () => {
   return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
 });
 
+function useOptionalAppHistory() {
+  return useApiHolder().get(appHistoryApiRef);
+}
+
 describe('useHref', () => {
   const appHistory = createMockAppHistory({ basename: '/backstage' });
 
@@ -392,7 +396,7 @@ describe('the framework authority', () => {
         const { result } = renderHook(
           () => ({
             routerHref: useRouterHref(to),
-            appHref: useAppHref(useApiHolder().get(appHistoryApiRef), to),
+            appHref: useAppHref(useOptionalAppHistory(), to),
           }),
           { wrapper },
         );
@@ -507,10 +511,8 @@ describe('the framework authority', () => {
           'https://example.com/x',
         ].map(to => [
           to,
-          renderHook(
-            () => useAppHref(useApiHolder().get(appHistoryApiRef), to),
-            { wrapper },
-          ).result.current,
+          renderHook(() => useAppHref(useOptionalAppHistory(), to), { wrapper })
+            .result.current,
         ]),
       );
 
@@ -564,7 +566,7 @@ describe('the framework authority', () => {
     );
 
     const framework = (to: string) =>
-      renderHook(() => useAppHref(useApiHolder().get(appHistoryApiRef), to), {
+      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
             {subPageTree(
@@ -599,7 +601,7 @@ describe('the framework authority', () => {
       }).result.current;
 
     const legacy = (to: string) =>
-      renderHook(() => useAppHref(useApiHolder().get(appHistoryApiRef), to), {
+      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[]}>{subPageTree(children)}</TestApiProvider>
         ),
