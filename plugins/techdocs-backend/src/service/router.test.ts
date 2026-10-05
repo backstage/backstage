@@ -919,7 +919,6 @@ data: {"updated":true}
         config: techDocsPermissionsConfig,
       });
 
-      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
       publisher.fetchTechDocsMetadata.mockResolvedValue({
         site_name: 'Test',
         site_description: 'Test description',
@@ -941,8 +940,36 @@ data: {"updated":true}
         ],
         { credentials: mockCredentials.user() },
       );
-      // The catalog lookup no longer carries the user's credentials, so
-      // catalog.entity.read is not applied on top of techdocs.entity.read.
+      // The entity content is not used on this route, so the catalog is not
+      // queried at all once techdocs.entity.read authorizes the request.
+      expect(MockCachedEntityLoader.prototype.load).not.toHaveBeenCalled();
+    });
+
+    it('should load the entity with the plugin credentials on routes that use it', async () => {
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: techDocsPermissionsConfig,
+      });
+
+      docsBuildStrategy.shouldBuild.mockResolvedValue(false);
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/sync/default/Component/test')
+        .set('accept', 'text/event-stream')
+        .send();
+
+      expect(response.status).toBe(200);
+      // This route needs the entity content, and access is already gated by
+      // techdocs.entity.read, so the catalog lookup carries the plugin's own
+      // credentials rather than the caller's.
       expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalledWith(
         mockCredentials.service('plugin:test'),
         expect.objectContaining({ name: 'test' }),
@@ -986,15 +1013,48 @@ data: {"updated":true}
       );
     });
 
-    it('should refuse to start when the permission framework is disabled', async () => {
-      await expect(
-        createApp({
-          ...outOfTheBoxOptions,
-          config: new ConfigReader({
-            techdocs: { experimentalTechdocsPermissions: true },
-          }),
+    it('should warn and fall back to catalog access when the permission framework is disabled', async () => {
+      const logger = mockServices.logger.mock();
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        logger,
+        permissions,
+        config: new ConfigReader({
+          techdocs: { experimentalTechdocsPermissions: true },
         }),
-      ).rejects.toThrow(/permission framework is disabled/);
+      });
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('permission framework is disabled'),
+      );
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+      publisher.fetchTechDocsMetadata.mockResolvedValue({
+        site_name: 'Test',
+        site_description: 'Test description',
+        etag: 'abc123',
+        build_timestamp: 1704067200,
+      });
+
+      // The flag has no effect: techdocs.entity.read is not authorized and the
+      // entity is still loaded with the caller's credentials so the catalog
+      // enforces catalog.entity.read as before.
+      const response = await request(app)
+        .get('/metadata/techdocs/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(permissions.authorize).not.toHaveBeenCalled();
+      expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalledWith(
+        mockCredentials.user(),
+        expect.objectContaining({ name: 'test' }),
+      );
     });
 
     it('should warn when documentation is served straight from storage', async () => {

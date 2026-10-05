@@ -20,4 +20,7 @@
  * @packageDocumentation
  */
 export * from './constants';
-export * from './permissions';
+export {
+  techDocsEntityReadPermission,
+  techDocsPermissions,
+} from './permissions';

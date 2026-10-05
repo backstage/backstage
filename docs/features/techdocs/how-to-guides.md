@@ -841,8 +841,9 @@ The route that returns the catalog entity behind a documentation site requires *
 ### Enable permissions
 
 Enable and configure the permission framework first, as described in the
-[permissions documentation](../../permissions/writing-a-policy.md). The backend
-refuses to start if the TechDocs flag is enabled without it:
+[permissions documentation](../../permissions/writing-a-policy.md). Without it
+the TechDocs flag has no effect, and the backend logs a warning on startup and
+keeps relying on `catalog.entity.read` to control access:
 
 ```yaml
 techdocs:
