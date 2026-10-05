@@ -577,7 +577,7 @@ describe('AppRoutes', () => {
     });
   });
 
-  it('should provide a PageMount with the matched basePath to the matched page', async () => {
+  it('should provide the matched base path to the matched page', async () => {
     const catalogPage = PageBlueprint.make({
       name: 'catalog',
       params: {

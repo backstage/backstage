@@ -17,12 +17,12 @@
 import type {
   AppHistoryApi,
   AppLocation,
+  RouteResolutionMatch,
 } from '@backstage/frontend-plugin-api';
 import {
   matchPath,
   readAppHistoryMetadata,
   type AppHistoryMetadata,
-  type PageMount,
 } from '@internal/frontend';
 import {
   createHistory,
@@ -46,7 +46,9 @@ export interface CreateTanStackHistoryOptions {
    */
   routePattern: string;
   /** Resolves this extension's mount from the app's selected route branch. */
-  resolveMount?: (pathname: string) => PageMount | undefined;
+  resolveMount?: (
+    pathname: string,
+  ) => Pick<RouteResolutionMatch, 'basePath'> | undefined;
 }
 
 /** An app-absolute pathname split at the page's mount point. */

@@ -80,8 +80,7 @@ import {
  * disable `react-hooks/rules-of-hooks`, and with neither authority present the
  * answers degrade to the app root instead of blanking the app.
  *
- * The app history is passed in rather than resolved here, the same way
- * `useOptionalAppHistory` hands it to every other call site in this package.
+ * Callers supply the app history from their API holder.
  *
  * Consumers are the `Sidebar` (`Items`, `SidebarGroup`, `MobileSidebar`,
  * `SidebarSubmenuItem`) and `ErrorPage`. `Link` needs none of this: it hands
@@ -193,9 +192,7 @@ export function useAppResolvedPath(
   to: AppTo,
 ): AppPath {
   const mountBasePaths = useRouteResolution()
-    .matches.filter(
-      (match, index) => index === 0 || match.contributesPath !== false,
-    )
+    .matches.filter((match, index) => index === 0 || match.contributesPath)
     .map(match => match.basePath);
   const routeBasePaths = useRouteBasePaths();
   // Whichever authority answers, it is the same one that answers for the

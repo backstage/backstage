@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import BottomNavigationAction, {
   BottomNavigationActionProps,
 } from '@material-ui/core/BottomNavigationAction';
@@ -25,7 +27,6 @@ import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
 import { useAppLocation } from '../appRouting';
-import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**
  * Props for the `SidebarGroup`
@@ -80,7 +81,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useStyles({ sidebarConfig });
   const { pathname: locationPathname } = useAppLocation(
-    useOptionalAppHistory(),
+    useApiHolder().get(appHistoryApiRef),
   );
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
