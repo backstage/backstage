@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
 import {
   act,
   fireEvent,
@@ -23,7 +25,7 @@ import {
 } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
-import { PageMountProvider } from '@internal/frontend';
+
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppRouting } from './useAppRouting';
 import { Link, RouterProvider } from 'react-aria-components';
