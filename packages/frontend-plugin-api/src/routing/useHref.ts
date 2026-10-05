@@ -21,6 +21,7 @@ import {
   sanitizeHref,
   useAppRouting,
 } from '@internal/frontend';
+import { usePageMountBasePaths } from './usePageMount';
 import { useApiHolder } from '../apis/system';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import {
@@ -54,7 +55,7 @@ export function useAppHref(
   appHistory: AppHistoryApi | undefined,
   to: string,
 ): string {
-  const appRouting = useAppRouting(appHistory);
+  const appRouting = useAppRouting(appHistory, usePageMountBasePaths());
   const navigation = useRouterContext(NavigationContext);
   const routeBasePaths = useRouteBasePaths();
   const routerLocation = useRouterContext(LocationContext)?.location;

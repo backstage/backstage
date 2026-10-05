@@ -24,6 +24,7 @@ import {
 import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
+  useRouteResolution,
   useAnalytics,
   createRouteRef,
   createExternalRouteRef,
@@ -50,7 +51,6 @@ import {
   useInRouterContext,
   Link,
 } from 'react-router-dom';
-import { usePageMount } from '@internal/frontend';
 import { renderInTestApp } from './renderInTestApp';
 import { renderTestApp } from './renderTestApp';
 import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
@@ -512,7 +512,7 @@ describe('renderInTestApp', () => {
       'hosts a deeper location when mounted at the app root with %s',
       async mountPath => {
         function Content() {
-          const mount = usePageMount();
+          const mount = useRouteResolution().matches.at(-1);
           return (
             <>
               <span>Mount: {mount?.basePath ?? 'none'}</span>

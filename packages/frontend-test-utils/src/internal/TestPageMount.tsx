@@ -17,6 +17,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
+  useRouteResolution,
   routeResolutionApiRef,
   useApiHolder,
   type AppNode,
@@ -27,7 +28,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import { usePageMountChain, type PageMount } from '@internal/frontend';
+import { type PageMount } from '@internal/frontend';
 
 const AppNodeContext = createVersionedContext<{ 1: { node?: AppNode } }>(
   'app-node-context',
@@ -40,7 +41,7 @@ export function PageMountProvider(props: {
   children: ReactNode;
 }) {
   const parent = useApiHolder();
-  const parentChain = usePageMountChain();
+  const parentChain = useRouteResolution().matches;
   const node = useMemo(() => ({} as AppNode), []);
   const { basePath, routePattern, params, contributesPath } = props.mount;
   const apis = useMemo(() => {

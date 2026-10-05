@@ -17,12 +17,8 @@
 import { JSX, ReactNode, lazy, useEffect } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import {
-  joinRoutePath,
-  usePageMount,
-  useAppRouteMatches,
-  useAppHistoryLocation,
-} from '@internal/frontend';
+import { joinRoutePath, useAppHistoryLocation } from '@internal/frontend';
+import { usePageMount } from '../routing/usePageMount';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -83,10 +79,12 @@ function PageContent(props: {
   children?: ReactNode;
 }) {
   const { subPages, children } = props;
-  const matches = useAppRouteMatches();
   const pageMount = usePageMount();
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
+  const routes = useApiHolder().get(routeResolutionApiRef);
+  const matches =
+    location && routes?.resolvePath({ pathname: location.pathname }).matches;
   const selectedMatch = matches?.find(match =>
     subPages?.some(page => page.node === match.node),
   );

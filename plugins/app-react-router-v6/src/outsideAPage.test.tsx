@@ -22,8 +22,10 @@ import {
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
+import {
+  useRouteResolution,
+  appHistoryApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   MemoryRouter,
   Route,
@@ -62,7 +64,7 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 function LegacyProbe(props: { id: string }) {
   const params = useParams();
   const resolved = useResolvedPath('edit');
-  const mount = usePageMount();
+  const mount = useRouteResolution().matches.at(-1);
   return (
     <span data-testid={props.id}>
       {JSON.stringify({
