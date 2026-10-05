@@ -54,6 +54,7 @@ import {
   Link,
 } from 'react-router-dom';
 import type { AppError } from '@backstage/frontend-app-api';
+import { usePageMount } from '@internal/frontend';
 import { renderInTestApp } from './renderInTestApp';
 import { renderTestApp } from './renderTestApp';
 import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
@@ -574,10 +575,21 @@ describe('renderInTestApp', () => {
     it.each(['/', '/*'])(
       'hosts a deeper location when mounted at the app root with %s',
       async mountPath => {
-        renderInTestApp(<HrefProbe to="techdocs" />, {
+        function Content() {
+          const mount = usePageMount();
+          return (
+            <>
+              <span>Mount: {mount?.basePath ?? 'none'}</span>
+              <HrefProbe to="techdocs" />
+            </>
+          );
+        }
+        renderInTestApp(<Content />, {
           mountPath,
           initialRouteEntries: ['/deeper/path'],
+          mountedRoutes: { '/deeper/path': createRouteRef() },
         });
+        expect(screen.getByText('Mount: /')).toBeInTheDocument();
 
         expect(screen.getByTestId('probe')).toHaveAttribute(
           'href',

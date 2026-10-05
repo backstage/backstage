@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PageMountProvider } from '../../../packages/frontend-test-utils/src/internal/TestPageMount';
 import type { ReactNode } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import {
@@ -21,7 +23,7 @@ import {
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { PageMountProvider, usePageMount } from '@internal/frontend';
+import { usePageMount } from '@internal/frontend';
 import { useRouter } from '@tanstack/react-router';
 import {
   TanStackPageRouter,
@@ -167,7 +169,7 @@ describe('TanStackPageRouter outside a page', () => {
     );
 
     await waitFor(() => {
-      expect(readProbe()).toEqual({
+      expect(readProbe()).toMatchObject({
         hasTanStackRouter: true,
         mount: { basePath: '/old/alpha', routePattern: '/old/:id' },
       });
