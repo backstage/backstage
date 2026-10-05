@@ -47,6 +47,7 @@ export const changelog_0_11_0: ChangelogProps[] = [
     components: [],
     version: '0.11.0',
     prs: ['32202'],
+    tokens: true,
     description: `**BREAKING**: Updating color tokens to match the new neutral style on different surfaces.`,
     migration: `There's no direct replacement for the old tint tokens but you can use the new neutral set of color tokens on surface 0 or 1 as a replacement.
 
@@ -69,6 +70,7 @@ export const changelog_0_11_0: ChangelogProps[] = [
     components: [],
     version: '0.11.0',
     prs: ['32200'],
+    tokens: true,
     description: `**BREAKING**: Renamed CSS variable \`--bui-bg\` to \`--bui-bg-surface-0\` for consistency.`,
     breaking: true,
     commitSha: '4ea1d15',
