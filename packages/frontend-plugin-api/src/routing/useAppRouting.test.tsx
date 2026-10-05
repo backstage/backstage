@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../frontend-test-utils/src/internal/TestPageMount';
+import {
+  routeResolutionApiRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import {
   act,
   fireEvent,
@@ -30,6 +32,14 @@ import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppRouting } from './useAppRouting';
 import { Link, RouterProvider } from 'react-aria-components';
 
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock('../components/AppNodeProvider', () => {
+  const actual = jest.requireActual('../components/AppNodeProvider');
+  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
+});
+
 describe('useAppRouting', () => {
   it('keeps direct React Aria hrefs and clicks in the provider scope across a deeper mount', () => {
     const history = createMockAppHistory({
@@ -43,24 +53,54 @@ describe('useAppRouting', () => {
           navigate={routing.navigate}
           useHref={routing.createHref}
         >
-          <PageMountProvider
-            mount={{
-              basePath: '/catalog/entity',
-              routePattern: '/catalog/:name',
-            }}
+          <TestApiProvider
+            apis={[
+              [
+                routeResolutionApiRef,
+                {
+                  resolvePath: () => ({
+                    matches: [
+                      {
+                        params: {},
+                        contributesPath: true,
+                        basePath: '/catalog/entity',
+                        routePattern: '/catalog/:name',
+                        node: mockRouteNode,
+                      },
+                    ],
+                  }),
+                },
+              ],
+            ]}
           >
             <Link href="details?view=docs#intro">Details</Link>
-          </PageMountProvider>
+          </TestApiProvider>
         </RouterProvider>
       );
     }
     render(
-      <TestApiProvider apis={[[appHistoryApiRef, history]]}>
-        <PageMountProvider
-          mount={{ basePath: '/catalog', routePattern: '/catalog' }}
-        >
-          <Content />
-        </PageMountProvider>
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, history],
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: () => ({
+                matches: [
+                  {
+                    params: {},
+                    contributesPath: true,
+                    basePath: '/catalog',
+                    routePattern: '/catalog',
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
+            },
+          ],
+        ]}
+      >
+        <Content />
       </TestApiProvider>,
     );
     const link = screen.getByRole('link', { name: 'Details' });
@@ -84,19 +124,31 @@ describe('useAppRouting', () => {
     });
     const { result } = renderHook(() => useAppRouting(), {
       wrapper: ({ children }) => (
-        <TestApiProvider apis={[[appHistoryApiRef, history]]}>
-          <PageMountProvider
-            mount={{ basePath: '/catalog', routePattern: '/catalog' }}
-          >
-            <PageMountProvider
-              mount={{
-                basePath: '/catalog/entity',
-                routePattern: '/catalog/:name',
-              }}
-            >
-              {children}
-            </PageMountProvider>
-          </PageMountProvider>
+        <TestApiProvider
+          apis={[
+            [appHistoryApiRef, history],
+            [
+              routeResolutionApiRef,
+              {
+                resolvePath: () => ({
+                  matches: [
+                    { basePath: '/catalog', routePattern: '/catalog' },
+                    {
+                      basePath: '/catalog/entity',
+                      routePattern: '/catalog/:name',
+                    },
+                  ].map(mount => ({
+                    params: {},
+                    contributesPath: true,
+                    ...mount,
+                    node: mockRouteNode,
+                  })),
+                }),
+              },
+            ],
+          ]}
+        >
+          {children}
         </TestApiProvider>
       ),
     });

@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../packages/frontend-test-utils/src/internal/TestPageMount';
+import { matchPath } from '@internal/frontend';
+import {
+  routeResolutionApiRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import {
@@ -35,6 +38,22 @@ import {
 } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock(
+  '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+  () => {
+    const actual = jest.requireActual(
+      '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+    );
+    return {
+      ...actual,
+      useAppNode: () => actual.useAppNode() ?? mockRouteNode,
+    };
+  },
+);
+
 /**
  * The adapter rendered where there is no page: the old frontend system, and
  * any plain `render()` unit test.
@@ -42,7 +61,7 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
  * Many plugins ship for both frontend systems out of one package, and the
  * component that wraps itself in this adapter for the new system is very often
  * the same component the old system renders. Under the old system there is no
- * `PageMountProvider` above it, no framework route matching, no framework APIs
+ * route resolution mock above it, no framework route matching, no framework APIs
  * registered at all, and an ordinary `<Router>` somewhere near the app root
  * doing all the routing. The wrap the ecosystem is being asked to add
  * therefore has to be *invisible* there: nothing scoped, nothing added, and in
@@ -98,11 +117,29 @@ function renderUnderLegacyRouter(
   );
   if (options.mount) {
     tree = (
-      <PageMountProvider
-        mount={{ basePath: '/old/alpha', routePattern: '/old/:id' }}
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath('/old/:id', pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: '/old/alpha',
+                    routePattern: '/old/:id',
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
+            },
+          ],
+        ]}
       >
         {tree}
-      </PageMountProvider>
+      </TestApiProvider>
     );
   }
   if (options.appHistory) {
@@ -174,15 +211,28 @@ describe('ReactRouterV7PageRouter outside a page', () => {
             appHistoryApiRef,
             createMockAppHistory({ initialLocation: '/old/alpha/deep' }),
           ],
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath('/old/:id', pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: '/old/alpha',
+                    routePattern: '/old/:id',
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
+            },
+          ],
         ]}
       >
-        <PageMountProvider
-          mount={{ basePath: '/old/alpha', routePattern: '/old/:id' }}
-        >
-          <ReactRouterV7PageRouter>
-            <LegacyProbe id="scoped" />
-          </ReactRouterV7PageRouter>
-        </PageMountProvider>
+        <ReactRouterV7PageRouter>
+          <LegacyProbe id="scoped" />
+        </ReactRouterV7PageRouter>
       </TestApiProvider>,
     );
 
