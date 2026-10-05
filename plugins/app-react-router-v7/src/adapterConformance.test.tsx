@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountProvider } from '../../../packages/frontend-test-utils/src/internal/TestPageMount';
+import { matchPath } from '@internal/frontend';
+import {
+  routeResolutionApiRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../../packages/frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
@@ -39,6 +42,22 @@ import {
   useSearchParams,
 } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock(
+  '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+  () => {
+    const actual = jest.requireActual(
+      '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+    );
+    return {
+      ...actual,
+      useAppNode: () => actual.useAppNode() ?? mockRouteNode,
+    };
+  },
+);
 
 /**
  * Page router adapter conformance.
@@ -164,14 +183,31 @@ describe(`React Router v7 route context matches a real router tree`, () => {
 
     const appHistory = createMockAppHistory({ initialLocation: url });
     render(
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        <PageMountProvider
-          mount={{ basePath: BASE_PATH, routePattern: ROUTE_PATTERN }}
-        >
-          <ReactRouterV7PageRouter>
-            <ContextProbe />
-          </ReactRouterV7PageRouter>
-        </PageMountProvider>
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, appHistory],
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: BASE_PATH,
+                    routePattern: ROUTE_PATTERN,
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
+            },
+          ],
+        ]}
+      >
+        <ReactRouterV7PageRouter>
+          <ContextProbe />
+        </ReactRouterV7PageRouter>
       </TestApiProvider>,
     );
 
@@ -183,14 +219,31 @@ describe(`React Router v7 route context matches a real router tree`, () => {
       initialLocation: `${BASE_PATH}/overview`,
     });
     render(
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        <PageMountProvider
-          mount={{ basePath: BASE_PATH, routePattern: ROUTE_PATTERN }}
-        >
-          <ReactRouterV7PageRouter>
-            <ContextProbe />
-          </ReactRouterV7PageRouter>
-        </PageMountProvider>
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, appHistory],
+          [
+            routeResolutionApiRef,
+            {
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: BASE_PATH,
+                    routePattern: ROUTE_PATTERN,
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
+            },
+          ],
+        ]}
+      >
+        <ReactRouterV7PageRouter>
+          <ContextProbe />
+        </ReactRouterV7PageRouter>
       </TestApiProvider>,
     );
 
