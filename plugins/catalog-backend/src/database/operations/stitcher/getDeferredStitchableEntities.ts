@@ -63,6 +63,8 @@ export async function getDeferredStitchableEntities(options: {
   // next_stitch_at has been bumped. Without the transaction the locks
   // are released after the SELECT auto-commits, and another worker can
   // claim the same rows before the UPDATE runs.
+  // SQLite also keeps selection and ticket/lease replacement in one transaction,
+  // without attempting the row-locking clauses that it does not support.
   const run = async (tx: Knex | Knex.Transaction) => {
     const items: DbStitchQueueRow[] = await tx('stitch_queue')
       .select('entity_ref', 'next_stitch_at', 'stitch_ticket')

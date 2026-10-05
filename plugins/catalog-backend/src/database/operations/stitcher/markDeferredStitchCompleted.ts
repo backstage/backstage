@@ -35,7 +35,6 @@ export async function markDeferredStitchCompleted(option: {
   entityRef: string;
   stitchTicket: string;
   stitchLeaseExpiresAt?: DbStitchQueueRow['next_stitch_at'];
-  result: 'succeeded' | 'abandoned';
 }): Promise<void> {
   const { knex, entityRef, stitchTicket, stitchLeaseExpiresAt } = option;
 

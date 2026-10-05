@@ -28,36 +28,32 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(
   'markDeferredStitchCompleted, %p',
   databaseId => {
-    it.each(['succeeded', 'abandoned'] as const)(
-      'does not disturb a successor after a stale %s completion',
-      async result => {
-        const knex = await databases.init(databaseId);
-        await applyDatabaseMigrations(knex);
-        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-        const [expired] = await getDeferredStitchableEntities({
-          knex,
-          batchSize: 1,
-          stitchTimeout: { seconds: 0 },
-        });
-        const [successor] = await getDeferredStitchableEntities({
-          knex,
-          batchSize: 1,
-          stitchTimeout: { minutes: 1 },
-        });
-        expect(successor.stitchTicket).not.toBe(expired.stitchTicket);
-        const before = await knex<DbStitchQueueRow>('stitch_queue');
-        await markDeferredStitchCompleted({ knex, ...expired, result });
-        await expect(knex<DbStitchQueueRow>('stitch_queue')).resolves.toEqual(
-          before,
-        );
-        await markDeferredStitchCompleted({
-          knex,
-          ...successor,
-          result: 'succeeded',
-        });
-        await expect(knex('stitch_queue')).resolves.toEqual([]);
-      },
-    );
+    it('does not disturb a successor after a stale completion', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const [expired] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { seconds: 0 },
+      });
+      const [successor] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(successor.stitchTicket).not.toBe(expired.stitchTicket);
+      const before = await knex<DbStitchQueueRow>('stitch_queue');
+      await markDeferredStitchCompleted({ knex, ...expired });
+      await expect(knex<DbStitchQueueRow>('stitch_queue')).resolves.toEqual(
+        before,
+      );
+      await markDeferredStitchCompleted({
+        knex,
+        ...successor,
+      });
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+    });
 
     it('makes a new request eligible when the same lease finishes', async () => {
       const knex = await databases.init(databaseId);
@@ -72,7 +68,6 @@ describe.each(databases.eachSupportedId())(
       await markDeferredStitchCompleted({
         knex,
         ...claim,
-        result: 'abandoned',
       });
       const [followUp] = await getDeferredStitchableEntities({
         knex,
@@ -111,7 +106,6 @@ describe.each(databases.eachSupportedId())(
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'the-wrong-ticket',
-        result: 'succeeded',
       });
       const afterWrongTicket = await result();
       expect(afterWrongTicket).toEqual([
@@ -129,7 +123,6 @@ describe.each(databases.eachSupportedId())(
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'the-ticket',
-        result: 'succeeded',
       });
       await expect(result()).resolves.toEqual([]);
     });
@@ -144,7 +137,6 @@ describe.each(databases.eachSupportedId())(
           knex,
           entityRef: 'k:ns/nonexistent',
           stitchTicket: 'any-ticket',
-          result: 'succeeded',
         }),
       ).resolves.toBeUndefined();
     });
@@ -162,7 +154,6 @@ describe.each(databases.eachSupportedId())(
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'old-ticket',
-        result: 'succeeded',
       });
       await expect(knex('stitch_queue')).resolves.toEqual(before);
     });
