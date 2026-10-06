@@ -1,5 +1,11 @@
 # @backstage/plugin-app-backend
 
+## 0.5.19-next.2
+
+### Patch Changes
+
+- c55505e: Fix protected app sign-in returning a 404 when an authenticated browser repeats the sign-in handoff for the same user.
+
 ## 0.5.19-next.1
 
 ### Patch Changes

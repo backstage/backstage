@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.1-next.2
+
+### Patch Changes
+
+- 589dcef: Fixed an issue where successfully processed entities could remain unavailable if stitch scheduling was interrupted.
+- a69d971: Improved the reliability of deferred stitching. Pending stitching work is no longer lost when entities are deleted and re-added, and updated instances prevent timed-out stitching attempts from overwriting or removing work taken over by another updated instance. During rolling upgrades from older versions, instances may still perform redundant stitching. On MySQL, protection against overlapping writes remains best-effort.
+- 476f042: Fixed entities disappearing from filtered and sorted catalog queries after a database error during stitching. The final entity and its search index rows are now written together, so a failure part way through is rolled back and retried in full. Previously the entity could be left with a search index that no longer matched it, and because the entity itself looked up to date, every later stitch attempt skipped it. Such an entity stayed readable by direct lookup while missing from list queries that filter or sort, until it was next edited.
+
+  PostgreSQL and MySQL deadlocks trigger prompt, bounded retries of the entire write transaction, skipping the write if newer stitching work has superseded it. If retries are exhausted, queued work remains available for recovery after the stitching timeout.
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.1
+  - @backstage/backend-openapi-utils@0.7.3-next.2
+
 ## 4.0.1-next.1
 
 ### Patch Changes

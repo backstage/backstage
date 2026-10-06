@@ -1,5 +1,11 @@
 # @backstage/backend-openapi-utils
 
+## 0.7.3-next.2
+
+### Patch Changes
+
+- 812225c: Fixed the OpenAPI validation test server wrapper to support `supertest` 7.3 by returning a standard server address for the validation proxy.
+
 ## 0.7.3-next.1
 
 ### Patch Changes

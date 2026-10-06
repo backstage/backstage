@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.19.2-next.2
+
+### Patch Changes
+
+- b8c8132: CLI API reports now support help output with separate groups and commands sections, including commands nested within groups.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.1
+
 ## 0.19.2-next.1
 
 ### Patch Changes

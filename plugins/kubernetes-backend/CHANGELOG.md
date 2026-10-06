@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.12-next.2
+
+### Patch Changes
+
+- b3292fc: Declare the existing per-cluster `assumeRole` and `externalId` options in the configuration schema so schema-generated configuration forms can expose AWS IAM role authentication settings. External IDs are marked as secrets.
+
 ## 0.21.12-next.1
 
 ### Patch Changes
