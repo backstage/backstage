@@ -15,14 +15,12 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import {
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 import { PropsWithChildren } from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
 import {
+  mockApis,
+  TestApiProvider,
   createMockAppHistory,
   type MockAppHistory,
 } from '@backstage/frontend-test-utils';
@@ -76,21 +74,17 @@ function createWrapper(options: {
       <TestApiProvider
         apis={[
           [appHistoryApiRef, appHistory],
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: ({ pathname }) => ({
-                matches: mounts.map(mount => ({
-                  params:
-                    matchPath(mount.routePattern, pathname, false)?.params ??
-                    {},
-                  contributesPath: true,
-                  ...mount,
-                  node: mockRouteNode,
-                })),
-              }),
-            },
-          ],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: mounts.map(mount => ({
+                params:
+                  matchPath(mount.routePattern, pathname, false)?.params ?? {},
+                contributesPath: true,
+                ...mount,
+                node: mockRouteNode,
+              })),
+            }),
+          }),
         ]}
       >
         {children}
