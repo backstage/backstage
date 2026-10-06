@@ -15,13 +15,11 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import {
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import {
+  mockApis,
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
@@ -119,23 +117,19 @@ function renderUnderLegacyRouter(
     tree = (
       <TestApiProvider
         apis={[
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: ({ pathname }) => ({
-                matches: [
-                  {
-                    params:
-                      matchPath('/old/:id', pathname, false)?.params ?? {},
-                    contributesPath: true,
-                    basePath: '/old/alpha',
-                    routePattern: '/old/:id',
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
-            },
-          ],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: '/old/alpha',
+                  routePattern: '/old/:id',
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
         ]}
       >
         {tree}
@@ -209,23 +203,19 @@ describe('ReactRouterV6PageRouter outside a page', () => {
             appHistoryApiRef,
             createMockAppHistory({ initialLocation: '/old/alpha/deep' }),
           ],
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: ({ pathname }) => ({
-                matches: [
-                  {
-                    params:
-                      matchPath('/old/:id', pathname, false)?.params ?? {},
-                    contributesPath: true,
-                    basePath: '/old/alpha',
-                    routePattern: '/old/:id',
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
-            },
-          ],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: '/old/alpha',
+                  routePattern: '/old/:id',
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
         ]}
       >
         <ReactRouterV6PageRouter>
