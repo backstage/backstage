@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Monitor and Synchronize Snyk Policies
-        uses: snyk/actions/node@12140f4059e244892ae643824a95459a102120dd # master
+        uses: snyk/actions/node@b075801f26076be9bb50521154cafab73f44da0c # master
         with:
           command: monitor
           args: >
