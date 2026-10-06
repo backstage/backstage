@@ -45,6 +45,43 @@ describe('source documentation', () => {
     );
     expect(JSON.stringify(explicit.tree)).toContain('"href":"#custom"');
   });
+  it('preserves callout kinds, disclosure state and safe inline presentation without enabling author styles', () => {
+    const result = parseTechDocsMarkdown(
+      [
+        '!!! warning "Watch out"',
+        '    Be careful.',
+        '',
+        '??? note "Closed"',
+        '    Hidden by default.',
+        '',
+        '???+ tip "Open"',
+        '    Visible by default.',
+        '',
+        'Great :thumbsup: `:heart:`',
+        '',
+        '![Small](small.png){: style="width: 100px" }',
+        '',
+        '![Unsafe](unsafe.png){: style="width: 100px; position: fixed" }',
+        '',
+        '[Download](file.txt){: download }',
+      ].join('\n'),
+    );
+    const nodes = result.tree.children!;
+    const callout = nodes.find(node => node.tagName === 'aside')!;
+    expect(callout.properties?.className).toEqual(['techdocs-warning']);
+    const details = nodes.filter(node => node.tagName === 'details');
+    expect(details).toHaveLength(2);
+    expect(details[0].properties?.open).toBeUndefined();
+    expect(details[1].properties?.open).toBe(true);
+    expect(details[0].children?.[0].tagName).toBe('summary');
+    expect(result.text).toContain('👍');
+    expect(result.text).toContain(':heart:');
+    const serialized = JSON.stringify(result.tree);
+    expect(serialized).toContain('"width":100');
+    expect(serialized).not.toContain('"style":');
+    expect(result.text).not.toContain('{: download }');
+    expect(result.text).toContain('position: fixed');
+  });
   it('enforces rollout policy and strict source behavior', () => {
     const manifest = {
       available: true,

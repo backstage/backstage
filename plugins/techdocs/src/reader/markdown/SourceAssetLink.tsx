@@ -17,6 +17,7 @@
 import { ReactNode, useState } from 'react';
 import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { readSourceJson } from './sourceClient';
+import styles from './markdown.module.css';
 
 export function SourceAssetLink({
   base,
@@ -72,7 +73,12 @@ export function SourceAssetLink({
   };
   return (
     <>
-      <button type="button" disabled={busy} onClick={download}>
+      <button
+        className={styles.assetLink}
+        type="button"
+        disabled={busy}
+        onClick={download}
+      >
         {children}
       </button>
       {error && <span role="alert">Download unavailable</span>}

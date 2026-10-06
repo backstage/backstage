@@ -37,12 +37,17 @@ import {
   TechDocsRenderingMode,
 } from '@backstage/plugin-techdocs-common/alpha';
 import { readSourceJson } from './sourceClient';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import styles from './markdown.module.css';
 
 const MarkdownReader = lazy(() => import('./MarkdownReader'));
 
 type ReaderGateProps = {
   children: ReactNode;
   defaultPath?: string;
+  withSearch?: boolean;
+  searchResultUrlMapper?: (url: string) => string;
   onReady?: () => void;
 };
 
@@ -64,7 +69,13 @@ function ConfiguredReader(props: ReaderGateProps) {
   );
 }
 
-function EntityReader({ children, defaultPath, onReady }: ReaderGateProps) {
+function EntityReader({
+  children,
+  defaultPath,
+  onReady,
+  withSearch,
+  searchResultUrlMapper,
+}: ReaderGateProps) {
   const config = useApi(configApiRef);
   const storage = useApi(techdocsStorageApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -139,33 +150,39 @@ function EntityReader({ children, defaultPath, onReady }: ReaderGateProps) {
       />
     );
   return (
-    <>
+    <div className={styles.reader}>
       {manifest?.available && manifest.legacy && policy !== 'source' && (
-        <label>
-          Documentation preview{' '}
-          <select
-            aria-label="Documentation preview"
-            value={renderer}
-            onChange={event => {
-              const next = new URLSearchParams(params);
-              next.set('techdocs-preview', event.target.value);
-              navigate(
-                {
-                  ...location,
-                  search: next.toString(),
-                  hash: (window.location.pathname === location.pathname
-                    ? window.location.hash
-                    : location.hash
-                  ).replace(/^#techdocs-/, '#'),
-                },
-                { replace: true },
-              );
-            }}
-          >
-            <option value="legacy">Published HTML</option>
-            <option value="source">Markdown</option>
-          </select>
-        </label>
+        <div className={styles.readerToolbar}>
+          <span className={styles.rendererLabel}>View as</span>
+          <ButtonGroup size="small" aria-label="Documentation renderer">
+            {(['legacy', 'source'] as const).map(value => (
+              <Button
+                key={value}
+                aria-pressed={renderer === value}
+                color={renderer === value ? 'primary' : 'default'}
+                variant={renderer === value ? 'contained' : 'outlined'}
+                disableElevation
+                onClick={() => {
+                  const next = new URLSearchParams(params);
+                  next.set('techdocs-preview', value);
+                  navigate(
+                    {
+                      ...location,
+                      search: next.toString(),
+                      hash: (window.location.pathname === location.pathname
+                        ? window.location.hash
+                        : location.hash
+                      ).replace(/^#techdocs-/, '#'),
+                    },
+                    { replace: true },
+                  );
+                }}
+              >
+                {value === 'legacy' ? 'HTML' : 'Markdown'}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </div>
       )}
       {renderer === 'source' ? (
         <Suspense fallback={<Progress />}>
@@ -173,6 +190,8 @@ function EntityReader({ children, defaultPath, onReady }: ReaderGateProps) {
             manifest={manifest!}
             base={base}
             defaultPath={defaultPath}
+            withSearch={withSearch}
+            searchResultUrlMapper={searchResultUrlMapper}
             onReady={onReady}
             onMissingArtifact={onMissingArtifact}
           />
@@ -180,6 +199,6 @@ function EntityReader({ children, defaultPath, onReady }: ReaderGateProps) {
       ) : (
         children
       )}
-    </>
+    </div>
   );
 }

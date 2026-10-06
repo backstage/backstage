@@ -32,7 +32,8 @@ import {
   useParams,
   useResolvedPath,
 } from 'react-router-dom';
-import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import useAsync from 'react-use/esm/useAsync';
 import { fetchApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
@@ -56,6 +57,24 @@ import { SourceAssetLink } from './SourceAssetLink';
 import { MathContent, HighlightedCode } from './renderers';
 import { MarkdownTabs } from './MarkdownTabs';
 import styles from './markdown.module.css';
+import { TechDocsSearch } from '../../search';
+import { Content } from '@backstage/core-components';
+import { BackstageTheme } from '@backstage/theme';
+
+const useStyles = makeStyles(theme => ({
+  article: Object.fromEntries(
+    (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const).map(tag => [
+      `& ${tag}`,
+      {
+        ...theme.typography[tag],
+        fontSize:
+          typeof theme.typography[tag].fontSize === 'number'
+            ? Number(theme.typography[tag].fontSize) * 0.6
+            : theme.typography[tag].fontSize,
+      },
+    ]),
+  ),
+}));
 
 const MermaidBlock = lazy(() => import('./MermaidBlock'));
 
@@ -77,16 +96,20 @@ export default function MarkdownReader(props: {
   manifest: TechDocsSourceManifest;
   base: string;
   defaultPath?: string;
+  withSearch?: boolean;
+  searchResultUrlMapper?: (url: string) => string;
   onReady?: () => void;
   onMissingArtifact?: (file: string) => void;
 }) {
   const { manifest, base, defaultPath, onReady, onMissingArtifact } = props;
   const { '*': route = '' } = useParams();
   const location = useLocation();
-  const theme = useTheme();
+  const theme = useTheme<BackstageTheme>();
+  const typographyClasses = useStyles();
+  const narrow = useMediaQuery('(max-width: 900px)');
   const fetchApi = useApi(fetchApiRef);
   const holder = useApiHolder();
-  const { entityRef, setTitle } = useTechDocsReaderPage();
+  const { entityRef, setTitle, entityMetadata } = useTechDocsReaderPage();
   const [selection, setSelection] = useState<TechDocsSelection>({ text: '' });
   const article = useRef<HTMLElement>(null);
   const selectedRoute = route || defaultPath || '';
@@ -326,6 +349,11 @@ export default function MarkdownReader(props: {
         <SourceImage
           base={base}
           file={asset.file}
+          width={
+            Number(properties.width) > 0 && Number(properties.width) <= 10000
+              ? Number(properties.width)
+              : undefined
+          }
           alt={String(properties.alt ?? '')}
           onMissingArtifact={onMissingArtifact}
         />
@@ -400,12 +428,33 @@ export default function MarkdownReader(props: {
       </Fragment>
     );
   }
+  const containsPage = (entry: TechDocsNavigation): boolean =>
+    entry.path === page!.path || (entry.children?.some(containsPage) ?? false);
+  const navigationPages: TechDocsNavigation[] = [];
+  const collectPages = (entries: TechDocsNavigation[]) => {
+    for (const entry of entries) {
+      if (entry.path) navigationPages.push(entry);
+      if (entry.children) collectPages(entry.children);
+    }
+  };
+  collectPages(manifest.nav);
+  const pageIndex = navigationPages.findIndex(
+    entry => entry.path === page!.path,
+  );
+  const previous = navigationPages[pageIndex - 1];
+  const next = navigationPages[pageIndex + 1];
+  const navigationTitle = (entry: TechDocsNavigation) =>
+    entry.title === entry.path
+      ? manifest.pages.find(p => p.path === entry.path)?.title ?? entry.title
+      : entry.title;
+  const headings = parsed.headings.filter((h, i) => i !== 0 || h.level !== 1);
   const nav = (entries: TechDocsNavigation[]): ReactNode => (
     <ul>
       {entries.map((entry, i) => (
         <li key={i}>
           {entry.path ? (
             <Link
+              aria-current={entry.path === page!.path ? 'page' : undefined}
               to={`${prefix}${(
                 manifest.pages.find(p => p.path === entry.path)?.route ?? ''
               )
@@ -413,12 +462,15 @@ export default function MarkdownReader(props: {
                 .map(encodeURIComponent)
                 .join('/')}${location.search}`}
             >
-              {entry.title}
+              {navigationTitle(entry)}
             </Link>
           ) : (
-            entry.title
+            <details open={containsPage(entry)}>
+              <summary>{navigationTitle(entry)}</summary>
+              {entry.children && nav(entry.children)}
+            </details>
           )}
-          {entry.children && nav(entry.children)}
+          {entry.path && entry.children && nav(entry.children)}
         </li>
       ))}
     </ul>
@@ -434,58 +486,112 @@ export default function MarkdownReader(props: {
       }}
       selection={selection}
     >
-      <div
-        className={styles.root}
-        style={
-          {
-            '--techdocs-link-color': theme.palette.primary.main,
-          } as CSSProperties
-        }
-      >
-        <div className={styles.toolbar}>
-          {slot('toolbar')}
-          {slot('settings')}
-        </div>
-        {manifest.diagnostics.length > 0 && (
-          <details>
-            <summary>
-              Source migration diagnostics ({manifest.diagnostics.length})
-            </summary>
-            <ul>
-              {manifest.diagnostics.map((d, i) => (
-                <li key={i}>{d}</li>
-              ))}
-            </ul>
-          </details>
-        )}
-        <div className={styles.layout}>
-          <nav aria-label="Documentation navigation">
-            {nav(manifest.nav)}
-            {slot('navigation')}
-          </nav>
-          <article ref={article}>
-            {slot('before-content')}
-            {render(parsed.tree, 0)}
-            {slot('after-content')}
-          </article>
-          <nav aria-label="On this page">
-            <ul>
-              {parsed.headings.map(h => (
-                <li key={h.id} style={{ marginInlineStart: (h.level - 1) * 8 }}>
-                  <Link
-                    to={`${location.pathname}${
-                      location.search
-                    }#${encodeURIComponent(h.id.replace(/^techdocs-/, ''))}`}
-                  >
-                    {h.title}
+      <Content>
+        <div
+          className={styles.root}
+          style={
+            {
+              '--techdocs-link-color': theme.palette.link,
+              '--techdocs-text-color': theme.palette.text.primary,
+              '--techdocs-muted-color': theme.palette.text.secondary,
+              '--techdocs-border-color': theme.palette.divider,
+              '--techdocs-paper-color': theme.palette.background.paper,
+              '--techdocs-code-color':
+                theme.palette.type === 'dark' ? '#90caf9' : '#4051b5',
+              '--techdocs-string-color':
+                theme.palette.type === 'dark' ? '#a5d6a7' : '#388e3c',
+            } as CSSProperties
+          }
+        >
+          <div className={styles.toolbar}>
+            {slot('toolbar')}
+            {slot('settings')}
+          </div>
+          {props.withSearch !== false && (
+            <div className={styles.search}>
+              <TechDocsSearch
+                entityId={entityRef}
+                entityTitle={entityMetadata.value?.metadata.title}
+                searchResultUrlMapper={props.searchResultUrlMapper}
+              />
+            </div>
+          )}
+          <div className={styles.layout}>
+            <nav
+              className={styles.navigation}
+              aria-label="Documentation navigation"
+            >
+              <details className={styles.navigationContents} open={!narrow}>
+                <summary>Browse documentation</summary>
+                <strong>{manifest.title}</strong>
+                {nav(manifest.nav)}
+                {slot('navigation')}
+              </details>
+            </nav>
+            <article className={typographyClasses.article} ref={article}>
+              {slot('before-content')}
+              {!parsed.headings.some(h => h.level === 1) && (
+                <h1>{page!.title}</h1>
+              )}
+              {render(parsed.tree, 0)}
+              {slot('after-content')}
+              <nav
+                className={styles.pagination}
+                aria-label="Documentation pages"
+              >
+                {previous?.path ? (
+                  <Link to={pageUrl(`/${previous.path}`)!}>
+                    <small>Previous</small>
+                    {navigationTitle(previous)}
                   </Link>
-                </li>
-              ))}
-            </ul>
-            {slot('toc')}
-          </nav>
+                ) : (
+                  <span />
+                )}
+                {next?.path && (
+                  <Link to={pageUrl(`/${next.path}`)!}>
+                    <small>Next</small>
+                    {navigationTitle(next)}
+                  </Link>
+                )}
+              </nav>
+            </article>
+            <nav className={styles.navigation} aria-label="On this page">
+              {headings.length > 0 && <strong>Table of contents</strong>}
+              <ul>
+                {headings.map(h => (
+                  <li
+                    key={h.id}
+                    style={{
+                      marginInlineStart: Math.max(0, h.level - 2) * 12,
+                    }}
+                  >
+                    <Link
+                      to={`${location.pathname}${
+                        location.search
+                      }#${encodeURIComponent(h.id.replace(/^techdocs-/, ''))}`}
+                    >
+                      {h.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {slot('toc')}
+            </nav>
+          </div>
+          {manifest.diagnostics.length > 0 && (
+            <details className={styles.diagnostics}>
+              <summary>
+                Source migration diagnostics ({manifest.diagnostics.length})
+              </summary>
+              <ul>
+                {manifest.diagnostics.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
+            </details>
+          )}
         </div>
-      </div>
+      </Content>
     </TechDocsDocumentProvider>
   );
 }

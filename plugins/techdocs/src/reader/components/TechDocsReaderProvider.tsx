@@ -60,13 +60,22 @@ export const TechDocsReaderProvider = (props: TechDocsReaderProviderProps) => {
 };
 
 export const withTechDocsReaderProvider =
-  <T extends { defaultPath?: string; onReady?: () => void }>(
+  <
+    T extends {
+      defaultPath?: string;
+      onReady?: () => void;
+      withSearch?: boolean;
+      searchResultUrlMapper?: (url: string) => string;
+    },
+  >(
     Component: ComponentType<T>,
   ) =>
   (props: T) =>
     (
       <MarkdownReaderGate
         defaultPath={props.defaultPath}
+        withSearch={props.withSearch}
+        searchResultUrlMapper={props.searchResultUrlMapper}
         onReady={props.onReady}
       >
         <TechDocsReaderProvider>
