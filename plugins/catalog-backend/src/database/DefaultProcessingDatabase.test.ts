@@ -22,6 +22,7 @@ import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { applyDatabaseMigrations } from './migrations';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
+import { markForStitching } from './operations/stitcher/markForStitching';
 import { DefaultProviderDatabase } from './DefaultProviderDatabase';
 import {
   DbRefreshKeysRow,
@@ -210,7 +211,8 @@ describe.each(databases.eachSupportedId())(
             deferredEntities: [],
             refreshKeys: [],
           });
-          await db.markForStitching(tx, {
+          await markForStitching({
+            knex: tx as Knex.Transaction,
             entityRefs: ['location:default/fakelocation'],
           });
         });
@@ -252,7 +254,8 @@ describe.each(databases.eachSupportedId())(
               deferredEntities: [],
               refreshKeys: [],
             });
-            await db.markForStitching(tx, {
+            await markForStitching({
+              knex: tx as Knex.Transaction,
               entityRefs: ['location:default/fakelocation'],
             });
             throw new Error('rollback');
@@ -384,7 +387,8 @@ describe.each(databases.eachSupportedId())(
                     if (attempts.processing === 1) {
                       await providerLockedQueue;
                     }
-                    await db.markForStitching(tx, {
+                    await markForStitching({
+                      knex: tx as Knex.Transaction,
                       entityRefs: [
                         'component:default/c',
                         ...relationsChange.inserted.map(
@@ -497,7 +501,8 @@ describe.each(databases.eachSupportedId())(
               );
               // Exercise a real enqueue failure: entity_ref is NOT NULL.
               // The first chunk is valid, so its inserts must roll back too.
-              await db.markForStitching(tx, {
+              await markForStitching({
+                knex: tx as Knex.Transaction,
                 entityRefs: [
                   ...Array.from(
                     { length: 100 },

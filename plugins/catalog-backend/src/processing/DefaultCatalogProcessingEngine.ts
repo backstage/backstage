@@ -35,6 +35,7 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { retryOnDeadlock } from '../database/util';
@@ -283,7 +284,8 @@ export class DefaultCatalogProcessingEngine {
                         resultHash,
                       },
                     );
-                    await this.processingDatabase.markForStitching(tx, {
+                    await markForStitching({
+                      knex: tx as Knex.Transaction,
                       entityRefs: [stringifyEntityRef(unprocessedEntity)],
                     });
                   }),
@@ -323,7 +325,8 @@ export class DefaultCatalogProcessingEngine {
                     setOfThingsToStitch.add(r.source_entity_ref);
                   }
 
-                  await this.processingDatabase.markForStitching(tx, {
+                  await markForStitching({
+                    knex: tx as Knex.Transaction,
                     entityRefs: setOfThingsToStitch,
                   });
                 }),

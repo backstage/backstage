@@ -31,7 +31,6 @@ import {
   GetProcessableEntitiesResult,
   ListParentsOptions,
   ListParentsResult,
-  MarkForStitchingOptions,
   ProcessingDatabase,
   RefreshStateItem,
   Transaction,
@@ -52,7 +51,6 @@ import { CATALOG_CONFLICTS_TOPIC } from '../constants';
 import { CatalogConflictEventPayload } from '../catalog/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
-import { markForStitching } from './operations/stitcher/markForStitching';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -170,16 +168,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         result_hash: resultHash,
       })
       .where('entity_id', id);
-  }
-
-  async markForStitching(
-    txOpaque: Transaction,
-    options: MarkForStitchingOptions,
-  ): Promise<void> {
-    await markForStitching({
-      knex: txOpaque as Knex.Transaction,
-      ...options,
-    });
   }
 
   async updateEntityCache(
