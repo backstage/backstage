@@ -35,7 +35,7 @@ interface CachedToken {
   newTokenPromise: Promise<string> | undefined;
 }
 
-const env = process.env.NODE_ENV || 'development';
+const env = this.options.config.getOptionalString('auth.environment') ?? 'development';
 
 /**
  * @public
