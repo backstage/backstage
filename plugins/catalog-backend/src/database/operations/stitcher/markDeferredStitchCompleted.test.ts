@@ -100,112 +100,24 @@ describe.each(databases.eachSupportedId())(
     it('scopes completion by ref even when tickets are shared', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
-      await knex('stitch_queue').insert([
-        {
-          entity_ref: 'k:ns/a',
-          stitch_ticket: 'shared',
-          next_stitch_at: '2099-01-01T00:00:00.000',
-        },
-        {
-          entity_ref: 'k:ns/b',
-          stitch_ticket: 'shared',
-          next_stitch_at: '2099-01-01T00:00:00.000',
-        },
-      ]);
+      await markForStitching({ knex, entityRefs: ['k:ns/a', 'k:ns/b'] });
+      const claims = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 2,
+        stitchTimeout: { minutes: 1 },
+      });
+      const a = claims.find(claim => claim.entityRef === 'k:ns/a')!;
+      const b = claims.find(claim => claim.entityRef === 'k:ns/b')!;
+      expect(a.stitchTicket).toBe(b.stitchTicket);
       const other = await knex('stitch_queue')
-        .where('entity_ref', 'k:ns/b')
+        .where('entity_ref', b.entityRef)
         .first();
-      await markDeferredStitchCompleted({
-        knex,
-        entityRef: 'k:ns/a',
-        stitchTicket: 'shared',
-      });
-      await markDeferredStitchCompleted({
-        knex,
-        entityRef: 'k:ns/a',
-        stitchTicket: 'shared',
-      });
+      await markDeferredStitchCompleted({ knex, ...a });
+      // Repeated completion of a removed row must not affect another ref.
+      await markDeferredStitchCompleted({ knex, ...a });
       await expect(knex('stitch_queue')).resolves.toEqual([other]);
-    });
-
-    it('completes only if unchanged', async () => {
-      const knex = await databases.init(databaseId);
-      await applyDatabaseMigrations(knex);
-
-      // Insert stitch_queue row
-      await knex<DbStitchQueueRow>('stitch_queue').insert([
-        {
-          entity_ref: 'k:ns/n',
-          stitch_ticket: 'the-ticket',
-          next_stitch_at: '1971-01-01T00:00:00.000',
-        },
-      ]);
-
-      async function result() {
-        return knex<DbStitchQueueRow>('stitch_queue').select(
-          'entity_ref',
-          'next_stitch_at',
-          'stitch_ticket',
-        );
-      }
-
-      // Wrong ticket should not delete the row, but should bump
-      // next_stitch_at to now() so the pending re-stitch is picked up
-      // immediately
-      await markDeferredStitchCompleted({
-        knex,
-        entityRef: 'k:ns/n',
-        stitchTicket: 'the-wrong-ticket',
-      });
-      const afterWrongTicket = await result();
-      expect(afterWrongTicket).toEqual([
-        {
-          entity_ref: 'k:ns/n',
-          next_stitch_at: expect.anything(),
-          stitch_ticket: 'the-ticket',
-        },
-      ]);
-      const bumped = new Date(afterWrongTicket[0].next_stitch_at as string);
-      expect(bumped.getFullYear()).toBeGreaterThan(1971);
-
-      // Correct ticket should delete the row
-      await markDeferredStitchCompleted({
-        knex,
-        entityRef: 'k:ns/n',
-        stitchTicket: 'the-ticket',
-      });
-      await expect(result()).resolves.toEqual([]);
-    });
-
-    it('does not fail when the row is already gone', async () => {
-      const knex = await databases.init(databaseId);
-      await applyDatabaseMigrations(knex);
-
-      // Calling on a nonexistent row should not throw
-      await expect(
-        markDeferredStitchCompleted({
-          knex,
-          entityRef: 'k:ns/nonexistent',
-          stitchTicket: 'any-ticket',
-        }),
-      ).resolves.toBeUndefined();
-    });
-
-    it('does not shorten an unknown future lease', async () => {
-      const knex = await databases.init(databaseId);
-      await applyDatabaseMigrations(knex);
-      await knex<DbStitchQueueRow>('stitch_queue').insert({
-        entity_ref: 'k:ns/n',
-        stitch_ticket: 'new-ticket',
-        next_stitch_at: '2099-01-01T00:00:00.000',
-      });
-      const before = await knex('stitch_queue');
-      await markDeferredStitchCompleted({
-        knex,
-        entityRef: 'k:ns/n',
-        stitchTicket: 'old-ticket',
-      });
-      await expect(knex('stitch_queue')).resolves.toEqual(before);
+      await markDeferredStitchCompleted({ knex, ...b });
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
     });
   },
 );

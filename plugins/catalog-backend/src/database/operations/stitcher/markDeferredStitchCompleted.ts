@@ -29,7 +29,6 @@ import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
  * A changed ticket with the same lease means a new request arrived during this
  * attempt. Make it immediately eligible, whether this attempt succeeded or was
  * abandoned. A changed lease belongs to a successor and must not be disturbed.
- * Without a captured lease, only already-due entries can be rescheduled.
  * The captured lease is opaque and must be passed through unchanged from
  * getDeferredStitchableEntities, not reconstructed from a Date or ISO string.
  */
@@ -37,7 +36,7 @@ export async function markDeferredStitchCompleted(option: {
   knex: Knex | Knex.Transaction;
   entityRef: string;
   stitchTicket: string;
-  stitchLeaseExpiresAt?: StitchLeaseExpiresAt;
+  stitchLeaseExpiresAt: StitchLeaseExpiresAt;
 }): Promise<void> {
   const { knex, entityRef, stitchTicket, stitchLeaseExpiresAt } = option;
 
@@ -51,11 +50,7 @@ export async function markDeferredStitchCompleted(option: {
       .where('entity_ref', '=', entityRef)
       .update({ next_stitch_at: knex.fn.now() });
 
-    if (stitchLeaseExpiresAt !== undefined) {
-      update.where('next_stitch_at', '=', stitchLeaseExpiresAt);
-    } else {
-      update.where('next_stitch_at', '<=', knex.fn.now());
-    }
+    update.where('next_stitch_at', '=', stitchLeaseExpiresAt);
 
     await update;
   }

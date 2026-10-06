@@ -16,6 +16,7 @@
 
 import { Knex } from 'knex';
 import { DbSearchRow } from '../../tables';
+import { retryOnDeadlock } from '../../util';
 import { BATCH_SIZE, NULL_SENTINEL } from './util';
 
 function filterSentinelValues(entries: DbSearchRow[]): DbSearchRow[] {
@@ -149,16 +150,16 @@ async function syncPostgres(
 // overlap on shared index pages. We retry on deadlock (error 1213) since
 // the operation is idempotent.
 // ---------------------------------------------------------------------------
-const MYSQL_DEADLOCK_MAX_RETRIES = 3;
-
 async function syncMysql(
   knex: Knex | Knex.Transaction,
   entityId: string,
   searchEntries: DbSearchRow[],
 ): Promise<void> {
-  for (let attempt = 1; ; attempt++) {
-    try {
-      await knex.transaction(async trx => {
+  // A root caller retries the whole transaction; a publication transaction
+  // propagates deadlocks to its owner rather than retrying an aborted savepoint.
+  await retryOnDeadlock(
+    () =>
+      knex.transaction(async trx => {
         // Create the temp table inside the transaction so it's guaranteed
         // to be on the same pooled connection as the merge queries.
         // CREATE TEMPORARY TABLE does not cause an implicit commit in
@@ -217,22 +218,9 @@ async function syncMysql(
             ')',
           [entityId, entityId],
         );
-      });
-      return;
-    } catch (error) {
-      // MySQL error 1213 rolls back the entire transaction, not just a
-      // savepoint. Only retry transactions we own; an enclosing publication
-      // must fail so its final entity write is retried together with search.
-      if (
-        !knex.isTransaction &&
-        (error as any)?.errno === 1213 &&
-        attempt < MYSQL_DEADLOCK_MAX_RETRIES
-      ) {
-        continue;
-      }
-      throw error;
-    }
-  }
+      }),
+    knex,
+  );
 }
 
 // ---------------------------------------------------------------------------
