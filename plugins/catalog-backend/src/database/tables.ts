@@ -151,8 +151,9 @@ export type DbFinalEntitiesRow = {
  *
  * @remarks
  *
- * Each row represents a pending stitch request for an entity. When a stitch
- * completes successfully and the ticket hasn't changed, the row is deleted.
+ * Each row represents pending stitch work for an entity. A completed attempt
+ * removes the row only if both its ticket and captured lease still match.
+ * Failed attempts leave the row available for retry after the lease expires.
  */
 export type DbStitchQueueRow = {
   /**
@@ -160,10 +161,11 @@ export type DbStitchQueueRow = {
    */
   entity_ref: string;
   /**
-   * A random value that changes with every new stitch request. Used for
-   * optimistic concurrency: when a stitch completes, the row is only deleted
-   * if this ticket still matches (meaning no new request came in while
-   * stitching was in progress).
+   * A random value replaced by every new stitch request and every claim or
+   * reclaim. Used for request versioning and optimistic claim fencing: an
+   * updated worker's claim supersedes any previous attempt, even without a
+   * new request. Completion requires both this ticket and the captured lease
+   * to match before deleting the row.
    */
   stitch_ticket: string;
   /**
@@ -171,8 +173,9 @@ export type DbStitchQueueRow = {
    *
    * @remarks
    *
-   * Each time that a request is made, this timestamp is updated to the current
-   * time, overwriting the previous value if applicable.
+   * A new queue row starts at the current time. Requests for an existing row
+   * replace its ticket but preserve this timestamp, so they do not interrupt
+   * an active lease.
    *
    * When the stitch loop runs and picks up an entity, this timestamp is not
    * immediately reset. It's instead moved forward in time by a certain amount,
@@ -180,9 +183,11 @@ export type DbStitchQueueRow = {
    * crashes or gets shut down), the entity will be picked up again in the
    * future.
    *
-   * Only when a stitch run is completed successfully, AND it's found that the
-   * stitch ticket has not changed since the start (which means that no new
-   * request has been made behind our backs), does the row get deleted.
+   * Completion deletes the row when both the ticket and captured lease match,
+   * including when an attempt is abandoned because the entity is missing or
+   * unprocessed. A changed ticket with the same lease makes the row immediately
+   * eligible for a follow-up; a changed lease is left untouched. The lease guard
+   * also protects reclaims by old workers that do not replace the ticket.
    */
   next_stitch_at: string | Date;
 };
