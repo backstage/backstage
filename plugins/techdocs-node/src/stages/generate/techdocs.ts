@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { runTechDocsMigration } from './source';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import path from 'node:path';
@@ -63,6 +64,7 @@ export class TechdocsGenerator implements GeneratorBase {
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.8';
   private readonly logger: LoggerService;
+  private readonly config: Config;
   private readonly containerRunner?: TechDocsContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
@@ -90,6 +92,7 @@ export class TechdocsGenerator implements GeneratorBase {
     scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.logger = options.logger;
+    this.config = options.config;
     this.options = readGeneratorConfig(options.config, options.logger);
     this.containerRunner = options.containerRunner;
     this.scmIntegrations = options.scmIntegrations;
@@ -97,6 +100,12 @@ export class TechdocsGenerator implements GeneratorBase {
 
   /** {@inheritDoc GeneratorBase.run} */
   public async run(options: GeneratorRunOptions): Promise<void> {
+    await runTechDocsMigration(this.config, options, () =>
+      this.runLegacy(options),
+    );
+  }
+
+  private async runLegacy(options: GeneratorRunOptions): Promise<void> {
     const {
       inputDir,
       outputDir,

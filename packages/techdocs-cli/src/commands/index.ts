@@ -25,6 +25,11 @@ export function registerCommands(program: Command) {
       'Generate a TechDocs documentation site with the selected engine (MkDocs by default).',
     )
     .option(
+      '--publishing <MODE>',
+      'Publication format: legacy, dual, or source',
+      'legacy',
+    )
+    .option(
       '--source-dir <PATH>',
       'Source directory containing mkdocs.yml and docs/ directory.',
       '.',
@@ -96,6 +101,14 @@ export function registerCommands(program: Command) {
     )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
+
+  program
+    .command('migrate-config')
+    .description(
+      'Create techdocs.yaml from supported MkDocs settings, preserving mkdocs.yml.',
+    )
+    .option('--source-dir <PATH>', 'Documentation project directory', '.')
+    .action(lazy(() => import('./generate/migrateConfig'), 'default'));
 
   program
     .command('migrate')

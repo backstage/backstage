@@ -20,6 +20,15 @@ export interface Config {
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
   techdocs?: {
+    /** Experimental migration to browser-rendered Markdown. */
+    migration?: {
+      /** Publish HTML, both formats, or source only. Defaults to legacy. */
+      publishing?: 'legacy' | 'dual' | 'source';
+      /** Reader policy. Source requires source artifacts and never falls back.
+       * @visibility frontend
+       */
+      rendering?: 'legacy' | 'opt-in' | 'prefer-source' | 'source';
+    };
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend
