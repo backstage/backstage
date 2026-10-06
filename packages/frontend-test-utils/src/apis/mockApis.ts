@@ -833,6 +833,7 @@ export namespace mockApis {
     export const mock: (
       partialImpl?: Partial<AppHistoryApi> | undefined,
     ) => ApiMock<AppHistoryApi> = partialImpl => {
+      // Preserve location updates when observing navigation.
       const { navigate, ...rest } = partialImpl ?? {};
       const instance = createMockAppHistory({ navigate });
       const navigateMock = jest.fn(
