@@ -24,6 +24,7 @@ import {
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from './types';
+import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '../../techdocsTypes';
 
 /**
  * Collection of docs generators
@@ -80,7 +81,7 @@ export class Generators implements GeneratorBuilder {
     }
 
     const generatorKey =
-      entity.metadata?.annotations?.['backstage.io/techdocs-engine'] ??
+      entity.metadata?.annotations?.[TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY] ??
       this.defaultEngine;
     const generator = this.generatorMap.get(generatorKey);
 

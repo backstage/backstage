@@ -20,12 +20,7 @@ import yaml from 'js-yaml';
 import { Entity } from '@backstage/catalog-model';
 import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '@backstage/plugin-techdocs-node';
 
-const CATALOG_FILE_CANDIDATES = [
-  'catalog-info.yaml',
-  'catalog-info.yml',
-  'service-info.yaml',
-  'service-info.yml',
-];
+const CATALOG_FILE_CANDIDATES = ['catalog-info.yaml', 'catalog-info.yml'];
 
 export async function readEntityFromCatalog(
   sourceDir: string,
@@ -50,4 +45,27 @@ export function getEngineFromEntity(
   return entity?.metadata?.annotations?.[
     TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY
   ];
+}
+
+/**
+ * Resolves the documentation engine to use.
+ * Priority: explicit --engine flag > catalog annotation > 'mkdocs' default.
+ */
+export async function resolveEngine(
+  sourceDir: string,
+  explicitEngine: string | undefined,
+  logger: { info: (msg: string) => void },
+): Promise<{ engine: string; entity: Entity | undefined }> {
+  const catalogEntity = await readEntityFromCatalog(sourceDir);
+  const catalogEngine = getEngineFromEntity(catalogEntity);
+
+  const engine = explicitEngine ?? catalogEngine ?? 'mkdocs';
+
+  if (catalogEngine && !explicitEngine) {
+    logger.info(
+      `Detected ${TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY}: '${catalogEngine}' from catalog entity`,
+    );
+  }
+
+  return { engine, entity: catalogEntity };
 }
