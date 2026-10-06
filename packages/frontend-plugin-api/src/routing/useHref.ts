@@ -19,9 +19,10 @@ import {
   isExternalTarget,
   resolveAppPath,
   sanitizeHref,
-  useAppRouting,
+  useAppHistoryLocation,
 } from '@internal/frontend';
-import { useRouteBasePaths as useFrameworkRouteBasePaths } from './useRouteBasePaths';
+import { useAppNode } from '../components/AppNodeProvider';
+import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { useApiHolder } from '../apis/system';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import {
@@ -55,26 +56,32 @@ export function useAppHref(
   appHistory: AppHistoryApi | undefined,
   to: string,
 ): string {
-  const appRouting = useAppRouting(appHistory, useFrameworkRouteBasePaths());
+  const node = useAppNode();
+  const routes = useApiHolder().get(routeResolutionApiRef);
+  const location = useAppHistoryLocation(appHistory);
   const navigation = useRouterContext(NavigationContext);
   const routeBasePaths = useRouteBasePaths();
   const routerLocation = useRouterContext(LocationContext)?.location;
 
-  if (isExternalTarget(to)) {
-    return to;
+  if (appHistory && location) {
+    const target = routes
+      ? routes.resolveTarget({ to, pathname: location.pathname, node })
+      : to;
+    return appHistory.createHref(target);
   }
-  if (appRouting) {
-    return appRouting.createHref(to);
+  const safeTo = sanitizeHref(to);
+  if (isExternalTarget(safeTo)) {
+    return safeTo;
   }
   if (!navigation) {
-    return to;
+    return safeTo;
   }
 
   // React Router's `useHref`: the resolved path, prefixed with the router
   // basename, handed to the navigator to render.
   const { basename, navigator } = navigation;
   const { pathname, search, hash } = resolveAppPath(
-    to,
+    safeTo,
     routeBasePaths,
     routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
   );
@@ -123,8 +130,5 @@ export function useAppHref(
  */
 export function useHref(to: string): string {
   const appHistory = useApiHolder().get(appHistoryApiRef);
-  // Made inert before anything else looks at it: the result of this hook is
-  // rendered as an href, and both authorities hand back a target they cannot
-  // route exactly as given.
-  return useAppHref(appHistory, sanitizeHref(to));
+  return useAppHref(appHistory, to);
 }

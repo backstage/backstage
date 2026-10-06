@@ -20,7 +20,7 @@ import {
   ReactNode,
   forwardRef,
 } from 'react';
-import { isExternalTarget, sanitizeHref } from '@internal/frontend';
+import { isExternalTarget } from '@internal/frontend';
 import { useAppHref } from './useHref';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
@@ -83,7 +83,7 @@ export const RouteLink = forwardRef(function RouteLink<
 
   // The rendered href must include the app's deploy basename: modified clicks
   // and the old frontend system both leave the anchor to the browser.
-  const href = useAppHref(appHistory, sanitizeHref(to));
+  const href = useAppHref(appHistory, to);
 
   if (!routeFunc) {
     return <>{children}</>;

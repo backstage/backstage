@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
-import { useRouteResolution } from './useRouteResolution';
+import { isExternalTarget as classifyTarget } from '@internal/frontend';
 
-export function useRouteBasePaths() {
-  const matches = useRouteResolution().matches;
-  return useMemo(
-    () =>
-      matches
-        .filter((match, index) => index === 0 || match.contributesPath)
-        .map(match => match.basePath),
-    [matches],
-  );
-}
+/**
+ * Whether a target is a browser-owned URL rather than an app-relative path.
+ * This classifies targets without checking whether their scheme is safe.
+ * Use AppHistoryApi.createHref before passing a target to the browser.
+ *
+ * @public
+ */
+export const isExternalTarget: (to: string) => boolean = classifyTarget;
