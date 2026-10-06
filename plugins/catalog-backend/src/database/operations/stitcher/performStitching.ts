@@ -34,6 +34,8 @@ import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { retryOnDeadlock } from '../../util';
 
+class StitchPublicationSupersededError extends Error {}
+
 function generateStableHash(entity: Entity) {
   return createHash('sha1')
     .update(stableStringify({ ...entity }))
@@ -205,7 +207,8 @@ export async function performStitching(options: {
     // Guard against concurrent stitchers: if our stitch_ticket no longer
     // matches stitch_queue, another worker has newer data and we should
     // not overwrite it. PostgreSQL guards both insert and merge in the
-    // publication statement. SQLite checks inside its transaction as well
+    // publication statement and rechecks the captured claim after the upsert.
+    // SQLite checks inside its transaction as well
     // as guarding the merge path. MySQL does not support
     // ON CONFLICT ... DO UPDATE ... WHERE, so its separate check retains
     // a best-effort TOCTOU window. Do not turn it into a queue lock here:
@@ -271,18 +274,32 @@ export async function performStitching(options: {
 
           await upsert;
 
-          // Verify the write took effect. INSERT return values vary across
-          // database engines (row IDs vs row counts vs empty arrays), so we
-          // check the hash directly — we already know hash !== previousHash
-          // from the check above, so a mismatch means the write was blocked.
+          // Verify the write took effect. On PostgreSQL, also recheck ownership
+          // using this statement's fresh Read Committed snapshot: the upsert's
+          // snapshot may predate a reclaim that committed while it was running.
+          // A successful upsert holds the final-row lock until commit, so a
+          // successor cannot publish past us after this check. Do not lock the
+          // queue, which would introduce a publication/deletion lock inversion.
           if (!isMySQL) {
             const written = await tx<DbFinalEntitiesRow>('final_entities')
               .where('entity_id', entityId)
               .where('hash', hash)
+              .modify(qb => {
+                if (isPostgres) {
+                  qb.whereExists(
+                    tx<DbStitchQueueRow>('stitch_queue')
+                      .select(tx.raw('1'))
+                      .where('entity_ref', entityRef)
+                      .where('stitch_ticket', stitchTicket)
+                      .where('next_stitch_at', stitchLeaseExpiresAt),
+                  );
+                }
+              })
               .select(tx.raw('1'))
               .first();
             if (!written) {
-              return 'abandoned' as const;
+              // Returning normally would commit any stale write already made.
+              throw new StitchPublicationSupersededError();
             }
           }
 
@@ -291,7 +308,14 @@ export async function performStitching(options: {
           return 'changed' as const;
         }),
       knex,
-    );
+    ).catch(error => {
+      // Knex has rolled the publication back before rejecting the transaction.
+      // Supersession is a normal abandonment, not a failure or deadlock retry.
+      if (error instanceof StitchPublicationSupersededError) {
+        return 'abandoned' as const;
+      }
+      throw error;
+    });
 
     if (writeOutcome === 'abandoned') {
       logger.debug(`Entity ${entityRef} is already stitched, skipping write.`);
