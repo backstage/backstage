@@ -32,12 +32,21 @@ import {
 import { MarkdownReaderGate } from './MarkdownReaderGate';
 
 const setTitle = jest.fn();
+let mockEntityName = 'test';
+const mockSync = jest.fn(async () => 'updated' as const);
 jest.mock('@backstage/plugin-techdocs-react', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-react'),
-  useTechDocsReaderPage: () => ({
-    entityRef: { namespace: 'default', kind: 'component', name: 'test' },
-    setTitle,
-  }),
+  useTechDocsReaderPage: () => {
+    jest.requireActual('react-router-dom').useLocation();
+    return {
+      entityRef: {
+        namespace: 'default',
+        kind: 'component',
+        name: mockEntityName,
+      },
+      setTitle,
+    };
+  },
 }));
 const file = `_techdocs/source/files/${'a'.repeat(64)}.json`;
 const manifest: TechDocsSourceManifest = {
@@ -75,6 +84,7 @@ async function renderReader(
   publication: unknown = manifest,
   preview = '',
   artifact?: (url: string) => Response | undefined,
+  builder = 'external',
 ) {
   const fetch = jest.fn(async (input: RequestInfo | URL): Promise<Response> => {
     const url = String(input);
@@ -117,7 +127,8 @@ async function renderReader(
           techdocsStorageApiRef,
           {
             getStorageUrl: async () => 'https://example.test/static/docs',
-            getBuilder: async () => 'external',
+            getBuilder: async () => builder,
+            syncEntityDocs: mockSync,
           },
         ],
         [
@@ -151,6 +162,10 @@ async function renderReader(
   return fetch;
 }
 describe('Markdown reader migration', () => {
+  beforeEach(() => {
+    mockEntityName = 'test';
+    mockSync.mockClear();
+  });
   it('keeps the default reader inert and allows URL-backed preview in configured legacy mode', async () => {
     const fetch = await renderReader(undefined);
     expect(await screen.findByText('Legacy reader')).toBeInTheDocument();
@@ -247,6 +262,7 @@ describe('Markdown reader migration', () => {
               text: async () => '',
             } as Response)
           : undefined,
+      'local',
     );
     expect(await screen.findByText('Addon: index.md')).toBeInTheDocument();
     latest = {
@@ -258,6 +274,18 @@ describe('Markdown reader migration', () => {
     expect(
       fetch.mock.calls.filter(([url]) => String(url).endsWith('manifest.json')),
     ).toHaveLength(2);
+    expect(mockSync).toHaveBeenCalledTimes(1);
+    mockEntityName = 'unbuilt';
+    fireEvent.change(screen.getByLabelText('Documentation preview'), {
+      target: { value: 'source' },
+    });
+    expect(await screen.findByText('Addon: next.md')).toBeInTheDocument();
+    expect(mockSync).toHaveBeenLastCalledWith({
+      namespace: 'default',
+      kind: 'component',
+      name: 'unbuilt',
+    });
+    expect(mockSync).toHaveBeenCalledTimes(2);
   });
   it('requires source in strict mode and never honors a legacy preview override', async () => {
     await renderReader('source', manifest, '?techdocs-preview=legacy');
