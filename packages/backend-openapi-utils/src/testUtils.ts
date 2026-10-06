@@ -37,11 +37,15 @@ export async function wrapServer(app: Express): Promise<Server> {
 
   return {
     ...server,
-    address: () => ({
-      address: '127.0.0.1',
-      family: 'IPv4',
-      port: Number(new URL(proxy.url).port),
-    }),
+    address: () => {
+      const url = new URL(proxy.url);
+      const address = url.hostname.replace(/^\[(.*)\]$/, '$1');
+      return {
+        address,
+        family: address.includes(':') ? 'IPv6' : 'IPv4',
+        port: Number(url.port),
+      };
+    },
   } as any;
 }
 
