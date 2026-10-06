@@ -527,6 +527,107 @@ query with each branch in isolation when investigating a regression.
 
 ---
 
+## 13. Deep dataset page with default ID ordering
+
+**User action**: Continue a bulk dataset scan without requesting an explicit
+order. `queryEntities` defaults to ascending `entity_id` order, unlike the
+legacy entity-reference ordering shown in scenario 3. Exclude `totalItems` and
+request 10,000 entities; the extra row detects whether another page exists.
+
+**Synthetic cursor**: The ID boundary `'e'` skips most UUID-shaped text IDs
+without depending on an existing entity. It is a SQL test boundary, not a
+public API cursor token. Check that the boundary skips a substantial portion
+of the matching entities and leaves at least 10,001 matches before comparing
+timings on another dataset.
+
+**Reference SQL**:
+
+```sql
+WITH filtered(entity_id, final_entity) AS (
+  SELECT final_entities.entity_id, final_entities.final_entity
+  FROM final_entities
+  WHERE final_entities.final_entity IS NOT NULL
+    AND EXISTS (
+      SELECT 1 FROM search AS s
+      WHERE s.entity_id = final_entities.entity_id
+        AND s.key = 'kind' AND s.value = 'api'
+    )
+    AND EXISTS (
+      SELECT 1 FROM search AS s
+      WHERE s.entity_id = final_entities.entity_id
+        AND s.key = 'spec.type' AND s.value = 'dataset'
+    )
+)
+SELECT * FROM filtered
+WHERE entity_id > 'e'
+ORDER BY entity_id ASC
+LIMIT 10001;
+```
+
+**Healthy plan**: An index range condition on `entity_id` skips earlier IDs.
+Filtering uses the search indexes, and LIMIT stops after 10,001 eligible rows.
+Track buffer work as well as execution time; a late cursor should not require
+visiting every preceding entity.
+
+**Anti-patterns**:
+
+- The cursor appears only as a filter rather than an index range condition.
+- Large numbers of earlier IDs are inspected despite the late boundary.
+- A blocking sort or materialized CTE prevents LIMIT from stopping the scan.
+
+---
+
+## 14. Deep dataset page ordered by name
+
+**User action**: Continue the same bulk dataset scan as scenario 13, but with
+`metadata.name` ascending and `entity_id` ascending as the tie-breaker.
+
+**Synthetic cursor**: Use the fixed pair `('s', 'e')`. Names need not include an
+entity named exactly `'s'`: the pair describes an ordering boundary, not an
+entity lookup. Verify that it skips most matching names while leaving at
+least 10,001 matches. Keep the equality branch even when no name equals `'s'`,
+so the reference SQL retains the two-column cursor shape used by the service.
+
+**Reference SQL**:
+
+```sql
+WITH filtered(entity_id, final_entity, value) AS (
+  SELECT final_entities.entity_id, final_entities.final_entity, search.value
+  FROM search
+  INNER JOIN final_entities ON final_entities.entity_id = search.entity_id
+  WHERE search.key = 'metadata.name'
+    AND search.value IS NOT NULL
+    AND final_entities.final_entity IS NOT NULL
+    AND EXISTS (
+      SELECT 1 FROM search AS s
+      WHERE s.entity_id = final_entities.entity_id
+        AND s.key = 'kind' AND s.value = 'api'
+    )
+    AND EXISTS (
+      SELECT 1 FROM search AS s
+      WHERE s.entity_id = final_entities.entity_id
+        AND s.key = 'spec.type' AND s.value = 'dataset'
+    )
+)
+SELECT * FROM filtered
+WHERE value > 's' OR (value = 's' AND entity_id > 'e')
+ORDER BY value ASC, entity_id ASC
+LIMIT 10001;
+```
+
+**Healthy plan**: The ordered search index provides the page order and the
+cursor becomes an index range condition. Compare inspected rows, buffer work,
+sort spills, and execution time: first-page scenarios do not reveal work
+wasted scanning entries before a deep cursor.
+
+**Anti-patterns**:
+
+- The cursor is applied as a filter while the ordered scan starts before it.
+- Hundreds of thousands of repeated index probes to return one page.
+- Sorting full entity payloads for a large candidate set before applying LIMIT.
+
+---
+
 ## Global anti-patterns
 
 These should NEVER appear in any of the above queries:

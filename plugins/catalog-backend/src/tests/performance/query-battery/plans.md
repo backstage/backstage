@@ -391,3 +391,86 @@ Planning:
 Planning Time: 5.165 ms
 Execution Time: 2892.599 ms
 ```
+
+## Deep-page additions (2026-10-06)
+
+These two plans were captured separately from scenarios 1-12, on a PostgreSQL
+18.6 staging replica. See the dated section in [baseline.md](./baseline.md)
+for data sizes, cursor coverage and measurement methodology. The JSON samples
+are separate warm executions of the same SQL.
+
+## 13 deep dataset ID
+
+```text
+Limit  (cost=4.92..142882.61 rows=10001 width=1056) (actual time=205.186..282.342 rows=10001.00 loops=1)
+  Buffers: shared hit=417176
+  ->  Merge Join  (cost=4.92..339434.08 rows=23759 width=1056) (actual time=205.184..281.522 rows=10001.00 loops=1)
+        Merge Cond: ((final_entities.entity_id)::text = (s.entity_id)::text)
+        Buffers: shared hit=417176
+        ->  Merge Join  (cost=4.23..302237.32 rows=43283 width=1093) (actual time=103.168..169.484 rows=10001.00 loops=1)
+              Merge Cond: ((final_entities.entity_id)::text = (s_1.entity_id)::text)
+              Buffers: shared hit=226502
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..267849.25 rows=85940 width=1056) (actual time=0.050..44.923 rows=35282.00 loops=1)
+                    Index Cond: ((entity_id)::text > 'e'::text)
+                    Filter: (final_entity IS NOT NULL)
+                    Rows Removed by Filter: 120
+                    Index Searches: 1
+                    Buffers: shared hit=35793
+              ->  Index Only Scan using search_key_value_entity_idx on search s_1  (cost=0.69..33025.56 rows=361255 width=37) (actual time=0.042..70.954 rows=188668.00 loops=1)
+                    Index Cond: ((key = 'spec.type'::text) AND (value = 'dataset'::text))
+                    Heap Fetches: 14512
+                    Index Searches: 1
+                    Buffers: shared hit=190709
+        ->  Index Only Scan using search_key_value_entity_idx on search s  (cost=0.69..35970.16 rows=393739 width=37) (actual time=0.051..70.201 rows=188985.00 loops=1)
+              Index Cond: ((key = 'kind'::text) AND (value = 'api'::text))
+              Heap Fetches: 14536
+              Index Searches: 1
+              Buffers: shared hit=190674
+Planning:
+  Buffers: shared hit=390
+Planning Time: 3.159 ms
+Execution Time: 283.120 ms
+```
+
+## 14 deep dataset name
+
+```text
+Limit  (cost=1002.51..243454.49 rows=10001 width=1092) (actual time=128.535..754.575 rows=10001.00 loops=1)
+  Buffers: shared hit=892306
+  ->  Nested Loop  (cost=1002.51..2602494.49 rows=107310 width=1092) (actual time=128.534..753.467 rows=10001.00 loops=1)
+        Buffers: shared hit=892306
+        ->  Gather Merge  (cost=1001.82..1839947.13 rows=195489 width=1166) (actual time=128.464..626.181 rows=10001.00 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=838077
+              ->  Nested Loop  (cost=1.80..1816382.82 rows=81454 width=1166) (actual time=119.932..540.531 rows=3345.67 loops=3)
+                    Buffers: shared hit=838077
+                    ->  Nested Loop  (cost=1.11..1185527.58 rows=161728 width=1129) (actual time=119.663..311.655 rows=17475.67 loops=3)
+                          Buffers: shared hit=571647
+                          ->  Parallel Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..102835.09 rows=162315 width=73) (actual time=119.591..132.946 rows=17475.67 loops=3)
+                                Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                                Filter: (((value)::text > 's'::text) OR ((value)::text = 's'::text))
+                                Rows Removed by Filter: 208829
+                                Heap Fetches: 41992
+                                Index Searches: 1
+                                Buffers: shared hit=361926
+                          ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..6.66 rows=1 width=1056) (actual time=0.010..0.010 rows=1.00 loops=52427)
+                                Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                                Filter: ((final_entity IS NOT NULL) AND (((search.value)::text > 's'::text) OR (((search.value)::text = 's'::text) AND ((entity_id)::text > 'e'::text))))
+                                Index Searches: 52427
+                                Buffers: shared hit=209721
+                    ->  Index Only Scan using search_key_value_entity_idx on search s_1  (cost=0.69..3.90 rows=1 width=37) (actual time=0.013..0.013 rows=0.19 loops=52427)
+                          Index Cond: ((key = 'spec.type'::text) AND (value = 'dataset'::text) AND (entity_id = (final_entities.entity_id)::text))
+                          Heap Fetches: 625
+                          Index Searches: 52427
+                          Buffers: shared hit=266430
+        ->  Index Only Scan using search_key_value_entity_idx on search s  (cost=0.69..3.90 rows=1 width=37) (actual time=0.012..0.012 rows=1.00 loops=10001)
+              Index Cond: ((key = 'kind'::text) AND (value = 'api'::text) AND (entity_id = (final_entities.entity_id)::text))
+              Heap Fetches: 623
+              Index Searches: 10001
+              Buffers: shared hit=54229
+Planning:
+  Buffers: shared hit=458
+Planning Time: 5.463 ms
+Execution Time: 756.023 ms
+```
