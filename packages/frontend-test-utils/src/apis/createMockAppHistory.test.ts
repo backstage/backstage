@@ -197,11 +197,14 @@ describe('createMockAppHistory', () => {
       '/backstage/search?q=https://example.com',
     );
 
-    // navigate is strict for exactly the same inputs.
-    expect(() => appHistory.navigate('https://example.com/x')).toThrow(
-      /does not support absolute or protocol-relative URLs/,
-    );
-    expect(() => appHistory.navigate('mailto:support@example.com')).toThrow();
+    const before = appHistory.location;
+    appHistory.navigate('https://example.com/x');
+    appHistory.navigate('mailto:support@example.com', { replace: true });
+    expect(appHistory.navigateCalls).toEqual([
+      { to: 'https://example.com/x', options: undefined },
+      { to: 'mailto:support@example.com', options: { replace: true } },
+    ]);
+    expect(appHistory.location).toBe(before);
     expect(() =>
       appHistory.navigate('/search?q=https://example.com'),
     ).not.toThrow();

@@ -38,4 +38,3 @@ export {
   type SetAppSearchParams,
 } from './useAppSearchParams';
 export { useRouteResolution } from './useRouteResolution';
-export { isExternalTarget } from './isExternalTarget';
