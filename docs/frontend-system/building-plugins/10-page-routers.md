@@ -305,7 +305,6 @@ current page or sub-page:
 import {
   appHistoryApiRef,
   routeResolutionApiRef,
-  isExternalTarget,
   useApi,
   useAppNode,
   useAppLocation,
@@ -330,16 +329,7 @@ export function ToolsContent() {
       pathname: history.location.pathname,
       node,
     });
-    if (isExternalTarget(target)) {
-      const href = history.createHref(target);
-      if (options?.replace) {
-        window.location.replace(href);
-      } else {
-        window.location.assign(href);
-      }
-    } else {
-      history.navigate(target, options);
-    }
+    history.navigate(target, options);
   };
 
   return (
@@ -357,8 +347,8 @@ climbs one path-contributing route. Query-only and hash-only targets use the
 current location; the location hook updates rendered hrefs, while navigation
 reads the latest location when called.
 
-The history API sanitizes browser hrefs and rejects external navigation targets.
-The external branch therefore passes the sanitized href to the browser instead.
+The history API sanitizes both hrefs and navigation targets, and handles external
+URLs through browser navigation.
 The example requires the new frontend system's history and route resolution APIs.
 
 `useAppNavigate` accepts app-absolute paths, while `useHref` also resolves
