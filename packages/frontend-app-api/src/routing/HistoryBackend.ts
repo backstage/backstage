@@ -57,6 +57,8 @@ export interface HistoryBackend {
    * Replace the current entry. `url` is pathname + search + hash (no origin).
    */
   replace(url: string, options?: HistoryWriteOptions): void;
+  /** Navigate outside app history. In-memory backends leave their location unchanged. */
+  navigateExternal(url: string, options?: { replace?: boolean }): void;
   /** Traverse the current history stack by a relative number of entries. */
   go(delta: number): void;
   /**
@@ -267,6 +269,13 @@ export function createWindowHistoryBackend(): HistoryBackend {
         writing = false;
       }
     },
+    navigateExternal(url, options): void {
+      if (options?.replace) {
+        window.location.replace(url);
+      } else {
+        window.location.assign(url);
+      }
+    },
     go(delta: number): void {
       window.history.go(delta);
     },
@@ -427,6 +436,9 @@ export function createMemoryHistoryBackend(
         ...parseEntry(url, writeOptions),
         key: entries[index].key,
       };
+    },
+    navigateExternal(): void {
+      // External navigation does not change the in-memory history.
     },
     go(delta: number): void {
       const next = index + delta;
