@@ -565,6 +565,30 @@ describe('Combobox', () => {
         </Combobox>
       ),
     },
+    {
+      name: 'a custom filter on sections',
+      query: 'navy',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={[
+            {
+              title: 'Owners',
+              options: owners.map(({ id, name, email }) => ({
+                id,
+                label: name,
+                description: email,
+              })),
+            },
+          ]}
+          search={{
+            filter: (option, query) =>
+              option.description?.includes(query) ?? false,
+          }}
+          onChange={onChange}
+        />
+      ),
+    },
   ])(
     'selects a client search match with the keyboard for $name',
     ({ query, renderSubject }) => {
@@ -585,8 +609,48 @@ describe('Combobox', () => {
       fireEvent.keyDown(input, { key: 'Enter' });
       expect(onChange).toHaveBeenCalledWith('grace');
       expect(input).toHaveValue('Grace Hopper');
+
+      act(() => input.blur());
+      expect(onChange).toHaveBeenLastCalledWith('grace');
+      expect(input).toHaveValue('Grace Hopper');
+
+      openCombobox();
+      expect(screen.getAllByRole('option')).toHaveLength(2);
     },
   );
+
+  it('applies a custom filter to a controlled input value changed by the caller', () => {
+    function ControlledOwnerCombobox({ inputValue }: { inputValue: string }) {
+      return (
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{
+            inputValue,
+            onInputChange: () => {},
+            filter: (owner, query) => owner.email.includes(query),
+          }}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>
+      );
+    }
+
+    const { rerender } = renderCombobox(
+      <ControlledOwnerCombobox inputValue="" />,
+    );
+    openCombobox();
+    expect(screen.getAllByRole('option')).toHaveLength(2);
+
+    rerender(
+      <BUIProvider>
+        <ControlledOwnerCombobox inputValue="navy" />
+      </BUIProvider>,
+    );
+
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    expect(screen.getByRole('option', { name: 'Grace Hopper' })).toBeVisible();
+  });
 
   it('supports controlled nested client search state', () => {
     const onInputChange = jest.fn();
