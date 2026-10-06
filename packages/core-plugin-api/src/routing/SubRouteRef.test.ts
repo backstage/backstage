@@ -18,6 +18,7 @@ import { AnyParams, SubRouteRef } from './types';
 import { createSubRouteRef } from './SubRouteRef';
 import { createRouteRef } from './RouteRef';
 import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
+import { mockApis } from '@backstage/frontend-test-utils';
 
 const parent = createRouteRef({ id: 'parent' });
 const parentX = createRouteRef({ id: 'parent-x', params: ['x'] });
@@ -128,10 +129,8 @@ describe('SubRouteRef', () => {
   });
 
   describe('with new frontend system', () => {
-    const routeResolutionApi = {
-      resolve: jest.fn(),
-      resolvePath: jest.fn(() => ({ matches: [] })),
-    } as RouteResolutionApi;
+    const routeResolutionApi: RouteResolutionApi =
+      mockApis.routeResolution.mock();
 
     function expectType<T>(): <U>(
       v: U,
