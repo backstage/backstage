@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.15-next.2
+
+### Patch Changes
+
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+
 ## 0.18.15-next.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.1-next.2
+
+### Patch Changes
+
+- 06128be: Throw a `ConflictError` with a clear message when `publish:gitlab` is called and the target repository already exists, instead of letting the GitLab API return a `GitbeakerRequestError` with a raw JSON body such as `{"name":["has already been taken"]}`.
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.1
+
 ## 0.12.1-next.1
 
 ### Patch Changes

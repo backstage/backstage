@@ -1,5 +1,13 @@
 # @backstage/plugin-events-backend
 
+## 0.6.7-next.2
+
+### Patch Changes
+
+- 02fd3bf: Improve database event cleanup under large backlogs and speed up reading events for subscriptions with many retained events.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.3-next.2
+
 ## 0.6.7-next.1
 
 ### Patch Changes

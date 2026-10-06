@@ -1,5 +1,14 @@
 # @backstage/cli-node
 
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7c6ab3d: Commands run through `runCli` now wait for `stdout` and `stderr` to be flushed before exiting, so large command output is no longer truncated on platforms where writes to `stdout` and `stderr` are asynchronous.
+- 6dc6bc6: Fixed CLIs created with `runCli` silently exiting when the root or a command group is invoked without a subcommand. They now display help for that level and complete successfully.
+
+  Help output now lists groups and commands in separate, alphabetically sorted sections. Group previews adapt to the terminal width, using 80 columns when unavailable. Nested groups expand breadth-first when space permits; unexpanded groups retain a trailing slash and truncated previews end in an ellipsis.
+
 ## 0.3.5-next.0
 
 ### Patch Changes

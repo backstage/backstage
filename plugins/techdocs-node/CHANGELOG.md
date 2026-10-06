@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-node
 
+## 2.0.3-next.2
+
+### Patch Changes
+
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.1
+  - @backstage/plugin-techdocs-common@0.1.2-next.0
+
+## 2.0.3-next.1
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 2.0.2-next.1
 
 ### Patch Changes

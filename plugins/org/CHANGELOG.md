@@ -1,5 +1,17 @@
 # @backstage/plugin-org
 
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 1557a8c: Added a swappable `UserAvatar` component and wired org plugin surfaces to use it for user profile pictures.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.4-next.1
+  - @backstage/core-components@0.18.15-next.2
+
 ## 0.7.10-next.0
 
 ### Patch Changes

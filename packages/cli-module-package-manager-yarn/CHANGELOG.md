@@ -1,5 +1,16 @@
 # @backstage/cli-module-package-manager-yarn
 
+## 0.1.3-next.2
+
+### Patch Changes
+
+- 84cfb88: Added a conservative `--fix` mode to `backstage-cli pm verify-patches` that can
+  update project-owned Backstage package patches when an automated release
+  upgrade leaves them pinned to older versions. The repair requires Yarn 3 or
+  later.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.1
+
 ## 0.1.3-next.1
 
 ### Patch Changes

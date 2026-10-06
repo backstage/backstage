@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 2.1.3-next.1
+
+### Patch Changes
+
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+
 ## 2.1.3-next.0
 
 ### Patch Changes
