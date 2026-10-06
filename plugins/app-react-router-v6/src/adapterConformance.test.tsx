@@ -15,16 +15,14 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import {
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../../packages/frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
+  mockApis,
   createMockAppHistory,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
@@ -187,23 +185,20 @@ describe(`React Router v6 route context matches a real router tree`, () => {
       <TestApiProvider
         apis={[
           [appHistoryApiRef, appHistory],
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: ({ pathname }) => ({
-                matches: [
-                  {
-                    params:
-                      matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
-                    contributesPath: true,
-                    basePath: BASE_PATH,
-                    routePattern: ROUTE_PATTERN,
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
-            },
-          ],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params:
+                    matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: BASE_PATH,
+                  routePattern: ROUTE_PATTERN,
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
         ]}
       >
         <ReactRouterV6PageRouter>
@@ -223,23 +218,20 @@ describe(`React Router v6 route context matches a real router tree`, () => {
       <TestApiProvider
         apis={[
           [appHistoryApiRef, appHistory],
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: ({ pathname }) => ({
-                matches: [
-                  {
-                    params:
-                      matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
-                    contributesPath: true,
-                    basePath: BASE_PATH,
-                    routePattern: ROUTE_PATTERN,
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
-            },
-          ],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params:
+                    matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: BASE_PATH,
+                  routePattern: ROUTE_PATTERN,
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
         ]}
       >
         <ReactRouterV6PageRouter>
