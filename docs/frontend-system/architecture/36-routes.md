@@ -534,7 +534,24 @@ and fall back to React Router in the old frontend system.
 `AppHistoryApi.navigate` accepts app-relative destinations or a numeric history
 delta for Back and Forward navigation. It rejects external destinations.
 `AppHistoryApi.createHref` adds the deployment basename and preserves external
-URLs. For scoped link destinations, use `useHref`.
+URLs, replacing executable schemes with `about:blank` and a warning. For scoped
+link destinations, use `useHref`.
+
+Custom integrations can call
+`RouteResolutionApi.resolveTarget({ to, pathname, node })` to resolve an authored
+target against an extension's route ancestry. Without a node, resolution uses
+app-root scope. Query-only and hash-only targets retain the supplied pathname;
+external URLs pass through unchanged. Pass the result to
+`AppHistoryApi.createHref` for a safe browser href, or to `navigate` for internal
+navigation. The public `isExternalTarget` helper classifies browser-owned URLs;
+it does not sanitize them. Browser navigation must use the href returned by
+`createHref`.
+
+`resolvePath` remains available for adapters and parameter consumers that need
+matched ancestry rather than a destination. Relative-path resolution belongs to
+the app's route resolution API, and basename handling and href sanitization
+belong to its history API. A BUI integration only connects these APIs to the
+current app node and location.
 
 `useHref` resolves relative paths against the matched extension ancestry. Each
 leading `..` climbs one route, even when that route spans multiple URL segments.

@@ -1609,6 +1609,9 @@ export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
 };
 
 // @public
+export const isExternalTarget: (to: string) => boolean;
+
+// @public
 export const microsoftAuthApiRef: ApiRef_2<
   OAuthApi &
     OpenIdConnectApi &
@@ -2140,6 +2143,11 @@ export interface RouteResolutionApi {
   resolvePath(options: { pathname: string; node?: AppNode }): {
     matches: readonly RouteResolutionMatch[];
   };
+  resolveTarget(options: {
+    to: string;
+    pathname: string;
+    node?: AppNode;
+  }): string;
 }
 
 // @public

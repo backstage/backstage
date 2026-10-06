@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { resolveAppTarget } from '@internal/frontend';
 import {
   ApiHolder,
   ApiRef,
@@ -115,6 +116,13 @@ class CompatIconsApi implements IconsApi {
 }
 
 class CompatRouteResolutionApi implements RouteResolutionApi {
+  resolveTarget({
+    to,
+    pathname,
+  }: Parameters<RouteResolutionApi['resolveTarget']>[0]) {
+    return resolveAppTarget(to, pathname, []);
+  }
+
   resolvePath(): ReturnType<RouteResolutionApi['resolvePath']> {
     // The old frontend system has no app-node route tree.
     return { matches: [] };

@@ -109,6 +109,32 @@ describe('RouteResolver', () => {
 
     // The child wins over consuming "edit" as the parent's optional id.
     const pathname = '/a/edit';
+    expect(
+      resolver.resolveTarget({ to: '../view', pathname, node: content }),
+    ).toBe('/a/view');
+    expect(
+      resolver.resolveTarget({
+        to: '?tab=docs#intro',
+        pathname,
+        node: content,
+      }),
+    ).toBe('/a/edit?tab=docs#intro');
+    expect(resolver.resolveTarget({ to: 'view', pathname })).toBe('/view');
+    expect(
+      resolver.resolveTarget({
+        to: '/search?q=https://example.com',
+        pathname,
+        node: content,
+      }),
+    ).toBe('/search?q=https://example.com');
+    expect(
+      resolver.resolveTarget({
+        to: 'https://example.com',
+        pathname,
+        node: content,
+      }),
+    ).toBe('https://example.com');
+
     const branch = resolver.resolvePath({ pathname });
     expect(branch.matches).toEqual([
       {

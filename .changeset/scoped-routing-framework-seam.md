@@ -4,7 +4,7 @@
 
 Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` supports route-reference links, while `useRouteRef` and `useAppNavigate` can be combined for programmatic navigation.
 
-Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location. The `useRouteResolution` hook provides the current extension’s matched routing ancestry at the current location.
+Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location. `RouteResolutionApi.resolveTarget` resolves authored links against a node’s route ancestry, using app-root scope when no node is supplied. `AppHistoryApi.createHref` sanitizes executable URL schemes, and `isExternalTarget` is available for integrations that handle browser navigation separately. The `useRouteResolution` hook provides the current extension’s matched routing ancestry at the current location.
 
 Framework routing hooks work without a page adapter and retain old frontend compatibility. Existing pages keep implicit React Router v6 routing, with development warnings to guide migration to explicit adapters. Page headers remain visible during content loading and errors, and sub-page breadcrumbs point to their matched routes.
 

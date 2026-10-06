@@ -24,6 +24,7 @@ import {
   SubRouteRef,
 } from '@backstage/frontend-plugin-api';
 import {
+  resolveAppTarget,
   OpaqueExternalRouteRef,
   OpaqueRouteRef,
   OpaqueSubRouteRef,
@@ -61,6 +62,8 @@ export interface MockRouteResolutionApiOptions {
    * over {@link MockRouteResolutionApiOptions.routes}.
    */
   resolve?: RouteResolutionApi['resolve'];
+  /** Override target resolution; by default uses the configured path matches. */
+  resolveTarget?: RouteResolutionApi['resolveTarget'];
   /**
    * Fixed matches or a custom path-matching implementation. Defaults to no
    * matches. Fixed matches ignore the requested pathname and node, defaulting
@@ -91,6 +94,8 @@ export interface MockRouteResolutionApi extends RouteResolutionApi {
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
   /** The underlying mock for pathname resolution. */
   resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  /** The underlying mock for target resolution. */
+  resolveTarget: jest.MockedFunction<RouteResolutionApi['resolveTarget']>;
 }
 
 function substitutePath(
@@ -194,19 +199,29 @@ export function createMockRouteResolutionApi(
   >;
 
   const pathResolution = options.resolvePath;
+  const resolvePath = jest.fn(
+    typeof pathResolution === 'function'
+      ? pathResolution
+      : () => ({
+          matches: (pathResolution?.matches ?? []).map(match => ({
+            ...match,
+            routePattern: match.routePattern ?? match.basePath,
+            params: match.params ?? {},
+            contributesPath: match.contributesPath ?? true,
+          })),
+        }),
+  );
   return {
     resolve,
-    resolvePath: jest.fn(
-      typeof pathResolution === 'function'
-        ? pathResolution
-        : () => ({
-            matches: (pathResolution?.matches ?? []).map(match => ({
-              ...match,
-              routePattern: match.routePattern ?? match.basePath,
-              params: match.params ?? {},
-              contributesPath: match.contributesPath ?? true,
-            })),
-          }),
+    resolvePath,
+    resolveTarget: jest.fn(
+      options.resolveTarget ??
+        (({ to, pathname, node }) =>
+          resolveAppTarget(
+            to,
+            pathname,
+            node ? resolvePath({ pathname, node }).matches : [],
+          )),
     ),
   };
 }
