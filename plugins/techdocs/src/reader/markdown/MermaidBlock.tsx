@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from '@material-ui/core/styles';
 import useAsync from 'react-use/esm/useAsync';
 import DOMPurify from 'dompurify';
 import type { TechDocsCodeBlockProps } from '@backstage/plugin-techdocs-react/alpha';
@@ -23,6 +24,7 @@ let nextId = 0;
 // Mermaid has process-wide configuration. Serialize renders and reset our policy.
 let queue: Promise<unknown> = Promise.resolve();
 export default function MermaidBlock({ code }: TechDocsCodeBlockProps) {
+  const theme = useTheme();
   const root = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -54,6 +56,7 @@ export default function MermaidBlock({ code }: TechDocsCodeBlockProps) {
         const { default: mermaid } = await import('mermaid');
         mermaid.initialize({
           startOnLoad: false,
+          theme: theme.palette.type === 'dark' ? 'dark' : 'default',
           securityLevel: 'strict',
           maxTextSize: 20000,
           maxEdges: 200,
@@ -74,7 +77,7 @@ export default function MermaidBlock({ code }: TechDocsCodeBlockProps) {
       });
     queue = run;
     return run;
-  }, [code, visible]);
+  }, [code, visible, theme.palette.type]);
   return (
     <div ref={root}>
       {state.value ? (

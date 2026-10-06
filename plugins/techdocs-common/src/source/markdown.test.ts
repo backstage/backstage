@@ -24,13 +24,26 @@ describe('source documentation', () => {
     );
     expect(result.headings.map(h => h.id)).toEqual([
       'techdocs-hello',
-      'techdocs-hello-1',
+      'techdocs-hello_1',
     ]);
     const serialized = JSON.stringify(result.tree);
     expect(serialized).not.toMatch(/onerror|javascript:|"tagName":"script"/);
     expect(serialized).toContain('details');
     expect(result.text).toContain('Useful');
     expect(result.text).toContain('Content');
+    const table = parseTechDocsMarkdown(
+      '| A | B |\n| - | - |\n| 1 | 2 |\n\n- [x] Done\n\n$E=mc^2$',
+    );
+    expect(JSON.stringify(table.tree)).toContain('"tagName":"table"');
+    expect(JSON.stringify(table.tree)).toContain('math-inline');
+    const explicit = parseTechDocsMarkdown(
+      '<h2 id="custom">Heading</h2>\n\n[Go](#custom)\n\nFootnote[^1]\n\n[^1]: Detail',
+    );
+    expect(explicit.headings[0].id).toBe('techdocs-custom');
+    expect(JSON.stringify(explicit.tree)).toContain(
+      'user-content-user-content-fn-1',
+    );
+    expect(JSON.stringify(explicit.tree)).toContain('"href":"#custom"');
   });
   it('enforces rollout policy and strict source behavior', () => {
     const manifest = {

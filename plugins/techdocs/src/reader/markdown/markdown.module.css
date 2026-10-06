@@ -1,60 +1,65 @@
-.techdocs-markdown {
+.root {
   color: inherit;
   line-height: 1.6;
   padding: 16px;
 }
-.techdocs-markdown-layout {
+.layout {
   display: grid;
   grid-template-columns: minmax(150px, 1fr) minmax(0, 4fr) minmax(150px, 1fr);
   gap: 24px;
 }
-.techdocs-markdown article {
+.root article {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.techdocs-markdown article img {
+.root article img {
   max-width: 100%;
   height: auto;
 }
-.techdocs-markdown pre {
+.root pre {
   overflow: auto;
   padding: 16px;
   background: rgba(127, 127, 127, 0.12);
 }
-.techdocs-markdown table {
+.root table {
   border-collapse: collapse;
   display: block;
   overflow: auto;
 }
-.techdocs-markdown td,
-.techdocs-markdown th {
+.root td,
+.root th {
   border: 1px solid rgba(127, 127, 127, 0.4);
   padding: 8px;
 }
-.techdocs-markdown aside,
-.techdocs-markdown details {
+.root aside,
+.root details {
   border: 1px solid rgba(127, 127, 127, 0.4);
   padding: 12px;
   margin-block: 12px;
 }
-.techdocs-markdown summary {
+.root summary {
   cursor: pointer;
 }
-.techdocs-markdown a {
-  color: var(--bui-fg-link, #1976d2);
+.root a {
+  color: var(--techdocs-link-color);
 }
-.techdocs-markdown .hljs-keyword,
-.techdocs-markdown .hljs-title {
-  color: var(--bui-fg-link, #1976d2);
+.root :global(.hljs-keyword),
+.root :global(.hljs-title) {
+  color: var(--techdocs-link-color);
 }
-.techdocs-markdown .hljs-string {
+.root :global(.hljs-string) {
   color: #388e3c;
 }
-.techdocs-markdown .hljs-comment {
+.root :global(.hljs-comment) {
   opacity: 0.7;
 }
 @media (max-width: 900px) {
-  .techdocs-markdown-layout {
+  .layout {
     grid-template-columns: 1fr;
   }
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
 }

@@ -40,3 +40,8 @@ export type { RunCommandOptions } from './stages/generate/helpers';
 export function createDockerContainerRunner(): TechDocsContainerRunner {
   return new DockerContainerRunner();
 }
+
+export {
+  migrateTechDocsConfig,
+  generateTechDocsSource,
+} from './stages/generate/source';

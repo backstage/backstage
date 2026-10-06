@@ -16,7 +16,7 @@
 
 import { resolve } from 'node:path';
 import { OptionValues } from 'commander';
-import { migrateTechDocsConfig } from '@backstage/plugin-techdocs-node';
+import { migrateTechDocsConfig } from '@backstage/plugin-techdocs-node/alpha';
 import { createLogger } from '../../lib/utility';
 
 export default async function migrateConfig(opts: OptionValues) {

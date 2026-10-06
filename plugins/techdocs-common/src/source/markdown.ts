@@ -157,14 +157,21 @@ export function parseTechDocsMarkdown(
     if (/^h[1-6]$/.test(node.tagName ?? '')) {
       const title = techDocsNodeText(node);
       const base =
-        title
-          .toLowerCase()
-          .replace(/[^\p{L}\p{N}_\s-]/gu, '')
-          .trim()
-          .replace(/\s+/g, '-') || 'section';
+        typeof originalId === 'string'
+          ? originalId.replace(/^user-content-/, '')
+          : title
+              .toLowerCase()
+              .replace(/[^\p{L}\p{N}_\s-]/gu, '')
+              .trim()
+              .replace(/\s+/g, '-') || 'section';
       const count = ids.get(base) ?? 0;
       ids.set(base, count + 1);
-      const id = `techdocs-${base}${count ? `-${count}` : ''}`;
+      const id = `techdocs-${base}${count ? `_${count}` : ''}`;
+      if (typeof originalId === 'string')
+        anchors.set(
+          originalId.replace(/^user-content-/, ''),
+          id.replace(/^techdocs-/, ''),
+        );
       node.properties = { ...node.properties, id };
       headings.push({ id, title, level: Number(node.tagName![1]) });
     }

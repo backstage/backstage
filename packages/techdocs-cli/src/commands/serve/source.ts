@@ -25,6 +25,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { ConfigReader } from '@backstage/config';
 import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 import HTTPServer from '../../lib/httpServer';
+import { getEngineConfig } from '../../lib/engines';
 import { createLogger, getLogStream } from '../../lib/utility';
 
 export async function serveSource(opts: OptionValues, previewAppPath: string) {
@@ -119,6 +120,8 @@ export async function serveSource(opts: OptionValues, previewAppPath: string) {
       previewPort,
       `http://127.0.0.1:${address.port}`,
       opts.verbose,
+      getEngineConfig('mkdocs'),
+      true,
     ).serve();
     watcher = chokidar.watch(inputDir, {
       ignoreInitial: true,

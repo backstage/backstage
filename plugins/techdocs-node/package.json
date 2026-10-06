@@ -99,5 +99,20 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/supertest": "^2.0.8",
     "supertest": "^7.0.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   }
 }

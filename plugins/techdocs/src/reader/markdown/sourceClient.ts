@@ -23,9 +23,13 @@ export async function readSourceJson(
   limit: number,
   optional = false,
   signal?: AbortSignal,
+  onMissing?: () => void,
 ): Promise<unknown> {
   const response = await fetchApi.fetch(url, { signal, cache: 'no-cache' });
-  if (optional && response.status === 404) return undefined;
+  if (response.status === 404) {
+    if (optional) return undefined;
+    onMissing?.();
+  }
   if (!response.ok) throw await ResponseError.fromResponse(response);
   if (Number(response.headers.get('content-length')) > limit)
     throw new Error('Source artifact exceeds size limit');

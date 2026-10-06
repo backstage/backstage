@@ -263,13 +263,14 @@ export const bulkStorageOperation = async <T>(
   { concurrencyLimit } = { concurrencyLimit: 25 },
 ) => {
   const limiter = createLimiter(concurrencyLimit);
-  const isCommitFile = (arg: T) =>
-    typeof arg === 'string' &&
-    (arg
-      .split(path.sep)
-      .join('/')
-      .endsWith('/_techdocs/source/manifest.json') ||
-      arg.endsWith('/techdocs_metadata.json'));
+  const isCommitFile = (arg: T) => {
+    if (typeof arg !== 'string') return false;
+    const file = arg.replace(/\\/g, '/');
+    return (
+      file.endsWith('/_techdocs/source/manifest.json') ||
+      file.endsWith('/techdocs_metadata.json')
+    );
+  };
   // Publish pointers only after every referenced source file is available.
   await Promise.all(
     args.filter(arg => !isCommitFile(arg)).map(arg => limiter(operation, arg)),

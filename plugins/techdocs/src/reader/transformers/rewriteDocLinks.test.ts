@@ -57,6 +57,26 @@ describe('rewriteDocLinks', () => {
     ]);
   });
 
+  it('preserves an enabled preview choice only on documentation links', async () => {
+    window.history.replaceState(null, '', '/?techdocs-preview=legacy');
+    try {
+      const dom = await createTestShadowDom(
+        '<a href="next?other=1#section">Next</a><a href="https://example.com">External</a><a download href="file.txt">Download</a>',
+        {
+          preTransformers: [rewriteDocLinks(true)],
+          postTransformers: [],
+        },
+      );
+      expect(getSample(dom, 'a', 'href', 6)).toEqual([
+        'http://localhost/next?other=1&techdocs-preview=legacy#section',
+        'https://example.com/',
+        'http://localhost/file.txt',
+      ]);
+    } finally {
+      window.history.replaceState(null, '', '/');
+    }
+  });
+
   it('should rewrite non-parseable URLs as text', async () => {
     const expectedText = `www.my-internet.[top-level-domain]/pathname/[URLkey]`;
     const shadowDom = await createTestShadowDom(

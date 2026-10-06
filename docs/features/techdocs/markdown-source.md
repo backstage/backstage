@@ -34,8 +34,9 @@ nav:
 
 Only these keys are accepted in `techdocs.yaml`. Navigation entries must reference
 existing Markdown pages. Configuration is parsed as data, without custom YAML
-tags. Symlinks, paths outside the document root, and executable source files are
-not accepted. Pages are limited to 1 MB, individual assets to 10 MB, and a site to
+tags. `docsDir` must be a subdirectory of the project; using the project root
+itself is not supported. Symlinks and paths outside the document root are rejected.
+Executable source files are omitted. Pages are limited to 1 MB, individual assets to 10 MB, and a site to
 100 MB and 10,000 files. Unsupported assets and MkDocs settings produce diagnostics.
 
 Source builds produce a search index for Backstage search. Dual builds retain the
@@ -93,7 +94,8 @@ MkDocs, or use `--publishing dual` to compare both formats. Changes rebuild the
 preview and reload the browser. A failed rebuild retains the last successful
 preview and displays the build error. The preview command uses the bundled
 Backstage app; when developing this repository, use its embedded app development
-server or provide an existing preview bundle with `--preview-app-bundle-path`.
+server with `TECHDOCS_CLI_DEV_MODE=1 techdocs-cli serve --publishing source`
+running alongside it, or provide an existing preview bundle with `--preview-app-bundle-path`.
 
 The lightbox and report-issue frontend modules include Markdown variants. Report
 issue uses structured selection information; it does not inspect generated HTML.
@@ -102,7 +104,9 @@ Source rendering generates a navigation landing page when `index.md` is missing.
 
 Source files use content-derived names. Built-in publishers upload source files
 before the source manifest; a failed upload does not advance that manifest.
-Concurrent publication of the same entity should still be serialized in CI.
+If a cloud publication removes a file referenced by an open reader, the reader
+refreshes the manifest and retries once. Concurrent publication of the same entity
+should still be serialized in CI.
 
 Custom generators and publishers must explicitly support the source format. A
 custom publisher should treat `source: true` in `techdocs_metadata.json` as a

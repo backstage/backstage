@@ -36,7 +36,7 @@ const DEVELOPMENT_CONFIG = {
   },
 };
 
-async function isProductionServe() {
+export async function isProductionServe() {
   const res = await fetch('/.detect');
   if (!res.ok) {
     return false;

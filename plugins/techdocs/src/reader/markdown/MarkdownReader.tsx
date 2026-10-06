@@ -16,6 +16,7 @@
 
 import {
   createElement,
+  CSSProperties,
   Fragment,
   lazy,
   ReactNode,
@@ -25,7 +26,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useParams,
+  useResolvedPath,
+} from 'react-router-dom';
+import { useTheme } from '@material-ui/core/styles';
 import useAsync from 'react-use/esm/useAsync';
 import { fetchApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
@@ -48,7 +55,7 @@ import { SourceImage } from './SourceImage';
 import { SourceAssetLink } from './SourceAssetLink';
 import { MathContent, HighlightedCode } from './renderers';
 import { MarkdownTabs } from './MarkdownTabs';
-import './markdown.css';
+import styles from './markdown.module.css';
 
 const MermaidBlock = lazy(() => import('./MermaidBlock'));
 
@@ -71,10 +78,12 @@ export default function MarkdownReader(props: {
   base: string;
   defaultPath?: string;
   onReady?: () => void;
+  onMissingArtifact?: (file: string) => void;
 }) {
-  const { manifest, base, defaultPath, onReady } = props;
+  const { manifest, base, defaultPath, onReady, onMissingArtifact } = props;
   const { '*': route = '' } = useParams();
   const location = useLocation();
+  const theme = useTheme();
   const fetchApi = useApi(fetchApiRef);
   const holder = useApiHolder();
   const { entityRef, setTitle } = useTechDocsReaderPage();
@@ -86,9 +95,7 @@ export default function MarkdownReader(props: {
       p.route.replace(/\/$/, '') === selectedRoute.replace(/\/$/, '') ||
       p.path === selectedRoute,
   );
-  const prefix = location.pathname
-    .slice(0, location.pathname.length - route.length)
-    .replace(/\/?$/, '/');
+  const prefix = useResolvedPath('.').pathname.replace(/\/?$/, '/');
   const addons = useMemo(
     () => holder.get(techdocsMarkdownAddonsApiRef)?.getAddons() ?? [],
     [holder],
@@ -123,6 +130,9 @@ export default function MarkdownReader(props: {
       fetchApi,
       `${base}${page.file}`,
       6_000_000,
+      false,
+      undefined,
+      () => onMissingArtifact?.(page.file),
     );
     if (
       !value ||
@@ -135,7 +145,7 @@ export default function MarkdownReader(props: {
       value.markdown,
       addons.flatMap(addon => addon.transforms ?? []),
     );
-  }, [fetchApi, base, page?.file, selectedRoute, addons]);
+  }, [fetchApi, base, page?.file, selectedRoute, addons, onMissingArtifact]);
   useEffect(() => {
     const update = () => {
       const selected = window.getSelection();
@@ -181,7 +191,12 @@ export default function MarkdownReader(props: {
       }
       const element = Array.from(
         article.current?.querySelectorAll('[id]') ?? [],
-      ).find(el => el.id === id || el.id === `techdocs-${id}`);
+      ).find(
+        el =>
+          el.id === id ||
+          el.id === `techdocs-${id}` ||
+          el.id === `user-content-${id}`,
+      );
       element?.scrollIntoView();
     }
   }, [
@@ -206,7 +221,10 @@ export default function MarkdownReader(props: {
         p.route.replace(/\/$/, '') === resolved.path.replace(/\/$/, ''),
     );
     if (!targetPage) return undefined;
-    return `${prefix}${targetPage.route}${location.search}${resolved.hash}`;
+    return `${prefix}${targetPage.route
+      .split('/')
+      .map(encodeURIComponent)
+      .join('/')}${location.search}${resolved.hash}`;
   };
   const slot = (
     name: NonNullable<TechDocsMarkdownAddon['slots']>[number]['location'],
@@ -309,6 +327,7 @@ export default function MarkdownReader(props: {
           base={base}
           file={asset.file}
           alt={String(properties.alt ?? '')}
+          onMissingArtifact={onMissingArtifact}
         />
       ) : (
         <span role="note">
@@ -324,7 +343,11 @@ export default function MarkdownReader(props: {
       const asset = manifest.assets.find(a => a.path === resolved?.path);
       if (asset) {
         content = (
-          <SourceAssetLink base={base} asset={asset}>
+          <SourceAssetLink
+            base={base}
+            asset={asset}
+            onMissingArtifact={onMissingArtifact}
+          >
             {renderChildren(node.children)}
           </SourceAssetLink>
         );
@@ -383,9 +406,12 @@ export default function MarkdownReader(props: {
         <li key={i}>
           {entry.path ? (
             <Link
-              to={`${prefix}${
+              to={`${prefix}${(
                 manifest.pages.find(p => p.path === entry.path)?.route ?? ''
-              }${location.search}`}
+              )
+                .split('/')
+                .map(encodeURIComponent)
+                .join('/')}${location.search}`}
             >
               {entry.title}
             </Link>
@@ -408,8 +434,15 @@ export default function MarkdownReader(props: {
       }}
       selection={selection}
     >
-      <div className="techdocs-markdown">
-        <div className="techdocs-markdown-toolbar">
+      <div
+        className={styles.root}
+        style={
+          {
+            '--techdocs-link-color': theme.palette.primary.main,
+          } as CSSProperties
+        }
+      >
+        <div className={styles.toolbar}>
           {slot('toolbar')}
           {slot('settings')}
         </div>
@@ -425,7 +458,7 @@ export default function MarkdownReader(props: {
             </ul>
           </details>
         )}
-        <div className="techdocs-markdown-layout">
+        <div className={styles.layout}>
           <nav aria-label="Documentation navigation">
             {nav(manifest.nav)}
             {slot('navigation')}
@@ -439,7 +472,11 @@ export default function MarkdownReader(props: {
             <ul>
               {parsed.headings.map(h => (
                 <li key={h.id} style={{ marginInlineStart: (h.level - 1) * 8 }}>
-                  <Link to={`${location.pathname}${location.search}#${h.id}`}>
+                  <Link
+                    to={`${location.pathname}${
+                      location.search
+                    }#${encodeURIComponent(h.id.replace(/^techdocs-/, ''))}`}
+                  >
                     {h.title}
                   </Link>
                 </li>

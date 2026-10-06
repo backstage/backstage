@@ -21,16 +21,25 @@ import { readSourceJson } from './sourceClient';
 
 export function SourceImage({
   base,
+  onMissingArtifact,
   file,
   alt,
 }: {
   base: string;
+  onMissingArtifact?: (file: string) => void;
   file: string;
   alt: string;
 }) {
   const fetchApi = useApi(fetchApiRef);
   const state = useAsync(async () => {
-    const raw = await readSourceJson(fetchApi, `${base}${file}`, 14_000_000);
+    const raw = await readSourceJson(
+      fetchApi,
+      `${base}${file}`,
+      14_000_000,
+      false,
+      undefined,
+      () => onMissingArtifact?.(file),
+    );
     if (
       !raw ||
       typeof raw !== 'object' ||
@@ -65,7 +74,7 @@ export function SourceImage({
       return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(clean)}`;
     }
     return `data:image/${type};base64,${raw.data}`;
-  }, [fetchApi, base, file]);
+  }, [fetchApi, base, file, onMissingArtifact]);
   if (state.error) return <span role="note">Image unavailable: {alt}</span>;
   return state.value ? (
     <img src={state.value} alt={alt} loading="lazy" />

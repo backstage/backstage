@@ -18,6 +18,7 @@ import { renderWithEffects } from '@backstage/test-utils';
 import app from './App';
 
 jest.mock('./config', () => ({
+  isProductionServe: async () => true,
   configLoader: async () => [
     {
       data: {
