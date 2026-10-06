@@ -22,6 +22,7 @@ import type {
 import type { Observable, Subscription } from '@backstage/types';
 import {
   createPath,
+  sanitizeHref,
   isExternalTarget,
   appHistoryMetadataSymbol,
   parsePath,
@@ -233,13 +234,16 @@ export class AppHistory implements AppHistoryApi {
    * throws for these instead.
    */
   createHref(to: string): string {
-    if (isExternalTarget(to)) {
-      return to;
+    const safeTo = sanitizeHref(to);
+    if (isExternalTarget(safeTo)) {
+      return safeTo;
     }
-    const target = parsePath(to);
+    const target = parsePath(safeTo);
     const resolved = resolvePath(
-      to,
-      target.pathname === undefined && to !== '' ? this.location.pathname : '/',
+      safeTo,
+      target.pathname === undefined && safeTo !== ''
+        ? this.location.pathname
+        : '/',
     );
     // Still normalized through `URL`, which is what turns a resolved path that
     // is not already app-absolute into one, and collapses any `.`/`..` a

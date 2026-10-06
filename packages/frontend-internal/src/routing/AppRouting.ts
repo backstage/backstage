@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
+import { isExternalTarget } from './isExternalTarget';
+
 /**
  * Shared path resolution for AppHistory and legacy React Router consumers.
  * Route ancestry is supplied by the matched extension chain; these functions
@@ -265,4 +268,19 @@ export function resolveAppPath(
     resolved.pathname += '/';
   }
   return resolved;
+}
+
+/** Resolves an authored target using already selected framework matches. */
+export function resolveAppTarget(
+  to: string,
+  pathname: string,
+  matches: readonly RouteResolutionMatch[],
+): string {
+  if (isExternalTarget(to)) {
+    return to;
+  }
+  const basePaths = matches
+    .filter((match, index) => index === 0 || match.contributesPath)
+    .map(match => match.basePath);
+  return createPath(resolveAppPath(to, basePaths, pathname));
 }

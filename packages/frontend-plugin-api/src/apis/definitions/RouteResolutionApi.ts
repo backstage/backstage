@@ -65,6 +65,20 @@ export interface RouteResolutionMatch {
  */
 export interface RouteResolutionApi {
   /**
+   * Resolves an authored target against the given node's route ancestry.
+   * Each leading `..` climbs one path-contributing route. Query-only and
+   * hash-only targets use `pathname`. Without a node, targets use app-root scope.
+   * Returns an app-absolute path, excluding the deployment basename, or an
+   * external URL unchanged. Use AppHistoryApi.createHref to sanitize and
+   * format the result for the browser.
+   */
+  resolveTarget(options: {
+    to: string;
+    pathname: string;
+    node?: AppNode;
+  }): string;
+
+  /**
    * Matches an app-relative pathname against the app's route tree.
    *
    * Matches are ordered from outermost to innermost. When a node is supplied,
