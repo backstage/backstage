@@ -63,6 +63,8 @@ export interface AppHistoryApi {
    * Resolve a path to a browser-ready href, including the app's deploy
    * basename.
    *
+   * Executable URL schemes are replaced with `about:blank` and a warning.
+   *
    * Paths resolve against the app root. Use {@link useHref} for targets
    * relative to the current page: it resolves the matched route ancestry
    * before calling this method. A target with no pathname of its own, such
