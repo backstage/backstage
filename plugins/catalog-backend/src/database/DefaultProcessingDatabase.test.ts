@@ -36,6 +36,7 @@ import { timestampToDateTime } from './conversion';
 import { generateStableHash, retryOnDeadlock } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
+import { getDeferredStitchableEntities } from './operations/stitcher/getDeferredStitchableEntities';
 
 jest.setTimeout(60_000);
 
@@ -278,6 +279,99 @@ describe.each(databases.eachSupportedId())(
       });
 
       if (databaseId.startsWith('POSTGRES')) {
+        it.each(['commit', 'rollback'] as const)(
+          'does not claim uncommitted processing work before %s',
+          async outcome => {
+            const { knex, db } = await createDatabase();
+            const entityRef = 'location:default/fakelocation';
+            await insertRefreshStateRow(knex, {
+              entity_id: id,
+              entity_ref: entityRef,
+              unprocessed_entity: '{}',
+              processed_entity: '{}',
+              errors: '[]',
+              next_update_at: '2021-04-01 13:37:00',
+              last_discovery_at: '2021-04-01 13:37:00',
+            });
+            await knex('stitch_queue').insert({
+              entity_ref: entityRef,
+              stitch_ticket: 'previous-request',
+              next_stitch_at: '1971-01-01T00:00:00.000',
+            });
+            let ready!: () => void;
+            const staged = new Promise<void>(resolve => {
+              ready = resolve;
+            });
+            let release!: () => void;
+            const released = new Promise<void>(resolve => {
+              release = resolve;
+            });
+            const processing = db.transaction(async tx => {
+              await db.updateProcessedEntity(tx, {
+                id,
+                processedEntity,
+                resultHash: 'new-result-hash',
+                relations: [],
+                deferredEntities: [],
+                refreshKeys: [],
+              });
+              await markForStitching({
+                knex: tx as Knex.Transaction,
+                entityRefs: [entityRef],
+              });
+              ready();
+              await released;
+              if (outcome === 'rollback') throw new Error('rollback');
+            });
+            // Attach rejection handling before coordinating concurrent work.
+            const settled = processing.then(
+              () => undefined,
+              error => error,
+            );
+            try {
+              await Promise.race([staged, processing]);
+              const claims = await knex.transaction(async tx => {
+                await tx.raw("set local statement_timeout = '2s'");
+                return getDeferredStitchableEntities({
+                  knex: tx,
+                  batchSize: 1,
+                  stitchTimeout: { minutes: 1 },
+                });
+              });
+              expect(claims).toEqual([]);
+              await expect(
+                knex('refresh_state').where('entity_id', id).first(),
+              ).resolves.toMatchObject({
+                processed_entity: '{}',
+                result_hash: null,
+              });
+            } finally {
+              release();
+              await settled;
+            }
+            expect(await settled).toEqual(
+              outcome === 'commit' ? undefined : new Error('rollback'),
+            );
+            const request = await knex('stitch_queue').first();
+            expect(request.stitch_ticket === 'previous-request').toBe(
+              outcome === 'rollback',
+            );
+            const [claim] = await getDeferredStitchableEntities({
+              knex,
+              batchSize: 1,
+              stitchTimeout: { minutes: 1 },
+            });
+            expect(claim.entityRef).toBe(entityRef);
+            expect(claim.stitchTicket).not.toBe(request.stitch_ticket);
+            await expect(
+              knex('refresh_state').where('entity_id', id).first(),
+            ).resolves.toMatchObject({
+              processed_entity:
+                outcome === 'commit' ? JSON.stringify(processedEntity) : '{}',
+              result_hash: outcome === 'commit' ? 'new-result-hash' : null,
+            });
+          },
+        );
         it('recovers provider and processing transactions from a refresh-state/queue deadlock', async () => {
           const { knex, db } = await createDatabase();
           const provider = new DefaultProviderDatabase({

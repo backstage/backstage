@@ -26,6 +26,7 @@ import {
 import { deleteWithEagerPruningOfChildren } from './deleteWithEagerPruningOfChildren';
 import { markForStitching } from '../stitcher/markForStitching';
 import { performStitching } from '../stitcher/performStitching';
+import { getDeferredStitchableEntities } from '../stitcher/getDeferredStitchableEntities';
 
 jest.setTimeout(60_000);
 
@@ -112,13 +113,17 @@ describe.each(databases.eachSupportedId())(
       await expect(knex('stitch_queue').orderBy('entity_ref')).resolves.toEqual(
         queued,
       );
-      for (const item of queued) {
+      const claims = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 10,
+        stitchTimeout: { minutes: 1 },
+      });
+      for (const item of claims) {
         await expect(
           performStitching({
             knex,
             logger: mockServices.logger.mock(),
-            entityRef: item.entity_ref,
-            stitchTicket: item.stitch_ticket,
+            ...item,
           }),
         ).resolves.toBe('abandoned');
       }
@@ -134,7 +139,6 @@ describe.each(databases.eachSupportedId())(
         target_entity_ref: entityRef,
       });
       await markForStitching({ knex, entityRefs: [entityRef] });
-      const queued = await knex('stitch_queue').first();
       expect(
         await deleteWithEagerPruningOfChildren({
           knex,
@@ -160,12 +164,16 @@ describe.each(databases.eachSupportedId())(
       const replacement = await knex('refresh_state')
         .where('entity_ref', entityRef)
         .first();
+      const [claim] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
       await expect(
         performStitching({
           knex,
           logger: mockServices.logger.mock(),
-          entityRef,
-          stitchTicket: queued.stitch_ticket,
+          ...claim,
         }),
       ).resolves.toBe('changed');
       const final = await knex('final_entities').first();

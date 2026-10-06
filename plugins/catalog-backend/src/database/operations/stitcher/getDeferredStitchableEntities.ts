@@ -111,6 +111,8 @@ export async function getDeferredStitchableEntities(options: {
         tx.raw('next_stitch_at::text as next_stitch_at'),
       ]);
     } else if (String(tx.client.config.client).includes('mysql')) {
+      // MySQL has no UPDATE RETURNING; read the lease on the same locked
+      // connection before committing the claim.
       await update;
       leases = await tx<DbStitchQueueRow>('stitch_queue')
         .select('entity_ref', 'next_stitch_at')
