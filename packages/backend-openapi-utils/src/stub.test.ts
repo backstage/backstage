@@ -21,6 +21,7 @@ import singlePathSpec from './___fixtures__/single-path';
 import { Response } from './utility';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { wrapServer } from './testUtils';
+import { Proxy } from './proxy/setup';
 
 describe('createRouter', () => {
   const pet: Response<typeof singlePathSpec, '/pet/:petId', 'get'> = {
@@ -57,11 +58,23 @@ describe('createRouter', () => {
     const server = await wrapServer(express().use(router));
 
     expect(server.address()).toMatchObject({
-      address: expect.any(String),
+      address: 'localhost',
       port: expect.any(Number),
     });
     const response = await request(server).get('/ping').expect(200);
     expect(response.body).toBe('pong');
+
+    const proxyUrl = jest.spyOn(Proxy.prototype, 'url', 'get');
+    try {
+      proxyUrl.mockReturnValue('http://[::1]:12345');
+      expect(server.address()).toEqual({
+        address: '::1',
+        family: 'IPv6',
+        port: 12345,
+      });
+    } finally {
+      proxyUrl.mockRestore();
+    }
   });
 
   const routers = specs.flatMap(spec => {
