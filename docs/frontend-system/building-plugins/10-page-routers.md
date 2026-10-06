@@ -295,6 +295,99 @@ rebuilt when the active tab changes. The surrounding page shell — header, tabs
 breadcrumbs — stays mounted throughout, and is framework-owned, so it needs no
 routing library at all.
 
+## Use React Aria components directly
+
+React Aria controls can use Backstage navigation without a page routing library.
+Use the public hooks and utility APIs to connect React Aria's provider to the
+current page or sub-page:
+
+```tsx
+import {
+  appHistoryApiRef,
+  routeResolutionApiRef,
+  isExternalTarget,
+  useApi,
+  useAppNode,
+  useAppLocation,
+  type AppNavigateOptions,
+} from '@backstage/frontend-plugin-api';
+import { Link, RouterProvider } from 'react-aria-components';
+
+export function ToolsContent() {
+  const history = useApi(appHistoryApiRef);
+  const routes = useApi(routeResolutionApiRef);
+  const node = useAppNode();
+  const location = useAppLocation();
+
+  const resolveHref = (to: string) =>
+    history.createHref(
+      routes.resolveTarget({ to, pathname: location.pathname, node }),
+    );
+
+  const navigate = (to: string, options?: AppNavigateOptions) => {
+    const target = routes.resolveTarget({
+      to,
+      pathname: history.location.pathname,
+      node,
+    });
+    if (isExternalTarget(target)) {
+      const href = history.createHref(target);
+      if (options?.replace) {
+        window.location.replace(href);
+      } else {
+        window.location.assign(href);
+      }
+    } else {
+      history.navigate(target, options);
+    }
+  };
+
+  return (
+    <RouterProvider navigate={navigate} useHref={resolveHref}>
+      <Link href="details">Tool details</Link>
+    </RouterProvider>
+  );
+}
+```
+
+Both callbacks resolve targets against the node where the provider is created.
+For a page mounted at `/tools`, `details` renders and navigates to
+`/tools/details`, with the deployment basename added once. Each leading `..`
+climbs one path-contributing route. Query-only and hash-only targets use the
+current location; the location hook updates rendered hrefs, while navigation
+reads the latest location when called.
+
+The history API sanitizes browser hrefs and rejects external navigation targets.
+The external branch therefore passes the sanitized href to the browser instead.
+The example requires the new frontend system's history and route resolution APIs.
+
+`useAppNavigate` accepts app-absolute paths, while `useHref` also resolves
+relative paths. Passing those hooks directly to React Aria does not give relative
+hrefs and navigation the same meaning; the example resolves both through
+`RouteResolutionApi.resolveTarget`.
+
+To type React Aria's `routerOptions` in your app, configure its routing types:
+
+```tsx
+import type { AppNavigateOptions } from '@backstage/frontend-plugin-api';
+
+declare module 'react-aria-components' {
+  interface RouterConfig {
+    routerOptions: AppNavigateOptions;
+  }
+}
+```
+
+The options support `replace` and `state` for app navigation. This declaration
+belongs to your app; BUI does not set React Aria's global router types for plugins.
+
+Import the provider and controls from the same React Aria installation. Mount
+another provider inside a nested sub-page to use that sub-page's scope. React
+Aria preserves native browser interactions such as modified clicks and downloads.
+
+BUI controls already receive their routing integration from the app.
+`BUIProvider` does not configure unrelated React Aria controls.
+
 ## Migrate Backstage UI routing
 
 Backstage apps configure Backstage UI (BUI) navigation automatically. Standalone
@@ -320,8 +413,8 @@ When upgrading an existing integration:
    `state` options.
 1. Use `href="."` to navigate to the current route. Empty hrefs follow React
    Aria's native behavior and are not resolved by the host router.
-1. Give directly used React Aria components their own routing provider. The
-   app-provided integration applies only to BUI controls.
+1. Give directly used React Aria components their own routing provider, as
+   described in [React Aria integration](#use-react-aria-components-directly).
 
 BUI links treat URL schemes, including custom and mixed-case schemes, as
 external destinations. A scheme appearing only in a query string or fragment
