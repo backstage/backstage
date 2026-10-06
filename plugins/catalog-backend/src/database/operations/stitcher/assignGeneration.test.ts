@@ -15,34 +15,67 @@
  */
 
 import { TestDatabases } from '@backstage/backend-test-utils';
+import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../migrations';
-import { allocateGeneration } from './allocateGeneration';
+import { assignGeneration } from './assignGeneration';
 
 jest.setTimeout(60_000);
 const databases = TestDatabases.create();
+
+async function addFinalRows(knex: Knex) {
+  await knex('refresh_state').insert(
+    ['one', 'two'].map(id => ({
+      entity_id: id,
+      entity_ref: `k:ns/${id}`,
+      unprocessed_entity: '{}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    })),
+  );
+  await knex('final_entities').insert(
+    ['one', 'two'].map(id => ({
+      entity_id: id,
+      entity_ref: `k:ns/${id}`,
+      hash: 'h',
+      final_entity: '{}',
+    })),
+  );
+}
 
 it.each(databases.eachSupportedId())(
   'keeps bigint precision and rolls allocation back for %p',
   async databaseId => {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
+    await addFinalRows(knex);
     await knex('catalog_generation_counter').update({
       generation: '9007199254740992',
     });
     await expect(
       knex.transaction(async tx => {
-        expect(await allocateGeneration(tx)).toBe('9007199254740993');
+        await tx('final_entities')
+          .where('entity_id', 'one')
+          .update({ hash: 'changed' });
+        expect(await assignGeneration(tx, 'one')).toBe('9007199254740993');
         throw new Error('rollback');
       }),
     ).rejects.toThrow('rollback');
+    expect(
+      (await knex('final_entities').where('entity_id', 'one').first())
+        .generation,
+    ).toBeNull();
     await knex.transaction(async tx => {
-      expect(await allocateGeneration(tx)).toBe('9007199254740993');
-      expect(await allocateGeneration(tx)).toBe('9007199254740994');
+      await tx('final_entities')
+        .where('entity_id', 'one')
+        .update({ hash: 'changed' });
+      expect(await assignGeneration(tx, 'one')).toBe('9007199254740993');
+      expect(await assignGeneration(tx, 'one')).toBe('9007199254740994');
     });
     await knex('catalog_generation_counter').delete();
-    await expect(knex.transaction(allocateGeneration)).rejects.toThrow(
-      'counter is missing or invalid',
-    );
+    await expect(
+      knex.transaction(tx => assignGeneration(tx, 'one')),
+    ).rejects.toThrow('missing or invalid');
   },
 );
 
@@ -53,13 +86,20 @@ it.each(
   async databaseId => {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
+    await addFinalRows(knex);
     const first = await knex.transaction();
     const second = await knex.transaction();
     let later: Promise<string> | undefined;
     try {
-      expect(await allocateGeneration(first)).toBe('1');
+      await first('final_entities')
+        .where('entity_id', 'one')
+        .update({ hash: 'changed' });
+      await second('final_entities')
+        .where('entity_id', 'two')
+        .update({ hash: 'changed' });
+      expect(await assignGeneration(first, 'one')).toBe('1');
       const { rows } = await second.raw('SELECT pg_backend_pid() AS pid');
-      later = allocateGeneration(second);
+      later = assignGeneration(second, 'two');
       // Observe a real lock wait, not a timing-dependent unsettled promise.
       const deadline = Date.now() + 5_000;
       let blocked = false;

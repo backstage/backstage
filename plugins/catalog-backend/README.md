@@ -1,8 +1,5 @@
 # Catalog Backend
 
-For database upgrade considerations related to internal publication bookkeeping,
-see [publication generations](src/database/operations/stitcher/README.md).
-
 This is the backend for the default Backstage [software catalog](http://backstage.io/docs/features/software-catalog/).
 This provides an API for consumers such as the frontend [catalog plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog).
 
@@ -84,6 +81,39 @@ Install the module you need in your backend package and register it with
 `backend.add(import('<module-package>'))`. Remove your custom registration of the
 old processor to avoid registering it twice. If you need to configure a processor
 explicitly, follow the replacement module's documentation.
+
+## Upgrading large installations
+
+Internal publication bookkeeping adds a nullable generation column without
+rewriting existing entities. PostgreSQL builds its index concurrently, but still
+scans the entire catalog table, even when every generation is null.
+
+The metadata transaction has a five-second lock-wait timeout. If it expires,
+startup fails and must retry; repeated failures can cause deployment restart
+loops. The concurrent index phase has no imposed timeout and can wait on long
+transactions elsewhere in the database, including other plugins using separate
+schemas. It may exceed deployment startup deadlines.
+
+Large installations can prepare the column and index out of band before
+starting the upgraded service. Use the catalog plugin's schema, inspect for an
+existing or invalid index first, and run these commands outside a transaction:
+
+```sql
+ALTER TABLE final_entities ADD COLUMN IF NOT EXISTS generation bigint;
+CREATE INDEX CONCURRENTLY final_entities_generation_idx
+  ON final_entities (generation) INCLUDE (entity_ref)
+  WHERE generation IS NOT NULL;
+```
+
+The migration preserves an existing valid index and repairs an invalid one left
+by an interrupted build. Reruns do not reset the generation counter. Reversing
+the migration discards this bookkeeping, not entity or search contents.
+
+This does not expose a change-feed API or track deletions. During rolling
+upgrades, older instances can overwrite content while retaining a previously
+assigned generation. A non-null generation is therefore not proof of complete
+change tracking. Any future feed needs an explicit rollout activation boundary
+and initial synchronization strategy.
 
 ## Development
 

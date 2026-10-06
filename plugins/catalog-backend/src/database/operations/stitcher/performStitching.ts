@@ -33,7 +33,7 @@ import { syncSearchRows } from './syncSearchRows';
 import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { retryOnDeadlock } from '../../util';
-import { allocateGeneration } from './allocateGeneration';
+import { assignGeneration } from './assignGeneration';
 
 class StitchPublicationSupersededError extends Error {}
 
@@ -325,10 +325,7 @@ export async function performStitching(options: {
 
           // All publication locks are already held. Do not acquire queue or
           // other entity locks after this global counter lock; settle later.
-          const generation = await allocateGeneration(tx);
-          await tx<DbFinalEntitiesRow>('final_entities')
-            .where('entity_id', entityId)
-            .update({ generation });
+          await assignGeneration(tx, entityId);
 
           return 'changed' as const;
         }),
@@ -350,8 +347,6 @@ export async function performStitching(options: {
 
     stitchResult = 'succeeded';
     return 'changed';
-  } catch (error) {
-    throw error;
   } finally {
     if (stitchResult) {
       await markDeferredStitchCompleted({

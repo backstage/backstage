@@ -141,6 +141,12 @@ it.each(databases.eachSupportedId())(
 
     let entities: DbFinalEntitiesRow[];
     let entity: Entity;
+    const generationQueries: string[] = [];
+    const trackGeneration = (query: { sql: string }) => {
+      if (query.sql.includes('catalog_next_generation'))
+        generationQueries.push(query.sql);
+    };
+    knex.on('query', trackGeneration);
 
     await knex<DbRefreshStateRow>('refresh_state').insert([
       {
@@ -221,6 +227,10 @@ it.each(databases.eachSupportedId())(
     const last_updated_at = entities[0].last_updated_at;
     expect(last_updated_at).not.toBeNull();
     const firstHash = entities[0].hash;
+    knex.removeListener('query', trackGeneration);
+    expect(
+      generationQueries.map(query => /^update "final_entities"/.test(query)),
+    ).toEqual(databaseId.startsWith('POSTGRES') ? [true] : []);
     expect(String((await knex('final_entities').first()).generation)).toBe('1');
 
     const search = await knex<DbSearchRow>('search');
@@ -797,6 +807,8 @@ describe.each(databases.eachSupportedId())(
           });
           const deletion = await knex.transaction();
           let deleted: Promise<number> | undefined;
+          let publication: Promise<string> | undefined;
+          let timer: ReturnType<typeof setTimeout> | undefined;
           const actualSync =
             jest.requireActual<typeof import('./syncSearchRows')>(
               './syncSearchRows',
@@ -840,14 +852,26 @@ describe.each(databases.eachSupportedId())(
                 await actualSync(tx, id, entries);
               },
             );
+            publication = performStitching({ knex, logger, ...claim });
             await expect(
-              performStitching({ knex, logger, ...claim }),
+              Promise.race([
+                publication,
+                new Promise<never>((_, reject) => {
+                  timer = setTimeout(
+                    () =>
+                      reject(new Error('Publication blocked behind deletion')),
+                    5_000,
+                  );
+                }),
+              ]),
             ).resolves.toBe('changed');
             await expect(deleted).resolves.toBe(1);
             await deletion[deletionOutcome]();
           } finally {
+            clearTimeout(timer);
             syncSearchRowsMock.mockReset().mockImplementation(actualSync);
             if (!deletion.isCompleted()) await deletion.rollback();
+            if (publication) await publication.catch(() => {});
             if (deleted) await deleted.catch(() => {});
           }
 
