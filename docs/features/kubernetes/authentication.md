@@ -121,6 +121,24 @@ kubernetes:
           authProvider: 'aws'
           caData: ${EKS_CA_DATA}
           authMetadata:
+            kubernetes.io/aws-assume-role: ${AWS_IAM_ROLE_ARN}
+            kubernetes.io/x-k8s-aws-id: ${CLUSTER_NAME_IN_AWS_CONSOLE}
+```
+
+To use the selected account's credentials directly, use the account-ID variant:
+
+```yaml
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: https://<unique-identifier>.<region>.eks.amazonaws.com
+          name: ${CLUSTER_NAME_TO_DISPLAY}
+          authProvider: 'aws'
+          caData: ${EKS_CA_DATA}
+          authMetadata:
             kubernetes.io/aws-account-id: ${AWS_ACCOUNT_ID}
             kubernetes.io/x-k8s-aws-id: ${CLUSTER_NAME_IN_AWS_CONSOLE}
 ```
