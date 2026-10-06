@@ -69,3 +69,5 @@ export const attachTechDocsAddonComponentData = <P>(
     attachComponentData(techDocsAddon, dataKey, true);
   }
 };
+
+export * from './markdown';

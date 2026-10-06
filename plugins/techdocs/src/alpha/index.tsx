@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { markdownAddonsApi } from './markdownAddonsApi';
 
 import { z } from 'zod/v4';
 import { RiArticleLine } from '@remixicon/react';
@@ -283,6 +284,7 @@ export default createFrontendPlugin({
     techDocsClientApi,
     techDocsStorageApi,
     TechDocsAddonsApiExtension,
+    markdownAddonsApi,
     techDocsSupportAction,
     techDocsPage,
     techDocsReaderPage,

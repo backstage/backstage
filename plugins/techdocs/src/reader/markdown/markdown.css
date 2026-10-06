@@ -1,0 +1,60 @@
+.techdocs-markdown {
+  color: inherit;
+  line-height: 1.6;
+  padding: 16px;
+}
+.techdocs-markdown-layout {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(0, 4fr) minmax(150px, 1fr);
+  gap: 24px;
+}
+.techdocs-markdown article {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.techdocs-markdown article img {
+  max-width: 100%;
+  height: auto;
+}
+.techdocs-markdown pre {
+  overflow: auto;
+  padding: 16px;
+  background: rgba(127, 127, 127, 0.12);
+}
+.techdocs-markdown table {
+  border-collapse: collapse;
+  display: block;
+  overflow: auto;
+}
+.techdocs-markdown td,
+.techdocs-markdown th {
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  padding: 8px;
+}
+.techdocs-markdown aside,
+.techdocs-markdown details {
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  padding: 12px;
+  margin-block: 12px;
+}
+.techdocs-markdown summary {
+  cursor: pointer;
+}
+.techdocs-markdown a {
+  color: var(--bui-fg-link, #1976d2);
+}
+.techdocs-markdown .hljs-keyword,
+.techdocs-markdown .hljs-title {
+  color: var(--bui-fg-link, #1976d2);
+}
+.techdocs-markdown .hljs-string {
+  color: #388e3c;
+}
+.techdocs-markdown .hljs-comment {
+  opacity: 0.7;
+}
+@media (max-width: 900px) {
+  .techdocs-markdown-layout {
+    grid-template-columns: 1fr;
+  }
+}

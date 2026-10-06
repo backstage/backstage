@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MarkdownReaderGate } from '../markdown/MarkdownReaderGate';
 import { ComponentType, createContext, useContext, ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
@@ -59,10 +60,17 @@ export const TechDocsReaderProvider = (props: TechDocsReaderProviderProps) => {
 };
 
 export const withTechDocsReaderProvider =
-  <T extends {}>(Component: ComponentType<T>) =>
+  <T extends { defaultPath?: string; onReady?: () => void }>(
+    Component: ComponentType<T>,
+  ) =>
   (props: T) =>
     (
-      <TechDocsReaderProvider>
-        <Component {...props} />
-      </TechDocsReaderProvider>
+      <MarkdownReaderGate
+        defaultPath={props.defaultPath}
+        onReady={props.onReady}
+      >
+        <TechDocsReaderProvider>
+          <Component {...props} />
+        </TechDocsReaderProvider>
+      </MarkdownReaderGate>
     );
