@@ -24,8 +24,9 @@ import { DbStitchQueueRow } from '../../tables';
 /**
  * Opaque lease value captured by a deferred stitch claim. Pass it unchanged
  * back to completion using the same database. Do not parse or normalize it:
- * PostgreSQL requires its exact timestamp text to retain microsecond precision,
- * while other drivers use their native timestamp parameter representation.
+ * PostgreSQL requires its exact timestamp text to retain microsecond precision;
+ * MySQL uses timestamp text to avoid timezone/DST conversion through a Date.
+ * SQLite also returns its stored timestamp text.
  */
 export type StitchLeaseExpiresAt = DbStitchQueueRow['next_stitch_at'] & {
   readonly __stitchLeaseExpiresAt: unique symbol;
@@ -112,10 +113,14 @@ export async function getDeferredStitchableEntities(options: {
       ]);
     } else if (String(tx.client.config.client).includes('mysql')) {
       // MySQL has no UPDATE RETURNING; read the lease on the same locked
-      // connection before committing the claim.
+      // connection before committing the claim. Cast to text so the driver
+      // cannot normalize the value through a Date across a local DST gap.
       await update;
       leases = await tx<DbStitchQueueRow>('stitch_queue')
-        .select('entity_ref', 'next_stitch_at')
+        .select<Pick<DbStitchQueueRow, 'entity_ref' | 'next_stitch_at'>[]>(
+          'entity_ref',
+          tx.raw('CAST(next_stitch_at AS CHAR) as next_stitch_at'),
+        )
         .whereIn(
           'entity_ref',
           items.map(i => i.entity_ref),

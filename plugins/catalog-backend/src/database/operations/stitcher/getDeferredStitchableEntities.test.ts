@@ -64,17 +64,18 @@ describe.each(databases.eachSupportedId())(
         expect(['a', 'b']).not.toContain(item.stitchTicket);
         // Compare the exact database representation, not JavaScript Dates:
         // PostgreSQL's driver and Date parsing can round microseconds differently.
+        let leaseExpression = 'next_stitch_at as lease';
+        if (databaseId.startsWith('POSTGRES')) {
+          leaseExpression = 'next_stitch_at::text as lease';
+        } else if (databaseId.startsWith('MYSQL')) {
+          leaseExpression = 'CAST(next_stitch_at AS CHAR) as lease';
+        }
         const exact = await knex('stitch_queue')
-          .select(
-            knex.raw(
-              databaseId.startsWith('POSTGRES')
-                ? 'next_stitch_at::text as lease'
-                : 'next_stitch_at as lease',
-            ),
-          )
+          .select(knex.raw(leaseExpression))
           .where('entity_ref', item.entityRef)
           .first();
         expect(item.stitchLeaseExpiresAt).toEqual(exact.lease);
+        expect(typeof item.stitchLeaseExpiresAt).toBe('string');
       }
       await expect(
         knex('stitch_queue').where('entity_ref', 'k:ns/future').first(),
