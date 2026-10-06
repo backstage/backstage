@@ -110,7 +110,15 @@ export const getFileTreeRecursively = async (
   const fileList = await recursiveReadDir(rootDirPath).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
-  return fileList;
+  return fileList.sort(
+    (a, b) =>
+      Number(
+        a.endsWith('manifest.json') || a.endsWith('techdocs_metadata.json'),
+      ) -
+      Number(
+        b.endsWith('manifest.json') || b.endsWith('techdocs_metadata.json'),
+      ),
+  );
 };
 
 /**
@@ -255,7 +263,18 @@ export const bulkStorageOperation = async <T>(
   { concurrencyLimit } = { concurrencyLimit: 25 },
 ) => {
   const limiter = createLimiter(concurrencyLimit);
-  await Promise.all(args.map(arg => limiter(operation, arg)));
+  const isCommitFile = (arg: T) =>
+    typeof arg === 'string' &&
+    (arg
+      .split(path.sep)
+      .join('/')
+      .endsWith('/_techdocs/source/manifest.json') ||
+      arg.endsWith('/techdocs_metadata.json'));
+  // Publish pointers only after every referenced source file is available.
+  await Promise.all(
+    args.filter(arg => !isCommitFile(arg)).map(arg => limiter(operation, arg)),
+  );
+  for (const arg of args.filter(isCommitFile)) await operation(arg);
 };
 
 // Checks content path is the same as or a child path of bucketRoot, specifically for posix paths.

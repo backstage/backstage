@@ -51,6 +51,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
+    "chokidar": "^4.0.3",
     "commander": "^14.0.3",
     "entities": "^4.5.0",
     "fs-extra": "^11.0.0",

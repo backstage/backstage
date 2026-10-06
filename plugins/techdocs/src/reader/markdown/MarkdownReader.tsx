@@ -45,7 +45,9 @@ import {
 } from '@backstage/plugin-techdocs-common/alpha';
 import { readSourceJson } from './sourceClient';
 import { SourceImage } from './SourceImage';
+import { SourceAssetLink } from './SourceAssetLink';
 import { MathContent, HighlightedCode } from './renderers';
+import { MarkdownTabs } from './MarkdownTabs';
 import './markdown.css';
 
 const MermaidBlock = lazy(() => import('./MermaidBlock'));
@@ -214,10 +216,45 @@ export default function MarkdownReader(props: {
         .filter(s => s.location === name)
         .map((s, i) => createElement(s.component, { key: `${a}-${i}` })),
     );
-  const render = (node: TechDocsMarkdownNode, key: number): ReactNode => {
+  const renderChildren = (nodes: TechDocsMarkdownNode[] = []): ReactNode[] => {
+    const result: ReactNode[] = [];
+    for (let i = 0; i < nodes.length; i++) {
+      const isTab = (node: TechDocsMarkdownNode) =>
+        node.tagName === 'details' &&
+        (node.properties?.className as string[] | undefined)?.includes(
+          'techdocs-tab',
+        );
+      if (!isTab(nodes[i])) {
+        result.push(render(nodes[i], i));
+        continue;
+      }
+      const tabs = [];
+      do {
+        const tab = nodes[i];
+        tabs.push({
+          title: techDocsNodeText(
+            tab.children?.[0] ?? { type: 'text', value: 'Tab' },
+          ),
+          content: renderChildren(tab.children?.slice(1)),
+        });
+        if (
+          nodes[i + 1]?.type === 'text' &&
+          !nodes[i + 1].value?.trim() &&
+          nodes[i + 2] &&
+          isTab(nodes[i + 2])
+        )
+          i++;
+        if (!nodes[i + 1] || !isTab(nodes[i + 1])) break;
+        i++;
+      } while (i < nodes.length);
+      result.push(<MarkdownTabs key={i} tabs={tabs} />);
+    }
+    return result;
+  };
+  function render(node: TechDocsMarkdownNode, key: number): ReactNode {
     if (node.type === 'text') return node.value;
     if (node.type === 'root')
-      return <Fragment key={key}>{node.children?.map(render)}</Fragment>;
+      return <Fragment key={key}>{renderChildren(node.children)}</Fragment>;
     if (node.type !== 'element' || !node.tagName) return null;
     const tag = node.tagName;
     const properties = node.properties ?? {};
@@ -246,6 +283,12 @@ export default function MarkdownReader(props: {
             <Custom code={code} language={language} />
           </Suspense>
         );
+      } else if (
+        (codeNode.properties?.className as string[] | undefined)?.includes(
+          'math-display',
+        )
+      ) {
+        content = <MathContent text={code} display />;
       } else if (language === 'mermaid') {
         content = (
           <Suspense fallback={<pre>{code}</pre>}>
@@ -274,20 +317,31 @@ export default function MarkdownReader(props: {
       );
     } else if (tag === 'a') {
       const href = pageUrl(String(properties.href ?? ''));
-      if (!href) {
+      const resolved = resolveDocumentPath(
+        String(properties.href ?? ''),
+        page!.path,
+      );
+      const asset = manifest.assets.find(a => a.path === resolved?.path);
+      if (asset) {
+        content = (
+          <SourceAssetLink base={base} asset={asset}>
+            {renderChildren(node.children)}
+          </SourceAssetLink>
+        );
+      } else if (!href) {
         content = (
           <span title="Unsupported or missing documentation link">
-            {node.children?.map(render)}
+            {renderChildren(node.children)}
           </span>
         );
       } else if (/^https?:|^mailto:/i.test(href)) {
         content = (
           <a href={href} rel="noopener noreferrer">
-            {node.children?.map(render)}
+            {renderChildren(node.children)}
           </a>
         );
       } else {
-        content = <Link to={href}>{node.children?.map(render)}</Link>;
+        content = <Link to={href}>{renderChildren(node.children)}</Link>;
       }
     } else {
       const attrs: Record<string, unknown> = { ...properties };
@@ -306,7 +360,7 @@ export default function MarkdownReader(props: {
       content = createElement(
         tag,
         attrs,
-        ...(node.children?.map(render) ?? []),
+        ...(renderChildren(node.children) ?? []),
       );
     }
     const Component =
@@ -315,14 +369,14 @@ export default function MarkdownReader(props: {
       <Fragment key={key}>
         {Component ? (
           <Component node={node} defaultComponent={content}>
-            {node.children?.map(render)}
+            {renderChildren(node.children)}
           </Component>
         ) : (
           content
         )}
       </Fragment>
     );
-  };
+  }
   const nav = (entries: TechDocsNavigation[]): ReactNode => (
     <ul>
       {entries.map((entry, i) => (

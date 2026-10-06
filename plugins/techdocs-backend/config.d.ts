@@ -24,6 +24,10 @@ export interface Config {
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
   techdocs?: {
+    /** Experimental source publication. Existing HTML generation remains the default. */
+    migration?: {
+      publishing?: 'legacy' | 'dual' | 'source';
+    };
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend

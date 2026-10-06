@@ -103,7 +103,11 @@ export function parseTechDocsMarkdown(
         if (depth > 100)
           throw new Error('Documentation nesting exceeds 100 levels');
         if (node.type === 'containerDirective') {
-          node.data = { hName: node.name === 'tab' ? 'details' : 'aside' };
+          node.data = {
+            hName: node.name === 'tab' ? 'details' : 'aside',
+            hProperties:
+              node.name === 'tab' ? { className: ['techdocs-tab'] } : {},
+          };
           if (node.name === 'tab' && node.children?.[0]) {
             node.children[0].data = { hName: 'summary' };
           }
@@ -122,6 +126,10 @@ export function parseTechDocsMarkdown(
       tagNames: [...(defaultSchema.tagNames ?? []), 'aside'],
       attributes: {
         ...defaultSchema.attributes,
+        details: [
+          ...(defaultSchema.attributes?.details ?? []),
+          ['className', 'techdocs-tab'],
+        ],
         code: [
           [
             'className',
@@ -134,12 +142,18 @@ export function parseTechDocsMarkdown(
         span: [['className', 'math', 'math-inline']],
       },
     });
+  const normalized = normalizeTechDocsMarkdown(source);
   const tree = processor.runSync(
-    processor.parse(normalizeTechDocsMarkdown(source)),
+    processor.parse(normalized),
   ) as TechDocsMarkdownNode;
   const headings: TechDocsHeading[] = [];
   const ids = new Map<string, number>();
+  const anchors = new Map<string, string>();
   const visit = (node: TechDocsMarkdownNode) => {
+    if (normalized !== source) delete node.position;
+    const originalId = node.properties?.id;
+    if (typeof originalId === 'string')
+      anchors.set(originalId.replace(/^user-content-/, ''), originalId);
     if (/^h[1-6]$/.test(node.tagName ?? '')) {
       const title = techDocsNodeText(node);
       const base =
@@ -157,6 +171,18 @@ export function parseTechDocsMarkdown(
     for (const child of node.children ?? []) visit(child);
   };
   visit(tree);
+  const fixAnchors = (node: TechDocsMarkdownNode) => {
+    const href = node.properties?.href;
+    if (
+      typeof href === 'string' &&
+      href.startsWith('#') &&
+      anchors.has(href.slice(1))
+    ) {
+      node.properties!.href = `#${anchors.get(href.slice(1))}`;
+    }
+    for (const child of node.children ?? []) fixAnchors(child);
+  };
+  fixAnchors(tree);
   return {
     tree,
     headings,
