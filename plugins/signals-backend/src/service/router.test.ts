@@ -215,7 +215,7 @@ describe('handleUpgrade', () => {
 
     const app = express().use(router);
     const server = http.createServer(app);
-    await new Promise<void>(resolve => server.listen(0, resolve));
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
     const port = (server.address() as { port: number }).port;
 
     // Register the upgrade handler by sending one request with the
@@ -223,7 +223,12 @@ describe('handleUpgrade', () => {
     // already being registered, and clean up the trigger request.
     if (server.listenerCount('upgrade') === 0) {
       const trigger = http.get(
-        { port, path: '/', headers: { Upgrade: 'websocket' } },
+        {
+          hostname: '127.0.0.1',
+          port,
+          path: '/',
+          headers: { Upgrade: 'websocket' },
+        },
         res => res.resume(),
       );
       trigger.on('error', () => {});
