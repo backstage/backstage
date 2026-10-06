@@ -59,7 +59,8 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^",
+    "p-limit": "^3.1.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

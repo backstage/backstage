@@ -20,14 +20,21 @@ import {
   SchedulerServiceTaskInvocationDefinition,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { CodeSearchResultItem } from '../lib';
+import {
+  EntityProviderConnection,
+  locationSpecToLocationEntity,
+} from '@backstage/plugin-catalog-node';
+import { CodeSearchResultItem, GitRepository } from '../lib';
 import { AzureDevOpsEntityProvider } from './AzureDevOpsEntityProvider';
-import { codeSearch } from '../lib';
+import { codeSearch, fileExists, listRepositories } from '../lib';
 import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
+const mockListRepositories = listRepositories as jest.MockedFunction<
+  typeof listRepositories
+>;
+const mockFileExists = fileExists as jest.MockedFunction<typeof fileExists>;
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -47,6 +54,8 @@ const logger = mockServices.logger.mock();
 describe('AzureDevOpsEntityProvider', () => {
   afterEach(() => {
     mockCodeSearch.mockClear();
+    mockListRepositories.mockReset();
+    mockFileExists.mockReset();
   });
 
   const expectMutation = async (
@@ -343,5 +352,182 @@ describe('AzureDevOpsEntityProvider', () => {
           'generated-2deccac384c34d0dca37be0ebb4b1c8cf6913fe1',
       },
     );
+  });
+
+  describe('with the listing discovery method', () => {
+    const runRefresh = async (providerConfig: object) => {
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            azureDevOps: {
+              listing: {
+                organization: 'myorganization',
+                discoveryMethod: 'listing',
+                ...providerConfig,
+              },
+            },
+          },
+        },
+      });
+      const schedule = new PersistingTaskRunner();
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const provider = AzureDevOpsEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      })[0];
+      await provider.connect(entityProviderConnection);
+      await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+      return entityProviderConnection;
+    };
+
+    const toDeferredEntity = (target: string) => ({
+      locationKey: 'AzureDevOpsEntityProvider:listing',
+      entity: locationSpecToLocationEntity({
+        location: { type: 'url', target, presence: 'required' },
+      }),
+    });
+
+    const repository = (
+      id: string,
+      name: string,
+      project: string,
+      extra: Partial<GitRepository> = {},
+    ): GitRepository => ({
+      id,
+      name,
+      defaultBranch: 'refs/heads/main',
+      project: { name: project },
+      ...extra,
+    });
+
+    it('discovers catalog files in forks and skips repositories that cannot have them', async () => {
+      mockListRepositories.mockResolvedValueOnce([
+        repository('1', 'myrepo', 'myproject'),
+        repository('2', 'myfork', 'myproject', { isFork: true }),
+        repository('3', 'nocatalog', 'myproject'),
+        repository('4', 'disabled', 'myproject', { isDisabled: true }),
+        repository('5', 'empty', 'myproject', { defaultBranch: undefined }),
+      ]);
+      mockFileExists.mockImplementation(async (...args) =>
+        ['1', '2'].includes(args[4]),
+      );
+
+      const connection = await runRefresh({ project: 'myproject' });
+
+      expect(mockListRepositories).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ host: 'dev.azure.com' }),
+        'myorganization',
+        'myproject',
+      );
+      expect(mockFileExists.mock.calls.map(call => call.slice(2))).toEqual([
+        ['myorganization', 'myproject', '1', '/catalog-info.yaml', undefined],
+        ['myorganization', 'myproject', '2', '/catalog-info.yaml', undefined],
+        ['myorganization', 'myproject', '3', '/catalog-info.yaml', undefined],
+      ]);
+
+      const mutation = {
+        type: 'full',
+        entities: [
+          toDeferredEntity(
+            'https://dev.azure.com/myorganization/myproject/_git/myrepo?path=/catalog-info.yaml',
+          ),
+          toDeferredEntity(
+            'https://dev.azure.com/myorganization/myproject/_git/myfork?path=/catalog-info.yaml',
+          ),
+        ],
+      };
+      expect(connection.applyMutation).toHaveBeenCalledWith(mutation);
+      // Same location entity as the code search discovery method produces
+      expect(mutation.entities[0].entity.metadata.name).toBe(
+        'generated-87865246726bb12a8c4fb4f914443f1fbb91648c',
+      );
+    });
+
+    it('matches names like code search, checks the branch, and skips forks when configured', async () => {
+      mockListRepositories.mockResolvedValueOnce([
+        repository('1', 'service-a', 'Platform Services'),
+        repository('2', 'Service-B', 'platform tools'),
+        repository('3', 'service-fork', 'Platform Services', {
+          isFork: true,
+        }),
+        repository('4', 'other', 'Platform Services'),
+        repository('5', 'service-c', 'Other'),
+        repository('6', 'service-empty', 'Platform Services', {
+          defaultBranch: undefined,
+        }),
+      ]);
+      mockFileExists.mockImplementation(async (...args) =>
+        ['1', '2'].includes(args[4]),
+      );
+
+      const connection = await runRefresh({
+        project: '"Platform *"',
+        repository: 'service-*',
+        path: 'catalog-info.yaml',
+        branch: 'mybranch',
+        skipForkedRepos: true,
+      });
+
+      expect(mockListRepositories).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        'myorganization',
+        undefined,
+      );
+      expect(mockFileExists.mock.calls.map(call => call.slice(2))).toEqual([
+        [
+          'myorganization',
+          'Platform Services',
+          '1',
+          '/catalog-info.yaml',
+          'mybranch',
+        ],
+        [
+          'myorganization',
+          'platform tools',
+          '2',
+          '/catalog-info.yaml',
+          'mybranch',
+        ],
+        [
+          'myorganization',
+          'Platform Services',
+          '6',
+          '/catalog-info.yaml',
+          'mybranch',
+        ],
+      ]);
+      expect(connection.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [
+          toDeferredEntity(
+            'https://dev.azure.com/myorganization/Platform%20Services/_git/service-a?path=/catalog-info.yaml&version=GBmybranch',
+          ),
+          toDeferredEntity(
+            'https://dev.azure.com/myorganization/platform%20tools/_git/Service-B?path=/catalog-info.yaml&version=GBmybranch',
+          ),
+        ],
+      });
+    });
+
+    it('keeps the current entities when a file lookup fails', async () => {
+      mockListRepositories.mockResolvedValueOnce([
+        repository('1', 'myrepo', 'myproject'),
+      ]);
+      mockFileExists.mockRejectedValueOnce(
+        new Error('Azure DevOps file lookup failed with response status 500'),
+      );
+
+      const connection = await runRefresh({ project: 'myproject' });
+
+      expect(mockFileExists).toHaveBeenCalledTimes(1);
+      expect(connection.applyMutation).not.toHaveBeenCalled();
+    });
   });
 });

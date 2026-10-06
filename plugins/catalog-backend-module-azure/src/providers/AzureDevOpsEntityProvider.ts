@@ -30,12 +30,41 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { readAzureDevOpsConfigs } from './config';
 import { AzureDevOpsConfig } from './types';
 import { randomUUID } from 'node:crypto';
-import { codeSearch, CodeSearchResultItem } from '../lib';
+import pLimit from 'p-limit';
+import {
+  codeSearch,
+  CodeSearchResultItem,
+  fileExists,
+  listRepositories,
+} from '../lib';
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+
+type CatalogFile = Pick<
+  CodeSearchResultItem,
+  'path' | 'project' | 'repository'
+>;
+
+const WILDCARD_PATTERN = /[*?]/;
+const FILE_LOOKUP_CONCURRENCY = 5;
+
+// Code Search needs names with spaces to be quoted, as in `'"My Project"'`
+function unquote(value: string): string {
+  return value.replace(/^"(.*)"$/, '$1');
+}
+
+// Matches names the way the Code Search filters do: `*` and `?` are
+// wildcards and the comparison ignores case.
+function toNamePattern(value: string): RegExp {
+  const source = value
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*')
+    .replace(/\?/g, '.');
+  return new RegExp(`^${source}$`, 'i');
+}
 
 /**
  * Provider which discovers catalog files within an Azure DevOps repositories.
@@ -163,15 +192,18 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
 
     logger.info('Discovering Azure DevOps catalog files');
 
-    const files = await codeSearch(
-      this.credentialsProvider,
-      this.integration.config,
-      this.config.organization,
-      this.config.project,
-      this.config.repository,
-      this.config.path,
-      this.config.branch || '',
-    );
+    const files =
+      this.config.discoveryMethod === 'listing'
+        ? await this.listCatalogFiles(logger)
+        : await codeSearch(
+            this.credentialsProvider,
+            this.integration.config,
+            this.config.organization,
+            this.config.project,
+            this.config.repository,
+            this.config.path,
+            this.config.branch || '',
+          );
 
     logger.info(`Discovered ${files.length} catalog files`);
 
@@ -195,6 +227,77 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     );
   }
 
+  // Lists the repositories through the Git REST API and checks each of them for
+  // the catalog file. Unlike Code Search, this also finds files in forks.
+  private async listCatalogFiles(
+    logger: LoggerService,
+  ): Promise<CatalogFile[]> {
+    const project = unquote(this.config.project);
+    const projectPattern = WILDCARD_PATTERN.test(project)
+      ? toNamePattern(project)
+      : undefined;
+    const repositoryPattern = toNamePattern(unquote(this.config.repository));
+    const path = this.config.path.startsWith('/')
+      ? this.config.path
+      : `/${this.config.path}`;
+
+    const repositories = await listRepositories(
+      this.credentialsProvider,
+      this.integration.config,
+      this.config.organization,
+      projectPattern ? undefined : project,
+    );
+
+    const candidates = repositories.filter(repository => {
+      const name = `${repository.project.name}/${repository.name}`;
+      if (
+        (projectPattern && !projectPattern.test(repository.project.name)) ||
+        !repositoryPattern.test(repository.name)
+      ) {
+        return false;
+      }
+      if (repository.isDisabled) {
+        logger.debug(`Skipping disabled repository ${name}`);
+        return false;
+      }
+      if (repository.isFork && this.config.skipForkedRepos) {
+        logger.debug(`Skipping forked repository ${name}`);
+        return false;
+      }
+      if (!repository.defaultBranch && !this.config.branch) {
+        logger.debug(`Skipping empty repository ${name}`);
+        return false;
+      }
+      return true;
+    });
+
+    logger.info(
+      `Looking for ${path} in ${candidates.length} of ${repositories.length} repositories`,
+    );
+
+    const limit = pLimit(FILE_LOOKUP_CONCURRENCY);
+    const files = await Promise.all(
+      candidates.map(repository =>
+        limit(async (): Promise<CatalogFile | undefined> => {
+          const exists = await fileExists(
+            this.credentialsProvider,
+            this.integration.config,
+            this.config.organization,
+            repository.project.name,
+            repository.id,
+            path,
+            this.config.branch,
+          );
+          return exists
+            ? { project: repository.project, repository, path }
+            : undefined;
+        }),
+      ),
+    );
+
+    return files.filter((file): file is CatalogFile => file !== undefined);
+  }
+
   private createLocationSpec(target: string): LocationSpec {
     return {
       type: 'url',
@@ -203,7 +306,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     };
   }
 
-  private createObjectUrl(file: CodeSearchResultItem): string {
+  private createObjectUrl(file: CatalogFile): string {
     const baseUrl = `https://${this.config.host}/${this.config.organization}/${file.project.name}`;
 
     let fullUrl = `${baseUrl}/_git/${file.repository.name}?path=${file.path}`;
