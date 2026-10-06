@@ -40,6 +40,10 @@ function row(
 describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   let knex: Knex;
 
+  async function syncRows(entries: DbSearchRow[]): Promise<void> {
+    await knex.transaction(tx => syncSearchRows(tx, 'e1', entries));
+  }
+
   async function getSearchRows(): Promise<DbSearchRow[]> {
     return knex<DbSearchRow>('search')
       .where({ entity_id: 'e1' })
@@ -71,7 +75,7 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   it('inserts all rows into an empty table', async () => {
     const entries = [row('a', 'x'), row('b', 'y'), row('c', null)];
 
-    await syncSearchRows(knex, 'e1', entries);
+    await syncRows(entries);
 
     const rows = await getSearchRows();
     expect(rows).toEqual(
@@ -84,26 +88,42 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     expect(rows).toHaveLength(3);
   });
 
+  it('uses the caller transaction without savepoints and rolls back all chunks', async () => {
+    await knex('search').insert(row('a', 'old'));
+    const queries: string[] = [];
+    await expect(
+      knex.transaction(async tx => {
+        tx.on('query', query => queries.push(query.sql));
+        const entries = Array.from({ length: 1001 }, (_, i) =>
+          row(`field${i}`, 'new'),
+        );
+        await syncSearchRows(tx, 'e1', entries);
+        expect(await tx('search').where({ entity_id: 'e1' })).toHaveLength(
+          1001,
+        );
+        expect(queries.filter(sql => /savepoint/i.test(sql))).toEqual([]);
+        throw new Error('abort publication');
+      }),
+    ).rejects.toThrow('abort publication');
+    expect(await getSearchRows()).toEqual([row('a', 'old')]);
+  });
+
   it('leaves unchanged rows untouched', async () => {
     const entries = [row('a', 'x'), row('b', 'y')];
 
-    await syncSearchRows(knex, 'e1', entries);
+    await syncRows(entries);
     const rowsBefore = await getSearchRows();
 
     // Sync again with the same data
-    await syncSearchRows(knex, 'e1', entries);
+    await syncRows(entries);
     const rowsAfter = await getSearchRows();
 
     expect(rowsAfter).toEqual(rowsBefore);
   });
 
   it('adds new rows without removing existing ones', async () => {
-    await syncSearchRows(knex, 'e1', [row('a', 'x'), row('b', 'y')]);
-    await syncSearchRows(knex, 'e1', [
-      row('a', 'x'),
-      row('b', 'y'),
-      row('c', 'z'),
-    ]);
+    await syncRows([row('a', 'x'), row('b', 'y')]);
+    await syncRows([row('a', 'x'), row('b', 'y'), row('c', 'z')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(3);
@@ -117,12 +137,8 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   });
 
   it('removes stale rows', async () => {
-    await syncSearchRows(knex, 'e1', [
-      row('a', 'x'),
-      row('b', 'y'),
-      row('c', 'z'),
-    ]);
-    await syncSearchRows(knex, 'e1', [row('a', 'x')]);
+    await syncRows([row('a', 'x'), row('b', 'y'), row('c', 'z')]);
+    await syncRows([row('a', 'x')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(1);
@@ -130,8 +146,8 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   });
 
   it('handles a value change as a remove + add', async () => {
-    await syncSearchRows(knex, 'e1', [row('a', 'old'), row('b', 'keep')]);
-    await syncSearchRows(knex, 'e1', [row('a', 'new'), row('b', 'keep')]);
+    await syncRows([row('a', 'old'), row('b', 'keep')]);
+    await syncRows([row('a', 'new'), row('b', 'keep')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(2);
@@ -144,15 +160,15 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   });
 
   it('removes all rows when syncing with an empty set', async () => {
-    await syncSearchRows(knex, 'e1', [row('a', 'x'), row('b', 'y')]);
-    await syncSearchRows(knex, 'e1', []);
+    await syncRows([row('a', 'x'), row('b', 'y')]);
+    await syncRows([]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(0);
   });
 
   it('handles null values correctly', async () => {
-    await syncSearchRows(knex, 'e1', [row('a', null), row('b', 'y')]);
+    await syncRows([row('a', null), row('b', 'y')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(2);
@@ -164,7 +180,7 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     );
 
     // Change null to value
-    await syncSearchRows(knex, 'e1', [row('a', 'v'), row('b', 'y')]);
+    await syncRows([row('a', 'v'), row('b', 'y')]);
 
     const rows2 = await getSearchRows();
     expect(rows2).toEqual(
@@ -176,8 +192,8 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   });
 
   it('distinguishes rows by original_value', async () => {
-    await syncSearchRows(knex, 'e1', [row('a', 'v', 'V')]);
-    await syncSearchRows(knex, 'e1', [row('a', 'v', 'v')]);
+    await syncRows([row('a', 'v', 'V')]);
+    await syncRows([row('a', 'v', 'v')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(1);
@@ -195,8 +211,8 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     // original_value casing are deduplicated — the UNIQUE constraint on
     // (entity_id, key, value) allows only one. The first occurrence wins,
     // matching the first-wins semantics of buildEntitySearch.
-    await syncSearchRows(knex, 'e1', [row('a', 'v', 'V')]);
-    await syncSearchRows(knex, 'e1', [row('a', 'v', 'V'), row('a', 'v', 'v')]);
+    await syncRows([row('a', 'v', 'V')]);
+    await syncRows([row('a', 'v', 'V'), row('a', 'v', 'v')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(1);
@@ -207,14 +223,14 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
 
   it('handles multiple rows with the same key but different values', async () => {
     // Simulates array-derived rows like metadata.tags
-    await syncSearchRows(knex, 'e1', [
+    await syncRows([
       row('metadata.tags', 'java'),
       row('metadata.tags', 'python'),
       row('metadata.tags', 'go'),
     ]);
 
     // Remove one tag, add another
-    await syncSearchRows(knex, 'e1', [
+    await syncRows([
       row('metadata.tags', 'java'),
       row('metadata.tags', 'python'),
       row('metadata.tags', 'rust'),
@@ -226,7 +242,7 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   });
 
   it('restores original_value when re-syncing after it was corrupted', async () => {
-    await syncSearchRows(knex, 'e1', [row('a', 'x', 'X')]);
+    await syncRows([row('a', 'x', 'X')]);
 
     // Corrupt the stored original_value (simulates stale or wrong data left
     // by a previous stitcher run) without changing the key or value.
@@ -237,7 +253,7 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     // Re-syncing the same desired rows should overwrite original_value back to
     // 'X' via the ON CONFLICT DO UPDATE SET original_value = EXCLUDED.original_value
     // clause inside syncSearchRows.
-    await syncSearchRows(knex, 'e1', [row('a', 'x', 'X')]);
+    await syncRows([row('a', 'x', 'X')]);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(1);
@@ -255,7 +271,7 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
       row('relations.ownedby', 'group:default/team-a'),
     ];
 
-    await syncSearchRows(knex, 'e1', initial);
+    await syncRows(initial);
     expect(await getSearchRows()).toHaveLength(53);
 
     // Only the relation changed
@@ -266,7 +282,7 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
       row('relations.ownedby', 'group:default/team-b'),
     ];
 
-    await syncSearchRows(knex, 'e1', updated);
+    await syncRows(updated);
 
     const rows = await getSearchRows();
     expect(rows).toHaveLength(53);
@@ -276,26 +292,8 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
   });
 
   if (databaseId === 'MYSQL_8') {
-    it('still retries a deadlock when it owns the transaction', async () => {
-      const deadlock = Object.assign(new Error('Deadlock found'), {
-        errno: 1213,
-      });
-      // Inject one failure at the transaction boundary; the retry performs
-      // real search synchronization against MySQL.
-      const transaction = jest.spyOn(knex.client, 'transaction');
-      transaction.mockImplementationOnce(() => {
-        throw deadlock;
-      });
-      try {
-        await syncSearchRows(knex, 'e1', [row('a', 'new')]);
-        expect(await getSearchRows()).toEqual([row('a', 'new')]);
-      } finally {
-        transaction.mockRestore();
-      }
-    });
-
     it('propagates a deadlock instead of retrying inside an aborted publication transaction', async () => {
-      await syncSearchRows(knex, 'e1', [row('a', 'old')]);
+      await syncRows([row('a', 'old')]);
       await knex('final_entities').where({ entity_id: 'e1' }).update({
         hash: 'old',
         final_entity: '{"version":"old"}',
@@ -348,8 +346,8 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
         ).toMatchObject({ hash: 'old', final_entity: '{"version":"old"}' });
         expect(await getSearchRows()).toEqual([row('a', 'old')]);
 
-        // Retrying the complete publication, rather than just its search
-        // savepoint, keeps both representations in agreement.
+        // Retrying the complete publication, rather than only search writes,
+        // keeps both representations in agreement.
         await knex.transaction(async tx => {
           await tx('final_entities').where({ entity_id: 'e1' }).update({
             hash: 'new',
