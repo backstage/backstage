@@ -17,20 +17,24 @@
 import { Knex } from 'knex';
 
 /**
- * Allocates a commit-ordered publication generation, retaining the counter's
+ * Assigns a commit-ordered publication generation, retaining the counter's
  * row lock until the caller commits. Call only after taking all other write
  * locks, and commit promptly afterward. Rollback also rolls back allocation.
- * The decimal string avoids losing bigint precision in JavaScript.
+ * The returned decimal string avoids losing bigint precision in JavaScript.
  */
-export async function allocateGeneration(
+export async function assignGeneration(
   tx: Knex.Transaction,
+  entityId: string,
 ): Promise<string> {
   const client = tx.client.config.client as string;
   let generation: string | undefined;
   if (client.includes('pg')) {
-    const { rows } = await tx.raw(
-      'SELECT catalog_next_generation()::text AS generation',
-    );
+    // The caller already owns this final row. Allocate and assign in one
+    // statement to avoid a round trip while holding the global counter lock.
+    const rows = await tx('final_entities')
+      .where('entity_id', entityId)
+      .update({ generation: tx.raw('catalog_next_generation()') })
+      .returning(tx.raw('generation::text AS generation'));
     generation = rows[0]?.generation;
   } else {
     await tx('catalog_generation_counter')
@@ -50,8 +54,15 @@ export async function allocateGeneration(
   }
   if (typeof generation !== 'string' || !/^\d+$/.test(generation)) {
     throw new Error(
-      'Catalog publication generation counter is missing or invalid',
+      'Catalog publication generation or final entity is missing or invalid',
     );
+  }
+  if (!client.includes('pg')) {
+    const updated = await tx('final_entities')
+      .where('entity_id', entityId)
+      .update({ generation });
+    if (updated !== 1)
+      throw new Error('Catalog publication final entity is missing');
   }
   return generation;
 }
