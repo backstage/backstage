@@ -176,8 +176,10 @@ Preset item with an avatar and profile name.
 
 ### Search
 
-Pass `search.filter` to replace the default contains match. The selected
-option stays in the list even when the filter excludes it.
+Opening the list with the button or on focus shows every option. Filtering
+starts when the user types. Pass `search.filter` to replace the default
+contains match. Escape and blur restore the label of the selected option even
+when the filter excludes it.
 
 <CodeBlock code={comboboxCustomSearchSnippet} />
 

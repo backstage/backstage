@@ -21,6 +21,7 @@ import {
   ListBox,
   ListBoxLoadMoreItem,
   ListBoxSection,
+  SelectableCollectionContext,
   Text,
 } from 'react-aria-components';
 import clsx from 'clsx';
@@ -250,6 +251,7 @@ export function ComboboxListBox<T extends CollectionItem>(
     options,
     items,
     children,
+    hiddenKey,
     dependencies,
     loading,
     isStale,
@@ -300,5 +302,17 @@ export function ComboboxListBox<T extends CollectionItem>(
     </ListBox>
   );
 
-  return <div aria-busy={isBusy || undefined}>{listBox}</div>;
+  const busyListBox = <div aria-busy={isBusy || undefined}>{listBox}</div>;
+
+  if (hiddenKey === undefined) {
+    return busyListBox;
+  }
+
+  return (
+    <SelectableCollectionContext.Provider
+      value={{ filter: (_textValue, node) => node.key !== hiddenKey }}
+    >
+      {busyListBox}
+    </SelectableCollectionContext.Provider>
+  );
 }

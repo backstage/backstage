@@ -325,6 +325,7 @@ export type ComboboxListBoxOwnProps<T extends CollectionItem> = {
   options?: ReadonlyArray<Option | OptionSection>;
   items?: Iterable<T>;
   children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);
+  hiddenKey?: Key;
   dependencies?: ReadonlyArray<unknown>;
   loading?: LoadingConfig;
   isStale?: boolean;

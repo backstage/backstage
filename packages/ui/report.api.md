@@ -1394,6 +1394,7 @@ export const ComboboxListBoxDefinition: {
     readonly options: {};
     readonly items: {};
     readonly children: {};
+    readonly hiddenKey: {};
     readonly dependencies: {};
     readonly loading: {};
     readonly isStale: {};

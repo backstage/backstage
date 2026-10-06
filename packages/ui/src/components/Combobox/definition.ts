@@ -85,6 +85,7 @@ export const ComboboxListBoxDefinition = defineComponent<
     options: {},
     items: {},
     children: {},
+    hiddenKey: {},
     dependencies: {},
     loading: {},
     isStale: {},
