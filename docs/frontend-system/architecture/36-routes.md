@@ -532,9 +532,10 @@ and updates query parameters. Both use app history in the new frontend system
 and fall back to React Router in the old frontend system.
 
 `AppHistoryApi.navigate` accepts app-relative destinations or a numeric history
-delta for Back and Forward navigation. It rejects external destinations.
+delta for Back and Forward navigation. External destinations use browser
+navigation, with `replace` honored and `state` ignored.
 `AppHistoryApi.createHref` adds the deployment basename and preserves external
-URLs, replacing executable schemes with `about:blank` and a warning. For scoped
+URLs. Both methods replace executable schemes with `about:blank` and a warning. For scoped
 link destinations, use `useHref`.
 
 Custom integrations can call
@@ -542,10 +543,7 @@ Custom integrations can call
 target against an extension's route ancestry. Without a node, resolution uses
 app-root scope. Query-only and hash-only targets retain the supplied pathname;
 external URLs pass through unchanged. Pass the result to
-`AppHistoryApi.createHref` for a safe browser href, or to `navigate` for internal
-navigation. The public `isExternalTarget` helper classifies browser-owned URLs;
-it does not sanitize them. Browser navigation must use the href returned by
-`createHref`.
+`AppHistoryApi.createHref` for a safe browser href, or to `navigate` for navigation.
 
 `resolvePath` remains available for adapters and parameter consumers that need
 matched ancestry rather than a destination. Relative-path resolution belongs to

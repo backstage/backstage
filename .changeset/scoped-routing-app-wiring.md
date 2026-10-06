@@ -4,7 +4,7 @@
 
 The new frontend system now owns app history independently of page routing libraries. Page matching, route references, and navigation analytics use the same location and route hierarchy, including nested extensions, encoded paths, and browser Back and Forward navigation.
 
-Href creation now replaces executable URL schemes with `about:blank` and a warning. App navigation continues to reject external URLs.
+Href creation and navigation now replace executable URL schemes with `about:blank` and a warning. External URLs use browser navigation, honoring the `replace` option.
 
 Default history is created only when requested. Disposing it preserves other listeners that share the underlying history.
 

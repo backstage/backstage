@@ -168,13 +168,11 @@ describe('mockApis', () => {
       history.navigate('/only-path');
       expect(navigate.mock.calls[1]).toEqual(['/only-path']);
 
-      // And the guard on targets that are not app-relative is the real one,
-      // not something a supplied implementation can drop.
-      expect(() => history.navigate('https://example.com/x')).toThrow(
-        /does not support absolute or protocol-relative URLs/,
-      );
-      expect(() => history.navigate('mailto:support@example.com')).toThrow();
-      expect(navigate).toHaveBeenCalledTimes(2);
+      // External navigation is recorded without leaving the test page.
+      history.navigate('https://example.com/x');
+      history.navigate('mailto:support@example.com');
+      expect(navigate).toHaveBeenCalledTimes(4);
+      expect(navigate).toHaveBeenLastCalledWith('mailto:support@example.com');
       expect(history.location.pathname).toBe('/only-path');
     });
 

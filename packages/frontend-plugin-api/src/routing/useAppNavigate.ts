@@ -107,7 +107,9 @@ export function useOptionalAppNavigate():
  *
  * Prefer this in shared plugin code that must run under both the new and old
  * frontend systems. Paths should be app-absolute (basename-stripped); a number
- * traverses that many entries through the current history authority.
+ * traverses that many entries through the current history authority. External
+ * URLs are supported when app history is registered; the old frontend system
+ * retains React Router navigation semantics.
  *
  * The react-aria-style counterpart to this hook is {@link useHref}.
  *
