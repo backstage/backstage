@@ -40,3 +40,49 @@ not accepted. Pages are limited to 1 MB, individual assets to 10 MB, and a site 
 
 Source builds produce a search index for Backstage search. Dual builds retain the
 legacy search index, and also publish a separate source search index.
+
+## Reader policies
+
+Set `techdocs.migration.rendering` explicitly to enable source discovery:
+
+- `legacy`: start with HTML, with source preview when both artifacts exist.
+- `opt-in`: use source when the published project contains `techdocs.yaml`.
+- `prefer-source`: use source whenever available, otherwise HTML.
+- `source`: require source and disable the HTML preview choice.
+
+Leaving this setting absent preserves the existing reader without additional
+source requests. In the first three modes, a **Documentation preview** selector
+appears for dual publications. Its `techdocs-preview` URL parameter is shareable;
+it changes neither publishing nor repository configuration. Missing source can
+fall back to HTML; malformed artifacts and authorization errors cannot.
+
+The source reader supports tables, task lists, footnotes, admonitions, collapsible
+tab content, syntax highlighting, Mermaid and KaTeX. It sanitizes embedded HTML
+and resolves links within the published snapshot. Scripts, document styles,
+executable imports, external images, and document-supplied diagram configuration
+are not allowed. Mermaid and math have input limits, and expensive renderers load
+on demand. Large diagrams can still be expensive; this is an experimental reader.
+
+## Markdown add-ons
+
+Import `MarkdownAddonBlueprint` from `@backstage/plugin-techdocs-react/alpha`.
+Register it alongside the existing `AddonBlueprint` in a frontend module to
+support both readers. Each reader activates only its own registrations.
+
+```tsx
+const diagram = MarkdownAddonBlueprint.make({
+  name: 'diagram',
+  params: {
+    codeBlocks: [{ language: 'diagram', loader: () => import('./Diagram') }],
+  },
+});
+```
+
+Add-ons can contribute toolbar/settings/navigation/TOC/content slots, override
+links, images, tables and code rendering, and transform the Markdown syntax tree
+before sanitization. `useTechDocsDocument` exposes page, headings and navigation;
+`useTechDocsSelection` exposes selected text and source lines where available.
+Duplicate component or code-language registrations are configuration errors.
+Add-ons are trusted application code: documents cannot install them. Custom
+components must preserve URL and output security policies. Any syntax transforms
+that change headings or searchable content must also run during ingestion.
