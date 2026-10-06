@@ -479,6 +479,156 @@ describe.each(databases.eachSupportedId())(
       );
     }
     if (databaseId.startsWith('POSTGRES')) {
+      it.each([
+        ['insert', 'completed successor', ['fresh']],
+        ['update', 'completed successor', ['fresh']],
+        ['insert', 'old-worker reclaim', []],
+        ['update', 'old-worker reclaim', ['initial']],
+      ] as const)(
+        'rolls back a stale %s after a %s during the publication statement',
+        async (publicationKind, supersession, expectedDescriptions) => {
+          const knex = await databases.init(databaseId);
+          await applyDatabaseMigrations(knex);
+          const logger = mockServices.logger.mock();
+          const entityRef = 'k:ns/n';
+          const entity = {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns', description: 'initial' },
+          };
+          await knex<DbRefreshStateRow>('refresh_state').insert({
+            entity_id: 'my-id',
+            entity_ref: entityRef,
+            unprocessed_entity: '{}',
+            processed_entity: JSON.stringify(entity),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          });
+          if (publicationKind === 'update') {
+            await markForStitching({ knex, entityRefs: [entityRef] });
+            await performStitching({
+              knex,
+              logger,
+              ...(await getStitchClaim(knex, entityRef)),
+            });
+          }
+          await knex('refresh_state').update({
+            processed_entity: JSON.stringify({
+              ...entity,
+              metadata: { ...entity.metadata, description: 'stale' },
+            }),
+          });
+          await markForStitching({ knex, entityRefs: [entityRef] });
+          const [claim] = await getDeferredStitchableEntities({
+            knex,
+            batchSize: 1,
+            stitchTimeout: { seconds: 0 },
+          });
+          // Pause only the stale INSERT after its statement snapshot is taken,
+          // before it acquires the final-row lock. Successor writes remain free.
+          await knex.raw(`
+            CREATE FUNCTION pause_stale_publication() RETURNS trigger
+            LANGUAGE plpgsql AS $$
+            BEGIN
+              IF NEW.final_entity::jsonb #>> '{metadata,description}' = 'stale' THEN
+                PERFORM pg_advisory_xact_lock(841721);
+              END IF;
+              RETURN NEW;
+            END $$
+          `);
+          await knex.raw(`
+            CREATE TRIGGER pause_stale_publication BEFORE INSERT ON final_entities
+            FOR EACH ROW EXECUTE FUNCTION pause_stale_publication()
+          `);
+          const gate = await knex.transaction();
+          let stale: Promise<string> | undefined;
+          let successorTicket: string | undefined;
+          let successorResult: string | undefined;
+          try {
+            await gate.raw('SELECT pg_advisory_xact_lock(841721)');
+            stale = performStitching({ knex, logger, ...claim });
+            void stale.catch(() => {});
+            const deadline = Date.now() + 5_000;
+            for (;;) {
+              const {
+                rows: [{ paused }],
+              } = await knex.raw(`
+                SELECT EXISTS (
+                  SELECT 1 FROM pg_locks
+                  WHERE locktype = 'advisory' AND classid = 0
+                    AND objid = 841721 AND NOT granted
+                    AND database = (
+                      SELECT oid FROM pg_database WHERE datname = current_database()
+                    )
+                ) AS paused
+              `);
+              if (paused) break;
+              if (Date.now() >= deadline) {
+                throw new Error('Stale publication did not reach the barrier');
+              }
+              await new Promise(resolve => setTimeout(resolve, 10));
+            }
+            if (supersession === 'completed successor') {
+              await knex('refresh_state').update({
+                processed_entity: JSON.stringify({
+                  ...entity,
+                  metadata: { ...entity.metadata, description: 'fresh' },
+                }),
+              });
+              const [successor] = await knex.transaction(async tx => {
+                await tx.raw("SET LOCAL statement_timeout = '2s'");
+                return getDeferredStitchableEntities({
+                  knex: tx,
+                  batchSize: 1,
+                  stitchTimeout: { minutes: 1 },
+                });
+              });
+              successorTicket = successor.stitchTicket;
+              successorResult = await knex.transaction(async tx => {
+                await tx.raw("SET LOCAL statement_timeout = '2s'");
+                return performStitching({ knex: tx, logger, ...successor });
+              });
+            } else {
+              // Old workers replace only the lease, so a ticket-only
+              // post-write check would still let this stale attempt commit.
+              await knex('stitch_queue').update({
+                next_stitch_at: '2099-01-01 00:00:00',
+              });
+            }
+            const finalBefore = await knex('final_entities');
+            const searchBefore = await knex('search');
+            const queueBefore = await knex('stitch_queue');
+            expect(successorTicket).not.toBe(claim.stitchTicket);
+            expect(successorResult).toBe(
+              supersession === 'completed successor' ? 'changed' : undefined,
+            );
+            expect(queueBefore.map(row => row.stitch_ticket)).toEqual(
+              supersession === 'completed successor'
+                ? []
+                : [claim.stitchTicket],
+            );
+            expect(
+              finalBefore.map(
+                row => JSON.parse(row.final_entity).metadata.description,
+              ),
+            ).toEqual(expectedDescriptions);
+            await gate.commit();
+            await expect(stale).resolves.toBe('abandoned');
+            await expect(knex('final_entities')).resolves.toEqual(finalBefore);
+            await expect(knex('search')).resolves.toEqual(searchBefore);
+            await expect(knex('stitch_queue')).resolves.toEqual(queueBefore);
+          } finally {
+            if (!gate.isCompleted()) await gate.rollback();
+            if (stale) await stale.catch(() => {});
+            await knex.raw(
+              'DROP TRIGGER pause_stale_publication ON final_entities',
+            );
+            await knex.raw('DROP FUNCTION pause_stale_publication()');
+          }
+        },
+      );
+
       it.each(['commit', 'rollback'] as const)(
         'publishes without a lock inversion while cascading deletion waits, then %s deletion',
         async deletionOutcome => {
@@ -777,11 +927,12 @@ describe.each(databases.eachSupportedId())(
       expect(afterStale).toHaveLength(1);
       expect(afterStale[0].hash).toBe(firstHash);
 
-      // Now stitch with the correct fresh ticket — should succeed
+      // Abandonment made the row due again. Claim a fresh lease rather than
+      // reusing the lease that the previous completion has already settled.
       const result3 = await performStitching({
         knex,
         logger: mockServices.logger.mock(),
-        ...freshClaim,
+        ...(await getStitchClaim(knex, 'k:ns/n')),
       });
       expect(result3).toBe('changed');
 
@@ -833,8 +984,8 @@ describe.each(databases.eachSupportedId())(
       expect(await knex<DbFinalEntitiesRow>('final_entities')).toEqual([]);
       expect(await knex<DbSearchRow>('search')).toEqual([]);
 
-      // The failure left the queue entry in place, so the entity is
-      // retried with the same ticket.
+      // The failure left the queue entry in place, so the entity can be
+      // reclaimed and retried with a new ticket and lease.
       await expect(
         performStitching({
           knex,
