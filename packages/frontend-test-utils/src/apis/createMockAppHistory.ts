@@ -78,8 +78,9 @@ export interface MockAppHistory extends AppHistoryApi {
  *
  * Uses the production app history with an in-memory backend, including its
  * synchronous location subscriptions, stable snapshots, href resolution, and
- * numeric traversal. Prefer `renderInTestApp` / `renderTestApp` (and the
- * returned `appHistory`) for navigation across a full test app.
+ * numeric traversal. External navigation is recorded without changing the
+ * location or leaving the test page. Prefer `renderInTestApp` / `renderTestApp`
+ * (and the returned `appHistory`) for navigation across a full test app.
  *
  * Also available as `mockApis.appHistory()`. Pair with
  * {@link createMockRouteResolutionApi} for `RouteLink` /

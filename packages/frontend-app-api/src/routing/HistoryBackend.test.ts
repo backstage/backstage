@@ -107,6 +107,19 @@ describe('HistoryBackend', () => {
   });
 
   describe('createWindowHistoryBackend', () => {
+    it('uses browser navigation for external targets and honors replace', () => {
+      const history = createWindowHistoryBackend();
+      const initialLength = window.history.length;
+      history.navigateExternal(`${window.location.origin}/#external-push`);
+      expect(window.location.hash).toBe('#external-push');
+      expect(window.history.length).toBe(initialLength + 1);
+      history.navigateExternal(`${window.location.origin}/#external-replace`, {
+        replace: true,
+      });
+      expect(window.location.hash).toBe('#external-replace');
+      expect(window.history.length).toBe(initialLength + 1);
+    });
+
     afterEach(() => {
       window.history.replaceState(null, '', '/');
       delete (window as unknown as { navigation?: unknown }).navigation;
