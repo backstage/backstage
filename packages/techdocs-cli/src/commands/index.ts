@@ -288,6 +288,16 @@ export function registerCommands(program: Command) {
 
   program
     .command('serve')
+    .option(
+      '--publishing <MODE>',
+      'Preview legacy, dual, or source publication',
+      'legacy',
+    )
+    .option(
+      '--source-dir <PATH>',
+      'Documentation project directory for source preview',
+      '.',
+    )
     .description(
       'Serve a documentation project locally in a Backstage app-like environment',
     )

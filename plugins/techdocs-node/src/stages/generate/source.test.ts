@@ -101,6 +101,25 @@ describe('source publication', () => {
   });
   it('rejects traversal, symlinks, unknown settings and unsafe YAML before calling the legacy generator', async () => {
     await setup();
+    const sourceMode = new ConfigReader({
+      techdocs: { migration: { publishing: 'source' } },
+    });
+    for (const outputDir of [
+      root,
+      options().inputDir,
+      path.join(options().inputDir, 'docs'),
+    ]) {
+      await expect(
+        runTechDocsMigration(
+          sourceMode,
+          { ...options(), outputDir },
+          jest.fn(),
+        ),
+      ).rejects.toThrow('must not replace');
+    }
+    expect(
+      await fs.readFile(path.join(options().inputDir, 'docs/index.md'), 'utf8'),
+    ).toContain('Welcome');
     await fs.outputFile(
       path.join(root, 'input/techdocs.yaml'),
       'version: 1\ndocsDir: ../outside',

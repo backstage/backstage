@@ -56,8 +56,7 @@ appears for dual publications. Its `techdocs-preview` URL parameter is shareable
 it changes neither publishing nor repository configuration. Missing source can
 fall back to HTML; malformed artifacts and authorization errors cannot.
 
-The source reader supports tables, task lists, footnotes, admonitions, collapsible
-tab content, syntax highlighting, Mermaid and KaTeX. It sanitizes embedded HTML
+The source reader supports tables, task lists, footnotes, admonitions, tabs, syntax highlighting, Mermaid and KaTeX. It sanitizes embedded HTML
 and resolves links within the published snapshot. Scripts, document styles,
 executable imports, external images, and document-supplied diagram configuration
 are not allowed. Mermaid and math have input limits, and expensive renderers load
@@ -86,3 +85,26 @@ Duplicate component or code-language registrations are configuration errors.
 Add-ons are trusted application code: documents cannot install them. Custom
 components must preserve URL and output security policies. Any syntax transforms
 that change headings or searchable content must also run during ingestion.
+
+## Local preview
+
+Run `techdocs-cli serve --publishing source --source-dir .` to preview without
+MkDocs, or use `--publishing dual` to compare both formats. Changes rebuild the
+preview and reload the browser. A failed rebuild retains the last successful
+preview and displays the build error. The preview command uses the bundled
+Backstage app; when developing this repository, use its embedded app development
+server or provide an existing preview bundle with `--preview-app-bundle-path`.
+
+The lightbox and report-issue frontend modules include Markdown variants. Report
+issue uses structured selection information; it does not inspect generated HTML.
+Normalized MkDocs block syntax omits source line ranges when an exact mapping is unavailable.
+Source rendering generates a navigation landing page when `index.md` is missing.
+
+Source files use content-derived names. Built-in publishers upload source files
+before the source manifest; a failed upload does not advance that manifest.
+Concurrent publication of the same entity should still be serialized in CI.
+
+Custom generators and publishers must explicitly support the source format. A
+custom publisher should treat `source: true` in `techdocs_metadata.json` as a
+successful publication even when there is no `index.html`, and publish the source
+manifest after its referenced files.

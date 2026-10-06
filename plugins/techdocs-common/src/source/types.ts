@@ -65,7 +65,16 @@ export const techDocsSourceManifestSchema = z.object({
     .array(
       z.object({
         path: safePath,
-        route: z.string().max(1024),
+        route: z
+          .string()
+          .max(1024)
+          .refine(
+            value =>
+              value === '' ||
+              (value.endsWith('/') &&
+                safePath.safeParse(value.slice(0, -1)).success),
+            'Expected a relative page route',
+          ),
         title: z.string().max(1024),
         file: z
           .string()
@@ -83,7 +92,29 @@ export const techDocsSourceManifestSchema = z.object({
       }),
     )
     .max(10000),
-  nav: z.array(navigation).max(10000),
+  nav: z
+    .unknown()
+    .superRefine((value, ctx) => {
+      const pending = [{ value, depth: 0 }];
+      let count = 0;
+      while (pending.length) {
+        const item = pending.pop()!;
+        if (++count > 20000 || item.depth > 30) {
+          ctx.addIssue({
+            code: 'custom',
+            message: 'Navigation exceeds nesting or size limits',
+          });
+          return;
+        }
+        if (Array.isArray(item.value)) {
+          for (const entry of item.value) {
+            if (entry && typeof entry === 'object' && 'children' in entry)
+              pending.push({ value: entry.children, depth: item.depth + 1 });
+          }
+        }
+      }
+    })
+    .pipe(z.array(navigation).max(10000)),
   diagnostics: z.array(z.string().max(2048)).max(1000),
 });
 /** @alpha */

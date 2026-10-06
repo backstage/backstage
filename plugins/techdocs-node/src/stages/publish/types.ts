@@ -92,6 +92,11 @@ export type ReadinessResponse = {
  * @public
  */
 export type TechDocsMetadata = {
+  /** Whether a source artifact was published. */
+  source?: boolean;
+  /** Publication mode used to invalidate backend build caches during migration. */
+  publishingMode?: 'legacy' | 'dual' | 'source';
+
   site_name: string;
   site_description: string;
   etag: string;

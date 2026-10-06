@@ -18228,6 +18228,7 @@ __metadata:
     "@types/node": "npm:^22.13.14"
     "@types/serve-handler": "npm:^6.1.0"
     "@types/webpack-env": "npm:^1.15.3"
+    chokidar: "npm:^4.0.3"
     commander: "npm:^14.0.3"
     find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
@@ -19020,23 +19021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/d3-zoom@npm:*":
+"@types/d3-zoom@npm:*, @types/d3-zoom@npm:^3.0.1":
   version: 3.0.9
   resolution: "@types/d3-zoom@npm:3.0.9"
   dependencies:
     "@types/d3-interpolate": "npm:*"
     "@types/d3-selection": "npm:*"
   checksum: 10/ec3b2b3d071dd6242c50c3c786290e552a6444bbcefb41c740f7bc949a73ca6d914dea5d7a43f72c48c481746ebae871c7fe760e3c72887cf6f727f3d048fa07
-  languageName: node
-  linkType: hard
-
-"@types/d3-zoom@npm:^3.0.1":
-  version: 3.0.8
-  resolution: "@types/d3-zoom@npm:3.0.8"
-  dependencies:
-    "@types/d3-interpolate": "npm:*"
-    "@types/d3-selection": "npm:*"
-  checksum: 10/cc6ba975cf4f55f94933413954d81b87feb1ee8b8cee8f2202cf526f218dcb3ba240cbeb04ed80522416201c4a7394b37de3eb695d840a36d190dfb2d3e62cb5
   languageName: node
   linkType: hard
 
@@ -24065,7 +24056,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^4.0.1":
+"chokidar@npm:^4.0.1, chokidar@npm:^4.0.3":
   version: 4.0.3
   resolution: "chokidar@npm:4.0.3"
   dependencies:
@@ -44163,14 +44154,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylis@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "stylis@npm:4.3.0"
-  checksum: 10/54eb1a13a9ec394a01a2e1a5ca8f856b96ecd8b85b8c04a24c0ff0aa8416798a6a1e9555f6a4345b6f088d03424f5a4376ea093d0ec73e419698415a3c8b59d0
-  languageName: node
-  linkType: hard
-
-"stylis@npm:^4.3.6":
+"stylis@npm:^4.3.0, stylis@npm:^4.3.6":
   version: 4.4.0
   resolution: "stylis@npm:4.4.0"
   checksum: 10/e5a149b571ea88b801b43deb6f6a9f5a5711b7ce501540ac2be18ca63a4cfb3fab86309c661a2f88491a5b98f27f95ef3eb397d412fba532c50f13964d9a1013
@@ -44912,14 +44896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyexec@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "tinyexec@npm:1.0.4"
-  checksum: 10/ccebe4044eef6fa5050929df7862fda70b4fb700f15d94aef8ae6109b9d194dbc3a990125d99944fd25b90fe2115e1927f055b909a604c571a81b647ede5757a
-  languageName: node
-  linkType: hard
-
-"tinyexec@npm:^1.3.1":
+"tinyexec@npm:^1.0.4, tinyexec@npm:^1.3.1":
   version: 1.3.1
   resolution: "tinyexec@npm:1.3.1"
   checksum: 10/9c7a8ce2633f76c776d9ff663531c7b34d605f41909c2f97a27397e8c12bcaf721dae7680b6683232ffe7a6d465090be9926d5ffd00b5d7be9336a43b45289b1
@@ -45257,14 +45234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-dedent@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "ts-dedent@npm:2.2.0"
-  checksum: 10/93ed8f7878b6d5ed3c08d99b740010eede6bccfe64bce61c5a4da06a2c17d6ddbb80a8c49c2d15251de7594a4f93ffa21dd10e7be75ef66a4dc9951b4a94e2af
-  languageName: node
-  linkType: hard
-
-"ts-dedent@npm:^2.2.0":
+"ts-dedent@npm:^2.0.0, ts-dedent@npm:^2.2.0":
   version: 2.3.0
   resolution: "ts-dedent@npm:2.3.0"
   checksum: 10/fc56bfac5daf2a3d2197eda2c804125756ecfbbc830ad3ce28cf775cca0027fe848abf827a913be67d33fb0f57dfbdd536f9c908e9979fa65968443b514561b2

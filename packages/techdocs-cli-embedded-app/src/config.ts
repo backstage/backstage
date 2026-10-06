@@ -22,6 +22,7 @@ const PRODUCTION_CONFIG = {
   },
   techdocs: {
     builder: 'external',
+    migration: { rendering: 'prefer-source' },
   },
 };
 
@@ -31,6 +32,7 @@ const DEVELOPMENT_CONFIG = {
   },
   techdocs: {
     builder: 'external',
+    migration: { rendering: 'prefer-source' },
   },
 };
 

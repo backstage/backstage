@@ -108,13 +108,16 @@ export class DocsBuilder {
     let storedEtag: string | undefined;
     if (await this.publisher.hasDocsBeenGenerated(this.entity)) {
       try {
-        storedEtag = (
-          await this.publisher.fetchTechDocsMetadata({
-            namespace: this.entity.metadata.namespace ?? DEFAULT_NAMESPACE,
-            kind: this.entity.kind,
-            name: this.entity.metadata.name,
-          })
-        ).etag;
+        const metadata = await this.publisher.fetchTechDocsMetadata({
+          namespace: this.entity.metadata.namespace ?? DEFAULT_NAMESPACE,
+          kind: this.entity.kind,
+          name: this.entity.metadata.name,
+        });
+        const publishingMode =
+          this.config.getOptionalString('techdocs.migration.publishing') ??
+          'legacy';
+        if ((metadata.publishingMode ?? 'legacy') === publishingMode)
+          storedEtag = metadata.etag;
       } catch (err) {
         // Proceed with a fresh build
         this.logger.warn(

@@ -65,14 +65,15 @@ async function renderReader(
   publication: unknown = manifest,
   preview = '',
 ) {
-  const fetch = jest.fn(async (url: string) => {
+  const fetch = jest.fn(async (input: RequestInfo | URL): Promise<Response> => {
+    const url = String(input);
     if (url.endsWith('manifest.json'))
       return {
         status: publication === undefined ? 404 : 200,
         ok: true,
         headers: new Headers(),
         text: async () => JSON.stringify(publication),
-      };
+      } as Response;
     return {
       status: 200,
       ok: true,
@@ -82,7 +83,7 @@ async function renderReader(
           markdown:
             '# Home\n\n[Home](index.md)\n\n<details><summary>More</summary>Allowed HTML</details>\n\n<script>bad()</script><img src="javascript:bad()" onerror="bad()">',
         }),
-    };
+    } as Response;
   });
   await renderInTestApp(
     <TestApiProvider
@@ -107,7 +108,11 @@ async function renderReader(
           techdocsMarkdownAddonsApiRef,
           {
             getAddons: () => [
-              { slots: [{ location: 'after-content', component: Addon }] },
+              {
+                slots: [
+                  { location: 'after-content' as const, component: Addon },
+                ],
+              },
             ],
           },
         ],

@@ -15,7 +15,7 @@
  */
 
 import { ReactNode, lazy, Suspense } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { configApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
@@ -58,7 +58,9 @@ function ConfiguredReader({
   const fetchApi = useApi(fetchApiRef);
   const { entityRef } = useTechDocsReaderPage();
   const { namespace, kind, name } = entityRef;
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const policy = config.getString(
     'techdocs.migration.rendering',
   ) as TechDocsRenderingMode;
@@ -124,7 +126,10 @@ function ConfiguredReader({
             onChange={event => {
               const next = new URLSearchParams(params);
               next.set('techdocs-preview', event.target.value);
-              setParams(next, { replace: true });
+              navigate(
+                { ...location, search: next.toString() },
+                { replace: true },
+              );
             }}
           >
             <option value="legacy">Published HTML</option>

@@ -25,6 +25,7 @@ import {
   TechDocsNavigation,
   TechDocsSourceManifest,
   parseTechDocsMarkdown,
+  TechDocsMarkdownTransform,
   techDocsSourceManifestSchema,
 } from '@backstage/plugin-techdocs-common/alpha';
 import { GeneratorRunOptions } from './types';
@@ -91,10 +92,36 @@ function navigation(value: unknown, depth = 0): TechDocsNavigation[] {
   });
 }
 
+async function validateOutput(
+  input: string,
+  outputDir: string,
+  docsDir: string,
+) {
+  const requested = path.resolve(outputDir);
+  let ancestor = requested;
+  while (!(await fs.pathExists(ancestor))) ancestor = path.dirname(ancestor);
+  const output = path.resolve(
+    await fs.realpath(ancestor),
+    path.relative(ancestor, requested),
+  );
+  const docs = path.resolve(input, docsDir);
+  if (
+    output === input ||
+    input.startsWith(`${output}${path.sep}`) ||
+    output === docs ||
+    output.startsWith(`${docs}${path.sep}`)
+  ) {
+    throw new Error(
+      'Documentation output must not replace the project or documentation sources',
+    );
+  }
+}
+
 /** Creates a bounded, data-only source snapshot. No source files are executed. @alpha */
 export async function generateTechDocsSource(
   options: GeneratorRunOptions,
   legacy: boolean,
+  transforms: TechDocsMarkdownTransform[] = [],
 ): Promise<void> {
   const input = await fs.realpath(options.inputDir);
   const explicit = await readConfig(input, ['techdocs.yaml', 'techdocs.yml']);
@@ -130,6 +157,7 @@ export async function generateTechDocsSource(
       'docsDir must be a directory inside the documentation project, without symlinks',
     );
   }
+  await validateOutput(input, options.outputDir, docsDir);
   const manifest: TechDocsSourceManifest = {
     version: 1,
     available: true,
@@ -192,10 +220,12 @@ export async function generateTechDocsSource(
         if (stat.size > 1_000_000)
           throw new Error(`Markdown page exceeds 1 MB: ${relative}`);
         const markdown = await fs.readFile(full, 'utf8');
-        const parsed = parseTechDocsMarkdown(markdown);
+        const parsed = parseTechDocsMarkdown(markdown, transforms);
         const route = relative
           .replace(/(^|\/)index\.md$/i, '$1')
           .replace(/\.md$/i, '/');
+        if (manifest.pages.some(p => p.route === route))
+          throw new Error(`Duplicate documentation route: ${route}`);
         const title = parsed.title ?? relative;
         manifest.pages.push({
           path: relative,
@@ -238,17 +268,50 @@ export async function generateTechDocsSource(
   };
   await walk(docs);
   if (!manifest.pages.length) throw new Error('No Markdown pages found');
+  if (!manifest.pages.some(page => page.route === '')) {
+    const markdown = `# ${manifest.title}\n\n${manifest.pages
+      .map(page => `- [${page.title.replace(/[\[\]]/g, '')}](${page.path})`)
+      .join('\n')}`;
+    manifest.pages.unshift({
+      path: 'index.md',
+      route: '',
+      title: manifest.title,
+      file: await put({ markdown }),
+    });
+    search.unshift({
+      title: manifest.title,
+      text: manifest.title,
+      location: '',
+    });
+  }
   manifest.nav = config.nav
     ? navigation(config.nav)
     : manifest.pages.map(p => ({ title: p.title, path: p.path }));
-  const checkNav = (entries: TechDocsNavigation[]) => {
-    for (const entry of entries) {
-      if (entry.path && !manifest.pages.some(p => p.path === entry.path))
-        throw new Error(`Navigation references missing page: ${entry.path}`);
-      if (entry.children) checkNav(entry.children);
-    }
-  };
-  checkNav(manifest.nav);
+  const checkNav = (entries: TechDocsNavigation[]): TechDocsNavigation[] =>
+    entries.flatMap(entry => {
+      if (entry.path && !manifest.pages.some(p => p.path === entry.path)) {
+        if (explicit)
+          throw new Error(`Navigation references missing page: ${entry.path}`);
+        const directoryIndex = entry.path.replace(/\.md$/, '/index.md');
+        if (manifest.pages.some(p => p.path === directoryIndex)) {
+          manifest.diagnostics.push(
+            `Updated migrated navigation: ${entry.path} -> ${directoryIndex}`,
+          );
+          return [{ ...entry, path: directoryIndex }];
+        }
+        manifest.diagnostics.push(
+          `Omitted missing MkDocs navigation page: ${entry.path}`,
+        );
+        return [];
+      }
+      return [
+        {
+          ...entry,
+          ...(entry.children ? { children: checkNav(entry.children) } : {}),
+        },
+      ];
+    });
+  manifest.nav = checkNav(manifest.nav);
   techDocsSourceManifestSchema.parse(manifest);
   for (const diagnostic of manifest.diagnostics)
     options.logger.warn(diagnostic);
@@ -279,8 +342,20 @@ export async function runTechDocsMigration(
     throw new Error(`Invalid TechDocs publishing mode: ${mode}`);
   if (mode === 'legacy') {
     await generateLegacy();
+    await fs.remove(path.join(options.outputDir, '_techdocs/source'));
     return;
   }
+  const input = await fs.realpath(options.inputDir);
+  const sourceConfig = await readConfig(input, [
+    'techdocs.yaml',
+    'techdocs.yml',
+  ]);
+  const oldConfig = sourceConfig
+    ? undefined
+    : await readConfig(input, ['mkdocs.yml', 'mkdocs.yaml']);
+  const docsDir = sourceConfig?.docsDir ?? oldConfig?.docs_dir ?? 'docs';
+  if (typeof docsDir !== 'string') throw new Error('docsDir must be a string');
+  await validateOutput(input, options.outputDir, docsDir);
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'techdocs-source-'));
   try {
     // Capture source before MkDocs preprocessing modifies the input configuration.
@@ -301,6 +376,7 @@ export async function runTechDocsMigration(
       site_name:
         value.site_name ?? options.siteOptions?.name ?? 'Documentation',
       source: true,
+      publishingMode: mode,
     });
   } finally {
     await fs.remove(staging);
