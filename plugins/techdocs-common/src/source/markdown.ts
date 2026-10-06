@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { emojify } from 'node-emoji';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -69,9 +70,19 @@ export function normalizeTechDocsMarkdown(source: string): string {
     const indent = block[1].length;
     const tab = block[2] === '===';
     const kind = tab ? 'tab' : block[3].split(/\s/)[0];
-    const title = block[3].match(/"([^"\n]*)"/)?.[1] ?? kind;
+    const title =
+      block[3].match(/"([^"\n]*)"/)?.[1] ??
+      `${kind[0].toUpperCase()}${kind.slice(1)}`;
+    let directive = 'note';
+    if (tab) directive = 'tab';
+    else if (block[2].startsWith('???')) directive = 'details';
     output.push(
-      `${block[1]}:::${tab ? 'tab' : 'note'}[${title.replace(/[\[\]]/g, '')}]`,
+      `${block[1]}:::${directive}[${title.replace(
+        /[\[\]]/g,
+        '',
+      )}]{kind="${kind.replace(/[^a-z]/g, '')}"${
+        block[2] === '???+' ? ' expanded="true"' : ''
+      }}`,
     );
     while (
       i + 1 < lines.length &&
@@ -103,13 +114,57 @@ export function parseTechDocsMarkdown(
         if (depth > 100)
           throw new Error('Documentation nesting exceeds 100 levels');
         if (node.type === 'containerDirective') {
+          const attributes = (
+            node as TechDocsMarkdownNode & {
+              attributes?: Record<string, string>;
+            }
+          ).attributes;
+          const collapsible = node.name === 'tab' || node.name === 'details';
+          const kind = attributes?.kind ?? 'note';
           node.data = {
-            hName: node.name === 'tab' ? 'details' : 'aside',
+            hName: collapsible ? 'details' : 'aside',
             hProperties:
-              node.name === 'tab' ? { className: ['techdocs-tab'] } : {},
+              node.name === 'tab'
+                ? { className: ['techdocs-tab'] }
+                : {
+                    className: [`techdocs-${kind}`],
+                    ...(attributes?.expanded === 'true' ? { open: true } : {}),
+                  },
           };
-          if (node.name === 'tab' && node.children?.[0]) {
+          if (collapsible && node.children?.[0]) {
             node.children[0].data = { hName: 'summary' };
+          }
+        }
+        if (node.type === 'text' && node.value)
+          node.value = emojify(
+            node.value
+              .replace(/:thumbsup:/g, ':+1:')
+              .replace(/:thumbsdown:/g, ':-1:'),
+          );
+        // Accept only bounded image dimensions and download markers, never author CSS.
+        for (let i = 0; i < (node.children?.length ?? 0) - 1; i++) {
+          const child = node.children![i];
+          const following = node.children![i + 1];
+          if (following.type !== 'text' || !following.value) continue;
+          if (child.type === 'image') {
+            const width = following.value.match(
+              /^\{:\s*(?:style="width:\s*(\d+)px\s*;?"|width="(\d+)")\s*\}/,
+            );
+            if (width && Number(width[1] ?? width[2]) <= 10000) {
+              child.data = {
+                ...child.data,
+                hProperties: {
+                  ...child.data?.hProperties,
+                  width: Number(width[1] ?? width[2]),
+                },
+              };
+              following.value = following.value.slice(width[0].length);
+            }
+          } else if (child.type === 'link') {
+            following.value = following.value.replace(
+              /^\{:\s*download\s*\}/,
+              '',
+            );
           }
         }
         if (node.type === 'yaml') node.value = '';
@@ -128,7 +183,17 @@ export function parseTechDocsMarkdown(
         ...defaultSchema.attributes,
         details: [
           ...(defaultSchema.attributes?.details ?? []),
-          ['className', 'techdocs-tab'],
+          [
+            'className',
+            'techdocs-tab',
+            /^techdocs-(note|warn|warning|info|tip|success|danger|error|example|quote)$/,
+          ],
+        ],
+        aside: [
+          [
+            'className',
+            /^techdocs-(note|warn|warning|info|tip|success|danger|error|example|quote)$/,
+          ],
         ],
         code: [
           [

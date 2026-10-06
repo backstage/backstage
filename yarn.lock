@@ -6973,6 +6973,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
+    node-emoji: "npm:^2.2.0"
     rehype-raw: "npm:^7.0.0"
     rehype-sanitize: "npm:^6.0.0"
     remark-directive: "npm:^3.0.1"

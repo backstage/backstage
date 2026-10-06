@@ -107,7 +107,7 @@ async function renderReader(
       text: async () =>
         JSON.stringify({
           markdown:
-            '# Home\n\n[Home](index.md)\n\n<details><summary>More</summary>Allowed HTML</details>\n\n<script>bad()</script><img src="javascript:bad()" onerror="bad()">',
+            '# Home\n\n## Section\n\n[Home](index.md)\n\n<details><summary>More</summary>Allowed HTML</details>\n\n<script>bad()</script><img src="javascript:bad()" onerror="bad()">',
         }),
     } as Response;
   });
@@ -150,7 +150,7 @@ async function renderReader(
         <Route
           path="/docs/*"
           element={
-            <MarkdownReaderGate>
+            <MarkdownReaderGate withSearch={false}>
               <p>Legacy reader</p>
             </MarkdownReaderGate>
           }
@@ -174,9 +174,7 @@ describe('Markdown reader migration', () => {
   it('switches between publications, renders sanitized HTML and exposes structured addon data', async () => {
     await renderReader('legacy');
     expect(await screen.findByText('Legacy reader')).toBeInTheDocument();
-    fireEvent.change(await screen.findByLabelText('Documentation preview'), {
-      target: { value: 'source' },
-    });
+    fireEvent.click(await screen.findByRole('button', { name: 'Markdown' }));
     expect(
       await screen.findByRole('heading', { name: 'Home' }),
     ).toBeInTheDocument();
@@ -188,9 +186,7 @@ describe('Markdown reader migration', () => {
     expect(
       screen.getByRole('navigation', { name: 'On this page' }),
     ).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Documentation preview'), {
-      target: { value: 'legacy' },
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'HTML' }));
     expect(await screen.findByText('Legacy reader')).toBeInTheDocument();
   });
   it('preserves encoded paths and renderer-independent TOC anchors', async () => {
@@ -221,20 +217,18 @@ describe('Markdown reader migration', () => {
     ).toHaveAttribute('href', '/docs/?techdocs-preview=source');
     const toc = within(
       screen.getByRole('navigation', { name: 'On this page' }),
-    ).getByRole('link', { name: 'Home' });
+    ).getByRole('link', { name: 'Section' });
     expect(toc).toHaveAttribute(
       'href',
-      '/docs/my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=source#home',
+      '/docs/my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=source#section',
     );
     Element.prototype.scrollIntoView = jest.fn();
     fireEvent.click(toc);
-    fireEvent.change(screen.getByLabelText('Documentation preview'), {
-      target: { value: 'legacy' },
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'HTML' }));
     expect(await screen.findByText('Legacy reader')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Route: /docs/my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=legacy#home',
+        'Route: /docs/my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=legacy#section',
       ),
     ).toBeInTheDocument();
   });
@@ -276,9 +270,7 @@ describe('Markdown reader migration', () => {
     ).toHaveLength(2);
     expect(mockSync).toHaveBeenCalledTimes(1);
     mockEntityName = 'unbuilt';
-    fireEvent.change(screen.getByLabelText('Documentation preview'), {
-      target: { value: 'source' },
-    });
+    fireEvent.click(await screen.findByRole('button', { name: 'Markdown' }));
     expect(await screen.findByText('Addon: next.md')).toBeInTheDocument();
     expect(mockSync).toHaveBeenLastCalledWith({
       namespace: 'default',
@@ -293,7 +285,7 @@ describe('Markdown reader migration', () => {
       await screen.findByRole('heading', { name: 'Home' }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByLabelText('Documentation preview'),
+      screen.queryByRole('group', { name: 'Documentation renderer' }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Legacy reader')).not.toBeInTheDocument();
   });

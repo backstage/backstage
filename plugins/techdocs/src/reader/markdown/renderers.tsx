@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import { useEffect, useState } from 'react';
+import FileCopyOutlined from '@material-ui/icons/FileCopyOutlined';
+import Check from '@material-ui/icons/Check';
+import IconButton from '@material-ui/core/IconButton';
+import styles from './markdown.module.css';
 import useAsync from 'react-use/esm/useAsync';
 import DOMPurify from 'dompurify';
 import 'katex/dist/katex.min.css';
@@ -55,6 +60,8 @@ export function HighlightedCode({
   code: string;
   language: string;
 }) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => setCopied(false), [code]);
   const state = useAsync(async () => {
     if (code.length > 50000 || !language) return undefined;
     const { default: hljs } = await import('highlight.js/lib/common');
@@ -65,12 +72,40 @@ export function HighlightedCode({
     );
   }, [code, language]);
   return (
-    <pre>
-      {state.value ? (
-        <code dangerouslySetInnerHTML={{ __html: state.value }} />
-      ) : (
-        <code>{code}</code>
-      )}
-    </pre>
+    <div className={styles.codeBlock}>
+      <IconButton
+        className={styles.copyCode}
+        size="small"
+        aria-label={copied ? 'Code copied' : 'Copy code'}
+        onClick={async () => {
+          try {
+            await window.navigator.clipboard.writeText(code);
+            setCopied(true);
+          } catch {
+            setCopied(false);
+          }
+        }}
+      >
+        {copied ? (
+          <Check fontSize="small" />
+        ) : (
+          <FileCopyOutlined fontSize="small" />
+        )}
+      </IconButton>
+      <pre>
+        <span className={styles.lineNumbers} aria-hidden="true">
+          {code
+            .replace(/\n$/, '')
+            .split('\n')
+            .map((_, i) => i + 1)
+            .join('\n')}
+        </span>
+        {state.value ? (
+          <code dangerouslySetInnerHTML={{ __html: state.value }} />
+        ) : (
+          <code>{code}</code>
+        )}
+      </pre>
+    </div>
   );
 }

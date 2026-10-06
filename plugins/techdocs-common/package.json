@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@backstage/plugin-permission-common": "workspace:^",
+    "node-emoji": "^2.2.0",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
     "remark-directive": "^3.0.1",

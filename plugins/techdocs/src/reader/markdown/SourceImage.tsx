@@ -24,11 +24,13 @@ export function SourceImage({
   onMissingArtifact,
   file,
   alt,
+  width,
 }: {
   base: string;
   onMissingArtifact?: (file: string) => void;
   file: string;
   alt: string;
+  width?: number;
 }) {
   const fetchApi = useApi(fetchApiRef);
   const state = useAsync(async () => {
@@ -77,7 +79,7 @@ export function SourceImage({
   }, [fetchApi, base, file, onMissingArtifact]);
   if (state.error) return <span role="note">Image unavailable: {alt}</span>;
   return state.value ? (
-    <img src={state.value} alt={alt} loading="lazy" />
+    <img width={width} src={state.value} alt={alt} loading="lazy" />
   ) : (
     <span>{alt}</span>
   );

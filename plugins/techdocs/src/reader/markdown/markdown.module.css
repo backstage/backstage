@@ -1,65 +1,357 @@
+.reader {
+  grid-area: pageContent;
+  min-width: 0;
+}
+.readerToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px 24px 0;
+}
+.readerToolbar button {
+  text-transform: none;
+}
+.rendererLabel {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
 .root {
-  color: inherit;
+  color: var(--techdocs-text-color);
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  font-size: 16px;
   line-height: 1.6;
-  padding: 16px;
 }
 .layout {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(0, 4fr) minmax(150px, 1fr);
-  gap: 24px;
+  grid-template-columns: 256px minmax(0, 1fr) 256px;
+  gap: 0;
+}
+.search {
+  margin: 16px 275px;
 }
 .root article {
   min-width: 0;
+  padding: 16px 19.2px 32px;
   overflow-wrap: anywhere;
+}
+.root article h1 {
+  margin: 0 0 1.25em;
+}
+.root article h2 {
+  margin: 1.6em 0 0.64em;
+}
+.root article h3 {
+  margin: 1.6em 0 0.8em;
+}
+.root article h4,
+.root article h5,
+.root article h6 {
+  margin: 1em 0;
+}
+.root article p,
+.root article ul,
+.root article ol {
+  margin-block: 1em;
+}
+.root article ul,
+.root article ol {
+  padding-inline-start: 1.875em;
+}
+.root article li {
+  margin-bottom: 0.5em;
+}
+.root article li > ul,
+.root article li > ol {
+  margin-block: 0.5em;
 }
 .root article img {
   max-width: 100%;
   height: auto;
 }
+.root article blockquote {
+  margin: 1em 0;
+  padding-inline-start: 12px;
+  border-inline-start: 4px solid var(--techdocs-border-color);
+  color: var(--techdocs-muted-color);
+}
+.root a {
+  color: var(--techdocs-link-color);
+  text-decoration: none;
+}
+.root a:hover {
+  text-decoration: underline;
+}
+.root a:focus-visible,
+.root summary:focus-visible {
+  outline: 2px solid var(--techdocs-link-color);
+  outline-offset: 3px;
+}
+.root code,
+.root pre {
+  font-family: 'Roboto Mono', SFMono-Regular, Consolas, Menlo, monospace;
+  font-size: 0.85em;
+}
+.root code {
+  background: rgba(127, 127, 127, 0.1);
+  padding: 0 0.3em;
+  border-radius: 2px;
+}
 .root pre {
   overflow: auto;
-  padding: 16px;
-  background: rgba(127, 127, 127, 0.12);
+  padding: 10px 16px;
+  background: rgba(127, 127, 127, 0.1);
+  line-height: 1.4;
+  margin: 1em 0;
+}
+.root pre code {
+  font-size: inherit;
+  padding: 0;
+  background: none;
 }
 .root table {
   border-collapse: collapse;
   display: block;
   overflow: auto;
+  margin: 1em 0;
 }
 .root td,
 .root th {
-  border: 1px solid rgba(127, 127, 127, 0.4);
-  padding: 8px;
+  border-bottom: 1px solid var(--techdocs-border-color);
+  padding: 0.9375em 1.25em;
+  text-align: start;
 }
-.root aside,
-.root details {
-  border: 1px solid rgba(127, 127, 127, 0.4);
-  padding: 12px;
-  margin-block: 12px;
+.root table {
+  border: 1px solid var(--techdocs-border-color);
+  border-bottom: none;
+}
+.root th {
+  min-width: 5em;
+  font-weight: 700;
+}
+.root article aside,
+.root article details {
+  --callout-color: #448aff;
+  border: 1px solid var(--callout-color);
+  border-radius: 4px;
+  padding: 0 12px;
+  margin: 1.5em 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+.root article aside > :first-child,
+.root article details > summary {
+  background: color-mix(in srgb, var(--callout-color) 10%, transparent);
+  font-weight: 700;
+  margin: 0 -12px;
+  padding: 8px 12px;
+}
+.root article aside:global(.techdocs-warning),
+.root article aside:global(.techdocs-warn) {
+  --callout-color: #ff9100;
+}
+.root article aside:global(.techdocs-info) {
+  --callout-color: #00b8d4;
+}
+.root article aside:global(.techdocs-tip) {
+  --callout-color: #00bfa5;
 }
 .root summary {
   cursor: pointer;
 }
-.root a {
+.navigation {
+  font-size: 0.9em;
+  line-height: 1.3;
+  padding: 19px 12px;
+  align-self: start;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+.navigation ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navigation li {
+  margin: 0;
+}
+.navigation a,
+.navigation summary {
+  display: block;
+  padding: 4px 0;
+  color: inherit;
+}
+.navigation a[aria-current='page'] {
   color: var(--techdocs-link-color);
+  text-decoration: underline;
+}
+.layout > .navigation:last-child {
+  padding-inline-start: 32px;
+}
+.navigation strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.navigation ul ul {
+  padding-inline-start: 12px;
+}
+.navigation summary {
+  display: list-item;
+  list-style-position: inside;
+}
+.diagnostics {
+  margin: 24px 19px;
+  font-size: 0.875rem;
+  color: var(--techdocs-muted-color);
+  border-top: 1px solid var(--techdocs-border-color);
+  padding-top: 12px;
+}
+.toolbar {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.toolbar:empty {
+  display: none;
 }
 .root :global(.hljs-keyword),
-.root :global(.hljs-title) {
-  color: var(--techdocs-link-color);
+.root :global(.hljs-title),
+.root :global(.hljs-built_in) {
+  color: var(--techdocs-code-color);
 }
-.root :global(.hljs-string) {
-  color: #388e3c;
+.root :global(.hljs-string),
+.root :global(.hljs-attr) {
+  color: var(--techdocs-string-color);
 }
 .root :global(.hljs-comment) {
-  opacity: 0.7;
+  color: var(--techdocs-muted-color);
+}
+.root [role='tablist'] {
+  display: flex;
+  border-bottom: 1px solid var(--techdocs-border-color);
+}
+.root [role='tab'] {
+  cursor: pointer;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 12px 16px;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--techdocs-muted-color);
+}
+.root [role='tab'][aria-selected='true'] {
+  border-bottom-color: var(--techdocs-link-color);
+  color: var(--techdocs-link-color);
+}
+.root :global(.task-list-item) {
+  list-style: none;
+}
+.root input[type='checkbox'] {
+  margin-inline-end: 8px;
+}
+@media (max-width: 1219px) {
+  .layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+  .layout > nav:last-child {
+    display: none;
+  }
+  .search {
+    margin: 0 19px 24px 239px;
+  }
 }
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
   }
+  .navigation {
+    position: static;
+    max-height: none;
+  }
+  .search {
+    margin: 0 19px 24px;
+  }
 }
-
-.toolbar {
+@media print {
+  .readerToolbar,
+  .navigation,
+  .search,
+  .diagnostics,
+  .toolbar {
+    display: none;
+  }
+  .layout {
+    display: block;
+  }
+}
+.codeBlock {
+  position: relative;
+}
+.root .codeBlock pre {
   display: flex;
-  gap: 8px;
+  padding: 12px 0;
+  background: var(--techdocs-paper-color);
+}
+.root .codeBlock code {
+  display: block;
+  padding: 0 32px 0 16px;
+}
+.lineNumbers {
+  user-select: none;
+  color: var(--techdocs-muted-color);
+  border-inline-end: 1px solid var(--techdocs-border-color);
+  padding: 0 8px 0 16px;
+  text-align: right;
+}
+.root .copyCode {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  z-index: 1;
+  opacity: 0.5;
+  background: var(--techdocs-paper-color);
+}
+.root .copyCode:hover,
+.root .copyCode:focus-visible {
+  opacity: 1;
+}
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--techdocs-border-color);
+  margin-top: 32px;
+  padding-top: 16px;
+}
+.pagination a:last-child {
+  text-align: end;
+}
+.pagination small {
+  display: block;
+  color: var(--techdocs-muted-color);
+}
+.navigationContents > summary {
+  display: none;
+}
+.assetLink {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--techdocs-link-color);
+  cursor: pointer;
+}
+.assetLink:hover {
+  text-decoration: underline;
+}
+@media (max-width: 900px) {
+  .navigationContents > summary {
+    display: list-item;
+    font-weight: 700;
+  }
+  .navigationContents > strong {
+    margin-top: 12px;
+  }
 }

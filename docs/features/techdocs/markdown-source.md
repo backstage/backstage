@@ -52,12 +52,17 @@ Set `techdocs.migration.rendering` explicitly to enable source discovery:
 - `source`: require source and disable the HTML preview choice.
 
 Leaving this setting absent preserves the existing reader without additional
-source requests. In the first three modes, a **Documentation preview** selector
-appears for dual publications. Its `techdocs-preview` URL parameter is shareable;
+source requests. In the first three modes, a **View as** control at the top right of the reader
+lets you switch between **HTML** and **Markdown** for dual publications. Its `techdocs-preview` URL parameter is shareable;
 it changes neither publishing nor repository configuration. Missing source can
 fall back to HTML; malformed artifacts and authorization errors cannot.
 
-The source reader supports tables, task lists, footnotes, admonitions, tabs, syntax highlighting, Mermaid and KaTeX. It sanitizes embedded HTML
+The source reader supports tables, task lists, footnotes, admonitions, collapsible
+details, tabs, emoji aliases, syntax highlighting, Mermaid, and KaTeX. It uses
+the application theme for headings and colors, with documentation navigation,
+search, a table of contents, and code copy controls. Image attributes can specify a
+bounded pixel width; arbitrary author CSS is not supported. PlantUML blocks remain
+code unless an application supplies a trusted renderer add-on. It sanitizes embedded HTML
 and resolves links within the published snapshot. Scripts, document styles,
 executable imports, external images, and document-supplied diagram configuration
 are not allowed. Mermaid and math have input limits, and expensive renderers load
