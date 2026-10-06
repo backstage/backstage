@@ -1623,9 +1623,6 @@ export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
 };
 
 // @public
-export const isExternalTarget: (to: string) => boolean;
-
-// @public
 export const microsoftAuthApiRef: ApiRef_2<
   OAuthApi &
     OpenIdConnectApi &

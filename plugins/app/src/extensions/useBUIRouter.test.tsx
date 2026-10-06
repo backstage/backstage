@@ -191,19 +191,16 @@ describe('useBUIRouter', () => {
       );
       expect(warning).toHaveBeenCalledTimes(1);
       const before = history.location;
-      result.current.navigate(`${window.location.origin}/#native-aria`);
-      expect(window.location.hash).toBe('#native-aria');
-      const historyLength = window.history.length;
-      result.current.navigate(`${window.location.origin}/#native-replaced`, {
-        replace: true,
-      });
-      expect(window.location.hash).toBe('#native-replaced');
-      expect(window.history.length).toBe(historyLength);
+      result.current.navigate('https://example.com/path');
+      result.current.navigate('mailto:test@example.com', { replace: true });
+      expect(history.navigateCalls).toEqual([
+        { to: 'https://example.com/path', options: undefined },
+        { to: 'mailto:test@example.com', options: { replace: true } },
+      ]);
 
       expect(history.location).toEqual(before);
     } finally {
       warning.mockRestore();
-      window.history.replaceState(null, '', '/');
     }
   });
 });

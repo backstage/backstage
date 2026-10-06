@@ -17,7 +17,6 @@
 import {
   appHistoryApiRef,
   routeResolutionApiRef,
-  isExternalTarget,
   useApi,
   useAppNode,
   useAppLocation,
@@ -37,16 +36,7 @@ export function useBUIRouter(): BUIRouter {
         pathname: history.location.pathname,
         node,
       });
-      if (isExternalTarget(target)) {
-        const href = history.createHref(target);
-        if (options?.replace) {
-          window.location.replace(href);
-        } else {
-          window.location.assign(href);
-        }
-      } else {
-        history.navigate(target, options);
-      }
+      history.navigate(target, options);
     },
     resolveHref: to =>
       history.createHref(
