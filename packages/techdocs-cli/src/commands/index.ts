@@ -23,6 +23,11 @@ const defaultPreviewAppPort = '3000';
 export function registerCommands(program: Command) {
   program
     .command('generate')
+    .option(
+      '--publishing <MODE>',
+      'Publication format: legacy, dual, or source',
+      'legacy',
+    )
     .description('Generate TechDocs documentation site using MkDocs.')
     .option(
       '--source-dir <PATH>',
@@ -93,6 +98,14 @@ export function registerCommands(program: Command) {
     )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
+
+  program
+    .command('migrate-config')
+    .description(
+      'Create techdocs.yaml from supported MkDocs settings, preserving mkdocs.yml.',
+    )
+    .option('--source-dir <PATH>', 'Documentation project directory', '.')
+    .action(lazy(() => import('./generate/migrateConfig'), 'default'));
 
   program
     .command('migrate')
