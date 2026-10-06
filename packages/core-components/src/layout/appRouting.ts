@@ -35,10 +35,15 @@ import {
 } from 'react-router-dom';
 import {
   useRouteResolution,
+  useAppNode,
+  useApiHolder,
+  routeResolutionApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import {
   APP_ROOT_PATH,
+  createPath,
+  parsePath,
   resolveAppPath,
   normalizeBasePath,
   useAppHistoryLocation,
@@ -192,20 +197,28 @@ export function useAppResolvedPath(
   appHistory: AppHistoryApi | undefined,
   to: AppTo,
 ): AppPath {
-  const mountBasePaths = useRouteResolution()
-    .matches.filter((match, index) => index === 0 || match.contributesPath)
-    .map(match => match.basePath);
+  const node = useAppNode();
+  const routes = useApiHolder().get(routeResolutionApiRef);
   const routeBasePaths = useRouteBasePaths();
   // Whichever authority answers, it is the same one that answers for the
   // location, so a target with no pathname of its own — `?tab=readme`,
   // `#section` — stays on the page the caller is actually standing on.
   const { pathname } = useAppLocation(appHistory);
 
-  return resolveAppPath(
-    to,
-    appHistory ? mountBasePaths : routeBasePaths,
-    pathname,
-  );
+  if (appHistory && routes) {
+    const target =
+      typeof to === 'string'
+        ? to
+        : createPath({
+            ...to,
+            pathname: to.pathname === '' ? '.' : to.pathname ?? pathname,
+          });
+    return {
+      ...APP_ROOT_PATH,
+      ...parsePath(routes.resolveTarget({ to: target, pathname, node })),
+    };
+  }
+  return resolveAppPath(to, appHistory ? [] : routeBasePaths, pathname);
 }
 
 /**

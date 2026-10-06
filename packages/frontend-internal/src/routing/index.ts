@@ -24,12 +24,12 @@ export {
   normalizeBasePath,
   parsePath,
   resolveAppPath,
+  resolveAppTarget,
   resolvePath,
   type AppPath,
   type AppTo,
 } from './AppRouting';
 export { useAppHistoryLocation } from './useAppHistoryLocation';
-export { useAppRouting } from './useAppRouting';
 export {
   appHistoryMetadataSymbol,
   readAppHistoryMetadata,

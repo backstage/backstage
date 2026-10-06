@@ -435,6 +435,7 @@ export class MockPermissionApi implements PermissionApi {
 export interface MockRouteResolutionApi extends RouteResolutionApi {
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
   resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  resolveTarget: jest.MockedFunction<RouteResolutionApi['resolveTarget']>;
 }
 
 // @public
@@ -448,6 +449,7 @@ export interface MockRouteResolutionApiOptions {
         >;
       }
     | RouteResolutionApi['resolvePath'];
+  resolveTarget?: RouteResolutionApi['resolveTarget'];
   routes?:
     | ReadonlyMap<MockRouteResolutionRouteRef, string>
     | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
