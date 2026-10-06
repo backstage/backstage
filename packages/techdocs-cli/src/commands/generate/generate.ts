@@ -32,10 +32,7 @@ import {
 } from '../../lib/utility';
 import { computeDirectoryEtag } from '../../lib/etag';
 import { getEngineConfig } from '../../lib/engineConfig';
-import {
-  readEntityFromCatalog,
-  getEngineFromEntity,
-} from '../../lib/catalogEntity';
+import { resolveEngine } from '../../lib/catalogEntity';
 
 const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
 const GENERATED_SITE_ETAG_EXCLUDED_FILES = [
@@ -56,18 +53,11 @@ export default async function generate(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
   const sourceDir = resolve(opts.sourceDir);
 
-  // Read the catalog entity from disk if available
-  const catalogEntity = await readEntityFromCatalog(sourceDir);
-  const catalogEngine = getEngineFromEntity(catalogEntity);
-
-  // Engine priority: --engine flag > catalog annotation > 'mkdocs' default
-  const engine = opts.engine ?? catalogEngine ?? 'mkdocs';
-
-  if (catalogEngine && !opts.engine) {
-    logger.info(
-      `Detected backstage.io/techdocs-engine: '${catalogEngine}' from catalog entity`,
-    );
-  }
+  const { engine, entity: catalogEntity } = await resolveEngine(
+    sourceDir,
+    opts.engine,
+    logger,
+  );
 
   const engineConfig = getEngineConfig(engine);
   logger.info(`Using engine: ${engine} (binary: ${engineConfig.binary})`);

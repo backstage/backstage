@@ -25,10 +25,7 @@ import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
 import { getEngineConfig } from '../../lib/engineConfig';
-import {
-  readEntityFromCatalog,
-  getEngineFromEntity,
-} from '../../lib/catalogEntity';
+import { resolveEngine } from '../../lib/catalogEntity';
 
 function findPreviewBundlePath(): string {
   try {
@@ -56,16 +53,7 @@ function getPreviewAppPath(opts: OptionValues): string {
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
-  const catalogEntity = await readEntityFromCatalog(process.cwd());
-  const catalogEngine = getEngineFromEntity(catalogEntity);
-  const engine = opts.engine ?? catalogEngine ?? 'mkdocs';
-
-  if (catalogEngine && !opts.engine) {
-    logger.info(
-      `Detected backstage.io/techdocs-engine: '${catalogEngine}' from catalog entity`,
-    );
-  }
-
+  const { engine } = await resolveEngine(process.cwd(), opts.engine, logger);
   const engineConfig = getEngineConfig(engine);
 
   // Determine if we want to run in local dev mode or not

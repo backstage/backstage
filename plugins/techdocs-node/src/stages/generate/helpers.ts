@@ -35,13 +35,15 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
 
+/**
+ * @deprecated Use Generators.get(entity) instead, which reads the
+ * backstage.io/techdocs-engine annotation and falls back to defaultEngine.
+ */
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
   if (!entity) {
     throw new Error('No entity provided');
   }
 
-  // Future: read backstage.io/techdocs-engine annotation from entity,
-  // fall back to the global defaultEngine config.
   return 'techdocs';
 }
 

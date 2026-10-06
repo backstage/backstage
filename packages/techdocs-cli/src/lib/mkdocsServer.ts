@@ -35,23 +35,10 @@ export const runMkdocsServer = (options: {
   const useDocker = options.useDocker ?? true;
   const dockerImage = options.dockerImage ?? 'spotify/techdocs';
 
-  const defaultDockerServeArgs = [
+  const buildDefaultServeArgs = (addr: string) => [
     'serve',
     '--dev-addr',
-    `0.0.0.0:${port}`,
-    '--livereload',
-    ...(options.mkdocsConfigFileName
-      ? ['--config-file', options.mkdocsConfigFileName]
-      : []),
-    ...(options.mkdocsParameterClean ? ['--clean'] : []),
-    ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
-    ...(options.mkdocsParameterStrict ? ['--strict'] : []),
-  ];
-
-  const defaultLocalServeArgs = [
-    'serve',
-    '--dev-addr',
-    `127.0.0.1:${port}`,
+    addr,
     '--livereload',
     ...(options.mkdocsConfigFileName
       ? ['--config-file', options.mkdocsConfigFileName]
@@ -62,7 +49,8 @@ export const runMkdocsServer = (options: {
   ];
 
   if (useDocker) {
-    const serveArgs = options.engineServeArgs ?? defaultDockerServeArgs;
+    const serveArgs =
+      options.engineServeArgs ?? buildDefaultServeArgs(`0.0.0.0:${port}`);
 
     return run(
       [
@@ -91,7 +79,8 @@ export const runMkdocsServer = (options: {
   }
 
   const binary = options.engineBinary ?? 'mkdocs';
-  const serveArgs = options.engineServeArgs ?? defaultLocalServeArgs;
+  const serveArgs =
+    options.engineServeArgs ?? buildDefaultServeArgs(`127.0.0.1:${port}`);
 
   return run([binary, ...serveArgs], {
     onStdout: options.onStdout,
