@@ -15,13 +15,11 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import {
-  routeResolutionApiRef,
-  type AppNode,
-} from '@backstage/frontend-plugin-api';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import {
+  mockApis,
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
@@ -97,23 +95,19 @@ function renderWithContext(
     tree = (
       <TestApiProvider
         apis={[
-          [
-            routeResolutionApiRef,
-            {
-              resolvePath: ({ pathname }) => ({
-                matches: [
-                  {
-                    params:
-                      matchPath('/old/:id', pathname, false)?.params ?? {},
-                    contributesPath: true,
-                    basePath: '/old/alpha',
-                    routePattern: '/old/:id',
-                    node: mockRouteNode,
-                  },
-                ],
-              }),
-            },
-          ],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: '/old/alpha',
+                  routePattern: '/old/:id',
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
         ]}
       >
         {tree}
