@@ -240,10 +240,15 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     setLastInputValue(currentInputValue);
     setShowAllOptions(false);
   }
+  const [uncontrolledSelectedKey, setUncontrolledSelectedKey] = useState(
+    comboboxStateProps.defaultValue ?? null,
+  );
+  const selectedKey =
+    comboboxStateProps.value !== undefined
+      ? comboboxStateProps.value
+      : uncontrolledSelectedKey;
   // Like React Aria's own filtering, the custom filter only applies once the
-  // input text changes in the open menu. Keeping every option while the menu
-  // is closed also keeps the selected option in the collection after a
-  // selection updates the input text.
+  // input text changes in the open menu.
   const customFilterQuery =
     hasCustomFilter && isMenuOpen && !showAllOptions
       ? currentInputValue
@@ -255,6 +260,9 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     : (searchProps?.filter as
         | ((option: NormalizedOption, query: string) => boolean)
         | undefined);
+  // The selected option always stays in the filtered list. React Aria reads
+  // its label from the collection when it restores the input on Escape or
+  // blur, and the collection only holds the options the list box renders.
   const filteredOptions = useMemo(
     () =>
       optionFilter &&
@@ -263,18 +271,26 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
         ? filterOptionSections(
             normalizeOptions(collectionSource.options),
             customFilterQuery,
-            optionFilter,
+            (option, query) =>
+              option.id === selectedKey || optionFilter(option, query),
           )
         : collectionSource.options,
-    [collectionSource.options, optionFilter, customFilterQuery],
+    [collectionSource.options, optionFilter, customFilterQuery, selectedKey],
   );
   const itemFilter = collectionSource.rendersItems
     ? (searchProps?.filter as ((item: T, query: string) => boolean) | undefined)
     : undefined;
   const filteredItems =
     itemFilter && customFilterQuery !== undefined && renderedItems
-      ? renderedItems.filter(item => itemFilter(item, customFilterQuery))
+      ? renderedItems.filter(
+          item =>
+            item.id === selectedKey || itemFilter(item, customFilterQuery),
+        )
       : renderedItems;
+  const handleChange = (key: Key | null) => {
+    setUncontrolledSelectedKey(key);
+    comboboxStateProps.onChange?.(key);
+  };
   const handleInputChange = (nextInputValue: string) => {
     setUncontrolledInputValue(nextInputValue);
     comboboxStateProps.onInputChange?.(nextInputValue);
@@ -303,6 +319,7 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
       ref={ref}
       {...ariaProps}
       {...comboboxStateProps}
+      onChange={handleChange}
       onInputChange={handleInputChange}
       onOpenChange={handleOpenChange}
       menuTrigger={menuTrigger}

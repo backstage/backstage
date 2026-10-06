@@ -619,6 +619,71 @@ describe('Combobox', () => {
     },
   );
 
+  it.each([
+    {
+      name: 'Escape with allowsCustomValue',
+      search: {},
+      allowsCustomValue: true,
+      leave: (input: HTMLElement) =>
+        fireEvent.keyDown(input, { key: 'Escape' }),
+    },
+    {
+      name: 'blur with a controlled input',
+      search: { controlled: true },
+      allowsCustomValue: false,
+      leave: () => act(() => screen.getByText('Other').focus()),
+    },
+  ])(
+    'keeps the selected option when a custom filter excludes it, on $name',
+    ({ search, allowsCustomValue, leave }) => {
+      const onChange = jest.fn();
+      const filter = (owner: Owner, query: string) =>
+        owner.email.includes(query);
+
+      function OwnerCombobox() {
+        const [inputValue, setInputValue] = useState('');
+        return (
+          <>
+            <Combobox
+              aria-label="Owner"
+              items={owners}
+              search={
+                search.controlled
+                  ? { filter, inputValue, onInputChange: setInputValue }
+                  : { filter }
+              }
+              allowsCustomValue={allowsCustomValue}
+              onChange={onChange}
+            >
+              {owner => <ComboboxItemProfile name={owner.name} />}
+            </Combobox>
+            <button>Other</button>
+          </>
+        );
+      }
+
+      renderCombobox(<OwnerCombobox />);
+
+      const input = screen.getByRole('combobox');
+      openCombobox();
+      fireEvent.click(screen.getByRole('option', { name: 'Ada Lovelace' }));
+      act(() => input.focus());
+      openCombobox();
+      fireEvent.change(input, { target: { value: 'navy' } });
+
+      expect(
+        screen.getByRole('option', { name: 'Ada Lovelace' }),
+      ).toBeVisible();
+      expect(
+        screen.getByRole('option', { name: 'Grace Hopper' }),
+      ).toBeVisible();
+
+      leave(input);
+      expect(input).toHaveValue('Ada Lovelace');
+      expect(onChange).toHaveBeenLastCalledWith('ada');
+    },
+  );
+
   it('applies a custom filter to a controlled input value changed by the caller', () => {
     function ControlledOwnerCombobox({ inputValue }: { inputValue: string }) {
       return (
