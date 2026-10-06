@@ -139,6 +139,8 @@ export type DbRelationsRow = {
 };
 
 export type DbFinalEntitiesRow = {
+  /** Internal publication bookkeeping; null for legacy/untracked rows. */
+  generation?: string | number | null;
   entity_id: string;
   hash: string;
   final_entity?: string;
