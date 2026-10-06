@@ -730,7 +730,7 @@ Backstage UI receives a `useRouter` hook through `BUIProvider`. The hook runs at
 BUI controls bind that integration to a local React Aria provider. React Aria
 owns link activation and native browser behavior; BUI does not detect a routing
 library or handle modified clicks itself. This integration applies to BUI controls;
-plugins using React Aria directly must configure their own routing provider.
+plugins using React Aria directly can [configure their own routing provider](../building-plugins/10-page-routers.md#use-react-aria-components-directly) using the public routing APIs.
 
 An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
 
