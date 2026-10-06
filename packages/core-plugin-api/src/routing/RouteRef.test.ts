@@ -17,6 +17,7 @@
 import { AnyParams, RouteRef, ParamKeys } from './types';
 import { createRouteRef } from './RouteRef';
 import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
+import { mockApis } from '@backstage/frontend-test-utils';
 
 describe('RouteRef', () => {
   it('should be created', () => {
@@ -100,10 +101,8 @@ describe('RouteRef', () => {
   });
 
   describe('with new frontend system', () => {
-    const routeResolutionApi = {
-      resolve: jest.fn(),
-      resolvePath: jest.fn(() => ({ matches: [] })),
-    } as RouteResolutionApi;
+    const routeResolutionApi: RouteResolutionApi =
+      mockApis.routeResolution.mock();
 
     function expectType<T>(): <U>(
       v: U,
