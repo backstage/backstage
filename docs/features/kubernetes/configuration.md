@@ -370,13 +370,15 @@ instead attempting to access the Kubernetes API via an in-cluster client as in
 
 The IAM role ARN to assume when using the `aws` auth provider. Each cluster can
 use a different role. This is equivalent to setting
-`kubernetes.io/aws-assume-role` in the cluster's `authMetadata`.
+`kubernetes.io/aws-assume-role` in the cluster's `authMetadata`. If both are set,
+the `authMetadata` value takes precedence.
 
 ##### `clusters.\*.externalId` (optional)
 
 The external ID to supply when assuming the IAM role, if required by its trust
 policy. This value is treated as a secret and is equivalent to setting
-`kubernetes.io/aws-external-id` in the cluster's `authMetadata`.
+`kubernetes.io/aws-external-id` in the cluster's `authMetadata`. If both are set,
+the `authMetadata` value takes precedence.
 
 ##### `clusters.\*.oidcTokenProvider` (optional)
 
