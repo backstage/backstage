@@ -19,6 +19,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { createHash } from 'node:crypto';
 import yaml from 'js-yaml';
+import { createLogger } from 'winston';
 import { Config } from '@backstage/config';
 import {
   TECHDOCS_SOURCE_MANIFEST,
@@ -28,7 +29,7 @@ import {
   TechDocsMarkdownTransform,
   techDocsSourceManifestSchema,
 } from '@backstage/plugin-techdocs-common/alpha';
-import { GeneratorRunOptions } from './types';
+import type { GeneratorRunOptions } from '@backstage/plugin-techdocs-node';
 import { createOrUpdateMetadata } from './helpers';
 
 async function readConfig(inputDir: string, names: string[]) {
@@ -62,16 +63,31 @@ export async function migrateTechDocsConfig(
   }
   const config = await readConfig(inputDir, ['mkdocs.yml', 'mkdocs.yaml']);
   if (!config) throw new Error('No mkdocs.yml or mkdocs.yaml found');
-  const diagnostics = Object.keys(config)
-    .filter(key => !['site_name', 'docs_dir', 'nav'].includes(key))
-    .map(key => `Review unsupported MkDocs setting: ${key}`);
+  const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'techdocs-migrate-'));
+  let manifest: TechDocsSourceManifest;
+  try {
+    await generateTechDocsSource(
+      { inputDir, outputDir: staging, logger: createLogger({ silent: true }) },
+      false,
+    );
+    manifest = techDocsSourceManifestSchema.parse(
+      await fs.readJson(path.join(staging, TECHDOCS_SOURCE_MANIFEST)),
+    );
+  } finally {
+    await fs.remove(staging);
+  }
+  const diagnostics = manifest.diagnostics;
+  const toConfigNav = (entries: TechDocsNavigation[]): unknown[] =>
+    entries.map(entry => ({
+      [entry.title]: entry.path ?? toConfigNav(entry.children ?? []),
+    }));
   await fs.writeFile(
     path.join(inputDir, 'techdocs.yaml'),
     yaml.dump({
       version: 1,
-      title: config.site_name ?? 'Documentation',
+      title: manifest.title,
       docsDir: config.docs_dir ?? 'docs',
-      ...(config.nav ? { nav: config.nav } : {}),
+      ...(config.nav ? { nav: toConfigNav(manifest.nav) } : {}),
     }),
     { flag: 'wx' },
   );
@@ -238,7 +254,7 @@ export async function generateTechDocsSource(
           search.push({
             title: heading.title,
             text: '',
-            location: `${route}#${heading.id}`,
+            location: `${route}#${heading.id.replace(/^techdocs-/, '')}`,
           });
         if (
           /^import |^export |<TechDocsAddon|\{\{|!include|^\s*```(?:plantuml|graphviz)/m.test(

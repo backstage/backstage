@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { isProductionServe } from '../config';
 
 /** Polls only the local preview server, never an adopter's backend. */
 export function SourceLiveReload() {
@@ -24,12 +25,18 @@ export function SourceLiveReload() {
     let revision: number | undefined;
     let timer: ReturnType<typeof setTimeout>;
     const controller = new AbortController();
+    const origin = isProductionServe().then(production =>
+      production ? '' : 'http://localhost:7007',
+    );
     const poll = async () => {
       try {
-        const response = await fetch('/api/techdocs/_techdocs/preview.json', {
-          signal: controller.signal,
-          cache: 'no-store',
-        });
+        const response = await fetch(
+          `${await origin}/api/techdocs/_techdocs/preview.json`,
+          {
+            signal: controller.signal,
+            cache: 'no-store',
+          },
+        );
         if (!response.ok) return;
         const value = await response.json();
         if (typeof value.revision !== 'number') return;

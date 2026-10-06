@@ -16,7 +16,7 @@
 
 import type { Transformer } from './transformer';
 
-export const rewriteDocLinks = (): Transformer => {
+export const rewriteDocLinks = (preservePreview = false): Transformer => {
   return dom => {
     const updateDom = <T extends Element>(
       list: Array<T>,
@@ -36,10 +36,19 @@ export const rewriteDocLinks = (): Transformer => {
               const normalizedWindowLocation = normalizeUrl(
                 window.location.href,
               );
-              elem.setAttribute(
-                attributeName,
-                new URL(elemAttribute, normalizedWindowLocation).toString(),
-              );
+              const url = new URL(elemAttribute, normalizedWindowLocation);
+              const preview = new URL(
+                normalizedWindowLocation,
+              ).searchParams.get('techdocs-preview');
+              if (
+                preservePreview &&
+                (preview === 'legacy' || preview === 'source') &&
+                !/^[a-z][a-z0-9+.-]*:|^\/\//i.test(elemAttribute) &&
+                !elem.hasAttribute('download')
+              ) {
+                url.searchParams.set('techdocs-preview', preview);
+              }
+              elem.setAttribute(attributeName, url.toString());
             } catch (_e) {
               // Non-parseable links should be re-written as plain text.
               elem.replaceWith(elem.textContent || elemAttribute);

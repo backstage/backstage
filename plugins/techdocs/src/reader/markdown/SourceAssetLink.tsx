@@ -20,10 +20,12 @@ import { readSourceJson } from './sourceClient';
 
 export function SourceAssetLink({
   base,
+  onMissingArtifact,
   asset,
   children,
 }: {
   base: string;
+  onMissingArtifact?: (file: string) => void;
   asset: { path: string; file: string };
   children: ReactNode;
 }) {
@@ -38,6 +40,9 @@ export function SourceAssetLink({
         fetchApi,
         `${base}${asset.file}`,
         14_000_000,
+        false,
+        undefined,
+        () => onMissingArtifact?.(asset.file),
       );
       if (
         !raw ||
@@ -55,7 +60,9 @@ export function SourceAssetLink({
       const link = document.createElement('a');
       link.href = url;
       link.download = asset.path.split('/').pop()!;
+      document.body.appendChild(link);
       link.click();
+      link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch {
       setError(true);

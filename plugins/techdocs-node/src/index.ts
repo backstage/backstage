@@ -33,8 +33,3 @@ export {
   type TechdocsPreparerExtensionPoint,
   type TechdocsPublisherExtensionPoint,
 } from './extensions';
-
-export {
-  migrateTechDocsConfig,
-  generateTechDocsSource,
-} from './stages/generate/source';

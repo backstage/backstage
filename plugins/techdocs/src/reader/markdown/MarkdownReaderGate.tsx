@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ReactNode, lazy, Suspense } from 'react';
+import {
+  ReactNode,
+  lazy,
+  Suspense,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { configApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
@@ -58,6 +65,17 @@ function ConfiguredReader({
   const fetchApi = useApi(fetchApiRef);
   const { entityRef } = useTechDocsReaderPage();
   const { namespace, kind, name } = entityRef;
+  const [refresh, setRefresh] = useState(0);
+  const retried = useRef(new Set<string>());
+  const onMissingArtifact = useCallback(
+    (file: string) => {
+      const key = `${namespace}/${kind}/${name}/${file}`;
+      if (retried.current.has(key)) return;
+      retried.current.add(key);
+      setRefresh(value => value + 1);
+    },
+    [namespace, kind, name],
+  );
   const [params] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -75,7 +93,7 @@ function ConfiguredReader({
       .map(encodeURIComponent)
       .join('/')}/`;
     // Synchronization also handles the first source-only build, which has no HTML page.
-    if ((await storage.getBuilder()) === 'local')
+    if (refresh === 0 && (await storage.getBuilder()) === 'local')
       await storage.syncEntityDocs(entityRef);
     const raw = await readSourceJson(
       fetchApi,
@@ -86,7 +104,7 @@ function ConfiguredReader({
     const manifest =
       raw === undefined ? undefined : techDocsSourceManifestSchema.parse(raw);
     return { base, manifest };
-  }, [fetchApi, storage, namespace, kind, name, policy]);
+  }, [fetchApi, storage, namespace, kind, name, policy, refresh]);
   if (state.loading) return <Progress />;
   if (state.error) return <ResponseErrorPanel error={state.error} />;
   const { base, manifest } = state.value!;
@@ -127,7 +145,14 @@ function ConfiguredReader({
               const next = new URLSearchParams(params);
               next.set('techdocs-preview', event.target.value);
               navigate(
-                { ...location, search: next.toString() },
+                {
+                  ...location,
+                  search: next.toString(),
+                  hash: (window.location.pathname === location.pathname
+                    ? window.location.hash
+                    : location.hash
+                  ).replace(/^#techdocs-/, '#'),
+                },
                 { replace: true },
               );
             }}
@@ -144,6 +169,7 @@ function ConfiguredReader({
             base={base}
             defaultPath={defaultPath}
             onReady={onReady}
+            onMissingArtifact={onMissingArtifact}
           />
         </Suspense>
       ) : (

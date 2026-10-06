@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { fireEvent, screen } from '@testing-library/react';
-import { Route, Routes } from 'react-router-dom';
+import { fireEvent, screen, within } from '@testing-library/react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import {
   TestApiProvider,
   renderInTestApp,
@@ -60,19 +60,35 @@ function Addon() {
     </p>
   );
 }
+function RouteState() {
+  const { pathname, search, hash } = useLocation();
+  return (
+    <p>
+      Route: {pathname}
+      {search}
+      {hash}
+    </p>
+  );
+}
 async function renderReader(
   policy: string | undefined,
   publication: unknown = manifest,
   preview = '',
+  artifact?: (url: string) => Response | undefined,
 ) {
   const fetch = jest.fn(async (input: RequestInfo | URL): Promise<Response> => {
     const url = String(input);
+    const override = artifact?.(url);
+    if (override) return override;
     if (url.endsWith('manifest.json'))
       return {
         status: publication === undefined ? 404 : 200,
         ok: true,
         headers: new Headers(),
-        text: async () => JSON.stringify(publication),
+        text: async () =>
+          JSON.stringify(
+            typeof publication === 'function' ? publication() : publication,
+          ),
       } as Response;
     return {
       status: 200,
@@ -118,6 +134,7 @@ async function renderReader(
         ],
       ]}
     >
+      <RouteState />
       <Routes>
         <Route
           path="/docs/*"
@@ -160,6 +177,87 @@ describe('Markdown reader migration', () => {
       target: { value: 'legacy' },
     });
     expect(await screen.findByText('Legacy reader')).toBeInTheDocument();
+  });
+  it('preserves encoded paths and renderer-independent TOC anchors', async () => {
+    const published = {
+      ...manifest,
+      pages: [
+        ...manifest.pages,
+        {
+          path: 'my page/中文.md',
+          route: 'my page/中文/',
+          title: 'Encoded',
+          file,
+        },
+      ],
+    };
+    await renderReader(
+      'prefer-source',
+      published,
+      'my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=source',
+    );
+    expect(
+      await screen.findByText('Addon: my page/中文.md'),
+    ).toBeInTheDocument();
+    expect(
+      within(
+        screen.getByRole('navigation', { name: 'Documentation navigation' }),
+      ).getByRole('link', { name: 'Home' }),
+    ).toHaveAttribute('href', '/docs/?techdocs-preview=source');
+    const toc = within(
+      screen.getByRole('navigation', { name: 'On this page' }),
+    ).getByRole('link', { name: 'Home' });
+    expect(toc).toHaveAttribute(
+      'href',
+      '/docs/my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=source#home',
+    );
+    Element.prototype.scrollIntoView = jest.fn();
+    fireEvent.click(toc);
+    fireEvent.change(screen.getByLabelText('Documentation preview'), {
+      target: { value: 'legacy' },
+    });
+    expect(await screen.findByText('Legacy reader')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Route: /docs/my%20page/%E4%B8%AD%E6%96%87/?techdocs-preview=legacy#home',
+      ),
+    ).toBeInTheDocument();
+  });
+  it('refreshes a stale manifest once when an artifact disappears', async () => {
+    const stale = `_techdocs/source/files/${'b'.repeat(64)}.json`;
+    let latest = {
+      ...manifest,
+      pages: [
+        ...manifest.pages,
+        { path: 'next.md', route: 'next/', title: 'Next', file: stale },
+      ],
+      nav: [{ title: 'Next', path: 'next.md' }],
+    };
+    const fetch = await renderReader(
+      'prefer-source',
+      () => latest,
+      '',
+      url =>
+        url.endsWith(stale)
+          ? ({
+              status: 404,
+              statusText: 'Not Found',
+              ok: false,
+              headers: new Headers(),
+              text: async () => '',
+            } as Response)
+          : undefined,
+    );
+    expect(await screen.findByText('Addon: index.md')).toBeInTheDocument();
+    latest = {
+      ...latest,
+      pages: latest.pages.map(page => ({ ...page, file })),
+    };
+    fireEvent.click(screen.getByRole('link', { name: 'Next' }));
+    expect(await screen.findByText('Addon: next.md')).toBeInTheDocument();
+    expect(
+      fetch.mock.calls.filter(([url]) => String(url).endsWith('manifest.json')),
+    ).toHaveLength(2);
   });
   it('requires source in strict mode and never honors a legacy preview override', async () => {
     await renderReader('source', manifest, '?techdocs-preview=legacy');

@@ -4,12 +4,139 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { z } from 'zod';
+
+// @alpha
+export function normalizeTechDocsMarkdown(source: string): string;
+
+// @alpha
+export function parseTechDocsMarkdown(
+  source: string,
+  transforms?: TechDocsMarkdownTransform[],
+): {
+  tree: TechDocsMarkdownNode;
+  headings: TechDocsHeading[];
+  text: string;
+  title: string;
+};
+
+// @alpha (undocumented)
+export function selectTechDocsRenderer(
+  policy: TechDocsRenderingMode,
+  manifest?: TechDocsSourceManifest,
+  preview?: string | null,
+): 'legacy' | 'source';
+
+// @alpha (undocumented)
+export const TECHDOCS_SOURCE_MANIFEST = '_techdocs/source/manifest.json';
 
 // @alpha
 export const techdocsActionsReadPermission: BasicPermission;
 
+// @alpha (undocumented)
+export type TechDocsHeading = {
+  id: string;
+  title: string;
+  level: number;
+};
+
+// @alpha
+export type TechDocsMarkdownNode = {
+  type: string;
+  tagName?: string;
+  value?: string;
+  name?: string;
+  properties?: Record<string, unknown>;
+  children?: TechDocsMarkdownNode[];
+  position?: {
+    start: {
+      line: number;
+      column: number;
+    };
+    end: {
+      line: number;
+      column: number;
+    };
+  };
+  data?: {
+    hName?: string;
+    hProperties?: Record<string, unknown>;
+  };
+};
+
+// @alpha
+export type TechDocsMarkdownTransform = (tree: TechDocsMarkdownNode) => void;
+
+// @alpha (undocumented)
+export type TechDocsNavigation = {
+  title: string;
+  path?: string;
+  children?: TechDocsNavigation[];
+};
+
+// @alpha (undocumented)
+export function techDocsNodeText(node: TechDocsMarkdownNode): string;
+
 // @alpha
 export const techdocsPermissions: BasicPermission[];
+
+// @alpha (undocumented)
+export type TechDocsPublishingMode = 'legacy' | 'dual' | 'source';
+
+// @alpha (undocumented)
+export type TechDocsRenderingMode =
+  | 'legacy'
+  | 'opt-in'
+  | 'prefer-source'
+  | 'source';
+
+// @alpha (undocumented)
+export type TechDocsSourceManifest = z.infer<
+  typeof techDocsSourceManifestSchema
+>;
+
+// @alpha
+export const techDocsSourceManifestSchema: z.ZodObject<
+  {
+    version: z.ZodLiteral<1>;
+    available: z.ZodBoolean;
+    legacy: z.ZodBoolean;
+    optedIn: z.ZodBoolean;
+    title: z.ZodString;
+    pages: z.ZodArray<
+      z.ZodObject<
+        {
+          path: z.ZodString;
+          route: z.ZodString;
+          title: z.ZodString;
+          file: z.ZodString;
+        },
+        z.core.$strip
+      >
+    >;
+    assets: z.ZodArray<
+      z.ZodObject<
+        {
+          path: z.ZodString;
+          file: z.ZodString;
+        },
+        z.core.$strip
+      >
+    >;
+    nav: z.ZodPipe<
+      z.ZodUnknown,
+      z.ZodArray<
+        z.ZodType<
+          TechDocsNavigation,
+          unknown,
+          z.core.$ZodTypeInternals<TechDocsNavigation, unknown>
+        >
+      >
+    >;
+    diagnostics: z.ZodArray<z.ZodString>;
+  },
+  z.core.$strip
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

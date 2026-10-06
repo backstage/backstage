@@ -27,6 +27,7 @@ import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-rea
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
+import { TechDocsMarkdownAddon } from '@backstage/plugin-techdocs-react/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -77,6 +78,34 @@ const _default: OverridableFrontendPlugin<
       };
       kind: 'api';
       name: 'addons';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:techdocs/markdown-addons': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsMarkdownAddon,
+            'techdocs.markdown-addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'markdown-addons';
       params: <
         TApi,
         TImpl extends TApi,

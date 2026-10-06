@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve } from 'node:path';
-import { OptionValues } from 'commander';
-import { migrateTechDocsConfig } from '@backstage/plugin-techdocs-node/alpha';
-import { createLogger } from '../../lib/utility';
-
-export default async function migrateConfig(opts: OptionValues) {
-  const logger = createLogger({ verbose: false });
-  const { diagnostics } = await migrateTechDocsConfig(resolve(opts.sourceDir));
-  for (const diagnostic of diagnostics) logger.warn(diagnostic);
-  logger.info('Created techdocs.yaml. Keep mkdocs.yml while dual publishing.');
-}
+export {
+  migrateTechDocsConfig,
+  generateTechDocsSource,
+} from './stages/generate/source';
