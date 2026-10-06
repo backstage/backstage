@@ -162,13 +162,24 @@ describe('useBUIRouter', () => {
       state: { source: 'aria' },
     });
     expect(result.current.pathname).toBe('/app/catalog/create');
+    const navigate = result.current.navigate;
+    act(() => history.navigate('/catalog/other'));
+    act(() => navigate('#latest'));
+    expect(history.location).toMatchObject({
+      pathname: '/catalog/other',
+      hash: '#latest',
+    });
+    act(() => navigate('../create'));
+    expect(history.location.pathname).toBe('/catalog/create');
   });
 
   it('keeps browser destinations out of app history and sanitizes executable hrefs', () => {
     const history = createMockAppHistory();
     const { result } = renderHook(() => useBUIRouter(), {
       wrapper: ({ children }) => (
-        <TestApiProvider apis={[[appHistoryApiRef, history]]}>
+        <TestApiProvider
+          apis={[[appHistoryApiRef, history], mockApis.routeResolution()]}
+        >
           {children}
         </TestApiProvider>
       ),
@@ -182,6 +193,13 @@ describe('useBUIRouter', () => {
       const before = history.location;
       result.current.navigate(`${window.location.origin}/#native-aria`);
       expect(window.location.hash).toBe('#native-aria');
+      const historyLength = window.history.length;
+      result.current.navigate(`${window.location.origin}/#native-replaced`, {
+        replace: true,
+      });
+      expect(window.location.hash).toBe('#native-replaced');
+      expect(window.history.length).toBe(historyLength);
+
       expect(history.location).toEqual(before);
     } finally {
       warning.mockRestore();

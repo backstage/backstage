@@ -14,42 +14,46 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
 import {
   appHistoryApiRef,
+  routeResolutionApiRef,
+  isExternalTarget,
   useApi,
-  useRouteResolution,
+  useAppNode,
+  useAppLocation,
 } from '@backstage/frontend-plugin-api';
 import { BUIRouter } from '@backstage/ui';
-import {
-  isExternalTarget,
-  sanitizeHref,
-  useAppRouting,
-} from '@internal/frontend';
 
 /** Binds each BUI control to the routing scope where it renders. */
 export function useBUIRouter(): BUIRouter {
-  const { matches } = useRouteResolution();
-  const basePaths = useMemo(
-    () =>
-      matches
-        .filter((match, index) => index === 0 || match.contributesPath)
-        .map(match => match.basePath),
-    [matches],
-  );
-  const routing = useAppRouting(useApi(appHistoryApiRef), basePaths)!;
+  const history = useApi(appHistoryApiRef);
+  const routes = useApi(routeResolutionApiRef);
+  const node = useAppNode();
+  const location = useAppLocation();
   return {
     navigate(to, options) {
-      const target = sanitizeHref(to);
+      const target = routes.resolveTarget({
+        to,
+        pathname: history.location.pathname,
+        node,
+      });
       if (isExternalTarget(target)) {
-        window.location.assign(target);
+        const href = history.createHref(target);
+        if (options?.replace) {
+          window.location.replace(href);
+        } else {
+          window.location.assign(href);
+        }
       } else {
-        routing.navigate(target, options);
+        history.navigate(target, options);
       }
     },
-    resolveHref: to => routing.createHref(sanitizeHref(to)),
+    resolveHref: to =>
+      history.createHref(
+        routes.resolveTarget({ to, pathname: location.pathname, node }),
+      ),
     pathname: new URL(
-      routing.createHref(routing.location.pathname),
+      history.createHref(location.pathname),
       'http://backstage.local',
     ).pathname,
   };

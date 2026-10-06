@@ -222,7 +222,7 @@ describe('without a root React Router', () => {
 describe('useAppResolvedPath', () => {
   it('resolves relative targets against the page mount, not the location (framework)', () => {
     const resolve = (
-      to: string,
+      to: Parameters<typeof useAppResolvedPath>[1],
       location: string,
       pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>,
     ) =>
@@ -246,6 +246,20 @@ describe('useAppResolvedPath', () => {
     expect(
       resolve('widgets', '/catalog/default/component/foo/docs', pageMount),
     ).toBe('/catalog/default/component/foo/widgets');
+    expect(
+      resolve(
+        { search: '?view=docs' },
+        '/catalog/default/component/foo/docs',
+        pageMount,
+      ),
+    ).toBe('/catalog/default/component/foo/docs');
+    expect(
+      resolve(
+        { pathname: '', search: '?view=docs' },
+        '/catalog/default/component/foo/docs',
+        pageMount,
+      ),
+    ).toBe('/catalog/default/component/foo');
   });
 
   it('keeps absolute targets and their search string intact (framework)', () => {

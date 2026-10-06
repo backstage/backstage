@@ -439,6 +439,29 @@ describe('AppHistory', () => {
   });
 
   describe('createHref', () => {
+    it('sanitizes executable hrefs while keeping navigation strict', () => {
+      const navigate = history.navigate.bind(history);
+      const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        for (const target of [
+          // eslint-disable-next-line no-script-url
+          'javascript:alert(1)',
+          'java\tscript:alert(1)',
+          'data:text/html,test',
+          'vbscript:msgbox(1)',
+        ]) {
+          expect(history.createHref(target)).toBe('about:blank');
+          expect(() => navigate(target)).toThrow();
+        }
+        expect(history.createHref('mailto:test@example.com')).toBe(
+          'mailto:test@example.com',
+        );
+        expect(warning).toHaveBeenCalledTimes(4);
+      } finally {
+        warning.mockRestore();
+      }
+    });
+
     it('should return the path unchanged without a basename', () => {
       expect(history.createHref('/catalog/entity/foo')).toBe(
         '/catalog/entity/foo',
