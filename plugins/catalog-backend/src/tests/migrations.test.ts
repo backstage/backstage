@@ -61,6 +61,131 @@ it('runs the refresh state maintenance migration without a transaction wrapper',
 });
 
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  if (databaseId.startsWith('POSTGRES')) {
+    it('preserves a prebuilt generation index and repairs an interrupted build', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+      const migration = jest.requireActual<{ up: (db: Knex) => Promise<void> }>(
+        '../../migrations/20261006000000_final_entity_generations',
+      );
+      const readIndex = async () => {
+        const { rows } = await knex.raw(`
+          SELECT c.oid, i.indisvalid, i.indnkeyatts, i.indnatts,
+                 pg_get_expr(i.indpred, i.indrelid) AS predicate
+          FROM pg_class c JOIN pg_index i ON i.indexrelid = c.oid
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+          WHERE c.relname = 'final_entities_generation_idx'
+            AND n.nspname = current_schema()
+        `);
+        return rows[0];
+      };
+      const index = await readIndex();
+      expect(index).toMatchObject({
+        indisvalid: true,
+        indnkeyatts: 1,
+        indnatts: 2,
+        predicate: '(generation IS NOT NULL)',
+      });
+      await migration.up(knex);
+      expect(await readIndex()).toEqual(index);
+      await knex.raw('DROP INDEX CONCURRENTLY final_entities_generation_idx');
+      await knex('refresh_state').insert(
+        ['one', 'two'].map(id => ({
+          entity_id: id,
+          entity_ref: `k:ns/${id}`,
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        })),
+      );
+      await knex('final_entities').insert(
+        ['one', 'two'].map(id => ({
+          entity_id: id,
+          entity_ref: `k:ns/${id}`,
+          hash: 'h',
+          final_entity: '{}',
+          generation: 5,
+        })),
+      );
+      // Failed concurrent uniqueness validation leaves a real invalid index.
+      await expect(
+        knex.raw(
+          'CREATE UNIQUE INDEX CONCURRENTLY final_entities_generation_idx ON final_entities (generation)',
+        ),
+      ).rejects.toMatchObject({ code: '23505' });
+      expect((await readIndex()).indisvalid).toBe(false);
+      await migration.up(knex);
+      expect(await readIndex()).toMatchObject({
+        indisvalid: true,
+        indnkeyatts: 1,
+        indnatts: 2,
+        predicate: '(generation IS NOT NULL)',
+      });
+    });
+  }
+
+  it('adds publication generations without backfilling or resetting existing data', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(
+      knex,
+      '20261006000000_final_entity_generations.js',
+    );
+
+    const migration = jest.requireActual<{
+      up: (db: Knex) => Promise<void>;
+    }>('../../migrations/20261006000000_final_entity_generations');
+    await knex('refresh_state').insert({
+      entity_id: 'legacy',
+      entity_ref: 'k:ns/legacy',
+      unprocessed_entity: '{}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+    await knex('final_entities').insert({
+      entity_id: 'legacy',
+      entity_ref: 'k:ns/legacy',
+      hash: 'h',
+      final_entity: '{}',
+    });
+    await knex('search').insert({
+      entity_id: 'legacy',
+      key: 'kind',
+      value: 'k',
+    });
+    const original = await knex('final_entities');
+    const search = await knex('search');
+    await migrateUpOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'generation')).toBe(
+      true,
+    );
+    expect(await knex('final_entities')).toEqual(
+      original.map(row => ({ ...row, generation: null })),
+    );
+    expect(await knex('search')).toEqual(search);
+    await knex('catalog_generation_counter')
+      .where('id', 1)
+      .update({ generation: '123' });
+    await migration.up(knex);
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('123');
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'generation')).toBe(
+      false,
+    );
+    expect(await knex.schema.hasTable('catalog_generation_counter')).toBe(
+      false,
+    );
+    expect(await knex('final_entities')).toEqual(original);
+    expect(await knex('search')).toEqual(search);
+    await migrateUpOnce(knex);
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('0');
+  });
+
   it('latest version correctly cascades deletions', async () => {
     const knex = await databases.init(databaseId);
     await knex.migrate.latest({ directory: migrationsDir });
