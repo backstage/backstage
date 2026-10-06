@@ -23,8 +23,9 @@ import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
  *
  * @remarks
  *
- * If the ticket still matches, the stitch_queue entry is deleted — no
- * further stitching is needed.
+ * If the ticket and captured lease still match, the stitch_queue entry is
+ * deleted — no further stitching is needed. Both guards are needed during
+ * mixed-version rollouts: old workers reclaim without replacing the ticket.
  *
  * A changed ticket with the same lease means a new request arrived during this
  * attempt. Make it immediately eligible, whether this attempt succeeded or was
@@ -43,6 +44,7 @@ export async function markDeferredStitchCompleted(option: {
   const deleted = await knex<DbStitchQueueRow>('stitch_queue')
     .where('entity_ref', '=', entityRef)
     .andWhere('stitch_ticket', '=', stitchTicket)
+    .andWhere('next_stitch_at', '=', stitchLeaseExpiresAt)
     .delete();
 
   if (!deleted) {
