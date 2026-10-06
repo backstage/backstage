@@ -40,26 +40,31 @@ import { readSourceJson } from './sourceClient';
 
 const MarkdownReader = lazy(() => import('./MarkdownReader'));
 
-export function MarkdownReaderGate(props: {
+type ReaderGateProps = {
   children: ReactNode;
   defaultPath?: string;
   onReady?: () => void;
-}) {
+};
+
+export function MarkdownReaderGate(props: ReaderGateProps) {
   const config = useApi(configApiRef);
   // An absent migration configuration preserves the existing reader and its requests.
   if (!config.has('techdocs.migration.rendering')) return <>{props.children}</>;
   return <ConfiguredReader {...props} />;
 }
 
-function ConfiguredReader({
-  children,
-  defaultPath,
-  onReady,
-}: {
-  children: ReactNode;
-  defaultPath?: string;
-  onReady?: () => void;
-}) {
+function ConfiguredReader(props: ReaderGateProps) {
+  const { entityRef } = useTechDocsReaderPage();
+  // Recovery and build state belongs to one entity, even when the route reuses the reader.
+  return (
+    <EntityReader
+      key={`${entityRef.namespace}/${entityRef.kind}/${entityRef.name}`}
+      {...props}
+    />
+  );
+}
+
+function EntityReader({ children, defaultPath, onReady }: ReaderGateProps) {
   const config = useApi(configApiRef);
   const storage = useApi(techdocsStorageApiRef);
   const fetchApi = useApi(fetchApiRef);
