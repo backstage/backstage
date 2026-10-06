@@ -48,12 +48,9 @@ export async function markDeferredStitchCompleted(option: {
     .delete();
 
   if (!deleted) {
-    const update = knex<DbStitchQueueRow>('stitch_queue')
+    await knex<DbStitchQueueRow>('stitch_queue')
       .where('entity_ref', '=', entityRef)
+      .where('next_stitch_at', '=', stitchLeaseExpiresAt)
       .update({ next_stitch_at: knex.fn.now() });
-
-    update.where('next_stitch_at', '=', stitchLeaseExpiresAt);
-
-    await update;
   }
 }
