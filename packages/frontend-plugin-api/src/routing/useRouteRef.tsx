@@ -14,13 +14,41 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
-import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+import {
+  appLifecycleApiRef,
+  RouteFunc,
+  routeResolutionApiRef,
+  useApi,
+  useApiHolder,
+} from '../apis';
+
+function useIsAppFinalized(): boolean {
+  const appLifecycleApi = useApiHolder().get(appLifecycleApiRef);
+  const [finalized, setFinalized] = useState(
+    () => appLifecycleApi?.isFinalized() ?? true,
+  );
+
+  useEffect(() => {
+    if (finalized) return undefined;
+
+    let mounted = true;
+    appLifecycleApi?.waitForFinalization().then(() => {
+      if (mounted) setFinalized(true);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [appLifecycleApi, finalized]);
+
+  return finalized;
+}
 
 /**
  * React hook for constructing URLs to routes.
@@ -41,10 +69,12 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined {
   const { pathname } = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
+  const finalized = useIsAppFinalized();
 
   const routeFunc = useMemo(
     () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
-    [routeResolutionApi, routeRef, pathname],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [routeResolutionApi, routeRef, pathname, finalized],
   );
 
   return routeFunc;
