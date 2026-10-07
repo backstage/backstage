@@ -16,7 +16,7 @@
 
 import { AnchorHTMLAttributes, forwardRef } from 'react';
 import { isExternalTarget } from '@internal/frontend';
-import { useHref } from './useHref';
+import { useAppHref } from './useAppHref';
 import { useOptionalAppNavigate } from './useAppNavigate';
 import type { AppNavigateOptions } from './AppLocation';
 
@@ -47,7 +47,7 @@ export interface RouterLinkProps
 export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
   function RouterLink(props, ref) {
     const { href: to, replace, state, onClick, children, ...rest } = props;
-    const href = useHref(to);
+    const href = useAppHref(to);
     const navigate = useOptionalAppNavigate();
 
     return (

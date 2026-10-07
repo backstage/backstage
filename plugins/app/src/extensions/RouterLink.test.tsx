@@ -18,7 +18,7 @@ import {
   appHistoryApiRef,
   RouterLink,
   useAppLocation,
-  useHref,
+  useAppHref,
   type AppNode,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -151,8 +151,8 @@ describe('RouterLink composition', () => {
     const user = userEvent.setup();
     function ToolTabs() {
       const location = useAppLocation();
-      const currentHref = useHref(location.pathname);
-      const detailsHref = useHref('details');
+      const currentHref = useAppHref(location.pathname);
+      const detailsHref = useAppHref('details');
       const selectedKey = currentHref === detailsHref ? 'details' : 'overview';
       return (
         <Tabs selectedKey={selectedKey}>

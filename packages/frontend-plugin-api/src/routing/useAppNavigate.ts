@@ -119,14 +119,14 @@ export function useOptionalAppNavigate():
  *
  * Prefer this in shared plugin code that must run under both the new and old
  * frontend systems. Relative targets resolve against the calling extension's
- * route ancestry, just like {@link useHref}; each leading `..` climbs one
+ * route ancestry, just like {@link useAppHref}; each leading `..` climbs one
  * path-contributing route. App-absolute paths exclude the deployment basename.
  * With app history, navigation reads the latest location when called, including
  * for query-only and hash-only targets. A number traverses that many history
  * entries. External URLs are supported when app history is registered; the old
  * frontend system retains React Router navigation semantics.
  *
- * The react-aria-style counterpart to this hook is {@link useHref}.
+ * The react-aria-style counterpart to this hook is {@link useAppHref}.
  *
  * @public
  */
