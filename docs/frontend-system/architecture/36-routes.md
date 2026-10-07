@@ -517,7 +517,7 @@ For the design background, see [RFC #33603](https://github.com/backstage/backsta
 
 Route refs work in every page, with or without a routing library. `useRouteRef`
 resolves a route ref to a path, `useRouteRefParams` reads the parameters the
-route pattern names, `useHref` turns a page-relative path into a browser-ready
+route pattern names, `useAppHref` turns a page-relative path into a browser-ready
 href, and `RouteLink` renders a link straight from a route ref. None of them
 require a page router, so a plugin using only these hooks needs no adapter.
 
@@ -536,7 +536,7 @@ delta for Back and Forward navigation. External destinations use browser
 navigation, with `replace` honored and `state` ignored.
 `AppHistoryApi.createHref` adds the deployment basename and preserves external
 URLs. Both methods replace executable schemes with `about:blank` and a warning. For scoped
-link destinations, use `useHref`.
+link destinations, use `useAppHref`.
 
 Custom integrations can call
 `RouteResolutionApi.resolveTarget({ to, pathname, node })` to resolve an authored
@@ -551,7 +551,7 @@ the app's route resolution API, and basename handling and href sanitization
 belong to its history API. A BUI integration only connects these APIs to the
 current app node and location.
 
-`useHref` resolves relative paths against the matched extension ancestry. Each
+`useAppHref` resolves relative paths against the matched extension ancestry. Each
 leading `..` climbs one route, even when that route spans multiple URL segments.
 Query-only and fragment-only targets keep the current pathname. External URLs
 are preserved, except that `javascript:`, `data:`, and `vbscript:` targets become
@@ -566,7 +566,7 @@ adapter for that context to include its own route match. See
 
 A page adapter owns navigation within its own page and nothing beyond it. Resolving a route ref to a concrete path and handing it to React Router's `navigate`, or pointing a React Router `Link` at an absolute `to` string, reaches past that boundary and can break.
 
-For navigation that does cross the boundary, `@backstage/frontend-plugin-api` exports `useAppNavigate` and `useHref`. The pair mirrors the `navigate` and `useHref` props of [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html). `useAppNavigate` reads the app's `AppHistoryApi` when one is registered and falls back to React Router when it is not, so the same plugin code runs under both the new and the old frontend system. That fallback is also why the example below imports `useRouteRef` from `@backstage/core-plugin-api`, which resolves route refs in either system.
+For navigation that does cross the boundary, `@backstage/frontend-plugin-api` exports `useAppNavigate` and `useAppHref`. The pair mirrors the `navigate` and `useHref` props of [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html). `useAppNavigate` reads the app's `AppHistoryApi` when one is registered and falls back to React Router when it is not, so the same plugin code runs under both the new and the old frontend system. That fallback is also why the example below imports `useRouteRef` from `@backstage/core-plugin-api`, which resolves route refs in either system.
 
 ```tsx
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -583,7 +583,7 @@ export function useNavigateToSearchQuery() {
 }
 ```
 
-`useHref` is the counterpart that resolves a path to a browser-ready href, for a plain `<a>` for example, with the same React Router fallback.
+`useAppHref` is the counterpart that resolves a path to a browser-ready href, for a plain `<a>` for example, with the same React Router fallback.
 
 For declarative cross-plugin links, `RouteLink` takes the route ref directly so that no absolute `to` string has to be built:
 

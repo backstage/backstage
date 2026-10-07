@@ -306,7 +306,7 @@ describe('useAppResolvedPath', () => {
  * The route trees the React Router authority is run through.
  *
  * Shared with the href differential in `@backstage/frontend-plugin-api`'s
- * `useHref.test.tsx`, which runs the same shapes through the other half of the
+ * `useAppHref.test.tsx`, which runs the same shapes through the other half of the
  * split.
  */
 const trees: Array<{
