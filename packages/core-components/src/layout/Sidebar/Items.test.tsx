@@ -148,12 +148,17 @@ it('navigates a sidebar link through the app history rather than the browser', a
   expect(window.location.pathname).toBe(browserPath);
 });
 
-function RelativeTargetSidebar() {
+function RelativeTargetSidebar({ absolute = false }: { absolute?: boolean }) {
   return (
     <TestApiProvider apis={[[analyticsApiRef, relativeTargetsAnalyticsApi]]}>
       <Sidebar>
-        {relativeTargets.map(({ text, to }) => (
-          <SidebarItem key={text} text={text} icon={HomeIcon} to={to} />
+        {relativeTargets.map(({ text, to, href }) => (
+          <SidebarItem
+            key={text}
+            text={text}
+            icon={HomeIcon}
+            to={absolute ? href : to}
+          />
         ))}
       </Sidebar>
     </TestApiProvider>
@@ -177,13 +182,13 @@ const relativeTargetRenderers: Array<
   [
     'new frontend system',
     async path => {
-      renderAppChrome(<RelativeTargetSidebar />, [path]);
+      renderAppChrome(<RelativeTargetSidebar absolute />, [path]);
     },
   ],
 ];
 
 describe.each(relativeTargetRenderers)(
-  'SidebarItem relative targets (%s)',
+  'SidebarItem targets (%s)',
   (_system, renderSidebarAt) => {
     // The location the original bug surfaced at: deep inside a different plugin
     // than the one the sidebar item points to.
@@ -220,7 +225,7 @@ describe.each(relativeTargetRenderers)(
       }
     });
 
-    it('highlights the plugin whose relative target is the current page', async () => {
+    it('highlights the plugin whose target is the current page', async () => {
       await renderSidebarAt('/rbac');
 
       // `to="rbac"` means `/rbac`. Resolved against the current location it

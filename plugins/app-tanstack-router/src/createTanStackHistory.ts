@@ -17,10 +17,8 @@
 import type {
   AppHistoryApi,
   AppLocation,
-  RouteResolutionMatch,
 } from '@backstage/frontend-plugin-api';
 import {
-  matchPath,
   readAppHistoryMetadata,
   type AppHistoryMetadata,
 } from '@internal/frontend';
@@ -33,31 +31,6 @@ import {
 } from '@tanstack/history';
 
 type HistoryNotifyAction = Parameters<RouterHistory['notify']>[0];
-
-/**
- * Options for {@link createTanStackHistory}.
- *
- * @internal
- */
-export interface CreateTanStackHistoryOptions {
-  /**
-   * Registered page route pattern this history is scoped to (e.g. `/catalog`
-   * or `/catalog/:namespace/:kind/:name`).
-   */
-  routePattern: string;
-  /** Resolves this extension's mount from the app's selected route branch. */
-  resolveMount?: (
-    pathname: string,
-  ) => Pick<RouteResolutionMatch, 'basePath'> | undefined;
-}
-
-/** An app-absolute pathname split at the page's mount point. */
-interface PageScope {
-  /** The page's concrete mount prefix within that pathname. */
-  base: string;
-  /** The remainder, as the page's own scoped pathname. */
-  scoped: string;
-}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -76,11 +49,8 @@ function toTraversalAction(delta: number): HistoryNotifyAction {
 /**
  * Creates a `RouterHistory` bound to the framework's {@link AppHistoryApi}.
  *
- * Never writes `window.history`. Locations are scoped to the page using the
- * framework's selected mount for each emitted pathname. Isolated
- * contexts fall back to matching the route pattern. Resolution happens during
- * the history notification, before React rerenders, so changing a concrete
- * prefix cannot leave an old base attached to a new location.
+ * Locations and destinations use app-absolute paths, excluding the deployment
+ * basename. Only href creation adds that basename, through the app history.
  *
  * TanStack's entry fields project the framework's optional private metadata.
  * Without it, the adapter exposes a single synthetic slot (index 0, length 1,
@@ -101,57 +71,12 @@ function toTraversalAction(delta: number): HistoryNotifyAction {
  */
 export function createTanStackHistory(
   appHistory: AppHistoryApi,
-  options: CreateTanStackHistoryOptions,
 ): RouterHistory {
-  /**
-   * Splits an app-absolute pathname into this page's mount prefix and the
-   * page-scoped remainder, or `undefined` when the pathname is not on this
-   * page at all.
-   *
-   * Resolve the branch for this exact pathname instead of capturing the mount
-   * from a React render. An optional parent must not consume its child's path.
-   */
-  function splitScope(appPathname: string): PageScope | undefined {
-    const base = options.resolveMount
-      ? options.resolveMount(appPathname)?.basePath
-      : matchPath(options.routePattern, appPathname, false)?.pathnameBase;
-    if (base === undefined) {
-      return undefined;
-    }
-    const rest = appPathname.slice(base === '/' ? 1 : base.length);
-    return {
-      base,
-      scoped: rest ? `${rest.startsWith('/') ? '' : '/'}${rest}` : '/',
-    };
-  }
-
-  let basePath = splitScope(appHistory.location.pathname)?.base ?? '/';
-
-  /**
-   * Re-adds the page's mount prefix to a scoped href. Exactly inverts the
-   * split above for every scoped location this history can hold, so a
-   * round-trip through `AppHistoryApi` never accumulates a prefix.
-   */
-  function toAppAbsolute(scopedHref: string): string {
-    const { pathname, search, hash } = parseHref(scopedHref, undefined);
-    if (basePath === '/') {
-      return `${pathname || '/'}${search}${hash}`;
-    }
-    // The page root *is* the base path, so a scoped `/` contributes nothing —
-    // otherwise `/` + `?q=1` would come out as `/page/?q=1`.
-    const suffix =
-      pathname === '/' || pathname === ''
-        ? ''
-        : `${pathname.startsWith('/') ? '' : '/'}${pathname}`;
-    return `${basePath}${suffix}${search}${hash}`;
-  }
-
   function toHistoryLocation(
     appLoc: AppLocation,
-    scopedPathname: string,
     metadata: AppHistoryMetadata | undefined,
   ): HistoryLocation {
-    const href = `${scopedPathname}${appLoc.search}${appLoc.hash}`;
+    const href = `${appLoc.pathname}${appLoc.search}${appLoc.hash}`;
     let userState: Record<string, unknown> | undefined;
     if (isRecord(appLoc.state)) {
       userState = appLoc.state;
@@ -176,27 +101,16 @@ export function createTanStackHistory(
   let subscription: { unsubscribe(): void } | undefined;
   let sourceLocation = appHistory.location;
   let latestMetadata = readAppHistoryMetadata(appHistory);
-  let latestLocation = toHistoryLocation(
-    sourceLocation,
-    splitScope(sourceLocation.pathname)?.scoped ?? '/',
-    latestMetadata,
-  );
+  let latestLocation = toHistoryLocation(sourceLocation, latestMetadata);
   let blockers: NavigationBlocker[] = [];
   let writing = false;
   let writtenLocation: AppLocation | undefined;
   let pendingEchoes = new WeakSet<AppLocation>();
 
-  function commit(location: AppLocation): boolean {
-    const scope = splitScope(location.pathname);
-    if (!scope) {
-      // Retain the last page location while the app is unmounting this page.
-      return false;
-    }
-    basePath = scope.base;
+  function commit(location: AppLocation): void {
     sourceLocation = location;
     latestMetadata = readAppHistoryMetadata(appHistory);
-    latestLocation = toHistoryLocation(location, scope.scoped, latestMetadata);
-    return true;
+    latestLocation = toHistoryLocation(location, latestMetadata);
   }
 
   function write(path: string, state: unknown, replace: boolean) {
@@ -205,7 +119,7 @@ export function createTanStackHistory(
     writing = true;
     writtenLocation = undefined;
     try {
-      appHistory.navigate(toAppAbsolute(path), { state, replace });
+      appHistory.navigate(path, { state, replace });
       const location = appHistory.location;
       if (
         subscription &&
@@ -239,7 +153,7 @@ export function createTanStackHistory(
     go: delta => appHistory.navigate(delta),
     back: () => appHistory.navigate(-1),
     forward: () => appHistory.navigate(1),
-    createHref: href => appHistory.createHref(toAppAbsolute(href)),
+    createHref: href => appHistory.createHref(href),
     getBlockers: () => blockers,
     setBlockers: next => {
       blockers = next;
@@ -275,9 +189,7 @@ export function createTanStackHistory(
           return;
         }
         const previousIndex = latestMetadata?.index ?? 0;
-        if (!commit(location)) {
-          return;
-        }
+        commit(location);
         if (metadata?.action === 'PUSH' || metadata?.action === 'REPLACE') {
           history.notify({ type: metadata.action });
         } else {

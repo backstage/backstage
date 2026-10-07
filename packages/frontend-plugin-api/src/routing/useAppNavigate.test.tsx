@@ -156,7 +156,7 @@ describe('useOptionalAppNavigate', () => {
 });
 
 describe('useAppNavigate', () => {
-  it('resolves targets like useAppHref and keeps the calling scope with the latest location', () => {
+  it('uses app-absolute paths and the latest location for query and hash targets', () => {
     const node = {} as AppNode;
     const appHistory = createMockAppHistory({
       basename: '/app',
@@ -173,7 +173,10 @@ describe('useAppNavigate', () => {
     jest.mocked(useAppNode).mockReturnValue(node);
     try {
       const { result, rerender } = renderHook(
-        () => ({ navigate: useAppNavigate(), href: useAppHref('details') }),
+        () => ({
+          navigate: useAppNavigate(),
+          href: useAppHref('/tools/admin/details'),
+        }),
         {
           wrapper: ({ children }) => (
             <TestApiProvider apis={[[appHistoryApiRef, appHistory], routes]}>
@@ -185,7 +188,10 @@ describe('useAppNavigate', () => {
       const navigate = result.current.navigate;
       expect(result.current.href).toBe('/app/tools/admin/details');
       act(() =>
-        navigate('details', { replace: true, state: { from: 'test' } }),
+        navigate('/tools/admin/details', {
+          replace: true,
+          state: { from: 'test' },
+        }),
       );
       expect(appHistory.location).toMatchObject({
         pathname: '/tools/admin/details',
@@ -204,7 +210,8 @@ describe('useAppNavigate', () => {
       });
       act(() => navigate('#latest'));
       expect(appHistory.location.hash).toBe('#latest');
-      act(() => navigate('../create'));
+      expect(() => navigate('../create')).toThrow('App routing requires');
+      act(() => navigate('/tools/create'));
       expect(appHistory.location.pathname).toBe('/tools/create');
       act(() => navigate('/catalog'));
       expect(appHistory.location.pathname).toBe('/catalog');
@@ -221,7 +228,7 @@ describe('useAppNavigate', () => {
     }
   });
 
-  it('resolves from app-root scope without an app node', () => {
+  it('rejects relative paths without an app node too', () => {
     const appHistory = createMockAppHistory({
       initialLocation: '/tools/admin',
     });
@@ -234,7 +241,8 @@ describe('useAppNavigate', () => {
         </TestApiProvider>
       ),
     });
-    act(() => result.current('details'));
+    expect(() => result.current('details')).toThrow('App routing requires');
+    act(() => result.current('/details'));
     expect(appHistory.location.pathname).toBe('/details');
   });
 
