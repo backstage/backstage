@@ -17,6 +17,7 @@
 import { AnyParams, ExternalRouteRef } from './types';
 import { createExternalRouteRef } from './ExternalRouteRef';
 import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
+import { mockApis } from '@backstage/frontend-test-utils';
 
 describe('ExternalRouteRef', () => {
   it('should be created', () => {
@@ -114,7 +115,8 @@ describe('ExternalRouteRef', () => {
   });
 
   describe('with new frontend system', () => {
-    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+    const routeResolutionApi: RouteResolutionApi =
+      mockApis.routeResolution.mock();
 
     function expectType<T>(): <U>(
       v: U,

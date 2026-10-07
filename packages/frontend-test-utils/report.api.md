@@ -49,6 +49,7 @@ import { registerMswTestHooks } from '@backstage/test-utils';
 import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
+import { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
@@ -433,11 +434,22 @@ export class MockPermissionApi implements PermissionApi {
 // @public
 export interface MockRouteResolutionApi extends RouteResolutionApi {
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+  resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  resolveTarget: jest.MockedFunction<RouteResolutionApi['resolveTarget']>;
 }
 
 // @public
 export interface MockRouteResolutionApiOptions {
   resolve?: RouteResolutionApi['resolve'];
+  resolvePath?:
+    | {
+        matches: ReadonlyArray<
+          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+        >;
+      }
+    | RouteResolutionApi['resolvePath'];
+  resolveTarget?: RouteResolutionApi['resolveTarget'];
   routes?:
     | ReadonlyMap<MockRouteResolutionRouteRef, string>
     | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;

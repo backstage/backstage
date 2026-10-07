@@ -44,7 +44,7 @@ const PAGE_PATH = '/pages/entity';
 /**
  * Stands in for the resolver a host app hands to `BUIProvider`: it knows the
  * page an anchor is written in and applies the app's deploy basename, the same
- * contract as `useHref` from `@backstage/frontend-plugin-api`. Declared at
+ * contract as `useAppHref` from `@backstage/frontend-plugin-api`. Declared at
  * module scope so the reference never changes identity, exactly as the app
  * declares its own.
  */

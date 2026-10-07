@@ -32,23 +32,26 @@ export interface RouteRefMatch {
 }
 
 type Branch = {
-  routes: Array<{ route: BackstageRouteObject; path: string; pattern: string }>;
+  routes: Array<{
+    route: BackstageRouteObject;
+    path: string;
+    pattern: string;
+    routePattern: string;
+  }>;
   priority: number;
 };
 
-const compiledTrees = new WeakMap<BackstageRouteObject[], Branch[]>();
-
 function compileBranches(routes: BackstageRouteObject[]): Branch[] {
-  const cached = compiledTrees.get(routes);
-  if (cached) {
-    return cached;
-  }
   const branches: Branch[] = [];
   function visit(children: BackstageRouteObject[], parents: Branch['routes']) {
     for (const route of children) {
       for (const path of expandOptionalSegments(route.path)) {
         const pattern = joinRoutePath(parents.at(-1)?.pattern ?? '', path);
-        const chain = [...parents, { route, path, pattern }];
+        const routePattern = joinRoutePath(
+          parents.at(-1)?.routePattern ?? '',
+          route.path,
+        );
+        const chain = [...parents, { route, path, pattern, routePattern }];
         // Children precede their parent when scores tie, including empty paths.
         if (route.children) {
           visit(route.children, chain);
@@ -59,8 +62,41 @@ function compileBranches(routes: BackstageRouteObject[]): Branch[] {
   }
   visit(routes, []);
   branches.sort((a, b) => b.priority - a.priority);
-  compiledTrees.set(routes, branches);
   return branches;
+}
+
+const matchers = new WeakMap<
+  BackstageRouteObject[],
+  (pathname: string) => RouteRefMatch[] | null
+>();
+
+/** Compiles a route tree once and shares its latest pathname match across consumers. */
+export function createRouteMatcher(
+  routes: BackstageRouteObject[],
+): (pathname: string) => RouteRefMatch[] | null {
+  let matcher = matchers.get(routes);
+  if (!matcher) {
+    const branches = compileBranches(routes);
+    let lastPathname: string | undefined;
+    let lastMatches: RouteRefMatch[] | null = null;
+    matcher = pathname => {
+      if (pathname !== lastPathname) {
+        lastMatches = matchBranches(branches, pathname);
+        lastPathname = pathname;
+      }
+      return lastMatches;
+    };
+    matchers.set(routes, matcher);
+  }
+  return matcher;
+}
+
+/** Matches the selected branch for rendering, route refs, and route tracking. */
+export function matchRouteRefs(
+  routes: BackstageRouteObject[],
+  pathname: string,
+): RouteRefMatch[] | null {
+  return createRouteMatcher(routes)(pathname);
 }
 
 /**
@@ -68,15 +104,18 @@ function compileBranches(routes: BackstageRouteObject[]): Branch[] {
  * route refs and route tracking all use this ordering and node identity.
  * @internal
  */
-export function matchRouteRefs(
-  routes: BackstageRouteObject[],
+function matchBranches(
+  branches: Branch[],
   pathname: string,
 ): RouteRefMatch[] | null {
-  for (const branch of compileBranches(routes)) {
+  for (const branch of branches) {
     const matches: RouteRefMatch[] = [];
     let base = '/';
     const params: Record<string, string> = {};
-    for (const [index, { route, path }] of branch.routes.entries()) {
+    for (const [
+      index,
+      { route, path, routePattern },
+    ] of branch.routes.entries()) {
       const remaining =
         base === '/' ? pathname : pathname.slice(base.length) || '/';
       const match = matchPath(
@@ -96,10 +135,7 @@ export function matchRouteRefs(
         pathname:
           joinRoutePath(base, match.matchedPathname).replace(/\/$/, '') || '/',
         pathnameBase,
-        routePattern: joinRoutePath(
-          matches.at(-1)?.routePattern ?? '',
-          route.path,
-        ),
+        routePattern,
         params: { ...params },
       });
       base = pathnameBase;

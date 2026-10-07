@@ -2,7 +2,13 @@
 '@backstage/frontend-plugin-api': minor
 ---
 
-Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` and `useNavigateRouteRef` support route-reference navigation, and `useAppRouting` provides matching href and navigation callbacks for React Aria integration.
+Added `RouterLink`, a routing anchor with no styles for composing custom UI components, including React Aria links, tabs, and menu items through their `render` prop. It resolves relative destinations in the component’s extension scope and preserves native browser link interactions.
+
+Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useAppHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` supports route-reference links, while `useRouteRef` and `useAppNavigate` can be combined for programmatic navigation.
+
+Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location. `RouteResolutionApi.resolveTarget` resolves authored links against a node’s route ancestry, using app-root scope when no node is supplied. `AppHistoryApi.navigate` now handles external URLs through browser navigation, honoring `replace`. Both `navigate` and `createHref` sanitize executable URL schemes. The `useRouteResolution` hook provides the current extension’s matched routing ancestry at the current location.
+
+`useAppNavigate` resolves relative targets against the calling extension’s route ancestry, matching `useAppHref`, and reads the latest history location when invoked.
 
 Framework routing hooks work without a page adapter and retain old frontend compatibility. Existing pages keep implicit React Router v6 routing, with development warnings to guide migration to explicit adapters. Page headers remain visible during content loading and errors, and sub-page breadcrumbs point to their matched routes.
 

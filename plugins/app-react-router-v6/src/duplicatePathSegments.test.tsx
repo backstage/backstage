@@ -19,7 +19,7 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   SubPageBlueprint,
-  useHref as useFrameworkHref,
+  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
 import { MemoryRouter, Route, Routes, useResolvedPath } from 'react-router-dom';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
@@ -43,7 +43,7 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  *  - the v6 adapter's projected route context, read through `useResolvedPath`;
  *  - a real `react-router-dom` route tree of the same shape at the same URL,
  *    which is the definition of the right answer;
- *  - the framework's own `useHref`, which resolves from the page mount with no
+ *  - the framework's own `useAppHref`, which resolves from the page mount with no
  *    routing library involved at all, and is what a `RouteLink`, a tab href
  *    and every `@backstage/ui` link go through.
  *

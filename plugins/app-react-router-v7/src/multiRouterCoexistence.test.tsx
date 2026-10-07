@@ -18,6 +18,7 @@ import path from 'node:path';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  useRouteResolution,
   PageBlueprint,
   RouteLink,
   SubPageBlueprint,
@@ -26,9 +27,9 @@ import {
   createRouteRef,
   useApi,
   useAppNavigate,
-  useHref as useFrameworkHref,
+  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
-import { useAppHistoryLocation, usePageMount } from '@internal/frontend';
+import { useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
 import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
@@ -271,7 +272,7 @@ describe('multi-router coexistence', () => {
 
     const TreeV7SubPage = () => {
       const location = useLocation();
-      const pageMount = usePageMount();
+      const pageMount = useRouteResolution().matches.at(-1);
       return (
         <div data-testid="tree-subpage">
           <div data-testid="adapter">v7</div>
@@ -429,7 +430,7 @@ describe('multi-router coexistence', () => {
     // adapter per page, which is precisely what this case would have caught.
     const NestedProbe = () => {
       const location = useLocation();
-      const mount = usePageMount();
+      const mount = useRouteResolution().matches.at(-1);
       return (
         <div data-testid="nested-probe">
           {/* Answered by the inner v7 adapter, scoped to the page mount. */}
@@ -505,7 +506,7 @@ describe('multi-router coexistence', () => {
       const v6Params = reactRouterV6.useParams();
       const v6Resolved = reactRouterV6.useResolvedPath('deep').pathname;
       const v7Location = useLocation();
-      const mount = usePageMount();
+      const mount = useRouteResolution().matches.at(-1);
       return (
         <div data-testid="nested-probe">
           {/* Answered by the inner v6 adapter, scoped to the page mount. */}
@@ -591,7 +592,7 @@ describe('multi-router coexistence', () => {
    * Both majors share that projection but not their contexts, so this asks the
    * same question of each: a target below, the climb to the page, and a target
    * that spells the page's own segment, cross-checked against the framework's
-   * own `useHref`, which walks page mounts with no routing library at all.
+   * own `useAppHref`, which walks page mounts with no routing library at all.
    */
   describe('where a target written at sub-page depth lands', () => {
     const PAGE_PATTERN = '/catalog-majors';

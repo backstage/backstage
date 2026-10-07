@@ -19,73 +19,18 @@ import {
   isExternalTarget,
   resolveAppPath,
   sanitizeHref,
-  useAppRouting,
+  useAppHistoryLocation,
 } from '@internal/frontend';
+import { useAppNode } from '../components/AppNodeProvider';
+import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { useApiHolder } from '../apis/system';
-import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
+import { appHistoryApiRef } from './AppHistoryApi';
 import {
   LocationContext,
   NavigationContext,
   useRouteBasePaths,
   useRouterContext,
 } from './reactRouterContext';
-
-/*
- * Reading React Router's contexts rather than calling `useHref` /
- * `useResolvedPath` /
- * `useLocation` is what lets this hook render with no router at all. New
- * frontend system chrome is deliberately routerless, and a specialized app
- * does not need to mount a React Router provider. Those hooks throw there; the
- * contexts are `null` instead, which is exactly how `useInRouterContext`
- * detects a router.
- *
- * This package owns the React Router v6 dependency for the old frontend
- * fallback. `@internal/frontend` stays free of it and carries only the path
- * algebra both authorities share.
- */
-/**
- * Resolves framework targets against the actual matched extension ancestry.
- * Each leading `..` climbs one route, and AppHistory applies the deployment
- * basename. Without AppHistory, reads the old frontend's React Router
- * contexts; without either authority, returns the target unchanged.
- * @internal
- */
-export function useAppHref(
-  appHistory: AppHistoryApi | undefined,
-  to: string,
-): string {
-  const appRouting = useAppRouting(appHistory);
-  const navigation = useRouterContext(NavigationContext);
-  const routeBasePaths = useRouteBasePaths();
-  const routerLocation = useRouterContext(LocationContext)?.location;
-
-  if (isExternalTarget(to)) {
-    return to;
-  }
-  if (appRouting) {
-    return appRouting.createHref(to);
-  }
-  if (!navigation) {
-    return to;
-  }
-
-  // React Router's `useHref`: the resolved path, prefixed with the router
-  // basename, handed to the navigator to render.
-  const { basename, navigator } = navigation;
-  const { pathname, search, hash } = resolveAppPath(
-    to,
-    routeBasePaths,
-    routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
-  );
-  let joinedPathname = pathname;
-  if (basename !== '/') {
-    joinedPathname =
-      pathname === '/'
-        ? basename
-        : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
-  }
-  return navigator.createHref({ pathname: joinedPathname, search, hash });
-}
 
 /**
  * Resolves an app-relative path to a browser-ready href (including the app's
@@ -120,10 +65,58 @@ export function useAppHref(
  *
  * @public
  */
-export function useHref(to: string): string {
-  const appHistory = useApiHolder().get(appHistoryApiRef);
-  // Made inert before anything else looks at it: the result of this hook is
-  // rendered as an href, and both authorities hand back a target they cannot
-  // route exactly as given.
-  return useAppHref(appHistory, sanitizeHref(to));
+export function useAppHref(to: string): string {
+  /*
+   * Reading React Router's contexts rather than calling `useHref` /
+   * `useResolvedPath` /
+   * `useLocation` is what lets this hook render with no router at all. New
+   * frontend system chrome is deliberately routerless, and a specialized app
+   * does not need to mount a React Router provider. Those hooks throw there; the
+   * contexts are `null` instead, which is exactly how `useInRouterContext`
+   * detects a router.
+   *
+   * This package owns the React Router v6 dependency for the old frontend
+   * fallback. The internal frontend package stays free of it and carries only the path
+   * algebra both authorities share.
+   */
+
+  const apis = useApiHolder();
+  const appHistory = apis.get(appHistoryApiRef);
+  const node = useAppNode();
+  const routes = apis.get(routeResolutionApiRef);
+  const location = useAppHistoryLocation(appHistory);
+  const navigation = useRouterContext(NavigationContext);
+  const routeBasePaths = useRouteBasePaths();
+  const routerLocation = useRouterContext(LocationContext)?.location;
+
+  if (appHistory && location) {
+    const target = routes
+      ? routes.resolveTarget({ to, pathname: location.pathname, node })
+      : to;
+    return appHistory.createHref(target);
+  }
+  const safeTo = sanitizeHref(to);
+  if (isExternalTarget(safeTo)) {
+    return safeTo;
+  }
+  if (!navigation) {
+    return safeTo;
+  }
+
+  // React Router's `useHref`: the resolved path, prefixed with the router
+  // basename, handed to the navigator to render.
+  const { basename, navigator } = navigation;
+  const { pathname, search, hash } = resolveAppPath(
+    safeTo,
+    routeBasePaths,
+    routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
+  );
+  let joinedPathname = pathname;
+  if (basename !== '/') {
+    joinedPathname =
+      pathname === '/'
+        ? basename
+        : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
+  }
+  return navigator.createHref({ pathname: joinedPathname, search, hash });
 }

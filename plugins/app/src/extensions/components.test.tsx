@@ -238,7 +238,7 @@ describe('PageLayout', () => {
   });
 
   it('falls back to the ambient route match when there is no page mount', async () => {
-    // No AppRouteSwitch above the layout, so there is no PageMount to read and
+    // No AppRouteSwitch above the layout, so there is no routing scope to read and
     // the surrounding React Router match is the only base available.
     renderInTestApp(
       <PageLayout
@@ -265,7 +265,7 @@ describe('PageLayout', () => {
   });
 
   it('falls back to the app root when nothing above the layout has a path', async () => {
-    // Neither a PageMount nor a route match, which is also what a layout sees
+    // Neither routing scope nor a route match, which is also what a layout sees
     // when the app has no root router at all.
     renderInTestApp(
       <PageLayout

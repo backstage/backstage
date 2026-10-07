@@ -6,7 +6,7 @@ description: Render a page with React Router v6, React Router v7 or TanStack Rou
 ---
 
 Most pages need no router at all. `useRouteRef`, `useRouteRefParams` and
-`useHref` from `@backstage/frontend-plugin-api` answer from the framework's own
+`useAppHref` from `@backstage/frontend-plugin-api` answer from the framework's own
 routing. They work on every page, whichever library it uses and on pages that
 use none. Try them before reaching for anything else on this page.
 
@@ -31,8 +31,8 @@ still owns browser history, and navigation between plugins still goes through
 
 A page router is declared by rendering it, inside the lazily loaded page component. This keeps the adapter import and its
 routing library out of the blueprint module. There is no extension to attach and no input to fill: this is
-ordinary React, and the adapter picks up the page's mount from the context it is
-already rendered in.
+ordinary React, and the adapter resolves its routing scope from the app node
+it is rendered inside.
 
 ```tsx title="plugins/tools/src/alpha.tsx"
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
@@ -280,8 +280,7 @@ export function Overview() {
 ```
 
 An adapter declared here scopes itself to the **sub-page**, because the
-sub-page's own mount is what is in context by the time the loader's element
-renders. A React Router `<Routes>` tree inside that content is therefore written
+sub-page's app node is in context when its content renders. A React Router `<Routes>` tree inside that content is therefore written
 relative to the sub-page, not to the page, and a relative `Link` resolves from
 the sub-page.
 
@@ -298,53 +297,91 @@ routing library at all.
 
 ## Use React Aria components directly
 
-React Aria controls can use Backstage navigation without a page routing library.
-Call `useAppRouting` inside the page or sub-page and pass its callbacks to
-React Aria's own provider:
+Use `RouterLink` from `@backstage/frontend-plugin-api` to connect custom React Aria
+components to Backstage routing. It is a routing primitive with no styles, intended for
+composition. For standard UI links, use the BUI `Link` component.
+
+Pass `RouterLink` through React Aria's `render` prop:
 
 ```tsx
-import { useAppRouting } from '@backstage/frontend-plugin-api';
-import { Link, RouterProvider } from 'react-aria-components';
+import { RouterLink } from '@backstage/frontend-plugin-api';
+import { Link } from 'react-aria-components';
 
-export function ToolsContent() {
-  const routing = useAppRouting();
+export function ToolDetailsLink() {
   return (
-    <RouterProvider navigate={routing.navigate} useHref={routing.createHref}>
-      <Link href="details">Tool details</Link>
-    </RouterProvider>
+    <Link
+      href="details"
+      render={props =>
+        'href' in props ? <RouterLink {...props} /> : <span {...props} />
+      }
+    >
+      Tool details
+    </Link>
   );
 }
 ```
 
-Both callbacks capture the scope where the hook runs. For a page mounted at
-`/tools`, `details` renders and navigates to `/tools/details`, with the deployment
-basename added once. Each leading `..` climbs one page or sub-page, and query-only
-or hash-only targets stay on the current location. To type React Aria's
-`routerOptions` in your app, configure its routing types:
+Relative destinations resolve against the extension where the link renders. In
+a page mounted at `/tools`, `details` navigates to `/tools/details`. The link
+handles the deployment basename and preserves browser behavior for modified
+clicks, downloads, and external destinations. No `RouterProvider` or custom click
+handler is needed. Without app history, links use browser navigation.
+
+The same approach works for navigable tabs:
 
 ```tsx
-import type { AppNavigateOptions } from '@backstage/frontend-plugin-api';
+import {
+  RouterLink,
+  useAppLocation,
+  useAppHref,
+} from '@backstage/frontend-plugin-api';
+import { Tabs, TabList, Tab } from 'react-aria-components';
 
-declare module 'react-aria-components' {
-  interface RouterConfig {
-    routerOptions: AppNavigateOptions;
-  }
+export function ToolTabs() {
+  const location = useAppLocation();
+  const currentHref = useAppHref(location.pathname);
+  const detailsHref = useAppHref('details');
+
+  const selectedKey = currentHref === detailsHref ? 'details' : 'overview';
+
+  return (
+    <Tabs selectedKey={selectedKey}>
+      <TabList aria-label="Tool">
+        <Tab
+          id="overview"
+          href="."
+          render={props =>
+            'href' in props ? <RouterLink {...props} /> : <div {...props} />
+          }
+        >
+          Overview
+        </Tab>
+        <Tab
+          id="details"
+          href="details"
+          render={props =>
+            'href' in props ? <RouterLink {...props} /> : <div {...props} />
+          }
+        >
+          Details
+        </Tab>
+      </TabList>
+    </Tabs>
+  );
 }
 ```
 
-The options support `replace` and `state`. This declaration belongs to your app;
-BUI does not set React Aria's global router types for plugins.
+Mount this tab bar in the parent page's extension scope. The example compares
+browser-ready paths so the deployment basename matches. It selects Details on an exact
+path match and Overview otherwise.
+Derive selection from your route structure when tabs also include descendant
+routes. The page router renders the destination content, while the current
+location controls tab selection, including after Back and Forward navigation.
 
-Import the provider and controls from the same React Aria installation. To use a
-nested sub-page's scope, mount another provider inside that sub-page. A provider
-outside it keeps its original scope for both callbacks, so hrefs and clicks agree.
-React Aria handles native browser interactions, including modified clicks and
-downloads. Absolute URLs use browser navigation.
-
-BUI controls already receive this integration from the app. `BUIProvider` does
-not configure unrelated React Aria controls. The separate `useAppNavigate` hook
-continues to accept app-absolute destinations; use the captured pair above for
-React Aria links that include relative destinations.
+For navigable menu items, use the same `render` pattern on `MenuItem`. Forward
+all supplied props and the ref so React Aria retains its accessibility, focus,
+and interaction behavior. Use a link with button styling for navigation that
+looks like a button; keep action buttons as buttons.
 
 ## Migrate Backstage UI routing
 
@@ -371,7 +408,7 @@ When upgrading an existing integration:
    `state` options.
 1. Use `href="."` to navigate to the current route. Empty hrefs follow React
    Aria's native behavior and are not resolved by the host router.
-1. Give directly used React Aria components their own scoped provider, as
+1. Give directly used React Aria components their own routing provider, as
    described in [React Aria integration](#use-react-aria-components-directly).
 
 BUI links treat URL schemes, including custom and mixed-case schemes, as
@@ -441,6 +478,6 @@ need a page adapter. Use `useAppLocation` for the app-absolute location and
 history and fall back to React Router in the old frontend system.
 
 Use `useRouteRefParams` with a route reference for framework route parameters,
-and `useAppNavigate` for app-absolute navigation. Keep a library adapter when
+and `useAppNavigate` for app-absolute or route-relative navigation. Keep a library adapter when
 content renders that library's nested routes, outlets, or other library-specific
 features. Declaring an adapter for a shared link or query hook alone is unnecessary.

@@ -16,7 +16,6 @@
 
 import { renderHook, act } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
-import { TestApiProvider } from '@backstage/test-utils';
 import { Observable, Subscription } from '@backstage/types';
 import {
   createMemoryRouter,
@@ -27,6 +26,19 @@ import {
 import { useAppNavigate, useOptionalAppNavigate } from './useAppNavigate';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type { AppLocation } from './AppLocation';
+import {
+  TestApiProvider,
+  createMockAppHistory,
+  mockApis,
+} from '@backstage/frontend-test-utils';
+import { useAppNode } from '../components/AppNodeProvider';
+import type { AppNode } from '../apis/definitions/AppTreeApi';
+import { useAppHref } from './useAppHref';
+
+jest.mock('../components/AppNodeProvider', () => ({
+  ...jest.requireActual('../components/AppNodeProvider'),
+  useAppNode: jest.fn(),
+}));
 
 /**
  * A hand-rolled `AppHistoryApi` matching the real implementation's contract:
@@ -144,6 +156,88 @@ describe('useOptionalAppNavigate', () => {
 });
 
 describe('useAppNavigate', () => {
+  it('resolves targets like useAppHref and keeps the calling scope with the latest location', () => {
+    const node = {} as AppNode;
+    const appHistory = createMockAppHistory({
+      basename: '/app',
+      initialLocation: '/app/tools/admin',
+    });
+    const routes = mockApis.routeResolution({
+      resolvePath: {
+        matches: [
+          { node, basePath: '/tools' },
+          { node, basePath: '/tools/admin' },
+        ],
+      },
+    });
+    jest.mocked(useAppNode).mockReturnValue(node);
+    try {
+      const { result, rerender } = renderHook(
+        () => ({ navigate: useAppNavigate(), href: useAppHref('details') }),
+        {
+          wrapper: ({ children }) => (
+            <TestApiProvider apis={[[appHistoryApiRef, appHistory], routes]}>
+              {children}
+            </TestApiProvider>
+          ),
+        },
+      );
+      const navigate = result.current.navigate;
+      expect(result.current.href).toBe('/app/tools/admin/details');
+      act(() =>
+        navigate('details', { replace: true, state: { from: 'test' } }),
+      );
+      expect(appHistory.location).toMatchObject({
+        pathname: '/tools/admin/details',
+        state: { from: 'test' },
+      });
+
+      // Retained callbacks keep their original node, but read the latest location.
+      jest.mocked(useAppNode).mockReturnValue(undefined);
+      rerender();
+      act(() => appHistory.navigate('/tools/admin/other'));
+      act(() => navigate('?view=docs#intro'));
+      expect(appHistory.location).toMatchObject({
+        pathname: '/tools/admin/other',
+        search: '?view=docs',
+        hash: '#intro',
+      });
+      act(() => navigate('#latest'));
+      expect(appHistory.location.hash).toBe('#latest');
+      act(() => navigate('../create'));
+      expect(appHistory.location.pathname).toBe('/tools/create');
+      act(() => navigate('/catalog'));
+      expect(appHistory.location.pathname).toBe('/catalog');
+      act(() => navigate(-1));
+      expect(appHistory.location.pathname).toBe('/tools/create');
+      act(() => navigate('https://example.com', { replace: true }));
+      expect(appHistory.navigateCalls.at(-1)).toEqual({
+        to: 'https://example.com',
+        options: { replace: true },
+      });
+      expect(appHistory.location.pathname).toBe('/tools/create');
+    } finally {
+      jest.mocked(useAppNode).mockReset();
+    }
+  });
+
+  it('resolves from app-root scope without an app node', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: '/tools/admin',
+    });
+    const { result } = renderHook(() => useAppNavigate(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[[appHistoryApiRef, appHistory], mockApis.routeResolution()]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+    act(() => result.current('details'));
+    expect(appHistory.location.pathname).toBe('/details');
+  });
+
   it('uses the app history when registered', () => {
     const navigate = jest.fn();
     const { appHistory } = createFakeAppHistory(

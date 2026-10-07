@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useOptionalAppHistory } from '../hooks/useOptionalAppHistory';
+import { appHistoryApiRef, type AppNode } from '@backstage/frontend-plugin-api';
 import { default as React, PropsWithChildren, ReactNode } from 'react';
 import {
   MemoryRouter,
@@ -32,18 +34,29 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
-import { TestApiProvider } from '@backstage/test-utils';
-import { PageMountProvider, type PageMount } from '@internal/frontend';
+import {
+  TestApiProvider,
+  mockApis,
+  createMockAppHistory,
+} from '@backstage/frontend-test-utils';
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { useAppGoBack, useAppLocation, useAppResolvedPath } from './appRouting';
-import { useOptionalAppHistory } from '../hooks/useOptionalAppHistory';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock('../../../frontend-plugin-api/src/components/AppNodeProvider', () => {
+  const actual = jest.requireActual(
+    '../../../frontend-plugin-api/src/components/AppNodeProvider',
+  );
+  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
+});
 
 type MockAppHistory = ReturnType<typeof createMockAppHistory>;
 
 function frameworkWrapper(options: {
   location?: string;
-  pageMount?: PageMount;
+  pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>;
   appHistory?: MockAppHistory;
   basename?: string;
 }) {
@@ -58,7 +71,17 @@ function frameworkWrapper(options: {
     <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
       <MemoryRouter initialEntries={[options.location ?? '/']}>
         {pageMount ? (
-          <PageMountProvider mount={pageMount}>{children}</PageMountProvider>
+          <TestApiProvider
+            apis={[
+              mockApis.routeResolution({
+                resolvePath: {
+                  matches: [{ ...pageMount, node: mockRouteNode }],
+                },
+              }),
+            ]}
+          >
+            {children}
+          </TestApiProvider>
         ) : (
           children
         )}
@@ -108,19 +131,26 @@ it('resolves parent hrefs from route mounts rather than URL segments', () => {
   );
   unmount();
   render(
-    <TestApiProvider apis={[[appHistoryApiRef, history]]}>
-      <PageMountProvider
-        mount={{ basePath: '/catalog/foo', routePattern: '/catalog/:name' }}
-      >
-        <PageMountProvider
-          mount={{
-            basePath: '/catalog/foo/tab/123',
-            routePattern: '/catalog/:name/tab/:id',
-          }}
-        >
-          <ChromeStandIn to=".." />
-        </PageMountProvider>
-      </PageMountProvider>
+    <TestApiProvider
+      apis={[
+        [appHistoryApiRef, history],
+        mockApis.routeResolution({
+          resolvePath: {
+            matches: [
+              {
+                basePath: '/catalog/foo',
+                routePattern: '/catalog/:name',
+              },
+              {
+                basePath: '/catalog/foo/tab/123',
+                routePattern: '/catalog/:name/tab/:id',
+              },
+            ].map(mount => ({ ...mount, node: mockRouteNode })),
+          },
+        }),
+      ]}
+    >
+      <ChromeStandIn to=".." />
     </TestApiProvider>,
   );
   expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
@@ -191,7 +221,11 @@ describe('without a root React Router', () => {
 
 describe('useAppResolvedPath', () => {
   it('resolves relative targets against the page mount, not the location (framework)', () => {
-    const resolve = (to: string, location: string, pageMount?: PageMount) =>
+    const resolve = (
+      to: Parameters<typeof useAppResolvedPath>[1],
+      location: string,
+      pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>,
+    ) =>
       renderHook(() => useAppResolvedPath(useOptionalAppHistory(), to), {
         wrapper: frameworkWrapper({ location, pageMount }),
       }).result.current.pathname;
@@ -205,13 +239,27 @@ describe('useAppResolvedPath', () => {
     );
     expect(resolve('', '/catalog/default/component/foo')).toBe('/');
 
-    const pageMount: PageMount = {
+    const pageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
       basePath: '/catalog/default/component/foo',
       routePattern: '/catalog/:namespace/:kind/:name',
     };
     expect(
       resolve('widgets', '/catalog/default/component/foo/docs', pageMount),
     ).toBe('/catalog/default/component/foo/widgets');
+    expect(
+      resolve(
+        { search: '?view=docs' },
+        '/catalog/default/component/foo/docs',
+        pageMount,
+      ),
+    ).toBe('/catalog/default/component/foo/docs');
+    expect(
+      resolve(
+        { pathname: '', search: '?view=docs' },
+        '/catalog/default/component/foo/docs',
+        pageMount,
+      ),
+    ).toBe('/catalog/default/component/foo');
   });
 
   it('keeps absolute targets and their search string intact (framework)', () => {
@@ -258,7 +306,7 @@ describe('useAppResolvedPath', () => {
  * The route trees the React Router authority is run through.
  *
  * Shared with the href differential in `@backstage/frontend-plugin-api`'s
- * `useHref.test.tsx`, which runs the same shapes through the other half of the
+ * `useAppHref.test.tsx`, which runs the same shapes through the other half of the
  * split.
  */
 const trees: Array<{
@@ -619,11 +667,22 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const appHistory = createMockAppHistory({
       initialLocation: '/catalog/foo',
     });
-    const mount: PageMount = { basePath: '/catalog', routePattern: '/catalog' };
+    const mount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
+      basePath: '/catalog',
+      routePattern: '/catalog',
+    };
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
-      <versioned.PageMountProvider mount={mount}>
+      <TestApiProvider
+        apis={[
+          mockApis.routeResolution({
+            resolvePath: {
+              matches: [{ ...mount, node: mockRouteNode }],
+            },
+          }),
+        ]}
+      >
         {children}
-      </versioned.PageMountProvider>
+      </TestApiProvider>
     );
 
     const { result } = renderHook(

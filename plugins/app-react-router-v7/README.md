@@ -63,7 +63,7 @@ selected: React Router v7 publishes its own React context, so it nests with adap
 from other libraries instead of replacing them.
 
 Rendering it in a sub-page's component scopes it to that sub-page, because the
-sub-page's own mount is what is in context there. Sibling tabs may declare
+sub-page's app node determines its routing scope. Sibling tabs may declare
 different libraries, or none at all.
 
 Declare it at a route-bearing extension, such as a page or sub-page. An

@@ -486,7 +486,7 @@ export namespace mockApis {
    * ```tsx
    * const navigate = jest.fn();
    * const appHistory = mockApis.appHistory({ navigate });
-   * // Pair with mockApis.routeResolution() for RouteLink / useNavigateRouteRef
+   * // Pair with mockApis.routeResolution() for RouteLink / useRouteRef
    * ```
    */
   export function appHistory(
@@ -527,9 +527,8 @@ export namespace mockApis {
     ) => ApiMock<AppHistoryApi> = partialImpl => {
       // `navigate` goes to the fake rather than to `createApiMock`, which
       // installs a partial implementation by replacing the jest mock's body
-      // wholesale. That would take the external-target guard, the location
-      // commit and the `location$` emission with it, leaving a mock that
-      // accepts `https://example.com` and reports the app root forever.
+      // wholesale. Keep the location updates and `location$` emissions even
+      // when a test supplies its own navigation callback.
       const { navigate, ...rest } = partialImpl ?? {};
       const instance = createMockAppHistory({ navigate });
       const navigateMock = jest.fn(
@@ -605,6 +604,11 @@ export namespace mockApis {
   export namespace routeResolution {
     export const mock = createApiMock(routeResolutionApiRef, () => ({
       resolve: jest.fn(),
+      resolveTarget: jest.fn(),
+      resolvePath: jest.fn<
+        ReturnType<RouteResolutionApi['resolvePath']>,
+        Parameters<RouteResolutionApi['resolvePath']>
+      >(() => ({ matches: [] })),
     }));
   }
 }

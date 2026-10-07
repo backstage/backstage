@@ -23,13 +23,13 @@ import {
   joinRoutePath,
   matchPath,
   useAppHistoryLocation,
-  usePageMountChain,
-  type PageMount,
 } from '@internal/frontend';
+import { useRouteResolution } from './useRouteResolution';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { useApiHolder } from '../apis/system';
+import type { RouteResolutionMatch } from '../apis/definitions/RouteResolutionApi';
 import { appHistoryApiRef } from './AppHistoryApi';
 
 /**
@@ -86,7 +86,7 @@ function patternParams(
  */
 function resolveParams(
   routeRef: RouteRef<any> | SubRouteRef<any>,
-  mountChain: readonly PageMount[],
+  mountChain: readonly RouteResolutionMatch[],
   pathname: string,
 ): Record<string, string> {
   const params: Record<string, string> = {};
@@ -138,7 +138,7 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
   // Subscribes to the app history: the params are read out of the location, so
   // they have to be recomputed when the app navigates.
   const location = useAppHistoryLocation(appHistory);
-  const mountChain = usePageMountChain();
+  const mountChain = useRouteResolution().matches;
   const legacyParams = useRouterContext(RouteContext)?.matches.at(-1)?.params;
   const pathname = location?.pathname ?? APP_ROOT_PATH.pathname;
 
