@@ -27,14 +27,14 @@ import {
   pluginWrapperApiRef,
   appHistoryApiRef,
   useAnalytics,
-  useAppRouting,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
-import { BUIProvider, type BUIRouter } from '@backstage/ui';
+import { BUIProvider } from '@backstage/ui';
+import { useBUIRouter } from './useBUIRouter';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -50,8 +50,6 @@ import {
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppRouteProvider } from '../../../../packages/frontend-app-api/src/routing/AppRouteProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -273,37 +271,23 @@ export function AppRouter(props: AppRouterProps) {
   }
 
   return (
-    <AppRouteProvider history={appHistory} routeObjects={routeObjects}>
-      <RootHistoryRouter history={appHistory}>
-        <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
-          <BreadcrumbsRegistryProvider>
-            {...extraElements}
-            <RouteTracker routeObjects={routeObjects} />
-            {SignInPageComponent ? (
-              <SignInPageWrapper
-                component={SignInPageComponent}
-                appIdentityProxy={appIdentityProxy}
-              >
-                {children}
-              </SignInPageWrapper>
-            ) : (
-              children
-            )}
-          </BreadcrumbsRegistryProvider>
-        </BUIProvider>
-      </RootHistoryRouter>
-    </AppRouteProvider>
+    <RootHistoryRouter history={appHistory}>
+      <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
+        <BreadcrumbsRegistryProvider>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          {SignInPageComponent ? (
+            <SignInPageWrapper
+              component={SignInPageComponent}
+              appIdentityProxy={appIdentityProxy}
+            >
+              {children}
+            </SignInPageWrapper>
+          ) : (
+            children
+          )}
+        </BreadcrumbsRegistryProvider>
+      </BUIProvider>
+    </RootHistoryRouter>
   );
-}
-
-function useBUIRouter(): BUIRouter {
-  const routing = useAppRouting();
-  return {
-    navigate: routing.navigate,
-    resolveHref: routing.createHref,
-    pathname: new URL(
-      routing.createHref(routing.location.pathname),
-      'http://backstage.local',
-    ).pathname,
-  };
 }

@@ -15,6 +15,7 @@
  */
 
 import {
+  useRouteResolution,
   AppNode,
   AppTree,
   Extension,
@@ -40,9 +41,8 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
-import { OpaqueExtensionDefinition, usePageMount } from '@internal/frontend';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppRouteProvider } from '../../../frontend-app-api/src/routing/AppRouteProvider';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
+import { TestRouteResolver } from '../internal/TestRouteResolver';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   extractRouteInfoFromAppNode,
@@ -52,7 +52,7 @@ import { resolveTestApiEntries, TestApiPairs } from '../apis/TestApiProvider';
 
 function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
   const history = useApiHolder().get(appHistoryApiRef);
-  const routePattern = usePageMount()?.routePattern ?? '/';
+  const routePattern = useRouteResolution().matches.at(-1)?.routePattern ?? '/';
   const routeObjects = useMemo(() => {
     const { routeObjects: routes } = extractRouteInfoFromAppNode(
       props.node,
@@ -69,9 +69,9 @@ function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
     }));
   }, [props.node, routePattern]);
   return history ? (
-    <AppRouteProvider history={history} routeObjects={routeObjects}>
+    <TestRouteResolver routeObjects={routeObjects}>
       {props.children}
-    </AppRouteProvider>
+    </TestRouteResolver>
   ) : (
     <>{props.children}</>
   );

@@ -16,8 +16,10 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
+import {
+  useRouteResolution,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
 import {
   UNSAFE_RouteContext,
   useInRouterContext,
@@ -46,27 +48,23 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  * does — but *how loudly*. The two directions are very different, and the
  * difference decides what an adopter debugging a white page has to go on.
  *
- * The contrast that matters is with `PageMountContext`, which is deliberately
- * not identified by object: it goes through `@backstage/version-bridge`'s
- * global singleton precisely so it survives this. Page router adapters are
- * separately built packages that read the mount from it, so a duplicated copy
- * of the framework has to keep answering. Both halves are asserted below,
- * because the whole design rests on exactly one of these two contexts being
- * copy-proof.
+ * App-node and API contexts use the version bridge, so independently compiled
+ * adapters can resolve the same routing scope despite duplicated framework
+ * modules. React Router context identity remains local to the library copy.
  */
 
 const sharedReact = jest.requireActual('react');
 const sharedReactDom = jest.requireActual('react-dom');
 
 let otherCopy: typeof import('react-router-dom');
-let otherInternal: typeof import('@internal/frontend');
+let otherFrontend: typeof import('@backstage/frontend-plugin-api');
 let otherAdapterModule: typeof import('./ReactRouterV6PageRouter');
 
 jest.isolateModules(() => {
   jest.doMock('react', () => sharedReact);
   jest.doMock('react-dom', () => sharedReactDom);
   otherCopy = require('react-router-dom');
-  otherInternal = require('@internal/frontend');
+  otherFrontend = require('@backstage/frontend-plugin-api');
   otherAdapterModule = require('./ReactRouterV6PageRouter');
 });
 jest.dontMock('react');
@@ -100,18 +98,17 @@ function readReport() {
 }
 
 describe('a duplicated copy of react-router-dom', () => {
-  it('should genuinely be a second copy, while the page mount context stays one', () => {
+  it('should genuinely be a second copy, while routing scope stays shared', () => {
     // The premise of every case below. If module isolation ever stopped
     // producing a distinct copy, the tests would keep passing while testing
     // nothing at all, so it is asserted rather than assumed.
     expect(otherCopy.UNSAFE_RouteContext).not.toBe(UNSAFE_RouteContext);
     expect(otherCopy.useParams).not.toBe(useParams);
     // The framework package is a second copy too — same isolation, same
-    // reasoning. Its page mount context is not, which is the point of routing
-    // it through the version bridge's global singleton, and is what the
-    // behavioural assertions below rely on.
-    expect(otherInternal.usePageMount).toBeInstanceOf(Function);
-    expect(otherInternal.usePageMount).not.toBe(usePageMount);
+    // reasoning. Its app-node and API contexts are shared through the version
+    // bridge, which is what the behavioural assertions below rely on.
+    expect(otherFrontend.useRouteResolution).toBeInstanceOf(Function);
+    expect(otherFrontend.useRouteResolution).not.toBe(useRouteResolution);
     expect(otherAdapterModule.ReactRouterV6PageRouter).not.toBe(
       ReactRouterV6PageRouter,
     );
@@ -139,7 +136,7 @@ describe('a duplicated copy of react-router-dom', () => {
         inRouterContext: otherCopy.useInRouterContext(),
         // The framework's mount crosses copies intact, because it is not
         // carried on a copy-local context object.
-        mount: otherInternal.usePageMount() ?? null,
+        mount: otherFrontend.useRouteResolution().matches.at(-1) ?? null,
       };
       return <span data-testid="report">{JSON.stringify(report)}</span>;
     };
@@ -173,7 +170,7 @@ describe('a duplicated copy of react-router-dom', () => {
       const resolved = useResolvedPath('./deep');
       const params = useParams();
       const inRouterContext = useInRouterContext();
-      const mount = usePageMount();
+      const mount = useRouteResolution().matches.at(-1);
       const report = {
         location: location.pathname,
         resolved: resolved.pathname,

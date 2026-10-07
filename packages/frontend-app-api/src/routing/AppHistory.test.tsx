@@ -325,11 +325,38 @@ describe('AppHistory', () => {
     replaceSpy.mockRestore();
   });
 
-  it('should throw for absolute and protocol-relative URLs, but not for URLs inside the query or hash', () => {
-    const rejected = 'does not support absolute or protocol-relative URLs';
-    expect(() => history.navigate('https://evil.com/path')).toThrow(rejected);
-    expect(() => history.navigate('//evil.com/path')).toThrow(rejected);
-    expect(() => history.navigate('mailto:x@y.z')).toThrow(rejected);
+  it('delegates external URLs to the backend without changing app history', () => {
+    const backend = createMemoryHistoryBackend();
+    const navigateExternal = jest.spyOn(backend, 'navigateExternal');
+    const appHistory = createAppHistory({
+      history: backend,
+      basename: '/backstage',
+    });
+    const before = appHistory.location;
+    const listener = jest.fn();
+    const subscription = appHistory.location$.subscribe(listener);
+    listener.mockClear();
+
+    for (const target of [
+      'https://example.com/path',
+      '//example.com/path',
+      'mailto:x@y.z',
+      'tel:+15551234',
+      `${window.location.origin}/same-origin`,
+    ]) {
+      appHistory.navigate(target);
+      expect(navigateExternal).toHaveBeenLastCalledWith(target, {
+        replace: undefined,
+      });
+      appHistory.navigate(target, { replace: true, state: { ignored: true } });
+      expect(navigateExternal).toHaveBeenLastCalledWith(target, {
+        replace: true,
+      });
+    }
+    expect(appHistory.location).toBe(before);
+    expect(listener).not.toHaveBeenCalled();
+    subscription.unsubscribe();
+    appHistory.dispose();
 
     // Only the path may carry a scheme. A query string or fragment that
     // happens to contain a URL is an ordinary app-relative target - links
@@ -439,6 +466,36 @@ describe('AppHistory', () => {
   });
 
   describe('createHref', () => {
+    it('sanitizes executable hrefs and navigation targets', () => {
+      const backend = createMemoryHistoryBackend();
+      const navigateExternal = jest.spyOn(backend, 'navigateExternal');
+      const appHistory = createAppHistory({ history: backend });
+      const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        for (const target of [
+          // eslint-disable-next-line no-script-url
+          'javascript:alert(1)',
+          'java\tscript:alert(1)',
+          'data:text/html,test',
+          'vbscript:msgbox(1)',
+        ]) {
+          expect(history.createHref(target)).toBe('about:blank');
+          appHistory.navigate(target);
+          expect(navigateExternal).toHaveBeenLastCalledWith('about:blank', {
+            replace: undefined,
+          });
+        }
+        expect(history.createHref('mailto:test@example.com')).toBe(
+          'mailto:test@example.com',
+        );
+        expect(warning).toHaveBeenCalledTimes(8);
+        expect(navigateExternal).toHaveBeenCalledTimes(4);
+      } finally {
+        appHistory.dispose();
+        warning.mockRestore();
+      }
+    });
+
     it('should return the path unchanged without a basename', () => {
       expect(history.createHref('/catalog/entity/foo')).toBe(
         '/catalog/entity/foo',

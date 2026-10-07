@@ -22,8 +22,10 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-import { AppNodeRouteProvider, useAppRouteMatches } from './PageMountContext';
+import type {
+  AppHistoryApi,
+  RouteResolutionMatch,
+} from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 import { generatePath, matchPath } from './routePattern';
 
@@ -112,6 +114,8 @@ export interface AppRouteRedirect {
 export interface AppRouteSwitchProps {
   /** Framework app history that owns browser history. */
   history: AppHistoryApi;
+  /** Matched branch supplied by the app route resolution API. */
+  matches: readonly RouteResolutionMatch[];
   /** Page components keyed by extension node ID. */
   pages: Map<string, ComponentType>;
   /** Optional redirects resolved before page matching. */
@@ -179,10 +183,9 @@ function resolveRedirectTarget(
  * extensions keep responsibility for rendering their own children.
  */
 export function AppRouteSwitch(props: AppRouteSwitchProps) {
-  const { history, pages, redirects, fallback } = props;
+  const { history, matches, pages, redirects, fallback } = props;
   const location = useAppHistoryLocation(history)!;
-  const matches = useAppRouteMatches();
-  const match = matches?.find(candidate => pages.has(candidate.node.spec.id));
+  const match = matches.find(candidate => pages.has(candidate.node.spec.id));
   const redirectTarget = resolveRedirectTarget(redirects, location);
 
   useEffect(() => {
@@ -199,14 +202,12 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
     return fallback;
   }
   return (
-    <AppNodeRouteProvider node={match.node}>
-      <PluginErrorBoundary
-        key={match.node.spec.id}
-        basePath={match.basePath}
-        fallback={fallback}
-      >
-        <PageComponent />
-      </PluginErrorBoundary>
-    </AppNodeRouteProvider>
+    <PluginErrorBoundary
+      key={match.node.spec.id}
+      basePath={match.basePath}
+      fallback={fallback}
+    >
+      <PageComponent />
+    </PluginErrorBoundary>
   );
 }

@@ -15,10 +15,13 @@
  */
 
 import { useMemo, type ReactNode } from 'react';
-import { useApiHolder, appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import {
+  useApiHolder,
+  appHistoryApiRef,
+  useRouteResolution,
+} from '@backstage/frontend-plugin-api';
 import {
   createAppHistoryRouter,
-  usePageMount,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
 import {
@@ -91,7 +94,8 @@ export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
   // history is registered — that throw would happen before the passthrough
   // below could be reached, in exactly the apps that need it.
   const appHistory = useApiHolder().get(appHistoryApiRef);
-  const routePattern = usePageMount()?.routePattern;
+  const mounts = useRouteResolution().matches;
+  const routePattern = mounts.at(-1)?.routePattern;
 
   // Only ever recreated for a genuinely different router: a new element type
   // here would unmount and remount the whole page subtree, throwing away page
@@ -116,5 +120,5 @@ export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
     return <>{children}</>;
   }
 
-  return <scopedRouter.Router>{children}</scopedRouter.Router>;
+  return <scopedRouter.Router mounts={mounts}>{children}</scopedRouter.Router>;
 }
