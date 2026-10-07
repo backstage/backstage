@@ -29,6 +29,7 @@ import stableStringify from 'fast-json-stable-stringify';
 import { DbFinalEntitiesRow, DbStitchQueueRow } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
+import { markDeferredStitchFailed } from './markDeferredStitchFailed';
 import { syncSearchRows } from './syncSearchRows';
 import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -326,6 +327,21 @@ export async function performStitching(options: {
     stitchResult = 'succeeded';
     return 'changed';
   } catch (error) {
+    try {
+      await markDeferredStitchFailed({
+        knex,
+        entityRef,
+        stitchTicket,
+        stitchLeaseExpiresAt,
+      });
+    } catch (recordError) {
+      // A database outage may also prevent recording the failure. Keep the
+      // queued work and report the original stitching error to the caller.
+      logger.warn(
+        `Failed to record stitch failure for ${entityRef}`,
+        recordError,
+      );
+    }
     throw error;
   } finally {
     if (stitchResult) {

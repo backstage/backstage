@@ -18,6 +18,8 @@ import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbStitchQueueRow } from '../../tables';
 import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
+import { timestampToDateTime } from '../../conversion';
+import { markForStitching } from './markForStitching';
 
 jest.setTimeout(60_000);
 
@@ -26,6 +28,110 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(
   'getDeferredStitchableEntities, %p',
   databaseId => {
+    it('preserves queued requests when adding and removing the failure counter', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const migration = require('../../../../migrations/20261007000000_stitch_failure_count');
+      await migration.down(knex);
+      await knex('stitch_queue').insert({
+        entity_ref: 'existing',
+        stitch_ticket: 'ticket',
+        next_stitch_at: '2099-01-01 00:00:00',
+      });
+      const before = await knex('stitch_queue').first();
+      await migration.up(knex);
+      expect(await knex('stitch_queue').first()).toEqual({
+        ...before,
+        failure_count: 0,
+      });
+      await migration.down(knex);
+      expect(await knex('stitch_queue').first()).toEqual(before);
+    });
+
+    it('backs off each failed request independently and preserves its budget across claims', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const random = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+      try {
+        for (const [ref, failures] of [
+          ['healthy', 0],
+          ['once', 1],
+          ['twice', 2],
+          ['capped', 10000],
+        ] as const) {
+          await knex('stitch_queue').insert({
+            entity_ref: ref,
+            failure_count: failures,
+            stitch_ticket: ref,
+            next_stitch_at: '1971-01-01 00:00:00',
+          });
+        }
+        const before = Date.now();
+        const claims = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 10,
+          stitchTimeout: { minutes: 1 },
+        });
+        const after = Date.now();
+        for (const [ref, seconds] of [
+          ['healthy', 60],
+          ['once', 252],
+          ['twice', 567],
+          ['capped', 3780],
+        ] as const) {
+          const claim = claims.find(c => c.entityRef === ref)!;
+          const lease = timestampToDateTime(
+            claim.stitchLeaseExpiresAt,
+          ).toMillis();
+          expect(lease).toBeGreaterThanOrEqual(before + seconds * 1000 - 1000);
+          expect(lease).toBeLessThanOrEqual(after + seconds * 1000 + 1000);
+        }
+        expect(
+          (await knex('stitch_queue').where('entity_ref', 'twice').first())
+            .failure_count,
+        ).toBe(2);
+        await knex('stitch_queue')
+          .where('entity_ref', 'twice')
+          .update({ next_stitch_at: '1971-01-01 00:00:00' });
+        const [reclaimed] = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 1,
+          stitchTimeout: { minutes: 1 },
+        });
+        expect(reclaimed.stitchTicket).not.toBe(
+          claims.find(c => c.entityRef === 'twice')!.stitchTicket,
+        );
+        expect(
+          (await knex('stitch_queue').where('entity_ref', 'twice').first())
+            .failure_count,
+        ).toBe(2);
+        const activeLease = (
+          await knex('stitch_queue').where('entity_ref', 'twice').first()
+        ).next_stitch_at;
+        await markForStitching({ knex, entityRefs: ['twice'] });
+        const reset = await knex('stitch_queue')
+          .where('entity_ref', 'twice')
+          .first();
+        expect(reset.failure_count).toBe(0);
+        expect(reset.next_stitch_at).toEqual(activeLease);
+        await knex('stitch_queue').update({
+          next_stitch_at: '1971-01-01 00:00:00',
+        });
+        const longClaims = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 10,
+          stitchTimeout: { hours: 2 },
+        });
+        expect(
+          timestampToDateTime(
+            longClaims.find(c => c.entityRef === 'once')!.stitchLeaseExpiresAt,
+          ).toMillis(),
+        ).toBeGreaterThanOrEqual(Date.now() + 7200 * 1000 - 1000);
+      } finally {
+        random.mockRestore();
+      }
+    });
+
     it('claims a batch with per-ref leases and leaves future work untouched', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
