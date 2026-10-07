@@ -244,6 +244,11 @@ JSON schema that describes the input/output types on your field like in the foll
 
 ```tsx
 //packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
+
 export const MyCustomExtensionWithOptionsSchema = {
   uiOptions: {
     type: 'object',
@@ -262,15 +267,24 @@ export const MyCustomExtensionWithOptions = ({
   rawErrors,
   required,
   formData,
+  uiSchema,
 }: FieldExtensionComponentProps<string, { focused?: boolean }>) => {
+  const focused = uiSchema['ui:options']?.focused;
+
   return (
     <FormControl
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !formData}
-      onChange={onChange}
       focused={focused}
-    />
+    >
+      <InputLabel htmlFor="myCustomField">My custom field</InputLabel>
+      <Input
+        id="myCustomField"
+        value={formData ?? ''}
+        onChange={e => onChange(e.target.value)}
+      />
+    </FormControl>
   );
 };
 ```
@@ -318,15 +332,24 @@ export const MyCustomExtensionWithOptions = ({
   rawErrors,
   required,
   formData,
+  uiSchema,
 }: MyCustomExtensionWithOptionsProps) => {
+  const focused = uiSchema['ui:options']?.focused;
+
   return (
     <FormControl
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !formData}
-      onChange={onChange}
       focused={focused}
-    />
+    >
+      <InputLabel htmlFor="myCustomField">My custom field</InputLabel>
+      <Input
+        id="myCustomField"
+        value={formData ?? ''}
+        onChange={e => onChange(e.target.value)}
+      />
+    </FormControl>
   );
 };
 ```
