@@ -349,9 +349,9 @@ await renderInTestApp(<EntityHeader />, {
 ```
 
 Without `mountPath` the element is treated as a page mounted at the app root.
-With it, page-relative targets — a tab href, a `..` climb — resolve against the
-pattern the way they would in a real app, and `useRouteRefParams` binds the
-params the pattern names.
+With an adapter, library-relative targets and BUI links resolve against the
+pattern as they would in a real app. Framework navigation requires app-absolute
+paths. `useRouteRefParams` binds the parameters the pattern names.
 
 A component that wraps _itself_ in an adapter, which is what a plugin shipping
 for both frontend systems does, needs no `router` option here. It also needs no

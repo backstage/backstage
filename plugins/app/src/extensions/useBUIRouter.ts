@@ -16,9 +16,7 @@
 
 import {
   appHistoryApiRef,
-  routeResolutionApiRef,
   useApi,
-  useAppNode,
   useAppLocation,
   useAppNavigate,
 } from '@backstage/frontend-plugin-api';
@@ -27,16 +25,11 @@ import { BUIRouter } from '@backstage/ui';
 /** Binds each BUI control to the routing scope where it renders. */
 export function useBUIRouter(): BUIRouter {
   const history = useApi(appHistoryApiRef);
-  const routes = useApi(routeResolutionApiRef);
-  const node = useAppNode();
   const location = useAppLocation();
   const navigate = useAppNavigate();
   return {
     navigate,
-    resolveHref: to =>
-      history.createHref(
-        routes.resolveTarget({ to, pathname: location.pathname, node }),
-      ),
+    resolveHref: to => history.createHref(to),
     pathname: new URL(
       history.createHref(location.pathname),
       'http://backstage.local',

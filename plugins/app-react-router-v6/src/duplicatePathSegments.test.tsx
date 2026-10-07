@@ -19,9 +19,9 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   SubPageBlueprint,
-  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
 import { MemoryRouter, Route, Routes, useResolvedPath } from 'react-router-dom';
+import { Link as BuiLink } from '@backstage/ui';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 
 /**
@@ -43,15 +43,7 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  *  - the v6 adapter's projected route context, read through `useResolvedPath`;
  *  - a real `react-router-dom` route tree of the same shape at the same URL,
  *    which is the definition of the right answer;
- *  - the framework's own `useAppHref`, which resolves from the page mount with no
- *    routing library involved at all, and is what a `RouteLink`, a tab href
- *    and every `@backstage/ui` link go through.
- *
- * The third is not redundant. The framework and the library resolve the same
- * target by completely different routes — one walks a stack of page mounts,
- * the other a stack of route matches — and a page whose links duplicate a
- * segment while its `<Link>`s do not is precisely the shape that survives a
- * test suite. They are documented to agree, so they are required to agree.
+ *  - BUI links resolved through the adapter at the same route scope.
  */
 
 /** Targets that have caused a duplicated segment, or would expose one. */
@@ -98,19 +90,29 @@ function ResolvedPathProbe(props: { testId?: string }) {
   );
 }
 
-function FrameworkHrefProbe() {
-  const hrefs = Object.fromEntries(
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    ALL_TARGETS.map(target => [target, useFrameworkHref(target)]),
+function BuiHrefProbe() {
+  return (
+    <div data-testid="bui">
+      {ALL_TARGETS.map(target => (
+        <BuiLink key={target} href={target}>
+          {target}
+        </BuiLink>
+      ))}
+    </div>
   );
-  return <span data-testid="framework">{JSON.stringify(hrefs)}</span>;
 }
 
-function readResolved(testId: 'library' | 'framework' | 'real') {
-  return JSON.parse(screen.getByTestId(testId).textContent!) as Record<
-    string,
-    string
-  >;
+function readResolved(testId: 'library' | 'bui' | 'real') {
+  const element = screen.getByTestId(testId);
+  if (testId === 'bui') {
+    return Object.fromEntries(
+      Array.from(element.querySelectorAll('a')).map(a => [
+        a.textContent!,
+        a.getAttribute('href')!,
+      ]),
+    );
+  }
+  return JSON.parse(element.textContent!) as Record<string, string>;
 }
 
 /**
@@ -201,7 +203,7 @@ describe('duplicate path segment guard', () => {
           loader: async () => (
             <ReactRouterV6PageRouter>
               <ResolvedPathProbe />
-              <FrameworkHrefProbe />
+              <BuiHrefProbe />
             </ReactRouterV6PageRouter>
           ),
         },
@@ -215,7 +217,7 @@ describe('duplicate path segment guard', () => {
           loader: async () => (
             <ReactRouterV6PageRouter>
               <ResolvedPathProbe />
-              <FrameworkHrefProbe />
+              <BuiHrefProbe />
             </ReactRouterV6PageRouter>
           ),
         },
@@ -245,7 +247,7 @@ describe('duplicate path segment guard', () => {
       });
 
       expect(readResolved('library')).toEqual(real);
-      expect(readResolved('framework')).toEqual(real);
+      expect(readResolved('bui')).toEqual(real);
 
       // Written out as well as compared, so a change to both sides at once
       // still has to face the paths a reviewer can read.
@@ -287,7 +289,7 @@ describe('duplicate path segment guard', () => {
       expect(fromCreate['..']).toBe('/catalog');
       expect(fromCreate.create).toBe('/catalog/create/create');
       expectNoDuplicatedPrefix(fromCreate, '/catalog');
-      expect(readResolved('framework')).toEqual(fromCreate);
+      expect(readResolved('bui')).toEqual(fromCreate);
 
       await act(async () => {
         appHistory.navigate('/catalog/overview');
@@ -312,7 +314,7 @@ describe('duplicate path segment guard', () => {
         expect(readResolved('library')['.']).toBe('/catalog/overview'),
       );
       expect(readResolved('library')).toEqual(fromOverview);
-      expect(readResolved('framework')).toEqual(fromOverview);
+      expect(readResolved('bui')).toEqual(fromOverview);
     });
   });
 
@@ -339,7 +341,7 @@ describe('duplicate path segment guard', () => {
           loader: async () => (
             <ReactRouterV6PageRouter>
               <ResolvedPathProbe />
-              <FrameworkHrefProbe />
+              <BuiHrefProbe />
             </ReactRouterV6PageRouter>
           ),
         },
@@ -378,7 +380,7 @@ describe('duplicate path segment guard', () => {
       });
 
       expect(readResolved('library')).toEqual(real);
-      expect(readResolved('framework')).toEqual(real);
+      expect(readResolved('bui')).toEqual(real);
       expect(real['..']).toBe(MOUNT);
       expect(real['../create']).toBe(`${MOUNT}/create`);
       expect(real.create).toBe(`${MOUNT}/overview/create`);
@@ -408,7 +410,7 @@ describe('duplicate path segment guard', () => {
       expect(resolved.create).toBe('/catalog/component/bar/overview/create');
       expect(screen.getByTestId('library')).not.toHaveTextContent('/foo');
       expectNoDuplicatedPrefix(resolved, '/catalog/component/bar');
-      expect(readResolved('framework')).toEqual(resolved);
+      expect(readResolved('bui')).toEqual(resolved);
     });
   });
 
@@ -427,7 +429,7 @@ describe('duplicate path segment guard', () => {
           loader: async () => (
             <ReactRouterV6PageRouter>
               <ResolvedPathProbe />
-              <FrameworkHrefProbe />
+              <BuiHrefProbe />
             </ReactRouterV6PageRouter>
           ),
         },
@@ -447,7 +449,7 @@ describe('duplicate path segment guard', () => {
       });
 
       expect(readResolved('library')).toEqual(real);
-      expect(readResolved('framework')).toEqual(real);
+      expect(readResolved('bui')).toEqual(real);
       expect(real).toMatchObject({
         // One `catalog` from the mount, one from the target — and no third.
         catalog: '/catalog/catalog',

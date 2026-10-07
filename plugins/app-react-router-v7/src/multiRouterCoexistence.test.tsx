@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Link as BuiLink } from '@backstage/ui';
 import path from 'node:path';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
@@ -27,7 +28,6 @@ import {
   createRouteRef,
   useApi,
   useAppNavigate,
-  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
@@ -591,15 +591,14 @@ describe('multi-router coexistence', () => {
    *
    * Both majors share that projection but not their contexts, so this asks the
    * same question of each: a target below, the climb to the page, and a target
-   * that spells the page's own segment, cross-checked against the framework's
-   * own `useAppHref`, which walks page mounts with no routing library at all.
+   * that spells the page's own segment, cross-checked against BUI's links resolved through the adapter at the same route scope.
    */
   describe('where a target written at sub-page depth lands', () => {
     const PAGE_PATTERN = '/catalog-majors';
 
     /**
      * The same three answers from whichever copy of React Router is passed in,
-     * plus the framework's answer to the same target.
+     * plus BUI's answer to the same target.
      */
     function TargetProbe(props: {
       testId: string;
@@ -616,9 +615,9 @@ describe('multi-router coexistence', () => {
           <span data-testid={`${testId}-self-naming`}>
             {useResolved(selfSegment).pathname}
           </span>
-          <span data-testid={`${testId}-framework-href`}>
-            {useFrameworkHref('edit')}
-          </span>
+          <BuiLink data-testid={`${testId}-bui-href`} href="edit">
+            Edit
+          </BuiLink>
         </div>
       );
     }
@@ -713,7 +712,7 @@ describe('multi-router coexistence', () => {
       expect(screen.getByTestId('v7-probe-self-naming').textContent).toBe(
         '/catalog-majors/overview/catalog-majors',
       );
-      expect(screen.getByTestId('v7-probe-framework-href').textContent).toBe(
+      expect(screen.getByTestId('v7-probe-bui-href').getAttribute('href')).toBe(
         '/catalog-majors/overview/edit',
       );
 
@@ -737,7 +736,7 @@ describe('multi-router coexistence', () => {
       expect(screen.getByTestId('v6-probe-self-naming').textContent).toBe(
         '/catalog-majors/create/catalog-majors',
       );
-      expect(screen.getByTestId('v6-probe-framework-href').textContent).toBe(
+      expect(screen.getByTestId('v6-probe-bui-href').getAttribute('href')).toBe(
         '/catalog-majors/create/edit',
       );
 
@@ -759,7 +758,7 @@ describe('multi-router coexistence', () => {
       expect(screen.getByTestId('v7-probe-self-naming').textContent).toBe(
         '/tools-majors/tools-majors',
       );
-      expect(screen.getByTestId('v7-probe-framework-href').textContent).toBe(
+      expect(screen.getByTestId('v7-probe-bui-href').getAttribute('href')).toBe(
         '/tools-majors/edit',
       );
     });

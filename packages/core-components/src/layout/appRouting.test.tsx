@@ -117,48 +117,6 @@ function ChromeStandIn(props: { to: string }) {
   );
 }
 
-it('resolves parent hrefs from route mounts rather than URL segments', () => {
-  const history = createMockAppHistory({ initialLocation: '/catalog/list' });
-  const { unmount } = render(<ChromeStandIn to=".." />, {
-    wrapper: frameworkWrapper({
-      appHistory: history,
-      pageMount: { basePath: '/catalog/list', routePattern: '/catalog/list' },
-    }),
-  });
-  expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
-    'href',
-    '/',
-  );
-  unmount();
-  render(
-    <TestApiProvider
-      apis={[
-        [appHistoryApiRef, history],
-        mockApis.routeResolution({
-          resolvePath: {
-            matches: [
-              {
-                basePath: '/catalog/foo',
-                routePattern: '/catalog/:name',
-              },
-              {
-                basePath: '/catalog/foo/tab/123',
-                routePattern: '/catalog/:name/tab/:id',
-              },
-            ].map(mount => ({ ...mount, node: mockRouteNode })),
-          },
-        }),
-      ]}
-    >
-      <ChromeStandIn to=".." />
-    </TestApiProvider>,
-  );
-  expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
-    'href',
-    '/catalog/foo',
-  );
-});
-
 describe('without a root React Router', () => {
   it('renders app chrome from the app history alone', async () => {
     const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
@@ -220,46 +178,30 @@ describe('without a root React Router', () => {
 });
 
 describe('useAppResolvedPath', () => {
-  it('resolves relative targets against the page mount, not the location (framework)', () => {
-    const resolve = (
-      to: Parameters<typeof useAppResolvedPath>[1],
-      location: string,
-      pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>,
-    ) =>
-      renderHook(() => useAppResolvedPath(useOptionalAppHistory(), to), {
-        wrapper: frameworkWrapper({ location, pageMount }),
-      }).result.current.pathname;
-
-    // App chrome renders outside the route tree, so there is no page mount and
-    // relative targets resolve against the app root - the same answer React
-    // Router gives when no route matched.
-    expect(resolve('catalog', '/catalog')).toBe('/catalog');
-    expect(resolve('catalog', '/catalog/default/component/foo')).toBe(
-      '/catalog',
-    );
-    expect(resolve('', '/catalog/default/component/foo')).toBe('/');
-
-    const pageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
-      basePath: '/catalog/default/component/foo',
-      routePattern: '/catalog/:namespace/:kind/:name',
-    };
-    expect(
-      resolve('widgets', '/catalog/default/component/foo/docs', pageMount),
-    ).toBe('/catalog/default/component/foo/widgets');
-    expect(
-      resolve(
-        { search: '?view=docs' },
-        '/catalog/default/component/foo/docs',
-        pageMount,
-      ),
-    ).toBe('/catalog/default/component/foo/docs');
-    expect(
-      resolve(
-        { pathname: '', search: '?view=docs' },
-        '/catalog/default/component/foo/docs',
-        pageMount,
-      ),
-    ).toBe('/catalog/default/component/foo');
+  it('rejects relative framework targets and keeps query targets at the current path', () => {
+    const wrapper = frameworkWrapper({ location: '/catalog/foo/docs' });
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      for (const to of ['catalog', '.', '..', '']) {
+        expect(() =>
+          renderHook(() => useAppResolvedPath(useOptionalAppHistory(), to), {
+            wrapper,
+          }),
+        ).toThrow('App routing requires');
+      }
+      const { result } = renderHook(
+        () =>
+          useAppResolvedPath(useOptionalAppHistory(), { search: '?view=docs' }),
+        { wrapper },
+      );
+      expect(result.current).toEqual({
+        pathname: '/catalog/foo/docs',
+        search: '?view=docs',
+        hash: '',
+      });
+    } finally {
+      error.mockRestore();
+    }
   });
 
   it('keeps absolute targets and their search string intact (framework)', () => {
@@ -707,16 +649,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     expect({
       '#frag': resolved('#frag'),
       '?query=x': resolved('?query=x'),
-      sub: resolved('sub'),
-      './x': resolved('./x'),
-      '..': resolved('..'),
       '/x': resolved('/x'),
     }).toEqual({
       '#frag': '/catalog/foo',
       '?query=x': '/catalog/foo',
-      sub: '/catalog/sub',
-      './x': '/catalog/x',
-      '..': '/',
       '/x': '/x',
     });
   });

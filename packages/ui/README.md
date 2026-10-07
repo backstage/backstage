@@ -52,13 +52,12 @@ ambient React Router. Nested BUI providers inherit the host hook.
   `useRouter`. React Router is no longer a BUI peer dependency.
 - Use the router-neutral `routerOptions` fields `replace` and `state`. Options
   specific to React Router are no longer part of the BUI contract.
-- Use `href="."` to navigate to the current route. Empty hrefs follow React
-  Aria's native behavior and are no longer resolved by the host router.
-- When using React Aria components directly, configure their own `RouterProvider`
-  at the desired route scope, from the same installation as those components.
-  BUIProvider configures BUI controls. In the new frontend system, the public
-  `useAppRouting` hook supplies React Aria's matching `navigate` and `useHref`
-  callbacks; see [page router integration](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
+- In Backstage apps, use app-absolute paths or route-ref destinations. A page
+  adapter also enables its library's relative routing for BUI controls inside it.
+  Empty hrefs follow React Aria's native behavior.
+- When using React Aria components directly in a Backstage app, compose them with
+  the `RouterLink` routing primitive from `@backstage/frontend-plugin-api`.
+  See [page router integration](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
 
 ## Writing Changesets for Components
 
