@@ -308,7 +308,7 @@ import {
   useApi,
   useAppNode,
   useAppLocation,
-  type AppNavigateOptions,
+  useAppNavigate,
 } from '@backstage/frontend-plugin-api';
 import { Link, RouterProvider } from 'react-aria-components';
 
@@ -317,20 +317,12 @@ export function ToolsContent() {
   const routes = useApi(routeResolutionApiRef);
   const node = useAppNode();
   const location = useAppLocation();
+  const navigate = useAppNavigate();
 
   const resolveHref = (to: string) =>
     history.createHref(
       routes.resolveTarget({ to, pathname: location.pathname, node }),
     );
-
-  const navigate = (to: string, options?: AppNavigateOptions) => {
-    const target = routes.resolveTarget({
-      to,
-      pathname: history.location.pathname,
-      node,
-    });
-    history.navigate(target, options);
-  };
 
   return (
     <RouterProvider navigate={navigate} useHref={resolveHref}>
@@ -351,10 +343,16 @@ The history API sanitizes both hrefs and navigation targets, and handles externa
 URLs through browser navigation.
 The example requires the new frontend system's history and route resolution APIs.
 
-`useAppNavigate` accepts app-absolute paths, while `useHref` also resolves
-relative paths. Passing those hooks directly to React Aria does not give relative
-hrefs and navigation the same meaning; the example resolves both through
-`RouteResolutionApi.resolveTarget`.
+React Aria passes the original link target to `navigate`, rather than the
+resolved browser href. Both callbacks must therefore use the same routing scope.
+The example captures that scope in `ToolsContent`: `useAppNavigate` captures its
+app node, and `resolveHref` uses that same node explicitly. Passing `useHref`
+directly would instead read the link's app node, which can differ inside a nested
+extension. Add another scoped provider when relative links should use a sub-page's
+scope.
+
+BUI components bind both callbacks locally through the hook supplied to the
+root `BUIProvider`, so they do not need this manual wiring.
 
 To type React Aria's `routerOptions` in your app, configure its routing types:
 
@@ -473,6 +471,6 @@ need a page adapter. Use `useAppLocation` for the app-absolute location and
 history and fall back to React Router in the old frontend system.
 
 Use `useRouteRefParams` with a route reference for framework route parameters,
-and `useAppNavigate` for app-absolute navigation. Keep a library adapter when
+and `useAppNavigate` for app-absolute or route-relative navigation. Keep a library adapter when
 content renders that library's nested routes, outlets, or other library-specific
 features. Declaring an adapter for a shared link or query hook alone is unnecessary.
