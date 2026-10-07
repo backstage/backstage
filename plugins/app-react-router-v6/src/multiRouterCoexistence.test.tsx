@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Link as BuiLink } from '@backstage/ui';
 import { ReactNode, useCallback, useSyncExternalStore } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
@@ -26,7 +27,6 @@ import {
   createRouteRef,
   useApi,
   useAppNavigate,
-  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
 import {
   Link as TanStackLink,
@@ -479,14 +479,8 @@ describe('TanStack + RR v6 coexistence', () => {
    * derives its prefix from the sub-page's own full route pattern, page
    * segment included. Two mechanisms, one answer required.
    *
-   * Every case below therefore checks three answers for the same mount:
-   *
-   *  - what the sub-page's own library resolves a target to;
-   *  - what the framework's `useAppHref` resolves the same target to, walking
-   *    page mounts with no routing library involved — the two are documented
-   *    to agree, so they are required to agree;
-   *  - what the page mount alone would give, which is the same target one
-   *    segment shallower, so the extra segment is visibly the sub-page's.
+   * Each case compares native relative links with BUI links at the same scope.
+   * Both retain the app-wide pathname, including the plugin mount.
    *
    * `duplicatePathSegments.test.tsx` next door sweeps every relative spelling
    * against a real `react-router-dom` route tree for the v6 side. What is new
@@ -498,25 +492,23 @@ describe('TanStack + RR v6 coexistence', () => {
     const PAGE_PATTERN = '/catalog-mix';
     /** A target below wherever it is written, spelled for each library. */
     const V6_BELOW = 'edit';
-    const TANSTACK_BELOW = '/edit';
+    const TANSTACK_BELOW = './edit';
 
     /**
      * A TanStack consumer's own answers: the location it is given, and the
      * app-absolute href its `<Link>` produces.
      *
-     * TanStack targets are router-absolute rather than relative — `/edit`
-     * means this router's own root, which is the mount the adapter scoped
-     * itself to — so `selfSegment` is spelled the same way. The framework href
-     * beside it is the same target expressed the framework's way, and has to
-     * come out identical.
+     * Native and BUI relative targets must resolve identically. App-absolute
+     * targets keep their meaning regardless of this scope.
      */
     function TanStackTargetProbe(props: { selfSegment: string }) {
       const location = useTanStackLocation();
-      const frameworkHref = useFrameworkHref(V6_BELOW);
       return (
         <div data-testid="tanstack-probe">
           <span data-testid="tanstack-pathname">{location.pathname}</span>
-          <span data-testid="tanstack-framework-href">{frameworkHref}</span>
+          <BuiLink data-testid="tanstack-bui-href" href={V6_BELOW}>
+            Edit
+          </BuiLink>
           <TanStackLink to={TANSTACK_BELOW} data-testid="tanstack-below">
             Edit
           </TanStackLink>
@@ -524,7 +516,7 @@ describe('TanStack + RR v6 coexistence', () => {
               copy is the one the caller asked for; a third, or a copy the
               caller did not ask for, is the bug. */}
           <TanStackLink
-            to={`/${props.selfSegment}`}
+            to={`./${props.selfSegment}`}
             data-testid="tanstack-self-naming"
           >
             Self
@@ -535,7 +527,6 @@ describe('TanStack + RR v6 coexistence', () => {
 
     /** The same questions asked of React Router v6. */
     function V6TargetProbe(props: { selfSegment: string }) {
-      const frameworkHref = useFrameworkHref(V6_BELOW);
       return (
         <div data-testid="v6-probe">
           <span data-testid="v6-below">
@@ -549,7 +540,9 @@ describe('TanStack + RR v6 coexistence', () => {
           <span data-testid="v6-self-naming">
             {useV6ResolvedPath(props.selfSegment).pathname}
           </span>
-          <span data-testid="v6-framework-href">{frameworkHref}</span>
+          <BuiLink data-testid="v6-bui-href" href={V6_BELOW}>
+            Edit
+          </BuiLink>
           <V6Link to={V6_BELOW} data-testid="v6-below-link">
             Edit
           </V6Link>
@@ -640,9 +633,10 @@ describe('TanStack + RR v6 coexistence', () => {
         expect(screen.getByTestId('tanstack-probe')).toBeInTheDocument();
       });
 
-      // Scoped to the sub-page's own mount: the page mount would leave
-      // `/overview` here, and the app root `/catalog-mix/overview`.
-      expect(screen.getByTestId('tanstack-pathname').textContent).toBe('/');
+      // Locations retain the app-absolute pathname.
+      expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
+        '/catalog-mix/overview',
+      );
 
       // The target lands under both segments — the page's and the sub-page's.
       // Losing the first gives `/overview/edit`, losing both `/edit`.
@@ -650,9 +644,8 @@ describe('TanStack + RR v6 coexistence', () => {
         'href',
         '/catalog-mix/overview/edit',
       );
-      // The framework resolves the same target by walking page mounts instead,
-      // and has to agree with the library.
-      expect(screen.getByTestId('tanstack-framework-href').textContent).toBe(
+      // BUI uses the same native scope.
+      expect(screen.getByTestId('tanstack-bui-href').getAttribute('href')).toBe(
         '/catalog-mix/overview/edit',
       );
       // Asking for the page's own segment by name gets exactly the one copy
@@ -672,9 +665,10 @@ describe('TanStack + RR v6 coexistence', () => {
       await waitFor(() => {
         expect(appHistory.location.pathname).toBe('/catalog-mix/overview/edit');
       });
-      // Still the same sub-page, one segment deeper inside it, with no
-      // accumulation in the scoped location.
-      expect(screen.getByTestId('tanstack-pathname').textContent).toBe('/edit');
+      // Native links and BUI keep using the matched page scope.
+      expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
+        '/catalog-mix/overview/edit',
+      );
       expect(screen.getByTestId('tanstack-below')).toHaveAttribute(
         'href',
         '/catalog-mix/overview/edit',
@@ -706,7 +700,7 @@ describe('TanStack + RR v6 coexistence', () => {
       expect(screen.getByTestId('v6-below').textContent).toBe(
         '/catalog-mix/create/edit',
       );
-      expect(screen.getByTestId('v6-framework-href').textContent).toBe(
+      expect(screen.getByTestId('v6-bui-href').getAttribute('href')).toBe(
         '/catalog-mix/create/edit',
       );
       expect(screen.getByTestId('v6-below-link')).toHaveAttribute(
@@ -736,7 +730,9 @@ describe('TanStack + RR v6 coexistence', () => {
       await waitFor(() => {
         expect(screen.getByTestId('tanstack-probe')).toBeInTheDocument();
       });
-      expect(screen.getByTestId('tanstack-pathname').textContent).toBe('/');
+      expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
+        '/catalog-mix/overview',
+      );
       expect(screen.getByTestId('tanstack-below')).toHaveAttribute(
         'href',
         '/catalog-mix/overview/edit',
@@ -754,12 +750,14 @@ describe('TanStack + RR v6 coexistence', () => {
       await waitFor(() => {
         expect(screen.getByTestId('tanstack-probe')).toBeInTheDocument();
       });
-      expect(screen.getByTestId('tanstack-pathname').textContent).toBe('/');
+      expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
+        '/tools-mix',
+      );
       expect(screen.getByTestId('tanstack-below')).toHaveAttribute(
         'href',
         '/tools-mix/edit',
       );
-      expect(screen.getByTestId('tanstack-framework-href').textContent).toBe(
+      expect(screen.getByTestId('tanstack-bui-href').getAttribute('href')).toBe(
         '/tools-mix/edit',
       );
       expect(screen.getByTestId('tanstack-self-naming')).toHaveAttribute(
@@ -779,7 +777,7 @@ describe('TanStack + RR v6 coexistence', () => {
       // difference between the two mounts.
       expect(screen.getByTestId('v6-up').textContent).toBe('/');
       expect(screen.getByTestId('v6-below').textContent).toBe('/shop-mix/edit');
-      expect(screen.getByTestId('v6-framework-href').textContent).toBe(
+      expect(screen.getByTestId('v6-bui-href').getAttribute('href')).toBe(
         '/shop-mix/edit',
       );
       expect(screen.getByTestId('v6-self-naming').textContent).toBe(

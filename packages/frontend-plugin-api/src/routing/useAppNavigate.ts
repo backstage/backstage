@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo } from 'react';
-import { resolveAppPath } from '@internal/frontend';
+import { useMemo } from 'react';
+import { resolveAppTarget, parsePath } from '@internal/frontend';
 import { useApiHolder } from '../apis/system';
-import { useAppNode } from '../components/AppNodeProvider';
-import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type { AppNavigateOptions } from './AppLocation';
 import {
   DataRouterContext,
   LocationContext,
   NavigationContext,
-  useRouteBasePaths,
   useRouterContext,
 } from './reactRouterContext';
 
-/** React Router's route-relative navigate, read without requiring a router. */
+/** Adapts framework targets to a legacy React Router without requiring one. */
 function useOptionalReactRouterNavigate():
   | AppHistoryApi['navigate']
   | undefined {
   const navigation = useRouterContext(NavigationContext);
   const dataRouter = useRouterContext(DataRouterContext);
   const location = useRouterContext(LocationContext)?.location;
-  const routeBasePaths = useRouteBasePaths();
 
   return useMemo(() => {
     if (!navigation) {
@@ -51,10 +47,8 @@ function useOptionalReactRouterNavigate():
         navigation.navigator.go(pathOrDelta);
         return;
       }
-      const resolved = resolveAppPath(
-        pathOrDelta,
-        routeBasePaths,
-        location?.pathname ?? '/',
+      const resolved = parsePath(
+        resolveAppTarget(pathOrDelta, location?.pathname ?? '/'),
       );
       if (!dataRouter && navigation.basename !== '/') {
         resolved.pathname =
@@ -72,7 +66,7 @@ function useOptionalReactRouterNavigate():
       }
     };
     return navigate as AppHistoryApi['navigate'];
-  }, [dataRouter, navigation, location?.pathname, routeBasePaths]);
+  }, [dataRouter, navigation, location?.pathname]);
 }
 
 /**
@@ -91,26 +85,7 @@ export function useOptionalAppNavigate():
   | undefined {
   const apis = useApiHolder();
   const appHistory = apis.get(appHistoryApiRef);
-  const routes = apis.get(routeResolutionApiRef);
-  const node = useAppNode();
-  const navigate = useCallback(
-    (pathOrDelta: string | number, options?: AppNavigateOptions) => {
-      if (typeof pathOrDelta === 'number') {
-        appHistory?.navigate(pathOrDelta);
-      } else if (appHistory) {
-        const target = routes
-          ? routes.resolveTarget({
-              to: pathOrDelta,
-              pathname: appHistory.location.pathname,
-              node,
-            })
-          : pathOrDelta;
-        appHistory.navigate(target, options);
-      }
-    },
-    [appHistory, routes, node],
-  );
-  return appHistory ? (navigate as AppHistoryApi['navigate']) : undefined;
+  return useMemo(() => appHistory?.navigate.bind(appHistory), [appHistory]);
 }
 
 /**
@@ -118,9 +93,8 @@ export function useOptionalAppNavigate():
  * `useNavigate`.
  *
  * Prefer this in shared plugin code that must run under both the new and old
- * frontend systems. Relative targets resolve against the calling extension's
- * route ancestry, just like {@link useAppHref}; each leading `..` climbs one
- * path-contributing route. App-absolute paths exclude the deployment basename.
+ * frontend systems. Paths must start with `/` and exclude the deployment
+ * basename. Relative paths belong to routing adapters and are rejected.
  * With app history, navigation reads the latest location when called, including
  * for query-only and hash-only targets. A number traverses that many history
  * entries. External URLs are supported when app history is registered; the old

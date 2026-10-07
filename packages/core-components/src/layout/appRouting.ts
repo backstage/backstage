@@ -35,9 +35,6 @@ import {
 } from 'react-router-dom';
 import {
   useRouteResolution,
-  useAppNode,
-  useApiHolder,
-  routeResolutionApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -45,6 +42,7 @@ import {
   createPath,
   parsePath,
   resolveAppPath,
+  resolveAppTarget,
   normalizeBasePath,
   useAppHistoryLocation,
   type AppPath,
@@ -59,8 +57,7 @@ import {
  * the same way:
  *
  * - **Framework**: an `AppHistoryApi` is registered (new frontend system).
- *   Location comes from the app history, and relative targets resolve against
- *   the current page's mount base.
+ *   Location comes from the app history, and path targets must be app-absolute.
  * - **React Router**: no app history (old frontend system). Every value is the
  *   one React Router's own hook at that call site produced before the framework
  *   seam existed, so legacy behavior is unchanged.
@@ -188,24 +185,20 @@ export function useAppLocation(appHistory: AppHistoryApi | undefined): AppPath {
 /**
  * Resolves a link target to an app-absolute path.
  *
- * Absolute targets are returned unchanged by both authorities; relative ones
- * resolve against the page mount base path (framework) or the matched route
- * base (React Router, which falls back to the app root when nothing matched,
- * and equally when there is no router).
+ * Framework paths must be app-absolute. Without app history, relative targets
+ * retain React Router's route-relative behavior.
  */
 export function useAppResolvedPath(
   appHistory: AppHistoryApi | undefined,
   to: AppTo,
 ): AppPath {
-  const node = useAppNode();
-  const routes = useApiHolder().get(routeResolutionApiRef);
   const routeBasePaths = useRouteBasePaths();
   // Whichever authority answers, it is the same one that answers for the
   // location, so a target with no pathname of its own — `?tab=readme`,
   // `#section` — stays on the page the caller is actually standing on.
   const { pathname } = useAppLocation(appHistory);
 
-  if (appHistory && routes) {
+  if (appHistory) {
     const target =
       typeof to === 'string'
         ? to
@@ -215,10 +208,10 @@ export function useAppResolvedPath(
           });
     return {
       ...APP_ROOT_PATH,
-      ...parsePath(routes.resolveTarget({ to: target, pathname, node })),
+      ...parsePath(resolveAppTarget(target, pathname)),
     };
   }
-  return resolveAppPath(to, appHistory ? [] : routeBasePaths, pathname);
+  return resolveAppPath(to, routeBasePaths, pathname);
 }
 
 /**

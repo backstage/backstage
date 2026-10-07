@@ -91,6 +91,33 @@ describe('BUIProvider', () => {
     expect(navigate).toHaveBeenCalledWith('/catalog', undefined);
   });
 
+  it('preserves analytics when an adapter overrides only routing', () => {
+    const captureEvent = jest.fn();
+    const useParentAnalytics = () => ({ captureEvent });
+    const override = jest.fn();
+    const useOverride = () => ({ captureEvent: override });
+    const useRouter = (): BUIRouter => ({
+      navigate: jest.fn(),
+      resolveHref: to => to,
+      pathname: '/',
+    });
+    for (const useChildAnalytics of [undefined, useOverride]) {
+      const { result, unmount } = renderHook(() => useAnalytics(), {
+        wrapper: ({ children }) => (
+          <BUIProvider useAnalytics={useParentAnalytics}>
+            <BUIProvider useRouter={useRouter} useAnalytics={useChildAnalytics}>
+              {children}
+            </BUIProvider>
+          </BUIProvider>
+        ),
+      });
+      result.current.captureEvent('click', 'Link');
+      unmount();
+    }
+    expect(captureEvent).toHaveBeenCalledTimes(1);
+    expect(override).toHaveBeenCalledTimes(1);
+  });
+
   it('reads analytics from older providers without requiring their routing capabilities', () => {
     const LegacyContext = createVersionedContext<{
       1: BUIContextValueV1;

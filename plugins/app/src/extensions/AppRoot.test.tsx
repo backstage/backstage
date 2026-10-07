@@ -119,7 +119,7 @@ describe('AppRoot', () => {
           <div>
             <ButtonLink href="#tab-2">Fragment</ButtonLink>
             <ButtonLink href="?query=x">Query</ButtonLink>
-            <ButtonLink href="sub">Relative</ButtonLink>
+            <ButtonLink href="/catalog/foo/sub">Relative</ButtonLink>
             <ButtonLink href="/catalog/overview">Absolute</ButtonLink>
             <ButtonLink href="https://example.com/x">External</ButtonLink>
           </div>
@@ -151,12 +151,12 @@ describe('AppRoot', () => {
       external: 'https://example.com/x',
     });
   });
-  it('navigates to the same destination rendered by page-relative BUI links', async () => {
+  it('navigates to the same destination rendered by app-absolute BUI links', async () => {
     const targets = [
-      ['Child', 'sub', '/catalog/foo/sub'],
+      ['Child', '/catalog/foo/sub', '/catalog/foo/sub'],
       ['Query', '?view=details', '/catalog/foo?view=details'],
       ['Fragment', '#details', '/catalog/foo#details'],
-      ['Parent', '..', '/'],
+      ['Parent', '/', '/'],
     ];
     const page = PageBlueprint.make({
       name: 'catalog',

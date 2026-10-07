@@ -490,9 +490,11 @@ const SidebarItemBase = forwardRef<
   };
 
   const analyticsApi = useAnalytics();
+  const appHistory = useOptionalAppHistory();
+  const defaultTarget = appHistory ? '/' : '';
   const { pathname: to } = useAppResolvedPath(
-    useOptionalAppHistory(),
-    !isButtonItem(props) && props.to ? props.to : '',
+    appHistory,
+    !isButtonItem(props) && props.to ? props.to : defaultTarget,
   );
 
   const handleClick = useCallback(

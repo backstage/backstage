@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { useMemo, type ReactNode } from 'react';
+import { useContext, useMemo, type ReactNode } from 'react';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext, type BUIContextVersions } from './BUIContext';
 import type { UseAnalyticsFn } from '../analytics/types';
-import { useBUIRouter, type BUIRouter } from './BUIRouter';
+import type { BUIRouter } from './BUIRouter';
 
 /** @public */
 export type BUIProviderProps = {
+  /** Analytics hook. Inherits the enclosing provider when omitted. */
   useAnalytics?: UseAnalyticsFn;
   /**
    * Hook called at each consuming component to bind navigation, href
@@ -41,7 +42,7 @@ export type BUIProviderProps = {
  * bind this hook to React Aria at their own route scope. Without a host hook,
  * components use an explicitly supplied React Aria router or browser navigation.
  *
- * React Aria components used directly need their own scoped `RouterProvider`.
+ * React Aria components used directly need their own routing integration.
  *
  * External links, downloads, and links with non-self targets use native browser
  * navigation. Components outside a routing context also use native links.
@@ -63,9 +64,16 @@ export type BUIProviderProps = {
  * @public
  */
 export function BUIProvider(props: BUIProviderProps) {
-  const { useAnalytics, useRouter: providedUseRouter, children } = props;
-  const parentUseRouter = useBUIRouter();
-  const useRouter = providedUseRouter ?? parentUseRouter;
+  const {
+    useAnalytics: providedUseAnalytics,
+    useRouter: providedUseRouter,
+    children,
+  } = props;
+  const parent = useContext(BUIContext);
+  const useAnalytics =
+    providedUseAnalytics ??
+    (parent?.atVersion(2) ?? parent?.atVersion(1))?.useAnalytics;
+  const useRouter = providedUseRouter ?? parent?.atVersion(3)?.useRouter;
   const value = useMemo(
     () =>
       createVersionedValueMap<BUIContextVersions>({
