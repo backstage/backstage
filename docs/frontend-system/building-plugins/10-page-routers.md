@@ -297,38 +297,23 @@ routing library at all.
 
 ## Use React Aria components directly
 
-Custom components can connect React Aria links to Backstage through their `href`
-and `onClick` props. Call `useHref` and `useAppNavigate` inside the component so
-both use its current routing scope:
+Use `RouterLink` from `@backstage/frontend-plugin-api` to connect custom React Aria
+components to Backstage routing. It is a routing primitive with no styles, intended for
+composition. For standard UI links, use the BUI `Link` component.
+
+Pass `RouterLink` through React Aria's `render` prop:
 
 ```tsx
-import { useAppNavigate, useHref } from '@backstage/frontend-plugin-api';
+import { RouterLink } from '@backstage/frontend-plugin-api';
 import { Link } from 'react-aria-components';
 
 export function ToolDetailsLink() {
-  const to = 'details';
-  const href = useHref(to);
-  const navigate = useAppNavigate();
-
   return (
     <Link
-      href={href}
-      onClick={event => {
-        if (
-          event.defaultPrevented ||
-          event.button !== 0 ||
-          event.metaKey ||
-          event.ctrlKey ||
-          event.altKey ||
-          event.shiftKey ||
-          (event.currentTarget.getAttribute('target') || '_self') !== '_self' ||
-          event.currentTarget.hasAttribute('download')
-        ) {
-          return;
-        }
-        event.preventDefault();
-        navigate(to);
-      }}
+      href="details"
+      render={props =>
+        'href' in props ? <RouterLink {...props} /> : <span {...props} />
+      }
     >
       Tool details
     </Link>
@@ -336,27 +321,67 @@ export function ToolDetailsLink() {
 }
 ```
 
-For a page mounted at `/tools`, this link renders and navigates to
-`/tools/details`. Inside a sub-page mounted at `/tools/admin`, it instead uses
-`/tools/admin/details`. Each leading `..` climbs one path-contributing route.
-Query-only and hash-only targets use the current location.
+Relative destinations resolve against the extension where the link renders. In
+a page mounted at `/tools`, `details` navigates to `/tools/details`. The link
+handles the deployment basename and preserves browser behavior for modified
+clicks, downloads, and external destinations. No `RouterProvider` or custom click
+handler is needed. Without app history, links use browser navigation.
 
-`useHref` supplies a browser-ready URL, including the deployment basename, and
-updates it when the location changes. Pass the original target to `navigate`,
-which resolves it using the latest location and adds the basename itself.
-Navigation options can be passed directly, for example
-`navigate(to, { replace: true, state: { from: 'tools' } })`.
+The same approach works for navigable tabs:
 
-The example intercepts ordinary clicks on an internal link. Modified clicks,
-downloads, and links targeting another browsing context retain browser behavior.
-Use `onClick` rather than an unconditional `onPress` handler so navigation can
-prevent the browser's default action without also handling modified clicks.
-For external destinations, pass the resolved `href` and let the browser navigate
-without adding this click handler.
+```tsx
+import {
+  RouterLink,
+  useAppLocation,
+  useHref,
+} from '@backstage/frontend-plugin-api';
+import { Tabs, TabList, Tab } from 'react-aria-components';
 
-This approach needs no React Aria `RouterProvider` or access to the internal
-routing context in BUI. BUI components already provide their own routing integration;
-custom React Aria components can use these public hooks directly.
+export function ToolTabs() {
+  const location = useAppLocation();
+  const currentHref = useHref(location.pathname);
+  const detailsHref = useHref('details');
+
+  const selectedKey = currentHref === detailsHref ? 'details' : 'overview';
+
+  return (
+    <Tabs selectedKey={selectedKey}>
+      <TabList aria-label="Tool">
+        <Tab
+          id="overview"
+          href="."
+          render={props =>
+            'href' in props ? <RouterLink {...props} /> : <div {...props} />
+          }
+        >
+          Overview
+        </Tab>
+        <Tab
+          id="details"
+          href="details"
+          render={props =>
+            'href' in props ? <RouterLink {...props} /> : <div {...props} />
+          }
+        >
+          Details
+        </Tab>
+      </TabList>
+    </Tabs>
+  );
+}
+```
+
+Mount this tab bar in the parent page's extension scope. The example compares
+browser-ready paths so the deployment basename matches. It selects Details on an exact
+path match and Overview otherwise.
+Derive selection from your route structure when tabs also include descendant
+routes. The page router renders the destination content, while the current
+location controls tab selection, including after Back and Forward navigation.
+
+For navigable menu items, use the same `render` pattern on `MenuItem`. Forward
+all supplied props and the ref so React Aria retains its accessibility, focus,
+and interaction behavior. Use a link with button styling for navigation that
+looks like a button; keep action buttons as buttons.
 
 ## Migrate Backstage UI routing
 
