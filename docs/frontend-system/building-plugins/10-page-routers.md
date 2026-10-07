@@ -297,84 +297,66 @@ routing library at all.
 
 ## Use React Aria components directly
 
-React Aria controls can use Backstage navigation without a page routing library.
-Use the public hooks and utility APIs to connect React Aria's provider to the
-current page or sub-page:
+Custom components can connect React Aria links to Backstage through their `href`
+and `onClick` props. Call `useHref` and `useAppNavigate` inside the component so
+both use its current routing scope:
 
 ```tsx
-import {
-  appHistoryApiRef,
-  routeResolutionApiRef,
-  useApi,
-  useAppNode,
-  useAppLocation,
-  useAppNavigate,
-} from '@backstage/frontend-plugin-api';
-import { Link, RouterProvider } from 'react-aria-components';
+import { useAppNavigate, useHref } from '@backstage/frontend-plugin-api';
+import { Link } from 'react-aria-components';
 
-export function ToolsContent() {
-  const history = useApi(appHistoryApiRef);
-  const routes = useApi(routeResolutionApiRef);
-  const node = useAppNode();
-  const location = useAppLocation();
+export function ToolDetailsLink() {
+  const to = 'details';
+  const href = useHref(to);
   const navigate = useAppNavigate();
 
-  const resolveHref = (to: string) =>
-    history.createHref(
-      routes.resolveTarget({ to, pathname: location.pathname, node }),
-    );
-
   return (
-    <RouterProvider navigate={navigate} useHref={resolveHref}>
-      <Link href="details">Tool details</Link>
-    </RouterProvider>
+    <Link
+      href={href}
+      onClick={event => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.altKey ||
+          event.shiftKey ||
+          (event.currentTarget.getAttribute('target') || '_self') !== '_self' ||
+          event.currentTarget.hasAttribute('download')
+        ) {
+          return;
+        }
+        event.preventDefault();
+        navigate(to);
+      }}
+    >
+      Tool details
+    </Link>
   );
 }
 ```
 
-Both callbacks resolve targets against the node where the provider is created.
-For a page mounted at `/tools`, `details` renders and navigates to
-`/tools/details`, with the deployment basename added once. Each leading `..`
-climbs one path-contributing route. Query-only and hash-only targets use the
-current location; the location hook updates rendered hrefs, while navigation
-reads the latest location when called.
+For a page mounted at `/tools`, this link renders and navigates to
+`/tools/details`. Inside a sub-page mounted at `/tools/admin`, it instead uses
+`/tools/admin/details`. Each leading `..` climbs one path-contributing route.
+Query-only and hash-only targets use the current location.
 
-The history API sanitizes both hrefs and navigation targets, and handles external
-URLs through browser navigation.
-The example requires the new frontend system's history and route resolution APIs.
+`useHref` supplies a browser-ready URL, including the deployment basename, and
+updates it when the location changes. Pass the original target to `navigate`,
+which resolves it using the latest location and adds the basename itself.
+Navigation options can be passed directly, for example
+`navigate(to, { replace: true, state: { from: 'tools' } })`.
 
-React Aria passes the original link target to `navigate`, rather than the
-resolved browser href. Both callbacks must therefore use the same routing scope.
-The example captures that scope in `ToolsContent`: `useAppNavigate` captures its
-app node, and `resolveHref` uses that same node explicitly. Passing `useHref`
-directly would instead read the link's app node, which can differ inside a nested
-extension. Add another scoped provider when relative links should use a sub-page's
-scope.
+The example intercepts ordinary clicks on an internal link. Modified clicks,
+downloads, and links targeting another browsing context retain browser behavior.
+Use `onClick` rather than an unconditional `onPress` handler so navigation can
+prevent the browser's default action without also handling modified clicks.
+For external destinations, pass the resolved `href` and let the browser navigate
+without adding this click handler.
 
-BUI components bind both callbacks locally through the hook supplied to the
-root `BUIProvider`, so they do not need this manual wiring.
-
-To type React Aria's `routerOptions` in your app, configure its routing types:
-
-```tsx
-import type { AppNavigateOptions } from '@backstage/frontend-plugin-api';
-
-declare module 'react-aria-components' {
-  interface RouterConfig {
-    routerOptions: AppNavigateOptions;
-  }
-}
-```
-
-The options support `replace` and `state` for app navigation. This declaration
-belongs to your app; BUI does not set React Aria's global router types for plugins.
-
-Import the provider and controls from the same React Aria installation. Mount
-another provider inside a nested sub-page to use that sub-page's scope. React
-Aria preserves native browser interactions such as modified clicks and downloads.
-
-BUI controls already receive their routing integration from the app.
-`BUIProvider` does not configure unrelated React Aria controls.
+This approach needs no React Aria `RouterProvider` or access to the internal
+routing context in BUI. BUI components already provide their own routing integration;
+custom React Aria components can use these public hooks directly.
 
 ## Migrate Backstage UI routing
 
