@@ -22,9 +22,10 @@ import {
   createExtensionInput,
   NotFoundErrorPage,
   appHistoryApiRef,
+  routeResolutionApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
-import { AppRouteSwitch } from '@internal/frontend';
+import { AppRouteSwitch, useAppHistoryLocation } from '@internal/frontend';
 
 function PageSuspense(props: { children: ReactNode }) {
   return <Suspense fallback={null}>{props.children}</Suspense>;
@@ -64,10 +65,13 @@ export const AppRoutes = createExtension({
 
     const RoutesElement = () => {
       const history = useApi(appHistoryApiRef);
+      const routes = useApi(routeResolutionApiRef);
+      const location = useAppHistoryLocation(history)!;
 
       return (
         <AppRouteSwitch
           history={history}
+          matches={routes.resolvePath({ pathname: location.pathname }).matches}
           pages={pages}
           redirects={redirects}
           fallback={<NotFoundErrorPage />}

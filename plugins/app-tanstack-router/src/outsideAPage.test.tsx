@@ -14,19 +14,40 @@
  * limitations under the License.
  */
 
+import { matchPath } from '@internal/frontend';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import {
+  mockApis,
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { PageMountProvider, usePageMount } from '@internal/frontend';
+import {
+  useRouteResolution,
+  appHistoryApiRef,
+} from '@backstage/frontend-plugin-api';
 import { useRouter } from '@tanstack/react-router';
 import {
   TanStackPageRouter,
   createTanStackPageRouter,
 } from './TanStackPageRouter';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock(
+  '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+  () => {
+    const actual = jest.requireActual(
+      '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+    );
+    return {
+      ...actual,
+      useAppNode: () => actual.useAppNode() ?? mockRouteNode,
+    };
+  },
+);
 
 /**
  * The adapter rendered where there is no page: the old frontend system, and
@@ -35,7 +56,7 @@ import {
  * Many plugins ship for both frontend systems out of one package, and the
  * component that wraps itself in this adapter for the new system is very often
  * the same component the old system renders. Under the old system there is no
- * `PageMountProvider` above it, no framework route matching, and no framework
+ * route resolution mock above it, no framework route matching, and no framework
  * APIs registered at all. The wrap the ecosystem is being asked to add
  * therefore has to be invisible there — nothing scoped, nothing added, and in
  * particular nothing demanded of the surrounding app.
@@ -53,7 +74,7 @@ function TanStackProbe() {
   // back `undefined` rather than throwing, so the absence has to be read from
   // the return value.
   const hasTanStackRouter = Boolean(useRouter({ warn: false }));
-  const mount = usePageMount();
+  const mount = useRouteResolution().matches.at(-1);
   return (
     <span data-testid="probe">
       {JSON.stringify({ hasTanStackRouter, mount: mount ?? null })}
@@ -72,11 +93,25 @@ function renderWithContext(
   let tree = <>{children}</>;
   if (options.mount) {
     tree = (
-      <PageMountProvider
-        mount={{ basePath: '/old/alpha', routePattern: '/old/:id' }}
+      <TestApiProvider
+        apis={[
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: '/old/alpha',
+                  routePattern: '/old/:id',
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
+        ]}
       >
         {tree}
-      </PageMountProvider>
+      </TestApiProvider>
     );
   }
   if (options.appHistory) {
@@ -167,7 +202,7 @@ describe('TanStackPageRouter outside a page', () => {
     );
 
     await waitFor(() => {
-      expect(readProbe()).toEqual({
+      expect(readProbe()).toMatchObject({
         hasTanStackRouter: true,
         mount: { basePath: '/old/alpha', routePattern: '/old/:id' },
       });

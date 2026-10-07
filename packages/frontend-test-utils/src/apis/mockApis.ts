@@ -833,6 +833,7 @@ export namespace mockApis {
     export const mock: (
       partialImpl?: Partial<AppHistoryApi> | undefined,
     ) => ApiMock<AppHistoryApi> = partialImpl => {
+      // Preserve location updates when observing navigation.
       const { navigate, ...rest } = partialImpl ?? {};
       const instance = createMockAppHistory({ navigate });
       const navigateMock = jest.fn(
@@ -894,6 +895,11 @@ export namespace mockApis {
      */
     export const mock = createApiMock(routeResolutionApiRef, () => ({
       resolve: jest.fn(),
+      resolveTarget: jest.fn(),
+      resolvePath: jest.fn<
+        ReturnType<RouteResolutionApi['resolvePath']>,
+        Parameters<RouteResolutionApi['resolvePath']>
+      >(() => ({ matches: [] })),
     }));
   }
 

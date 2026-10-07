@@ -24,6 +24,7 @@ import {
 import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
+  useRouteResolution,
   useAnalytics,
   createRouteRef,
   createExternalRouteRef,
@@ -38,7 +39,7 @@ import {
   coreExtensionData,
   createExtension,
   type StorageApi,
-  useHref,
+  useAppHref,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -77,7 +78,7 @@ function PathProbe() {
 
 function HrefProbe(props: { to: string }) {
   return (
-    <a data-testid="probe" href={useHref(props.to)}>
+    <a data-testid="probe" href={useAppHref(props.to)}>
       probe
     </a>
   );
@@ -510,10 +511,21 @@ describe('renderInTestApp', () => {
     it.each(['/', '/*'])(
       'hosts a deeper location when mounted at the app root with %s',
       async mountPath => {
-        renderInTestApp(<HrefProbe to="techdocs" />, {
+        function Content() {
+          const mount = useRouteResolution().matches.at(-1);
+          return (
+            <>
+              <span>Mount: {mount?.basePath ?? 'none'}</span>
+              <HrefProbe to="techdocs" />
+            </>
+          );
+        }
+        renderInTestApp(<Content />, {
           mountPath,
           initialRouteEntries: ['/deeper/path'],
+          mountedRoutes: { '/deeper/path': createRouteRef() },
         });
+        expect(screen.getByText('Mount: /')).toBeInTheDocument();
 
         expect(screen.getByTestId('probe')).toHaveAttribute(
           'href',

@@ -1659,13 +1659,6 @@ export const microsoftAuthApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public
-export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
-  ...input: TParams extends undefined
-    ? readonly [options?: AppNavigateOptions]
-    : readonly [params: TParams, options?: AppNavigateOptions]
-) => void;
-
 // @public (undocumented)
 export const NotFoundErrorPage: {
   (props: NotFoundErrorPageProps): JSX.Element | null;
@@ -2554,6 +2547,9 @@ export function useApi<T>(apiRef: ApiRef<T>): T;
 export function useApiHolder(): ApiHolder;
 
 // @public
+export function useAppHref(to: string): string;
+
+// @public
 export function useAppLocation(): AppLocation;
 
 // @public
@@ -2561,13 +2557,6 @@ export function useAppNavigate(): AppHistoryApi['navigate'];
 
 // @public
 export function useAppNode(): AppNode | undefined;
-
-// @public
-export function useAppRouting(): {
-  createHref: (to: string) => string;
-  navigate: (to: string, options?: AppNavigateOptions) => void;
-  location: AppLocation;
-};
 
 // @public
 export function useAppSearchParams(
@@ -2578,17 +2567,6 @@ export function useAppSearchParams(
 export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
-
-// @public
-export function useHref(to: string): string;
-
-// @public
-export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
-  routeRef:
-    | RouteRef<TParams>
-    | SubRouteRef<TParams>
-    | ExternalRouteRef<TParams>,
-): NavigateRouteRefFunc<TParams> | undefined;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

@@ -323,7 +323,7 @@ actually needs.
 
 **Prefer framework routing.** A component that only reads route parameters and
 builds links is asking for less than a router. `useRouteRef`,
-`useRouteRefParams` and `useHref` from `@backstage/frontend-plugin-api` answer
+`useRouteRefParams` and `useAppHref` from `@backstage/frontend-plugin-api` answer
 from the framework and need no adapter on any page:
 
 ```tsx

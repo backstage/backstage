@@ -28,7 +28,7 @@ import {
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { usePageMount } from '@internal/frontend';
+import { useRouteResolution } from '../routing/useRouteResolution';
 import { useAppNode } from '../components/AppNodeProvider';
 import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
@@ -420,12 +420,18 @@ describe('PageBlueprint', () => {
 
   it('should mount the first sub-page, and any router it declares, at the sub-page mount in an isolated render', async () => {
     const SubPageRouter = ({ children }: { children?: ReactNode }) => (
-      <div data-testid="sub-page-router" data-mount={usePageMount()?.basePath}>
+      <div
+        data-testid="sub-page-router"
+        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+      >
         {children}
       </div>
     );
     const FirstSubPage = () => (
-      <div data-testid="first-page" data-mount={usePageMount()?.basePath} />
+      <div
+        data-testid="first-page"
+        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+      />
     );
     const parentPage = PageBlueprint.make({
       name: 'isolated',
@@ -471,7 +477,7 @@ describe('PageBlueprint', () => {
     async ({ mountPath, basePath }) => {
       const Child = ({ name }: { name: string }) => (
         <p>
-          {name} at {usePageMount()?.basePath}
+          {name} at {useRouteResolution().matches.at(-1)?.basePath}
         </p>
       );
       const parent = PageBlueprint.make({

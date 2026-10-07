@@ -17,14 +17,19 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   type ComponentType,
   type ReactNode,
 } from 'react';
-import { appHistoryApiRef, useApiHolder } from '@backstage/frontend-plugin-api';
-import { usePageMount, usePageMountResolver } from '@internal/frontend';
+import {
+  appHistoryApiRef,
+  useApiHolder,
+  useRouteResolution,
+  routeResolutionApiRef,
+} from '@backstage/frontend-plugin-api';
 import type { RouterHistory } from '@tanstack/history';
 import {
   Outlet,
@@ -80,9 +85,18 @@ export function createTanStackPageRouter(
   options: CreateTanStackPageRouterOptions,
 ): ComponentType<{ children?: ReactNode }> {
   return function TanStackPageRouterAdapter(props: { children?: ReactNode }) {
-    const routePattern = usePageMount()?.routePattern;
-    const resolveMount = usePageMountResolver();
+    const mount = useRouteResolution().matches.at(-1);
+    const routePattern = mount?.routePattern;
+    const node = mount?.node;
     const apiHolder = useApiHolder();
+    const routes = apiHolder.get(routeResolutionApiRef);
+    const resolveMount = useCallback(
+      (pathname: string) => {
+        const match = routes?.resolvePath({ pathname, node }).matches.at(-1);
+        return match?.node === node ? match : undefined;
+      },
+      [routes, node],
+    );
     const appHistory = routePattern
       ? apiHolder.get(appHistoryApiRef)
       : undefined;

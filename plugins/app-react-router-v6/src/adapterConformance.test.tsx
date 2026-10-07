@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+import { matchPath } from '@internal/frontend';
+import { type AppNode } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../../packages/frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
+  mockApis,
   createMockAppHistory,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { PageMountProvider } from '@internal/frontend';
+
 import {
   Link,
   MemoryRouter,
@@ -37,6 +40,22 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock(
+  '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+  () => {
+    const actual = jest.requireActual(
+      '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
+    );
+    return {
+      ...actual,
+      useAppNode: () => actual.useAppNode() ?? mockRouteNode,
+    };
+  },
+);
 
 /**
  * Page router adapter conformance.
@@ -163,14 +182,28 @@ describe(`React Router v6 route context matches a real router tree`, () => {
 
     const appHistory = createMockAppHistory({ initialLocation: url });
     render(
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        <PageMountProvider
-          mount={{ basePath: BASE_PATH, routePattern: ROUTE_PATTERN }}
-        >
-          <ReactRouterV6PageRouter>
-            <ContextProbe />
-          </ReactRouterV6PageRouter>
-        </PageMountProvider>
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, appHistory],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params:
+                    matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: BASE_PATH,
+                  routePattern: ROUTE_PATTERN,
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
+        ]}
+      >
+        <ReactRouterV6PageRouter>
+          <ContextProbe />
+        </ReactRouterV6PageRouter>
       </TestApiProvider>,
     );
 
@@ -182,14 +215,28 @@ describe(`React Router v6 route context matches a real router tree`, () => {
       initialLocation: `${BASE_PATH}/overview`,
     });
     render(
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        <PageMountProvider
-          mount={{ basePath: BASE_PATH, routePattern: ROUTE_PATTERN }}
-        >
-          <ReactRouterV6PageRouter>
-            <ContextProbe />
-          </ReactRouterV6PageRouter>
-        </PageMountProvider>
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, appHistory],
+          mockApis.routeResolution.mock({
+            resolvePath: ({ pathname }) => ({
+              matches: [
+                {
+                  params:
+                    matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                  contributesPath: true,
+                  basePath: BASE_PATH,
+                  routePattern: ROUTE_PATTERN,
+                  node: mockRouteNode,
+                },
+              ],
+            }),
+          }),
+        ]}
+      >
+        <ReactRouterV6PageRouter>
+          <ContextProbe />
+        </ReactRouterV6PageRouter>
       </TestApiProvider>,
     );
 
