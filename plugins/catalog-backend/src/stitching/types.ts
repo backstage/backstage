@@ -15,7 +15,8 @@
  */
 
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { HumanDuration } from '@backstage/types';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { InputError } from '@backstage/errors';
 
 /**
  * Configuration for the stitching process, controlling polling and timeout
@@ -36,6 +37,18 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
   const stitchTimeout = config.has(stitchTimeoutKey)
     ? readDurationFromConfig(config, { key: stitchTimeoutKey })
     : { seconds: 60 };
+
+  for (const [key, duration] of [
+    [pollingIntervalKey, pollingInterval],
+    [stitchTimeoutKey, stitchTimeout],
+  ] as const) {
+    const milliseconds = durationToMilliseconds(duration);
+    if (!Number.isFinite(milliseconds) || milliseconds <= 0) {
+      throw new InputError(
+        `Duration in config at '${key}' must be greater than zero`,
+      );
+    }
+  }
 
   return {
     pollingInterval: pollingInterval,

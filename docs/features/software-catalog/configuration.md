@@ -251,7 +251,7 @@ files.
 [Stitching](./life-of-an-entity.md#stitching) finalizes entities asynchronously via a worker queue. You can tune the following parameters under `catalog.stitchingStrategy`:
 
 - `pollingInterval` - the interval between polling for entities that need stitching
-- `stitchTimeout` - the maximum time to wait for an entity to be stitched
+- `stitchTimeout` - the lease duration before unfinished stitching work can be reclaimed
 
 These parameters accept a duration object, similar to the `processingInterval` parameter.
 
@@ -261,6 +261,11 @@ catalog:
     pollingInterval: { seconds: 1 }
     stitchTimeout: { minutes: 1 }
 ```
+
+Both durations must be greater than zero; invalid values prevent the catalog
+from starting. The defaults are one second between polls and a one-minute lease.
+Lease expiry allows another worker to reclaim unfinished work. It does not
+cancel the original attempt or impose a database query timeout.
 
 ## Subscribing to Catalog Errors
 
