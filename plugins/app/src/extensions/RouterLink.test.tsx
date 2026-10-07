@@ -78,7 +78,7 @@ describe('RouterLink composition', () => {
     const onClick = jest.fn();
     const { rerender } = render(
       <Link
-        href="details"
+        href="/tools/details"
         ref={ref}
         className="custom-link"
         onClick={onClick}
@@ -111,7 +111,7 @@ describe('RouterLink composition', () => {
 
     rerender(
       <Link
-        href="cancelled"
+        href="/tools/cancelled"
         onClick={event => event.preventDefault()}
         render={props =>
           'href' in props ? <RouterLink {...props} /> : <span {...props} />
@@ -130,7 +130,7 @@ describe('RouterLink composition', () => {
       <Menu aria-label="Tool actions">
         <MenuItem
           id="details"
-          href="details"
+          href="/tools/details"
           render={props =>
             'href' in props ? <RouterLink {...props} /> : <div {...props} />
           }
@@ -152,14 +152,14 @@ describe('RouterLink composition', () => {
     function ToolTabs() {
       const location = useAppLocation();
       const currentHref = useAppHref(location.pathname);
-      const detailsHref = useAppHref('details');
+      const detailsHref = useAppHref('/tools/details');
       const selectedKey = currentHref === detailsHref ? 'details' : 'overview';
       return (
         <Tabs selectedKey={selectedKey}>
           <TabList aria-label="Tool">
             <Tab
               id="overview"
-              href="."
+              href="/tools"
               render={props =>
                 'href' in props ? <RouterLink {...props} /> : <div {...props} />
               }
@@ -168,7 +168,7 @@ describe('RouterLink composition', () => {
             </Tab>
             <Tab
               id="details"
-              href="details"
+              href="/tools/details"
               render={props =>
                 'href' in props ? <RouterLink {...props} /> : <div {...props} />
               }

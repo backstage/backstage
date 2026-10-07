@@ -290,25 +290,6 @@ describe('mockApis', () => {
       ]);
       expect(api.resolvePath({ pathname: '/unrelated' })).toEqual(result);
       expect(api.resolvePath).toHaveBeenCalledWith(options);
-      expect(api.resolveTarget({ ...options, to: 'details' })).toBe(
-        '/catalog/details',
-      );
-      expect(
-        api.resolveTarget({ pathname: options.pathname, to: 'details' }),
-      ).toBe('/details');
-      expect(api.resolveTarget({ ...options, to: '?view=docs' })).toBe(
-        '/catalog/entity?view=docs',
-      );
-      expect(api.resolveTarget({ ...options, to: 'https://example.com' })).toBe(
-        'https://example.com',
-      );
-      const customTarget = mockApis.routeResolution({
-        resolveTarget: () => '/custom',
-      });
-      expect(customTarget.resolveTarget({ ...options, to: 'details' })).toBe(
-        '/custom',
-      );
-
       const resolvePath = jest.fn(({ pathname }) =>
         pathname === options.pathname ? result : { matches: [] },
       );

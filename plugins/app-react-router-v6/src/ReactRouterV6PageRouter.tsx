@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-import { useMemo, type ReactNode } from 'react';
+import { useContext, useMemo, type ReactNode } from 'react';
+import { BUIProvider, type BUIRouter } from '@backstage/ui';
 import {
   appHistoryApiRef,
+  useApi,
   useApiHolder,
   useRouteResolution,
 } from '@backstage/frontend-plugin-api';
 import {
   createAppHistoryRouter,
+  resolveAppPath,
+  createPath,
+  isExternalTarget,
+  sanitizeHref,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
   UNSAFE_RouteContext,
+  useLocation,
+  useNavigate,
   NavigationType,
   matchPath,
 } from 'react-router-dom';
@@ -42,6 +50,40 @@ const v6Bindings: ReactRouterAdapterBindings = {
   UNSAFE_RouteContext:
     UNSAFE_RouteContext as ReactRouterAdapterBindings['UNSAFE_RouteContext'],
 };
+
+/** Called by each BUI control, inside its own React Router route context. */
+function useBUIRouter(): BUIRouter {
+  const history = useApi(appHistoryApiRef);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { matches } = useContext(UNSAFE_RouteContext);
+  const contributing = matches.filter(
+    (match, index) => index === 0 || !!match.route.path,
+  );
+  const bases = contributing.map(match => match.pathnameBase);
+  return {
+    navigate: (to, options) => {
+      const safeTo = sanitizeHref(to);
+      if (isExternalTarget(safeTo)) {
+        history.navigate(safeTo, options);
+      } else {
+        navigate(safeTo, options);
+      }
+    },
+    resolveHref: to => {
+      const safeTo = sanitizeHref(to);
+      return history.createHref(
+        isExternalTarget(safeTo)
+          ? safeTo
+          : createPath(resolveAppPath(safeTo, bases, location.pathname)),
+      );
+    },
+    pathname: new URL(
+      history.createHref(location.pathname),
+      'http://backstage.local',
+    ).pathname,
+  };
+}
 
 /**
  * React Router v6 page adapter. Injects library context projected from the
@@ -118,5 +160,9 @@ export function ReactRouterV6PageRouter(props: { children?: ReactNode }) {
     return <>{children}</>;
   }
 
-  return <scopedRouter.Router mounts={mounts}>{children}</scopedRouter.Router>;
+  return (
+    <scopedRouter.Router mounts={mounts}>
+      <BUIProvider useRouter={useBUIRouter}>{children}</BUIProvider>
+    </scopedRouter.Router>
+  );
 }
