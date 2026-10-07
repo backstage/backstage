@@ -16,6 +16,7 @@
 
 import {
   FeatureFlagState,
+  AppNode,
   AppLocation,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
@@ -167,13 +168,11 @@ describe('mockApis', () => {
       history.navigate('/only-path');
       expect(navigate.mock.calls[1]).toEqual(['/only-path']);
 
-      // And the guard on targets that are not app-relative is the real one,
-      // not something a supplied implementation can drop.
-      expect(() => history.navigate('https://example.com/x')).toThrow(
-        /does not support absolute or protocol-relative URLs/,
-      );
-      expect(() => history.navigate('mailto:support@example.com')).toThrow();
-      expect(navigate).toHaveBeenCalledTimes(2);
+      // External navigation is recorded without leaving the test page.
+      history.navigate('https://example.com/x');
+      history.navigate('mailto:support@example.com');
+      expect(navigate).toHaveBeenCalledTimes(4);
+      expect(navigate).toHaveBeenLastCalledWith('mailto:support@example.com');
       expect(history.location.pathname).toBe('/only-path');
     });
 
@@ -250,6 +249,75 @@ describe('mockApis', () => {
         routes: [[home, '/home']],
       });
       expect(routeResolution.resolve(home)?.()).toBe('/home');
+    });
+
+    it('supports fixed path matches with defaults and custom resolution callbacks', () => {
+      const node = {} as AppNode;
+      const options = { pathname: '/catalog/entity', node };
+      expect(mockApis.routeResolution().resolvePath(options)).toEqual({
+        matches: [],
+      });
+      const api = mockApis.routeResolution({
+        resolvePath: {
+          matches: [
+            { node, basePath: '/catalog' },
+            {
+              node,
+              basePath: '/catalog/entity',
+              routePattern: '/catalog/:name',
+              params: { name: 'entity' },
+              contributesPath: false,
+            },
+          ],
+        },
+      });
+      const result = api.resolvePath(options);
+      expect(result.matches).toEqual([
+        {
+          node,
+          basePath: '/catalog',
+          routePattern: '/catalog',
+          params: {},
+          contributesPath: true,
+        },
+        {
+          node,
+          basePath: '/catalog/entity',
+          routePattern: '/catalog/:name',
+          params: { name: 'entity' },
+          contributesPath: false,
+        },
+      ]);
+      expect(api.resolvePath({ pathname: '/unrelated' })).toEqual(result);
+      expect(api.resolvePath).toHaveBeenCalledWith(options);
+      expect(api.resolveTarget({ ...options, to: 'details' })).toBe(
+        '/catalog/details',
+      );
+      expect(
+        api.resolveTarget({ pathname: options.pathname, to: 'details' }),
+      ).toBe('/details');
+      expect(api.resolveTarget({ ...options, to: '?view=docs' })).toBe(
+        '/catalog/entity?view=docs',
+      );
+      expect(api.resolveTarget({ ...options, to: 'https://example.com' })).toBe(
+        'https://example.com',
+      );
+      const customTarget = mockApis.routeResolution({
+        resolveTarget: () => '/custom',
+      });
+      expect(customTarget.resolveTarget({ ...options, to: 'details' })).toBe(
+        '/custom',
+      );
+
+      const resolvePath = jest.fn(({ pathname }) =>
+        pathname === options.pathname ? result : { matches: [] },
+      );
+      const dynamic = mockApis.routeResolution({ resolvePath });
+      expect(dynamic.resolvePath(options)).toBe(result);
+      expect(dynamic.resolvePath({ pathname: '/unrelated' })).toEqual({
+        matches: [],
+      });
+      expect(resolvePath).toHaveBeenCalledWith(options);
     });
 
     it('can create a mock and make assertions on it', () => {

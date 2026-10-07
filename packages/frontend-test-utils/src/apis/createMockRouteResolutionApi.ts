@@ -20,9 +20,11 @@ import {
   RouteFunc,
   RouteRef,
   RouteResolutionApi,
+  RouteResolutionMatch,
   SubRouteRef,
 } from '@backstage/frontend-plugin-api';
 import {
+  resolveAppTarget,
   OpaqueExternalRouteRef,
   OpaqueRouteRef,
   OpaqueSubRouteRef,
@@ -60,11 +62,27 @@ export interface MockRouteResolutionApiOptions {
    * over {@link MockRouteResolutionApiOptions.routes}.
    */
   resolve?: RouteResolutionApi['resolve'];
+  /** Override target resolution; by default uses the configured path matches. */
+  resolveTarget?: RouteResolutionApi['resolveTarget'];
+  /**
+   * Fixed matches or a custom path-matching implementation. Defaults to no
+   * matches. Fixed matches ignore the requested pathname and node, defaulting
+   * `routePattern` to `basePath`, `params` to `{}`, and `contributesPath` to
+   * `true`. Callbacks return complete matches without applying these defaults.
+   */
+  resolvePath?:
+    | {
+        matches: ReadonlyArray<
+          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+        >;
+      }
+    | RouteResolutionApi['resolvePath'];
 }
 
 /**
  * A mock {@link @backstage/frontend-plugin-api#RouteResolutionApi} for unit
- * tests of `RouteLink`, `useNavigateRouteRef`, and components that resolve
+ * tests of `RouteLink`, `useRouteRef`, and components that resolve
  * route refs under the new frontend system.
  *
  * @public
@@ -74,6 +92,10 @@ export interface MockRouteResolutionApi extends RouteResolutionApi {
    * The underlying jest mock for `resolve`, useful for call assertions.
    */
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+  /** The underlying mock for pathname resolution. */
+  resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  /** The underlying mock for target resolution. */
+  resolveTarget: jest.MockedFunction<RouteResolutionApi['resolveTarget']>;
 }
 
 function substitutePath(
@@ -119,7 +141,7 @@ function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
  * custom implementation (including always returning `undefined`).
  *
  * Also available as `mockApis.routeResolution()`. Pair with
- * {@link createMockAppHistory} for NFS `RouteLink` / `useNavigateRouteRef` tests.
+ * {@link createMockAppHistory} for NFS `RouteLink` / `useRouteRef` tests.
  *
  * @public
  * @example
@@ -176,5 +198,30 @@ export function createMockRouteResolutionApi(
     RouteResolutionApi['resolve']
   >;
 
-  return { resolve };
+  const pathResolution = options.resolvePath;
+  const resolvePath = jest.fn(
+    typeof pathResolution === 'function'
+      ? pathResolution
+      : () => ({
+          matches: (pathResolution?.matches ?? []).map(match => ({
+            ...match,
+            routePattern: match.routePattern ?? match.basePath,
+            params: match.params ?? {},
+            contributesPath: match.contributesPath ?? true,
+          })),
+        }),
+  );
+  return {
+    resolve,
+    resolvePath,
+    resolveTarget: jest.fn(
+      options.resolveTarget ??
+        (({ to, pathname, node }) =>
+          resolveAppTarget(
+            to,
+            pathname,
+            node ? resolvePath({ pathname, node }).matches : [],
+          )),
+    ),
+  };
 }

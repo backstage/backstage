@@ -15,14 +15,14 @@
  */
 
 import { type ComponentType, type ReactNode } from 'react';
-import { Route, Routes, useMatch } from 'react-router-dom';
-import { PageMountProvider } from '@internal/frontend';
+import { Route, Routes } from 'react-router-dom';
 import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
   createExtension,
+  ExtensionBoundary,
   ExtensionDefinition,
   coreExtensionData,
   RouteRef,
@@ -41,6 +41,7 @@ import {
   type TestAppRenderResult,
 } from './createTestNavigation';
 import { prepareTestAppFeatures } from './prepareTestAppFeatures';
+import { TestRouteResolver } from '../internal/TestRouteResolver';
 
 export type { TestAppRenderResult };
 
@@ -48,49 +49,6 @@ const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
   backend: { baseUrl: 'http://localhost:7007' },
 };
-
-/**
- * Publishes the page mount for an element rendered at `mountPath`.
- *
- * The test app owns navigation through an app history, the same seam as
- * production, so page-relative targets are resolved against the page they are
- * written in rather than against React Router. The page mount is what carries
- * that page. In a real app it is published while the location is matched to a
- * page; here the element is rendered directly, with no `AppRouteSwitch` above
- * it to do so, and `mountPath` is the caller saying where the element sits.
- *
- * Without this, everything page-relative inside the element under test — a tab
- * href, a `..` climb, a fragment-only target — would resolve against the app
- * root, which is a place the element is not mounted.
- *
- * The pattern is published alongside the concrete base because a leading `..`
- * climbs one route match rather than one path segment, and only the pattern
- * says where the match ends: an element at `/catalog/:namespace/:kind/:name`
- * is one route however many segments its address has.
- */
-function TestPageMount(props: {
-  routePath: string;
-  routePattern: string;
-  children: ReactNode;
-}) {
-  const { routePath, routePattern, children } = props;
-  // Rendered as the route's own element, so this matches by construction. The
-  // guard is for the caller whose `initialRouteEntries` do not reach
-  // `mountPath`: publishing a mount the location is not actually at would be
-  // worse than publishing none.
-  const match = useMatch(routePath);
-  if (!match) {
-    return <>{children}</>;
-  }
-  return (
-    <PageMountProvider
-      isolated
-      mount={{ basePath: match.pathnameBase, routePattern }}
-    >
-      {children}
-    </PageMountProvider>
-  );
-}
 
 /**
  * Options to customize the behavior of the test app.
@@ -161,7 +119,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * Pass the same adapter the page renders in its loader, and the element is
    * rendered inside it exactly as the page renders it. Reach for this only for
    * content that genuinely uses its routing library: `useRouteRef`,
-   * `useRouteRefParams` and `useHref` answer from the framework and need no
+   * `useRouteRefParams` and `useAppHref` answer from the framework and need no
    * adapter at all.
    *
    * Pairs with `mountPath`, which is what says where the page sits; without one
@@ -286,7 +244,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         ? { id: 'app/root', input: 'elements' }
         : { id: 'app/root', input: 'children' },
       output: [coreExtensionData.reactElement],
-      factory: () => {
+      factory: ({ node }) => {
         if (asChrome) {
           return [coreExtensionData.reactElement(element)];
         }
@@ -300,20 +258,32 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
           const routePath = mountPath.endsWith('/*')
             ? mountPath
             : `${mountPath.replace(/\/$/, '')}/*`;
-          // The pattern the caller mounted at, which is `routePath` without
-          // the splat the wrapping route needs in order to host nested routes.
-          const routePattern = routePath.replace(/\/\*$/, '') || '/';
+          // Mounted route refs are link targets, not competing page matches.
+          // Resolve the subject in its own tree, including the root's splat.
           content = (
             <Routes>
               <Route
                 path={routePath}
                 element={
-                  <TestPageMount
-                    routePath={routePath}
-                    routePattern={routePattern}
+                  <TestRouteResolver
+                    routeObjects={[
+                      {
+                        path: routePath.replace(/\/\*$/, '') || '/',
+                        appNode: node,
+                        routeRefs: new Set(),
+                        caseSensitive: false,
+                        children: [
+                          {
+                            path: '*',
+                            routeRefs: new Set(),
+                            caseSensitive: false,
+                          },
+                        ],
+                      },
+                    ]}
                   >
-                    {content}
-                  </TestPageMount>
+                    <ExtensionBoundary node={node}>{content}</ExtensionBoundary>
+                  </TestRouteResolver>
                 }
               />
             </Routes>

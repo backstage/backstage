@@ -22,6 +22,7 @@ import type {
 import type { Observable, Subscription } from '@backstage/types';
 import {
   createPath,
+  sanitizeHref,
   isExternalTarget,
   appHistoryMetadataSymbol,
   parsePath,
@@ -179,7 +180,7 @@ export class AppHistory implements AppHistoryApi {
   };
 
   /**
-   * Navigate to a path (relative to the app root, not basename).
+   * Navigate to an app-root-relative path or a browser-owned URL.
    */
   navigate(to: string, options?: AppNavigateOptions): void;
   navigate(delta: number): void;
@@ -188,12 +189,12 @@ export class AppHistory implements AppHistoryApi {
       this.history.go(to);
       return;
     }
-    if (isExternalTarget(to)) {
-      throw new Error(
-        'AppHistory.navigate does not support absolute or protocol-relative URLs',
-      );
+    const safeTo = sanitizeHref(to);
+    if (isExternalTarget(safeTo)) {
+      this.history.navigateExternal(safeTo, { replace: options?.replace });
+      return;
     }
-    const url = new URL(to, 'http://localhost');
+    const url = new URL(safeTo, 'http://localhost');
     const fullPath = this.basename + url.pathname + url.search + url.hash;
     const writeOptions = { state: options?.state };
 
@@ -221,25 +222,20 @@ export class AppHistory implements AppHistoryApi {
    * re-render when the location changes — first-party chrome does that by
    * subscribing through `useAppHistoryLocation`.
    *
-   * Targets that are not app-relative — absolute (`https://example.com/x`),
-   * protocol-relative (`//example.com/x`), and opaque schemes such as
-   * `mailto:` and `tel:` — are returned unchanged rather than rewritten or
-   * rejected. Prefixing them silently produces a broken internal link, and
-   * throwing is not an option either: hrefs are resolved during render, where
-   * an error takes out the whole tree. Callers rendering
-   * `<a href={useHref(props.url)}>` for a possibly-external URL get the URL
-   * they passed in. Use
-   * {@link AppHistory.navigate} when a target must be app-relative — it
-   * throws for these instead.
+   * External URLs pass through without the basename. Executable URL schemes
+   * are replaced with `about:blank` and a warning, as in `navigate`.
    */
   createHref(to: string): string {
-    if (isExternalTarget(to)) {
-      return to;
+    const safeTo = sanitizeHref(to);
+    if (isExternalTarget(safeTo)) {
+      return safeTo;
     }
-    const target = parsePath(to);
+    const target = parsePath(safeTo);
     const resolved = resolvePath(
-      to,
-      target.pathname === undefined && to !== '' ? this.location.pathname : '/',
+      safeTo,
+      target.pathname === undefined && safeTo !== ''
+        ? this.location.pathname
+        : '/',
     );
     // Still normalized through `URL`, which is what turns a resolved path that
     // is not already app-absolute into one, and collapses any `.`/`..` a

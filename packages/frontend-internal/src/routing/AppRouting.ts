@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { usePageMount } from './PageMountContext';
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
+import { isExternalTarget } from './isExternalTarget';
 
 /**
  * Shared path resolution for AppHistory and legacy React Router consumers.
@@ -231,7 +232,7 @@ export function resolvePath(to: AppTo, fromPathname: string = '/'): AppPath {
  */
 export function resolveAppPath(
   to: AppTo,
-  basePaths: string[],
+  basePaths: readonly string[],
   locationPathname: string,
 ): AppPath {
   const target = typeof to === 'string' ? parsePath(to) : { ...to };
@@ -269,20 +270,17 @@ export function resolveAppPath(
   return resolved;
 }
 
-/**
- * The base path that relative targets resolve against on the framework path,
- * as a prefix without a trailing slash (empty string at the app root).
- *
- * This is the framework's analogue of React Router's `pathnameBase`: a page —
- * or a sub-page, whose mount is provided inside its page's — publishes where
- * it is mounted, and every link written inside it resolves against that,
- * whether it is written in the page's own chrome, in its content, or in app
- * chrome rendered under it. Chrome rendered above any page sees no mount at
- * all and resolves against the app root.
- *
- * Only meaningful on the framework path; a consumer's React Router fallback
- * derives its own bases from the matched routes.
- */
-export function useAppBasePath(): string {
-  return normalizeBasePath(usePageMount()?.basePath);
+/** Resolves an authored target using already selected framework matches. */
+export function resolveAppTarget(
+  to: string,
+  pathname: string,
+  matches: readonly RouteResolutionMatch[],
+): string {
+  if (isExternalTarget(to)) {
+    return to;
+  }
+  const basePaths = matches
+    .filter((match, index) => index === 0 || match.contributesPath)
+    .map(match => match.basePath);
+  return createPath(resolveAppPath(to, basePaths, pathname));
 }

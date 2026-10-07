@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../apis';
+import { createApiRef } from '../apis/system';
 import type { Observable } from '@backstage/types';
 import type { AppLocation, AppNavigateOptions } from './AppLocation';
 
@@ -26,25 +26,26 @@ import type { AppLocation, AppNavigateOptions } from './AppLocation';
  * The public navigation surface mirrors the `navigate` + `useHref` pattern
  * used by libraries like react-aria: `AppHistoryApi.navigate` performs
  * navigation, and {@link AppHistoryApi.createHref} (paired with the public
- * {@link useHref} hook) resolves an app-relative path to a browser-ready
+ * {@link useAppHref} hook) resolves an app-relative path to a browser-ready
  * href (including the app's deploy basename).
  *
  * @public
  */
 export interface AppHistoryApi {
   /**
-   * Navigate to an app-relative path.
+   * Navigate to an app-relative path or an external URL.
    *
-   * A path throws when it is not app-relative — absolute
-   * (`https://example.com/x`), protocol-relative (`//example.com/x`), and
-   * opaque schemes such as `mailto:` and `tel:`. Navigation is an explicit
-   * action with a single correct answer, so a wrong target is a bug worth
-   * surfacing. {@link AppHistoryApi.createHref} passes the same targets
-   * through instead.
+   * Absolute URLs (including same-origin URLs), protocol-relative URLs, and
+   * schemes such as `mailto:` are handled by the browser. The `replace`
+   * option replaces the browser history entry; `state` is only used for
+   * app-relative navigation. Executable URL schemes are replaced with
+   * `about:blank` and a warning.
    *
    * Implementations used with the TanStack page adapter must expose the new
-   * `location` synchronously when a push or replace completes. Numeric history
-   * traversal may complete asynchronously and is observed through `location$`.
+   * `location` synchronously when an app-relative push or replace completes.
+   * Numeric history traversal may complete asynchronously and is observed
+   * through `location$`. External navigation does not synchronously update
+   * the app location.
    */
   navigate(path: string, options?: AppNavigateOptions): void;
   /** Traverse a relative number of history entries. */
@@ -63,19 +64,15 @@ export interface AppHistoryApi {
    * Resolve a path to a browser-ready href, including the app's deploy
    * basename.
    *
-   * Paths resolve against the app root. Use {@link useHref} for targets
+   * Executable URL schemes are replaced with `about:blank` and a warning.
+   *
+   * Paths resolve against the app root. Use {@link useAppHref} for targets
    * relative to the current page: it resolves the matched route ancestry
    * before calling this method. A target with no pathname of its own, such
    * as `?tab=readme` or `#section`, stays at the current location.
    *
-   * Targets that are not app-relative — absolute (`https://example.com/x`),
-   * protocol-relative (`//example.com/x`), and opaque schemes such as
-   * `mailto:` and `tel:` — are returned unchanged. Prefixing them would
-   * silently produce a broken internal link, and throwing is not an option
-   * either: hrefs are resolved during render, where an error takes out the
-   * whole tree. So `<a href={useHref(props.url)}>` is safe for a possibly
-   * external URL. Use `AppHistoryApi.navigate` when a target must be
-   * app-relative — it throws for these instead.
+   * Absolute URLs, protocol-relative URLs, and schemes such as `mailto:`
+   * and `tel:` pass through without the basename, after sanitization.
    *
    * Only the path portion is inspected, so `/search?query=https://example.com`
    * is an ordinary app-relative target.
