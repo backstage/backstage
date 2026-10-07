@@ -20,6 +20,7 @@ import {
   useApi,
   useAppNode,
   useAppLocation,
+  useAppNavigate,
 } from '@backstage/frontend-plugin-api';
 import { BUIRouter } from '@backstage/ui';
 
@@ -29,15 +30,9 @@ export function useBUIRouter(): BUIRouter {
   const routes = useApi(routeResolutionApiRef);
   const node = useAppNode();
   const location = useAppLocation();
+  const navigate = useAppNavigate();
   return {
-    navigate(to, options) {
-      const target = routes.resolveTarget({
-        to,
-        pathname: history.location.pathname,
-        node,
-      });
-      history.navigate(target, options);
-    },
+    navigate,
     resolveHref: to =>
       history.createHref(
         routes.resolveTarget({ to, pathname: location.pathname, node }),
