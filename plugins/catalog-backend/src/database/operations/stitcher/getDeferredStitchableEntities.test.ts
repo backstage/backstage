@@ -28,26 +28,6 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(
   'getDeferredStitchableEntities, %p',
   databaseId => {
-    it('preserves queued requests when adding and removing the failure counter', async () => {
-      const knex = await databases.init(databaseId);
-      await applyDatabaseMigrations(knex);
-      const migration = require('../../../../migrations/20261007000000_stitch_failure_count');
-      await migration.down(knex);
-      await knex('stitch_queue').insert({
-        entity_ref: 'existing',
-        stitch_ticket: 'ticket',
-        next_stitch_at: '2099-01-01 00:00:00',
-      });
-      const before = await knex('stitch_queue').first();
-      await migration.up(knex);
-      expect(await knex('stitch_queue').first()).toEqual({
-        ...before,
-        failure_count: 0,
-      });
-      await migration.down(knex);
-      expect(await knex('stitch_queue').first()).toEqual(before);
-    });
-
     it('backs off each failed request independently and preserves its budget across claims', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);

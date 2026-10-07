@@ -1651,4 +1651,52 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     await migrateDownOnce(knex);
     expect(await hasAutovacuumOptions()).toBe(false);
   });
+
+  it('20261007000000_stitch_failure_count.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20261007000000_stitch_failure_count.js');
+
+    await knex('stitch_queue').insert({
+      entity_ref: 'component:default/existing',
+      stitch_ticket: 'existing-ticket',
+      next_stitch_at: '2099-01-01 00:00:00',
+    });
+    const existing = await knex('stitch_queue').first();
+
+    await migrateUpOnce(knex);
+    expect(await knex('stitch_queue').first()).toEqual({
+      ...existing,
+      failure_count: 0,
+    });
+
+    // Older workers omit the new column when enqueueing during a rollout.
+    await knex('stitch_queue').insert({
+      entity_ref: 'component:default/new',
+      stitch_ticket: 'new-ticket',
+      next_stitch_at: '2099-01-02 00:00:00',
+    });
+    const inserted = await knex('stitch_queue')
+      .where('entity_ref', 'component:default/new')
+      .first();
+    expect(inserted.failure_count).toBe(0);
+
+    await knex('stitch_queue')
+      .where('entity_ref', existing.entity_ref)
+      .update({ failure_count: 3 });
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasColumn('stitch_queue', 'failure_count')).toBe(
+      false,
+    );
+    const { failure_count: _failureCount, ...newRequest } = inserted;
+    expect(await knex('stitch_queue').orderBy('entity_ref')).toEqual([
+      existing,
+      newRequest,
+    ]);
+
+    await migrateUpOnce(knex);
+    expect(await knex('stitch_queue').orderBy('entity_ref')).toEqual([
+      { ...existing, failure_count: 0 },
+      { ...newRequest, failure_count: 0 },
+    ]);
+  });
 });
