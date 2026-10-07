@@ -91,6 +91,14 @@ export async function getDeferredStitchableEntities(options: {
 
     const stitchTicket = randomUUID();
     const base = durationToMilliseconds(stitchTimeout);
+    const nextStitchAt = (failureCount: number) => {
+      const delay = Math.max(
+        base,
+        Math.min(base * (failureCount + 1) ** 2, 3_600_000),
+      );
+      const jitter = failureCount > 0 ? delay * 0.1 * Math.random() : 0;
+      return nowPlus(tx, delay + jitter);
+    };
     const update = tx<DbStitchQueueRow>('stitch_queue')
       .whereIn(
         'entity_ref',
@@ -99,15 +107,10 @@ export async function getDeferredStitchableEntities(options: {
       .update({
         next_stitch_at: tx.raw(
           `case entity_ref ${items.map(() => 'when ? then ?').join(' ')} end`,
-          items.flatMap(item => {
-            const delay = Math.max(
-              base,
-              Math.min(base * (item.failure_count + 1) ** 2, 3_600_000),
-            );
-            const jitter =
-              item.failure_count > 0 ? delay * 0.1 * Math.random() : 0;
-            return [item.entity_ref, nowPlus(tx, delay + jitter)];
-          }),
+          items.flatMap(item => [
+            item.entity_ref,
+            nextStitchAt(item.failure_count),
+          ]),
         ),
         stitch_ticket: stitchTicket,
       });
