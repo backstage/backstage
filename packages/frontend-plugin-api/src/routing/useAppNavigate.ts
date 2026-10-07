@@ -17,6 +17,8 @@
 import { useCallback, useMemo } from 'react';
 import { resolveAppPath } from '@internal/frontend';
 import { useApiHolder } from '../apis/system';
+import { useAppNode } from '../components/AppNodeProvider';
+import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type { AppNavigateOptions } from './AppLocation';
 import {
@@ -87,16 +89,26 @@ function useOptionalReactRouterNavigate():
 export function useOptionalAppNavigate():
   | AppHistoryApi['navigate']
   | undefined {
-  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const apis = useApiHolder();
+  const appHistory = apis.get(appHistoryApiRef);
+  const routes = apis.get(routeResolutionApiRef);
+  const node = useAppNode();
   const navigate = useCallback(
     (pathOrDelta: string | number, options?: AppNavigateOptions) => {
       if (typeof pathOrDelta === 'number') {
         appHistory?.navigate(pathOrDelta);
-      } else {
-        appHistory?.navigate(pathOrDelta, options);
+      } else if (appHistory) {
+        const target = routes
+          ? routes.resolveTarget({
+              to: pathOrDelta,
+              pathname: appHistory.location.pathname,
+              node,
+            })
+          : pathOrDelta;
+        appHistory.navigate(target, options);
       }
     },
-    [appHistory],
+    [appHistory, routes, node],
   );
   return appHistory ? (navigate as AppHistoryApi['navigate']) : undefined;
 }
@@ -106,10 +118,13 @@ export function useOptionalAppNavigate():
  * `useNavigate`.
  *
  * Prefer this in shared plugin code that must run under both the new and old
- * frontend systems. Paths should be app-absolute (basename-stripped); a number
- * traverses that many entries through the current history authority. External
- * URLs are supported when app history is registered; the old frontend system
- * retains React Router navigation semantics.
+ * frontend systems. Relative targets resolve against the calling extension's
+ * route ancestry, just like {@link useHref}; each leading `..` climbs one
+ * path-contributing route. App-absolute paths exclude the deployment basename.
+ * With app history, navigation reads the latest location when called, including
+ * for query-only and hash-only targets. A number traverses that many history
+ * entries. External URLs are supported when app history is registered; the old
+ * frontend system retains React Router navigation semantics.
  *
  * The react-aria-style counterpart to this hook is {@link useHref}.
  *
