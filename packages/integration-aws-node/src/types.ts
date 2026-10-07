@@ -30,6 +30,11 @@ export type AwsCredentialProvider = {
    */
   stsRegion?: string;
   /**
+   * The ARN of the IAM role that these credentials are for, when they are
+   * obtained by assuming a role, e.g. 'arn:aws:iam::0123456789012:role/my-role'
+   */
+  roleArn?: string;
+  /**
    * The credential identity provider to use when creating AWS SDK for Javascript V3 clients
    */
   sdkCredentialProvider: AwsCredentialIdentityProvider;
