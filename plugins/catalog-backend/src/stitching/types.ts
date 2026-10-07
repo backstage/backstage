@@ -45,7 +45,7 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
     const milliseconds = durationToMilliseconds(duration);
     if (!Number.isFinite(milliseconds) || milliseconds <= 0) {
       throw new InputError(
-        `Duration in config at '${key}' must be greater than zero`,
+        `Duration in config at '${key}' must be finite and greater than zero`,
       );
     }
   }

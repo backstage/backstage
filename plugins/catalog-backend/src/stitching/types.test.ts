@@ -58,5 +58,14 @@ it.each(['pollingInterval', 'stitchTimeout'])(
         ),
       ).toThrow(`catalog.stitchingStrategy.${key}`);
     }
+    expect(() =>
+      stitchingStrategyFromConfig(
+        new ConfigReader({
+          catalog: { stitchingStrategy: { [key]: { seconds: Infinity } } },
+        }),
+      ),
+    ).toThrow(
+      `'catalog.stitchingStrategy.${key}' must be finite and greater than zero`,
+    );
   },
 );
