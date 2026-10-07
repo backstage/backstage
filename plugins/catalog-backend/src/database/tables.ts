@@ -156,6 +156,8 @@ export type DbFinalEntitiesRow = {
  * Failed attempts leave the row available for retry after the lease expires.
  */
 export type DbStitchQueueRow = {
+  /** Failed attempts since the latest stitch request, used for claim backoff. */
+  failure_count: number;
   /**
    * The entity ref that needs stitching (primary key).
    */
