@@ -801,10 +801,11 @@ describe.each(databases.eachSupportedId())(
         stitchTimeout: { minutes: 1 },
       });
       expect(retry.stitchTicket).not.toBe(claim.stitchTicket);
+      const successor = await knex('stitch_queue').first();
       await expect(
         performStitching({ knex, logger, ...claim }),
       ).rejects.toThrow(SyntaxError);
-      expect((await knex('stitch_queue').first()).failure_count).toBe(1);
+      expect(await knex('stitch_queue').first()).toEqual(successor);
       await markForStitching({ knex, entityIds: ['my-id'] });
       expect((await knex('stitch_queue').first()).failure_count).toBe(0);
       await expect(
