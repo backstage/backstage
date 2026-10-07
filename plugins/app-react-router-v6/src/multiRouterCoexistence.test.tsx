@@ -26,7 +26,7 @@ import {
   createRouteRef,
   useApi,
   useAppNavigate,
-  useHref as useFrameworkHref,
+  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
 import {
   Link as TanStackLink,
@@ -482,7 +482,7 @@ describe('TanStack + RR v6 coexistence', () => {
    * Every case below therefore checks three answers for the same mount:
    *
    *  - what the sub-page's own library resolves a target to;
-   *  - what the framework's `useHref` resolves the same target to, walking
+   *  - what the framework's `useAppHref` resolves the same target to, walking
    *    page mounts with no routing library involved — the two are documented
    *    to agree, so they are required to agree;
    *  - what the page mount alone would give, which is the same target one
