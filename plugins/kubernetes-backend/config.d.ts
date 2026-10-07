@@ -169,6 +169,34 @@ export interface Config {
         };
       };
     };
+
+    auth?: {
+      /**
+       * Microsoft Entra Id configuration dedicated to the Kubernetes backend.
+       *
+       * When set, these client credentials are used instead of the ones under
+       * `auth.microsoft`, allowing a dedicated Entra application for Kubernetes.
+       * Any field left unset falls back to the matching `auth.microsoft` field.
+       */
+      microsoft?: {
+        [authEnv: string]: {
+          /**
+           * Microsoft Entra Id tenant id used to request Kubernetes tokens
+           */
+          tenantId?: string;
+          /**
+           * Microsoft Entra Id client id used to request Kubernetes tokens
+           */
+          clientId?: string;
+          /**
+           * Microsoft Entra Id client secret used to request Kubernetes tokens
+           *
+           * @visibility secret
+           */
+          clientSecret?: string;
+        };
+      };
+    };
   };
   auth?: {
     providers?: {

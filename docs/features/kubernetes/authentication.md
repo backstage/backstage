@@ -179,18 +179,42 @@ kubernetes:
           authProvider: microsoft
           authMetadata:
             kubernetes.io/microsoft-entra-id-scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
-
-auth:
-  providers:
+  auth:
     microsoft:
       <env>:
-        clientId: ${AZURE_CLIENT_ID}
-        clientSecret: ${AZURE_CLIENT_SECRET}
-        tenantId: ${AZURE_TENANT_ID}
-        ...
+        clientId: ${KUBERNETES_AZURE_CLIENT_ID}
+        clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
+        tenantId: ${KUBERNETES_AZURE_TENANT_ID}
 ```
 
-The configuration of the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
+The Kubernetes backend reads its Microsoft Entra Id client credentials from the
+`kubernetes.auth.microsoft.<env>` block, where `<env>` is the current
+`NODE_ENV` (defaults to `development`). This keeps the Kubernetes credentials
+independent from the main Microsoft authentication provider.
+
+You can configure these credentials in one of two ways:
+
+- **Reuse the main application (no dedicated app).** If you do not want a
+  separate Entra application for the Kubernetes backend, set the **same**
+  values here as under `auth.microsoft.<env>`. You can also omit the
+  `kubernetes.auth.microsoft.<env>` keys entirely and rely on the automatic
+  fallback described below. Either way, the Enterprise Application created for
+  the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md)
+  is used to get users authorized against the Kubernetes clusters.
+- **Isolate with a dedicated app.** If you want the Kubernetes backend to use
+  its own Entra application, create a dedicated app registration and set its
+  `tenantId`, `clientId`, and `clientSecret` under
+  `kubernetes.auth.microsoft.<env>`. These values take precedence over
+  `auth.microsoft.<env>`.
+
+:::note
+When a field under `kubernetes.auth.microsoft.<env>` is not set, the Kubernetes
+backend falls back to the matching field under `auth.microsoft.<env>`. Each of
+`tenantId`, `clientId`, and `clientSecret` falls back independently, so you can
+override only some fields if needed. If neither location provides a required
+field, the backend throws an error at runtime naming the missing
+`auth.microsoft.<env>` key.
+:::
 
 #### Alternative configuration
 

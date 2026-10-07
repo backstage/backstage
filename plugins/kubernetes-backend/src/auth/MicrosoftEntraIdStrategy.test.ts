@@ -16,6 +16,25 @@
 import { ConfigReader } from '@backstage/config';
 import { AccessToken, TokenCredential } from '@azure/identity';
 import { MicrosoftEntraIdStrategy } from './MicrosoftEntraIdStrategy';
+
+const clientSecretCredentialMock = jest.fn();
+
+jest.mock('@azure/identity', () => {
+  const actual = jest.requireActual('@azure/identity');
+  return {
+    ...actual,
+    ClientSecretCredential: jest.fn().mockImplementation((...args) => {
+      clientSecretCredentialMock(...args);
+      return {
+        getToken: jest.fn().mockResolvedValue({
+          token: 'CLIENT_SECRET_TOKEN',
+          expiresOnTimestamp: Date.now() + 20 * 60 * 1000,
+        }),
+      };
+    }),
+  };
+});
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugin-kubernetes-common';
@@ -236,6 +255,97 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     });
     expect(tokenCredential.lastScope).toBe(
       'microsoft-enterprise-app-id/mapped.permission',
+    );
+  });
+
+  it('should read client credentials from the kubernetes-specific config location', async () => {
+    clientSecretCredentialMock.mockClear();
+
+    const kubernetesSpecificConfig = new ConfigReader({
+      auth: {
+        microsoft: {
+          [env]: {
+            tenantId: 'shared-tenant-id',
+            clientId: 'shared-client-id',
+            clientSecret: 'shared-client-secret',
+          },
+        },
+      },
+      kubernetes: {
+        auth: {
+          microsoft: {
+            [env]: {
+              tenantId: 'kubernetes-tenant-id',
+              clientId: 'kubernetes-client-id',
+              clientSecret: 'kubernetes-client-secret',
+            },
+          },
+          providers: {
+            microsoft: {
+              [env]: {
+                scope: 'microsoft-enterprise-app-id/mapped.permission',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const strategy = new MicrosoftEntraIdStrategy(logger, {
+      config: kubernetesSpecificConfig,
+    });
+
+    const credential = await strategy.getCredential(clusterWithoutAnnotation);
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'CLIENT_SECRET_TOKEN',
+    });
+    expect(clientSecretCredentialMock).toHaveBeenCalledWith(
+      'kubernetes-tenant-id',
+      'kubernetes-client-id',
+      'kubernetes-client-secret',
+    );
+  });
+
+  it('should fall back to the shared auth.microsoft credentials when kubernetes-specific keys are absent', async () => {
+    clientSecretCredentialMock.mockClear();
+
+    const fallbackConfig = new ConfigReader({
+      auth: {
+        microsoft: {
+          [env]: {
+            tenantId: 'shared-tenant-id',
+            clientId: 'shared-client-id',
+            clientSecret: 'shared-client-secret',
+          },
+        },
+      },
+      kubernetes: {
+        auth: {
+          providers: {
+            microsoft: {
+              [env]: {
+                scope: 'microsoft-enterprise-app-id/mapped.permission',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const strategy = new MicrosoftEntraIdStrategy(logger, {
+      config: fallbackConfig,
+    });
+
+    const credential = await strategy.getCredential(clusterWithoutAnnotation);
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'CLIENT_SECRET_TOKEN',
+    });
+    expect(clientSecretCredentialMock).toHaveBeenCalledWith(
+      'shared-tenant-id',
+      'shared-client-id',
+      'shared-client-secret',
     );
   });
 });
