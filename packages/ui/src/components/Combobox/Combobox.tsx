@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import type {
@@ -29,7 +29,10 @@ import type {
   ComboboxServerOptionsProps,
   ComboboxStaticProps,
 } from './types';
-import type { Key } from 'react-aria-components';
+import type {
+  ComboBoxProps as AriaComboBoxProps,
+  Key,
+} from 'react-aria-components';
 import type {
   AsyncListSource,
   CollectionItem,
@@ -47,7 +50,9 @@ import {
   type CollectionAdapterResult,
 } from '../../hooks/useCollectionAdapter';
 import {
+  filterOptionSections,
   isAsyncListSource,
+  normalizeOptions,
   resolveCollectionSource,
 } from '../../utils/selectableCollection';
 import {
@@ -179,17 +184,16 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
   const renderedItems = collectionSource.rendersItems
     ? collection.canonicalItems
     : undefined;
-  const rootItems =
-    renderedItems ??
-    (collectionSource.options !== undefined && search !== undefined
-      ? collection.canonicalItems
-      : undefined);
   const searchProps = typeof search === 'object' ? search : undefined;
+  const isServerSearch = searchProps?.mode === 'server';
   const isDirectAsyncServer =
-    searchProps?.mode === 'server' &&
-    isAsyncListSource(collectionSource.source);
-  const shouldDisableRootFilter =
-    searchProps?.mode === 'server' || searchProps?.filter !== undefined;
+    isServerSearch && isAsyncListSource(collectionSource.source);
+  const hasCustomFilter = searchProps?.filter !== undefined;
+  // React Aria builds the collection from the list box children and filters it
+  // by text unless items are passed. Passing items turns that filter off, so
+  // the server or the custom filter decides which options the list box renders.
+  const rootItems =
+    isServerSearch || hasCustomFilter ? collection.canonicalItems : undefined;
   const {
     value,
     defaultValue,
@@ -198,6 +202,7 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     defaultInputValue,
     onInputChange,
     menuTrigger = 'focus',
+    onOpenChange,
     ...ariaProps
   } = restProps as typeof restProps & ComboboxRuntimeStateProps<T>;
   const asyncComboboxProps = isDirectAsyncServer
@@ -223,7 +228,103 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     collection,
     hasSearch: search !== undefined,
   });
-  const defaultFilter = shouldDisableRootFilter ? () => true : contains;
+  const [uncontrolledInputValue, setUncontrolledInputValue] = useState(
+    comboboxStateProps.defaultInputValue ?? '',
+  );
+  const currentInputValue =
+    comboboxStateProps.inputValue ?? uncontrolledInputValue;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAllOptions, setShowAllOptions] = useState(false);
+  const [lastInputValue, setLastInputValue] = useState(currentInputValue);
+  if (lastInputValue !== currentInputValue) {
+    setLastInputValue(currentInputValue);
+    setShowAllOptions(false);
+  }
+  // The deprecated `selectedKey` and `defaultSelectedKey` props still reach
+  // React Aria, so the selection mirror honors them too.
+  const keyProps = ariaProps as {
+    selectedKey?: Key | null;
+    defaultSelectedKey?: Key | null;
+    disabledKeys?: Iterable<Key>;
+  };
+  const [uncontrolledSelectedKey, setUncontrolledSelectedKey] = useState(
+    comboboxStateProps.defaultValue ?? keyProps.defaultSelectedKey ?? null,
+  );
+  let selectedKey = uncontrolledSelectedKey;
+  if (comboboxStateProps.value !== undefined) {
+    selectedKey = comboboxStateProps.value;
+  } else if (keyProps.selectedKey !== undefined) {
+    selectedKey = keyProps.selectedKey;
+  }
+  // Like React Aria's own filtering, the custom filter only applies once the
+  // input text changes in the open menu.
+  const customFilterQuery =
+    hasCustomFilter && isMenuOpen && !showAllOptions
+      ? currentInputValue
+      : undefined;
+  // `search` mixes the options and items variants, so each branch narrows the
+  // filter to the type it renders.
+  const optionFilter = collectionSource.rendersItems
+    ? undefined
+    : (searchProps?.filter as
+        | ((option: NormalizedOption, query: string) => boolean)
+        | undefined);
+  // React Aria reads the selected option's label from the collection when it
+  // restores the input on Escape or blur, and the collection only holds the
+  // options the list box renders. So the selected option stays in the
+  // collection even when the filter excludes it, but it is disabled so the
+  // keyboard skips it, and the list box hides it.
+  let hiddenKey: Key | undefined;
+  const keepsSelected = (id: Key, matches: boolean) => {
+    if (matches || id !== selectedKey) {
+      return matches;
+    }
+    hiddenKey = id;
+    return true;
+  };
+  const filteredOptions =
+    optionFilter && customFilterQuery !== undefined && collectionSource.options
+      ? filterOptionSections(
+          normalizeOptions(collectionSource.options),
+          customFilterQuery,
+          (option, query) =>
+            keepsSelected(option.id, optionFilter(option, query)),
+        )
+      : collectionSource.options;
+  const itemFilter = collectionSource.rendersItems
+    ? (searchProps?.filter as ((item: T, query: string) => boolean) | undefined)
+    : undefined;
+  const filteredItems =
+    itemFilter && customFilterQuery !== undefined && renderedItems
+      ? renderedItems.filter(item =>
+          keepsSelected(item.id, itemFilter(item, customFilterQuery)),
+        )
+      : renderedItems;
+  const disabledKeys =
+    hiddenKey === undefined
+      ? keyProps.disabledKeys
+      : [...(keyProps.disabledKeys ?? []), hiddenKey];
+  const handleChange = (key: Key | null) => {
+    setUncontrolledSelectedKey(key);
+    comboboxStateProps.onChange?.(key);
+  };
+  const handleInputChange = (nextInputValue: string) => {
+    setUncontrolledInputValue(nextInputValue);
+    // The mirror misses the label React Aria shows for a default selection, so
+    // an edit back to the mirrored value must still start filtering.
+    setShowAllOptions(false);
+    comboboxStateProps.onInputChange?.(nextInputValue);
+  };
+  const handleOpenChange: NonNullable<AriaComboBoxProps<T>['onOpenChange']> = (
+    isOpen,
+    trigger,
+  ) => {
+    setIsMenuOpen(isOpen);
+    if (isOpen) {
+      setShowAllOptions(trigger !== 'input');
+    }
+    onOpenChange?.(isOpen, trigger);
+  };
   const getItemTextValue =
     isDirectAsyncServer && items !== undefined
       ? getAsyncComboboxItemTextValue
@@ -232,12 +333,16 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
   return (
     <AriaComboBox<T>
       className={classes.root}
-      defaultFilter={defaultFilter}
+      defaultFilter={contains}
       items={rootItems}
       {...dataAttributes}
       ref={ref}
       {...ariaProps}
       {...comboboxStateProps}
+      disabledKeys={disabledKeys}
+      onChange={handleChange}
+      onInputChange={handleInputChange}
+      onOpenChange={handleOpenChange}
       menuTrigger={menuTrigger}
       allowsEmptyCollection
     >
@@ -251,10 +356,10 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
       <FieldError />
       <Popover className={classes.popover} hideArrow {...dataAttributes}>
         <ComboboxListBox
-          options={collectionSource.options}
-          items={renderedItems}
+          options={filteredOptions}
+          items={filteredItems}
+          hiddenKey={hiddenKey}
           dependencies={dependencies}
-          search={search as never}
           loading={collection.loading}
           isStale={collection.isStale}
           getItemTextValue={getItemTextValue}
