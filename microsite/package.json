@@ -24,8 +24,8 @@
   },
   "prettier": "@backstage/cli/config/prettier",
   "resolutions": {
-    "@swc/core": "1.16.2",
-    "@swc/html": "1.16.2",
+    "@swc/core": "1.16.13",
+    "@swc/html": "1.16.13",
     "node-polyfill-webpack-plugin": "^4.1.0"
   },
   "dependencies": {
