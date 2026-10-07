@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createContext, useContext, useMemo, type Context } from 'react';
+import { createContext, useContext, type Context } from 'react';
 import { unwrapReactRouterContext } from '@internal/frontend';
 import {
   UNSAFE_DataRouterContext,
@@ -81,30 +81,4 @@ export const DataRouterContext: Context<object> =
 /** Reads a React Router context without requiring a router to be present. */
 export function useRouterContext<T>(context: Context<T>): T | undefined {
   return unwrapReactRouterContext(useContext(context)) ?? undefined;
-}
-
-/**
- * The route bases a relative target resolves against, derived exactly the way
- * React Router's `useResolvedPath` derives them: the `pathnameBase` of every
- * match that contributes a path segment, or the leaf's full `pathname` when the
- * `v7_relativeSplatPath` future flag is on.
- *
- * Empty when there is no router, and equally inside one where nothing matched —
- * both mean relative targets resolve against the app root.
- */
-export function useRouteBasePaths(): string[] {
-  const matches = unwrapReactRouterContext(useContext(RouteContext)).matches;
-  const relativeSplatPath =
-    useRouterContext(NavigationContext)?.future?.v7_relativeSplatPath ?? false;
-
-  return useMemo(() => {
-    const contributing = matches.filter(
-      (match, index) => index === 0 || !!match.route.path,
-    );
-    return contributing.map((match, index) =>
-      relativeSplatPath && index === contributing.length - 1
-        ? match.pathname
-        : match.pathnameBase,
-    );
-  }, [matches, relativeSplatPath]);
 }

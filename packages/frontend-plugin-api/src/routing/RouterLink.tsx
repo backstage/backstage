@@ -28,7 +28,7 @@ import type { AppNavigateOptions } from './AppLocation';
 export interface RouterLinkProps
   extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
     AppNavigateOptions {
-  /** Target resolved against the calling extension's route ancestry. */
+  /** App-absolute path, query/hash target, or external URL. */
   href: string;
 }
 
@@ -37,8 +37,8 @@ export interface RouterLinkProps
  *
  * Use the Backstage UI Link for standard UI links. This primitive forwards
  * anchor props and refs, and can be supplied through React Aria's render prop.
- * It resolves relative targets in its own extension scope and handles internal
- * navigation through app history. Without app history, it uses browser navigation.
+ * Paths must start with `/`, excluding the deployment basename. It handles
+ * internal navigation through app history. Without app history, it uses browser navigation.
  * External URLs, modified clicks, downloads, and other targets retain native
  * browser behavior.
  *

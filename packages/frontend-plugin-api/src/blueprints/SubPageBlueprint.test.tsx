@@ -251,7 +251,7 @@ describe('SubPageBlueprint', () => {
   it('preserves native React Router APIs for an unmigrated subpage', async () => {
     const NativeRoutingProbe = () => {
       const nativeSibling = useResolvedPath('../sibling');
-      const frameworkSibling = useAppHref('../sibling');
+      const frameworkSibling = useAppHref('/native/sibling');
       const params = useParams();
       return (
         <div data-testid="native-routing-probe">
@@ -386,7 +386,10 @@ describe('SubPageBlueprint', () => {
               <div data-testid="templates-page">
                 <div data-testid="pathname">{location.pathname}</div>
                 <div data-testid="mount-base">{mount?.basePath}</div>
-                <a href={useAppHref('./actions')} data-testid="relative-link">
+                <a
+                  href={useAppHref('/create/templates/actions')}
+                  data-testid="relative-link"
+                >
                   Actions
                 </a>
               </div>
@@ -456,7 +459,9 @@ describe('SubPageBlueprint', () => {
           <div data-testid="mount-pattern">{mount?.routePattern}</div>
           {/* Framework href resolution reads the selected subpage mount, so it
               is right whether or not the content declared a router. */}
-          <div data-testid="framework-href">{useAppHref('detail')}</div>
+          <div data-testid="framework-href">
+            {useAppHref('/docs/intro/detail')}
+          </div>
         </div>
       );
     };

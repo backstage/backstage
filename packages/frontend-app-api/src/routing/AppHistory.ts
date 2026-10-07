@@ -21,12 +21,9 @@ import type {
 } from '@backstage/frontend-plugin-api';
 import type { Observable, Subscription } from '@backstage/types';
 import {
-  createPath,
-  sanitizeHref,
+  resolveAppTarget,
   isExternalTarget,
   appHistoryMetadataSymbol,
-  parsePath,
-  resolvePath,
   type AppHistoryAction,
   type AppHistoryMetadata,
 } from '@internal/frontend';
@@ -189,7 +186,7 @@ export class AppHistory implements AppHistoryApi {
       this.history.go(to);
       return;
     }
-    const safeTo = sanitizeHref(to);
+    const safeTo = resolveAppTarget(to, this.location.pathname);
     if (isExternalTarget(safeTo)) {
       this.history.navigateExternal(safeTo, { replace: options?.replace });
       return;
@@ -212,8 +209,7 @@ export class AppHistory implements AppHistoryApi {
    * Resolve a path to a browser-ready href, prefixed with the app's deploy
    * basename.
    *
-   * Framework hrefs and BUI navigation resolve the matched route ancestry
-   * before calling this method. Paths here resolve against the app root;
+   * Paths must start with `/` and are relative to the app root;
    * a target with no pathname, such as `?tab=readme` or `#section`, stays at
    * the current location.
    *
@@ -226,21 +222,11 @@ export class AppHistory implements AppHistoryApi {
    * are replaced with `about:blank` and a warning, as in `navigate`.
    */
   createHref(to: string): string {
-    const safeTo = sanitizeHref(to);
+    const safeTo = resolveAppTarget(to, this.location.pathname);
     if (isExternalTarget(safeTo)) {
       return safeTo;
     }
-    const target = parsePath(safeTo);
-    const resolved = resolvePath(
-      safeTo,
-      target.pathname === undefined && safeTo !== ''
-        ? this.location.pathname
-        : '/',
-    );
-    // Still normalized through `URL`, which is what turns a resolved path that
-    // is not already app-absolute into one, and collapses any `.`/`..` a
-    // caller wrote into an absolute target.
-    const url = new URL(createPath(resolved), 'http://localhost');
+    const url = new URL(safeTo, 'http://localhost');
     return `${this.basename}${url.pathname}${url.search}${url.hash}`;
   }
 

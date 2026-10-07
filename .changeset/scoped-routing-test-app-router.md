@@ -8,7 +8,7 @@ Added `createMockAppHistory`, `createMockRouteResolutionApi`, `mockApis.appHisto
 
 App history mocks record external navigation without changing the location or leaving the test page.
 
-Route resolution fakes also resolve authored targets using their configured matches, with a `resolveTarget` override for custom behavior.
+App history mocks reject path-relative destinations, matching production history. Use app-absolute paths or route-ref destinations.
 
 Root mounts (`mountPath: '/'` or `'/*'`) now render at descendant locations. Isolated extension tests select attached sub-pages using app route matching and preserve query strings and fragments during parent index redirects.
 
