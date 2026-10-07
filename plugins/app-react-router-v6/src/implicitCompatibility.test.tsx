@@ -138,7 +138,7 @@ describe('implicit page router compatibility', () => {
       return <h1>Explicit {useParams().id}</h1>;
     }
     function FrameworkContent() {
-      return <a href={useAppHref('details')}>Framework link</a>;
+      return <a href={useAppHref('/framework/details')}>Framework link</a>;
     }
     const explicit = PageBlueprint.make({
       name: 'explicit',

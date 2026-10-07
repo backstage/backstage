@@ -580,7 +580,7 @@ export function createAppHistoryRouter(
       () =>
         observeReactRouterContext(
           {
-            basename: '',
+            basename: '/',
             navigator,
             static: false,
             ...navigationContextExtras,

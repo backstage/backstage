@@ -170,7 +170,10 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   const appHistory = useOptionalAppHistory();
   const basePath = useAppBasePath();
-  const toLocation = useAppResolvedPath(appHistory, to ?? '');
+  const toLocation = useAppResolvedPath(
+    appHistory,
+    to ?? (appHistory ? '/' : ''),
+  );
   const currentLocation = useAppLocation(appHistory);
   let isActive = isLocationMatch(currentLocation, toLocation, exact);
 

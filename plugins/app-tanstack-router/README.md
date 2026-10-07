@@ -112,23 +112,31 @@ import {
 } from '@tanstack/react-router';
 import { ToolDetails } from './ToolDetails';
 
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <TanStackPageContent />
-      <Outlet />
-    </>
-  ),
-});
-const detailsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/details',
-  component: ToolDetails,
-});
-const routeTree = rootRoute.addChildren([detailsRoute]);
-
 const ToolsPageRouter = createTanStackPageRouter({
-  createRouter: ({ history }) => createRouter({ routeTree, history }),
+  createRouter: ({ history, routePaths }) => {
+    const rootRoute = createRootRoute({ component: Outlet });
+    const routeTree = rootRoute.addChildren(
+      routePaths.map(routePath => {
+        const pageRoute = createRoute({
+          getParentRoute: () => rootRoute,
+          path: routePath,
+          component: () => (
+            <>
+              <TanStackPageContent />
+              <Outlet />
+            </>
+          ),
+        });
+        const detailsRoute = createRoute({
+          getParentRoute: () => pageRoute,
+          path: 'details',
+          component: ToolDetails,
+        });
+        return pageRoute.addChildren([detailsRoute]);
+      }),
+    );
+    return createRouter({ routeTree, history });
+  },
 });
 
 export function ToolsPage() {
@@ -142,6 +150,17 @@ export function ToolsPage() {
 
 Going through the factory keeps TanStack types out of the framework's public
 contract, so they stay inside this package and your own plugin.
+
+## Navigation targets
+
+Paths starting with `/` are absolute from the app root, without the deployment
+basename. Route-ref destinations work unchanged through this adapter's native
+navigation APIs and through BUI controls, including navigation to other plugins.
+
+The adapter installs a local BUI routing provider. BUI links, buttons, and tabs
+resolve relative targets using the routing library at the consuming control's
+route scope. Outside an adapter, framework routing accepts only app-absolute
+paths, query/hash targets, and external URLs.
 
 ## Limitations
 

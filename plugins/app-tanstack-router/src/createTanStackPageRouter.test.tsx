@@ -99,17 +99,52 @@ describe('createTanStackPageRouter', () => {
       initialRouteEntries: ['/catalog/edit'],
     });
     expect(await screen.findByText('Edit child')).toBeInTheDocument();
-    expect(await screen.findByText('Scoped path: /edit')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Scoped path: /catalog/edit'),
+    ).toBeInTheDocument();
     await act(async () =>
       screen.getByRole('button', { name: 'Count 0' }).click(),
     );
     await act(async () => appHistory.navigate('/catalog/foo/edit'));
-    expect(await screen.findByText('Scoped path: /edit')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Scoped path: /catalog/foo/edit'),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Count 1' })).toBeInTheDocument();
     await act(async () => appHistory.navigate('/catalog/edit'));
-    expect(await screen.findByText('Scoped path: /edit')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Scoped path: /catalog/edit'),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Count 1' })).toBeInTheDocument();
   });
+  it.each([
+    ['/', '/deep'],
+    ['/tools/:id?', '/tools/alpha/details'],
+    ['/tools/:item-id?', '/tools/alpha/details'],
+    ['/tools/optional?', '/tools/optional/details'],
+    ['/tools/optional?', '/tools/details'],
+    ['/touché/a b', '/touch%C3%A9/a%20b/details'],
+  ])(
+    'keeps app-absolute locations for mount %s at %s',
+    async (mountPath, initialRoute) => {
+      function Probe() {
+        const location = useLocation();
+        return <p>Path: {location.pathname}</p>;
+      }
+      renderInTestApp(
+        <TanStackPageRouter>
+          <Probe />
+        </TanStackPageRouter>,
+        {
+          mountPath,
+          initialRouteEntries: [initialRoute],
+        },
+      );
+      expect(
+        await screen.findByText(`Path: ${initialRoute}`),
+      ).toBeInTheDocument();
+    },
+  );
+
   it('binds a plugin-owned nested route tree to the page history', async () => {
     const rootRoute = createRootRoute({
       component: () => (
@@ -121,7 +156,7 @@ describe('createTanStackPageRouter', () => {
     });
     const detailsRoute = createRoute({
       getParentRoute: () => rootRoute,
-      path: '/details',
+      path: '/things/details',
       component: () => <span>Nested details</span>,
     });
     const routeTree = rootRoute.addChildren([detailsRoute]);
@@ -161,12 +196,12 @@ describe('createTanStackPageRouter', () => {
         });
         const detailsRoute = createRoute({
           getParentRoute: () => rootRoute,
-          path: '/details',
+          path: '/things/details',
           component: () => <span>Strict details</span>,
         });
         const indexRoute = createRoute({
           getParentRoute: () => rootRoute,
-          path: '/',
+          path: '/things',
           component: () => null,
         });
         return createRouter({
@@ -231,7 +266,10 @@ describe('createTanStackPageRouter', () => {
           <span>Location: {location.pathname}</span>
           <span>Hook back: {String(canGoBack)}</span>
           <span>History back: {String(router.history.canGoBack())}</span>
-          <button type="button" onClick={() => router.navigate({ to: '/one' })}>
+          <button
+            type="button"
+            onClick={() => router.navigate({ to: '/tools/one' })}
+          >
             Next
           </button>
           <button type="button" onClick={() => router.history.back()}>
@@ -253,11 +291,11 @@ describe('createTanStackPageRouter', () => {
     );
     expect(await screen.findByText('Hook back: false')).toBeInTheDocument();
     await act(async () => screen.getByRole('button', { name: 'Next' }).click());
-    expect(await screen.findByText('Location: /one')).toBeInTheDocument();
+    expect(await screen.findByText('Location: /tools/one')).toBeInTheDocument();
     expect(screen.getByText('Hook back: false')).toBeInTheDocument();
     expect(screen.getByText('History back: false')).toBeInTheDocument();
     await act(async () => screen.getByRole('button', { name: 'Back' }).click());
-    expect(await screen.findByText('Location: /')).toBeInTheDocument();
+    expect(await screen.findByText('Location: /tools')).toBeInTheDocument();
     expect(inner.location.pathname).toBe('/tools');
   });
 });
