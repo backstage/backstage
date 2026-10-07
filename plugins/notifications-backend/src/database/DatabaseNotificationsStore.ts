@@ -71,7 +71,7 @@ type NotificationRowType = {
   read: Date | null;
   saved: Date | null;
   icon: string | null;
-  metadata?: string | null;
+  metadata: string | null;
 };
 
 type BroadcastRowType = {
@@ -85,7 +85,7 @@ type BroadcastRowType = {
   created: Date;
   updated: Date | null;
   icon: string | null;
-  metadata?: string | null;
+  metadata: string | null;
 };
 
 type BroadcastUserStatusRowType = {
@@ -170,16 +170,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
-        metadata: (() => {
-          if (!row.metadata) {
-            return undefined;
-          }
-
-          if (typeof row.metadata === 'string') {
-            return JSON.parse(row.metadata);
-          }
-          return row.metadata;
-        })(),
+        metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
       },
     }));
   };
@@ -459,6 +450,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   }) {
     const updateColumns = {
       title: notification.payload.title,
+      metadata: notification.payload.metadata
+        ? JSON.stringify(notification.payload.metadata)
+        : null,
       description: notification.payload.description,
       link: notification.payload.link,
       topic: notification.payload.topic,
