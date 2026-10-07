@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
@@ -27,28 +28,6 @@ import {
   useApi,
   useApiHolder,
 } from '../apis';
-
-function useIsAppFinalized(): boolean {
-  const appLifecycleApi = useApiHolder().get(appLifecycleApiRef);
-  const [finalized, setFinalized] = useState(
-    () => appLifecycleApi?.isFinalized() ?? true,
-  );
-
-  useEffect(() => {
-    if (finalized) return undefined;
-
-    let mounted = true;
-    appLifecycleApi?.waitForFinalization().then(() => {
-      if (mounted) setFinalized(true);
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [appLifecycleApi, finalized]);
-
-  return finalized;
-}
 
 /**
  * React hook for constructing URLs to routes.
@@ -69,12 +48,26 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined {
   const { pathname } = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
-  const finalized = useIsAppFinalized();
+  const appLifecycleApi = useApiHolder().get(appLifecycleApiRef);
+  const appLifecycleSubscribe = useCallback(
+    (listener: () => void) =>
+      appLifecycleApi?.subscribe(listener) ?? (() => {}),
+    [appLifecycleApi],
+  );
+  const appLifecycleIsFinalized = useCallback(
+    () => appLifecycleApi?.isFinalized(),
+    [appLifecycleApi],
+  );
+  const isFinalized = useSyncExternalStore(
+    appLifecycleSubscribe,
+    appLifecycleIsFinalized,
+  );
 
   const routeFunc = useMemo(
     () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
+    // Resolve before app is finalized and re-evaluate again after
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [routeResolutionApi, routeRef, pathname, finalized],
+    [routeResolutionApi, routeRef, pathname, isFinalized],
   );
 
   return routeFunc;

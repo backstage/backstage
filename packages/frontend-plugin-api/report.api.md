@@ -225,7 +225,7 @@ export const appLanguageApiRef: ApiRef_2<AppLanguageApi, 'core.applanguage'> & {
 // @public
 export interface AppLifecycleApi {
   isFinalized(): boolean;
-  waitForFinalization(): Promise<void>;
+  subscribe(listener: () => void): () => void;
 }
 
 // @public

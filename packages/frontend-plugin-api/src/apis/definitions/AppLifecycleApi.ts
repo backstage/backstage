@@ -35,10 +35,16 @@ export interface AppLifecycleApi {
   isFinalized(): boolean;
 
   /**
-   * Returns a promise that resolves once the app has been finalized, or
-   * immediately if it already has been.
+   * Subscribes to changes in the lifecycle of the app.
+   *
+   * @remarks
+   *
+   * The listener is called without arguments whenever the lifecycle changes.
+   * Use the other methods of this API to read the current state.
+   *
+   * @returns A function that removes the subscription.
    */
-  waitForFinalization(): Promise<void>;
+  subscribe(listener: () => void): () => void;
 }
 
 /**

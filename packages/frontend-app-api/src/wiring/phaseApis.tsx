@@ -37,7 +37,6 @@ import {
   type ExtensionFactoryMiddleware,
   type IdentityApi,
 } from '@backstage/frontend-plugin-api';
-import { createDeferred } from '@backstage/types';
 import { matchRoutes } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
@@ -169,19 +168,26 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
 
 export class DefaultAppLifecycleApi implements AppLifecycleApi {
   #finalized = false;
-  readonly #finalization = createDeferred();
+  readonly #listeners = new Set<() => void>();
 
   isFinalized() {
     return this.#finalized;
   }
 
-  waitForFinalization(): Promise<void> {
-    return this.#finalization;
+  subscribe(listener: () => void) {
+    this.#listeners.add(listener);
+
+    return () => {
+      this.#listeners.delete(listener);
+    };
   }
 
   markFinalized() {
     this.#finalized = true;
-    this.#finalization.resolve();
+
+    for (const listener of this.#listeners) {
+      listener();
+    }
   }
 }
 
