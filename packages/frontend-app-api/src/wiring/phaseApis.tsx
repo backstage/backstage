@@ -17,6 +17,8 @@
 import {
   AnyApiFactory,
   ApiHolder,
+  AppLifecycleApi,
+  appLifecycleApiRef,
   AppTree,
   AppTreeApi,
   appTreeApiRef,
@@ -164,6 +166,29 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
   }
 }
 
+export class DefaultAppLifecycleApi implements AppLifecycleApi {
+  #finalized = false;
+  readonly #listeners = new Set<() => void>();
+
+  isFinalized = () => this.#finalized;
+
+  subscribe = (listener: () => void) => {
+    this.#listeners.add(listener);
+
+    return () => {
+      this.#listeners.delete(listener);
+    };
+  };
+
+  markFinalized() {
+    this.#finalized = true;
+
+    for (const listener of this.#listeners) {
+      listener();
+    }
+  }
+}
+
 export class PreparedAppIdentityProxy extends AppIdentityProxy {
   #onTargetSet?:
     | ((identityApi: Parameters<AppIdentityProxy['setTarget']>[0]) => void)
@@ -213,9 +238,11 @@ export function createPhaseApis(options: {
     options.appBasePath,
   );
   const identityProxy = new PreparedAppIdentityProxy();
+  const appLifecycleApi = new DefaultAppLifecycleApi();
   const phaseApiRegistry = new FrontendApiRegistry();
   phaseApiRegistry.registerAll([
     createApiFactory(appTreeApiRef, appTreeApi),
+    createApiFactory(appLifecycleApiRef, appLifecycleApi),
     ...(options.includeConfigApi
       ? [createApiFactory(configApiRef, options.config)]
       : []),
@@ -234,6 +261,7 @@ export function createPhaseApis(options: {
     apis,
     routeResolutionApi,
     appTreeApi,
+    appLifecycleApi,
     identityApiProxy: identityProxy,
   };
 }

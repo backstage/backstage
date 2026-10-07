@@ -15,6 +15,7 @@
  */
 
 import {
+  appLifecycleApiRef,
   AppTreeApi,
   appTreeApiRef,
   coreExtensionData,
@@ -22,6 +23,8 @@ import {
   createFrontendPlugin,
   createFrontendModule,
   ApiBlueprint,
+  AppRootElementBlueprint,
+  PageBlueprint,
   createApiRef,
   createRouteRef,
   createExternalRouteRef,
@@ -1747,6 +1750,53 @@ describe('createSpecializedApp', () => {
       await expect(
         screen.findByText('Deferred Element'),
       ).resolves.toBeInTheDocument();
+    });
+
+    it('should mark the app as finalized and resolve page routes in app root elements', async () => {
+      const pageRouteRef = createRouteRef();
+      function LinkElement() {
+        const link = useRouteRef(pageRouteRef);
+        return <div>Link: {link?.() ?? 'none'}</div>;
+      }
+      const features = [
+        appPluginOriginal.withOverrides({
+          extensions: [
+            appPluginOriginal
+              .getExtension('sign-in-page:app')
+              .override({ disabled: true }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            PageBlueprint.make({
+              params: { path: '/page', routeRef: pageRouteRef },
+            }),
+            AppRootElementBlueprint.make({
+              params: { element: <LinkElement /> },
+            }),
+          ],
+        }),
+      ];
+
+      const preparedApp = prepareSpecializedApp({ features });
+      renderPreparedBootstrap(preparedApp);
+      const lifecycleApi = preparedApp
+        .getBootstrapApp()
+        .apis.get(appLifecycleApiRef)!;
+      expect(screen.getByText('Link: none')).toBeInTheDocument();
+      expect(lifecycleApi.isFinalized()).toBe(false);
+
+      await act(async () => {
+        await waitForFinalizedApp(preparedApp);
+      });
+
+      expect(screen.getByText('Link: /page')).toBeInTheDocument();
+      expect(lifecycleApi.isFinalized()).toBe(true);
+
+      // Also verify that finalizing a new prepared app instance works as expected
+      const app = prepareSpecializedApp({ features }).finalize();
+      expect(app.apis.get(appLifecycleApiRef)?.isFinalized()).toBe(true);
     });
 
     it('should warn when bootstrap extensions access APIs that appear during finalization', async () => {
