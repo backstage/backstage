@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  AnchorHTMLAttributes,
-  MouseEvent as ReactMouseEvent,
-  ReactNode,
-  forwardRef,
-} from 'react';
-import { isExternalTarget } from '@internal/frontend';
-import { useAppHref } from './useHref';
+import { AnchorHTMLAttributes, ReactNode, forwardRef } from 'react';
+import { RouterLink } from './RouterLink';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
-import { useApiHolder } from '../apis/system';
-import { appHistoryApiRef } from './AppHistoryApi';
 
 /**
  * Props for {@link RouteLink}.
@@ -50,10 +42,6 @@ export type RouteLinkProps<TParams extends AnyRouteRefParams> = {
   children?: ReactNode;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 
-function isModifiedEvent(event: ReactMouseEvent): boolean {
-  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
-}
-
 /**
  * A link that resolves a {@link RouteRef} and navigates via the app history
  * when one is available, otherwise falls through to a normal anchor
@@ -67,53 +55,21 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
 export const RouteLink = forwardRef(function RouteLink<
   TParams extends AnyRouteRefParams,
 >(props: RouteLinkProps<TParams>, ref: React.ForwardedRef<HTMLAnchorElement>) {
-  const { routeRef, params, replace, children, onClick, ...rest } = props;
+  const { routeRef, params, children, ...rest } = props;
   const routeFunc = useRouteRef(routeRef);
-  const appHistory = useApiHolder().get(appHistoryApiRef);
-
-  // Resolved above the unresolved-route bail-out below, since the target feeds
-  // a hook that has to be called unconditionally.
-  let to = '';
-  if (routeFunc) {
-    to =
-      params === undefined
-        ? (routeFunc as unknown as () => string)()
-        : (routeFunc as unknown as (p: TParams) => string)(params);
-  }
-
-  // The rendered href must include the app's deploy basename: modified clicks
-  // and the old frontend system both leave the anchor to the browser.
-  const href = useAppHref(appHistory, to);
-
   if (!routeFunc) {
     return <>{children}</>;
   }
 
-  const handleClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
-    onClick?.(event);
-    if (
-      event.defaultPrevented ||
-      isExternalTarget(to) ||
-      event.button !== 0 ||
-      isModifiedEvent(event) ||
-      (event.currentTarget.target &&
-        event.currentTarget.target.toLowerCase() !== '_self') ||
-      event.currentTarget.hasAttribute('download')
-    ) {
-      return;
-    }
-    if (!appHistory) {
-      // Old frontend system / no app history: let the browser follow href.
-      return;
-    }
-    event.preventDefault();
-    appHistory.navigate(to, replace ? { replace: true } : undefined);
-  };
+  const to =
+    params === undefined
+      ? (routeFunc as unknown as () => string)()
+      : (routeFunc as unknown as (p: TParams) => string)(params);
 
   return (
-    <a {...rest} ref={ref} href={href} onClick={handleClick}>
+    <RouterLink {...rest} ref={ref} href={to}>
       {children}
-    </a>
+    </RouterLink>
   );
 }) as <TParams extends AnyRouteRefParams>(
   props: RouteLinkProps<TParams> & {
