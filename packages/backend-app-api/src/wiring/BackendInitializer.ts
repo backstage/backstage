@@ -25,7 +25,7 @@ import {
   createServiceFactory,
   ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
-import type { ConnectionRegistration } from '@backstage/backend-plugin-api';
+import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
 import {
   ExtensionPointFactoryMiddleware,
   ServiceOrExtensionPoint,

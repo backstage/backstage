@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { declareConnection } from '../alpha';
 import { createServiceRef } from '../services';
 import { ID_PATTERN } from './constants';
 import { createBackendModule } from './createBackendModule';
@@ -26,17 +27,17 @@ describe('createBackendModule', () => {
       pluginId: 'test',
       moduleId: 'connections',
       register(env) {
-        env.registerConnection({
+        declareConnection(env, {
           type: 'github',
           required: true,
           description: 'Reads repository metadata',
         });
-        env.registerConnection({ type: 'gitlab' });
-        expect(() => env.registerConnection({ type: 'github' })).toThrow(
+        declareConnection(env, { type: 'gitlab' });
+        expect(() => declareConnection(env, { type: 'github' })).toThrow(
           /Duplicate connection registration for type 'github'/,
         );
         env.registerInit({ deps: {}, async init() {} });
-        expect(() => env.registerConnection({ type: 'azure' })).toThrow(
+        expect(() => declareConnection(env, { type: 'azure' })).toThrow(
           /registerConnection called after registerInit/,
         );
       },

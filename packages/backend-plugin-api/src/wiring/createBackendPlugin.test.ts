@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { declareConnection } from '../alpha';
 import { createServiceRef } from '../services';
 import { ID_PATTERN } from './constants';
 import { createBackendPlugin } from './createBackendPlugin';
@@ -96,12 +97,12 @@ describe('createBackendPlugin', () => {
     const plugin = createBackendPlugin({
       pluginId: 'x',
       register(r) {
-        r.registerConnection({
+        declareConnection(r, {
           type: 'github',
           required: true,
           description: 'used by x',
         });
-        r.registerConnection({ type: 'gitlab' });
+        declareConnection(r, { type: 'gitlab' });
         r.registerInit({ deps: {}, async init() {} });
       },
     });
@@ -118,8 +119,8 @@ describe('createBackendPlugin', () => {
         createBackendPlugin({
           pluginId: 'x',
           register(r) {
-            r.registerConnection({ type: 'github' });
-            r.registerConnection({ type: 'github' });
+            declareConnection(r, { type: 'github' });
+            declareConnection(r, { type: 'github' });
             r.registerInit({ deps: {}, async init() {} });
           },
         }).$$type,
@@ -130,8 +131,8 @@ describe('createBackendPlugin', () => {
         createBackendPlugin({
           pluginId: 'x',
           register(r) {
-            r.registerConnection({ type: 'github' });
-            r.registerConnection({ type: 'github' });
+            declareConnection(r, { type: 'github' });
+            declareConnection(r, { type: 'github' });
             r.registerInit({ deps: {}, async init() {} });
           },
         }) as unknown as InternalBackendRegistrations
@@ -144,7 +145,7 @@ describe('createBackendPlugin', () => {
           pluginId: 'x',
           register(r) {
             r.registerInit({ deps: {}, async init() {} });
-            r.registerConnection({ type: 'github' });
+            declareConnection(r, { type: 'github' });
           },
         }) as unknown as InternalBackendRegistrations
       ).getRegistrations(),

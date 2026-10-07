@@ -4,6 +4,8 @@
 
 ```ts
 import { AnyZodObject } from 'zod/v3';
+import type { BackendModuleRegistrationPoints } from '@backstage/backend-plugin-api';
+import type { BackendPluginRegistrationPoints } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { ConnectionsService } from '@backstage/connections';
@@ -145,7 +147,7 @@ export const actionsServiceRef: ServiceRef<
   'singleton'
 >;
 
-// @public
+// @alpha
 export interface ConnectionRegistration {
   description?: string;
   required?: boolean;
@@ -158,6 +160,12 @@ export const connectionsServiceRef: ServiceRef<
   'plugin',
   'singleton'
 >;
+
+// @alpha
+export function declareConnection(
+  reg: BackendPluginRegistrationPoints | BackendModuleRegistrationPoints,
+  registration: ConnectionRegistration,
+): void;
 
 // @alpha
 export interface MetricAdvice {

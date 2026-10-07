@@ -19,7 +19,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { mockServices } from '@backstage/backend-test-utils';
-import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/backend-plugin-api/alpha';
 
 describe('connections-example-backend-module-gitlab', () => {
   const testConfig = mockServices.rootConfig.factory({
@@ -46,7 +49,7 @@ describe('connections-example-backend-module-gitlab', () => {
       pluginId: 'test',
       moduleId: 'gitlab-test',
       register(reg) {
-        reg.registerConnection({
+        declareConnection(reg, {
           type: 'gitlab',
         });
         reg.registerInit({
@@ -85,7 +88,7 @@ describe('connections-example-backend-module-gitlab', () => {
       pluginId: 'test',
       moduleId: 'gitlab-only',
       register(reg) {
-        reg.registerConnection({
+        declareConnection(reg, {
           type: 'gitlab',
         });
         reg.registerInit({
@@ -123,7 +126,7 @@ describe('connections-example-backend-module-gitlab', () => {
     const testPlugin = createBackendPlugin({
       pluginId: 'test',
       register(reg) {
-        reg.registerConnection({
+        declareConnection(reg, {
           type: 'github',
         });
         reg.registerInit({
@@ -152,7 +155,7 @@ describe('connections-example-backend-module-gitlab', () => {
       pluginId: 'test',
       moduleId: 'gitlab-only',
       register(reg) {
-        reg.registerConnection({
+        declareConnection(reg, {
           type: 'gitlab',
         });
         reg.registerInit({

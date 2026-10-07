@@ -26,6 +26,7 @@ describe('connectionsServiceFactory', () => {
   it('is installed by default and resolves plugin-scoped credentials', async () => {
     expect(defaultServiceFactories).toContain(connectionsServiceFactory);
     expect(connectionsServiceFactory.service).toBe(connectionsServiceRef);
+    expect(connectionsServiceRef.id).toBe('alpha.core.connections');
 
     const tester = ServiceFactoryTester.from(connectionsServiceFactory, {
       dependencies: [

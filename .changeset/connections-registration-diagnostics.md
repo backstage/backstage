@@ -2,4 +2,4 @@
 '@backstage/backend-app-api': patch
 ---
 
-Updated undeclared-connection errors to direct plugin authors to `registerConnection` on their registration environment.
+Updated undeclared-connection errors to direct plugin authors to `declareConnection` from `@backstage/backend-plugin-api/alpha`.

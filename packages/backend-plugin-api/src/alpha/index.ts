@@ -65,3 +65,4 @@ export {
 } from './refs';
 
 export type { ConnectionRegistration } from '../wiring/types';
+export { declareConnection } from './declareConnection';

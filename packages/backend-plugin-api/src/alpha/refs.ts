@@ -18,14 +18,14 @@ import { createServiceRef } from '@backstage/backend-plugin-api';
 
 /**
  * Service for looking up plugin-scoped connections to external systems.
- * Declare consumed connection types with `registerConnection` before requesting this service.
+ * Declare consumed connection types with `declareConnection` before requesting this service.
  *
  * @alpha
  */
 export const connectionsServiceRef = createServiceRef<
   import('@backstage/connections').ConnectionsService
 >({
-  id: 'core.connections',
+  id: 'alpha.core.connections',
   scope: 'plugin',
 });
 

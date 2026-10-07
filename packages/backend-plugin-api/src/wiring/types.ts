@@ -68,7 +68,7 @@ type DepsToInstances<
 /**
  * Declares that a plugin or module consumes a particular connection type.
  *
- * @public
+ * @alpha
  */
 export interface ConnectionRegistration {
   /**
@@ -95,11 +95,6 @@ export interface ConnectionRegistration {
  * @public
  */
 export interface BackendPluginRegistrationPoints {
-  /**
-   * Declares a connection type consumed by this plugin.
-   * Must be called before `registerInit`.
-   */
-  registerConnection(registration: ConnectionRegistration): void;
   /**
    * Registers an implementation for an extension point.
    */
@@ -130,11 +125,6 @@ export interface BackendPluginRegistrationPoints {
  * @public
  */
 export interface BackendModuleRegistrationPoints {
-  /**
-   * Declares a connection type consumed by this module.
-   * Must be called before `registerInit`.
-   */
-  registerConnection(registration: ConnectionRegistration): void;
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
@@ -151,6 +141,18 @@ export interface BackendModuleRegistrationPoints {
     deps: TDeps;
     init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
+}
+
+/** @internal */
+export interface InternalBackendPluginRegistrationPoints
+  extends BackendPluginRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
+}
+
+/** @internal */
+export interface InternalBackendModuleRegistrationPoints
+  extends BackendModuleRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
 }
 
 /** @internal */

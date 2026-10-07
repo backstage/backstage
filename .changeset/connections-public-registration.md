@@ -2,4 +2,4 @@
 '@backstage/backend-plugin-api': minor
 ---
 
-Added `registerConnection` to plugin and module registration environments, with a public `ConnectionRegistration` type. Plugins can request the experimental connections service using `connectionsServiceRef` from `@backstage/backend-plugin-api/alpha`.
+Added experimental `declareConnection` and `connectionsServiceRef` exports to `@backstage/backend-plugin-api/alpha`. Plugins and modules can declare connection dependencies and request the connections service without importing private packages.

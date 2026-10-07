@@ -14,10 +14,10 @@ calling `ConnectionsService.find` with a
 :::caution[Experimental service]
 The public `@backstage/connections` package contains the shared service
 contract, connection types, and type helpers. Import the experimental service
-reference from `@backstage/backend-plugin-api/alpha`. Connection declarations
-use the public `registerConnection` method on plugin and module registration
-environments. The service implementation remains internal; plugins should not
-depend on `@backstage/connections-node`.
+reference and `declareConnection` helper from
+`@backstage/backend-plugin-api/alpha`. Both APIs are experimental. The service
+implementation remains internal; plugins should not depend on
+`@backstage/connections-node`.
 :::
 
 Backends created with `createBackend` from `@backstage/backend-defaults` include
@@ -34,12 +34,15 @@ the declaration is separate from lookup:
 
 ```ts
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
-import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/backend-plugin-api/alpha';
 
 export const examplePlugin = createBackendPlugin({
   pluginId: 'example',
   register(reg) {
-    reg.registerConnection({
+    declareConnection(reg, {
       type: 'github',
       description: 'Reads repository metadata from GitHub',
     });

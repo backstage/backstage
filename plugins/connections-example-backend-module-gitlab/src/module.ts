@@ -17,7 +17,10 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/backend-plugin-api/alpha';
 import { NotFoundError } from '@backstage/errors';
 
 /**
@@ -30,7 +33,7 @@ export const connectionsExampleBackendModuleGitlab = createBackendModule({
   pluginId: 'connections-example-backend',
   moduleId: 'gitlab',
   register(reg) {
-    reg.registerConnection({
+    declareConnection(reg, {
       type: 'gitlab',
       description:
         'Used by the gitlab module to look up GitLab hosts via the connections service',

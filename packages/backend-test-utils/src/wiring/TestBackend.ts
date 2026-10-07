@@ -73,7 +73,6 @@ export interface TestBackend extends Backend {
 }
 
 export const defaultServiceFactories = [
-  connectionsServiceFactory,
   mockServices.auth.factory(),
   mockServices.auditor.factory(),
   mockServices.cache.factory(),
@@ -94,6 +93,7 @@ export const defaultServiceFactories = [
   mockServices.events.factory(),
 
   // Alpha services
+  connectionsServiceFactory,
   actionsRegistryServiceMock.factory(),
   actionsServiceMock.factory(),
   metricsServiceMock.factory(),
