@@ -28,7 +28,7 @@ import {
   createRouteRef,
   useRouteRef,
   useRouteRefParams,
-  useHref,
+  useAppHref,
 } from '@backstage/frontend-plugin-api';
 import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { Link, useLocation, useParams } from 'react-router-dom';
@@ -72,8 +72,8 @@ describe('AppRoutes', () => {
     async ({ path, location, childHref }) => {
       const Content = () => (
         <>
-          <a href={useHref('details')}>Static page</a>
-          <a href={useHref('..')}>Static parent</a>
+          <a href={useAppHref('details')}>Static page</a>
+          <a href={useAppHref('..')}>Static parent</a>
         </>
       );
       const page = PageBlueprint.make({
@@ -120,7 +120,7 @@ describe('AppRoutes', () => {
     async ({ childPath, tail, id: expectedId, parentHref }) => {
       const parentRef = createRouteRef({ params: ['name'] });
       const childRef = createRouteRef({ params: ['id'] });
-      const ParentLinks = () => <a href={useHref('..')}>Parent up</a>;
+      const ParentLinks = () => <a href={useAppHref('..')}>Parent up</a>;
       const ChildContent = () => {
         const { name } = useRouteRefParams(parentRef);
         const { id } = useRouteRefParams(childRef);
@@ -129,7 +129,7 @@ describe('AppRoutes', () => {
             <p>
               Child {name} {id}
             </p>
-            <a href={useHref('..')}>Child up</a>
+            <a href={useAppHref('..')}>Child up</a>
             <Link to="..">Router up</Link>
           </>
         );
