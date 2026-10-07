@@ -2468,6 +2468,9 @@ export function useApi<T>(apiRef: ApiRef<T>): T;
 export function useApiHolder(): ApiHolder;
 
 // @public
+export function useAppHref(to: string): string;
+
+// @public
 export function useAppLocation(): AppLocation;
 
 // @public
@@ -2485,9 +2488,6 @@ export function useAppSearchParams(
 export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
-
-// @public
-export function useHref(to: string): string;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

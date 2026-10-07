@@ -40,7 +40,7 @@ import {
   coreExtensionData,
   createExtension,
   type StorageApi,
-  useHref,
+  useAppHref,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -83,7 +83,7 @@ function PathProbe() {
 
 function HrefProbe(props: { to: string }) {
   return (
-    <a data-testid="probe" href={useHref(props.to)}>
+    <a data-testid="probe" href={useAppHref(props.to)}>
       probe
     </a>
   );
