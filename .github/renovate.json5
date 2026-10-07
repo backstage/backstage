@@ -52,6 +52,11 @@
       matchManagers: ['github-actions'],
       pinDigests: true,
     },
+    // License changed in 4.9.0 — keep within the Apache 2.0 range. See #34045
+    {
+      matchPackageNames: ['@remixicon/react'],
+      allowedVersions: '>=4.6.0 <4.9.0',
+    },
     // ESM only majors, that we're not ready for yet
     {
       matchPackageNames: ['node-fetch'],
