@@ -16979,8 +16979,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-rulesets@npm:^1.18.0":
-  version: 1.22.7
-  resolution: "@stoplight/spectral-rulesets@npm:1.22.7"
+  version: 1.23.0
+  resolution: "@stoplight/spectral-rulesets@npm:1.23.0"
   dependencies:
     "@asyncapi/specs": "npm:6.11.1"
     "@scarf/scarf": "npm:^1.4.0"
@@ -16998,7 +16998,7 @@ __metadata:
     leven: "npm:3.1.0"
     lodash: "npm:^4.18.1"
     tslib: "npm:^2.8.1"
-  checksum: 10/17cb7bd4dbde25cbe6fd86516e7b5763f094c4c8f61633782370bc793f0cc96f9240993e839f112ca2229fece74343343ec76bc6534c6c56d4a194ec4ee65634
+  checksum: 10/cb5c79afb31c3deab051f329087b3cc5e494570339e66bb456275f2b0872cfaa6a905bdd1ad0fcc0c05c896f30b37106309020e658bf27b55a6added72fd4e65
   languageName: node
   linkType: hard
 
