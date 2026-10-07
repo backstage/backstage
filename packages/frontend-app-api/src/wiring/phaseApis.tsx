@@ -170,17 +170,15 @@ export class DefaultAppLifecycleApi implements AppLifecycleApi {
   #finalized = false;
   readonly #listeners = new Set<() => void>();
 
-  isFinalized() {
-    return this.#finalized;
-  }
+  isFinalized = () => this.#finalized;
 
-  subscribe(listener: () => void) {
+  subscribe = (listener: () => void) => {
     this.#listeners.add(listener);
 
     return () => {
       this.#listeners.delete(listener);
     };
-  }
+  };
 
   markFinalized() {
     this.#finalized = true;

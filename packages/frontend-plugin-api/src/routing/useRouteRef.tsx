@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
@@ -22,12 +22,18 @@ import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import {
+  AppLifecycleApi,
   appLifecycleApiRef,
   RouteFunc,
   routeResolutionApiRef,
   useApi,
   useApiHolder,
 } from '../apis';
+
+const appLifecycleApiFallback: AppLifecycleApi = {
+  isFinalized: () => true,
+  subscribe: () => () => {},
+};
 
 /**
  * React hook for constructing URLs to routes.
@@ -48,19 +54,11 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined {
   const { pathname } = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
-  const appLifecycleApi = useApiHolder().get(appLifecycleApiRef);
-  const appLifecycleSubscribe = useCallback(
-    (listener: () => void) =>
-      appLifecycleApi?.subscribe(listener) ?? (() => {}),
-    [appLifecycleApi],
-  );
-  const appLifecycleIsFinalized = useCallback(
-    () => appLifecycleApi?.isFinalized(),
-    [appLifecycleApi],
-  );
+  const appLifecycleApi =
+    useApiHolder().get(appLifecycleApiRef) ?? appLifecycleApiFallback;
   const isFinalized = useSyncExternalStore(
-    appLifecycleSubscribe,
-    appLifecycleIsFinalized,
+    appLifecycleApi.subscribe,
+    appLifecycleApi.isFinalized,
   );
 
   const routeFunc = useMemo(
