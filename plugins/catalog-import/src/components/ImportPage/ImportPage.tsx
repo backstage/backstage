@@ -15,7 +15,10 @@
  */
 
 import { useOutlet } from 'react-router-dom';
-import { DefaultImportPage } from '../DefaultImportPage';
+import {
+  DefaultImportPage,
+  NfsDefaultImportPage,
+} from '../DefaultImportPage/DefaultImportPage';
 
 /**
  * The whole catalog import page.
@@ -26,4 +29,10 @@ export const ImportPage = () => {
   const outlet = useOutlet();
 
   return outlet || <DefaultImportPage />;
+};
+
+export const NfsImportPage = () => {
+  const outlet = useOutlet();
+
+  return outlet || <NfsDefaultImportPage />;
 };

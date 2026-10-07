@@ -51,12 +51,12 @@ const catalogImportPage = PageBlueprint.make({
     routeRef: rootRouteRef,
     loader: async () => {
       const [m, { RequirePermission }] = await Promise.all([
-        import('./components/ImportPage'),
+        import('./components/ImportPage/ImportPage'),
         import('@backstage/plugin-permission-react'),
       ]);
       return (
         <RequirePermission permission={catalogEntityCreatePermission}>
-          <m.ImportPage />
+          <m.NfsImportPage />
         </RequirePermission>
       );
     },
