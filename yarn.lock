@@ -45199,12 +45199,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uri-js@npm:^4.2.2, uri-js@npm:^4.4.1":
+"uri-js@npm:4.4.1":
   version: 4.4.1
   resolution: "uri-js@npm:4.4.1"
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10/b271ca7e3d46b7160222e3afa3e531505161c9a4e097febae9664e4b59912f4cbe94861361a4175edac3a03fee99d91e44b6a58c17a634bc5a664b19fc76fbcb
+  languageName: node
+  linkType: hard
+
+"uri-js@patch:uri-js@npm%3A4.4.1#~/.yarn/patches/uri-js-npm-4.4.1-66d11cbcaf.patch":
+  version: 4.4.1
+  resolution: "uri-js@patch:uri-js@npm%3A4.4.1#~/.yarn/patches/uri-js-npm-4.4.1-66d11cbcaf.patch::version=4.4.1&hash=a49d8c"
+  dependencies:
+    punycode: "npm:^2.1.0"
+  checksum: 10/3e92e250defd01cd83707db4b5de06e5824ef886c7ccc2a82c1cb58c0df019e6542ca212bc356ef33be820d91c846d8825920d222f7df31be94de33340894fa2
   languageName: node
   linkType: hard
 
