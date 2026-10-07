@@ -192,7 +192,7 @@ backend:
 
 ### AWS with RDS IAM authentication
 
-Remove `password` from the connection configuration and set `type` to `rds`. The connector generates a short-lived IAM authentication token per connection (via the [`@aws-sdk/rds-signer`](https://www.npmjs.com/package/@aws-sdk/rds-signer) package) instead of using a static password, and refreshes pooled connections shortly before the token's ~15 minute lifetime expires.
+Remove `password` from the connection configuration and set `type` to `rds`. The connector generates short-lived IAM authentication tokens (via the [`@aws-sdk/rds-signer`](https://www.npmjs.com/package/@aws-sdk/rds-signer) package) instead of using a static password. It renews cached authentication settings for new connections one minute before either the token's 15-minute lifetime or the signing credentials expire.
 
 #### Prerequisites
 

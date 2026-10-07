@@ -496,6 +496,8 @@ export async function buildCloudSqlConfig(
 export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
   const { Signer } =
     require('@aws-sdk/rds-signer') as typeof import('@aws-sdk/rds-signer');
+  const { fromNodeProviderChain } =
+    require('@aws-sdk/credential-providers') as typeof import('@aws-sdk/credential-providers');
 
   let hostname: string;
   let port: number;
@@ -526,17 +528,38 @@ export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
     ['type', 'region'],
   ) as Partial<Knex.StaticConnectionConfig>;
 
-  const signer = new Signer({ hostname, port, username, region });
+  const credentialsProvider = fromNodeProviderChain();
 
-  // RDS IAM auth tokens are valid for 15 minutes. Renew 1 minute early so
-  // that pooled connections are refreshed before the token actually expires.
+  // A token cannot outlive the credentials used to sign it. Renew the cached
+  // connection settings one minute before either expiration.
   const tokenTtlMs = 15 * 60 * 1000;
   const renewalOffsetMs = 60 * 1000;
 
   async function getConnectionConfig() {
     try {
+      let credentials = await credentialsProvider();
+      // The SDK may return its cached credentials while refreshing them in the
+      // background. Wait for a refresh if they are already inside our margin.
+      if (
+        credentials.expiration &&
+        credentials.expiration.getTime() <= Date.now() + renewalOffsetMs
+      ) {
+        credentials = await credentialsProvider({ forceRefresh: true });
+      }
+      const signer = new Signer({
+        hostname,
+        port,
+        username,
+        region,
+        credentials,
+      });
+      const tokenIssuedAt = Date.now();
       const password = await signer.getAuthToken();
-      const tokenExpiration = Date.now() + tokenTtlMs - renewalOffsetMs;
+      const tokenExpiration =
+        Math.min(
+          tokenIssuedAt + tokenTtlMs,
+          credentials.expiration?.getTime() ?? Infinity,
+        ) - renewalOffsetMs;
       return {
         ...sanitizedConnection,
         password,
