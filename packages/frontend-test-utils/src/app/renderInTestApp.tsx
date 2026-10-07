@@ -119,7 +119,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * Pass the same adapter the page renders in its loader, and the element is
    * rendered inside it exactly as the page renders it. Reach for this only for
    * content that genuinely uses its routing library: `useRouteRef`,
-   * `useRouteRefParams` and `useHref` answer from the framework and need no
+   * `useRouteRefParams` and `useAppHref` answer from the framework and need no
    * adapter at all.
    *
    * Pairs with `mountPath`, which is what says where the page sits; without one

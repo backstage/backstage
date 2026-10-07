@@ -33,7 +33,7 @@ import {
 } from '@backstage/frontend-test-utils';
 import { useAppNode } from '../components/AppNodeProvider';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
-import { useHref } from './useHref';
+import { useAppHref } from './useAppHref';
 
 jest.mock('../components/AppNodeProvider', () => ({
   ...jest.requireActual('../components/AppNodeProvider'),
@@ -156,7 +156,7 @@ describe('useOptionalAppNavigate', () => {
 });
 
 describe('useAppNavigate', () => {
-  it('resolves targets like useHref and keeps the calling scope with the latest location', () => {
+  it('resolves targets like useAppHref and keeps the calling scope with the latest location', () => {
     const node = {} as AppNode;
     const appHistory = createMockAppHistory({
       basename: '/app',
@@ -173,7 +173,7 @@ describe('useAppNavigate', () => {
     jest.mocked(useAppNode).mockReturnValue(node);
     try {
       const { result, rerender } = renderHook(
-        () => ({ navigate: useAppNavigate(), href: useHref('details') }),
+        () => ({ navigate: useAppNavigate(), href: useAppHref('details') }),
         {
           wrapper: ({ children }) => (
             <TestApiProvider apis={[[appHistoryApiRef, appHistory], routes]}>

@@ -27,7 +27,7 @@ import {
   createRouteRef,
   useApi,
   useAppNavigate,
-  useHref as useFrameworkHref,
+  useAppHref as useFrameworkHref,
 } from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
@@ -592,7 +592,7 @@ describe('multi-router coexistence', () => {
    * Both majors share that projection but not their contexts, so this asks the
    * same question of each: a target below, the climb to the page, and a target
    * that spells the page's own segment, cross-checked against the framework's
-   * own `useHref`, which walks page mounts with no routing library at all.
+   * own `useAppHref`, which walks page mounts with no routing library at all.
    */
   describe('where a target written at sub-page depth lands', () => {
     const PAGE_PATTERN = '/catalog-majors';

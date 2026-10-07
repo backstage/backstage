@@ -26,7 +26,7 @@ import type { AppLocation, AppNavigateOptions } from './AppLocation';
  * The public navigation surface mirrors the `navigate` + `useHref` pattern
  * used by libraries like react-aria: `AppHistoryApi.navigate` performs
  * navigation, and {@link AppHistoryApi.createHref} (paired with the public
- * {@link useHref} hook) resolves an app-relative path to a browser-ready
+ * {@link useAppHref} hook) resolves an app-relative path to a browser-ready
  * href (including the app's deploy basename).
  *
  * @public
@@ -66,7 +66,7 @@ export interface AppHistoryApi {
    *
    * Executable URL schemes are replaced with `about:blank` and a warning.
    *
-   * Paths resolve against the app root. Use {@link useHref} for targets
+   * Paths resolve against the app root. Use {@link useAppHref} for targets
    * relative to the current page: it resolves the matched route ancestry
    * before calling this method. A target with no pathname of its own, such
    * as `?tab=readme` or `#section`, stays at the current location.
