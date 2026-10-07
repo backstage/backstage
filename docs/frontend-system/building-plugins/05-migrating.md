@@ -144,7 +144,7 @@ an immediate migration. In development, consuming this fallback logs a warning
 once per extension per app instance. Render an explicit page adapter to migrate
 that content; pages using only framework routing do not need an adapter.
 
-If the page only needs route parameters and links, switch it to `useRouteRef`, `useRouteRefParams` and `useHref` from `@backstage/frontend-plugin-api`. Those answer from the framework and need no router on any page. If the page genuinely drives a route tree of its own, render the matching adapter inside the lazily loaded component:
+If the page only needs route parameters and links, switch it to `useRouteRef`, `useRouteRefParams` and `useAppHref` from `@backstage/frontend-plugin-api`. Those answer from the framework and need no router on any page. If the page genuinely drives a route tree of its own, render the matching adapter inside the lazily loaded component:
 
 ```tsx
 const fooPage = PageBlueprint.make({

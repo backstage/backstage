@@ -32,8 +32,7 @@ import {
 } from '@backstage/frontend-test-utils';
 import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { appHistoryApiRef } from './AppHistoryApi';
-import { useAppHref, useHref } from './useHref';
-import { useApiHolder } from '../apis/system';
+import { useAppHref } from './useAppHref';
 
 const mockRouteNode = {} as AppNode;
 
@@ -43,11 +42,7 @@ jest.mock('../components/AppNodeProvider', () => {
   return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
 });
 
-function useOptionalAppHistory() {
-  return useApiHolder().get(appHistoryApiRef);
-}
-
-describe('useHref', () => {
+describe('useAppHref', () => {
   const appHistory = createMockAppHistory({ basename: '/backstage' });
 
   const targets = [
@@ -92,7 +87,9 @@ describe('useHref', () => {
     wrapper: (props: PropsWithChildren<{}>) => JSX.Element,
     hrefs: string[] = targets,
   ) =>
-    hrefs.map(to => renderHook(() => useHref(to), { wrapper }).result.current);
+    hrefs.map(
+      to => renderHook(() => useAppHref(to), { wrapper }).result.current,
+    );
 
   it('should apply the app basename to app-relative targets and pass others through', () => {
     expect(renderTargets(withAppHistory)).toEqual([
@@ -331,7 +328,7 @@ describe('the React Router authority', () => {
       const { result } = renderHook(
         () => ({
           routerHref: useRouterHref(to),
-          appHref: useAppHref(undefined, to),
+          appHref: useAppHref(to),
         }),
         { wrapper },
       );
@@ -388,7 +385,7 @@ describe('the framework authority', () => {
         const { result } = renderHook(
           () => ({
             routerHref: useRouterHref(to),
-            appHref: useAppHref(useOptionalAppHistory(), to),
+            appHref: useAppHref(to),
           }),
           { wrapper },
         );
@@ -483,8 +480,7 @@ describe('the framework authority', () => {
           'https://example.com/x',
         ].map(to => [
           to,
-          renderHook(() => useAppHref(useOptionalAppHistory(), to), { wrapper })
-            .result.current,
+          renderHook(() => useAppHref(to), { wrapper }).result.current,
         ]),
       );
 
@@ -538,7 +534,7 @@ describe('the framework authority', () => {
     );
 
     const framework = (to: string) =>
-      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
+      renderHook(() => useAppHref(to), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
             {subPageTree(
@@ -565,7 +561,7 @@ describe('the framework authority', () => {
       }).result.current;
 
     const legacy = (to: string) =>
-      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
+      renderHook(() => useAppHref(to), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[]}>{subPageTree(children)}</TestApiProvider>
         ),
@@ -592,7 +588,7 @@ function LinkSeam(props: { to: string }) {
   return (
     <>
       <RouterLink to={props.to}>link</RouterLink>
-      <a href={useHref(props.to)}>hook</a>
+      <a href={useAppHref(props.to)}>hook</a>
     </>
   );
 }
@@ -600,7 +596,7 @@ function LinkSeam(props: { to: string }) {
 describe('the seam between the two', () => {
   // `Link` hands an internal target to React Router's own `Link`, so on a page
   // hosted by the React Router v6 adapter the href a plugin author gets from
-  // their markup is the one rendered here, while `AppRoot` injects `useHref`
+  // their markup is the one rendered here, while `AppRoot` injects `useAppHref`
   // into Backstage UI's provider and every `@backstage/ui` anchor on the same
   // page renders through that instead. Comparing the two hooks is not enough:
   // the component is a separate authority, so it is rendered beside the hook
@@ -657,7 +653,7 @@ describe('the seam between the two', () => {
  * React Router v6 beta is still a supported version — `AppManager.compat.test`
  * runs the old frontend system against both, and the migration CLI writes
  * `'6.0.0-beta.0 || ^6.3.0'` — and it exports none of the `UNSAFE_*` context
- * objects the React Router fallback in `useHref.ts` reads. Each one used to be
+ * objects the React Router fallback in `useAppHref.ts` reads. Each one used to be
  * imported straight off the module, so under beta they were `undefined` when
  * handed to `useContext` and this hook could not answer at all.
  *
@@ -705,7 +701,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
    */
   function requireVersioned() {
     return {
-      ...(require('./useHref') as typeof import('./useHref')),
+      ...(require('./useAppHref') as typeof import('./useAppHref')),
       ...(require('@internal/frontend') as typeof import('@internal/frontend')),
     };
   }
@@ -728,6 +724,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const wrapper = ({ children }: PropsWithChildren<{}>) => (
       <TestApiProvider
         apis={[
+          [appHistoryApiRef, appHistory],
           mockApis.routeResolution({
             resolvePath: {
               matches: [{ ...mount, node: mockRouteNode }],
@@ -739,8 +736,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       </TestApiProvider>
     );
     const href = (to: string) =>
-      renderHook(() => versioned.useAppHref(appHistory, to), { wrapper }).result
-        .current;
+      renderHook(() => versioned.useAppHref(to), { wrapper }).result.current;
 
     // The answers the framework authority gives above, unchanged: targets with
     // no pathname of their own keep the location they were written at,
@@ -770,12 +766,9 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   it('hands the target back with neither authority present', () => {
     const versioned = requireVersioned();
     const { result } = renderHook(() => ({
-      href: versioned.useAppHref(undefined, '/catalog'),
-      fragmentHref: versioned.useAppHref(undefined, '#section'),
-      externalHref: versioned.useAppHref(
-        undefined,
-        'mailto:someone@example.com',
-      ),
+      href: versioned.useAppHref('/catalog'),
+      fragmentHref: versioned.useAppHref('#section'),
+      externalHref: versioned.useAppHref('mailto:someone@example.com'),
     }));
 
     // The stand-in contexts report no router under beta, and under stable

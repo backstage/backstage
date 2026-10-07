@@ -26,7 +26,7 @@ import {
 } from 'react-router-dom';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
-import { PageBlueprint, useHref } from '@backstage/frontend-plugin-api';
+import { PageBlueprint, useAppHref } from '@backstage/frontend-plugin-api';
 
 describe('implicit page router compatibility', () => {
   beforeEach(() => {
@@ -138,7 +138,7 @@ describe('implicit page router compatibility', () => {
       return <h1>Explicit {useParams().id}</h1>;
     }
     function FrameworkContent() {
-      return <a href={useHref('details')}>Framework link</a>;
+      return <a href={useAppHref('details')}>Framework link</a>;
     }
     const explicit = PageBlueprint.make({
       name: 'explicit',

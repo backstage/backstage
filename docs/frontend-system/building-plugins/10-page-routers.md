@@ -6,7 +6,7 @@ description: Render a page with React Router v6, React Router v7 or TanStack Rou
 ---
 
 Most pages need no router at all. `useRouteRef`, `useRouteRefParams` and
-`useHref` from `@backstage/frontend-plugin-api` answer from the framework's own
+`useAppHref` from `@backstage/frontend-plugin-api` answer from the framework's own
 routing. They work on every page, whichever library it uses and on pages that
 use none. Try them before reaching for anything else on this page.
 
@@ -333,14 +333,14 @@ The same approach works for navigable tabs:
 import {
   RouterLink,
   useAppLocation,
-  useHref,
+  useAppHref,
 } from '@backstage/frontend-plugin-api';
 import { Tabs, TabList, Tab } from 'react-aria-components';
 
 export function ToolTabs() {
   const location = useAppLocation();
-  const currentHref = useHref(location.pathname);
-  const detailsHref = useHref('details');
+  const currentHref = useAppHref(location.pathname);
+  const detailsHref = useAppHref('details');
 
   const selectedKey = currentHref === detailsHref ? 'details' : 'overview';
 
