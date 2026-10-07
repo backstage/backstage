@@ -71,7 +71,7 @@ describe('withDeclaredConnections', () => {
         authMethods: ['token'],
       }),
     ).rejects.toThrow(
-      /undeclared connection of type "gitlab".*declareConnection/,
+      /undeclared connection of type "gitlab".*registerConnection/,
     );
   });
 

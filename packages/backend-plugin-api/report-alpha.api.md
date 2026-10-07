@@ -6,6 +6,7 @@
 import { AnyZodObject } from 'zod/v3';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { ConnectionsService } from '@backstage/connections';
 import { JsonObject } from '@backstage/types';
 import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -144,12 +145,19 @@ export const actionsServiceRef: ServiceRef<
   'singleton'
 >;
 
-// @alpha
+// @public
 export interface ConnectionRegistration {
   description?: string;
   required?: boolean;
   type: string;
 }
+
+// @alpha
+export const connectionsServiceRef: ServiceRef<
+  ConnectionsService,
+  'plugin',
+  'singleton'
+>;
 
 // @alpha
 export interface MetricAdvice {

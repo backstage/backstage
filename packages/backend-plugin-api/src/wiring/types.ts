@@ -68,18 +68,18 @@ type DepsToInstances<
 /**
  * Declares that a plugin or module consumes a particular connection type.
  *
- * @alpha
+ * @public
  */
 export interface ConnectionRegistration {
   /**
    * The connection type identifier, matching the `type` field in connections
-   * config and in calls to `find` / `findOptional` on the connections service.
+   * config and in calls to `find` on the connections service.
    */
   type: string;
   /**
    * Whether the connection is essential for the plugin or module to function.
-   * If true, the backend will fail to start if no matching connection is
-   * configured. Defaults to false.
+   * Informational metadata; this does not enforce connection availability
+   * at startup. Defaults to false.
    */
   required?: boolean;
   /**
@@ -95,6 +95,11 @@ export interface ConnectionRegistration {
  * @public
  */
 export interface BackendPluginRegistrationPoints {
+  /**
+   * Declares a connection type consumed by this plugin.
+   * Must be called before `registerInit`.
+   */
+  registerConnection(registration: ConnectionRegistration): void;
   /**
    * Registers an implementation for an extension point.
    */
@@ -125,6 +130,11 @@ export interface BackendPluginRegistrationPoints {
  * @public
  */
 export interface BackendModuleRegistrationPoints {
+  /**
+   * Declares a connection type consumed by this module.
+   * Must be called before `registerInit`.
+   */
+  registerConnection(registration: ConnectionRegistration): void;
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
@@ -141,18 +151,6 @@ export interface BackendModuleRegistrationPoints {
     deps: TDeps;
     init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
-}
-
-/** @internal */
-export interface InternalBackendPluginRegistrationPoints
-  extends BackendPluginRegistrationPoints {
-  registerConnection(registration: ConnectionRegistration): void;
-}
-
-/** @internal */
-export interface InternalBackendModuleRegistrationPoints
-  extends BackendModuleRegistrationPoints {
-  registerConnection(registration: ConnectionRegistration): void;
 }
 
 /** @internal */

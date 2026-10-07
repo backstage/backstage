@@ -27,6 +27,7 @@ export {
 } from './createBackendFeatureLoader';
 
 export type {
+  ConnectionRegistration,
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
   ExtensionPoint,

@@ -96,6 +96,7 @@ export interface BackendFeature {
 
 // @public
 export interface BackendModuleRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
   // (undocumented)
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
@@ -119,6 +120,7 @@ export interface BackendModuleRegistrationPoints {
 
 // @public
 export interface BackendPluginRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
@@ -209,6 +211,13 @@ export type CacheServiceOptions = {
 export type CacheServiceSetOptions = {
   ttl?: number | HumanDuration;
 };
+
+// @public
+export interface ConnectionRegistration {
+  description?: string;
+  required?: boolean;
+  type: string;
+}
 
 // @public
 export namespace coreServices {

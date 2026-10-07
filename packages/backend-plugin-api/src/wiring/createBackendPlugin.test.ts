@@ -18,10 +18,7 @@ import { createServiceRef } from '../services';
 import { ID_PATTERN } from './constants';
 import { createBackendPlugin } from './createBackendPlugin';
 import { createExtensionPoint } from './createExtensionPoint';
-import {
-  InternalBackendPluginRegistrationPoints,
-  InternalBackendRegistrations,
-} from './types';
+import { InternalBackendRegistrations } from './types';
 
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
@@ -99,13 +96,12 @@ describe('createBackendPlugin', () => {
     const plugin = createBackendPlugin({
       pluginId: 'x',
       register(r) {
-        const env = r as InternalBackendPluginRegistrationPoints;
-        env.registerConnection({
+        r.registerConnection({
           type: 'github',
           required: true,
           description: 'used by x',
         });
-        env.registerConnection({ type: 'gitlab' });
+        r.registerConnection({ type: 'gitlab' });
         r.registerInit({ deps: {}, async init() {} });
       },
     });
@@ -122,9 +118,8 @@ describe('createBackendPlugin', () => {
         createBackendPlugin({
           pluginId: 'x',
           register(r) {
-            const env = r as InternalBackendPluginRegistrationPoints;
-            env.registerConnection({ type: 'github' });
-            env.registerConnection({ type: 'github' });
+            r.registerConnection({ type: 'github' });
+            r.registerConnection({ type: 'github' });
             r.registerInit({ deps: {}, async init() {} });
           },
         }).$$type,
@@ -135,9 +130,8 @@ describe('createBackendPlugin', () => {
         createBackendPlugin({
           pluginId: 'x',
           register(r) {
-            const env = r as InternalBackendPluginRegistrationPoints;
-            env.registerConnection({ type: 'github' });
-            env.registerConnection({ type: 'github' });
+            r.registerConnection({ type: 'github' });
+            r.registerConnection({ type: 'github' });
             r.registerInit({ deps: {}, async init() {} });
           },
         }) as unknown as InternalBackendRegistrations
@@ -149,9 +143,8 @@ describe('createBackendPlugin', () => {
         createBackendPlugin({
           pluginId: 'x',
           register(r) {
-            const env = r as InternalBackendPluginRegistrationPoints;
             r.registerInit({ deps: {}, async init() {} });
-            env.registerConnection({ type: 'github' });
+            r.registerConnection({ type: 'github' });
           },
         }) as unknown as InternalBackendRegistrations
       ).getRegistrations(),

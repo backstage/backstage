@@ -25,7 +25,7 @@ import {
   createServiceFactory,
   ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
-import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
+import type { ConnectionRegistration } from '@backstage/backend-plugin-api';
 import {
   ExtensionPointFactoryMiddleware,
   ServiceOrExtensionPoint,
@@ -50,7 +50,7 @@ import { BackendStartupResult } from './types';
 import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
 import type { ConnectionsService } from '@backstage/connections';
-import { connectionsServiceRef } from '@backstage/connections-node';
+import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { randomUUID } from 'node:crypto';
 import { withDeclaredConnections } from './withDeclaredConnections';
 import {

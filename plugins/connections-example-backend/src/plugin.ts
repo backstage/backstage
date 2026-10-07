@@ -18,10 +18,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import {
-  connectionsServiceRef,
-  declareConnection,
-} from '@backstage/connections-node';
+import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * connectionsExampleBackendPlugin backend plugin
@@ -31,11 +28,11 @@ import {
 export const connectionsExampleBackendPlugin = createBackendPlugin({
   pluginId: 'connections-example-backend',
   register(reg) {
-    declareConnection(reg, {
+    reg.registerConnection({
       type: 'github',
       description: 'Used by the example /find endpoint to look up GitHub hosts',
     });
-    declareConnection(reg, {
+    reg.registerConnection({
       type: 'gitlab',
       description: 'Used by the example /find endpoint to look up GitLab hosts',
     });

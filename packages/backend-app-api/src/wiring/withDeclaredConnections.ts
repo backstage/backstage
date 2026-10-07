@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
+import type { ConnectionRegistration } from '@backstage/backend-plugin-api';
 import type { ConnectionsService } from '@backstage/connections';
 import { InputError } from '@backstage/errors';
 
@@ -27,7 +27,7 @@ export function withDeclaredConnections(
       !registrations.some(({ type: registeredType }) => registeredType === type)
     ) {
       throw new InputError(
-        `Plugin attempted to look up an undeclared connection of type "${type}". Declare it during register() with declareConnection(reg, { type: "${type}" }).`,
+        `Plugin attempted to look up an undeclared connection of type "${type}". Declare it during register() with env.registerConnection({ type: "${type}" }).`,
       );
     }
   };

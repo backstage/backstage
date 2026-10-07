@@ -21,6 +21,43 @@ import { createExtensionPoint } from './createExtensionPoint';
 import { InternalBackendRegistrations } from './types';
 
 describe('createBackendModule', () => {
+  it('captures connection declarations and rejects duplicate or late declarations', () => {
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'connections',
+      register(env) {
+        env.registerConnection({
+          type: 'github',
+          required: true,
+          description: 'Reads repository metadata',
+        });
+        env.registerConnection({ type: 'gitlab' });
+        expect(() => env.registerConnection({ type: 'github' })).toThrow(
+          /Duplicate connection registration for type 'github'/,
+        );
+        env.registerInit({ deps: {}, async init() {} });
+        expect(() => env.registerConnection({ type: 'azure' })).toThrow(
+          /registerConnection called after registerInit/,
+        );
+      },
+    });
+
+    expect((module as InternalBackendRegistrations).getRegistrations()).toEqual(
+      [
+        expect.objectContaining({
+          connections: [
+            {
+              type: 'github',
+              required: true,
+              description: 'Reads repository metadata',
+            },
+            { type: 'gitlab' },
+          ],
+        }),
+      ],
+    );
+  });
+
   it('should create a BackendModule', () => {
     const result = createBackendModule({
       pluginId: 'x',

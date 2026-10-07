@@ -11,33 +11,35 @@ calling `ConnectionsService.find` with a
 [lookup query](./01-concepts.md#lookup-queries) and the
 [authentication methods](./01-concepts.md#authentication-method) it understands.
 
-:::caution[Runtime API boundary]
+:::caution[Experimental service]
 The public `@backstage/connections` package contains the shared service
-contract, connection types, and type helpers. The service reference and
-declaration helper remain in the private, inlined `@backstage/connections-node`
-package. The complete wiring example on this page applies to framework code in
-the Backstage repository while this experimental boundary is being completed.
-External plugin packages should not depend on `@backstage/connections-node`.
+contract, connection types, and type helpers. Import the experimental service
+reference from `@backstage/backend-plugin-api/alpha`. Connection declarations
+use the public `registerConnection` method on plugin and module registration
+environments. The service implementation remains internal; plugins should not
+depend on `@backstage/connections-node`.
 :::
+
+Backends created with `createBackend` from `@backstage/backend-defaults` include
+the default connections service. Tests using `startTestBackend` also include
+it. Custom backends using `createSpecializedBackend` can install
+`connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
 
 ## Declare a connection dependency
 
-Framework plugins and modules declare each type during `register`, before
+Plugins and modules declare each type during `register`, before
 calling `registerInit`. See the
 [connection declaration concept](./01-concepts.md#connection-declaration) for why
 the declaration is separate from lookup:
 
 ```ts
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
-import {
-  connectionsServiceRef,
-  declareConnection,
-} from '@backstage/connections-node';
+import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 export const examplePlugin = createBackendPlugin({
   pluginId: 'example',
   register(reg) {
-    declareConnection(reg, {
+    reg.registerConnection({
       type: 'github',
       description: 'Reads repository metadata from GitHub',
     });
