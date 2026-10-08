@@ -2,7 +2,7 @@
 '@backstage/ui': minor
 ---
 
-**BREAKING**: Backstage UI now uses explicit routing integration and React Aria's native link behavior. Standalone apps that relied on automatic React Router integration must supply `BUIProvider` with a `useRouter` hook. React Router is no longer a peer dependency, and `routerOptions` supports the router-neutral `replace` and `state` options.
+**BREAKING**: Backstage UI now uses explicit routing integration and React Aria's native link behavior. Standalone apps that relied on automatic React Router integration must supply `BUIProvider` with a `useNavigation` hook. React Router is no longer a peer dependency, and `routerOptions` supports the router-neutral `replace` and `state` options.
 
 Backstage apps preserve the legacy V2 React Router integration for separately bundled older BUI components. New nested providers retain that integration while independently overriding the new routing hook. Empty hrefs follow React Aria's native behavior. Backstage apps configure app-absolute navigation automatically, while page adapters add library-relative routing. Nested BUI providers inherit analytics and routing hooks when not overridden.
 

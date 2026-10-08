@@ -24,17 +24,17 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import { useBUIRouter } from './useBUIRouter';
+import { useBUINavigation } from './useBUINavigation';
 
 function Probe() {
-  const router = useBUIRouter();
+  const router = useBUINavigation();
   return (
     <>
       {['..', '../sibling?view=docs#intro', '?view=docs', '#intro', '/'].map(
         href => (
           <div key={href}>
             <Link to={href}>React Router {href}</Link>
-            <a href={router.resolveHref(href)}>BUI {href}</a>
+            <a href={router.createHref(href)}>BUI {href}</a>
           </div>
         ),
       )}

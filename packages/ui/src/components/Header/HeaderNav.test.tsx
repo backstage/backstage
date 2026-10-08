@@ -17,7 +17,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { TestRouter } from '../../testUtils/TestRouter';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { BUIProvider, type BUIRouter } from '../../provider';
+import { BUIProvider, type BUINavigation } from '../../provider';
 import { renderToString } from 'react-dom/server';
 import { HeaderNav } from './HeaderNav';
 import type { ComponentProps } from 'react';
@@ -73,9 +73,9 @@ describe('HeaderNav', () => {
   it('selects the most specific host tab during server rendering', () => {
     const html = renderToString(
       <BUIProvider
-        useRouter={() => ({
+        useNavigation={() => ({
           navigate: () => {},
-          resolveHref: href => '/base/catalog/' + href,
+          createHref: href => '/base/catalog/' + href,
           pathname: '/base/catalog/settings/details',
         })}
       >
@@ -94,14 +94,14 @@ describe('HeaderNav', () => {
   });
 
   it('detects the active tab through an injected router without React Router context', () => {
-    const router: BUIRouter = {
+    const router: BUINavigation = {
       navigate: jest.fn(),
-      resolveHref: href => `/app${href}`,
+      createHref: href => `/app${href}`,
       pathname: '/app/catalog/settings/details',
     };
 
     render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <HeaderNav
           tabs={[
             { id: 'overview', label: 'Overview', href: '/catalog/overview' },
@@ -129,15 +129,15 @@ describe('HeaderNav', () => {
   });
 
   it('resolves relative flat tabs through the injected router when detecting the active tab', () => {
-    const router: BUIRouter = {
+    const router: BUINavigation = {
       navigate: jest.fn(),
-      resolveHref: href =>
+      createHref: href =>
         href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
       pathname: '/app/catalog/settings/details',
     };
 
     render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <HeaderNav
           tabs={[
             { id: 'overview', label: 'Overview', href: 'overview' },
@@ -161,15 +161,15 @@ describe('HeaderNav', () => {
   });
 
   it('resolves relative grouped tabs through the injected router when detecting the active tab', async () => {
-    const router: BUIRouter = {
+    const router: BUINavigation = {
       navigate: jest.fn(),
-      resolveHref: href =>
+      createHref: href =>
         href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
       pathname: '/app/catalog/docs/details',
     };
 
     render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <HeaderNav
           tabs={[
             {

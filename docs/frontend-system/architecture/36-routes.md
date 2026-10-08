@@ -725,7 +725,7 @@ and the current browser pathname. Generated hrefs and pathname include the
 deployment basename; navigation accepts the original authored target. Outside
 adapters the default uses app history with strict framework semantics.
 
-Backstage UI receives a `useRouter` hook through `BUIProvider`. The app binds
+Backstage UI receives a `useNavigation` hook through `BUIProvider`. The app binds
 that hook to the public `useNavigation` contract. Other component libraries can
 consume the same contract without BUI dependencies or duplicated resolution.
 The separate frozen V2 BUI integration retains React Router behavior for older
