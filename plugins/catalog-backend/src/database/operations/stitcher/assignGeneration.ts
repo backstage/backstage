@@ -39,10 +39,20 @@ async function assignGenerationPostgres(
 ): Promise<string> {
   // The caller already owns this final row. Allocate and assign in one
   // statement to avoid a round trip while holding the global counter lock.
-  const rows = await tx('final_entities')
-    .where('entity_id', entityId)
-    .update({ generation: tx.raw('catalog_next_generation()') })
-    .returning(tx.raw('generation::text AS generation'));
+  const { rows } = await tx.raw(
+    `WITH allocated_generation AS (
+       UPDATE catalog_generation_counter
+       SET generation = generation + 1
+       WHERE id = 1
+       RETURNING generation
+     )
+     UPDATE final_entities
+     SET generation = allocated_generation.generation
+     FROM allocated_generation
+     WHERE entity_id = ?
+     RETURNING final_entities.generation::text AS generation`,
+    [entityId],
+  );
   const generation = rows[0]?.generation;
 
   if (typeof generation !== 'string' || !/^\d+$/.test(generation)) {

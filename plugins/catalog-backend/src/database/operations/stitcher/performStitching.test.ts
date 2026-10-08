@@ -143,8 +143,12 @@ it.each(databases.eachSupportedId())(
     let entity: Entity;
     const generationQueries: string[] = [];
     const trackGeneration = (query: { sql: string }) => {
-      if (query.sql.includes('catalog_next_generation'))
+      if (
+        query.sql.includes('catalog_generation_counter') &&
+        query.sql.includes('final_entities')
+      ) {
         generationQueries.push(query.sql);
+      }
     };
     knex.on('query', trackGeneration);
 
@@ -229,7 +233,9 @@ it.each(databases.eachSupportedId())(
     const firstHash = entities[0].hash;
     knex.removeListener('query', trackGeneration);
     expect(
-      generationQueries.map(query => /^update "final_entities"/.test(query)),
+      generationQueries.map(query =>
+        /^WITH allocated_generation AS/.test(query),
+      ),
     ).toEqual(databaseId.startsWith('POSTGRES') ? [true] : []);
     expect(String((await knex('final_entities').first()).generation)).toBe('1');
 
