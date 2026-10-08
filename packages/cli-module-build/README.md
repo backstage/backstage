@@ -18,6 +18,18 @@ CLI module that provides build, start, and packaging commands for the Backstage 
 
 ## Documentation
 
+### Frontend module federation remotes
+
+Remote builds split shared dependencies and workspace code according to their
+async import boundaries, rather than combining unrelated imports into named
+dependency-scope or vendor chunks. Code used by only one async chunk stays with
+that chunk; shared code is extracted when it meets the size threshold. This can
+reduce the amount downloaded during feature discovery, at the cost of more
+requests for smaller chunks.
+
+Extracted CSS stays with its importing chunks to preserve stylesheet order.
+Ordinary application builds retain their existing dependency chunking.
+
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
 - [Backstage Documentation](https://backstage.io/docs)
 - [Build System](https://backstage.io/docs/tooling/cli/build-system)
