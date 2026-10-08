@@ -18,7 +18,7 @@ import { useContext, useMemo, type ReactNode } from 'react';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext, type BUIContextVersions } from './BUIContext';
 import type { UseAnalyticsFn } from '../analytics/types';
-import type { BUIRouter } from './BUIRouter';
+import type { BUINavigation } from './BUINavigation';
 
 /** @public */
 export type BUIProviderProps = {
@@ -30,7 +30,7 @@ export type BUIProviderProps = {
    * When omitted, inherits an enclosing host hook. Without a host hook,
    * components use an explicitly supplied React Aria router or browser navigation.
    */
-  useRouter?: () => BUIRouter;
+  useNavigation?: () => BUINavigation;
   children: ReactNode;
 };
 
@@ -66,22 +66,23 @@ export type BUIProviderProps = {
 export function BUIProvider(props: BUIProviderProps) {
   const {
     useAnalytics: providedUseAnalytics,
-    useRouter: providedUseRouter,
+    useNavigation: providedUseNavigation,
     children,
   } = props;
   const parent = useContext(BUIContext);
   const legacy = parent?.atVersion(2);
   const useAnalytics =
     providedUseAnalytics ?? (legacy ?? parent?.atVersion(1))?.useAnalytics;
-  const useRouter = providedUseRouter ?? parent?.atVersion(3)?.useRouter;
+  const useNavigation =
+    providedUseNavigation ?? parent?.atVersion(3)?.useNavigation;
   const value = useMemo(
     () =>
       createVersionedValueMap<BUIContextVersions>({
         1: { useAnalytics },
         ...(legacy ? { 2: { ...legacy, useAnalytics } } : {}),
-        3: { useAnalytics, useRouter },
+        3: { useAnalytics, useNavigation },
       }),
-    [legacy, useAnalytics, useRouter],
+    [legacy, useAnalytics, useNavigation],
   );
 
   return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;

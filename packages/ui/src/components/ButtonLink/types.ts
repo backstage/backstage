@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type { ReactElement, ReactNode } from 'react';
 import type { LinkProps as RALinkProps } from 'react-aria-components';
 import type { Responsive } from '../../types';
@@ -42,5 +42,5 @@ export interface ButtonLinkProps
     >,
     ButtonLinkOwnProps {
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
