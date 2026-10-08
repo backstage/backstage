@@ -36,7 +36,8 @@ export interface AppHistoryApi {
    * Navigate to an app-absolute path or an external URL.
    *
    * Path targets must start with `/` and exclude the deployment basename.
-   * Query-only and hash-only targets use the current pathname. Path-relative
+   * Empty, query-only, and hash-only targets use the current pathname.
+   * An empty target clears query and hash. Path-relative
    * targets, including `.` and `..`, are rejected; use a page routing adapter
    * for library-relative navigation.
    *
@@ -72,7 +73,7 @@ export interface AppHistoryApi {
    * Executable URL schemes are replaced with `about:blank` and a warning.
    *
    * Paths must start with `/` and exclude the deployment basename. Relative
-   * paths are rejected. Query-only and hash-only targets, such as `?tab=readme`
+   * paths are rejected. Empty, query-only, and hash-only targets, such as `?tab=readme`
    * or `#section`, use the current pathname.
    *
    * Absolute URLs, protocol-relative URLs, and schemes such as `mailto:`

@@ -35,6 +35,7 @@ import {
 } from '@backstage/plugin-app-react';
 import { BUIProvider } from '@backstage/ui';
 import { useBUIRouter } from './useBUIRouter';
+import { LegacyBUIProvider } from './LegacyBUIProvider';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -272,22 +273,24 @@ export function AppRouter(props: AppRouterProps) {
 
   return (
     <RootHistoryRouter history={appHistory}>
-      <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
-        <BreadcrumbsRegistryProvider>
-          {...extraElements}
-          <RouteTracker routeObjects={routeObjects} />
-          {SignInPageComponent ? (
-            <SignInPageWrapper
-              component={SignInPageComponent}
-              appIdentityProxy={appIdentityProxy}
-            >
-              {children}
-            </SignInPageWrapper>
-          ) : (
-            children
-          )}
-        </BreadcrumbsRegistryProvider>
-      </BUIProvider>
+      <LegacyBUIProvider>
+        <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
+          <BreadcrumbsRegistryProvider>
+            {...extraElements}
+            <RouteTracker routeObjects={routeObjects} />
+            {SignInPageComponent ? (
+              <SignInPageWrapper
+                component={SignInPageComponent}
+                appIdentityProxy={appIdentityProxy}
+              >
+                {children}
+              </SignInPageWrapper>
+            ) : (
+              children
+            )}
+          </BreadcrumbsRegistryProvider>
+        </BUIProvider>
+      </LegacyBUIProvider>
     </RootHistoryRouter>
   );
 }

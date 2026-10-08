@@ -12,7 +12,7 @@ use none. Try them before reaching for anything else on this page.
 
 Framework path targets must start with `/`, excluding the deployment basename.
 Use route refs to generate paths without hardcoding where a plugin is mounted.
-Query-only and hash-only targets keep the current pathname; external URLs remain
+Empty, query-only, and hash-only targets keep the current pathname; external URLs remain
 supported. Relative paths such as `details`, `.` and `../edit` require a page
 router. BUI controls inside an adapter use that library's relative semantics at
 the control's route scope. App-absolute paths and route-ref destinations work
@@ -409,6 +409,8 @@ looks like a button; keep action buttons as buttons.
 Backstage apps configure Backstage UI (BUI) navigation automatically. Standalone
 apps that relied on an ambient React Router must provide the `useRouter` prop
 on `BUIProvider`. React Router is no longer a BUI peer dependency.
+Legacy core-components, including the sidebar, continue using React Router
+and require the implicit React Router compatibility provided by the app.
 
 The hook returns a `BUIRouter` with three members:
 
@@ -424,13 +426,14 @@ hook. Without a hook, controls use an explicitly supplied React Aria
 
 When upgrading an existing integration:
 
-1. Upgrade the app's BUI provider and separately bundled BUI components together.
+1. Upgrade the app's BUI provider before upgrading separately bundled BUI components.
+   Backstage apps retain the V2 React Router integration for older components.
+   New providers preserve V2 through nesting, independently of the new routing hook.
 1. Replace router-specific `routerOptions` with the supported `replace` and
    `state` options.
 1. Use app-absolute paths or route-ref destinations outside an adapter.
-   This includes sidebar links: change `to="catalog"` to `to="/catalog"`.
    Within an adapter, BUI controls also accept library-relative paths.
-   Empty hrefs follow React Aria's native behavior and are not resolved by the host router.
+   An empty target resolves to the current pathname, clearing query and hash.
 1. Compose directly used React Aria components with `RouterLink`, as
    described in [React Aria integration](#use-react-aria-components-directly).
 
