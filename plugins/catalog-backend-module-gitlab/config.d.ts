@@ -53,10 +53,17 @@ export interface Config {
            */
           catalogFile?: string;
           /**
-           * (Optional) The name used for the catalog file.
-           * If not set, 'catalog-info.yaml' will be used.
+           * (Optional) The filename or glob pattern used to discover catalog files.
+           * Glob patterns, such as `catalog-info.y?(a)ml`, cannot be used with `useSearch: true`.
+           * Defaults to `catalog-info.yaml`.
            */
           entityFilename?: string;
+          /**
+           * (Optional) Whether to use the GitLab group search API to discover catalog files.
+           * Requires a GitLab Premium or Ultimate license and cannot be used with a glob pattern in `entityFilename`.
+           * Defaults to `false`.
+           */
+          useSearch?: boolean;
           /**
            * (Optional) TaskScheduleDefinition for the refresh.
            */
