@@ -9,3 +9,5 @@ Native TanStack APIs and BUI controls share app-absolute paths, including cross-
 Install `@tanstack/react-router@1.131.2` and `@tanstack/history@1.131.2` alongside the adapter. Without a page mount or app history, the adapter renders children unchanged.
 
 See the [TanStack page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-tanstack-router) for setup, navigation blockers, and custom history requirements.
+
+The adapter supplies the public contextual navigation contract for any component library, including BUI, without depending on BUI at runtime.

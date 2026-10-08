@@ -15,3 +15,5 @@ Framework routing hooks work without a page adapter and retain old frontend comp
 **BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters. It no longer includes the undeclared splat `*`; use your page router's APIs if you need that value.
 
 See [scoped plugin routing](https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing) for navigation semantics and [page routers](https://backstage.io/docs/frontend-system/building-plugins/page-routers) for integration examples.
+
+Added `useNavigation` and `NavigationProvider` for component-library-neutral navigation bound to each consumer’s route scope. `RouterLink` now follows this context, including adapter-relative targets. Explicit framework navigation hooks remain app-absolute. Generated hrefs include the deployment basename; navigation accepts the original target.

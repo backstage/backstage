@@ -545,7 +545,8 @@ deployment basename. Both methods replace executable URL schemes with
 Empty, query-only, and hash-only targets keep the current pathname. An empty
 target clears query and hash. Path-relative
 targets such as `details`, `.` and `../edit` are rejected by framework navigation,
-including `RouterLink`. Use a routing adapter when relative navigation is needed.
+including explicit framework hooks. `RouterLink` and `useNavigation` instead
+follow the nearest adapter when relative navigation is needed.
 The adapter supplies its library's relative-path semantics to BUI controls too.
 
 `RouteResolutionApi.resolvePath` supplies matched ancestry for adapters and
@@ -716,9 +717,19 @@ For the steps to attach one, see [Choose a router for a page](../building-plugin
 
 ### Limits of the model
 
-The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. First-party chrome does not.
+The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. Legacy core-components also retain their React Router dependency.
 
-Backstage UI receives a `useRouter` hook through `BUIProvider`. The hook runs at each consuming component and returns navigation, a plain href resolver, and the current browser pathname. Hrefs and the pathname include the deployment basename. The app plugin uses `AppHistoryApi` for app-absolute destinations. Each page adapter supplies a local BUI routing hook that resolves relative destinations at the control’s library route context. Both hrefs and clicks use that same scope. App-absolute destinations remain app-absolute in every adapter.
+Routing adapters supply a component-library-neutral `NavigationProvider`. Its
+hook runs at each consumer's route scope and returns href creation, navigation,
+and the current browser pathname. Generated hrefs and pathname include the
+deployment basename; navigation accepts the original authored target. Outside
+adapters the default uses app history with strict framework semantics.
+
+Backstage UI receives a `useRouter` hook through `BUIProvider`. The app binds
+that hook to the public `useNavigation` contract. Other component libraries can
+consume the same contract without BUI dependencies or duplicated resolution.
+The separate frozen V2 BUI integration retains React Router behavior for older
+consumers and is preserved through nested providers.
 
 BUI controls bind that integration to a local React Aria provider. React Aria
 owns link activation and native browser behavior; BUI does not detect a routing
