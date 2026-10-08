@@ -21,11 +21,11 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import type { BUIRouter } from '@backstage/ui';
+import type { BUINavigation } from '@backstage/ui';
 import { resolveTo } from '@remix-run/router';
 
 /** Adapts the legacy app's React Router at each consuming BUI control. */
-export function useBUIRouter(): BUIRouter {
+export function useBUINavigation(): BUINavigation {
   const navigate = useNavigate();
   const location = useLocation();
   const { basename, navigator, future } = useContext(UNSAFE_NavigationContext);
@@ -45,7 +45,7 @@ export function useBUIRouter(): BUIRouter {
   return {
     navigate,
     pathname: withBasename(location.pathname),
-    resolveHref(href) {
+    createHref(href) {
       // Match browser-owned URLs without importing the new frontend system.
       const normalized = href
         .replace(/[\t\n\r]/g, '')
