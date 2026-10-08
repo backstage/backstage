@@ -50,6 +50,11 @@ import {
  * @public
  */
 export function useAppHref(to: string): string {
+  return useAppCreateHref()(to);
+}
+
+/** @internal */
+export function useAppCreateHref(): (to: string) => string {
   /*
    * Reading React Router's contexts rather than calling `useHref` /
    * `useResolvedPath` /
@@ -70,30 +75,32 @@ export function useAppHref(to: string): string {
   const navigation = useRouterContext(NavigationContext);
   const routerLocation = useRouterContext(LocationContext)?.location;
 
-  if (appHistory && location) {
-    return appHistory.createHref(to);
-  }
-  const safeTo = resolveAppTarget(
-    to,
-    routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
-  );
-  if (isExternalTarget(safeTo)) {
-    return safeTo;
-  }
-  if (!navigation) {
-    return safeTo;
-  }
+  return (to: string) => {
+    if (appHistory && location) {
+      return appHistory.createHref(to);
+    }
+    const safeTo = resolveAppTarget(
+      to,
+      routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
+    );
+    if (isExternalTarget(safeTo)) {
+      return safeTo;
+    }
+    if (!navigation) {
+      return safeTo;
+    }
 
-  // React Router's `useHref`: the resolved path, prefixed with the router
-  // basename, handed to the navigator to render.
-  const { basename, navigator } = navigation;
-  const { pathname = '/', search, hash } = parsePath(safeTo);
-  let joinedPathname = pathname;
-  if (basename !== '/') {
-    joinedPathname =
-      pathname === '/'
-        ? basename
-        : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
-  }
-  return navigator.createHref({ pathname: joinedPathname, search, hash });
+    // React Router's `useHref`: the resolved path, prefixed with the router
+    // basename, handed to the navigator to render.
+    const { basename, navigator } = navigation;
+    const { pathname = '/', search, hash } = parsePath(safeTo);
+    let joinedPathname = pathname;
+    if (basename !== '/') {
+      joinedPathname =
+        pathname === '/'
+          ? basename
+          : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
+    }
+    return navigator.createHref({ pathname: joinedPathname, search, hash });
+  };
 }

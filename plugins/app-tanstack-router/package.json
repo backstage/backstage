@@ -58,7 +58,6 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "use-sync-external-store": "^1.7.0"
   },
@@ -66,6 +65,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@tanstack/history": "1.131.2",
     "@tanstack/react-router": "1.131.2",
     "@testing-library/dom": "^10.0.0",

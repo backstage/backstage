@@ -9,3 +9,5 @@ BUI controls inside the adapter use React Router’s relative-path semantics at 
 The adapter renders children unchanged when no page mount or app history is available, supporting shared components in the old frontend system and standalone tests.
 
 See the [page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-react-router-v6) for setup and nesting examples.
+
+The adapter supplies the public contextual navigation contract for any component library, including BUI, without depending on BUI at runtime.

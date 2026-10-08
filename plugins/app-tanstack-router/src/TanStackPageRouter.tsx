@@ -25,11 +25,12 @@ import {
 } from 'react';
 import {
   appHistoryApiRef,
+  NavigationProvider,
+  type Navigation,
   useApi,
   useApiHolder,
   useRouteResolution,
 } from '@backstage/frontend-plugin-api';
-import { BUIProvider, type BUIRouter } from '@backstage/ui';
 import { isExternalTarget, sanitizeHref } from '@internal/frontend';
 import type { RouterHistory } from '@tanstack/history';
 import {
@@ -45,8 +46,8 @@ import {
 } from '@tanstack/react-router';
 import { createTanStackHistory } from './createTanStackHistory';
 
-/** Resolves BUI targets using the same route scope as a native TanStack Link. */
-function useBUIRouter(): BUIRouter {
+/** Resolves authored targets using the same route scope as a native TanStack Link. */
+function useAdapterNavigation(): Navigation {
   const history = useApi(appHistoryApiRef);
   const router = useRouter();
   const from = useMatch({
@@ -59,7 +60,7 @@ function useBUIRouter(): BUIRouter {
     if (isExternalTarget(safeTo)) {
       return safeTo;
     }
-    // TanStack exposes search and hash as separate options, while BUI accepts hrefs.
+    // TanStack exposes search and hash as separate options, while this contract accepts string targets.
     const url = new URL(safeTo, 'http://backstage.local');
     const pathname = safeTo.split(/[?#]/, 1)[0];
     return router.buildLocation({
@@ -70,7 +71,7 @@ function useBUIRouter(): BUIRouter {
     }).href;
   };
   return {
-    resolveHref: to => history.createHref(resolve(to)),
+    createHref: to => history.createHref(resolve(to)),
     navigate: (to, options) => {
       const target = resolve(to);
       if (isExternalTarget(target)) {
@@ -218,9 +219,9 @@ export function createTanStackPageRouter(
 
     return (
       <PageContentContext.Provider value={props.children}>
-        <BUIProvider useRouter={useBUIRouter}>
+        <NavigationProvider useNavigation={useAdapterNavigation}>
           <RouterProvider router={scoped.router} />
-        </BUIProvider>
+        </NavigationProvider>
       </PageContentContext.Provider>
     );
   };

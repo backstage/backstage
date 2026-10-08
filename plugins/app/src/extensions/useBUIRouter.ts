@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  appHistoryApiRef,
-  useApi,
-  useAppLocation,
-  useAppNavigate,
-} from '@backstage/frontend-plugin-api';
-import { BUIRouter } from '@backstage/ui';
+import { useNavigation } from '@backstage/frontend-plugin-api';
+import type { BUIRouter } from '@backstage/ui';
 
-/** Binds each BUI control to the routing scope where it renders. */
+/** Binds BUI to the public navigation contract at each consuming control. */
 export function useBUIRouter(): BUIRouter {
-  const history = useApi(appHistoryApiRef);
-  const location = useAppLocation();
-  const navigate = useAppNavigate();
-  return {
-    navigate,
-    resolveHref: to => history.createHref(to),
-    pathname: new URL(
-      history.createHref(location.pathname),
-      'http://backstage.local',
-    ).pathname,
-  };
+  const { createHref, navigate, pathname } = useNavigation();
+  return { resolveHref: createHref, navigate, pathname };
 }
