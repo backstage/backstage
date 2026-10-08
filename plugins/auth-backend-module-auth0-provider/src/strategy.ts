@@ -50,7 +50,27 @@ export class Auth0Strategy extends Auth0InternalStrategy {
   }
 
   authenticate(req: express.Request, options: Record<string, any>): void {
-    const { organization, invitation, screen_hint, login_hint } = req.query;
+    const {
+      error,
+      error_description: errorDescription,
+      organization,
+      invitation,
+      screen_hint,
+      login_hint,
+    } = req.query;
+
+    // passport-auth0 discards error_description before reporting a failed
+    // callback, so preserve it while the original query is still available.
+    if (typeof error === 'string') {
+      this.fail({
+        type: 'error',
+        message:
+          typeof errorDescription === 'string' && errorDescription.length > 0
+            ? errorDescription
+            : error,
+      });
+      return;
+    }
 
     // Throw an error if the organization in the request does not match the organization configured in the strategy
     if (
