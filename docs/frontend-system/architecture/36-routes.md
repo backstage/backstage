@@ -542,7 +542,8 @@ with `replace` honored and `state` ignored. `AppHistoryApi.createHref` adds the
 deployment basename. Both methods replace executable URL schemes with
 `about:blank` and a warning.
 
-Query-only and hash-only targets keep the current pathname. Path-relative
+Empty, query-only, and hash-only targets keep the current pathname. An empty
+target clears query and hash. Path-relative
 targets such as `details`, `.` and `../edit` are rejected by framework navigation,
 including `RouterLink`. Use a routing adapter when relative navigation is needed.
 The adapter supplies its library's relative-path semantics to BUI controls too.

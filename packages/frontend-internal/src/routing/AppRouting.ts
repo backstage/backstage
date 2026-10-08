@@ -277,6 +277,7 @@ export function resolveAppTarget(to: string, pathname: string): string {
     return safeTo;
   }
   if (
+    safeTo !== '' &&
     !safeTo.startsWith('/') &&
     !safeTo.startsWith('?') &&
     !safeTo.startsWith('#')

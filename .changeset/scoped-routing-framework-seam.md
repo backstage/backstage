@@ -8,7 +8,7 @@ Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`,
 
 Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location. `AppHistoryApi.navigate` now handles external URLs through browser navigation, honoring `replace`. Both `navigate` and `createHref` sanitize executable URL schemes. The `useRouteResolution` hook provides the current extension’s matched routing ancestry at the current location.
 
-Framework path destinations must start with `/` and exclude the deployment basename. Route-ref paths work unchanged across pages. Query-only and hash-only targets use the current pathname; path-relative targets are rejected. Use a page adapter for library-relative navigation. `useAppNavigate` reads the latest history location when invoked.
+Framework path destinations must start with `/` and exclude the deployment basename. Route-ref paths work unchanged across pages. Empty, query-only, and hash-only targets use the current pathname; path-relative targets are rejected. Use a page adapter for library-relative navigation. `useAppNavigate` reads the latest history location when invoked.
 
 Framework routing hooks work without a page adapter and retain old frontend compatibility. Existing pages keep implicit React Router v6 routing, with development warnings to guide migration to explicit adapters. Page headers remain visible during content loading and errors, and sub-page breadcrumbs point to their matched routes.
 

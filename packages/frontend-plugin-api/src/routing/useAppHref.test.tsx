@@ -145,7 +145,7 @@ describe('useAppHref', () => {
     const error = jest.spyOn(console, 'error').mockImplementation(() => {});
     try {
       for (const wrapper of [withAppHistory, withReactRouterOnly]) {
-        for (const to of ['details', '../edit', '.', '']) {
+        for (const to of ['details', '../edit', '.']) {
           expect(() => renderHook(() => useAppHref(to), { wrapper })).toThrow(
             'App routing requires',
           );

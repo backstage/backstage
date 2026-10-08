@@ -511,7 +511,6 @@ describe('AppHistory', () => {
         '../bar',
         '../../..',
         'widgets/',
-        '',
         '.',
       ]) {
         expect(() => appHistory.createHref(target)).toThrow(
@@ -529,6 +528,13 @@ describe('AppHistory', () => {
         pathname: '/catalog/foo',
         search: '?tab=docs',
         hash: '#intro',
+      });
+      expect(appHistory.createHref('')).toBe('/catalog/foo');
+      appHistory.navigate('');
+      expect(appHistory.location).toMatchObject({
+        pathname: '/catalog/foo',
+        search: '',
+        hash: '',
       });
       appHistory.navigate('#latest');
       expect(appHistory.location).toMatchObject({
