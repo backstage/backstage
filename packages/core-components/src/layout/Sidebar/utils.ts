@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Path } from 'history';
+import type { Location, Path } from 'history';
 import { isEqual, isMatch } from 'lodash';
 import qs from 'qs';
 
 export function isLocationMatch(
-  currentLocation: Pick<Path, 'pathname' | 'search'>,
+  currentLocation: Location,
   toLocation: Path,
   exact: boolean = false,
 ) {
