@@ -40,3 +40,10 @@ export {
 export { useRouteResolution } from './useRouteResolution';
 
 export { RouterLink, type RouterLinkProps } from './RouterLink';
+
+export {
+  NavigationProvider,
+  useNavigation,
+  type Navigation,
+  type NavigationProviderProps,
+} from './NavigationProvider';
