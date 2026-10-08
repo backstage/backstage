@@ -22,7 +22,7 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { useOutlet } from 'react-router-dom';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
-import { ImportPage, NfsImportPage } from './ImportPage';
+import { ImportPage } from './ImportPage';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -66,30 +66,6 @@ describe('<ImportPage />', () => {
     expect(
       screen.getByText('Start tracking your component in Backstage'),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: 'Register an existing component',
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it('renders without the legacy header in the new frontend system', async () => {
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <NfsImportPage />
-      </ApiProvider>,
-    );
-
-    expect(
-      screen.getByText('Start tracking your component in Backstage'),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', {
-        level: 1,
-        name: 'Register an existing component',
-      }),
-    ).not.toBeInTheDocument();
   });
 
   it('renders with custom children', async () => {
@@ -102,20 +78,5 @@ describe('<ImportPage />', () => {
     );
 
     expect(screen.getByText('Hello World')).toBeInTheDocument();
-  });
-
-  it('renders with custom children in the new frontend system', async () => {
-    (useOutlet as jest.Mock).mockReturnValue(<div>Hello World</div>);
-
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <NfsImportPage />
-      </ApiProvider>,
-    );
-
-    expect(screen.getByText('Hello World')).toBeInTheDocument();
-    expect(
-      screen.queryByText('Start tracking your component in Backstage'),
-    ).not.toBeInTheDocument();
   });
 });
