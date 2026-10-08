@@ -120,6 +120,7 @@ export type GitlabProviderConfig = {
   skipForkedRepos?: boolean;
   includeArchivedRepos?: boolean;
   excludeRepos?: string[];
+  excludeGroups?: string[];
   includeUsersWithoutSeat?: boolean;
   membership?: boolean;
   topics?: string;
