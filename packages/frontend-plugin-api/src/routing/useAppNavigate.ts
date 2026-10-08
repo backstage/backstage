@@ -96,7 +96,7 @@ export function useOptionalAppNavigate():
  * frontend systems. Paths must start with `/` and exclude the deployment
  * basename. Relative paths belong to routing adapters and are rejected.
  * With app history, navigation reads the latest location when called, including
- * for query-only and hash-only targets. A number traverses that many history
+ * for empty, query-only, and hash-only targets. A number traverses that many history
  * entries. External URLs are supported when app history is registered; the old
  * frontend system retains React Router navigation semantics.
  *

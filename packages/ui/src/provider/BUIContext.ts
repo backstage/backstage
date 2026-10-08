@@ -31,9 +31,8 @@ export type BUIContextValueV3 = BUIContextValueV1 & {
 /** @internal */
 export type BUIContextVersions = {
   1: BUIContextValueV1;
-  // Only analytics is read from legacy V2 providers. Their router-specific
-  // integration is deliberately neither consumed nor published anymore.
-  2?: BUIContextValueV1;
+  // Legacy routing is opaque here; the app supplies the frozen V2 contract.
+  2?: BUIContextValueV1 & { routing?: unknown };
   3?: BUIContextValueV3;
 };
 
