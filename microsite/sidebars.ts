@@ -663,6 +663,7 @@ export default {
                 'tooling/cli/modules',
                 'tooling/cli/module-auth',
                 'tooling/cli/module-actions',
+                'tooling/cli/module-ai',
                 'tooling/cli/module-build',
                 'tooling/cli/module-config',
                 'tooling/cli/module-github',

@@ -2116,6 +2116,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-module-ai@workspace:packages/cli-module-ai":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-ai@workspace:packages/cli-module-ai"
+  dependencies:
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
+    "@types/git-url-parse": "npm:^9.0.0"
+    cleye: "npm:^2.6.0"
+    git-url-parse: "npm:^15.0.0"
+    skills: "npm:1.7.0"
+  bin:
+    cli-module-ai: bin/backstage-cli-module-ai
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-module-auth@workspace:^, @backstage/cli-module-auth@workspace:packages/cli-module-auth":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-auth@workspace:packages/cli-module-auth"
@@ -42143,6 +42162,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"skills@npm:1.7.0":
+  version: 1.7.0
+  resolution: "skills@npm:1.7.0"
+  dependencies:
+    tar: "npm:^7.5.20"
+    yaml: "npm:^2.8.3"
+  bin:
+    add-skill: bin/cli.mjs
+    skills: bin/cli.mjs
+  checksum: 10/0cb4ea95705850cf0ec4937a68feacaee4562d4926168bbe60392a28c7dd1d840739cfc6ebb7fce27a554dc6afa9ebab7cf79536436903a954418a047aeb7b97
+  languageName: node
+  linkType: hard
+
 "skin-tone@npm:^2.0.0":
   version: 2.0.0
   resolution: "skin-tone@npm:2.0.0"
@@ -43651,7 +43683,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^7.4.3, tar@npm:^7.5.21, tar@npm:^7.5.3, tar@npm:^7.5.4":
+"tar@npm:^7.4.3, tar@npm:^7.5.20, tar@npm:^7.5.21, tar@npm:^7.5.3, tar@npm:^7.5.4":
   version: 7.5.22
   resolution: "tar@npm:7.5.22"
   dependencies:

@@ -99,6 +99,20 @@ All `AiResource` entities share these spec fields regardless of type:
 
 The actual content of skills and rules is not stored in the entity spec. Instead, the source file is referenced through the standard `backstage.io/source-location` annotation. Entity providers that generate `AiResource` entities from skill or rule files should set this annotation to point to the source file.
 
+### Making skills installable
+
+The `@backstage/cli-module-ai` CLI module installs the skills that apply to a repository into your coding agents. See the [AI module](../tooling/cli/module-ai.md) for usage. For a skill entity to be installable, it must meet these requirements:
+
+- The `backstage.io/source-location` annotation has the form `url:<git tree URL>`, for example `url:https://github.com/acme/skills/tree/main/skills/frontend-design`, and points at the directory that contains the `SKILL.md` file, not at the file itself or the repository root.
+- The directory must contain `SKILL.md` directly. If it does not, `skills` installs every skill it finds below it. The installed skill takes its name from the `SKILL.md` front matter, so the directory name does not need to match `metadata.name`.
+- The ref in the URL cannot contain `/`. Skills with such a ref are skipped.
+- The skill is `partOf` the component's system, or is owned by the component's owner, by one of the signed-in user's groups, or by an ancestor group of the component's owner or of those groups. See [How skills are selected](../tooling/cli/module-ai.md#how-skills-are-selected).
+- `spec.agents`, when set, lists [`skills`](https://github.com/vercel-labs/skills) agent IDs such as `claude-code`, `codex`, or `cursor`. A skill with no `spec.agents` is installed for the target agents of the command.
+
+### Security considerations
+
+Skills that the CLI module selects are installed without confirmation, and ownership and system membership in the catalog are declared rather than verified. Anyone who can register an `AiResource` owned by a widely shared ancestor group, or `partOf` a system, can cause that skill to be installed for every matching user. Control who can register catalog locations, and review what would be installed with `ai resolve` or `ai skills sync --dry-run`. See the [security considerations](../tooling/cli/module-ai.md#security-considerations) of the AI module.
+
 ## MCP Server API Type
 
 The `mcp-server` type is a structured subtype of the [`API` entity kind](../features/software-catalog/descriptor-format.md#kind-api). Use it to represent MCP servers in your catalog, capturing their transport endpoints through a `remotes` list instead of the `definition` field used by other API types like `openapi` or `graphql`.
