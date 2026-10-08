@@ -16,6 +16,8 @@
 
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
+export type AzureDevOpsDiscoveryMethod = 'codeSearch' | 'listing';
+
 export type AzureDevOpsConfig = {
   id: string;
   host: string;
@@ -24,6 +26,8 @@ export type AzureDevOpsConfig = {
   repository: string;
   branch?: string;
   path: string;
+  discoveryMethod: AzureDevOpsDiscoveryMethod;
+  skipForkedRepos: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
