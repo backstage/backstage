@@ -31,6 +31,7 @@ import {
 import {
   appHistoryApiRef,
   NavigationProvider,
+  useNavigation,
   useAppLocation,
   useAppNavigate,
 } from '@backstage/frontend-plugin-api';
@@ -56,7 +57,6 @@ import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/rou
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { WorkaroundNavLink } from '../../../../packages/core-components/src/layout/Sidebar/Items';
 import { LegacyBUIProvider } from './LegacyBUIProvider';
-import { useBUIRouter } from './useBUIRouter';
 
 // Frozen consumer contract: do not derive this type from the provider implementation.
 type LegacyRouting = {
@@ -123,13 +123,13 @@ it('preserves the frozen V2 contract through nested providers overriding V3', as
     <TestApiProvider apis={[[appHistoryApiRef, history]]}>
       <RootHistoryRouter history={history}>
         <LegacyBUIProvider>
-          <BUIProvider useRouter={useBUIRouter}>
+          <BUIProvider useNavigation={useNavigation}>
             <Routes>
               <Route path="catalog">
                 <Route
                   path="items/:id/*"
                   element={
-                    <BUIProvider useRouter={useBUIRouter}>
+                    <BUIProvider useNavigation={useNavigation}>
                       <NavigationProvider
                         useNavigation={() => ({
                           createHref: () => '/unrelated',

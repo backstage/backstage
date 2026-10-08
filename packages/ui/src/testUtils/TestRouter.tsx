@@ -24,11 +24,11 @@ import {
 } from 'react-router-dom';
 import { resolveTo } from '@remix-run/router';
 import { BUIProvider } from '../provider/BUIProvider';
-import type { BUIRouter } from '../provider/BUIRouter';
+import type { BUINavigation } from '../provider/BUINavigation';
 import { isBrowserOwnedHref } from '../utils/linkUtils';
 
 /** Explicit React Router adapter for component tests and stories. */
-export function useTestRouter(): BUIRouter {
+export function useTestRouter(): BUINavigation {
   const navigate = useNavigate();
   const location = useLocation();
   const { basename, navigator, future } = useContext(UNSAFE_NavigationContext);
@@ -46,7 +46,7 @@ export function useTestRouter(): BUIRouter {
   return {
     navigate,
     pathname: withBasename(location.pathname),
-    resolveHref(href) {
+    createHref(href) {
       if (isBrowserOwnedHref(href)) return href;
       const path = resolveTo(href, bases, location.pathname);
       return navigator.createHref({
@@ -59,7 +59,7 @@ export function useTestRouter(): BUIRouter {
 
 /** A React Aria href hook for tests that configure their own provider. */
 export function useTestHref(href: string): string {
-  return useTestRouter().resolveHref(href);
+  return useTestRouter().createHref(href);
 }
 
 /** A memory router with explicitly configured BUI navigation. */
@@ -69,7 +69,7 @@ export function TestRouter({
 }: ComponentProps<typeof MemoryRouter>) {
   return (
     <MemoryRouter {...props}>
-      <BUIProvider useRouter={useTestRouter}>{children}</BUIProvider>
+      <BUIProvider useNavigation={useTestRouter}>{children}</BUIProvider>
     </MemoryRouter>
   );
 }

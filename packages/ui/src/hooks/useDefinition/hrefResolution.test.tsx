@@ -18,7 +18,7 @@ import { TestRouter } from '../../testUtils/TestRouter';
 import { type ComponentType, type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { Route, Routes, createPath, resolvePath } from 'react-router-dom';
-import { BUIProvider, type BUIRouter } from '../../provider';
+import { BUIProvider, type BUINavigation } from '../../provider';
 import { isExternalLink } from '../../utils/linkUtils';
 import { Link } from '../../components/Link';
 import { ButtonLink } from '../../components/ButtonLink';
@@ -55,9 +55,9 @@ function resolvePageScopedHref(target: string): string {
   return `${DEPLOY_BASENAME}${createPath(resolvePath(target, PAGE_PATH))}`;
 }
 
-const scopedRouter: BUIRouter = {
+const scopedRouter: BUINavigation = {
   navigate: () => {},
-  resolveHref: resolvePageScopedHref,
+  createHref: resolvePageScopedHref,
   pathname: DEPLOY_BASENAME + PAGE_PATH,
 };
 
@@ -71,7 +71,7 @@ const scopedRouter: BUIRouter = {
 function ScopedHarness({ children }: { children: ReactNode }) {
   return (
     <TestRouter initialEntries={[PAGE_PATH]}>
-      <BUIProvider useRouter={() => scopedRouter}>{children}</BUIProvider>
+      <BUIProvider useNavigation={() => scopedRouter}>{children}</BUIProvider>
     </TestRouter>
   );
 }
@@ -241,9 +241,9 @@ describe('href resolution across components', () => {
       render(
         <TestRouter initialEntries={[PAGE_PATH]}>
           <BUIProvider
-            useRouter={() => ({
+            useNavigation={() => ({
               ...scopedRouter,
-              resolveHref: resolveRecordingHref,
+              createHref: resolveRecordingHref,
             })}
           >
             {/* eslint-disable-next-line no-script-url */}

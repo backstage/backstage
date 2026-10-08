@@ -27,6 +27,7 @@ import {
   pluginWrapperApiRef,
   appHistoryApiRef,
   useAnalytics,
+  useNavigation,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
@@ -34,7 +35,6 @@ import {
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
 import { BUIProvider } from '@backstage/ui';
-import { useBUIRouter } from './useBUIRouter';
 import { LegacyBUIProvider } from './LegacyBUIProvider';
 import {
   DiscoveryApi,
@@ -274,7 +274,7 @@ export function AppRouter(props: AppRouterProps) {
   return (
     <RootHistoryRouter history={appHistory}>
       <LegacyBUIProvider>
-        <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
+        <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
           <BreadcrumbsRegistryProvider>
             {...extraElements}
             <RouteTracker routeObjects={routeObjects} />
