@@ -70,17 +70,18 @@ export function BUIProvider(props: BUIProviderProps) {
     children,
   } = props;
   const parent = useContext(BUIContext);
+  const legacy = parent?.atVersion(2);
   const useAnalytics =
-    providedUseAnalytics ??
-    (parent?.atVersion(2) ?? parent?.atVersion(1))?.useAnalytics;
+    providedUseAnalytics ?? (legacy ?? parent?.atVersion(1))?.useAnalytics;
   const useRouter = providedUseRouter ?? parent?.atVersion(3)?.useRouter;
   const value = useMemo(
     () =>
       createVersionedValueMap<BUIContextVersions>({
         1: { useAnalytics },
+        ...(legacy ? { 2: { ...legacy, useAnalytics } } : {}),
         3: { useAnalytics, useRouter },
       }),
-    [useAnalytics, useRouter],
+    [legacy, useAnalytics, useRouter],
   );
 
   return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
