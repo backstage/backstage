@@ -28,12 +28,30 @@ export const runMkdocsServer = (options: {
   mkdocsParameterClean?: boolean;
   mkdocsParameterDirtyReload?: boolean;
   mkdocsParameterStrict?: boolean;
+  engineBinary?: string;
+  engineServeArgs?: string[];
 }): RunChildProcess => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
   const dockerImage = options.dockerImage ?? 'spotify/techdocs';
 
+  const buildDefaultServeArgs = (addr: string) => [
+    'serve',
+    '--dev-addr',
+    addr,
+    '--livereload',
+    ...(options.mkdocsConfigFileName
+      ? ['--config-file', options.mkdocsConfigFileName]
+      : []),
+    ...(options.mkdocsParameterClean ? ['--clean'] : []),
+    ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
+    ...(options.mkdocsParameterStrict ? ['--strict'] : []),
+  ];
+
   if (useDocker) {
+    const serveArgs =
+      options.engineServeArgs ?? buildDefaultServeArgs(`0.0.0.0:${port}`);
+
     return run(
       [
         'docker',
@@ -51,16 +69,7 @@ export const runMkdocsServer = (options: {
           : []),
         ...(options.dockerOptions || []),
         dockerImage,
-        'serve',
-        '--dev-addr',
-        `0.0.0.0:${port}`,
-        '--livereload',
-        ...(options.mkdocsConfigFileName
-          ? ['--config-file', options.mkdocsConfigFileName]
-          : []),
-        ...(options.mkdocsParameterClean ? ['--clean'] : []),
-        ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
-        ...(options.mkdocsParameterStrict ? ['--strict'] : []),
+        ...serveArgs,
       ],
       {
         onStdout: options.onStdout,
@@ -69,23 +78,12 @@ export const runMkdocsServer = (options: {
     );
   }
 
-  return run(
-    [
-      'mkdocs',
-      'serve',
-      '--dev-addr',
-      `127.0.0.1:${port}`,
-      '--livereload',
-      ...(options.mkdocsConfigFileName
-        ? ['--config-file', options.mkdocsConfigFileName]
-        : []),
-      ...(options.mkdocsParameterClean ? ['--clean'] : []),
-      ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
-      ...(options.mkdocsParameterStrict ? ['--strict'] : []),
-    ],
-    {
-      onStdout: options.onStdout,
-      onStderr: options.onStderr,
-    },
-  );
+  const binary = options.engineBinary ?? 'mkdocs';
+  const serveArgs =
+    options.engineServeArgs ?? buildDefaultServeArgs(`127.0.0.1:${port}`);
+
+  return run([binary, ...serveArgs], {
+    onStdout: options.onStdout,
+    onStderr: options.onStderr,
+  });
 };

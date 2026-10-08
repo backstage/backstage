@@ -22,13 +22,16 @@ import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
+import { getEngineConfig } from '../../lib/engineConfig';
+import { resolveEngine } from '../../lib/catalogEntity';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
-  const dockerAddr = `http://0.0.0.0:${opts.port}`;
+  const { engine } = await resolveEngine(process.cwd(), opts.engine, logger);
+  const engineConfig = getEngineConfig(engine);
+
   const localAddr = `http://127.0.0.1:${opts.port}`;
-  const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
   if (opts.docker) {
     const isDockerOperational = await checkIfDockerIsOperational(logger);
@@ -48,7 +51,7 @@ export default async function serveMkdocs(opts: OptionValues) {
   const logFunc: RunOnOutput = data => {
     // Sometimes the lines contain an unnecessary extra new line in between
     const logLines = data.toString().split('\n');
-    const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    const logPrefix = opts.docker ? `[docker/${engine}]` : `[${engine}]`;
     logLines.forEach(line => {
       if (line === '') {
         return;
@@ -60,10 +63,10 @@ export default async function serveMkdocs(opts: OptionValues) {
       // When the server has started, open a new browser tab for the user.
       if (
         !boolOpenBrowserTriggered &&
-        line.includes(`Serving on ${expectedDevAddr}`)
+        line.includes(`${engineConfig.startupLogPattern}`)
       ) {
         // Always open the local address, since 0.0.0.0 belongs to docker
-        logger.info(`\nStarting mkdocs server on ${localAddr}\n`);
+        logger.info(`\nStarting ${engine} server on ${localAddr}\n`);
         openBrowser(localAddr);
         boolOpenBrowserTriggered = true;
       }
@@ -73,7 +76,6 @@ export default async function serveMkdocs(opts: OptionValues) {
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
   // Had me questioning this whole implementation for half an hour.
 
-  // Commander stores --no-docker in cmd.docker variable
   const childProcess = runMkdocsServer({
     port: opts.port,
     dockerImage: opts.dockerImage,
@@ -83,6 +85,11 @@ export default async function serveMkdocs(opts: OptionValues) {
     mkdocsConfigFileName: mkdocsYmlPath,
     onStdout: logFunc,
     onStderr: logFunc,
+    engineBinary: engineConfig.binary,
+    engineServeArgs: engineConfig.serveArgs(opts.port, {
+      configFile: mkdocsYmlPath,
+      useDocker: opts.docker,
+    }),
   });
 
   // Keep waiting for user to cancel the process
