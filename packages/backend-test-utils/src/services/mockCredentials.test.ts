@@ -16,6 +16,11 @@
 
 import { mockCredentials } from './mockCredentials';
 
+const identityContext = {
+  issuer: 'https://portal.example.com/',
+  attributes: { profile: 'organization', profileId: 'org_a' },
+} as const;
+
 describe('mockCredentials', () => {
   it('creates a mocked credentials object for a none principal', () => {
     expect(mockCredentials.none()).toEqual({
@@ -37,6 +42,15 @@ describe('mockCredentials', () => {
       version: 'v1',
       principal: { type: 'user', userEntityRef: 'user:default/other' },
     });
+
+    expect(
+      mockCredentials.user('user:default/other', { identityContext }),
+    ).toMatchObject({
+      principal: { identityContext },
+    });
+    expect(
+      String(mockCredentials.user('user:default/other', { identityContext })),
+    ).not.toBe(String(mockCredentials.user('user:default/other')));
   });
 
   it('creates a mocked credentials object for a limited user principal', () => {
@@ -85,6 +99,13 @@ describe('mockCredentials', () => {
     expect(mockCredentials.user.invalidHeader()).toBe(
       'Bearer mock-invalid-user-token',
     );
+    expect(
+      mockCredentials.user.token('user:default/other', { identityContext }),
+    ).toBe(
+      `mock-user-token:{"sub":"user:default/other","identityContext":${JSON.stringify(
+        identityContext,
+      )}}`,
+    );
   });
 
   it('creates limited user tokens and headers', () => {
@@ -100,6 +121,15 @@ describe('mockCredentials', () => {
     );
     expect(mockCredentials.limitedUser.invalidCookie()).toBe(
       'backstage-auth=mock-invalid-limited-user-token',
+    );
+    expect(
+      mockCredentials.limitedUser.token('user:default/other', {
+        identityContext,
+      }),
+    ).toBe(
+      `mock-limited-user-token:{"sub":"user:default/other","identityContext":${JSON.stringify(
+        identityContext,
+      )}}`,
     );
   });
 
@@ -117,6 +147,18 @@ describe('mockCredentials', () => {
         targetPluginId: 'other',
       }),
     ).toBe('mock-service-token:{"obo":"user:default/other","target":"other"}');
+    expect(
+      mockCredentials.service.token({
+        onBehalfOf: mockCredentials.user('user:default/other', {
+          identityContext,
+        }),
+        targetPluginId: 'other',
+      }),
+    ).toBe(
+      `mock-service-token:{"obo":"user:default/other","identityContext":${JSON.stringify(
+        identityContext,
+      )},"target":"other"}`,
+    );
     expect(mockCredentials.service.invalidToken()).toBe(
       'mock-invalid-service-token',
     );

@@ -12,6 +12,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
+import { BackstageUserIdentityContext } from '@backstage/backend-plugin-api';
 import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
@@ -66,14 +67,27 @@ export function createServiceMock<TService>(
 export namespace mockCredentials {
   export function limitedUser(
     userEntityRef?: string,
+    options?: {
+      identityContext?: BackstageUserIdentityContext;
+    },
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace limitedUser {
-    export function cookie(userEntityRef?: string): string;
+    export function cookie(
+      userEntityRef?: string,
+      options?: {
+        identityContext?: BackstageUserIdentityContext;
+      },
+    ): string;
     // (undocumented)
     export function invalidCookie(): string;
     // (undocumented)
     export function invalidToken(): string;
-    export function token(userEntityRef?: string): string;
+    export function token(
+      userEntityRef?: string,
+      options?: {
+        identityContext?: BackstageUserIdentityContext;
+      },
+    ): string;
   }
   export function none(): BackstageCredentials<BackstageNonePrincipal>;
   export namespace none {
@@ -101,10 +115,19 @@ export namespace mockCredentials {
       actor?: {
         subject: string;
       };
+      identityContext?: BackstageUserIdentityContext;
     },
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
-    export function header(userEntityRef?: string): string;
+    export function header(
+      userEntityRef?: string,
+      options?: {
+        actor?: {
+          subject: string;
+        };
+        identityContext?: BackstageUserIdentityContext;
+      },
+    ): string;
     // (undocumented)
     export function invalidHeader(): string;
     // (undocumented)
@@ -115,6 +138,7 @@ export namespace mockCredentials {
         actor?: {
           subject: string;
         };
+        identityContext?: BackstageUserIdentityContext;
       },
     ): string;
   }

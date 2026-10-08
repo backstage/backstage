@@ -135,7 +135,9 @@ export class MockHttpAuthService implements HttpAuthService {
 
     res.setHeader(
       'Set-Cookie',
-      mockCredentials.limitedUser.cookie(credentials.principal.userEntityRef),
+      mockCredentials.limitedUser.cookie(credentials.principal.userEntityRef, {
+        identityContext: credentials.principal.identityContext,
+      }),
     );
 
     return { expiresAt: new Date(Date.now() + 3600_000) };
