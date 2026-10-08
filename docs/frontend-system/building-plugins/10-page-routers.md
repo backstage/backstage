@@ -316,88 +316,51 @@ routing library at all.
 
 ## Use React Aria components directly
 
-Use `RouterLink` from `@backstage/frontend-plugin-api` to connect custom React Aria
-components to Backstage routing. It is a routing primitive with no styles, intended for
-composition. For standard UI links, use the BUI `Link` component.
-
-Pass `RouterLink` through React Aria's `render` prop:
+Bind React Aria to the public navigation contract at the component's route scope.
+This supports anchors and collections without custom click handlers:
 
 ```tsx
-import { RouterLink } from '@backstage/frontend-plugin-api';
-import { Link } from 'react-aria-components';
+import { useNavigation } from '@backstage/frontend-plugin-api';
+import {
+  RouterProvider,
+  Link,
+  GridList,
+  GridListItem,
+} from 'react-aria-components';
 
-export function ToolDetailsLink() {
-  return (
-    <Link
-      href="/tools/details"
-      render={props =>
-        'href' in props ? <RouterLink {...props} /> : <span {...props} />
-      }
-    >
-      Tool details
-    </Link>
-  );
-}
-```
-
-`RouterLink` uses contextual navigation: app-absolute destinations and route-ref
-paths work everywhere, while relative destinations use the nearest adapter's
-semantics. It handles the deployment basename and preserves browser behavior
-for modified clicks, downloads, and external destinations. No `RouterProvider`
-or custom click handler is needed. Framework hooks such as `useAppNavigate`
-remain strict even inside an adapter.
-
-The same approach works for navigable tabs:
-
-```tsx
-import { RouterLink, useNavigation } from '@backstage/frontend-plugin-api';
-import { Tabs, TabList, Tab } from 'react-aria-components';
-
-export function ToolTabs() {
+export function ToolNavigation() {
   const navigation = useNavigation();
-  const currentHref = navigation.pathname;
-  const detailsHref = navigation.createHref('/tools/details');
-
-  const selectedKey = currentHref === detailsHref ? 'details' : 'overview';
-
   return (
-    <Tabs selectedKey={selectedKey}>
-      <TabList aria-label="Tool">
-        <Tab
-          id="overview"
-          href="/tools"
-          render={props =>
-            'href' in props ? <RouterLink {...props} /> : <div {...props} />
-          }
-        >
-          Overview
-        </Tab>
-        <Tab
-          id="details"
-          href="/tools/details"
-          render={props =>
-            'href' in props ? <RouterLink {...props} /> : <div {...props} />
-          }
-        >
+    <RouterProvider
+      useHref={navigation.createHref}
+      navigate={navigation.navigate}
+    >
+      <Link href="/tools">Tools</Link>
+      <GridList aria-label="Tool pages">
+        <GridListItem id="details" textValue="Details" href="/tools/details">
           Details
-        </Tab>
-      </TabList>
-    </Tabs>
+        </GridListItem>
+      </GridList>
+    </RouterProvider>
   );
 }
 ```
 
-The example compares
-browser-ready paths so the deployment basename matches. It selects Details on an exact
-path match and Overview otherwise.
-Derive selection from your route structure when tabs also include descendant
-routes. The page router renders the destination content, while the current
-location controls tab selection, including after Back and Forward navigation.
+Inside a routing adapter, these controls may also use relative targets. React
+Aria uses the generated href for the browser and passes the original target to
+`navigate`. It handles keyboard interaction, modified clicks, and native external
+navigation. The local provider also overrides an inherited legacy integration.
 
-For navigable menu items, use the same `render` pattern on `MenuItem`. Forward
-all supplied props and the ref so React Aria retains its accessibility, focus,
-and interaction behavior. Use a link with button styling for navigation that
-looks like a button; keep action buttons as buttons.
+Place this component inside the relevant library route. If descendants establish
+new route scopes, they need their own integration at that scope. Moving this
+provider to the app root would capture the root navigation callbacks and lose
+those descendant semantics.
+
+`RouterLink` is an alternative for component libraries that delegate anchor
+rendering and navigation to a custom link. Forward props and refs, and pass the
+original authored target. Do not combine it with a library integration that has
+already resolved the href or intercepts navigation first; use that library's
+routing callbacks as above instead.
 
 ## Integrate a component library
 
@@ -411,7 +374,7 @@ hooks `useAppHref` and `useAppNavigate` remain strict inside adapters.
 - `navigate(target, options)` accepts the original authored target, not the generated href.
 - `pathname` is the current browser pathname, including the deployment basename.
 
-For anchors, use the `RouterLink` primitive without built-in styling shown above. It uses this
+For custom anchors, use the `RouterLink` primitive without built-in styling. It uses this
 contextual contract and preserves refs, events, modified clicks, downloads, and
 native external navigation. Use a styled library component around it for UI.
 
@@ -483,7 +446,7 @@ When upgrading an existing integration:
 1. Use app-absolute paths or route-ref destinations outside an adapter.
    Within an adapter, BUI controls also accept library-relative paths.
    An empty target resolves to the current pathname, clearing query and hash.
-1. Compose directly used React Aria components with `RouterLink`, as
+1. Bind directly used React Aria components to `useNavigation`, as
    described in [React Aria integration](#use-react-aria-components-directly).
 
 BUI links treat URL schemes, including custom and mixed-case schemes, as
