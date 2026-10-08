@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type {
   GridListProps as ReactAriaGridListProps,
   GridListItemProps as ReactAriaGridListItemProps,
@@ -82,5 +82,5 @@ export interface ListRowProps
   extends ListRowOwnProps,
     Omit<ReactAriaGridListItemProps, keyof ListRowOwnProps | 'routerOptions'> {
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }

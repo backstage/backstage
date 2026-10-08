@@ -419,14 +419,14 @@ do not replace app history or route matching, which remain owned by the app APIs
 ## Migrate Backstage UI routing
 
 Backstage apps configure Backstage UI (BUI) navigation automatically. Standalone
-apps that relied on an ambient React Router must provide the `useRouter` prop
+apps that relied on an ambient React Router must provide the `useNavigation` prop
 on `BUIProvider`. React Router is no longer a BUI peer dependency.
 Legacy core-components, including the sidebar, continue using React Router
 and require the implicit React Router compatibility provided by the app.
 
-The hook returns a `BUIRouter` with three members:
+The hook returns a `BUINavigation` with three members:
 
-- `resolveHref` resolves a target to a browser href.
+- `createHref` resolves a target to a browser href.
 - `navigate` navigates to that target and accepts `replace` and `state` options.
 - `pathname` contains the current browser pathname.
 

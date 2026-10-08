@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type {
   MenuTriggerProps as RAMenuTriggerProps,
   MenuItemProps as RAMenuItemProps,
@@ -101,7 +101,7 @@ export interface MenuItemProps
   extends MenuItemOwnProps,
     Omit<RAMenuItemProps, keyof MenuItemOwnProps | 'render' | 'routerOptions'> {
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 /** @public */
@@ -118,7 +118,7 @@ export interface MenuListBoxItemProps
       keyof MenuListBoxItemOwnProps | 'render' | 'routerOptions'
     > {
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 /** @public */

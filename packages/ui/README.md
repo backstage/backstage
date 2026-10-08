@@ -22,23 +22,23 @@ yarn add @backstage/ui
 BUI uses React Aria for link activation, including keyboard input, modified
 clicks, downloads, and event cancellation. Backstage apps configure BUI routing
 automatically. A standalone app can configure client navigation with
-`BUIProvider`'s `useRouter` prop:
+`BUIProvider`'s `useNavigation` prop:
 
 ```tsx
-type BUIRouter = {
+type BUINavigation = {
   navigate: (
     href: string,
     options?: { replace?: boolean; state?: unknown },
   ) => void;
-  resolveHref: (href: string) => string;
+  createHref: (href: string) => string;
   pathname: string;
 };
 ```
 
 The hook runs at each consuming control's position in the app. Return a
-`resolveHref` function and a `navigate` function that interpret relative targets
+`createHref` function and a `navigate` function that interpret relative targets
 from that same position. Resolved hrefs and `pathname` must include the deployment
-basename. `resolveHref` is a normal function so collections can resolve multiple
+basename. `createHref` is a normal function so collections can resolve multiple
 items. Absolute URLs remain browser-owned.
 
 BUI uses browser navigation unless the app supplies a host hook or a React Aria
@@ -51,7 +51,7 @@ ambient React Router. Nested BUI providers inherit the host hook.
   Backstage apps retain the frozen V2 React Router integration for older
   components; nested new providers preserve it independently of their host hook.
 - Standalone apps that relied on automatic React Router integration must supply
-  `useRouter`. React Router is no longer a BUI peer dependency.
+  `useNavigation`. React Router is no longer a BUI peer dependency.
 - Use the router-neutral `routerOptions` fields `replace` and `state`. Options
   specific to React Router are no longer part of the BUI contract.
 - In Backstage apps, use app-absolute paths or route-ref destinations. A page
