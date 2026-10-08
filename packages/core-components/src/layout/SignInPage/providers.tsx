@@ -156,7 +156,6 @@ export const useSignInProviders = (
       .loader(apiHolder, provider.config?.apiRef!)
       .then(result => {
         if (didCancel) {
-          localStorage.removeItem(PROVIDER_STORAGE_KEY);
           return;
         }
         if (result) {
@@ -166,10 +165,10 @@ export const useSignInProviders = (
         }
       })
       .catch(error => {
-        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         if (didCancel) {
           return;
         }
+        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         errorApi.post(error);
         setLoading(false);
       });
