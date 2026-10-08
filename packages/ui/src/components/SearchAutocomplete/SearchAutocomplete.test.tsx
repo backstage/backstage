@@ -77,8 +77,8 @@ function TrackingProvider({
   children,
   navigate,
 }: PropsWithChildren<{ navigate: jest.Mock }>) {
-  function useRouter() {
+  function useNavigation() {
     return { ...useTestRouter(), navigate };
   }
-  return <BUIProvider useRouter={useRouter}>{children}</BUIProvider>;
+  return <BUIProvider useNavigation={useNavigation}>{children}</BUIProvider>;
 }

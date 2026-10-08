@@ -500,26 +500,26 @@ export type BoxUtilityProps = {
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public
+export type BUINavigation = {
+  navigate: (href: string, options?: BUINavigationOptions) => void;
+  createHref: (href: string) => string;
+  pathname: string;
+};
+
+// @public
+export type BUINavigationOptions = {
+  replace?: boolean;
+  state?: unknown;
+};
+
+// @public
 export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
 
 // @public (undocumented)
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
-  useRouter?: () => BUIRouter;
+  useNavigation?: () => BUINavigation;
   children: ReactNode;
-};
-
-// @public
-export type BUIRouter = {
-  navigate: (href: string, options?: BUIRouterOptions) => void;
-  resolveHref: (href: string) => string;
-  pathname: string;
-};
-
-// @public
-export type BUIRouterOptions = {
-  replace?: boolean;
-  state?: unknown;
 };
 
 // @public
@@ -665,7 +665,7 @@ export interface ButtonLinkProps
       keyof ButtonLinkOwnProps | 'render' | 'routerOptions'
     >,
     ButtonLinkOwnProps {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public (undocumented)
@@ -1304,7 +1304,7 @@ export type ComboboxItemProps<T extends object = object> =
       ListBoxItemProps<T>,
       keyof ComboboxItemOwnProps | 'render' | 'routerOptions'
     > & {
-      routerOptions?: BUIRouterOptions;
+      routerOptions?: BUINavigationOptions;
     };
 
 // @public (undocumented)
@@ -2589,7 +2589,7 @@ export interface LinkProps
       'children' | 'className' | 'render' | 'routerOptions'
     >,
     LinkOwnProps {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public
@@ -2665,7 +2665,7 @@ export type ListRowOwnProps = {
 export interface ListRowProps
   extends ListRowOwnProps,
     Omit<GridListItemProps, keyof ListRowOwnProps | 'routerOptions'> {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public (undocumented)
@@ -2770,7 +2770,7 @@ export type MenuItemOwnProps = {
 export interface MenuItemProps
   extends MenuItemOwnProps,
     Omit<MenuItemProps_2, keyof MenuItemOwnProps | 'render' | 'routerOptions'> {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public (undocumented)
@@ -2792,7 +2792,7 @@ export interface MenuListBoxItemProps
       ListBoxItemProps,
       keyof MenuListBoxItemOwnProps | 'render' | 'routerOptions'
     > {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public (undocumented)
@@ -3263,7 +3263,7 @@ export type RowOwnProps<T = object> = {
 export interface RowProps<T>
   extends RowOwnProps<T>,
     Omit<RowProps_2<T>, keyof RowOwnProps | 'routerOptions'> {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public
@@ -3334,7 +3334,7 @@ export interface SearchAutocompleteItemProps
       ListBoxItemProps,
       keyof SearchAutocompleteItemOwnProps | 'render' | 'routerOptions'
     > {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public (undocumented)
@@ -3649,7 +3649,7 @@ export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
     keyof SelectItemOwnProps | 'render' | 'textValue' | 'routerOptions'
   > & {
     textValue: string;
-    routerOptions?: BUIRouterOptions;
+    routerOptions?: BUINavigationOptions;
   };
 
 // @public (undocumented)
@@ -4300,7 +4300,7 @@ export interface TabPanelProps
 export interface TabProps
   extends TabOwnProps,
     Omit<TabProps_2, keyof TabOwnProps | 'render' | 'routerOptions'> {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public
@@ -4385,7 +4385,7 @@ export type TagOwnProps = {
 export interface TagProps
   extends TagOwnProps,
     Omit<TagProps_2, keyof TagOwnProps | 'routerOptions'> {
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 // @public

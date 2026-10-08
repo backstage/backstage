@@ -31,7 +31,7 @@ import { isReactRouterBeta } from './isReactRouterBeta';
 import { RouteTracker } from '../routing/RouteTracker';
 import { Route, Routes } from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
-import { useBUIRouter } from './useBUIRouter';
+import { useBUINavigation } from './useBUINavigation';
 
 /**
  * Get the app base path from the configured app baseUrl.
@@ -158,7 +158,10 @@ export function AppRouter(props: AppRouterProps) {
 
     return (
       <RouterComponent basename={basePath}>
-        <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
+        <BUIProvider
+          useAnalytics={useAnalytics}
+          useNavigation={useBUINavigation}
+        >
           <RouteTracker routeObjects={routeObjects} />
           {props.children}
         </BUIProvider>
@@ -186,7 +189,7 @@ export function AppRouter(props: AppRouterProps) {
 
   return (
     <RouterComponent basename={basePath}>
-      <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
+      <BUIProvider useAnalytics={useAnalytics} useNavigation={useBUINavigation}>
         <RouteTracker routeObjects={routeObjects} />
         <SignInPageWrapper
           component={SignInPageComponent}
