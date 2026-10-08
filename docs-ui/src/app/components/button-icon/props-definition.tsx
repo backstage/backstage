@@ -19,6 +19,12 @@ export const buttonIconPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  destructive: {
+    type: 'boolean',
+    default: 'false',
+    description:
+      'Applies destructive styling for dangerous actions like delete or remove.',
+  },
   size: {
     type: 'enum',
     values: ['small', 'medium'],

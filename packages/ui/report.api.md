@@ -574,6 +574,9 @@ export const ButtonIconDefinition: {
       readonly dataAttribute: true;
       readonly default: 'primary';
     };
+    readonly destructive: {
+      readonly dataAttribute: true;
+    };
     readonly isPending: {
       readonly dataAttribute: true;
     };
@@ -589,6 +592,7 @@ export const ButtonIconDefinition: {
 export type ButtonIconOwnProps = {
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  destructive?: boolean;
   icon?: ReactElement;
   isPending?: boolean;
   loading?: boolean;

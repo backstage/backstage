@@ -22,6 +22,7 @@ import type { Responsive } from '../../types';
 export type ButtonIconOwnProps = {
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  destructive?: boolean;
   icon?: ReactElement;
   isPending?: boolean;
   /** @deprecated Use `isPending` instead. */
