@@ -15,9 +15,10 @@
  */
 
 import { useContext, useMemo, type ReactNode } from 'react';
-import { BUIProvider, type BUIRouter } from '@backstage/ui';
 import {
   appHistoryApiRef,
+  NavigationProvider,
+  type Navigation,
   useApi,
   useApiHolder,
   useRouteResolution,
@@ -51,8 +52,8 @@ const v6Bindings: ReactRouterAdapterBindings = {
     UNSAFE_RouteContext as ReactRouterAdapterBindings['UNSAFE_RouteContext'],
 };
 
-/** Called by each BUI control, inside its own React Router route context. */
-function useBUIRouter(): BUIRouter {
+/** Called by each navigation consumer, inside its own React Router route context. */
+function useAdapterNavigation(): Navigation {
   const history = useApi(appHistoryApiRef);
   const location = useLocation();
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ function useBUIRouter(): BUIRouter {
         navigate(safeTo, options);
       }
     },
-    resolveHref: to => {
+    createHref: to => {
       const safeTo = sanitizeHref(to);
       return history.createHref(
         isExternalTarget(safeTo)
@@ -162,7 +163,9 @@ export function ReactRouterV6PageRouter(props: { children?: ReactNode }) {
 
   return (
     <scopedRouter.Router mounts={mounts}>
-      <BUIProvider useRouter={useBUIRouter}>{children}</BUIProvider>
+      <NavigationProvider useNavigation={useAdapterNavigation}>
+        {children}
+      </NavigationProvider>
     </scopedRouter.Router>
   );
 }

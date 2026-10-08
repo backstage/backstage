@@ -30,6 +30,7 @@ import {
 } from '@backstage/ui';
 import {
   appHistoryApiRef,
+  NavigationProvider,
   useAppLocation,
   useAppNavigate,
 } from '@backstage/frontend-plugin-api';
@@ -129,7 +130,15 @@ it('preserves the frozen V2 contract through nested providers overriding V3', as
                   path="items/:id/*"
                   element={
                     <BUIProvider useRouter={useBUIRouter}>
-                      <LegacyConsumer />
+                      <NavigationProvider
+                        useNavigation={() => ({
+                          createHref: () => '/unrelated',
+                          navigate: () => {},
+                          pathname: '/unrelated',
+                        })}
+                      >
+                        <LegacyConsumer />
+                      </NavigationProvider>
                       <FrameworkConsumer />
                       <WorkaroundNavLink to="details">
                         Legacy sidebar
