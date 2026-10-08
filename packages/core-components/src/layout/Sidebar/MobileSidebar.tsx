@@ -32,12 +32,11 @@ import {
   ReactElement,
   createElement,
 } from 'react';
+import { useLocation } from 'react-router-dom';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
-import { useAppLocation } from '../appRouting';
-import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**
  * Props of MobileSidebar
@@ -161,13 +160,13 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
   const classes = useStyles({ sidebarConfig });
-  const { pathname } = useAppLocation(useOptionalAppHistory());
+  const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);
 
   useEffect(() => {
     setSelectedMenuItemIndex(-1);
-  }, [pathname]);
+  }, [location.pathname]);
 
   // Filter children for SidebarGroups
   //
