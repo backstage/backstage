@@ -31,8 +31,7 @@ import { catalogImportTranslationRef } from '../../translation';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
-function DefaultImportPageContent(props: { headerVariant: 'legacy' | 'bui' }) {
-  const { headerVariant } = props;
+export const ImportPageContent = () => {
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const theme = useTheme();
   const configApi = useApi(configApiRef);
@@ -49,7 +48,7 @@ function DefaultImportPageContent(props: { headerVariant: 'legacy' | 'bui' }) {
     </Grid>,
   ];
 
-  const pageContent = (
+  return (
     <Content>
       <ContentHeader
         title={t('defaultImportPage.contentHeaderTitle', { appTitle })}
@@ -64,28 +63,20 @@ function DefaultImportPageContent(props: { headerVariant: 'legacy' | 'bui' }) {
       </Grid>
     </Content>
   );
-
-  if (headerVariant === 'bui') {
-    return pageContent;
-  }
-
-  return (
-    <Page themeId="home">
-      <Header title={t('defaultImportPage.headerTitle')} />
-      {pageContent}
-    </Page>
-  );
-}
+};
 
 /**
  * The default catalog import page.
  *
  * @public
  */
-export const DefaultImportPage = () => (
-  <DefaultImportPageContent headerVariant="legacy" />
-);
+export const DefaultImportPage = () => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
 
-export const NfsDefaultImportPage = () => (
-  <DefaultImportPageContent headerVariant="bui" />
-);
+  return (
+    <Page themeId="home">
+      <Header title={t('defaultImportPage.headerTitle')} />
+      <ImportPageContent />
+    </Page>
+  );
+};
