@@ -37,7 +37,7 @@ import {
  * (old frontend system).
  *
  * Paths must start with `/` and are relative to the app root, excluding the
- * deployment basename. Query-only and hash-only targets use the current path.
+ * deployment basename. Empty, query-only, and hash-only targets use the current path.
  * Relative paths belong to routing adapters and are rejected by this hook.
  * External URLs are returned unchanged.
  *
