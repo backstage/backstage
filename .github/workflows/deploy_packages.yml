@@ -17,7 +17,7 @@ jobs:
 
     services:
       postgres18:
-        image: postgres:18
+        image: postgres:18@sha256:86c951e05bf56c93d95d397747fb8820ac76cc3bedb78f43abd83eedbe3666ae
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -28,7 +28,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres14:
-        image: postgres:14
+        image: postgres:14@sha256:816cf7d06ec33116c8f54cf14197085be89f25291686229485ee7d53a785b901
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -39,7 +39,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8.4
+        image: mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -50,7 +50,7 @@ jobs:
         ports:
           - 3306/tcp
       redis:
-        image: redis:7
+        image: redis:7@sha256:c6eabf748fc7a61dbb5a705c78bcf3d6377b1127a97d0ce965c11c44ba46896f
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -73,10 +73,10 @@ jobs:
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Restore backstage-cli cache
         id: backstage-cli-cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -131,7 +131,7 @@ jobs:
 
       - name: Save backstage-cli cache
         if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: .cache/backstage-cli
           key: ${{ steps.backstage-cli-cache.outputs.cache-primary-key }}
@@ -175,7 +175,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 

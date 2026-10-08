@@ -1,5 +1,16 @@
 # @backstage/integration
 
+## 2.1.3-next.0
+
+### Patch Changes
+
+- 1f603db: Azure DevOps repository files now resolve to an edit URL when used by integrations such as TechDocs.
+- 4bd3c42: Bitbucket Cloud OAuth access tokens returned by `getBitbucketCloudOAuthToken` are now cached separately for each set of OAuth client credentials. Previously a single token was cached globally, which could cause the wrong token to be used when more than one Bitbucket Cloud integration was configured or when OAuth credentials were rotated.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/connections@0.4.1-next.0
+
 ## 2.1.2
 
 ### Patch Changes

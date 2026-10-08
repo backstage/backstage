@@ -18,6 +18,7 @@ export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
     providers: {
+      /** @visibility frontend */
       guest?: {
         /**
          * The entity reference to use for the guest user.

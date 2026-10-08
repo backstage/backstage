@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-catalog
+  title: '@backstage/cli-module-catalog'
+  description: CLI module for querying and managing the Backstage software catalog
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

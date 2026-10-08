@@ -253,6 +253,7 @@ describe('postgres', () => {
   describe('buildPgDatabaseConfig', () => {
     afterEach(() => {
       jest.useRealTimers();
+      jest.restoreAllMocks();
     });
 
     it('builds a postgres config', async () => {
@@ -700,6 +701,127 @@ describe('postgres', () => {
         },
         useNullAsDefault: true,
       });
+    });
+
+    it('retries transient cloud-sql-connector initialization failures', async () => {
+      jest.useFakeTimers();
+      const random = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      Connector.mockClear();
+      Connector.prototype.getOptions.mockReset();
+      Connector.prototype.close.mockClear();
+
+      const firstError = Object.assign(new Error('request failed'), {
+        cause: Object.assign(
+          new Error(
+            'Client network socket disconnected before secure TLS connection was established',
+          ),
+          { code: 'ECONNRESET' },
+        ),
+      });
+      const secondError = Object.assign(new Error('connection timed out'), {
+        code: 'ETIMEDOUT',
+      });
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions
+        .mockRejectedValueOnce(firstError)
+        .mockRejectedValueOnce(secondError)
+        .mockResolvedValueOnce({ stream: mockStream });
+
+      const result = buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'project:region:instance',
+          },
+        }),
+      );
+
+      await jest.advanceTimersByTimeAsync(99);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(1);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(2);
+      await jest.advanceTimersByTimeAsync(199);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(2);
+      await jest.advanceTimersByTimeAsync(1);
+
+      await expect(result).resolves.toMatchObject({
+        connection: { stream: mockStream },
+      });
+      expect(Connector).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
+      expect(random).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not retry persistent cloud-sql-connector failures', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      Connector.mockClear();
+      Connector.prototype.getOptions.mockReset();
+      Connector.prototype.close.mockClear();
+
+      const error = Object.assign(new Error('permission denied'), {
+        response: { status: 403 },
+      });
+      Connector.prototype.getOptions.mockRejectedValue(error);
+
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'project:region:instance',
+            },
+          }),
+        ),
+      ).rejects.toBe(error);
+      expect(Connector).toHaveBeenCalledTimes(1);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(1);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
+    });
+
+    it('stops retrying cloud-sql-connector initialization after three attempts', async () => {
+      jest.useFakeTimers();
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      Connector.mockClear();
+      Connector.prototype.getOptions.mockReset();
+      Connector.prototype.close.mockClear();
+
+      const errors = ['first', 'second', 'third'].map(message =>
+        Object.assign(new Error(message), { code: 'ECONNRESET' }),
+      );
+      Connector.prototype.getOptions
+        .mockRejectedValueOnce(errors[0])
+        .mockRejectedValueOnce(errors[1])
+        .mockRejectedValueOnce(errors[2]);
+
+      const result = buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'project:region:instance',
+          },
+        }),
+      );
+      const settledResult = result.then(
+        value => ({ value }),
+        error => ({ error }),
+      );
+
+      await jest.advanceTimersByTimeAsync(600);
+      await expect(settledResult).resolves.toEqual({ error: errors[2] });
+      expect(Connector).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
+      expect(jest.getTimerCount()).toBe(0);
     });
 
     it('passes default settings to cloud-sql-connector', async () => {

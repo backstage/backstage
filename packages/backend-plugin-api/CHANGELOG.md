@@ -1,5 +1,29 @@
 # @backstage/backend-plugin-api
 
+## 1.11.0-next.1
+
+### Minor Changes
+
+- e956084: **BREAKING PRODUCERS**: Added an instance ID to the root instance metadata service. Custom implementations and mocks must now provide a globally unique ID that remains stable for the lifetime of the running backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 1.10.1
 
 ### Patch Changes
