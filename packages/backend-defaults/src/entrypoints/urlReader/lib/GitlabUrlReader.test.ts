@@ -396,6 +396,36 @@ describe('GitlabUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
+    // GitLab treats a request to repository/archive made with the default fetch
+    // mode of 'cors' as hotlinking, and answers it with 406 - Not Acceptable.
+    // The reader has to opt out by asking for 'same-origin' instead.
+    // See https://github.com/backstage/backstage/issues/34395
+    it('requests the archive with the same-origin fetch mode', async () => {
+      let archiveRequest: Request | undefined;
+      worker.use(
+        http.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
+          ({ request }) => {
+            archiveRequest = request;
+            return new HttpResponse(new Uint8Array(archiveBuffer), {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/zip',
+                'content-disposition':
+                  'attachment; filename="mock-main-sha123abc.zip"',
+              },
+            });
+          },
+        ),
+      );
+
+      await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/tree/main',
+      );
+
+      expect(archiveRequest?.mode).toBe('same-origin');
+    });
+
     it('creates a directory with the wanted files', async () => {
       const response = await gitlabProcessor.readTree(
         'https://gitlab.com/backstage/mock',
