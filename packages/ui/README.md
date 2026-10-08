@@ -47,7 +47,9 @@ ambient React Router. Nested BUI providers inherit the host hook.
 
 ### Migrating an existing integration
 
-- Upgrade the app's BUI provider and separately bundled BUI components together.
+- Upgrade the app's BUI provider before separately bundled BUI components.
+  Backstage apps retain the frozen V2 React Router integration for older
+  components; nested new providers preserve it independently of their host hook.
 - Standalone apps that relied on automatic React Router integration must supply
   `useRouter`. React Router is no longer a BUI peer dependency.
 - Use the router-neutral `routerOptions` fields `replace` and `state`. Options
