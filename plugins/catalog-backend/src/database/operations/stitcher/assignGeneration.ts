@@ -26,43 +26,63 @@ export async function assignGeneration(
   tx: Knex.Transaction,
   entityId: string,
 ): Promise<string> {
-  const client = tx.client.config.client as string;
-  let generation: string | undefined;
-  if (client.includes('pg')) {
-    // The caller already owns this final row. Allocate and assign in one
-    // statement to avoid a round trip while holding the global counter lock.
-    const rows = await tx('final_entities')
-      .where('entity_id', entityId)
-      .update({ generation: tx.raw('catalog_next_generation()') })
-      .returning(tx.raw('generation::text AS generation'));
-    generation = rows[0]?.generation;
-  } else {
-    await tx('catalog_generation_counter')
-      .where('id', 1)
-      .update({ generation: tx.raw('generation + 1') });
-    const row = await tx('catalog_generation_counter')
-      .where('id', 1)
-      .select(
-        tx.raw(
-          `CAST(generation AS ${
-            client.includes('mysql') ? 'CHAR' : 'TEXT'
-          }) AS generation`,
-        ),
-      )
-      .first();
-    generation = row?.generation;
+  if (tx.client.config.client.includes('pg')) {
+    return assignGenerationPostgres(tx, entityId);
   }
+
+  return assignGenerationMysqlAndSqlite(tx, entityId);
+}
+
+async function assignGenerationPostgres(
+  tx: Knex.Transaction,
+  entityId: string,
+): Promise<string> {
+  // The caller already owns this final row. Allocate and assign in one
+  // statement to avoid a round trip while holding the global counter lock.
+  const rows = await tx('final_entities')
+    .where('entity_id', entityId)
+    .update({ generation: tx.raw('catalog_next_generation()') })
+    .returning(tx.raw('generation::text AS generation'));
+  const generation = rows[0]?.generation;
+
   if (typeof generation !== 'string' || !/^\d+$/.test(generation)) {
     throw new Error(
       'Catalog publication generation or final entity is missing or invalid',
     );
   }
-  if (!client.includes('pg')) {
-    const updated = await tx('final_entities')
-      .where('entity_id', entityId)
-      .update({ generation });
-    if (updated !== 1)
-      throw new Error('Catalog publication final entity is missing');
+
+  return generation;
+}
+
+async function assignGenerationMysqlAndSqlite(
+  tx: Knex.Transaction,
+  entityId: string,
+): Promise<string> {
+  const castType = tx.client.config.client.includes('mysql') ? 'CHAR' : 'TEXT';
+
+  await tx('catalog_generation_counter')
+    .where('id', 1)
+    .update({ generation: tx.raw('generation + 1') });
+
+  const row = await tx('catalog_generation_counter')
+    .where('id', 1)
+    .select(tx.raw(`CAST(generation AS ${castType}) AS generation`))
+    .first();
+  const generation = row?.generation;
+
+  if (typeof generation !== 'string' || !/^\d+$/.test(generation)) {
+    throw new Error(
+      'Catalog publication generation or final entity is missing or invalid',
+    );
   }
+
+  const updated = await tx('final_entities')
+    .where('entity_id', entityId)
+    .update({ generation });
+
+  if (updated !== 1) {
+    throw new Error('Catalog publication final entity is missing');
+  }
+
   return generation;
 }
