@@ -108,7 +108,8 @@
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch",
     "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
     "ast-types@npm:^0.13.4": "0.16.3",
-    "csstype@npm:^3.0.2": "3.0.9"
+    "csstype@npm:^3.0.2": "3.0.9",
+    "markdown-it": "14.3.2"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
@@ -196,6 +197,7 @@
     "@inquirer/type@npm:^4.0.5": "inquirer 13.4.3 declarations fail with TS2344 against @inquirer/type 4.1.1 when declaration files are checked. Keep its 4.0.x requests on 4.0.7 until Yeoman moves to Inquirer 14; see https://github.com/SBoudrias/Inquirer.js/issues/2244.",
     "@inquirer/type@npm:^4.0.7": "inquirer 13.4.3 declarations fail with TS2344 against @inquirer/type 4.1.1 when declaration files are checked. Keep its 4.0.x requests on 4.0.7 until Yeoman moves to Inquirer 14; see https://github.com/SBoudrias/Inquirer.js/issues/2244.",
     "ast-types@npm:^0.13.4": "Some transitive dependencies request ast-types 0.13.x, which predates the TypeScript 5.4 isolatedModules compatibility fix released in ast-types 0.16.2.",
-    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible."
+    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible.",
+    "markdown-it": "Force markdown-it to >=14.3.1 to fix quadratic-complexity DoS in linkify handling (GHSA-253c-mchw-3w2r, SNYK-JS-MARKDOWNIT-20335431, backstage/backstage#35945). Pulled in transitively via @graphiql/react (^14.1.0, used by @backstage/plugin-api-docs) and typedoc (^14.3.0)."
   }
 }
