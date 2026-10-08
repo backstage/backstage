@@ -33,6 +33,8 @@ import {
 import { RouteAliasResolver } from './RouteAliasResolver';
 import { joinPaths } from './joinPaths';
 
+const MAX_CACHED_SOURCE_LOCATIONS = 32;
+
 /**
  * Resolves the absolute route ref that our target route ref is pointing pointing to, as well
  * as the relative target path.
@@ -250,7 +252,7 @@ export class RouteResolver implements RouteResolutionApi {
       match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
     }
     this.routeMatches.set(sourceLocation, match);
-    if (this.routeMatches.size > 32) {
+    if (this.routeMatches.size > MAX_CACHED_SOURCE_LOCATIONS) {
       const oldestLocation = this.routeMatches.keys().next().value;
       if (oldestLocation !== undefined) {
         this.routeMatches.delete(oldestLocation);
