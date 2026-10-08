@@ -480,8 +480,7 @@ export const ColumnWidthsWithFr: Story = {
         </div>
         <div>
           <Text variant="body-large" color="secondary">
-            Resizable with defaultWidth — fr ratios with pixel min/max
-            constraints
+            Default widths with pixel min/max constraints
           </Text>
           <Table
             columnConfig={constrainedColumns}
