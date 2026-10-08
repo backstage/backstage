@@ -17,7 +17,7 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { connectionsServiceRef } from '@backstage/connections-node';
+import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { connectionTypes, type ConnectionType } from '@backstage/connections';
 import {
   type HttpAuthService,

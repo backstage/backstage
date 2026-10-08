@@ -40,6 +40,7 @@ import {
   createHttpServer,
 } from '@backstage/backend-defaults/rootHttpRouter';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import { connectionsServiceFactory } from '@backstage/backend-defaults/alpha';
 import {
   actionsRegistryServiceMock,
   actionsServiceMock,
@@ -92,6 +93,7 @@ export const defaultServiceFactories = [
   mockServices.events.factory(),
 
   // Alpha services
+  connectionsServiceFactory,
   actionsRegistryServiceMock.factory(),
   actionsServiceMock.factory(),
   metricsServiceMock.factory(),

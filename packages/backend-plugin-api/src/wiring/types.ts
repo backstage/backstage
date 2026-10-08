@@ -73,13 +73,13 @@ type DepsToInstances<
 export interface ConnectionRegistration {
   /**
    * The connection type identifier, matching the `type` field in connections
-   * config and in calls to `find` / `findOptional` on the connections service.
+   * config and in calls to `find` on the connections service.
    */
   type: string;
   /**
    * Whether the connection is essential for the plugin or module to function.
-   * If true, the backend will fail to start if no matching connection is
-   * configured. Defaults to false.
+   * Informational metadata; this does not enforce connection availability
+   * at startup. Defaults to false.
    */
   required?: boolean;
   /**

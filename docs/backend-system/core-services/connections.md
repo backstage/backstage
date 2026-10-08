@@ -13,7 +13,8 @@ define and read its own configuration.
 
 :::caution[Experimental]
 The connections framework is experimental. Its configuration and APIs can
-change while the public runtime boundary is completed.
+change during experimental development. The service reference is available
+from `@backstage/backend-plugin-api/alpha`.
 :::
 
 ## Why connections are useful

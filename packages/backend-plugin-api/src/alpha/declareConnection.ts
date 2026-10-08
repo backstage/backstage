@@ -18,20 +18,20 @@ import type {
   BackendPluginRegistrationPoints,
 } from '@backstage/backend-plugin-api';
 
-import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
+import type { ConnectionRegistration } from '../wiring/types';
 
 /**
  * Declares that a plugin or module uses a particular connection type.
  * Must be called inside the `register` callback, before `registerInit`.
  *
- * @public
+ * @alpha
  */
 export function declareConnection(
   reg: BackendPluginRegistrationPoints | BackendModuleRegistrationPoints,
   registration: ConnectionRegistration,
 ): void {
   const internal = reg as {
-    registerConnection?: (r: ConnectionRegistration) => void;
+    registerConnection?: (registration: ConnectionRegistration) => void;
   };
   if (typeof internal.registerConnection !== 'function') {
     throw new Error(

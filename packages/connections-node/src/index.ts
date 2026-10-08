@@ -20,6 +20,4 @@
  * @packageDocumentation
  */
 
-export { connectionsServiceRef, connectionsServiceFactory } from './service';
 export { DefaultConnectionsService } from './DefaultConnectionsService';
-export { declareConnection } from './declareConnection';
