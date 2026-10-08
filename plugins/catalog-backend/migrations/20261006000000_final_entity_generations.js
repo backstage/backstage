@@ -47,10 +47,6 @@ exports.up = async function up(knex) {
       .insert({ id: 1, generation: 0 })
       .onConflict('id')
       .ignore();
-
-    if (isPg) {
-      await createPostgresGenerationFunction(tx);
-    }
   });
 
   if (isPg) {
@@ -72,7 +68,6 @@ exports.up = async function up(knex) {
 /** @param {import('knex').Knex} knex */
 exports.down = async function down(knex) {
   if (knex.client.config.client.includes('pg')) {
-    await knex.raw('DROP FUNCTION IF EXISTS catalog_next_generation()');
     await knex.raw('DROP INDEX CONCURRENTLY IF EXISTS ??', [indexName]);
   } else if (await hasSecondaryIndex(knex)) {
     await knex.schema.alterTable('final_entities', table =>
@@ -104,25 +99,6 @@ async function hasSecondaryIndex(knex) {
       .whereRaw('table_schema = DATABASE()')
       .where({ table_name: 'final_entities', index_name: indexName })
       .first(),
-  );
-}
-
-/** @param {import('knex').Knex.Transaction} tx */
-async function createPostgresGenerationFunction(tx) {
-  const { rows } = await tx.raw('SELECT current_schema() AS schema');
-  const schema = rows[0].schema;
-
-  // Resolve the relation in the plugin's schema, even if a future caller
-  // invokes the function with a different search_path. No elevated rights.
-  await tx.raw(
-    `CREATE OR REPLACE FUNCTION ??() RETURNS bigint LANGUAGE SQL AS $$
-       UPDATE ?? SET generation = generation + 1 WHERE id = 1
-       RETURNING generation
-     $$`,
-    [
-      `${schema}.catalog_next_generation`,
-      `${schema}.catalog_generation_counter`,
-    ],
   );
 }
 
