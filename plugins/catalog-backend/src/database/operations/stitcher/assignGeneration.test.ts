@@ -72,6 +72,13 @@ it.each(databases.eachSupportedId())(
       expect(await assignGeneration(tx, 'one')).toBe('9007199254740993');
       expect(await assignGeneration(tx, 'one')).toBe('9007199254740994');
     });
+    await expect(
+      knex.transaction(tx => assignGeneration(tx, 'missing')),
+    ).rejects.toThrow('missing');
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('9007199254740994');
+
     await knex('catalog_generation_counter').delete();
     await expect(
       knex.transaction(tx => assignGeneration(tx, 'one')),
@@ -87,6 +94,11 @@ it.each(
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
     await addFinalRows(knex);
+    const { rows: functions } = await knex.raw(
+      "SELECT to_regprocedure('catalog_next_generation()') AS function",
+    );
+    expect(functions[0].function).toBeNull();
+
     const first = await knex.transaction();
     const second = await knex.transaction();
     let later: Promise<string> | undefined;

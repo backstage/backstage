@@ -22,9 +22,9 @@ even without changing the key. The early parent lock prevents an inversion with
 cascading deletion, which locks refresh state before final entities.
 
 Write and validate the final entity, then synchronize search. With publication
-locks held, PostgreSQL assigns `generation = catalog_next_generation()` in one
-update and commits promptly. SQLite and MySQL use separate counter and assignment
-statements. Never acquire queue or unrelated entity locks after the counter lock.
+locks held, PostgreSQL increments the counter in a writable CTE and assigns its
+returned generation to the final entity in the same statement, then commits
+promptly. SQLite and MySQL use separate counter and assignment statements. Never acquire queue or unrelated entity locks after the counter lock.
 Claim settlement stays after commit. Publication requires a root connection;
 releasing a nested `SAVEPOINT` would retain the counter lock into queue settlement.
 
