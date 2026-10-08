@@ -57,8 +57,8 @@ ambient React Router. Nested BUI providers inherit the host hook.
 - In Backstage apps, use app-absolute paths or route-ref destinations. A page
   adapter also enables its library's relative routing for BUI controls inside it.
   Empty hrefs follow React Aria's native behavior.
-- When using React Aria components directly in a Backstage app, compose them with
-  the `RouterLink` routing primitive from `@backstage/frontend-plugin-api`.
+- When using React Aria components directly in a Backstage app, bind them at their route scope to
+  `useNavigation` from `@backstage/frontend-plugin-api`.
   See [page router integration](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
 
 ## Writing Changesets for Components
