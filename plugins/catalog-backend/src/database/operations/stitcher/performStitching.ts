@@ -33,6 +33,7 @@ import { syncSearchRows } from './syncSearchRows';
 import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { retryOnDeadlock } from '../../util';
+import { assignGeneration } from './assignGeneration';
 
 class StitchPublicationSupersededError extends Error {}
 
@@ -51,9 +52,11 @@ const scriptProtocolPattern =
  * Performs the act of stitching - to take all of the various outputs from the
  * ingestion process, and stitching them together into the final entity JSON
  * shape.
+ * Requires a root database connection so publication commits and releases
+ * its counter lock before claim settlement acquires queue write locks.
  */
 export async function performStitching(options: {
-  knex: Knex | Knex.Transaction;
+  knex: Knex;
   logger: LoggerService;
   entityRef: string;
   stitchTicket: string;
@@ -61,6 +64,9 @@ export async function performStitching(options: {
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
   const { knex, logger, entityRef, stitchTicket, stitchLeaseExpiresAt } =
     options;
+  if (knex.isTransaction) {
+    throw new Error('Stitch publication requires a root database connection');
+  }
 
   // Settle the claim on any completion, without disturbing a successor's
   // lease. A new request during this lease becomes eligible immediately.
@@ -225,6 +231,18 @@ export async function performStitching(options: {
     const writeOutcome = await retryOnDeadlock(
       () =>
         knex.transaction(async tx => {
+          if (isPostgres) {
+            // A second UPDATE of a row changed in this transaction can recheck
+            // its FK even when entity_id is unchanged. Take the parent key
+            // lock before the final-row lock, matching cascading deletion's
+            // order, rather than waiting on refresh state after allocation.
+            const origin = await tx('refresh_state')
+              .where('entity_id', entityId)
+              .select('entity_id')
+              .forKeyShare()
+              .first();
+            if (!origin) return 'abandoned' as const;
+          }
           // Recheck on every attempt: a request or reclaimed claim may have
           // superseded this worker while its previous transaction rolled back.
           // Do not lock the queue here; processing locks refresh state before queue.
@@ -305,6 +323,10 @@ export async function performStitching(options: {
 
           await syncSearchRows(tx, entityId, searchEntries);
 
+          // All publication locks are already held. Do not acquire queue or
+          // other entity locks after this global counter lock; settle later.
+          await assignGeneration(tx, entityId);
+
           return 'changed' as const;
         }),
       knex,
@@ -325,8 +347,6 @@ export async function performStitching(options: {
 
     stitchResult = 'succeeded';
     return 'changed';
-  } catch (error) {
-    throw error;
   } finally {
     if (stitchResult) {
       await markDeferredStitchCompleted({

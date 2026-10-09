@@ -43,6 +43,31 @@ jest.setTimeout(60_000);
 const databases = TestDatabases.create();
 
 it.each(databases.eachSupportedId())(
+  'rejects an outer transaction before touching publication or queue state for %p',
+  async databaseId => {
+    const knex = await databases.init(databaseId);
+    await applyDatabaseMigrations(knex);
+    await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+    const claim = await getStitchClaim(knex, 'k:ns/n');
+    const queueBefore = await knex('stitch_queue');
+    await knex.transaction(async tx => {
+      await expect(
+        performStitching({
+          knex: tx,
+          logger: mockServices.logger.mock(),
+          ...claim,
+        }),
+      ).rejects.toThrow('root database connection');
+    });
+    expect(await knex('stitch_queue')).toEqual(queueBefore);
+    expect(await knex('final_entities')).toEqual([]);
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('0');
+  },
+);
+
+it.each(databases.eachSupportedId())(
   'rejects an expired claim without disturbing its successor for %p',
   async databaseId => {
     const knex = await databases.init(databaseId);
@@ -94,6 +119,9 @@ it.each(databases.eachSupportedId())(
     await expect(knex('final_entities')).resolves.toEqual(original);
     await expect(knex('search')).resolves.toEqual(originalSearch);
     await expect(knex('stitch_queue')).resolves.toEqual(queued);
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('1');
     await expect(
       performStitching({ knex, logger, ...successor }),
     ).resolves.toBe('changed');
@@ -113,6 +141,16 @@ it.each(databases.eachSupportedId())(
 
     let entities: DbFinalEntitiesRow[];
     let entity: Entity;
+    const generationQueries: string[] = [];
+    const trackGeneration = (query: { sql: string }) => {
+      if (
+        query.sql.includes('catalog_generation_counter') &&
+        query.sql.includes('final_entities')
+      ) {
+        generationQueries.push(query.sql);
+      }
+    };
+    knex.on('query', trackGeneration);
 
     await knex<DbRefreshStateRow>('refresh_state').insert([
       {
@@ -193,6 +231,13 @@ it.each(databases.eachSupportedId())(
     const last_updated_at = entities[0].last_updated_at;
     expect(last_updated_at).not.toBeNull();
     const firstHash = entities[0].hash;
+    knex.removeListener('query', trackGeneration);
+    expect(
+      generationQueries.map(query =>
+        /^WITH allocated_generation AS/.test(query),
+      ),
+    ).toEqual(databaseId.startsWith('POSTGRES') ? [true] : []);
+    expect(String((await knex('final_entities').first()).generation)).toBe('1');
 
     const search = await knex<DbSearchRow>('search');
     expect(search).toEqual(
@@ -258,6 +303,7 @@ it.each(databases.eachSupportedId())(
     expect(entities.length).toBe(1);
     entity = JSON.parse(entities[0].final_entity!);
     expect(entities[0].hash).toEqual(firstHash);
+    expect(String((await knex('final_entities').first()).generation)).toBe('1');
     expect(entity.metadata.etag).toEqual(firstHash);
 
     // Now add one more relation and re-stitch
@@ -282,6 +328,8 @@ it.each(databases.eachSupportedId())(
     });
 
     entities = await knex<DbFinalEntitiesRow>('final_entities');
+
+    expect(String((await knex('final_entities').first()).generation)).toBe('2');
 
     expect(entities.length).toBe(1);
     entity = JSON.parse(entities[0].final_entity!);
@@ -479,6 +527,76 @@ describe.each(databases.eachSupportedId())(
       );
     }
     if (databaseId.startsWith('POSTGRES')) {
+      it('rolls back body, search, and counter when generation assignment fails', async () => {
+        const knex = await databases.init(databaseId);
+        await applyDatabaseMigrations(knex);
+        const entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n', namespace: 'ns' },
+        };
+        await knex('refresh_state').insert({
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          processed_entity: JSON.stringify(entity),
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        });
+        const logger = mockServices.logger.mock();
+        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+        await performStitching({
+          knex,
+          logger,
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        });
+        const finalBefore = await knex('final_entities');
+        const searchBefore = await knex('search');
+        const counterBefore = await knex('catalog_generation_counter');
+        await knex('refresh_state').update({
+          processed_entity: JSON.stringify({
+            ...entity,
+            spec: { changed: true },
+          }),
+        });
+        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+        const claim = await getStitchClaim(knex, 'k:ns/n');
+        const queueBefore = await knex('stitch_queue');
+        await knex.raw(`
+          CREATE FUNCTION reject_generation_assignment() RETURNS trigger
+          LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'generation write failed'; END $$;
+          CREATE TRIGGER reject_generation_assignment BEFORE UPDATE OF generation ON final_entities
+          FOR EACH ROW EXECUTE FUNCTION reject_generation_assignment()
+        `);
+        try {
+          await expect(
+            performStitching({ knex, logger, ...claim }),
+          ).rejects.toThrow('generation write failed');
+          expect(await knex('final_entities')).toEqual(finalBefore);
+          expect(await knex('search')).toEqual(searchBefore);
+          expect(await knex('catalog_generation_counter')).toEqual(
+            counterBefore,
+          );
+          expect(await knex('stitch_queue')).toEqual(queueBefore);
+        } finally {
+          await knex.raw(
+            'DROP TRIGGER reject_generation_assignment ON final_entities',
+          );
+          await knex.raw('DROP FUNCTION reject_generation_assignment()');
+        }
+        await expect(
+          performStitching({
+            knex,
+            logger,
+            ...(await getStitchClaim(knex, 'k:ns/n')),
+          }),
+        ).resolves.toBe('changed');
+        expect(String((await knex('final_entities').first()).generation)).toBe(
+          '2',
+        );
+      });
+
       it.each([
         ['insert', 'completed successor', ['fresh']],
         ['update', 'completed successor', ['fresh']],
@@ -545,6 +663,7 @@ describe.each(databases.eachSupportedId())(
           let stale: Promise<string> | undefined;
           let successorTicket: string | undefined;
           let successorResult: string | undefined;
+          let successorPublication: Promise<string> | undefined;
           try {
             await gate.raw('SELECT pg_advisory_xact_lock(841721)');
             stale = performStitching({ knex, logger, ...claim });
@@ -585,10 +704,25 @@ describe.each(databases.eachSupportedId())(
                 });
               });
               successorTicket = successor.stitchTicket;
-              successorResult = await knex.transaction(async tx => {
-                await tx.raw("SET LOCAL statement_timeout = '2s'");
-                return performStitching({ knex: tx, logger, ...successor });
+              successorPublication = performStitching({
+                knex,
+                logger,
+                ...successor,
               });
+              let timer: ReturnType<typeof setTimeout> | undefined;
+              try {
+                successorResult = await Promise.race([
+                  successorPublication,
+                  new Promise<never>((_, reject) => {
+                    timer = setTimeout(
+                      () => reject(new Error('Successor publication blocked')),
+                      5_000,
+                    );
+                  }),
+                ]);
+              } finally {
+                clearTimeout(timer);
+              }
             } else {
               // Old workers replace only the lease, so a ticket-only
               // post-write check would still let this stale attempt commit.
@@ -599,6 +733,7 @@ describe.each(databases.eachSupportedId())(
             const finalBefore = await knex('final_entities');
             const searchBefore = await knex('search');
             const queueBefore = await knex('stitch_queue');
+            const counterBefore = await knex('catalog_generation_counter');
             expect(successorTicket).not.toBe(claim.stitchTicket);
             expect(successorResult).toBe(
               supersession === 'completed successor' ? 'changed' : undefined,
@@ -618,9 +753,14 @@ describe.each(databases.eachSupportedId())(
             await expect(knex('final_entities')).resolves.toEqual(finalBefore);
             await expect(knex('search')).resolves.toEqual(searchBefore);
             await expect(knex('stitch_queue')).resolves.toEqual(queueBefore);
+            await expect(knex('catalog_generation_counter')).resolves.toEqual(
+              counterBefore,
+            );
           } finally {
             if (!gate.isCompleted()) await gate.rollback();
             if (stale) await stale.catch(() => {});
+            if (successorPublication)
+              await successorPublication.catch(() => {});
             await knex.raw(
               'DROP TRIGGER pause_stale_publication ON final_entities',
             );
@@ -673,6 +813,8 @@ describe.each(databases.eachSupportedId())(
           });
           const deletion = await knex.transaction();
           let deleted: Promise<number> | undefined;
+          let publication: Promise<string> | undefined;
+          let timer: ReturnType<typeof setTimeout> | undefined;
           const actualSync =
             jest.requireActual<typeof import('./syncSearchRows')>(
               './syncSearchRows',
@@ -687,8 +829,8 @@ describe.each(databases.eachSupportedId())(
                 const {
                   rows: [{ pid: publicationPid }],
                 } = await tx.raw('SELECT pg_backend_pid() AS pid');
-                // Publication already owns the final row. Deletion locks refresh
-                // state and then waits on the final row through ON DELETE CASCADE.
+                // Publication owns the refresh-state key lock and the final row.
+                // Deletion must wait before acquiring either in the opposite order.
                 deleted = deletion('refresh_state')
                   .where('entity_id', 'my-id')
                   .delete()
@@ -716,14 +858,26 @@ describe.each(databases.eachSupportedId())(
                 await actualSync(tx, id, entries);
               },
             );
+            publication = performStitching({ knex, logger, ...claim });
             await expect(
-              performStitching({ knex, logger, ...claim }),
+              Promise.race([
+                publication,
+                new Promise<never>((_, reject) => {
+                  timer = setTimeout(
+                    () =>
+                      reject(new Error('Publication blocked behind deletion')),
+                    5_000,
+                  );
+                }),
+              ]),
             ).resolves.toBe('changed');
             await expect(deleted).resolves.toBe(1);
             await deletion[deletionOutcome]();
           } finally {
+            clearTimeout(timer);
             syncSearchRowsMock.mockReset().mockImplementation(actualSync);
             if (!deletion.isCompleted()) await deletion.rollback();
+            if (publication) await publication.catch(() => {});
             if (deleted) await deleted.catch(() => {});
           }
 
@@ -983,6 +1137,9 @@ describe.each(databases.eachSupportedId())(
       // retry below would match its hash and skip the search index.
       expect(await knex<DbFinalEntitiesRow>('final_entities')).toEqual([]);
       expect(await knex<DbSearchRow>('search')).toEqual([]);
+      expect(
+        String((await knex('catalog_generation_counter').first()).generation),
+      ).toBe('0');
 
       // The failure left the queue entry in place, so the entity can be
       // reclaimed and retried with a new ticket and lease.
