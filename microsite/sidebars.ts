@@ -135,7 +135,7 @@ export default {
               ]),
             ]),
             sidebarElementWithIndex({ label: 'Adopt Backstage' }, [
-              'golden-path/adoption/getting-started',
+              'golden-path/adoption/define-the-problem',
               'golden-path/adoption/setting-up-a-poc',
               'golden-path/adoption/first-stakeholder-feedback',
               'golden-path/adoption/leadership-buy-in',

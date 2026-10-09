@@ -91,7 +91,7 @@ matches your next goal:
   capabilities.
 - [Deploy and operate Backstage](../deployment/index.md) to prepare the app for
   production.
-- [Adopt Backstage](../adoption/001-getting-started.md) to plan a proof of
+- [Adopt Backstage](../adoption/001-define-the-problem.md) to plan a proof of
   concept and organizational rollout.
 - [Customize Backstage UI](https://ui.backstage.io/?path=/docs/backstage-ui-foundations-styling--docs)
   to apply your organization's visual identity.

@@ -23,6 +23,10 @@ still requires another tool. Schedule direct conversations with developers who
 use Backstage regularly and those who rarely return. Analytics show what
 happened; conversations help explain why.
 
+Informal feedback gathering can be very useful. Casual conversations in places
+where developers already gather reach people who rarely attend meetings or write
+comments.
+
 ## Measure the outcome
 
 Compare post-launch signals with the baseline and outcome defined before the
@@ -39,7 +43,7 @@ improved. Combine signals such as:
 
 Backstage does not include a usage analytics provider by default. The technical
 partner can evaluate an integration using the
-[Analytics documentation](../../plugins/analytics.md). Agree on what the team
+[Analytics documentation](../../frontend-system/building-plugins/08-analytics.md). Agree on what the team
 needs to learn before collecting additional data.
 
 ## Turn evidence into priorities

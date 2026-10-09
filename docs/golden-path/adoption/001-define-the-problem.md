@@ -1,5 +1,5 @@
 ---
-id: getting-started
+id: define-the-problem
 sidebar_label: 001 - Define the problem
 title: Define the problem
 description: Identify an organizational problem and decide whether it is worth exploring with Backstage
@@ -31,6 +31,21 @@ you want to install. For example:
 
 "Reduce the time needed to create a production-ready service" is a stronger
 starting point than "launch Software Templates."
+
+If the problem involves tools or services maintained by other teams, involve
+those teams early, in the problem statement and in ideation.
+
+## Register your hypothesis
+
+Write down what you expect to happen before you build anything, so the PoC can
+confirm or disprove it. A simple template:
+
+> We observe this organizational problem: _X_. Our hypothesis is that an
+> internal developer portal with _Y_ and _Z_ will reduce or solve _X_ by _this
+> much_.
+
+Keep the hypothesis with the PoC charter. You will compare results against it
+when you evaluate the PoC.
 
 ## Check whether Backstage is worth exploring
 
