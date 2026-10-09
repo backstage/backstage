@@ -40,16 +40,13 @@ describe('resourcesRoutes', () => {
     auditor.createEvent.mockResolvedValue(auditEvent);
   };
 
-  const nodeEnv = process.env.NODE_ENV || 'development';
-  const auth = {
-    providers: {
-      microsoft: {
-        [nodeEnv]: {
-          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
-          clientId: 'microsoft-entra-id-enterprise-application-client-id',
-          clientSecret:
-            'microsoft-entra-id-enterprise-application-client-secret',
-        },
+  const kubernetesAuth = {
+    environment: 'development',
+    microsoft: {
+      development: {
+        tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+        clientId: 'microsoft-entra-id-enterprise-application-client-id',
+        clientSecret: 'microsoft-entra-id-enterprise-application-client-secret',
       },
     },
   };
@@ -62,8 +59,8 @@ describe('resourcesRoutes', () => {
             kubernetes: {
               serviceLocatorMethod: { type: 'multiTenant' },
               clusterLocatorMethods: [],
+              auth: kubernetesAuth,
             },
-            auth,
           },
         }),
         auditor.factory,
@@ -152,8 +149,8 @@ describe('resourcesRoutes', () => {
                   clusters: [],
                 },
               ],
+              auth: kubernetesAuth,
             },
-            auth,
           },
         }),
         auditor.factory,

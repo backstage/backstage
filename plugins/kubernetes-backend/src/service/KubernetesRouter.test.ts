@@ -79,16 +79,13 @@ describe('API integration tests', () => {
   const happyK8SResult = {
     items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
-  const nodeEnv = process.env.NODE_ENV || 'development';
-  const auth = {
-    providers: {
-      microsoft: {
-        [nodeEnv]: {
-          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
-          clientId: 'microsoft-entra-id-enterprise-application-client-id',
-          clientSecret:
-            'microsoft-entra-id-enterprise-application-client-secret',
-        },
+  const kubernetesAuth = {
+    environment: 'development',
+    microsoft: {
+      development: {
+        tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+        clientId: 'microsoft-entra-id-enterprise-application-client-id',
+        clientSecret: 'microsoft-entra-id-enterprise-application-client-secret',
       },
     },
   };
@@ -97,8 +94,8 @@ describe('API integration tests', () => {
       kubernetes: {
         serviceLocatorMethod: { type: 'multiTenant' },
         clusterLocatorMethods: [],
+        auth: kubernetesAuth,
       },
-      auth,
     },
   });
   const withClusters = (clusters: ClusterDetails[]) =>
@@ -982,8 +979,8 @@ metadata:
               kubernetes: {
                 serviceLocatorMethod: { type: 'unsupported' },
                 clusterLocatorMethods: [{ type: 'config', clusters: [] }],
+                auth: kubernetesAuth,
               },
-              auth,
             },
           }),
           import('@backstage/plugin-kubernetes-backend'),
