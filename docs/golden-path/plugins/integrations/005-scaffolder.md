@@ -59,7 +59,7 @@ yarn new --select backend-plugin-module --option pluginId=scaffolder
 Name the module `todo` when prompted, then add its dependencies:
 
 ```shell
-yarn workspace @internal/plugin-scaffolder-backend-module-todo add @backstage/backend-plugin-api @backstage/errors @backstage/plugin-scaffolder-node
+yarn workspace @internal/plugin-scaffolder-backend-module-todo add @backstage/errors @backstage/plugin-scaffolder-node
 ```
 
 ### Step 2: Implement `todo:create`

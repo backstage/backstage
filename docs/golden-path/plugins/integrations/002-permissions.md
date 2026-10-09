@@ -402,11 +402,20 @@ export const permissionsPolicyExtension = createBackendModule({
 });
 ```
 
-Load the policy module from `packages/backend/src/index.ts`:
+A new app registers
+`@backstage/plugin-permission-backend-module-allow-all-policy`, and the
+permission backend accepts only one policy. Remove that registration from
+`packages/backend/src/index.ts`, then load the policy module in its place:
 
 ```ts
 backend.add(import('./extensions/permissionsPolicyExtension'));
 ```
+
+The final `ALLOW` in this example matches the behavior of the allow-all policy
+it replaces, so every permission other than `todo.read` stays allowed. If your
+app already uses a custom policy, do not replace it with this example. Instead,
+add the `todo.read` branch to that policy and keep its existing decisions for
+other permissions.
 
 The policy asks the Catalog for the current owners each time it makes this
 decision. If a Component moves to another Group, access changes without

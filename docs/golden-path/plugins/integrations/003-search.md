@@ -105,6 +105,11 @@ router.get('/todos/index', async (req, res) => {
 });
 ```
 
+Register this route before the scaffolded `router.get('/todos/:id', ...)` route.
+Express matches routes in registration order, so if the parameterized route
+comes first it captures `/todos/index` as a TODO with the id `index`, and the
+indexing handler never runs.
+
 Do not use this route in the frontend. It returns all TODOs to Search, including
 private ones. Search applies `todo.read` before it returns matches to a user.
 

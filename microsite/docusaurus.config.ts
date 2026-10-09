@@ -346,10 +346,6 @@ const config: Config = {
         fromExtensions: [],
         redirects: [
           {
-            from: '/docs/golden-path/adoption/getting-started',
-            to: '/docs/golden-path/adoption/define-the-problem',
-          },
-          {
             from: '/docs',
             to: '/docs/landing-page/doc-landing-page',
           },
