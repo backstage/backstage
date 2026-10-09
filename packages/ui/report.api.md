@@ -2808,7 +2808,7 @@ export type MenuSectionOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export interface MenuSectionProps<T>
   extends MenuSectionOwnProps,
     Omit<MenuSectionProps_2<T>, keyof MenuSectionOwnProps> {}

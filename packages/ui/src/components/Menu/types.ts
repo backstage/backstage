@@ -118,7 +118,12 @@ export type MenuSectionOwnProps = {
   className?: string;
 };
 
-/** @public */
+/**
+ * Props for a section within a menu. Disable items using `disabledKeys` on
+ * {@link MenuProps} or `isDisabled` on {@link MenuItemProps}.
+ *
+ * @public
+ */
 export interface MenuSectionProps<T>
   extends MenuSectionOwnProps,
     Omit<RAMenuSectionProps<T>, keyof MenuSectionOwnProps> {}
