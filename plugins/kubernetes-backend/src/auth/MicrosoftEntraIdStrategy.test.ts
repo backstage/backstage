@@ -226,6 +226,58 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     expect(tokenCredential.lastScope).toBe('custom-app-id/.default');
   });
 
+  it('should accept api:// and https:// scopes and reject malformed scopes', async () => {
+    const tokenCredential = new ScopeCapturingTokenCredential(20 * 60 * 1000);
+    const strategy = new MicrosoftEntraIdStrategy(
+      logger,
+      { config: config },
+      tokenCredential,
+    );
+
+    const clusterWithApiScope: ClusterDetails = {
+      name: 'api-scope-cluster',
+      url: 'https://localhost:6443',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+          'api://my-app-id/.default',
+      },
+    };
+    const apiCredential = await strategy.getCredential(clusterWithApiScope);
+    expect(apiCredential).toEqual({
+      type: 'bearer token',
+      token: 'TOKEN_FOR_api://my-app-id/.default',
+    });
+    expect(tokenCredential.lastScope).toBe('api://my-app-id/.default');
+
+    const clusterWithHttpsScope: ClusterDetails = {
+      name: 'https-scope-cluster',
+      url: 'https://localhost:6443',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+          'https://graph.microsoft.com/.default',
+      },
+    };
+    const httpsCredential = await strategy.getCredential(clusterWithHttpsScope);
+    expect(httpsCredential).toEqual({
+      type: 'bearer token',
+      token: 'TOKEN_FOR_https://graph.microsoft.com/.default',
+    });
+    expect(tokenCredential.lastScope).toBe(
+      'https://graph.microsoft.com/.default',
+    );
+
+    const clusterWithInvalidScope: ClusterDetails = {
+      name: 'invalid-scope-cluster',
+      url: 'https://localhost:6443',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]: 'invalid scope!value',
+      },
+    };
+    await expect(
+      strategy.getCredential(clusterWithInvalidScope),
+    ).rejects.toThrow('Invalid Microsoft Entra ID scope');
+  });
+
   it('should fall back to config scope when annotation is empty string', async () => {
     const tokenCredential = new ScopeCapturingTokenCredential(20 * 60 * 1000);
     const strategy = new MicrosoftEntraIdStrategy(

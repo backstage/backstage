@@ -8,4 +8,6 @@ Depending on how your Entra Id enterprise application is set up, you can either 
 
 The environment used to resolve the per-environment block is taken from the new `kubernetes.auth.environment` config key, which defaults to `development`.
 
+The resolved Microsoft Entra Id scope is now validated, so a malformed scope from either the cluster annotation or the config key fails with a descriptive error instead of an opaque token request failure.
+
 **BREAKING**: Entra Id credentials for the Kubernetes backend must now be configured under `kubernetes.auth.providers.microsoft.<env>`. If you previously relied on the Microsoft auth provider credentials for Kubernetes, copy the `tenantId`, `clientId`, and `clientSecret` into `kubernetes.auth.providers.microsoft.<env>`.

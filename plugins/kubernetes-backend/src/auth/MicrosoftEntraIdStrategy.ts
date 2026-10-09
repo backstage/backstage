@@ -109,14 +109,43 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
         ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE
       ];
     if (annotation && annotation.length > 0) {
-      return annotation;
+      return this.validateScope(annotation, 'annotation');
     }
     const env =
       this.options.config.getOptionalString('kubernetes.auth.environment') ??
       'development';
-    return this.options.config.getString(
-      `kubernetes.auth.providers.microsoft.${env}.scope`,
+    const key = `kubernetes.auth.providers.microsoft.${env}.scope`;
+    return this.validateScope(
+      this.options.config.getString(key),
+      `config key '${key}'`,
     );
+  }
+
+  /**
+   * Validates a Microsoft Entra ID scope expression.
+   *
+   * Scopes come in several valid shapes — `api://<app-id>/.default`,
+   * `<app-id>/user.read`, and resource URLs such as
+   * `https://graph.microsoft.com/.default` — so this does not enforce a fixed
+   * `<resource>/<permission>` structure. MSAL (used under `@azure/identity`)
+   * only rejects empty scopes and otherwise forwards the value to Microsoft
+   * Entra ID, and `@azure/identity` exposes no public scope validator (its
+   * `scopeUtils` helpers are `@internal`). Validating here catches the common
+   * misconfigurations — an empty value or stray whitespace — with an
+   * actionable error instead of an opaque token request failure. The allowed
+   * character set mirrors the one Entra ID accepts (`0-9a-zA-Z-_.:/`).
+   */
+  private validateScope(scope: string, source: string): string {
+    const trimmed = scope.trim();
+    const isValid = trimmed.length > 0 && /^[0-9a-zA-Z-_.:/]+$/.test(trimmed);
+    if (!isValid) {
+      throw new Error(
+        `Invalid Microsoft Entra ID scope '${scope}' from ${source}. ` +
+          `Expected a non-empty scope such as 'api://<app-id>/.default', ` +
+          `'<app-id>/user.read', or 'https://graph.microsoft.com/.default'.`,
+      );
+    }
+    return trimmed;
   }
 
   private getOrCreateCacheEntry(scope: string): CachedToken {

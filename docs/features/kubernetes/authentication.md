@@ -247,6 +247,11 @@ There is no built-in default scope. If neither the annotation nor the config
 key is set, the provider throws an error at runtime. You must provide a
 scope through at least one of these two options.
 
+The resolved scope may use any of the forms Microsoft Entra ID accepts, such as
+`api://<app-id>/.default`, `<app-id>/user.read`, or a resource URL like
+`https://graph.microsoft.com/.default`. The provider rejects an empty scope or
+one containing invalid characters with a descriptive error.
+
 When every cluster uses the same scope, the config key avoids repeating the
 annotation on each cluster entry:
 
