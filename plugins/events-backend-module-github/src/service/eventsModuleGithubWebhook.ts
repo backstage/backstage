@@ -38,18 +38,18 @@ export default createBackendModule({
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
         octokitProvider: octokitProviderServiceRef,
+        logger: coreServices.logger,
       },
-      async init({ config, events, octokitProvider }) {
+      async init({ config, events, octokitProvider, logger }) {
         const validator = createGithubSignatureValidator(
           config,
           octokitProvider,
+          logger,
         );
-        if (validator) {
-          events.addHttpPostIngress({
-            topic: 'github',
-            validator,
-          });
-        }
+        events.addHttpPostIngress({
+          topic: 'github',
+          validator,
+        });
       },
     });
   },

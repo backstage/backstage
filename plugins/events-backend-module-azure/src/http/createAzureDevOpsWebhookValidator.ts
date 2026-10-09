@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   RequestDetails,
   RequestValidationContext,
   RequestValidator,
 } from '@backstage/plugin-events-node';
-import { timingSafeEqual } from 'crypto';
+import { timingSafeEqual } from 'node:crypto';
 
 /**
  * Validates incoming Azure DevOps webhook requests
@@ -35,13 +36,39 @@ import { timingSafeEqual } from 'crypto';
  */
 export function createAzureDevOpsWebhookValidator(
   config: Config,
-): RequestValidator | undefined {
+  logger?: LoggerService,
+): RequestValidator {
   const secret = config.getOptionalString(
     'events.modules.azureDevOps.webhookSecret',
   );
 
+  const dangerouslyAllowUnauthenticatedEvents =
+    config.getOptionalBoolean(
+      'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents',
+    ) ?? false;
+
   if (!secret) {
-    return undefined;
+    if (dangerouslyAllowUnauthenticatedEvents) {
+      return async () => {};
+    }
+
+    return async (
+      _request: RequestDetails,
+      context: RequestValidationContext,
+    ): Promise<void> => {
+      const msg =
+        "Rejecting incoming unsigned Azure DevOps event. Webhook secrets are required by default unless 'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true.";
+      if (logger) {
+        logger.warn(msg);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(msg);
+      }
+      context.reject({
+        status: 403,
+        payload: { message: 'invalid webhook secret' },
+      });
+    };
   }
 
   const secretBuffer = Buffer.from(secret);

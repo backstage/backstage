@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -39,7 +40,8 @@ import { OctokitProviderService } from '../util/octokitProviderService';
 export function createGithubSignatureValidator(
   config: Config,
   octokitProvider: OctokitProviderService,
-): RequestValidator | undefined {
+  logger?: LoggerService,
+): RequestValidator {
   const integrations = ScmIntegrations.fromConfig(config);
 
   // GitHub App installation ID to secret
@@ -57,8 +59,33 @@ export function createGithubSignatureValidator(
     'events.modules.github.webhookSecret',
   );
 
+  const dangerouslyAllowUnauthenticatedEvents =
+    config.getOptionalBoolean(
+      'events.modules.github.dangerouslyAllowUnauthenticatedEvents',
+    ) ?? false;
+
   if (!genericSecret && githubAppSecrets.size === 0) {
-    return undefined;
+    if (dangerouslyAllowUnauthenticatedEvents) {
+      return async () => {};
+    }
+
+    return async (
+      _request: RequestDetails,
+      context: RequestValidationContext,
+    ): Promise<void> => {
+      const msg =
+        "Rejecting incoming unsigned GitHub event. Webhook secrets are required by default unless 'events.modules.github.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true.";
+      if (logger) {
+        logger.warn(msg);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(msg);
+      }
+      context.reject({
+        status: 403,
+        payload: { message: 'invalid signature' },
+      });
+    };
   }
 
   const appIdResolver = createAppIdResolver(octokitProvider);
