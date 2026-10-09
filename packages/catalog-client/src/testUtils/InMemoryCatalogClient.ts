@@ -53,6 +53,7 @@ import {
 } from '@backstage/errors';
 import {
   FilterPredicate,
+  FilterPredicateExpression,
   filterPredicateToFilterFunction,
 } from '@backstage/filter-predicates';
 import lodash from 'lodash';
@@ -195,6 +196,54 @@ function createFilter(
   };
 }
 
+// Relation shorthand is a search-index field, not a path into entity JSON.
+// Translate it to array predicates before using the generic JSON evaluator.
+function normalizeRelationQuery(query: FilterPredicate): FilterPredicate {
+  if (typeof query !== 'object') {
+    return query;
+  }
+  if ('$all' in query) {
+    return { ...query, $all: query.$all.map(normalizeRelationQuery) };
+  }
+  if ('$any' in query) {
+    return { ...query, $any: query.$any.map(normalizeRelationQuery) };
+  }
+  if ('$not' in query) {
+    return { ...query, $not: normalizeRelationQuery(query.$not) };
+  }
+
+  const conditions: FilterPredicate[] = [];
+  const remaining: FilterPredicateExpression = {};
+  for (const [key, value] of Object.entries(query)) {
+    if (!key.toLowerCase().startsWith('relations.')) {
+      remaining[key] = value;
+      continue;
+    }
+    const type = key.slice('relations.'.length);
+    const exists: FilterPredicate = {
+      relations: { $contains: { type } },
+    };
+    if (typeof value === 'object' && '$exists' in value) {
+      conditions.push(value.$exists ? exists : { $not: exists });
+    } else {
+      const targetRef =
+        typeof value === 'object' &&
+        '$contains' in value &&
+        typeof value.$contains !== 'object'
+          ? value.$contains
+          : value;
+      conditions.push({ relations: { $contains: { type, targetRef } } });
+    }
+  }
+  return { $all: [remaining, ...conditions] };
+}
+
+function createQueryFilter(
+  query: FilterPredicate,
+): (entity: Entity) => boolean {
+  return filterPredicateToFilterFunction(normalizeRelationQuery(query));
+}
+
 // Resolves a dot-separated field path against an entity, handling keys that
 // themselves contain dots (e.g. annotation keys like "backstage.io/orphan").
 // This matches the backend's parseEntityTransformParams implementation.
@@ -304,7 +353,9 @@ function applyFullTextFilter(
 /**
  * Implements a fake catalog client that stores entities in memory.
  * Supports filtering, ordering, pagination, full-text search, and field
- * projection for entity query methods. Location and validation methods
+ * projection for entity query methods. Query predicates support relation
+ * shorthand such as `relations.hasMember`, including logical and value
+ * operators. Location and validation methods
  * throw {@link @backstage/errors#NotImplementedError}.
  *
  * @public
@@ -355,7 +406,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
     const queryFilter = request.query
-      ? filterPredicateToFilterFunction(request.query)
+      ? createQueryFilter(request.query)
       : undefined;
     const refMap = this.#createEntityRefMap();
     const items = request.entityRefs
@@ -408,7 +459,7 @@ export class InMemoryCatalogClient implements CatalogApi {
 
     // Apply predicate-based query filter
     if (query) {
-      items = items.filter(filterPredicateToFilterFunction(query));
+      items = items.filter(createQueryFilter(query));
     }
 
     // Apply full-text filter, defaulting to the sort field or metadata.uid
@@ -507,7 +558,7 @@ export class InMemoryCatalogClient implements CatalogApi {
     let filteredEntities = this.#entities.filter(filter);
     if (request.query) {
       filteredEntities = filteredEntities.filter(
-        filterPredicateToFilterFunction(request.query),
+        createQueryFilter(request.query),
       );
     }
     const facets = Object.fromEntries(
