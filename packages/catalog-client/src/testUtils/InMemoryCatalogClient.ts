@@ -41,7 +41,6 @@ import {
 } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
-  DEFAULT_NAMESPACE,
   Entity,
   parseEntityRef,
   stringifyEntityRef,
@@ -53,11 +52,12 @@ import {
 } from '@backstage/errors';
 import {
   FilterPredicate,
-  filterPredicateToFilterFunction,
+  FilterPredicateExpression,
+  FilterPredicateValue,
 } from '@backstage/filter-predicates';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
+import { buildEntitySearch } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -120,43 +120,6 @@ function deserializeFilter(filter?: any[]): EntityFilterQuery | undefined {
   );
 }
 
-function buildEntitySearch(entity: Entity) {
-  const rows = traverse(entity);
-
-  if (entity.metadata?.name) {
-    rows.push({
-      key: 'metadata.name',
-      value: entity.metadata.name.toLowerCase(),
-    });
-  }
-  if (entity.metadata?.namespace) {
-    rows.push({
-      key: 'metadata.namespace',
-      value: entity.metadata.namespace.toLowerCase(),
-    });
-  }
-  if (entity.metadata?.uid) {
-    rows.push({
-      key: 'metadata.uid',
-      value: entity.metadata.uid.toLowerCase(),
-    });
-  }
-
-  if (!entity.metadata.namespace) {
-    rows.push({ key: 'metadata.namespace', value: DEFAULT_NAMESPACE });
-  }
-
-  // Visit relations
-  for (const relation of entity.relations ?? []) {
-    rows.push({
-      key: `relations.${relation.type.toLowerCase()}`,
-      value: relation.targetRef.toLowerCase(),
-    });
-  }
-
-  return rows;
-}
-
 function createFilter(
   filterOrFilters?: EntityFilterQuery,
 ): (entity: Entity) => boolean {
@@ -167,7 +130,7 @@ function createFilter(
   const filters = [filterOrFilters].flat();
 
   return entity => {
-    const rows = buildEntitySearch(entity);
+    const rows = buildEntitySearch('', entity);
 
     return filters.some(filter => {
       for (const [key, expectedValue] of Object.entries(filter)) {
@@ -193,6 +156,171 @@ function createFilter(
       return true;
     });
   };
+}
+
+function isPrimitive(value: unknown): value is string | number | boolean {
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  );
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+type SearchRow = ReturnType<typeof buildEntitySearch>[number];
+
+function fieldPredicate(
+  key: string,
+  value: FilterPredicateValue,
+): FilterPredicate {
+  const predicate: FilterPredicateExpression = {};
+  predicate[key] = value;
+  return predicate;
+}
+
+// Translates a filter predicate into an equivalent one without $contains,
+// following the backend's applyPredicateEntityFilterToQuery. This runs once up
+// front so that unsupported predicates are rejected regardless of the data,
+// just like in the backend.
+function translateQuery(predicate: FilterPredicate): FilterPredicate {
+  if (!isObject(predicate)) {
+    const actual = JSON.stringify(predicate);
+    throw new InputError(
+      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
+    );
+  }
+  if ('$not' in predicate) {
+    return { $not: translateQuery(predicate.$not) };
+  }
+  if ('$all' in predicate) {
+    return { $all: predicate.$all.map(translateQuery) };
+  }
+  if ('$any' in predicate) {
+    return { $any: predicate.$any.map(translateQuery) };
+  }
+  return {
+    $all: Object.entries(predicate).map(([key, value]) =>
+      translateQueryField(key.toLowerCase(), value),
+    ),
+  };
+}
+
+function translateQueryField(
+  key: string,
+  value: FilterPredicateValue,
+): FilterPredicate {
+  if (
+    isPrimitive(value) ||
+    (isObject(value) &&
+      ('$exists' in value || '$in' in value || '$hasPrefix' in value))
+  ) {
+    return fieldPredicate(key, value);
+  }
+
+  if (isObject(value) && '$contains' in value) {
+    const target: unknown = value.$contains;
+
+    // The search table has one row per array item, so this is plain equality
+    if (isPrimitive(target)) {
+      return fieldPredicate(key, target);
+    }
+
+    // { relations: { $contains: { type, targetRef } } } maps onto the
+    // search table's relations.<type> keys
+    if (key === 'relations' && isObject(target)) {
+      return translateContainsRelation(target);
+    }
+  }
+
+  throw new InputError(
+    `Unsupported filter predicate value for field "${key}": ${JSON.stringify(
+      value,
+    )}`,
+  );
+}
+
+function translateContainsRelation(
+  target: Record<string, unknown>,
+): FilterPredicate {
+  // Keys are matched case-insensitively, like in the backend
+  const {
+    type,
+    targetref: targetRef,
+    ...rest
+  } = Object.fromEntries(
+    Object.entries(target).map(([k, v]) => [k.toLowerCase(), v]),
+  );
+  if (type === undefined || Object.keys(rest).length > 0) {
+    throw new InputError(
+      `The $contains operator for "relations" requires a "type" and optionally a "targetRef" property, but got ${JSON.stringify(
+        target,
+      )}`,
+    );
+  }
+
+  const key = `relations.${String(type).toLowerCase()}`;
+  if (targetRef === undefined) {
+    return fieldPredicate(key, { $exists: true });
+  }
+  if (typeof targetRef === 'string') {
+    return fieldPredicate(key, targetRef);
+  }
+  if (isObject(targetRef) && Array.isArray(targetRef.$in)) {
+    return fieldPredicate(key, { $in: targetRef.$in.map(String) });
+  }
+  throw new InputError(
+    `Unsupported "targetRef" in $contains for "relations": ${JSON.stringify(
+      targetRef,
+    )}`,
+  );
+}
+
+// Evaluates a translated filter predicate against the search rows of an
+// entity, matching the same way as the backend does against the search table.
+function evaluateQuery(predicate: FilterPredicate, rows: SearchRow[]): boolean {
+  if (!isObject(predicate)) {
+    return false;
+  }
+  if ('$not' in predicate) {
+    return !evaluateQuery(predicate.$not, rows);
+  }
+  if ('$all' in predicate) {
+    return predicate.$all.every(p => evaluateQuery(p, rows));
+  }
+  if ('$any' in predicate) {
+    return predicate.$any.some(p => evaluateQuery(p, rows));
+  }
+  return Object.entries(predicate).every(([key, value]) => {
+    const values = rows
+      .filter(row => row.key === key)
+      .map(row => row.value?.toString().toLowerCase());
+    if (isPrimitive(value)) {
+      return values.includes(String(value).toLowerCase());
+    }
+    if (isObject(value) && '$exists' in value) {
+      return value.$exists ? values.length > 0 : values.length === 0;
+    }
+    if (isObject(value) && '$in' in value) {
+      return value.$in.some(v => values.includes(String(v).toLowerCase()));
+    }
+    if (isObject(value) && '$hasPrefix' in value) {
+      const prefix = value.$hasPrefix.toLowerCase();
+      return values.some(v => v?.startsWith(prefix));
+    }
+    // $contains and unsupported values never get here, since translateQuery
+    // has already erased or rejected them
+    return false;
+  });
+}
+
+function createQueryFilter(
+  query: FilterPredicate,
+): (entity: Entity) => boolean {
+  const translated = translateQuery(query);
+  return entity => evaluateQuery(translated, buildEntitySearch('', entity));
 }
 
 // Resolves a dot-separated field path against an entity, handling keys that
@@ -241,7 +369,7 @@ function applyOrdering(entities: Entity[], order?: EntityOrderQuery): Entity[] {
 
   const searchMap = new Map<Entity, Array<{ key: string; value: unknown }>>();
   for (const entity of entities) {
-    searchMap.set(entity, buildEntitySearch(entity));
+    searchMap.set(entity, buildEntitySearch('', entity));
   }
 
   return [...entities].sort((a, b) => {
@@ -289,7 +417,7 @@ function applyFullTextFilter(
   const fields = fullTextFilter.fields?.map(f => f.toLowerCase());
 
   return entities.filter(entity => {
-    const rows = buildEntitySearch(entity);
+    const rows = buildEntitySearch('', entity);
     return rows.some(row => {
       if (fields?.length && !fields.includes(row.key.toLowerCase())) {
         return false;
@@ -304,7 +432,10 @@ function applyFullTextFilter(
 /**
  * Implements a fake catalog client that stores entities in memory.
  * Supports filtering, ordering, pagination, full-text search, and field
- * projection for entity query methods. Location and validation methods
+ * projection for entity query methods. Query predicates are evaluated
+ * against the same search rows as the backend, so field keys are
+ * case-insensitive and relation shorthand such as `relations.hasMember`
+ * is supported. Location and validation methods
  * throw {@link @backstage/errors#NotImplementedError}.
  *
  * @public
@@ -355,7 +486,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
     const queryFilter = request.query
-      ? filterPredicateToFilterFunction(request.query)
+      ? createQueryFilter(request.query)
       : undefined;
     const refMap = this.#createEntityRefMap();
     const items = request.entityRefs
@@ -408,7 +539,7 @@ export class InMemoryCatalogClient implements CatalogApi {
 
     // Apply predicate-based query filter
     if (query) {
-      items = items.filter(filterPredicateToFilterFunction(query));
+      items = items.filter(createQueryFilter(query));
     }
 
     // Apply full-text filter, defaulting to the sort field or metadata.uid
@@ -507,20 +638,20 @@ export class InMemoryCatalogClient implements CatalogApi {
     let filteredEntities = this.#entities.filter(filter);
     if (request.query) {
       filteredEntities = filteredEntities.filter(
-        filterPredicateToFilterFunction(request.query),
+        createQueryFilter(request.query),
       );
     }
     const facets = Object.fromEntries(
       request.facets.map(facet => {
         const facetValues = new Map<string, number>();
         for (const entity of filteredEntities) {
-          const rows = buildEntitySearch(entity);
+          const rows = buildEntitySearch('', entity);
           // Use a Set to count each distinct value once per entity,
           // matching the backend's count(DISTINCT entity_id) behavior
           const uniqueValues = new Set(
             rows
               .filter(row => row.key.toLowerCase() === facet.toLowerCase())
-              .map(row => row.value)
+              .map(row => row.original_value)
               .filter(v => v !== null && v !== undefined)
               .map(v => String(v)),
           );
