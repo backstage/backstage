@@ -253,9 +253,10 @@ annotation on each cluster entry:
 ```yaml
 kubernetes:
   auth:
+    environment: development
     providers:
       microsoft:
-        <env>:
+        development:
           scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
 ```
 
