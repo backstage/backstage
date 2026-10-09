@@ -11,5 +11,5 @@ This fixes several cases where the fake returned different results than a real c
 - Entities without a `metadata.namespace` now match `{ 'metadata.namespace': 'default' }` in `query`.
 - Values longer than 200 characters can no longer be matched by value, but still satisfy `$exists: true`, as in the backend.
 - `metadata.name`, `metadata.namespace`, and `metadata.uid` always satisfy `$exists: true`, even when the entity has no value for them.
-- Unsupported predicates are rejected with the same `InputError`s as the backend, for example an object `$contains` on any field other than `relations`.
+- Predicates that the backend does not support are now rejected up front with an `InputError`, even when no entities would be evaluated. For example, an object `$contains` on any field other than `relations`, or a `relations` `$contains` without a `type`.
 - Entities that have keys differing only in casing, such as `spec.foo` and `spec.Foo`, now cause an `InputError` when matched, since the backend refuses to store such entities.
