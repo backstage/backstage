@@ -1131,6 +1131,21 @@ describe('relation query predicates', () => {
       },
       expected: [team],
     },
+    {
+      query: {
+        relations: {
+          $contains: {
+            type: 'HASMEMBER',
+            targetRef: { $in: ['user:default/missing', 'USER:DEFAULT/BOB'] },
+          },
+        },
+      },
+      expected: [team],
+    },
+    {
+      query: { relations: { $contains: { type: 'parentOf' } } },
+      expected: [team],
+    },
   ];
 
   it.each(cases)(
@@ -1183,5 +1198,44 @@ describe('relation query predicates', () => {
       [{ kind: 'Group', metadata: { name: 'team' } }],
       [{ kind: 'Group', metadata: { name: 'other' } }],
     ]);
+  });
+
+  it('matches against search rows like the backend does', async () => {
+    const tagged: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'tagged', tags: ['Java', 'web'] },
+    };
+    const client = new InMemoryCatalogClient({ entities: [tagged, team] });
+    const names = async (query: FilterPredicate) =>
+      (await client.queryEntities({ query })).items.map(e => e.metadata.name);
+
+    await expect(names({ 'metadata.namespace': 'default' })).resolves.toEqual([
+      'tagged',
+      'team',
+    ]);
+    await expect(names({ 'METADATA.NAME': 'TAGGED' })).resolves.toEqual([
+      'tagged',
+    ]);
+    await expect(names({ 'metadata.tags': 'java' })).resolves.toEqual([
+      'tagged',
+    ]);
+    await expect(
+      names({ 'metadata.tags': { $contains: 'WEB' } }),
+    ).resolves.toEqual(['tagged']);
+  });
+
+  it('rejects predicates that the backend rejects', async () => {
+    const client = new InMemoryCatalogClient({ entities: [team] });
+    await expect(
+      client.queryEntities({
+        query: { 'metadata.tags': { $contains: { a: 'b' } } },
+      }),
+    ).rejects.toThrow('Object form of $contains is not supported');
+    await expect(
+      client.queryEntities({
+        query: { relations: { $contains: { targetRef: 'user:default/bob' } } },
+      }),
+    ).rejects.toThrow('requires a "type" string property');
   });
 });
