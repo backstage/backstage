@@ -52,7 +52,7 @@ from `examples/template/template.yaml`. Running it publishes a repository to
 GitHub, which requires a configured
 [GitHub integration](../../integrations/github/locations.md). You will configure
 integrations when adapting Backstage for your organization, not during this
-stock-app tutorial.
+tutorial on the default base app.
 
 ## Check your local identity and preferences
 
