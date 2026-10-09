@@ -791,7 +791,8 @@ describe.each(databases.eachSupportedId())(
       await expect(
         performStitching({ knex, logger, ...claim }),
       ).rejects.toThrow(SyntaxError);
-      await expect(knex('stitch_queue')).resolves.toEqual(before);
+      const failed = await knex('stitch_queue');
+      expect(failed).toEqual([{ ...before[0], failure_count: 1 }]);
       await expect(knex('final_entities')).resolves.toEqual([]);
       await expect(knex('search')).resolves.toEqual([]);
       const [retry] = await getDeferredStitchableEntities({
@@ -800,10 +801,26 @@ describe.each(databases.eachSupportedId())(
         stitchTimeout: { minutes: 1 },
       });
       expect(retry.stitchTicket).not.toBe(claim.stitchTicket);
+      const successor = await knex('stitch_queue').first();
+      await expect(
+        performStitching({ knex, logger, ...claim }),
+      ).rejects.toThrow(SyntaxError);
+      expect(await knex('stitch_queue').first()).toEqual(successor);
+      await markForStitching({ knex, entityIds: ['my-id'] });
+      expect((await knex('stitch_queue').first()).failure_count).toBe(0);
+      await expect(
+        performStitching({ knex, logger, ...retry }),
+      ).rejects.toThrow(SyntaxError);
+      const [fresh] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(fresh).toBeDefined();
       await knex('refresh_state')
         .where('entity_id', 'my-id')
         .update({ processed_entity: null });
-      await expect(performStitching({ knex, logger, ...retry })).resolves.toBe(
+      await expect(performStitching({ knex, logger, ...fresh })).resolves.toBe(
         'abandoned',
       );
       await expect(knex('stitch_queue')).resolves.toEqual([]);

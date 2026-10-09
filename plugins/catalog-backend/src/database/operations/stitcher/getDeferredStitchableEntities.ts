@@ -32,10 +32,6 @@ export type StitchLeaseExpiresAt = DbStitchQueueRow['next_stitch_at'] & {
   readonly __stitchLeaseExpiresAt: unique symbol;
 };
 
-// TODO(freben): There is no retry counter or similar. If items start
-// perpetually crashing during stitching, they'll just get silently retried over
-// and over again, for better or worse. This will be visible in metrics though.
-
 /**
  * Finds entities that are marked for deferred stitching.
  *
@@ -48,7 +44,8 @@ export type StitchLeaseExpiresAt = DbStitchQueueRow['next_stitch_at'] & {
  * it is always checked together with entity_ref.
  *
  * All returned items have their next_stitch_at updated to be moved forward by
- * the given timeout duration. This has the effect that they will be picked up
+ * the configured timeout, extended by quadratic backoff and jitter after
+ * failures. This has the effect that they will be picked up
  * for stitching again in the future, if it hasn't completed by that point for
  * some reason (restarts, crashes, etc).
  */
@@ -78,7 +75,7 @@ export async function getDeferredStitchableEntities(options: {
   // without attempting the row-locking clauses that it does not support.
   const run = async (tx: Knex | Knex.Transaction) => {
     const items: DbStitchQueueRow[] = await tx('stitch_queue')
-      .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
+      .select('entity_ref', 'next_stitch_at', 'stitch_ticket', 'failure_count')
       .where('next_stitch_at', '<=', tx.fn.now())
       .orderBy('next_stitch_at', 'asc')
       .limit(batchSize)
@@ -93,13 +90,28 @@ export async function getDeferredStitchableEntities(options: {
     }
 
     const stitchTicket = randomUUID();
+    const base = durationToMilliseconds(stitchTimeout);
+    const nextStitchAt = (failureCount: number) => {
+      const delay = Math.max(
+        base,
+        Math.min(base * (failureCount + 1) ** 2, 3_600_000),
+      );
+      const jitter = failureCount > 0 ? delay * 0.1 * Math.random() : 0;
+      return nowPlus(tx, delay + jitter);
+    };
     const update = tx<DbStitchQueueRow>('stitch_queue')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
-        next_stitch_at: nowPlus(tx, stitchTimeout),
+        next_stitch_at: tx.raw(
+          `case entity_ref ${items.map(() => 'when ? then ?').join(' ')} end`,
+          items.flatMap(item => [
+            item.entity_ref,
+            nextStitchAt(item.failure_count),
+          ]),
+        ),
         stitch_ticket: stitchTicket,
       });
 
@@ -145,8 +157,8 @@ export async function getDeferredStitchableEntities(options: {
   return knex.isTransaction ? await run(knex) : await knex.transaction(run);
 }
 
-function nowPlus(knex: Knex, duration: HumanDuration): Knex.Raw {
-  const seconds = durationToMilliseconds(duration) / 1000;
+function nowPlus(knex: Knex, milliseconds: number): Knex.Raw {
+  const seconds = milliseconds / 1000;
   if (knex.client.config.client.includes('sqlite3')) {
     return knex.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
   } else if (knex.client.config.client.includes('mysql')) {
