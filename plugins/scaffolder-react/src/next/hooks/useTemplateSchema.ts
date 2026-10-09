@@ -32,6 +32,32 @@ export interface ParsedTemplateSchema {
   description?: string;
 }
 
+const isJsonObject = (value: unknown): value is JsonObject =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const getConditionalProperties = (schema: JsonObject): JsonObject => {
+  const properties: JsonObject = {};
+  const conditionalSchemas = [
+    ...((schema.allOf as JsonObject[]) ?? []),
+    ...((schema.anyOf as JsonObject[]) ?? []),
+    ...((schema.oneOf as JsonObject[]) ?? []),
+    ...Object.values((schema.dependencies as JsonObject) ?? {}),
+    schema.then,
+    schema.else,
+  ];
+
+  for (const conditionalSchema of conditionalSchemas) {
+    if (isJsonObject(conditionalSchema)) {
+      Object.assign(properties, getConditionalProperties(conditionalSchema));
+    }
+  }
+
+  return {
+    ...properties,
+    ...((schema.properties as JsonObject) ?? {}),
+  };
+};
+
 /**
  * This hook will parse the template schema and return the steps with the
  * parsed schema and uiSchema. Filtering out any steps or properties that
@@ -51,6 +77,23 @@ export const useTemplateSchema = (
     mergedSchema: schema,
     ...extractSchemaFromStep(schema),
   }));
+  const filterProperties = (properties: JsonObject, uiSchema: UiSchema) =>
+    Object.fromEntries(
+      Object.entries(properties).filter(([key]) => {
+        const stepFeatureFlag = uiSchema[key]?.['ui:backstage']?.featureFlag;
+        return stepFeatureFlag ? featureFlags.isActive(stepFeatureFlag) : true;
+      }),
+    );
+  const getStepProperties = (
+    step: ParsedTemplateSchema,
+    includeConditionalProperties = false,
+  ) =>
+    filterProperties(
+      includeConditionalProperties
+        ? getConditionalProperties(step.schema)
+        : (step.schema.properties as JsonObject) ?? {},
+      step.uiSchema,
+    );
 
   const returningSteps = steps
     // Filter out steps that are not enabled with the feature flags
@@ -59,30 +102,55 @@ export const useTemplateSchema = (
       return stepFeatureFlag ? featureFlags.isActive(stepFeatureFlag) : true;
     })
     // Then filter out the properties that are not enabled with feature flag
-    .map(step => {
+    .map((step, index, filteredSteps) => {
       // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
       const { title, ...stepSchema } = step.schema;
+
+      const shouldIncludeCurrentProperties =
+        Boolean(step.schema.properties) || !step.schema.dependencies;
+      const currentStepProperties = shouldIncludeCurrentProperties
+        ? getStepProperties(step)
+        : undefined;
+      const previousStepProperties = filteredSteps
+        .slice(0, index)
+        .reduce<JsonObject>(
+          (properties, previousStep) => ({
+            ...properties,
+            ...getStepProperties(previousStep, true),
+          }),
+          {},
+        );
 
       const strippedSchema = {
         ...step,
         schema: {
           ...stepSchema,
+          ...(currentStepProperties ||
+          Object.keys(previousStepProperties).length
+            ? {
+                properties: {
+                  ...previousStepProperties,
+                  ...(currentStepProperties ?? {}),
+                },
+              }
+            : {}),
         },
       } as ParsedTemplateSchema;
 
-      if (step.schema?.properties || !step.schema?.dependencies) {
-        strippedSchema.schema.properties = Object.fromEntries(
-          Object.entries((step.schema?.properties ?? {}) as JsonObject).filter(
-            ([key]) => {
-              const stepFeatureFlag =
-                step.uiSchema[key]?.['ui:backstage']?.featureFlag;
-              return stepFeatureFlag
-                ? featureFlags.isActive(stepFeatureFlag)
-                : true;
-            },
-          ),
-        );
-      }
+      strippedSchema.uiSchema = {
+        ...Object.fromEntries(
+          Object.keys(previousStepProperties)
+            .filter(property => !(property in (currentStepProperties ?? {})))
+            .map(property => [
+              property,
+              {
+                ...(step.uiSchema[property] as JsonObject | undefined),
+                'ui:widget': 'hidden',
+              },
+            ]),
+        ),
+        ...step.uiSchema,
+      };
 
       return strippedSchema;
     });
