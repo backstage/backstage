@@ -53,8 +53,7 @@ import {
 } from '@backstage/errors';
 import {
   FilterPredicate,
-  FilterPredicateExpression,
-  filterPredicateToFilterFunction,
+  FilterPredicateValue,
 } from '@backstage/filter-predicates';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -196,52 +195,153 @@ function createFilter(
   };
 }
 
-// Relation shorthand is a search-index field, not a path into entity JSON.
-// Translate it to array predicates before using the generic JSON evaluator.
-function normalizeRelationQuery(query: FilterPredicate): FilterPredicate {
-  if (typeof query !== 'object') {
-    return query;
+function isPrimitive(value: unknown): value is string | number | boolean {
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  );
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+type SearchRow = ReturnType<typeof buildEntitySearch>[number];
+
+// Evaluates a filter predicate against the search rows of an entity, mirroring
+// the backend's applyPredicateEntityFilterToQuery so that query predicates
+// match the same way as they do against the real search table.
+function evaluateQuery(predicate: FilterPredicate, rows: SearchRow[]): boolean {
+  if (!isObject(predicate)) {
+    const actual = JSON.stringify(predicate);
+    throw new InputError(
+      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
+    );
   }
-  if ('$all' in query) {
-    return { ...query, $all: query.$all.map(normalizeRelationQuery) };
+  if ('$not' in predicate) {
+    return !evaluateQuery(predicate.$not, rows);
   }
-  if ('$any' in query) {
-    return { ...query, $any: query.$any.map(normalizeRelationQuery) };
+  if ('$all' in predicate) {
+    return predicate.$all.every(p => evaluateQuery(p, rows));
   }
-  if ('$not' in query) {
-    return { ...query, $not: normalizeRelationQuery(query.$not) };
+  if ('$any' in predicate) {
+    return predicate.$any.some(p => evaluateQuery(p, rows));
+  }
+  return Object.entries(predicate).every(([key, value]) =>
+    evaluateQueryField(key.toLowerCase(), value, rows),
+  );
+}
+
+function evaluateQueryField(
+  key: string,
+  value: FilterPredicateValue,
+  rows: SearchRow[],
+): boolean {
+  const values = rows
+    .filter(row => row.key === key)
+    .map(row => row.value?.toString().toLowerCase());
+
+  if (isPrimitive(value)) {
+    return values.includes(String(value).toLowerCase());
   }
 
-  const conditions: FilterPredicate[] = [];
-  const remaining: FilterPredicateExpression = {};
-  for (const [key, value] of Object.entries(query)) {
-    if (!key.toLowerCase().startsWith('relations.')) {
-      remaining[key] = value;
-      continue;
+  if (isObject(value)) {
+    if ('$exists' in value) {
+      return value.$exists ? values.length > 0 : values.length === 0;
     }
-    const type = key.slice('relations.'.length);
-    const exists: FilterPredicate = {
-      relations: { $contains: { type } },
-    };
-    if (typeof value === 'object' && '$exists' in value) {
-      conditions.push(value.$exists ? exists : { $not: exists });
-    } else {
-      const targetRef =
-        typeof value === 'object' &&
-        '$contains' in value &&
-        typeof value.$contains !== 'object'
-          ? value.$contains
-          : value;
-      conditions.push({ relations: { $contains: { type, targetRef } } });
+    if ('$in' in value) {
+      return value.$in.some(v => values.includes(String(v).toLowerCase()));
+    }
+    if ('$hasPrefix' in value) {
+      const prefix = value.$hasPrefix.toLowerCase();
+      return values.some(v => v?.startsWith(prefix));
+    }
+    if ('$contains' in value) {
+      const target = value.$contains;
+      if (isPrimitive(target)) {
+        return values.includes(String(target).toLowerCase());
+      }
+      if (isObject(target)) {
+        if (key === 'relations') {
+          return evaluateContainsRelation(target, rows);
+        }
+        throw new InputError(
+          `Object form of $contains is not supported for field "${key}"`,
+        );
+      }
+      const actual = JSON.stringify(target);
+      throw new InputError(
+        `Unsupported $contains target for field "${key}": ${actual}`,
+      );
     }
   }
-  return { $all: [remaining, ...conditions] };
+
+  const actual = JSON.stringify(value);
+  throw new InputError(
+    `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, $hasPrefix, or $contains operator, but got ${actual}`,
+  );
+}
+
+function evaluateContainsRelation(
+  target: Record<string, unknown>,
+  rows: SearchRow[],
+): boolean {
+  let type: string | undefined;
+  let targetRefs: string[] | undefined;
+
+  for (const [rawKey, value] of Object.entries(target)) {
+    const key = rawKey.toLowerCase();
+    if (key === 'type') {
+      if (typeof value !== 'string') {
+        throw new InputError(
+          `The $contains operator for "relations" requires a "type" string property`,
+        );
+      }
+      type = value;
+    } else if (key === 'targetref') {
+      if (typeof value === 'string') {
+        targetRefs = [value.toLowerCase()];
+      } else if (
+        isObject(value) &&
+        Object.keys(value).length === 1 &&
+        Array.isArray(value.$in) &&
+        value.$in.length > 0 &&
+        value.$in.every((v): v is string => typeof v === 'string')
+      ) {
+        targetRefs = value.$in.map(v => v.toLowerCase());
+      } else {
+        const actual = JSON.stringify(value);
+        throw new InputError(
+          `Unsupported value in $contains for "relations": expected a string or { "$in": [strings] }, but got ${actual}`,
+        );
+      }
+    } else {
+      throw new InputError(
+        `Unsupported key "${rawKey}" in $contains for "relations". Only "type" and "targetRef" are supported`,
+      );
+    }
+  }
+
+  if (!type) {
+    throw new InputError(
+      `The $contains operator for "relations" requires a "type" string property`,
+    );
+  }
+
+  const relationKey = `relations.${type.toLowerCase()}`;
+  return rows.some(
+    row =>
+      row.key === relationKey &&
+      (!targetRefs ||
+        targetRefs.includes(String(row.value ?? '').toLowerCase())),
+  );
 }
 
 function createQueryFilter(
   query: FilterPredicate,
 ): (entity: Entity) => boolean {
-  return filterPredicateToFilterFunction(normalizeRelationQuery(query));
+  return entity => evaluateQuery(query, buildEntitySearch(entity));
 }
 
 // Resolves a dot-separated field path against an entity, handling keys that
@@ -353,9 +453,10 @@ function applyFullTextFilter(
 /**
  * Implements a fake catalog client that stores entities in memory.
  * Supports filtering, ordering, pagination, full-text search, and field
- * projection for entity query methods. Query predicates support relation
- * shorthand such as `relations.hasMember`, including logical and value
- * operators. Location and validation methods
+ * projection for entity query methods. Query predicates are evaluated
+ * against the same search rows as the backend, so field keys are
+ * case-insensitive and relation shorthand such as `relations.hasMember`
+ * is supported. Location and validation methods
  * throw {@link @backstage/errors#NotImplementedError}.
  *
  * @public

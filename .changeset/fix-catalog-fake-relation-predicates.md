@@ -2,4 +2,4 @@
 '@backstage/catalog-client': patch
 ---
 
-Fixed relation shorthand query predicates such as `relations.hasMember` and `relations.parentOf` in the in-memory Catalog client. Relation predicates now work with value and logical operators across entity queries, streamed pagination, reference lookups, and facet queries.
+The in-memory Catalog client now evaluates query predicates against the same search rows as `filter` and the catalog backend, instead of against raw entity JSON. This fixes relation shorthand such as `relations.hasMember`, case-insensitive field keys, default namespaces, and array fields in `queryEntities`, `streamEntities`, `getEntitiesByRefs`, and `getEntityFacets`.
