@@ -17,6 +17,7 @@
 import { CATALOG_FILTER_EXISTS } from '../types';
 import { InMemoryCatalogClient } from './InMemoryCatalogClient';
 import { Entity } from '@backstage/catalog-model';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 const entity1: Entity = {
   apiVersion: 'v1',
@@ -1045,5 +1046,142 @@ describe('InMemoryCatalogClient', () => {
         client.analyzeLocation({ location: { type: 'url', target: 'test' } }),
       ).rejects.toThrow('not implemented');
     });
+  });
+});
+
+describe('relation query predicates', () => {
+  const team: Entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: { name: 'team', namespace: 'default' },
+    relations: [
+      { type: 'hasMember', targetRef: 'user:default/alice' },
+      { type: 'hasMember', targetRef: 'user:default/bob' },
+      { type: 'parentOf', targetRef: 'group:default/child' },
+    ],
+  };
+  const other: Entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: { name: 'other', namespace: 'default' },
+    relations: [{ type: 'hasMember', targetRef: 'user:default/alice' }],
+  };
+  const empty: Entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: { name: 'empty', namespace: 'default' },
+  };
+
+  const cases: Array<{ query: FilterPredicate; expected: Entity[] }> = [
+    {
+      query: { 'relations.hasMember': 'USER:DEFAULT/ALICE' },
+      expected: [team, other],
+    },
+    {
+      query: {
+        'RELATIONS.HASMEMBER': {
+          $in: ['user:default/missing', 'user:default/bob'],
+        },
+      },
+      expected: [team],
+    },
+    {
+      query: { 'relations.parentOf': { $hasPrefix: 'group:default/' } },
+      expected: [team],
+    },
+    {
+      query: { 'relations.hasMember': { $contains: 'user:default/bob' } },
+      expected: [team],
+    },
+    {
+      query: { 'relations.hasMember': { $exists: true } },
+      expected: [team, other],
+    },
+    { query: { 'relations.hasMember': { $exists: false } }, expected: [empty] },
+    {
+      query: {
+        'relations.hasMember': 'user:default/alice',
+        'relations.parentOf': 'group:default/child',
+      },
+      expected: [team],
+    },
+    {
+      query: {
+        $all: [
+          { kind: 'group' },
+          {
+            $any: [
+              { 'relations.hasMember': 'user:default/bob' },
+              { 'relations.parentOf': 'group:default/missing' },
+            ],
+          },
+        ],
+      },
+      expected: [team],
+    },
+    {
+      query: { $not: { 'relations.hasMember': 'user:default/alice' } },
+      expected: [empty],
+    },
+    {
+      query: {
+        relations: {
+          $contains: { type: 'hasMember', targetRef: 'user:default/bob' },
+        },
+      },
+      expected: [team],
+    },
+  ];
+
+  it.each(cases)(
+    'matches relation predicates consistently across methods: $query',
+    async ({ query, expected }) => {
+      const client = new InMemoryCatalogClient({
+        entities: [team, other, empty],
+      });
+      expect((await client.queryEntities({ query })).items).toEqual(expected);
+      expect(
+        (
+          await client.getEntitiesByRefs({
+            entityRefs: [
+              'group:default/team',
+              'group:default/other',
+              'group:default/empty',
+            ],
+            query,
+          })
+        ).items,
+      ).toEqual(
+        [team, other, empty].map(e => (expected.includes(e) ? e : undefined)),
+      );
+      const facets = await client.getEntityFacets({
+        facets: ['metadata.name'],
+        query,
+      });
+      expect(facets.facets['metadata.name']).toEqual(
+        expected.map(e => ({ value: e.metadata.name, count: 1 })),
+      );
+    },
+  );
+
+  it('preserves relation predicates across streamed pages and projection', async () => {
+    const client = new InMemoryCatalogClient({
+      entities: [team, empty, other],
+    });
+    const pages: Entity[][] = [];
+    for await (const page of client.streamEntities({
+      query: {
+        kind: 'group',
+        'relations.hasMember': { $in: ['user:default/alice'] },
+      },
+      pageSize: 1,
+      fields: ['kind', 'metadata.name'],
+    })) {
+      pages.push(page);
+    }
+    expect(pages).toEqual([
+      [{ kind: 'Group', metadata: { name: 'team' } }],
+      [{ kind: 'Group', metadata: { name: 'other' } }],
+    ]);
   });
 });
