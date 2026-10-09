@@ -20,7 +20,7 @@ const indexName = 'final_entities_generation_idx';
 
 /** @param {import('knex').Knex} knex */
 exports.up = async function up(knex) {
-  const isPg = knex.client.config.client.includes('pg');
+  const isPg = knex.client.config.client === 'pg';
 
   // Release the short DDL locks before scanning the heap for the index.
   await knex.transaction(async tx => {
@@ -67,7 +67,7 @@ exports.up = async function up(knex) {
 
 /** @param {import('knex').Knex} knex */
 exports.down = async function down(knex) {
-  if (knex.client.config.client.includes('pg')) {
+  if (knex.client.config.client === 'pg') {
     await knex.raw('DROP INDEX CONCURRENTLY IF EXISTS ??', [indexName]);
   } else if (await hasSecondaryIndex(knex)) {
     await knex.schema.alterTable('final_entities', table =>
