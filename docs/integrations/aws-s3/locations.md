@@ -39,6 +39,26 @@ integrations:
       externalId: 'some-id' # optional
 ```
 
+If the AWS account of the role has its own entry under `aws.accounts` that
+already assumes that same role, for example using a web identity token file,
+the reader uses those credentials directly instead of assuming the role a
+second time. This means that the role doesn't need to trust itself:
+
+```yaml
+aws:
+  accounts:
+    - accountId: '111111111111'
+      roleName: 'example-role'
+      webIdentityTokenFile: '/var/run/secrets/aws/token'
+
+integrations:
+  awsS3:
+    - roleArn: 'arn:aws:iam::111111111111:role/example-role'
+```
+
+The role is still assumed a second time if `externalId` is set on the
+integration, so that the external ID is always checked.
+
 Configuration allows specifying custom S3 endpoint, along with
 [path-style access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html)
 to support integration with providers like
