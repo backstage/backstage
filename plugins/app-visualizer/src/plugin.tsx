@@ -23,26 +23,22 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { RiEyeLine } from '@remixicon/react';
 
-const rootRouteRef = createRouteRef();
+const rootRouteRef = createRouteRef({ extensionId: 'page:app-visualizer' });
 
 const appVisualizerPage = PageBlueprint.make({
   params: {
     path: '/visualizer',
-    routeRef: rootRouteRef,
+
     title: 'Visualizer',
     icon: <RiEyeLine />,
   },
 });
 
-const treeRouteRef = createRouteRef();
-const detailedRouteRef = createRouteRef();
-const textRouteRef = createRouteRef();
-
 const appVisualizerTreePage = SubPageBlueprint.make({
   name: 'tree',
   params: {
     path: 'tree',
-    routeRef: treeRouteRef,
+
     title: 'Tree',
     loader: () =>
       import('./components/AppVisualizerPage/TreeVisualizer').then(m => (
@@ -54,7 +50,7 @@ const appVisualizerDetailedPage = SubPageBlueprint.make({
   name: 'details',
   params: {
     path: 'details',
-    routeRef: detailedRouteRef,
+
     title: 'Detailed',
     loader: () =>
       import('./components/AppVisualizerPage/DetailedVisualizer').then(m => (
@@ -66,7 +62,7 @@ const appVisualizerTextPage = SubPageBlueprint.make({
   name: 'text',
   params: {
     path: 'text',
-    routeRef: textRouteRef,
+
     title: 'Text',
     loader: () =>
       import('./components/AppVisualizerPage/TextVisualizer').then(m => (
@@ -85,6 +81,7 @@ const copyTreeAsJson = PluginHeaderActionBlueprint.make({
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
   pluginId: 'app-visualizer',
+  routes: { root: rootRouteRef },
   title: 'App Visualizer',
   icon: <RiEyeLine />,
   info: { packageJson: () => import('../package.json') },

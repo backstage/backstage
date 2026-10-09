@@ -798,12 +798,14 @@ export interface CreateFrontendModuleOptions<
 > {
   // (undocumented)
   extensions?: TExtensions;
+  externalRoutes?: Record<string, ExternalRouteRef>;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   // (undocumented)
   if?: FilterPredicate;
   // (undocumented)
   pluginId: TPluginId;
+  routes?: Record<string, RouteRef | SubRouteRef>;
 }
 
 // @public
@@ -859,9 +861,9 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<TParamKey extends string = never>(config?: {
+export function createRouteRef<TParamKey extends string = never>(config: {
   readonly params?: TParamKey[];
-  aliasFor?: string;
+  readonly extensionId: string;
 }): RouteRef<
   [TParamKey] extends [never]
     ? undefined

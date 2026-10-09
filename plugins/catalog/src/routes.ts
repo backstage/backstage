@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  createExternalRouteRef,
-  createRouteRef,
-} from '@backstage/core-plugin-api';
+import { createExternalRouteRef } from '@backstage/core-plugin-api';
+import { createRouteRef } from '@backstage/frontend-plugin-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 
 export const createComponentRouteRef = createExternalRouteRef({
   id: 'create-component',
@@ -44,6 +43,6 @@ export const unregisterRedirectRouteRef = createExternalRouteRef({
   optional: true,
 });
 
-export const rootRouteRef = createRouteRef({
-  id: 'catalog',
-});
+export const rootRouteRef = convertLegacyRouteRef(
+  createRouteRef({ extensionId: 'page:catalog' }),
+);

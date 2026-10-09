@@ -27,7 +27,7 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  * @public
  * @example
  * ```tsx
- * const overviewRouteRef = createRouteRef();
+ * const overviewRouteRef = createRouteRef({ extensionId: 'sub-page:my-plugin/overview' });
  *
  * const mySubPage = SubPageBlueprint.make({
  *   attachTo: { id: 'page:my-plugin', input: 'pages' },
@@ -35,7 +35,6 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  *   params: {
  *     path: 'overview',
  *     title: 'Overview',
- *     routeRef: overviewRouteRef,
  *     loader: () => import('./components/Overview').then(m => <m.Overview />),
  *   },
  * });
@@ -77,7 +76,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       loader: () => Promise<JSX.Element>;
       /**
-       * Optional route reference for this sub-page.
+       * @deprecated Set extensionId when creating the route reference instead.
        */
       routeRef?: RouteRef;
     },

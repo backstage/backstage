@@ -15,7 +15,9 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 const visualizerPlugin: OverridableFrontendPlugin<
-  {},
+  {
+    root: RouteRef<undefined>;
+  },
   {},
   {
     'page:app-visualizer': OverridableExtensionDefinition<{

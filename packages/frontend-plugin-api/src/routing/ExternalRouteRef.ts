@@ -100,6 +100,9 @@ export function createExternalRouteRef<
 
   return OpaqueExternalRouteRef.createInstance('v1', {
     T: undefined as unknown as TParams,
+    getId() {
+      return id;
+    },
     getParams() {
       return params;
     },

@@ -115,6 +115,7 @@ describe('EntityContentBlueprint', () => {
   });
 
   it('should emit the correct defaults', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const mockRouteRef = createRouteRef();
     const extension = EntityContentBlueprint.make({
       name: 'test',
