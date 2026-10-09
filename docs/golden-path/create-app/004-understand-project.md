@@ -83,7 +83,7 @@ serves the compiled frontend.
 
 ## Complete the Create App Golden Path
 
-You now have a running stock Backstage app and know where to find its
+You now have a running default base app and know where to find its
 configuration, frontend, backend, and example data. Continue with the path that
 matches your next goal:
 
