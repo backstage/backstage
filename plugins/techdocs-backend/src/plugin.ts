@@ -36,6 +36,7 @@ import {
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { techDocsPermissions } from '@backstage/plugin-techdocs-common';
 import * as winston from 'winston';
 import { createRouter } from './service/router';
 import { createTechdocsActions } from './actions';
@@ -114,6 +115,8 @@ export const techdocsPlugin = createBackendPlugin({
         cache: coreServices.cache,
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
+        permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
       },
@@ -126,6 +129,8 @@ export const techdocsPlugin = createBackendPlugin({
         cache,
         httpAuth,
         auth,
+        permissions,
+        permissionsRegistry,
         catalog,
         actionsRegistry,
       }) {
@@ -157,6 +162,10 @@ export const techdocsPlugin = createBackendPlugin({
         // checks if the publisher is working and logs the result
         await publisher.getReadiness();
 
+        // The `catalog-entity` resource type that the permission targets is owned
+        // and registered by the catalog, so only the permission itself is added here.
+        permissionsRegistry.addPermissions(techDocsPermissions);
+
         http.use(
           await createRouter({
             logger: logger,
@@ -170,6 +179,7 @@ export const techdocsPlugin = createBackendPlugin({
             discovery,
             httpAuth,
             auth,
+            permissions,
             catalog,
           }),
         );
