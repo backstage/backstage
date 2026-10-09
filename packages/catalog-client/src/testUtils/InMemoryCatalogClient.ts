@@ -52,7 +52,7 @@ import {
 } from '@backstage/errors';
 import {
   FilterPredicate,
-  FilterPredicatePrimitive,
+  FilterPredicateExpression,
   FilterPredicateValue,
 } from '@backstage/filter-predicates';
 import lodash from 'lodash';
@@ -172,23 +172,20 @@ function isObject(value: unknown): value is Record<string, unknown> {
 
 type SearchRow = ReturnType<typeof buildEntitySearch>[number];
 
-type FieldMatcher =
-  | FilterPredicatePrimitive
-  | { $exists: boolean }
-  | { $in: FilterPredicatePrimitive[] }
-  | { $hasPrefix: string };
+function fieldPredicate(
+  key: string,
+  value: FilterPredicateValue,
+): FilterPredicate {
+  const predicate: FilterPredicateExpression = {};
+  predicate[key] = value;
+  return predicate;
+}
 
-type TranslatedQuery =
-  | { $all: TranslatedQuery[] }
-  | { $any: TranslatedQuery[] }
-  | { $not: TranslatedQuery }
-  | { key: string; matcher: FieldMatcher };
-
-// Translates a filter predicate into simple per-key matchers on the search
-// table, following the backend's applyPredicateEntityFilterToQuery. This runs
-// once up front so that unsupported predicates are rejected regardless of the
-// data, just like in the backend.
-function translateQuery(predicate: FilterPredicate): TranslatedQuery {
+// Translates a filter predicate into an equivalent one without $contains,
+// following the backend's applyPredicateEntityFilterToQuery. This runs once up
+// front so that unsupported predicates are rejected regardless of the data,
+// just like in the backend.
+function translateQuery(predicate: FilterPredicate): FilterPredicate {
   if (!isObject(predicate)) {
     const actual = JSON.stringify(predicate);
     throw new InputError(
@@ -214,33 +211,27 @@ function translateQuery(predicate: FilterPredicate): TranslatedQuery {
 function translateQueryField(
   key: string,
   value: FilterPredicateValue,
-): TranslatedQuery {
-  if (isPrimitive(value)) {
-    return { key, matcher: value };
+): FilterPredicate {
+  if (
+    isPrimitive(value) ||
+    (isObject(value) &&
+      ('$exists' in value || '$in' in value || '$hasPrefix' in value))
+  ) {
+    return fieldPredicate(key, value);
   }
-  if (isObject(value)) {
-    if ('$exists' in value) {
-      return { key, matcher: { $exists: value.$exists } };
-    }
-    if ('$in' in value) {
-      return { key, matcher: { $in: value.$in } };
-    }
-    if ('$hasPrefix' in value) {
-      return { key, matcher: { $hasPrefix: value.$hasPrefix } };
-    }
-    if ('$contains' in value) {
-      const target: unknown = value.$contains;
 
-      // The search table has one row per array item, so this is plain equality
-      if (isPrimitive(target)) {
-        return { key, matcher: target };
-      }
+  if (isObject(value) && '$contains' in value) {
+    const target: unknown = value.$contains;
 
-      // { relations: { $contains: { type, targetRef } } } maps onto the
-      // search table's relations.<type> keys
-      if (key === 'relations' && isObject(target)) {
-        return translateContainsRelation(target);
-      }
+    // The search table has one row per array item, so this is plain equality
+    if (isPrimitive(target)) {
+      return fieldPredicate(key, target);
+    }
+
+    // { relations: { $contains: { type, targetRef } } } maps onto the
+    // search table's relations.<type> keys
+    if (key === 'relations' && isObject(target)) {
+      return translateContainsRelation(target);
     }
   }
 
@@ -253,7 +244,7 @@ function translateQueryField(
 
 function translateContainsRelation(
   target: Record<string, unknown>,
-): TranslatedQuery {
+): FilterPredicate {
   const { type, targetRef, ...rest } = target;
   if (type === undefined || Object.keys(rest).length > 0) {
     throw new InputError(
@@ -265,13 +256,13 @@ function translateContainsRelation(
 
   const key = `relations.${String(type).toLowerCase()}`;
   if (targetRef === undefined) {
-    return { key, matcher: { $exists: true } };
+    return fieldPredicate(key, { $exists: true });
   }
   if (typeof targetRef === 'string') {
-    return { key, matcher: targetRef };
+    return fieldPredicate(key, targetRef);
   }
   if (isObject(targetRef) && Array.isArray(targetRef.$in)) {
-    return { key, matcher: { $in: targetRef.$in.map(String) } };
+    return fieldPredicate(key, { $in: targetRef.$in.map(String) });
   }
   throw new InputError(
     `Unsupported "targetRef" in $contains for "relations": ${JSON.stringify(
@@ -280,34 +271,42 @@ function translateContainsRelation(
   );
 }
 
-// Evaluates a translated query against the search rows of an entity, matching
-// the same way as the backend does against the search table.
-function evaluateQuery(query: TranslatedQuery, rows: SearchRow[]): boolean {
-  if ('$not' in query) {
-    return !evaluateQuery(query.$not, rows);
+// Evaluates a translated filter predicate against the search rows of an
+// entity, matching the same way as the backend does against the search table.
+function evaluateQuery(predicate: FilterPredicate, rows: SearchRow[]): boolean {
+  if (!isObject(predicate)) {
+    return false;
   }
-  if ('$all' in query) {
-    return query.$all.every(q => evaluateQuery(q, rows));
+  if ('$not' in predicate) {
+    return !evaluateQuery(predicate.$not, rows);
   }
-  if ('$any' in query) {
-    return query.$any.some(q => evaluateQuery(q, rows));
+  if ('$all' in predicate) {
+    return predicate.$all.every(p => evaluateQuery(p, rows));
   }
-
-  const { key, matcher } = query;
-  const values = rows
-    .filter(row => row.key === key)
-    .map(row => row.value?.toString().toLowerCase());
-  if (isPrimitive(matcher)) {
-    return values.includes(String(matcher).toLowerCase());
+  if ('$any' in predicate) {
+    return predicate.$any.some(p => evaluateQuery(p, rows));
   }
-  if ('$exists' in matcher) {
-    return matcher.$exists ? values.length > 0 : values.length === 0;
-  }
-  if ('$in' in matcher) {
-    return matcher.$in.some(v => values.includes(String(v).toLowerCase()));
-  }
-  const prefix = matcher.$hasPrefix.toLowerCase();
-  return values.some(v => v?.startsWith(prefix));
+  return Object.entries(predicate).every(([key, value]) => {
+    const values = rows
+      .filter(row => row.key === key)
+      .map(row => row.value?.toString().toLowerCase());
+    if (isPrimitive(value)) {
+      return values.includes(String(value).toLowerCase());
+    }
+    if (isObject(value) && '$exists' in value) {
+      return value.$exists ? values.length > 0 : values.length === 0;
+    }
+    if (isObject(value) && '$in' in value) {
+      return value.$in.some(v => values.includes(String(v).toLowerCase()));
+    }
+    if (isObject(value) && '$hasPrefix' in value) {
+      const prefix = value.$hasPrefix.toLowerCase();
+      return values.some(v => v?.startsWith(prefix));
+    }
+    // $contains and unsupported values never get here, since translateQuery
+    // has already erased or rejected them
+    return false;
+  });
 }
 
 function createQueryFilter(
