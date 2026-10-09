@@ -26,7 +26,7 @@ export async function assignGeneration(
   tx: Knex.Transaction,
   entityId: string,
 ): Promise<string> {
-  if (tx.client.config.client.includes('pg')) {
+  if (tx.client.config.client === 'pg') {
     return assignGenerationPostgres(tx, entityId);
   }
 
