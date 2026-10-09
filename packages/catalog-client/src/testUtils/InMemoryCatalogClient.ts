@@ -56,7 +56,7 @@ import {
 } from '@backstage/filter-predicates';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { buildEntitySearch as backendBuildEntitySearch } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
+import { buildEntitySearch } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -119,16 +119,6 @@ function deserializeFilter(filter?: any[]): EntityFilterQuery | undefined {
   );
 }
 
-// Use the backend's own search row builder so that filters and query
-// predicates see exactly the same keys and values as the real search table.
-function buildEntitySearch(entity: Entity) {
-  return backendBuildEntitySearch('', entity).map(row => ({
-    key: row.key,
-    value: row.value,
-    originalValue: row.original_value,
-  }));
-}
-
 function createFilter(
   filterOrFilters?: EntityFilterQuery,
 ): (entity: Entity) => boolean {
@@ -139,7 +129,7 @@ function createFilter(
   const filters = [filterOrFilters].flat();
 
   return entity => {
-    const rows = buildEntitySearch(entity);
+    const rows = buildEntitySearch('', entity);
 
     return filters.some(filter => {
       for (const [key, expectedValue] of Object.entries(filter)) {
@@ -325,7 +315,7 @@ function evaluateContainsRelation(
 function createQueryFilter(
   query: FilterPredicate,
 ): (entity: Entity) => boolean {
-  return entity => evaluateQuery(query, buildEntitySearch(entity));
+  return entity => evaluateQuery(query, buildEntitySearch('', entity));
 }
 
 // Resolves a dot-separated field path against an entity, handling keys that
@@ -374,7 +364,7 @@ function applyOrdering(entities: Entity[], order?: EntityOrderQuery): Entity[] {
 
   const searchMap = new Map<Entity, Array<{ key: string; value: unknown }>>();
   for (const entity of entities) {
-    searchMap.set(entity, buildEntitySearch(entity));
+    searchMap.set(entity, buildEntitySearch('', entity));
   }
 
   return [...entities].sort((a, b) => {
@@ -422,7 +412,7 @@ function applyFullTextFilter(
   const fields = fullTextFilter.fields?.map(f => f.toLowerCase());
 
   return entities.filter(entity => {
-    const rows = buildEntitySearch(entity);
+    const rows = buildEntitySearch('', entity);
     return rows.some(row => {
       if (fields?.length && !fields.includes(row.key.toLowerCase())) {
         return false;
@@ -650,13 +640,13 @@ export class InMemoryCatalogClient implements CatalogApi {
       request.facets.map(facet => {
         const facetValues = new Map<string, number>();
         for (const entity of filteredEntities) {
-          const rows = buildEntitySearch(entity);
+          const rows = buildEntitySearch('', entity);
           // Use a Set to count each distinct value once per entity,
           // matching the backend's count(DISTINCT entity_id) behavior
           const uniqueValues = new Set(
             rows
               .filter(row => row.key.toLowerCase() === facet.toLowerCase())
-              .map(row => row.originalValue)
+              .map(row => row.original_value)
               .filter(v => v !== null && v !== undefined)
               .map(v => String(v)),
           );
