@@ -221,7 +221,7 @@ export const userSettingsTranslationRef: TranslationRef<
   }
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const useUserProfile: () =>
   | {
       profile: ProfileInfo;

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-user-settings-react
+  title: '@backstage/plugin-user-settings-react'
+  description: React utilities for the user-settings plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers
