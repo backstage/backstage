@@ -8,7 +8,7 @@ description: Start and verify a generated Backstage app
 Audience: Developers and administrators
 
 In this step, you will start the generated frontend and backend and verify that
-the stock app works.
+the default base app works.
 
 ## Start Backstage
 
