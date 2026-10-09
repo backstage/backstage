@@ -25,7 +25,21 @@ the default connections service. Tests using `startTestBackend` also include
 it. Custom backends using `createSpecializedBackend` can install
 `connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
 
-## Declare a connection dependency
+## Get started with a backend plugin
+
+Configure a GitHub connection in `app-config.yaml` and supply `GITHUB_TOKEN`
+through your backend's environment:
+
+```yaml title="app-config.yaml"
+connections:
+  - type: github
+    host: github.com
+    auth:
+      - method: token
+        token: ${GITHUB_TOKEN}
+```
+
+### Declare and resolve the connection
 
 Plugins and modules declare each type during `register`, before
 calling `registerInit`. See the
@@ -33,7 +47,10 @@ calling `registerInit`. See the
 the declaration is separate from lookup:
 
 ```ts
-import { createBackendPlugin } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
 import {
   connectionsServiceRef,
   declareConnection,
@@ -50,14 +67,37 @@ export const examplePlugin = createBackendPlugin({
     reg.registerInit({
       deps: {
         connections: connectionsServiceRef,
+        logger: coreServices.logger,
       },
-      async init({ connections }) {
-        // Use connections here.
+      async init({ connections, logger }) {
+        const connection = await connections.find({
+          type: 'github',
+          query: { url: 'https://github.com/backstage/backstage' },
+          authMethods: ['app', 'token'],
+        });
+        logger.info(`Resolved GitHub connection for ${connection.host}`);
       },
     });
   },
 });
 ```
+
+Add the exported plugin to a backend created with `createBackend`:
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { examplePlugin } from './examplePlugin';
+
+const backend = createBackend();
+backend.add(examplePlugin);
+backend.start();
+```
+
+Save the plugin example as `examplePlugin.ts` alongside the backend entry point.
+On startup, the plugin resolves the configured connection and logs only its
+host, not its authentication values. No separate connections service installation
+is needed for this backend. Resolving a connection does not contact GitHub or
+verify that the token works.
 
 A declaration applies to one plugin or module registration. If a module uses
 GitHub and its parent plugin also uses GitHub, both registrations declare the
@@ -78,17 +118,17 @@ const connection = await connections.find({
   query: {
     url: 'https://github.com/backstage/backstage',
   },
-  authMethods: ['token'],
+  authMethods: ['app', 'token'],
 });
 
 connection.host; // string
-connection.auth.method; // 'token'
-connection.auth.token; // string
+connection.auth.method; // 'app' | 'token'
 ```
 
 The literal `type` and `authMethods` values drive TypeScript inference. In this
-example, the result is a GitHub connection and `connection.auth` is narrowed to
-the token authentication shape.
+example, the result is a GitHub connection and `connection.auth` can contain
+either app or token authentication. Narrow it using `connection.auth.method`
+before accessing method-specific fields.
 
 :::caution[Authentication values can expire]
 `ConnectionsService.find` returns static configuration or bootstrap material.
@@ -107,6 +147,16 @@ the consumer.
 
 ## Handle more than one authentication method
 
+We recommend supporting all authentication methods for a connection type unless
+your use case requires excluding a method. This lets adopters choose how to
+authenticate without changing your plugin. Implement handling for each method
+you list in `authMethods`; listing a method does not implement its credential
+exchange or refresh for you.
+
+The GitHub examples accept both `app` and `token` authentication. GitHub also
+supports `none` for unauthenticated access; include it when your use case allows
+unauthenticated requests.
+
 List every method the code can process, then narrow the returned discriminated
 union using `connection.auth.method`:
 
@@ -114,7 +164,7 @@ union using `connection.auth.method`:
 const connection = await connections.find({
   type: 'github',
   query: { url: repositoryUrl },
-  authMethods: ['token', 'app'],
+  authMethods: ['app', 'token'],
 });
 
 switch (connection.auth.method) {
