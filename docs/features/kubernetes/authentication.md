@@ -27,6 +27,7 @@ The server side providers are:
 
 - `aws`
 - `azure`
+- `microsoft`
 - `googleServiceAccount`
 - `localKubectlProxy`
 - `serviceAccount`
@@ -158,6 +159,115 @@ To get the API server address for your Azure cluster, go to the Azure console
 page for the cluster resource, go to `Overview` > `Properties` tab >
 `Networking` section and copy paste the API server address directly in that
 `url` field.
+
+### Microsoft
+
+The Microsoft provider supports the scenario where a Microsoft Entra App and [OpenID Connect]([10]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) are used to authenticate to clusters hosted on-premise or at cloud provider other than Azure (e.g. [Amazon EKS](https://aws.amazon.com/blogs/containers/using-azure-active-directory-to-authenticate-to-amazon-eks));
+
+:::tip
+AKS users should generally find the [Azure provider](#azure) more suitable.
+:::
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - title: My Self Hosted Kubernetes Cluster
+          name: on-prem-cluster0
+          url: https://k8s.example.com
+          authProvider: microsoft
+          authMetadata:
+            kubernetes.io/microsoft-entra-id-scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+  auth:
+    environment: production
+    providers:
+      microsoft:
+        production:
+          clientId: ${KUBERNETES_AZURE_CLIENT_ID}
+          clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
+          tenantId: ${KUBERNETES_AZURE_TENANT_ID}
+```
+
+The credentials sit under `kubernetes.auth.providers` rather than the top-level
+`auth` section, which is by design limited to frontend only, and are a structure
+with three mandatory keys:
+
+- `environment`: selects the per-environment block to read, defaults to `development`.
+- `tenantId`: Directory (tenant) ID, found on App Registration > Overview.
+- `clientId`: Application (client) ID, found on App Registration > Overview.
+- `clientSecret`: Secret, found on App Registration > Certificates & secrets.
+
+Depending on how your Entra application is set up, you can reuse the same
+credentials as the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md),
+or use a dedicated application for a clear separation between the user sign-in
+flow and the Kubernetes backend.
+
+#### Alternative configuration
+
+When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation has to be added to the `kubernetes-cluster` resource.
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'catalog'
+  auth:
+    environment: development
+    development:
+      production:
+        clientId: ${KUBERNETES_AZURE_CLIENT_ID}
+        clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
+        tenantId: ${KUBERNETES_AZURE_TENANT_ID}
+```
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  namespace: default
+  annotations:
+    kubernetes.io/auth-provider: microsoft
+    kubernetes.io/microsoft-entra-id-scope: my-custom-scope/role.permission
+  name: on-prem-cluster0
+```
+
+#### Scope resolution
+
+The Microsoft provider needs an OAuth scope to request a token for the
+Kubernetes cluster. The scope is resolved in the following order:
+
+1. The `kubernetes.io/microsoft-entra-id-scope` annotation on the cluster
+   (shown in the YAML examples above).
+2. If the annotation is not present, the provider falls back to the
+   `kubernetes.auth.providers.microsoft.<env>.scope` config key, where
+   `<env>` is the value of the `kubernetes.auth.environment` config key
+   (defaults to `development`).
+
+There is no built-in default scope. If neither the annotation nor the config
+key is set, the provider throws an error at runtime. You must provide a
+scope through at least one of these two options.
+
+The resolved scope may use any of the forms Microsoft Entra ID accepts, such as
+`api://<app-id>/.default`, `<app-id>/user.read`, or a resource URL like
+`https://graph.microsoft.com/.default`. The provider rejects an empty scope or
+one containing invalid characters with a descriptive error.
+
+When every cluster uses the same scope, the config key avoids repeating the
+annotation on each cluster entry:
+
+```yaml
+kubernetes:
+  auth:
+    environment: development
+    providers:
+      microsoft:
+        development:
+          scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+```
+
+When clusters require different scopes, set the
+`kubernetes.io/microsoft-entra-id-scope` annotation per cluster instead.
+The annotation always takes precedence over the config key.
 
 ## Client Side Providers
 
