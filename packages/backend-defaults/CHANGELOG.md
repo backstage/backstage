@@ -1,5 +1,14 @@
 # @backstage/backend-defaults
 
+## 0.18.1-next.3
+
+### Patch Changes
+
+- f6054ac: Backends created with `createBackend` now provide the experimental connections service by default. Custom backends can install `connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+  - @backstage/backend-app-api@1.8.0-next.2
+
 ## 0.18.1-next.2
 
 ### Patch Changes
