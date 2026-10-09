@@ -60,6 +60,7 @@ First, plumb the `urlReader` service into `TodoListService` alongside the catalo
          catalog: catalogServiceRef,
          database: coreServices.database,
 +        urlReader: coreServices.urlReader,
++        userInfo: coreServices.userInfo,
        },
        async factory(deps) {
          return TodoListService.create(deps);
@@ -68,9 +69,9 @@ First, plumb the `urlReader` service into `TodoListService` alongside the catalo
  });
 ```
 
-Wire it through the constructor the same way you did for `database` in the previous step.
+Wire `urlReader` and `userInfo` through the constructor the same way you did for `database` in the previous step.
 
-Next, add a method that asks the catalog for the components owned by the calling user and returns their source locations:
+Next, add a method that asks the catalog for the components owned by the calling user, or by any Group the user belongs to, and returns their source locations:
 
 ```ts title="src/services/TodoListService.ts"
 import {
@@ -81,15 +82,21 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 
 async listOwnedSources(options: {
-  // Typed as a user principal so `userEntityRef` is available; the router
-  // already enforces `allow: ['user']` before we get here.
+  // Typed as a user principal; the router already enforces `allow: ['user']`
+  // before we get here.
   credentials: BackstageCredentials<BackstageUserPrincipal>;
 }): Promise<{ entityRef: string; url: string }[]> {
+  // A Component is usually owned by a Group rather than by the user directly,
+  // so filter by every ownership reference the user has, not only their own.
+  const { ownershipEntityRefs } = await this.#userInfo.getUserInfo(
+    options.credentials,
+  );
+
   const { items } = await this.#catalog.getEntities(
     {
       filter: {
         kind: 'Component',
-        'relations.ownedBy': options.credentials.principal.userEntityRef,
+        'relations.ownedBy': ownershipEntityRefs,
       },
       fields: ['kind', 'metadata', 'spec'],
     },
@@ -137,7 +144,7 @@ async syncTodosFromSource(options: {
   credentials: BackstageCredentials<BackstageUserPrincipal>;
 }): Promise<{ items: TodoItem[] }> {
   const sources = await this.listOwnedSources(options);
-  const discovered: TodoItem[] = [];
+  const discovered: DiscoveredTodo[] = [];
 
   for (const { entityRef, url } of sources) {
     // `urlReader.search` translates this glob into the right per-provider
@@ -156,12 +163,17 @@ async syncTodosFromSource(options: {
 
         const [, author, title] = match;
         discovered.push({
-          id: crypto.randomUUID(),
-          title: title.trim() || lines[i].trim(),
-          createdBy: author?.trim()
-            ? `user:default/${author.trim()}`
-            : entityRef,
-          createdAt: new Date().toISOString(),
+          todo: {
+            id: crypto.randomUUID(),
+            title: title.trim() || lines[i].trim(),
+            createdBy: author?.trim()
+              ? `user:default/${author.trim()}`
+              : entityRef,
+            createdAt: new Date().toISOString(),
+          },
+          // Remember where the TODO was found so a repeated sync can
+          // recognize it.
+          source: { entityRef, file: file.url, line: i + 1 },
         });
       }
     }
@@ -171,7 +183,7 @@ async syncTodosFromSource(options: {
   // to know how rows are shaped or how conflicts are resolved.
   await this.createTodos(discovered);
 
-  return { items: discovered };
+  return { items: discovered.map(({ todo }) => todo) };
 }
 ```
 
@@ -179,21 +191,69 @@ If a user owns a repo your backend doesn't have credentials for, the `search` ca
 
 ## Persisting in bulk
 
-`createTodo` from the previous step already handles a single row. Sync can produce hundreds at once, and we want repeated runs to be idempotent rather than failing on duplicate ids. Add a sibling method that does both:
+`createTodo` from the previous step already handles a single row. Sync can produce hundreds at once, and we want repeated runs to be idempotent rather than inserting the same TODO again. A TODO found in source is identified by where it lives, so record that location and let the database reject duplicates.
+
+Create a second migration:
+
+```bash
+yarn workspace @internal/plugin-todo-backend knex migrate:make add_source_location --migrations-directory ./migrations
+```
+
+```js title="migrations/<timestamp>_add_source_location.js"
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('todo', table => {
+    // Null for TODOs created by hand, filled in for TODOs found by sync.
+    table.string('entity_ref', 255).nullable();
+    table.text('source_file').nullable();
+    table.integer('source_line').nullable();
+
+    // Null values never conflict, so manually created TODOs are unaffected.
+    table.unique(['entity_ref', 'source_file', 'source_line'], {
+      indexName: 'todo_source_location_uniq',
+    });
+  });
+};
+
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('todo', table => {
+    table.dropUnique(
+      ['entity_ref', 'source_file', 'source_line'],
+      'todo_source_location_uniq',
+    );
+    table.dropColumn('entity_ref');
+    table.dropColumn('source_file');
+    table.dropColumn('source_line');
+  });
+};
+```
+
+Define the shape that sync hands to the persistence method, then add the method:
 
 ```ts title="src/services/TodoListService.ts"
-async createTodos(todos: TodoItem[]): Promise<void> {
+interface DiscoveredTodo {
+  todo: TodoItem;
+  source: { entityRef: string; file: string; line: number };
+}
+
+async createTodos(todos: DiscoveredTodo[]): Promise<void> {
   // Knex rejects `.insert([])` on some dialects, and skipping the round-trip
   // is cheaper than handling that error — callers can hand us whatever the
   // sync produced without pre-filtering.
   if (todos.length === 0) return;
 
   await this.#database('todo')
-    .insert(todos.map(todo => this.toDatabaseRow(todo)))
-    // Keep repeated syncs idempotent. A more sophisticated implementation
-    // would key off `(entityRef, file, lineNumber)` so an edit to a TODO in
-    // source updates the existing row, but that's beyond this integration.
-    .onConflict('id')
+    .insert(
+      todos.map(({ todo, source }) => ({
+        ...this.toDatabaseRow(todo),
+        entity_ref: source.entityRef,
+        source_file: source.file,
+        source_line: source.line,
+      })),
+    )
+    // Keep repeated syncs idempotent. A TODO that has not moved conflicts with
+    // its existing row and is skipped. A TODO that moves to another line is
+    // treated as new; handling that is beyond this integration.
+    .onConflict(['entity_ref', 'source_file', 'source_line'])
     .ignore();
 }
 ```
