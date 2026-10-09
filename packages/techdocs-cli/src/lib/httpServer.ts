@@ -35,6 +35,7 @@ export default class HTTPServer {
     backstagePort: number,
     mkdocsTargetAddress: string,
     verbose: boolean,
+    private readonly sourcePreview = false,
   ) {
     this.proxyEndpoint = '/api/techdocs/';
     this.backstageBundleDir = backstageBundleDir;
@@ -63,6 +64,30 @@ export default class HTTPServer {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
+          if (this.sourcePreview) {
+            const origin = request.headers.origin;
+            if (
+              origin === 'http://localhost:3000' ||
+              origin === `http://localhost:${this.backstagePort}`
+            ) {
+              response.setHeader('Access-Control-Allow-Origin', origin);
+              response.setHeader('Access-Control-Allow-Credentials', 'true');
+              response.setHeader(
+                'Access-Control-Allow-Headers',
+                'authorization, content-type, cache-control',
+              );
+              response.setHeader(
+                'Access-Control-Allow-Methods',
+                'GET, OPTIONS',
+              );
+              response.setHeader('Vary', 'Origin');
+            }
+            if (request.method === 'OPTIONS') {
+              response.writeHead(204);
+              response.end();
+              return;
+            }
+          }
           // This endpoint is used by the frontend to issue a cookie for the user.
           // But the MkDocs server doesn't expose it as a the Backstage backend does.
           // So we need to fake it here to prevent 404 errors.
@@ -95,7 +120,8 @@ export default class HTTPServer {
               reject(error);
             });
 
-            response.setHeader('Access-Control-Allow-Origin', '*');
+            if (!this.sourcePreview)
+              response.setHeader('Access-Control-Allow-Origin', '*');
             response.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
             request.url = forwardPath;
@@ -130,14 +156,18 @@ export default class HTTPServer {
       );
 
       const logger = createLogger({ verbose: false });
-      server.listen(this.backstagePort, () => {
-        if (this.verbose) {
-          logger.info(
-            `[techdocs-preview-bundle] Running local version of Backstage at http://localhost:${this.backstagePort}`,
-          );
-        }
-        resolve(server);
-      });
+      server.listen(
+        this.backstagePort,
+        this.sourcePreview ? '127.0.0.1' : undefined,
+        () => {
+          if (this.verbose) {
+            logger.info(
+              `[techdocs-preview-bundle] Running local version of Backstage at http://localhost:${this.backstagePort}`,
+            );
+          }
+          resolve(server);
+        },
+      );
 
       server.on('error', (error: Error) => {
         reject(error);

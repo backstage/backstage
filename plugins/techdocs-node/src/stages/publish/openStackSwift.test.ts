@@ -74,6 +74,10 @@ jest.mock('@trendyol-js/openstack-swift-sdk', () => {
   return {
     __esModule: true,
     SwiftClient: class {
+      async delete(_containerName: string, file: string) {
+        await fs.remove(mockDir.resolve(file));
+        return true;
+      }
       async getMetadata(_containerName: string, file: string) {
         const fileExists = await checkFileExists(file);
         if (fileExists) {
@@ -266,6 +270,17 @@ describe('OpenStackSwiftPublish', () => {
           `test-namespace/TestKind/test-component-name/assets/main.css`,
         ]),
       });
+    });
+
+    it('removes a prior source manifest when publishing legacy output', async () => {
+      const entity = createMockEntity();
+      const manifestKey = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}/_techdocs/source/manifest.json`;
+      await fs.outputJson(mockDir.resolve(manifestKey), { version: 1 });
+      const output = mockDir.resolve('legacy-output');
+      await fs.outputFile(path.join(output, 'index.html'), 'new HTML');
+      const result = await publisher.publish({ entity, directory: output });
+      expect(await fs.pathExists(mockDir.resolve(manifestKey))).toBe(false);
+      expect(result?.objects).toContain(manifestKey);
     });
 
     it('should fail to publish a directory', async () => {

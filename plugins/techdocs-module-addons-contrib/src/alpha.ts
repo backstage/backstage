@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
-import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
+import { MarkdownLightBox, MarkdownReportIssue } from './MarkdownAddons';
+import {
+  AddonBlueprint,
+  MarkdownAddonBlueprint,
+} from '@backstage/plugin-techdocs-react/alpha';
 import { TextSizeAddon } from './TextSize';
 import { ReportIssueAddon } from './ReportIssue';
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
@@ -53,7 +57,15 @@ const techDocsReportIssueAddon = AddonBlueprint.make({
 /** @alpha */
 export const techDocsReportIssueAddonModule = createFrontendModule({
   pluginId: 'techdocs',
-  extensions: [techDocsReportIssueAddon],
+  extensions: [
+    techDocsReportIssueAddon,
+    MarkdownAddonBlueprint.make({
+      name: 'report-issue',
+      params: {
+        slots: [{ location: 'toolbar', component: MarkdownReportIssue }],
+      },
+    }),
+  ],
 });
 
 /** @alpha */
@@ -85,7 +97,13 @@ const techDocsLightBoxAddon = AddonBlueprint.make({
 /** @alpha */
 export const techDocsLightBoxAddonModule = createFrontendModule({
   pluginId: 'techdocs',
-  extensions: [techDocsLightBoxAddon],
+  extensions: [
+    techDocsLightBoxAddon,
+    MarkdownAddonBlueprint.make({
+      name: 'light-box',
+      params: { components: { img: MarkdownLightBox } },
+    }),
+  ],
 });
 
 /** @alpha */

@@ -277,6 +277,26 @@ describe('bulkStorageOperation', () => {
       });
   };
 
+  it('publishes source pointers only after all files succeed', async () => {
+    const files = [
+      'site/_techdocs/source/manifest.json',
+      'site/page.json',
+      'site/techdocs_metadata.json',
+    ];
+    const finished: string[] = [];
+    await bulkStorageOperation(async file => {
+      finished.push(file);
+    }, files);
+    expect(finished).toEqual([files[1], files[0], files[2]]);
+    const failed = jest.fn(async (file: string) => {
+      if (file === files[1]) throw new Error('upload failed');
+    });
+    await expect(bulkStorageOperation(failed, files)).rejects.toThrow(
+      'upload failed',
+    );
+    expect(failed).toHaveBeenCalledTimes(1);
+  });
+
   it('should take care of rate limit by default', async () => {
     const operation = createConcurrentRequestCounter((count: number) => {
       expect(count <= 25).toBeTruthy();

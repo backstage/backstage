@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { serveSource } from './source';
 import { OptionValues } from 'commander';
 import path from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
@@ -49,6 +50,13 @@ function getPreviewAppPath(opts: OptionValues): string {
 }
 
 export default async function serve(opts: OptionValues) {
+  if (opts.publishing && opts.publishing !== 'legacy') {
+    await serveSource(
+      opts,
+      process.env.TECHDOCS_CLI_DEV_MODE ? '.' : getPreviewAppPath(opts),
+    );
+    return;
+  }
   const logger = createLogger({ verbose: opts.verbose });
 
   // Determine if we want to run in local dev mode or not

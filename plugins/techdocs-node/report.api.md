@@ -331,6 +331,8 @@ export const techdocsGeneratorExtensionPoint: ExtensionPoint<TechdocsGeneratorEx
 
 // @public
 export type TechDocsMetadata = {
+  source?: boolean;
+  publishingMode?: 'legacy' | 'dual' | 'source';
   site_name: string;
   site_description: string;
   etag: string;

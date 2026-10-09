@@ -155,6 +155,11 @@ export class OpenStackSwiftPublish implements PublisherBase {
       const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<unknown>> = [];
       for (const filePath of allFilesToUpload) {
+        if (
+          filePath.endsWith('manifest.json') ||
+          filePath.endsWith('techdocs_metadata.json')
+        )
+          await Promise.all(uploadPromises);
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
@@ -184,6 +189,23 @@ export class OpenStackSwiftPublish implements PublisherBase {
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
+      const sourceManifest = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}/_techdocs/source/manifest.json`;
+      if (!objects.includes(sourceManifest)) {
+        const existing = await this.storageClient.getMetadata(
+          this.containerName,
+          sourceManifest,
+        );
+        if (!(existing instanceof NotFound)) {
+          if (
+            !(await this.storageClient.delete(
+              this.containerName,
+              sourceManifest,
+            ))
+          )
+            throw new Error('Unable to remove the previous source manifest');
+          objects.push(sourceManifest);
+        }
+      }
       this.logger.info(
         `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
       );
