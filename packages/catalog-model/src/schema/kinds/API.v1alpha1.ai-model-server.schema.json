@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ApiV1alpha1AiModelServer",
+  "description": "An AI model server exposed as an API entity. See RFC backstage/backstage#33060.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "API",
+      "metadata": {
+        "name": "openai-server",
+        "title": "OpenAI",
+        "description": "OpenAI inference API"
+      },
+      "spec": {
+        "type": "ai-model-server",
+        "lifecycle": "production",
+        "owner": "ai-platform-team",
+        "serverType": "openai-v1",
+        "serverUrl": "https://api.openai.com/v1",
+        "requiresApiKey": true,
+        "models": {
+          "discoverable": true,
+          "available": ["gpt-4o", "gpt-4o-mini"],
+          "default": "gpt-4o"
+        }
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["API"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner", "serverType", "serverUrl"],
+          "properties": {
+            "type": {
+              "const": "ai-model-server",
+              "description": "Discriminant for the AI model server specType."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the AI model server.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the AI model server.",
+              "examples": ["ai-platform-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the AI model server belongs to.",
+              "minLength": 1
+            },
+            "serverType": {
+              "type": "string",
+              "description": "The API contract type of the model server. Freeform string; well-known examples include openai-v1, anthropic, google.",
+              "examples": ["openai-v1", "anthropic", "google"],
+              "minLength": 1
+            },
+            "serverUrl": {
+              "type": "string",
+              "description": "Base URL of the model server inference endpoint.",
+              "examples": [
+                "https://api.openai.com/v1",
+                "http://localhost:11434"
+              ],
+              "minLength": 1
+            },
+            "requiresApiKey": {
+              "type": "boolean",
+              "description": "Whether consumers need an API key to access this server. The actual credential is managed externally (environment variables, secrets managers, etc.).",
+              "default": false
+            },
+            "apiEntityRef": {
+              "type": "string",
+              "description": "An entity reference to an API entity describing the server's REST contract, for cases where the consuming AI framework does not already know the interface for the given serverType.",
+              "minLength": 1
+            },
+            "models": {
+              "type": "object",
+              "description": "Information about models available on this server.",
+              "properties": {
+                "discoverable": {
+                  "type": "boolean",
+                  "description": "Whether the server exposes a model listing endpoint (e.g. GET /v1/models)."
+                },
+                "available": {
+                  "type": "array",
+                  "description": "Static list of model identifiers available on this server.",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "default": {
+                  "type": "string",
+                  "description": "Recommended default model identifier.",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
