@@ -180,10 +180,12 @@ async syncTodosFromSource(options: {
   }
 
   // Delegate persistence to `createTodos` so the sync flow doesn't have
-  // to know how rows are shaped or how conflicts are resolved.
-  await this.createTodos(discovered);
+  // to know how rows are shaped or how conflicts are resolved. It returns
+  // only the TODOs that were actually inserted, so a repeated sync reports
+  // just what is new.
+  const items = await this.createTodos(discovered);
 
-  return { items: discovered.map(({ todo }) => todo) };
+  return { items };
 }
 ```
 
@@ -235,13 +237,13 @@ interface DiscoveredTodo {
   source: { entityRef: string; file: string; line: number };
 }
 
-async createTodos(todos: DiscoveredTodo[]): Promise<void> {
+async createTodos(todos: DiscoveredTodo[]): Promise<TodoItem[]> {
   // Knex rejects `.insert([])` on some dialects, and skipping the round-trip
   // is cheaper than handling that error — callers can hand us whatever the
   // sync produced without pre-filtering.
-  if (todos.length === 0) return;
+  if (todos.length === 0) return [];
 
-  await this.#database('todo')
+  const rows: TodoDatabaseRow[] = await this.#database('todo')
     .insert(
       todos.map(({ todo, source }) => ({
         ...this.toDatabaseRow(todo),
@@ -254,9 +256,15 @@ async createTodos(todos: DiscoveredTodo[]): Promise<void> {
     // its existing row and is skipped. A TODO that moves to another line is
     // treated as new; handling that is beyond this integration.
     .onConflict(['entity_ref', 'source_file', 'source_line'])
-    .ignore();
+    .ignore()
+    // Skipped rows are not returned, so this is exactly what was inserted.
+    .returning('*');
+
+  return rows.map(row => this.fromDatabaseRow(row));
 }
 ```
+
+The `returning('*')` call works on PostgreSQL and SQLite, where a conflicting row skipped by `ignore()` is left out of the result. MySQL doesn't support `returning`, so if you run on MySQL you'll need to query the inserted rows back separately.
 
 Finally, expose the new method through the router so users can trigger a sync:
 
