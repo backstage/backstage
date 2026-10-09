@@ -92,6 +92,11 @@ The connection service can read existing `integrations` and top-level `aws`
 configuration at startup and convert it to connections automatically.
 Adopters do not need to change their existing configuration immediately.
 
+This conversion makes legacy configuration available to plugins that consume
+the connections service. It does not migrate plugin code or make existing
+integration APIs read `connections` configuration. Keep the legacy configuration
+needed by plugins that have not adopted the connections service.
+
 See [Migrate from legacy integrations](./connections/02-configuring-connections.md#migrate-from-legacy-integrations)
 for how automatic conversion works, precedence rules when legacy and explicit
 entries coexist, and a step-by-step guide for moving one connection type at a
