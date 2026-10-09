@@ -41,7 +41,6 @@ import {
 } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
-  DEFAULT_NAMESPACE,
   Entity,
   parseEntityRef,
   stringifyEntityRef,
@@ -57,7 +56,7 @@ import {
 } from '@backstage/filter-predicates';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
+import { buildEntitySearch as backendBuildEntitySearch } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -120,41 +119,14 @@ function deserializeFilter(filter?: any[]): EntityFilterQuery | undefined {
   );
 }
 
+// Use the backend's own search row builder so that filters and query
+// predicates see exactly the same keys and values as the real search table.
 function buildEntitySearch(entity: Entity) {
-  const rows = traverse(entity);
-
-  if (entity.metadata?.name) {
-    rows.push({
-      key: 'metadata.name',
-      value: entity.metadata.name.toLowerCase(),
-    });
-  }
-  if (entity.metadata?.namespace) {
-    rows.push({
-      key: 'metadata.namespace',
-      value: entity.metadata.namespace.toLowerCase(),
-    });
-  }
-  if (entity.metadata?.uid) {
-    rows.push({
-      key: 'metadata.uid',
-      value: entity.metadata.uid.toLowerCase(),
-    });
-  }
-
-  if (!entity.metadata.namespace) {
-    rows.push({ key: 'metadata.namespace', value: DEFAULT_NAMESPACE });
-  }
-
-  // Visit relations
-  for (const relation of entity.relations ?? []) {
-    rows.push({
-      key: `relations.${relation.type.toLowerCase()}`,
-      value: relation.targetRef.toLowerCase(),
-    });
-  }
-
-  return rows;
+  return backendBuildEntitySearch('', entity).map(row => ({
+    key: row.key,
+    value: row.value,
+    originalValue: row.original_value,
+  }));
 }
 
 function createFilter(
@@ -292,6 +264,14 @@ function evaluateContainsRelation(
 
   for (const [rawKey, value] of Object.entries(target)) {
     const key = rawKey.toLowerCase();
+    if (
+      (key === 'type' && type !== undefined) ||
+      (key === 'targetref' && targetRefs !== undefined)
+    ) {
+      throw new InputError(
+        `Duplicate key "${rawKey}" in $contains for "relations"`,
+      );
+    }
     if (key === 'type') {
       if (typeof value !== 'string') {
         throw new InputError(
@@ -306,9 +286,13 @@ function evaluateContainsRelation(
         isObject(value) &&
         Object.keys(value).length === 1 &&
         Array.isArray(value.$in) &&
-        value.$in.length > 0 &&
         value.$in.every((v): v is string => typeof v === 'string')
       ) {
+        if (value.$in.length === 0) {
+          throw new InputError(
+            `Empty "$in" array for $contains on "relations" is not allowed`,
+          );
+        }
         targetRefs = value.$in.map(v => v.toLowerCase());
       } else {
         const actual = JSON.stringify(value);
@@ -672,7 +656,7 @@ export class InMemoryCatalogClient implements CatalogApi {
           const uniqueValues = new Set(
             rows
               .filter(row => row.key.toLowerCase() === facet.toLowerCase())
-              .map(row => row.value)
+              .map(row => row.originalValue)
               .filter(v => v !== null && v !== undefined)
               .map(v => String(v)),
           );

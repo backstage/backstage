@@ -1204,7 +1204,13 @@ describe('relation query predicates', () => {
     const tagged: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
-      metadata: { name: 'tagged', tags: ['Java', 'web'] },
+      metadata: {
+        name: 'tagged',
+        tags: ['Java', 'web'],
+        annotations: { 'Example.com/Owner': 'Alice' },
+        description: 'x'.repeat(300),
+      },
+      spec: { dependsOn: ['component:default/b'], replicas: 3, flag: true },
     };
     const client = new InMemoryCatalogClient({ entities: [tagged, team] });
     const names = async (query: FilterPredicate) =>
@@ -1223,6 +1229,22 @@ describe('relation query predicates', () => {
     await expect(
       names({ 'metadata.tags': { $contains: 'WEB' } }),
     ).resolves.toEqual(['tagged']);
+    await expect(
+      names({ 'spec.dependsOn': 'component:default/b' }),
+    ).resolves.toEqual(['tagged']);
+    await expect(
+      names({ 'metadata.annotations.example.com/owner': 'alice' }),
+    ).resolves.toEqual(['tagged']);
+    await expect(
+      names({ 'metadata.tags.java': { $exists: true } }),
+    ).resolves.toEqual(['tagged']);
+    await expect(
+      names({ 'spec.replicas': 3, 'spec.flag': true }),
+    ).resolves.toEqual(['tagged']);
+    // Values longer than the search table limit are stored as null
+    await expect(
+      names({ 'metadata.description': 'x'.repeat(300) }),
+    ).resolves.toEqual([]);
   });
 
   it('rejects predicates that the backend rejects', async () => {
@@ -1237,5 +1259,19 @@ describe('relation query predicates', () => {
         query: { relations: { $contains: { targetRef: 'user:default/bob' } } },
       }),
     ).rejects.toThrow('requires a "type" string property');
+    await expect(
+      client.queryEntities({
+        query: { relations: { $contains: { type: 'a', TYPE: 'b' } } },
+      }),
+    ).rejects.toThrow('Duplicate key "TYPE"');
+    await expect(
+      client.queryEntities({
+        query: {
+          relations: {
+            $contains: { type: 'hasMember', targetRef: { $in: [] } },
+          },
+        },
+      }),
+    ).rejects.toThrow('Empty "$in" array');
   });
 });
