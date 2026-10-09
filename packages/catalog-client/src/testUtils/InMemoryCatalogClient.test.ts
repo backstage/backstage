@@ -1146,6 +1146,14 @@ describe('relation query predicates', () => {
       query: { relations: { $contains: { type: 'parentOf' } } },
       expected: [team],
     },
+    {
+      query: {
+        relations: {
+          $contains: { TyPe: 'hasMember', TargetRef: 'user:default/bob' },
+        },
+      },
+      expected: [team],
+    },
   ];
 
   it.each(cases)(

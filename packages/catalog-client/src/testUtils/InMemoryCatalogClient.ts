@@ -245,7 +245,14 @@ function translateQueryField(
 function translateContainsRelation(
   target: Record<string, unknown>,
 ): FilterPredicate {
-  const { type, targetRef, ...rest } = target;
+  // Keys are matched case-insensitively, like in the backend
+  const {
+    type,
+    targetref: targetRef,
+    ...rest
+  } = Object.fromEntries(
+    Object.entries(target).map(([k, v]) => [k.toLowerCase(), v]),
+  );
   if (type === undefined || Object.keys(rest).length > 0) {
     throw new InputError(
       `The $contains operator for "relations" requires a "type" and optionally a "targetRef" property, but got ${JSON.stringify(
