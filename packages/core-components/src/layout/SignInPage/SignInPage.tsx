@@ -25,7 +25,7 @@ import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { ComponentType, ReactNode, useState } from 'react';
+import { ComponentType, ReactNode, useRef, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -127,8 +127,14 @@ export const SingleSignInPage = ({
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
   // User was redirected back to sign in page with error from auth redirect flow
-  const [searchParams, _setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const errorParam = searchParams.get('error');
+
+  // Keeps track of whether an error was returned from the auth redirect flow
+  // for this instance of the page. The error is removed from the URL once it
+  // has been read, but auto sign-in must stay suppressed while the error is
+  // shown, otherwise a failed sign-in would end up in a redirect loop.
+  const errorSeenRef = useRef(errorParam !== null);
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
@@ -141,8 +147,11 @@ export const SingleSignInPage = ({
         });
       }
 
-      // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto) && !errorParam) {
+      // If no session exists, show the sign-in page.
+      // Auto sign-in is not started while an error from a previous sign-in
+      // attempt is being shown, as that would cause a redirect loop. A
+      // manual click on the Sign In button always starts a new attempt.
+      if (!identityResponse && (showPopup || (auto && !errorSeenRef.current))) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
@@ -180,6 +189,16 @@ export const SingleSignInPage = ({
   useMountEffect(() => {
     if (errorParam) {
       setError(new Error(errorParam));
+      // Remove the error from the URL now that it has been read, so that
+      // reloading the page and the redirect URL of the next sign-in attempt
+      // do not carry the stale error along.
+      setSearchParams(
+        prevSearchParams => {
+          prevSearchParams.delete('error');
+          return prevSearchParams;
+        },
+        { replace: true },
+      );
     }
     login({ checkExisting: true });
   });
