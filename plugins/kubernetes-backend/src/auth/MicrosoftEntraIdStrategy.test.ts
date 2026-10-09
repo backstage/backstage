@@ -41,17 +41,16 @@ import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugi
 
 const logger = mockServices.logger.mock();
 
-const env = process.env.NODE_ENV || 'development';
+// The strategy resolves the environment from `kubernetes.auth.environment`,
+// which defaults to `development` when unset.
+const env = 'development';
 const mockConfig = {
   auth: {
-    providers: {
-      microsoft: {
-        [env]: {
-          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
-          clientId: 'microsoft-entra-id-enterprise-application-client-id',
-          clientSecret:
-            'microsoft-entra-id-enterprise-application-client-secret',
-        },
+    microsoft: {
+      [env]: {
+        tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+        clientId: 'microsoft-entra-id-enterprise-application-client-id',
+        clientSecret: 'microsoft-entra-id-enterprise-application-client-secret',
       },
     },
   },
@@ -262,15 +261,6 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     clientSecretCredentialMock.mockClear();
 
     const kubernetesSpecificConfig = new ConfigReader({
-      auth: {
-        microsoft: {
-          [env]: {
-            tenantId: 'shared-tenant-id',
-            clientId: 'shared-client-id',
-            clientSecret: 'shared-client-secret',
-          },
-        },
-      },
       kubernetes: {
         auth: {
           microsoft: {
@@ -307,19 +297,51 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     );
   });
 
-  it('should fall back to the shared auth.microsoft credentials when kubernetes-specific keys are absent', async () => {
+  it('should resolve the environment from kubernetes.auth.environment', async () => {
     clientSecretCredentialMock.mockClear();
 
-    const fallbackConfig = new ConfigReader({
-      auth: {
-        microsoft: {
-          [env]: {
-            tenantId: 'shared-tenant-id',
-            clientId: 'shared-client-id',
-            clientSecret: 'shared-client-secret',
+    const environmentConfig = new ConfigReader({
+      kubernetes: {
+        auth: {
+          environment: 'production',
+          microsoft: {
+            production: {
+              tenantId: 'production-tenant-id',
+              clientId: 'production-client-id',
+              clientSecret: 'production-client-secret',
+            },
+          },
+          providers: {
+            microsoft: {
+              production: {
+                scope: 'microsoft-enterprise-app-id/mapped.permission',
+              },
+            },
           },
         },
       },
+    });
+
+    const strategy = new MicrosoftEntraIdStrategy(logger, {
+      config: environmentConfig,
+    });
+
+    const credential = await strategy.getCredential(clusterWithoutAnnotation);
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'CLIENT_SECRET_TOKEN',
+    });
+    expect(clientSecretCredentialMock).toHaveBeenCalledWith(
+      'production-tenant-id',
+      'production-client-id',
+      'production-client-secret',
+    );
+  });
+
+  it('should throw when the kubernetes-specific credentials are missing', async () => {
+    clientSecretCredentialMock.mockClear();
+
+    const missingCredentialsConfig = new ConfigReader({
       kubernetes: {
         auth: {
           providers: {
@@ -334,18 +356,12 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     });
 
     const strategy = new MicrosoftEntraIdStrategy(logger, {
-      config: fallbackConfig,
+      config: missingCredentialsConfig,
     });
 
-    const credential = await strategy.getCredential(clusterWithoutAnnotation);
-    expect(credential).toEqual({
-      type: 'bearer token',
-      token: 'CLIENT_SECRET_TOKEN',
-    });
-    expect(clientSecretCredentialMock).toHaveBeenCalledWith(
-      'shared-tenant-id',
-      'shared-client-id',
-      'shared-client-secret',
-    );
+    await expect(
+      strategy.getCredential(clusterWithoutAnnotation),
+    ).rejects.toThrow(`kubernetes.auth.microsoft.${env}.tenantId`);
+    expect(clientSecretCredentialMock).not.toHaveBeenCalled();
   });
 });

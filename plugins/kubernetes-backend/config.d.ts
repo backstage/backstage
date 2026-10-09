@@ -172,28 +172,37 @@ export interface Config {
 
     auth?: {
       /**
-       * Microsoft Entra Id configuration dedicated to the Kubernetes backend.
+       * The environment used to resolve the per-environment Kubernetes auth
+       * configuration keys (for example `kubernetes.auth.microsoft.<env>`).
        *
-       * When set, these client credentials are used instead of the ones under
-       * `auth.microsoft`, allowing a dedicated Entra application for Kubernetes.
-       * Any field left unset falls back to the matching `auth.microsoft` field.
+       * Defaults to `development` when unset.
+       */
+      environment?: string;
+      /**
+       * Microsoft Entra Id client credentials used by the Kubernetes backend
+       * to request tokens for clusters.
+       *
+       * These are backend-only secrets and are kept under `kubernetes.auth`
+       * rather than the frontend-visible `auth` section. You may configure the
+       * same Entra application that the Microsoft sign-in provider uses, or a
+       * dedicated application for the Kubernetes backend.
        */
       microsoft?: {
         [authEnv: string]: {
           /**
            * Microsoft Entra Id tenant id used to request Kubernetes tokens
            */
-          tenantId?: string;
+          tenantId: string;
           /**
            * Microsoft Entra Id client id used to request Kubernetes tokens
            */
-          clientId?: string;
+          clientId: string;
           /**
            * Microsoft Entra Id client secret used to request Kubernetes tokens
            *
            * @visibility secret
            */
-          clientSecret?: string;
+          clientSecret: string;
         };
       };
     };

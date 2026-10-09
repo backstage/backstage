@@ -61,18 +61,19 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
       return this.explicitTokenCredential;
     }
     if (!this.lazyTokenCredential) {
-      const env = process.env.NODE_ENV || 'development';
+      const env =
+        this.options.config.getOptionalString('kubernetes.auth.environment') ??
+        'development';
       this.lazyTokenCredential = new ClientSecretCredential(
-        this.options.config.getOptionalString(
+        this.options.config.getString(
           `kubernetes.auth.microsoft.${env}.tenantId`,
-        ) ?? this.options.config.getString(`auth.microsoft.${env}.tenantId`),
-        this.options.config.getOptionalString(
+        ),
+        this.options.config.getString(
           `kubernetes.auth.microsoft.${env}.clientId`,
-        ) ?? this.options.config.getString(`auth.microsoft.${env}.clientId`),
-        this.options.config.getOptionalString(
+        ),
+        this.options.config.getString(
           `kubernetes.auth.microsoft.${env}.clientSecret`,
-        ) ??
-          this.options.config.getString(`auth.microsoft.${env}.clientSecret`),
+        ),
       );
     }
     return this.lazyTokenCredential;
@@ -110,7 +111,9 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     if (annotation && annotation.length > 0) {
       return annotation;
     }
-    const env = process.env.NODE_ENV || 'development';
+    const env =
+      this.options.config.getOptionalString('kubernetes.auth.environment') ??
+      'development';
     return this.options.config.getString(
       `kubernetes.auth.providers.microsoft.${env}.scope`,
     );

@@ -162,7 +162,7 @@ page for the cluster resource, go to `Overview` > `Properties` tab >
 
 ### Microsoft
 
-The Microsoft provider supports the scenario where a Microsoft Entra App and [OpenID Connect][9] are used to authenticate to clusters hosted on-premise or at cloud provider other than Azure (e.g. [Amazon EKS][10]);
+The Microsoft provider supports the scenario where a Microsoft Entra App and [OpenID Connect]([10]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) are used to authenticate to clusters hosted on-premise or at cloud provider other than Azure (e.g. [Amazon EKS](https://aws.amazon.com/blogs/containers/using-azure-active-directory-to-authenticate-to-amazon-eks));
 
 :::tip
 AKS users should generally find the [Azure provider](#azure) more suitable.
@@ -180,41 +180,26 @@ kubernetes:
           authMetadata:
             kubernetes.io/microsoft-entra-id-scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
   auth:
+    environment: production
     microsoft:
-      <env>:
+      production:
         clientId: ${KUBERNETES_AZURE_CLIENT_ID}
         clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
         tenantId: ${KUBERNETES_AZURE_TENANT_ID}
 ```
 
-The Kubernetes backend reads its Microsoft Entra Id client credentials from the
-`kubernetes.auth.microsoft.<env>` block, where `<env>` is the current
-`NODE_ENV` (defaults to `development`). This keeps the Kubernetes credentials
-independent from the main Microsoft authentication provider.
+The credentials sit under `kubernetes.auth` rather than the top-level `auth`
+section, which is by design limited to frontend only, and are a structure with three mandatory keys:
 
-You can configure these credentials in one of two ways:
+- `environment`: selects the per-environment block to read, defaults to `development`.
+- `tenantId`: Directory (tenant) ID, found on App Registration > Overview.
+- `clientId`: Application (client) ID, found on App Registration > Overview.
+- `clientSecret`: Secret, found on App Registration > Certificates & secrets.
 
-- **Reuse the main application (no dedicated app).** If you do not want a
-  separate Entra application for the Kubernetes backend, set the **same**
-  values here as under `auth.microsoft.<env>`. You can also omit the
-  `kubernetes.auth.microsoft.<env>` keys entirely and rely on the automatic
-  fallback described below. Either way, the Enterprise Application created for
-  the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md)
-  is used to get users authorized against the Kubernetes clusters.
-- **Isolate with a dedicated app.** If you want the Kubernetes backend to use
-  its own Entra application, create a dedicated app registration and set its
-  `tenantId`, `clientId`, and `clientSecret` under
-  `kubernetes.auth.microsoft.<env>`. These values take precedence over
-  `auth.microsoft.<env>`.
-
-:::note
-When a field under `kubernetes.auth.microsoft.<env>` is not set, the Kubernetes
-backend falls back to the matching field under `auth.microsoft.<env>`. Each of
-`tenantId`, `clientId`, and `clientSecret` falls back independently, so you can
-override only some fields if needed. If neither location provides a required
-field, the backend throws an error at runtime naming the missing
-`auth.microsoft.<env>` key.
-:::
+Depending on how your Entra application is set up, you can reuse the same
+credentials as the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md),
+or use a dedicated application for a clear separation between the user sign-in
+flow and the Kubernetes backend.
 
 #### Alternative configuration
 
@@ -224,6 +209,13 @@ When relying on the `catalog` cluster locator methods, the `kubernetes.io/micros
 kubernetes:
   clusterLocatorMethods:
     - type: 'catalog'
+  auth:
+    environment: development
+    development:
+      production:
+        clientId: ${KUBERNETES_AZURE_CLIENT_ID}
+        clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
+        tenantId: ${KUBERNETES_AZURE_TENANT_ID}
 ```
 
 ```yaml
@@ -246,7 +238,8 @@ Kubernetes cluster. The scope is resolved in the following order:
    (shown in the YAML examples above).
 2. If the annotation is not present, the provider falls back to the
    `kubernetes.auth.providers.microsoft.<env>.scope` config key, where
-   `<env>` is the current `NODE_ENV` (defaults to `development`).
+   `<env>` is the value of the `kubernetes.auth.environment` config key
+   (defaults to `development`).
 
 There is no built-in default scope. If neither the annotation nor the config
 key is set, the provider throws an error at runtime. You must provide a
@@ -292,5 +285,3 @@ The providers available as client side are:
 [7]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 [8]: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
 [9]: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html
-[10]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens
-[11]: https://aws.amazon.com/blogs/containers/using-azure-active-directory-to-authenticate-to-amazon-eks
