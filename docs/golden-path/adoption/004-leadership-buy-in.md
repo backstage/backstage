@@ -37,7 +37,9 @@ may require:
 - a technical partner for the shared environment and its integrations;
 - time from participating developers and teams that own source systems;
 - communication, support, security, and governance partners as the audience
-  expands.
+  expands;
+- any required consultation or notification of affected groups, which
+  leadership should check against organizational and local requirements.
 
 Do not present these as universal staffing numbers. Show which responsibilities
 exist, who can own them now, and which commitments remain uncertain.

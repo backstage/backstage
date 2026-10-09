@@ -7,7 +7,7 @@ description: Explore the features and example data in a generated Backstage app
 
 Audience: Developers and administrators
 
-In this step, you will explore the stock portal without changing its
+In this step, you will explore the default base app without changing its
 configuration. Keep the app running with `yarn start` while you follow the
 steps.
 
