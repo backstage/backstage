@@ -42,11 +42,14 @@ describe('resourcesRoutes', () => {
 
   const kubernetesAuth = {
     environment: 'development',
-    microsoft: {
-      development: {
-        tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
-        clientId: 'microsoft-entra-id-enterprise-application-client-id',
-        clientSecret: 'microsoft-entra-id-enterprise-application-client-secret',
+    providers: {
+      microsoft: {
+        development: {
+          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+          clientId: 'microsoft-entra-id-enterprise-application-client-id',
+          clientSecret:
+            'microsoft-entra-id-enterprise-application-client-secret',
+        },
       },
     },
   };

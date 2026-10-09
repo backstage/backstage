@@ -45,20 +45,15 @@ const logger = mockServices.logger.mock();
 // which defaults to `development` when unset.
 const env = 'development';
 const mockConfig = {
-  auth: {
-    microsoft: {
-      [env]: {
-        tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
-        clientId: 'microsoft-entra-id-enterprise-application-client-id',
-        clientSecret: 'microsoft-entra-id-enterprise-application-client-secret',
-      },
-    },
-  },
   kubernetes: {
     auth: {
       providers: {
         microsoft: {
           [env]: {
+            tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+            clientId: 'microsoft-entra-id-enterprise-application-client-id',
+            clientSecret:
+              'microsoft-entra-id-enterprise-application-client-secret',
             scope: 'microsoft-enterprise-app-id/mapped.permission',
           },
         },
@@ -263,16 +258,12 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     const kubernetesSpecificConfig = new ConfigReader({
       kubernetes: {
         auth: {
-          microsoft: {
-            [env]: {
-              tenantId: 'kubernetes-tenant-id',
-              clientId: 'kubernetes-client-id',
-              clientSecret: 'kubernetes-client-secret',
-            },
-          },
           providers: {
             microsoft: {
               [env]: {
+                tenantId: 'kubernetes-tenant-id',
+                clientId: 'kubernetes-client-id',
+                clientSecret: 'kubernetes-client-secret',
                 scope: 'microsoft-enterprise-app-id/mapped.permission',
               },
             },
@@ -304,16 +295,12 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       kubernetes: {
         auth: {
           environment: 'production',
-          microsoft: {
-            production: {
-              tenantId: 'production-tenant-id',
-              clientId: 'production-client-id',
-              clientSecret: 'production-client-secret',
-            },
-          },
           providers: {
             microsoft: {
               production: {
+                tenantId: 'production-tenant-id',
+                clientId: 'production-client-id',
+                clientSecret: 'production-client-secret',
                 scope: 'microsoft-enterprise-app-id/mapped.permission',
               },
             },
@@ -361,7 +348,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
 
     await expect(
       strategy.getCredential(clusterWithoutAnnotation),
-    ).rejects.toThrow(`kubernetes.auth.microsoft.${env}.tenantId`);
+    ).rejects.toThrow(`kubernetes.auth.providers.microsoft.${env}.tenantId`);
     expect(clientSecretCredentialMock).not.toHaveBeenCalled();
   });
 });

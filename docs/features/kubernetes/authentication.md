@@ -181,15 +181,17 @@ kubernetes:
             kubernetes.io/microsoft-entra-id-scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
   auth:
     environment: production
-    microsoft:
-      production:
-        clientId: ${KUBERNETES_AZURE_CLIENT_ID}
-        clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
-        tenantId: ${KUBERNETES_AZURE_TENANT_ID}
+    providers:
+      microsoft:
+        production:
+          clientId: ${KUBERNETES_AZURE_CLIENT_ID}
+          clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
+          tenantId: ${KUBERNETES_AZURE_TENANT_ID}
 ```
 
-The credentials sit under `kubernetes.auth` rather than the top-level `auth`
-section, which is by design limited to frontend only, and are a structure with three mandatory keys:
+The credentials sit under `kubernetes.auth.providers` rather than the top-level
+`auth` section, which is by design limited to frontend only, and are a structure
+with three mandatory keys:
 
 - `environment`: selects the per-environment block to read, defaults to `development`.
 - `tenantId`: Directory (tenant) ID, found on App Registration > Overview.

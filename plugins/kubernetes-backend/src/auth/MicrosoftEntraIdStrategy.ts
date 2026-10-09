@@ -66,13 +66,13 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
         'development';
       this.lazyTokenCredential = new ClientSecretCredential(
         this.options.config.getString(
-          `kubernetes.auth.microsoft.${env}.tenantId`,
+          `kubernetes.auth.providers.microsoft.${env}.tenantId`,
         ),
         this.options.config.getString(
-          `kubernetes.auth.microsoft.${env}.clientId`,
+          `kubernetes.auth.providers.microsoft.${env}.clientId`,
         ),
         this.options.config.getString(
-          `kubernetes.auth.microsoft.${env}.clientSecret`,
+          `kubernetes.auth.providers.microsoft.${env}.clientSecret`,
         ),
       );
     }
