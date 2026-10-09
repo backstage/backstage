@@ -1,0 +1,11 @@
+---
+title: Onboarding
+author: Estehsan
+authorUrl: https://github.com/Estehsan
+category: Productivity
+description: Guide new joiners through phased onboarding checklists and track their progress across the team.
+documentation: https://github.com/Estehsan/backstage-plugin-onboarding
+iconUrl: https://www.estehsan.com/onboarding_logo.png
+npmPackageName: '@estehsaan/backstage-plugin-onboarding'
+addedDate: '2026-09-14'
+status: active
