@@ -175,7 +175,12 @@ describe('handleAutocompleteRequest', () => {
     const handle = createHandleAutocompleteRequest({
       integrations: mockIntegrations,
     });
-    for (const context of [{}, { owner: 'group' }, { repository: 'repo' }]) {
+    const missingContexts: Record<string, string>[] = [
+      {},
+      { owner: 'group' },
+      { repository: 'repo' },
+    ];
+    for (const context of missingContexts) {
       await expect(
         handle({ resource: 'branches', token: 'user-token', context }),
       ).rejects.toThrow(InputError);
