@@ -303,6 +303,52 @@ app:
                 $contains: wip
 ```
 
+### Filtering templates for the signed-in user
+
+Use `ScaffolderTemplateFilterBlueprint` when the filter depends on the current
+viewer or other frontend APIs. Its `useTemplateFilter` parameter is a React
+hook that returns the predicate applied to every template.
+
+For example, the following module only shows templates tagged `owner-only` to
+users whose ownership claims match the template's `ownedBy` relation:
+
+```tsx title="packages/app/src/modules/scaffolderOwnerFilter.tsx"
+import { useCallback } from 'react';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { useEntityOwnership } from '@backstage/plugin-catalog-react';
+import { ScaffolderTemplateFilterBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+
+const ownerFilter = ScaffolderTemplateFilterBlueprint.make({
+  name: 'owner-filter',
+  params: {
+    useTemplateFilter() {
+      const { loading, isOwnedEntity } = useEntityOwnership();
+
+      return useCallback(
+        template =>
+          !template.metadata.tags?.includes('owner-only') ||
+          (!loading && isOwnedEntity(template)),
+        [loading, isOwnedEntity],
+      );
+    },
+  },
+});
+
+export default createFrontendModule({
+  pluginId: 'scaffolder',
+  extensions: [ownerFilter],
+});
+```
+
+The hook can also query the catalog to implement organization-specific group
+hierarchy rules. If both this extension and the `templateFilter` config field
+are present, a template must pass both filters. Only one
+`ScaffolderTemplateFilterBlueprint` extension can be attached to the templates
+page.
+
+This filter only changes which cards are displayed. Use the permission
+framework when templates or their actions need access control.
+
 ### Replacing the default `TemplateCard`
 
 The `TemplateCard` exported from `@backstage/plugin-scaffolder-react/alpha`
