@@ -20,8 +20,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import MuiTextField from '@material-ui/core/TextField';
 import MuiAutocomplete from '@material-ui/lab/Autocomplete';
-import { useCallback, useState } from 'react';
-import useDebounce from 'react-use/esm/useDebounce';
+import { useEffect, useState } from 'react';
 import { BaseRepoBranchPickerProps } from './types';
 import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
@@ -52,7 +51,11 @@ export const GitLabRepoBranchPicker = ({
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
-  const updateAvailableBranches = useCallback(() => {
+  useEffect(() => {
+    let isCurrent = true;
+    setAvailableBranches([]);
+    setLoadError(false);
+
     if (
       !scaffolderApi.autocomplete ||
       !owner ||
@@ -60,30 +63,35 @@ export const GitLabRepoBranchPicker = ({
       !accessToken ||
       !host
     ) {
-      setAvailableBranches([]);
-      setLoadError(false);
-      return;
+      return undefined;
     }
 
-    setAvailableBranches([]);
-    setLoadError(false);
-    scaffolderApi
-      .autocomplete({
-        token: accessToken,
-        resource: 'branches',
-        context: { host, owner, repository },
-        provider: 'gitlab',
-      })
-      .then(({ results }) => {
-        setAvailableBranches(results.map(r => r.id));
-      })
-      .catch(() => {
-        setAvailableBranches([]);
-        setLoadError(true);
-      });
-  }, [host, owner, repository, accessToken, scaffolderApi]);
+    const timeout = setTimeout(() => {
+      scaffolderApi
+        .autocomplete({
+          token: accessToken,
+          resource: 'branches',
+          context: { host, owner, repository },
+          provider: 'gitlab',
+        })
+        .then(({ results }) => {
+          if (isCurrent) {
+            setAvailableBranches(results.map(r => r.id));
+          }
+        })
+        .catch(() => {
+          if (isCurrent) {
+            setAvailableBranches([]);
+            setLoadError(true);
+          }
+        });
+    }, 500);
 
-  useDebounce(updateAvailableBranches, 500, [updateAvailableBranches]);
+    return () => {
+      isCurrent = false;
+      clearTimeout(timeout);
+    };
+  }, [host, owner, repository, accessToken, scaffolderApi]);
 
   if (theme === 'bui') {
     const options = availableBranches.map(b => ({ label: b, value: b }));

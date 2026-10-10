@@ -28,6 +28,7 @@ import {
 } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
+import { RepoBranchPickerState } from './types';
 
 describe('GitLabRepoBranchPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
@@ -153,5 +154,129 @@ describe('GitLabRepoBranchPicker', () => {
     expect(
       await screen.findByText('Unable to load repository branches'),
     ).toBeInTheDocument();
+  });
+
+  describe('obsolete requests', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    it.each(['repository', 'credentials'])(
+      'ignores out-of-order responses after changing %s',
+      async change => {
+        type Response = Awaited<ReturnType<ScaffolderApi['autocomplete']>>;
+        const requests: {
+          resolve: (response: Response) => void;
+          reject: (error: Error) => void;
+        }[] = [];
+        const autocomplete = jest.fn().mockImplementation(
+          () =>
+            new Promise<Response>((resolve, reject) => {
+              requests.push({ resolve, reject });
+            }),
+        );
+        const api = { autocomplete };
+        const initialState: RepoBranchPickerState = {
+          host: 'gitlab.example.com',
+          owner: 'group/subgroup',
+          repository: 'first',
+          branch: '',
+        };
+        const picker = (
+          state = initialState,
+          accessToken: string | undefined = 'first-token',
+        ) => (
+          <TestApiProvider apis={[[scaffolderApiRef, api]]}>
+            <GitLabRepoBranchPicker
+              onChange={jest.fn()}
+              state={state}
+              rawErrors={[]}
+              accessToken={accessToken}
+            />
+          </TestApiProvider>
+        );
+        const { rerender } = render(picker());
+        act(() => jest.advanceTimersByTime(500));
+        expect(autocomplete).toHaveBeenCalledTimes(1);
+
+        const nextState =
+          change === 'repository'
+            ? { ...initialState, repository: 'second' }
+            : initialState;
+        const nextToken =
+          change === 'credentials' ? 'second-token' : 'first-token';
+        rerender(picker(nextState, nextToken));
+        act(() => jest.advanceTimersByTime(500));
+        expect(autocomplete).toHaveBeenLastCalledWith({
+          provider: 'gitlab',
+          resource: 'branches',
+          token: nextToken,
+          context: {
+            host: nextState.host,
+            owner: nextState.owner,
+            repository: nextState.repository,
+          },
+        });
+
+        await act(async () =>
+          requests[1].resolve({
+            results: [{ id: 'current', title: 'current' }],
+          }),
+        );
+        fireEvent.mouseDown(screen.getByRole('textbox'));
+        expect(
+          screen.getByRole('option', { name: 'current' }),
+        ).toBeInTheDocument();
+        await act(async () =>
+          requests[0].resolve({
+            results: [{ id: 'obsolete', title: 'obsolete' }],
+          }),
+        );
+        expect(
+          screen.getByRole('option', { name: 'current' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByRole('option', { name: 'obsolete' }),
+        ).not.toBeInTheDocument();
+
+        // Invalidate an in-flight request before the next debounce fires.
+        rerender(picker(initialState, 'third-token'));
+        act(() => jest.advanceTimersByTime(500));
+        rerender(picker(nextState, 'fourth-token'));
+        await act(async () =>
+          requests[2].reject(new Error('Obsolete failure')),
+        );
+        expect(
+          screen.queryByText('Unable to load repository branches'),
+        ).not.toBeInTheDocument();
+        act(() => jest.advanceTimersByTime(500));
+        await act(async () => requests[3].reject(new Error('Current failure')));
+        expect(
+          screen.getByText('Unable to load repository branches'),
+        ).toBeInTheDocument();
+
+        // Removing required context clears the error and ignores pending results.
+        rerender(picker(nextState, 'fifth-token'));
+        expect(
+          screen.queryByText('Unable to load repository branches'),
+        ).not.toBeInTheDocument();
+        act(() => jest.advanceTimersByTime(500));
+        rerender(
+          picker(
+            change === 'repository'
+              ? { ...nextState, repository: undefined }
+              : nextState,
+            change === 'credentials' ? '' : 'fifth-token',
+          ),
+        );
+        await act(async () =>
+          requests[4].resolve({
+            results: [{ id: 'obsolete', title: 'obsolete' }],
+          }),
+        );
+        act(() => jest.advanceTimersByTime(500));
+        expect(autocomplete).toHaveBeenCalledTimes(5);
+        expect(screen.queryByRole('option')).not.toBeInTheDocument();
+      },
+    );
   });
 });
