@@ -231,6 +231,8 @@ JSON schema that describes the input/output types on your field like in the foll
 ```tsx
 // packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
 import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 
 export const MyCustomExtensionWithOptionsSchema = {
@@ -260,9 +262,15 @@ export const MyCustomExtensionWithOptions = ({
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !formData}
-      onChange={onChange}
       focused={focused}
-    />
+    >
+      <InputLabel htmlFor="myCustomField">My custom field</InputLabel>
+      <Input
+        id="myCustomField"
+        value={formData ?? ''}
+        onChange={e => onChange(e.target.value)}
+      />
+    </FormControl>
   );
 };
 ```
@@ -298,6 +306,8 @@ and type for your field props to prevent having to duplicate the definitions:
 ```tsx
 // packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
 import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 import { z } from 'zod/v3';
 import { makeFieldSchemaFromZod } from '@backstage/plugin-scaffolder';
 
@@ -328,9 +338,15 @@ export const MyCustomExtensionWithOptions = ({
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !formData}
-      onChange={onChange}
       focused={focused}
-    />
+    >
+      <InputLabel htmlFor="myCustomField">My custom field</InputLabel>
+      <Input
+        id="myCustomField"
+        value={formData ?? ''}
+        onChange={e => onChange(e.target.value)}
+      />
+    </FormControl>
   );
 };
 ```
