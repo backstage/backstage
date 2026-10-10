@@ -27,7 +27,7 @@ import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
 
 jest.setTimeout(30_000);
 
-jest.mock('./components/CatalogGraphPage', () => {
+jest.mock('./components/CatalogGraphPage/CatalogGraphPage', () => {
   const { useCatalogGraphPage } = jest.requireActual<
     typeof import('./components/CatalogGraphPage/useCatalogGraphPage')
   >('./components/CatalogGraphPage/useCatalogGraphPage');
@@ -35,7 +35,7 @@ jest.mock('./components/CatalogGraphPage', () => {
     jest.requireActual<typeof import('react-router-dom')>('react-router-dom');
 
   return {
-    CatalogGraphPage: (
+    NfsCatalogGraphPage: (
       props: Parameters<typeof useCatalogGraphPage>[0] &
         Record<string, unknown>,
     ) => {
