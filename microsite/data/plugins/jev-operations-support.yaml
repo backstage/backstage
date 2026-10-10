@@ -1,0 +1,11 @@
+---
+title: Jev Operations Support
+author: namayasai
+authorUrl: https://github.com/namayasai
+category: Machine Learning
+description: Jev-powered pre-checks for runbooks and changes, incident triage for CloudWatch alerts and human reports, and catalog-based template and team recommendations.
+documentation: https://github.com/namayasai/backstage-jev-operations-support/blob/main/docs/installation.md
+iconUrl: https://raw.githubusercontent.com/namayasai/backstage-jev-operations-support/main/docs/icon.svg
+npmPackageName: '@namayasai/backstage-plugin-jev-operations-support'
+addedDate: '2026-09-19'
+status: active
