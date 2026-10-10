@@ -539,6 +539,20 @@ export interface Config {
                * Useful for debugging and tracking purposes.
                */
               subjectPrefix?: string;
+              /**
+               * Restricts which callers are accepted based on the claims in their JWT.
+               * Each entry maps a claim name to a single allowed value or a list of allowed values.
+               * A token is accepted only if every listed claim is present and matches one of its allowed values;
+               * for claims whose value is an array or a space-delimited string, it is enough that one of those values matches.
+               * Numbers and booleans are compared by their string representation.
+               */
+              claims?: {
+                [claim: string]:
+                  | string
+                  | number
+                  | boolean
+                  | Array<string | number | boolean>;
+              };
             };
             /**
              * Restricts what types of access that are permitted for this access

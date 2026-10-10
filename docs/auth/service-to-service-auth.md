@@ -189,6 +189,9 @@ backend:
           algorithm: RS256
           audience: example, other-example
           subjectPrefix: custom-prefix
+          claims:
+            department: platform
+            scope: [catalog:read, catalog:write]
       - type: jwks
         options:
           url: https://another-example.com/.well-known/jwks.json
@@ -205,6 +208,16 @@ must have been signed using one of the listed algorithms.
 
 `audience` specifies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
 claim that matches one of the audiences specified, or have no audience specified.
+
+`claims` optionally restricts which callers are accepted based on the claims in their JWT. Each
+entry maps a claim name to a single allowed value or a list of allowed values. A token is accepted
+only if every listed claim is present and matches one of its allowed values. When a claim's value is
+itself an array, it is enough that one of its entries matches. The `scope` claim is treated
+specially: since it's conventionally a space-delimited string of individual scopes (as used by
+OAuth), it is enough that one of its space-separated entries matches.. This applies
+in addition to the `issuer`, `algorithm`, and `audience` checks
+above, so all of them must pass. For example, the configuration above only accepts tokens whose
+`department` claim is `platform` and whose `scope` claim contains `catalog:read` or `catalog:write`.
 
 For additional details regarding the JWKS configuration, please consult your authentication
 provider's documentation.
