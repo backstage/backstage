@@ -207,7 +207,7 @@ the whole resulting file.
 
 ```text
 Would write /path/to/repo/.claude/settings.local.json (claude-code, 4 other setting(s) kept as they were)
-  SessionStart ✔ /usr/bin/node /path/to/cli ai skills sync --hook --agent claude-code
+  SessionStart ✔ backstage-cli ai skills sync --hook --agent claude-code
 ```
 
 The hook is written to a file in the root of the git repository that contains

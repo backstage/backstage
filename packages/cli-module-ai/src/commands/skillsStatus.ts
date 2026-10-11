@@ -84,12 +84,13 @@ export default async ({ args, info }: CliCommandContext) => {
     )}`,
   ];
   let missing = 0;
+  const width = Math.max(0, ...invocations.map(i => shortName(i.ref).length));
   for (const invocation of invocations) {
     const installed = isSkillInstalled(lock, invocation.source, isPresent, cwd);
     if (!installed) missing++;
     lines.push(
       `  ${installed ? symbols.ok : symbols.fail} ${style.ref(
-        shortName(invocation.ref),
+        shortName(invocation.ref).padEnd(width),
       )}  ${style.muted(installed ? 'installed' : 'missing')}`,
     );
   }

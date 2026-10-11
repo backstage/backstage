@@ -21,6 +21,12 @@ import { getMainCheckoutRoot, getRepoRoot } from '../lib/gitRemote';
 import { style, symbols } from '../lib/format';
 import { installHooks } from '../lib/installHooks';
 
+/** Drops the machine specific node and CLI paths, they only add noise. */
+function shortCommand(command: string): string {
+  const index = command.indexOf(' ai skills sync');
+  return index < 0 ? command : `backstage-cli${command.slice(index)}`;
+}
+
 export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
     {
@@ -87,7 +93,9 @@ export default async ({ args, info }: CliCommandContext) => {
       process.stdout.write(
         `${symbols.ok} Installed the ${result.agent} hook in ${result.file}\n`,
       );
-      process.stdout.write(`  ${style.muted(`runs: ${result.command}`)}\n`);
+      process.stdout.write(
+        `  ${style.muted(`runs: ${shortCommand(result.command)}`)}\n`,
+      );
       if (result.notice) {
         process.stdout.write(`  ${result.notice}\n`);
       }
@@ -101,7 +109,9 @@ export default async ({ args, info }: CliCommandContext) => {
         `Would write ${result.file} (${result.agent}${preserved})\n`,
       );
       process.stdout.write(
-        `  SessionStart ${symbols.ok} ${style.muted(result.command)}\n`,
+        `  SessionStart ${symbols.ok} ${style.muted(
+          shortCommand(result.command),
+        )}\n`,
       );
       if (flags.verbose) {
         process.stdout.write(`\n${result.json}`);
