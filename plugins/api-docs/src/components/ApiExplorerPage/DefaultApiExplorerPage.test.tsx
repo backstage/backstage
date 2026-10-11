@@ -40,23 +40,22 @@ import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('DefaultApiExplorerPage', () => {
   const catalogApi = catalogApiMock.mock({
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity1',
-              annotations: {
-                'backstage.io/view-url': 'viewurl',
-                'backstage.io/edit-url': 'editurl',
-              },
+    async *streamEntities() {
+      yield [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'API',
+          metadata: {
+            name: 'Entity1',
+            annotations: {
+              'backstage.io/view-url': 'viewurl',
+              'backstage.io/edit-url': 'editurl',
             },
-            spec: { type: 'openapi' },
           },
-        ],
-      }),
+          spec: { type: 'openapi' },
+        },
+      ];
+    },
     getLocationByRef: () =>
       Promise.resolve({
         id: 'id',
