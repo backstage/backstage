@@ -63,7 +63,7 @@ describe('reduceCatalogFilters', () => {
     expect(result.query).toBeUndefined();
   });
 
-  it('converts legacy filters and combines them with predicates', () => {
+  it('passes legacy filters through alongside the query', () => {
     const legacy: EntityFilter = {
       getCatalogFilters: () => ({
         'spec.lifecycle': ['production', 'staging'],
@@ -78,14 +78,12 @@ describe('reduceCatalogFilters', () => {
       legacy,
       notExperimental,
     ]);
+    expect(result.filter).toEqual({
+      'spec.lifecycle': ['production', 'staging'],
+      'metadata.annotations.a': CATALOG_FILTER_EXISTS,
+    });
     expect(result.query).toEqual({
       $all: [
-        {
-          $all: [
-            { 'spec.lifecycle': { $in: ['production', 'staging'] } },
-            { 'metadata.annotations.a': { $exists: true } },
-          ],
-        },
         { kind: 'component' },
         { $not: { 'spec.lifecycle': 'experimental' } },
       ],
@@ -97,9 +95,9 @@ describe('reduceCatalogFilters', () => {
       getCatalogFilters: () => ({ 'spec.type': 'legacy' }),
       getCatalogQuery: () => ({ 'metadata.name': { $hasPrefix: 'x' } }),
     };
-    expect(reduceCatalogFilters([both]).query).toEqual({
-      'metadata.name': { $hasPrefix: 'x' },
-    });
+    const result = reduceCatalogFilters([both]);
+    expect(result.filter).toBeUndefined();
+    expect(result.query).toEqual({ 'metadata.name': { $hasPrefix: 'x' } });
   });
 
   it('never matches anything for an empty set of owned refs', () => {
@@ -122,10 +120,12 @@ describe('reduceBackendCatalogFilters', () => {
         notExperimental,
       ]),
     ).toEqual({
-      $all: [
-        { kind: 'component' },
-        { $not: { 'spec.lifecycle': 'experimental' } },
-      ],
+      query: {
+        $all: [
+          { kind: 'component' },
+          { $not: { 'spec.lifecycle': 'experimental' } },
+        ],
+      },
     });
   });
 });

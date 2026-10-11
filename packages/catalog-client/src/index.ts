@@ -21,5 +21,4 @@
  */
 
 export { CatalogClient } from './CatalogClient';
-export { convertFilterToPredicate } from './utils';
 export * from './types';
