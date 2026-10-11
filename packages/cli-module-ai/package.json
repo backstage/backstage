@@ -38,6 +38,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/filter-predicates": "workspace:^",
+    "chalk": "^4.0.0",
     "cleye": "^2.6.0",
     "git-url-parse": "^15.0.0",
     "skills": "1.7.0"

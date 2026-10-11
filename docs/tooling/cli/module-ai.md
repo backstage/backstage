@@ -45,6 +45,30 @@ Prints the resolved component, its owner and system, your groups and their
 ancestor groups, and every candidate skill with whether it was selected and
 why. Use it to debug skill selection and as the dry run for `ai skills sync`.
 
+Skills are grouped into selected and skipped, each with the reason, and a
+summary line ends the output. Output is colored on a terminal. Set `NO_COLOR`
+to turn colors off; piped output is never colored.
+
+```text
+Component:       component:default/payments-service
+Owner:           group:default/payments
+System:          system:default/checkout
+User:            user:default/demo-user
+User groups:     -
+Ancestor groups: group:default/engineering
+Target agents:   claude-code
+
+Selected (3)
+  ✔ airesource:default/commenting-standards  owned by group:default/engineering
+  ✔ airesource:default/payments-code-shape   owned by group:default/payments
+  ✔ airesource:default/api-error-handling    dependency of airesource:default/payments-gateway-integration
+
+Skipped (1)
+  ○ airesource:default/growth-testing        outside the component scope
+
+3 selected, 1 skipped
+```
+
 ### Examples
 
 ```bash
@@ -69,6 +93,7 @@ Options:
   --dry-run            Print the skills commands without running them
   --instance <string>  Name of the instance to use
   --allow-file-sources Allow skills whose source location is a local directory (file:)
+  --verbose            Show the full output of skills while installing
   --hook               Run safely from an agent session start hook
 ```
 
@@ -83,6 +108,17 @@ Without `--global`, skills are installed into the project. The module runs
 `skills` from the root of the git repository that contains your current
 directory, so the skills do not end up in a subdirectory. Outside a git
 repository, for example with `--entity`, it uses the current directory.
+
+The command prints one line per skill as it installs, and a closing summary.
+The output of `skills` is hidden unless you pass `--verbose`.
+
+```text
+Syncing 2 skill(s) for component:default/payments-service into claude-code
+  ✔ api-error-handling
+  ✔ payments-code-shape
+
+✔ Installed 2 skill(s) into claude-code. Start a new agent session to use them.
+```
 
 Skills that cannot be installed are reported on standard error with the reason.
 If no skill can be installed, the command prints a message and exits
@@ -110,7 +146,7 @@ for you. In this mode the command:
 - Never starts a login. If you are not signed in, it asks you on standard error to run `backstage-cli auth login`.
 - Only installs skills that are recorded in `skills-lock.json` with the same repository, ref, and directory and whose folder is missing from the skills directory of the target agent, for example `.claude/skills` for Claude Code. A skill that is only in the lock file, or only installed for another agent, is installed. A normal run installs every applicable skill again.
 - Always installs into the project, and cannot be combined with `--global`.
-- Discards the output of `skills` and writes at most one line to standard output, such as `Backstage: installed 2 skill(s), 1 up to date.`, because agents add the output of session start hooks to the session context. It prints nothing when no skill was installed.
+- Discards the output of `skills` and writes at most one line to standard output, such as `Backstage: installed 2 skill(s) (api-error-handling, payments-code-shape), 1 up to date.`, because agents add the output of session start hooks to the session context. It prints nothing when no skill was installed.
 
 Claude Code stops a hook after 120 seconds, which is the timeout that
 `ai hooks install` sets. A large first install can take longer, so run
@@ -119,6 +155,35 @@ Claude Code stops a hook after 120 seconds, which is the timeout that
 Because installed skills are skipped, a skill that changed in its repository is
 not updated by the hook. Run `ai skills sync` without `--hook` to update the
 installed skills.
+
+## ai skills status
+
+Show which of the applicable skills are installed in the project.
+
+```text
+Usage: backstage-cli ai skills status [options]
+
+Options:
+  --entity <string>    Component to resolve against (skips git remote detection)
+  --agent <string>     Target agent, repeatable (default: detected)
+  --instance <string>  Name of the instance to use
+  --allow-file-sources Allow skills whose source location is a local directory (file:)
+  --check              Exit with an error when any skill is missing
+```
+
+Resolves the applicable skills like `ai skills sync` and compares them with
+`skills-lock.json` and the skills directory of each target agent. It does not
+change anything. A skill whose repository changed since you installed it still
+shows as installed, because the check does not fetch the repository. Use
+`--check` in a script or CI to fail when a skill is missing.
+
+```text
+Skill status for component:default/payments-service (claude-code)
+  ✔ api-error-handling   installed
+  ✖ payments-code-shape  missing
+
+1 installed, 1 missing. Run "ai skills sync" to install them.
+```
 
 ## ai hooks install
 
@@ -133,6 +198,16 @@ Options:
   --instance <string>  Name of the instance the hook uses
   --allow-file-sources Let the hook install skills whose source location is a local directory (file:)
   --dry-run            Print the resulting hook files without writing them
+  --verbose            Print the full resulting hook files on a dry run
+```
+
+A dry run prints the file it would write, the one command it would add, and how
+many other settings in the file stay as they are. Pass `--verbose` to also print
+the whole resulting file.
+
+```text
+Would write /path/to/repo/.claude/settings.local.json (claude-code, 4 other setting(s) kept as they were)
+  SessionStart ✔ /usr/bin/node /path/to/cli ai skills sync --hook --agent claude-code
 ```
 
 The hook is written to a file in the root of the git repository that contains

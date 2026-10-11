@@ -92,8 +92,13 @@ describe('ai resolve', () => {
     expect(text).toContain('component:default/svc');
     expect(text).toContain('system:default/payments');
     expect(text).toContain('group:default/org-x');
-    expect(text).toMatch(/selected\s+airesource:default\/mine.*owned by/);
-    expect(text).toMatch(/skipped\s+airesource:default\/other.*outside/);
+    expect(text).toMatch(
+      /Selected \(1\)\n\s+✔ airesource:default\/mine\s+owned by/,
+    );
+    expect(text).toMatch(
+      /Skipped \(1\)\n\s+○ airesource:default\/other\s+outside the component scope/,
+    );
+    expect(text).toContain('1 selected, 1 skipped');
   });
 
   it('prints JSON with --output json and rejects unknown formats', async () => {

@@ -96,11 +96,13 @@ describe('installHooks', () => {
     const results = await installHooks({ ...base(), agents: ['claude-code'] });
 
     expect(results).toEqual([
-      {
+      expect.objectContaining({
         agent: 'claude-code',
         file: path.join(root, '.claude', 'settings.local.json'),
         written: true,
-      },
+        command: expect.stringContaining('ai skills sync --hook'),
+        preservedSettings: 0,
+      }),
     ]);
     const text = read('.claude/settings.local.json');
     expect(text.endsWith('}\n')).toBe(true);

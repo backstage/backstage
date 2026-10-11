@@ -136,6 +136,9 @@ describe('ai skills sync', () => {
         undefined,
       ],
     ]);
+    expect(out()).toContain('Syncing 2 skill(s)');
+    expect(out()).toMatch(/✔ a\n\s+✔ b/);
+    expect(out()).toContain('Installed 2 skill(s) into claude-code');
     // Global installs do not depend on the project, so git is not consulted.
     expect(mockGetRepoRoot).not.toHaveBeenCalled();
     expect(err()).toMatch(
@@ -298,7 +301,9 @@ describe('ai skills sync', () => {
       expect(mockRunner.mock.calls).toEqual([
         [['add', url('one', 'b'), '-a', 'claude-code', '-y'], {}, repoRoot],
       ]);
-      expect(out()).toBe('Backstage: installed 1 skill(s), 1 up to date.\n');
+      expect(out()).toBe(
+        'Backstage: installed 1 skill(s) (b), 1 up to date.\n',
+      );
       expect(err()).toBe('');
     });
 
@@ -367,7 +372,9 @@ describe('ai skills sync', () => {
       mockRunner.mockResolvedValue(0);
       await skillsSync(ctx([]));
       expect(mockRunner).toHaveBeenCalledTimes(1);
-      expect(out()).toBe('Backstage: installed 1 skill(s), 0 up to date.\n');
+      expect(out()).toBe(
+        'Backstage: installed 1 skill(s) (a), 0 up to date.\n',
+      );
     });
 
     it('exits successfully with one stderr line and no stdout on errors', async () => {
