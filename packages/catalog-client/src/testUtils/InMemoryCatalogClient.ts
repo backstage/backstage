@@ -606,7 +606,9 @@ export class InMemoryCatalogClient implements CatalogApi {
     const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
     do {
       const res = await this.queryEntities(
-        cursor ? { ...request, limit, cursor } : { ...request, limit },
+        cursor
+          ? { ...request, limit, cursor }
+          : { ...request, limit, totalItems: 'exclude' },
       );
 
       yield res.items;

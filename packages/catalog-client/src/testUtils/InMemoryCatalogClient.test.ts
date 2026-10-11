@@ -811,6 +811,21 @@ describe('InMemoryCatalogClient', () => {
       expect(results.flat().map(e => e.metadata.name)).toEqual(['e3', 'e1']);
     });
 
+    it('never asks for the total item count', async () => {
+      const client = new InMemoryCatalogClient({ entities });
+      const spy = jest.spyOn(client, 'queryEntities');
+      for await (const _page of client.streamEntities({
+        pageSize: 1,
+        totalItems: 'include',
+      })) {
+        // drain
+      }
+      expect(spy.mock.calls.length).toBeGreaterThan(1);
+      expect(spy.mock.calls[0][0]).toEqual(
+        expect.objectContaining({ totalItems: 'exclude' }),
+      );
+    });
+
     it('streams in pages based on pageSize', async () => {
       const client = new InMemoryCatalogClient({ entities });
       const stream = client.streamEntities({ pageSize: 2 });

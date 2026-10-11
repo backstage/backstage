@@ -1071,6 +1071,33 @@ describe('CatalogClient', () => {
       expect(results).toEqual([defaultResponse.items, []]);
     });
 
+    it('never asks for the total item count', async () => {
+      const seen: Array<string | null> = [];
+      server.use(
+        http.get(`${mockBaseUrl}/entities/by-query`, ({ request }) => {
+          const params = new URL(request.url).searchParams;
+          seen.push(params.get('totalItems'));
+          if (params.get('cursor') === 'next') {
+            return HttpResponse.json({
+              items: [],
+              pageInfo: {},
+              totalItems: 0,
+            });
+          }
+          return HttpResponse.json(defaultResponse);
+        }),
+      );
+
+      const stream = client.streamEntities(
+        { filter: { kind: 'component' }, totalItems: 'include' },
+        { token },
+      );
+      for await (const _page of stream) {
+        // drain
+      }
+      expect(seen).toEqual(['exclude', null]);
+    });
+
     it('should handle errors', async () => {
       const mockedEndpoint = jest
         .fn()
