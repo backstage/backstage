@@ -152,6 +152,10 @@ export interface InstallHooksResult {
   excludedFrom?: string;
   /** The resulting file content, set on a dry run. */
   json?: string;
+  /** The session start command that was added. */
+  command: string;
+  /** Number of top-level settings in the file that were left as they were. */
+  preservedSettings: number;
 }
 
 /**
@@ -179,7 +183,13 @@ export async function installHooks(
   }
 
   const exec = options.exec ?? defaultExec;
-  const planned: Array<{ agent: string; file: string; json: string }> = [];
+  const planned: Array<{
+    agent: string;
+    file: string;
+    json: string;
+    command: string;
+    preservedSettings: number;
+  }> = [];
   for (const agent of new Set(options.agents)) {
     const file = path.join(options.rootDir, HOOK_FILES[agent]);
     const text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
@@ -198,13 +208,24 @@ export async function installHooks(
       2,
     )}\n`;
     await ensureNotTracked(options.rootDir, file, exec);
-    planned.push({ agent, file, json });
+    const preservedSettings =
+      existing && typeof existing === 'object'
+        ? Object.keys(existing).filter(key => key !== 'hooks').length
+        : 0;
+    planned.push({ agent, file, json, command, preservedSettings });
   }
 
   const results: InstallHooksResult[] = [];
-  for (const { agent, file, json } of planned) {
+  for (const { agent, file, json, command, preservedSettings } of planned) {
     if (options.dryRun) {
-      results.push({ agent, file, written: false, json });
+      results.push({
+        agent,
+        file,
+        written: false,
+        json,
+        command,
+        preservedSettings,
+      });
       continue;
     }
     fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -225,6 +246,8 @@ export async function installHooks(
       written: true,
       excludedFrom,
       notice: HOOK_NOTICES[agent],
+      command,
+      preservedSettings,
     });
   }
   return results;

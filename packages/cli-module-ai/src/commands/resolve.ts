@@ -16,6 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
+import { style, symbols } from '../lib/format';
 import { resolveTargetAgents } from '../lib/detectAgent';
 import {
   resolveSelection,
@@ -25,25 +26,38 @@ import {
 function formatResolveHuman(result: ResolveSelectionResult): string {
   const { context, decisions, agents } = result;
   const list = (refs: string[]) => (refs.length > 0 ? refs.join(', ') : '-');
+  const field = (label: string, value: string) =>
+    `${style.label(`${label}:`.padEnd(17))}${value}`;
   const lines = [
-    `Component:        ${context.componentRef}`,
-    `Owner:            ${context.owner ?? '-'}`,
-    `System:           ${context.system ?? '-'}`,
-    `User:             ${context.user}`,
-    `User groups:      ${list(context.groupRefs)}`,
-    `Ancestor groups:  ${list(context.ancestorGroupRefs)}`,
-    `Target agents:    ${list(agents)}`,
-    '',
-    'Skills:',
+    field('Component', style.heading(context.componentRef)),
+    field('Owner', context.owner ?? '-'),
+    field('System', context.system ?? '-'),
+    field('User', context.user),
+    field('User groups', list(context.groupRefs)),
+    field('Ancestor groups', list(context.ancestorGroupRefs)),
+    field('Target agents', list(agents)),
   ];
+
+  const selected = decisions.filter(d => d.status === 'selected');
+  const skipped = decisions.filter(d => d.status !== 'selected');
+  const width = Math.max(0, ...decisions.map(d => d.ref.length));
+  const section = (title: string, items: typeof decisions, symbol: string) => {
+    if (items.length === 0) return;
+    lines.push('', style.heading(`${title} (${items.length})`));
+    for (const item of items) {
+      lines.push(
+        `  ${symbol} ${style.ref(item.ref.padEnd(width))}  ${style.muted(
+          item.reason,
+        )}`,
+      );
+    }
+  };
   if (decisions.length === 0) {
-    lines.push('  (no candidate skills)');
+    lines.push('', '(no candidate skills)');
   }
-  for (const decision of decisions) {
-    lines.push(
-      `  ${decision.status.padEnd(8)} ${decision.ref}  ${decision.reason}`,
-    );
-  }
+  section('Selected', selected, symbols.ok);
+  section('Skipped', skipped, symbols.skip);
+  lines.push('', `${selected.length} selected, ${skipped.length} skipped`);
   return `${lines.join('\n')}\n`;
 }
 
