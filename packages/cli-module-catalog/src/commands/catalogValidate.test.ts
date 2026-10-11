@@ -101,10 +101,68 @@ describe('catalog validate', () => {
     await catalogValidate(ctx([entityPath]));
 
     expect(mockValidateEntity).not.toHaveBeenCalled();
-    const result = readOutput();
+    const [result] = readOutput();
     expect(result.isValid).toBe(false);
     expect(result.isValidYaml).toBe(false);
+    expect(result.errors[0]).toContain('YAML parsing error');
     expect(process.exitCode).toBe(1);
+  });
+
+  it('validates every document in a multi-document file', async () => {
+    writeFileSync(
+      entityPath,
+      `${validEntityYaml}\n---\n${validEntityYaml.replace(
+        'my-svc',
+        'other-svc',
+      )}\n---\n`,
+    );
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { file: entityPath },
+    });
+    mockValidateEntity
+      .mockResolvedValueOnce({ valid: true })
+      .mockResolvedValueOnce({
+        valid: false,
+        errors: [{ name: 'Error', message: 'bad entity' }],
+      });
+
+    await catalogValidate(ctx([entityPath]));
+
+    expect(mockValidateEntity).toHaveBeenCalledTimes(2);
+    expect(readOutput()).toEqual([
+      {
+        isValid: true,
+        isValidYaml: true,
+        errors: [],
+        entity: expect.objectContaining({
+          metadata: { name: 'my-svc' },
+        }),
+      },
+      {
+        isValid: false,
+        isValidYaml: true,
+        errors: ['bad entity'],
+        entity: undefined,
+      },
+    ]);
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('throws a usage error for empty input without calling the catalog', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { file: entityPath },
+    });
+
+    for (const content of ['', '# just a comment\n', '---\n---\n']) {
+      writeFileSync(entityPath, content);
+      await expect(catalogValidate(ctx([entityPath]))).rejects.toThrow(
+        'no entities to validate',
+      );
+    }
+    expect(mockValidateEntity).not.toHaveBeenCalled();
+    expect(stdoutSpy).not.toHaveBeenCalled();
   });
 
   it('validates a well-formed entity read from a file', async () => {
@@ -122,12 +180,14 @@ describe('catalog validate', () => {
       'url:https://localhost/entity-validator',
       { token: 'tok' },
     );
-    expect(readOutput()).toEqual({
-      isValid: true,
-      isValidYaml: true,
-      errors: [],
-      entity: expect.objectContaining({ kind: 'Component' }),
-    });
+    expect(readOutput()).toEqual([
+      {
+        isValid: true,
+        isValidYaml: true,
+        errors: [],
+        entity: expect.objectContaining({ kind: 'Component' }),
+      },
+    ]);
     expect(process.exitCode).toBeUndefined();
   });
 
@@ -183,12 +243,14 @@ describe('catalog validate', () => {
 
     await catalogValidate(ctx([entityPath]));
 
-    expect(readOutput()).toEqual({
-      isValid: false,
-      isValidYaml: true,
-      errors: ['missing apiVersion'],
-      entity: undefined,
-    });
+    expect(readOutput()).toEqual([
+      {
+        isValid: false,
+        isValidYaml: true,
+        errors: ['missing apiVersion'],
+        entity: undefined,
+      },
+    ]);
     expect(process.exitCode).toBe(1);
   });
 

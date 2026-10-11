@@ -92,7 +92,7 @@ yarn backstage-cli catalog get my-service --kind Component
 
 ## catalog validate
 
-Validate an entity YAML file, or standard input, against the catalog schema.
+Validate the entities in a YAML file, or standard input, against the catalog schema. Files with multiple YAML documents separated by `---` are supported.
 
 ```text
 Usage: backstage-cli catalog validate <file> [options]
@@ -102,9 +102,7 @@ Options:
   --instance <name>    Instance name
 ```
 
-Use `-` as the file to read from standard input. The result is printed as JSON, and the
-command exits with code 1 if the entity is not valid. Connection and
-authentication problems are reported as errors.
+Use `-` as the file to read from standard input. The results are printed as a JSON array with one result per entity, in document order. Each result has `isValid`, `isValidYaml`, and `errors` fields, and valid results also include the `entity`. `isValidYaml` is `false` only for YAML syntax errors. The command exits with code 1 if any entity is not valid, and reports an error if the input contains no entities. Connection and authentication problems are reported as errors.
 
 ### Examples
 

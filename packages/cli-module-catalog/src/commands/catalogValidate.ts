@@ -51,35 +51,45 @@ export default async ({ args, info }: CliCommandContext) => {
   }
   const entityYaml = await readFileOrStdin(file);
 
-  let entity: Entity;
-  try {
-    entity = yaml.parse(entityYaml);
-  } catch (yamlError: any) {
-    writeJson({
-      isValid: false,
-      isValidYaml: false,
-      errors: [`YAML parsing error: ${yamlError.message}`],
-    });
-    process.exitCode = 1;
-    return;
+  const documents = yaml
+    .parseAllDocuments(entityYaml)
+    .filter(doc => doc.errors.length > 0 || doc.toJS() !== null);
+  if (documents.length === 0) {
+    throw new Error(
+      'The input contains no entities to validate. Provide at least one entity YAML document. Usage: catalog validate <file>',
+    );
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
-  const resp = await client.validateEntity(
-    entity,
-    flags.location ?? 'url:https://localhost/entity-validator',
-    { token: accessToken },
-  );
+  const results = [];
+  for (const doc of documents) {
+    if (doc.errors.length > 0) {
+      results.push({
+        isValid: false,
+        isValidYaml: false,
+        errors: doc.errors.map(e => `YAML parsing error: ${e.message}`),
+      });
+      continue;
+    }
 
-  writeJson({
-    isValid: resp.valid,
-    isValidYaml: true,
-    errors: resp.valid ? [] : resp.errors.map(e => e.message),
-    entity: resp.valid ? entity : undefined,
-  });
-  if (!resp.valid) {
+    const entity: Entity = doc.toJS();
+    const resp = await client.validateEntity(
+      entity,
+      flags.location ?? 'url:https://localhost/entity-validator',
+      { token: accessToken },
+    );
+    results.push({
+      isValid: resp.valid,
+      isValidYaml: true,
+      errors: resp.valid ? [] : resp.errors.map(e => e.message),
+      entity: resp.valid ? entity : undefined,
+    });
+  }
+
+  writeJson(results);
+  if (results.some(r => !r.isValid)) {
     process.exitCode = 1;
   }
 };
