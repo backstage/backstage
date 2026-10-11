@@ -93,7 +93,7 @@ function queryOf(request?: QueryEntitiesRequest): string {
 }
 
 function isOwnedRequest(request?: QueryEntitiesRequest): boolean {
-  return queryOf(request).includes('relations.ownedBy');
+  return queryOf(request).includes('ownedBy');
 }
 
 function isStarredRequest(request?: QueryEntitiesRequest): boolean {
@@ -180,7 +180,14 @@ describe('<UserListPicker />', () => {
       query: {
         $all: [
           { 'metadata.namespace': 'default' },
-          { 'relations.ownedBy': 'user:default/testuser' },
+          {
+            relations: {
+              $contains: {
+                type: 'ownedBy',
+                targetRef: 'user:default/testuser',
+              },
+            },
+          },
         ],
       },
       limit: 0,
@@ -229,13 +236,13 @@ describe('<UserListPicker />', () => {
     });
 
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      query: { 'metadata.tags': 'tag1' },
+      query: { 'metadata.tags': { $contains: 'tag1' } },
       limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       query: {
         $all: [
-          { 'metadata.tags': 'tag1' },
+          { 'metadata.tags': { $contains: 'tag1' } },
           {
             $any: [
               {
@@ -257,8 +264,15 @@ describe('<UserListPicker />', () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       query: {
         $all: [
-          { 'metadata.tags': 'tag1' },
-          { 'relations.ownedBy': 'user:default/testuser' },
+          { 'metadata.tags': { $contains: 'tag1' } },
+          {
+            relations: {
+              $contains: {
+                type: 'ownedBy',
+                targetRef: 'user:default/testuser',
+              },
+            },
+          },
         ],
       },
       limit: 0,
@@ -321,7 +335,14 @@ describe('<UserListPicker />', () => {
       query: {
         $all: [
           { kind: 'component' },
-          { 'relations.ownedBy': 'user:default/testuser' },
+          {
+            relations: {
+              $contains: {
+                type: 'ownedBy',
+                targetRef: 'user:default/testuser',
+              },
+            },
+          },
         ],
       },
       limit: 0,
@@ -377,7 +398,14 @@ describe('<UserListPicker />', () => {
         query: {
           $all: [
             { kind: 'component' },
-            { 'relations.ownedBy': 'user:default/testuser' },
+            {
+              relations: {
+                $contains: {
+                  type: 'ownedBy',
+                  targetRef: 'user:default/testuser',
+                },
+              },
+            },
           ],
         },
         limit: 0,

@@ -651,7 +651,14 @@ describe('<EntityListProvider pagination />', () => {
         query: {
           $all: [
             { kind: 'component' },
-            { 'relations.ownedBy': ownershipEntityRefs[0] },
+            {
+              relations: {
+                $contains: {
+                  type: 'ownedBy',
+                  targetRef: ownershipEntityRefs[0],
+                },
+              },
+            },
           ],
         },
         totalItems: 'exclude',
@@ -739,7 +746,14 @@ describe('<EntityListProvider pagination />', () => {
           query: {
             $all: [
               { kind: 'component' },
-              { 'relations.ownedBy': ownershipEntityRefs[0] },
+              {
+                relations: {
+                  $contains: {
+                    type: 'ownedBy',
+                    targetRef: ownershipEntityRefs[0],
+                  },
+                },
+              },
             ],
           },
           totalItems: 'exclude',
@@ -1092,7 +1106,14 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         query: {
           $all: [
             { kind: 'component' },
-            { 'relations.ownedBy': ownershipEntityRefs[0] },
+            {
+              relations: {
+                $contains: {
+                  type: 'ownedBy',
+                  targetRef: ownershipEntityRefs[0],
+                },
+              },
+            },
           ],
         },
         totalItems: 'exclude',
@@ -1180,7 +1201,14 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
           query: {
             $all: [
               { kind: 'component' },
-              { 'relations.ownedBy': ownershipEntityRefs[0] },
+              {
+                relations: {
+                  $contains: {
+                    type: 'ownedBy',
+                    targetRef: ownershipEntityRefs[0],
+                  },
+                },
+              },
             ],
           },
           totalItems: 'exclude',
