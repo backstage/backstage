@@ -537,12 +537,17 @@ export type QueryEntitiesResponse = {
  */
 export type StreamEntitiesRequest = Omit<
   QueryEntitiesInitialRequest,
-  'limit' | 'offset'
+  'limit' | 'offset' | 'totalItems'
 > & {
   /**
    * The number of entities to fetch in each page. Defaults to 500.
    */
   pageSize?: number;
+  /**
+   * @deprecated This option is ignored. Streaming never computes the total
+   * number of matching items, since it is not part of the response.
+   */
+  totalItems?: QueryEntitiesInitialRequest['totalItems'];
 };
 
 /**

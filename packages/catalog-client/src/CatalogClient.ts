@@ -728,7 +728,9 @@ export class CatalogClient implements CatalogApi {
     const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
     do {
       const res = await this.queryEntities(
-        cursor ? { ...request, cursor, limit } : { ...request, limit },
+        cursor
+          ? { ...request, cursor, limit }
+          : { ...request, limit, totalItems: 'exclude' },
         options,
       );
 
