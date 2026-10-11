@@ -26,6 +26,7 @@ import {
   planSkillsInvocations,
   runSkills,
 } from '../lib/runSkills';
+import { shortName, style, symbols } from '../lib/format';
 import { errorMessage } from '../lib/errorMessage';
 import {
   isSkillInstalled,
@@ -39,6 +40,7 @@ interface SyncFlags {
   global?: boolean;
   instance?: string;
   'allow-file-sources'?: boolean;
+  verbose?: boolean;
 }
 
 /**
@@ -85,8 +87,12 @@ async function syncInHook(flags: SyncFlags) {
     const installed = pending.length - failed.length;
     if (installed > 0) {
       const upToDate = invocations.length - pending.length;
+      const names = pending
+        .filter(invocation => !failed.includes(invocation.ref))
+        .map(invocation => shortName(invocation.ref))
+        .join(', ');
       process.stdout.write(
-        `Backstage: installed ${installed} skill(s), ${upToDate} up to date.\n`,
+        `Backstage: installed ${installed} skill(s) (${names}), ${upToDate} up to date.\n`,
       );
     }
   } catch (error) {
@@ -127,6 +133,10 @@ export default async ({ args, info }: CliCommandContext) => {
           description:
             'Allow skills whose source location is a local directory (file:)',
         },
+        verbose: {
+          type: Boolean,
+          description: 'Show the full output of skills while installing',
+        },
         hook: {
           type: Boolean,
           description:
@@ -144,12 +154,13 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const agents = resolveTargetAgents(flags.agent);
-  const { decisions } = await resolveSelection({
+  const selection = await resolveSelection({
     entity: flags.entity,
     instance: flags.instance,
     agents,
     allowFileSources: Boolean(flags['allow-file-sources']),
   });
+  const { decisions } = selection;
 
   for (const decision of decisions) {
     if (decision.status === 'skipped') {
@@ -175,16 +186,43 @@ export default async ({ args, info }: CliCommandContext) => {
 
   assertSkillsNodeVersion();
 
+  const { context } = selection;
+  const out = (line: string) => process.stdout.write(`${line}\n`);
+  out(
+    `${style.heading(`Syncing ${invocations.length} skill(s)`)}${style.muted(
+      `${
+        context.componentRef ? ` for ${context.componentRef}` : ''
+      } into ${agents.join(', ')}`,
+    )}`,
+  );
+
   // skills installs project skills into its working directory, so run it from
   // the repository root rather than wherever the command was started.
   const cwd = flags.global ? undefined : await getRepoRoot();
   const { failed } = await runSkills(
     invocations,
-    createSkillsRunner(),
+    createSkillsRunner(undefined, { quiet: !flags.verbose }),
     undefined,
     cwd,
+    (invocation, ok) =>
+      out(
+        `  ${ok ? symbols.ok : symbols.fail} ${style.ref(
+          shortName(invocation.ref),
+        )}`,
+      ),
   );
   if (failed.length > 0) {
-    throw new Error(`skills add failed for: ${failed.join(', ')}`);
+    throw new Error(
+      `skills add failed for: ${failed.join(
+        ', ',
+      )} (run again with --verbose for details)`,
+    );
   }
+  out(
+    `\n${symbols.ok} Installed ${
+      invocations.length
+    } skill(s) into ${agents.join(
+      ', ',
+    )}. Start a new agent session to use them.`,
+  );
 };

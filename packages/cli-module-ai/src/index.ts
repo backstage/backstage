@@ -33,6 +33,12 @@ export default createCliModule({
       execute: { loader: () => import('./commands/skillsSync') },
     });
     reg.addCommand({
+      path: ['ai', 'skills', 'status'],
+      description:
+        'Show which of the catalog AI skills that apply to this repository are installed',
+      execute: { loader: () => import('./commands/skillsStatus') },
+    });
+    reg.addCommand({
       path: ['ai', 'hooks', 'install'],
       description:
         'Install an agent session start hook that keeps catalog AI skills in sync',

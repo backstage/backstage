@@ -56,6 +56,7 @@ Options:
   --allow-file-sources
   --dry-run
   --instance <string>
+  --verbose
   -h, --help
 ```
 
@@ -84,7 +85,22 @@ Options:
 
 Commands:
   help
+  status
   sync
+```
+
+### `backstage-cli-module-ai ai skills status`
+
+```
+Usage: @backstage/cli-module-ai ai skills status [flags...]
+
+Options:
+  --agent <string>
+  --allow-file-sources
+  --check
+  --entity <string>
+  --instance <string>
+  -h, --help
 ```
 
 ### `backstage-cli-module-ai ai skills sync`
@@ -100,5 +116,6 @@ Options:
   --global
   --hook
   --instance <string>
+  --verbose
   -h, --help
 ```

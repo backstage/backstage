@@ -2129,6 +2129,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@types/git-url-parse": "npm:^9.0.0"
+    chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
     git-url-parse: "npm:^15.0.0"
     skills: "npm:1.7.0"

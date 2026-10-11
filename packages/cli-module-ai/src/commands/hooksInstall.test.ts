@@ -71,6 +71,13 @@ describe('ai hooks install', () => {
     expect(out()).toContain(
       'ai skills sync --hook --agent claude-code --instance demo',
     );
+    // The full file is only printed with --verbose.
+    expect(out()).not.toContain('"SessionStart"');
+    (cli as jest.Mock).mockReturnValue({
+      flags: { agent: ['claude-code'], 'dry-run': true, verbose: true },
+    });
+    await hooksInstall(ctx);
+    expect(out()).toContain('"SessionStart"');
 
     (cli as jest.Mock).mockReturnValue({ flags: { agent: ['claude-code'] } });
     await hooksInstall(ctx);

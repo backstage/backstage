@@ -18,6 +18,7 @@ import { cli } from 'cleye';
 import fs from 'node:fs';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { getMainCheckoutRoot, getRepoRoot } from '../lib/gitRemote';
+import { style, symbols } from '../lib/format';
 import { installHooks } from '../lib/installHooks';
 
 export default async ({ args, info }: CliCommandContext) => {
@@ -38,6 +39,10 @@ export default async ({ args, info }: CliCommandContext) => {
           type: Boolean,
           description:
             'Let the hook install skills whose source location is a local directory (file:)',
+        },
+        verbose: {
+          type: Boolean,
+          description: 'Print the full resulting hook files on a dry run',
         },
         'dry-run': {
           type: Boolean,
@@ -74,20 +79,33 @@ export default async ({ args, info }: CliCommandContext) => {
   });
 
   for (const result of results) {
+    const preserved =
+      result.preservedSettings > 0
+        ? `, ${result.preservedSettings} other setting(s) kept as they were`
+        : '';
     if (result.written) {
       process.stdout.write(
-        `Installed the ${result.agent} hook in ${result.file}\n`,
+        `${symbols.ok} Installed the ${result.agent} hook in ${result.file}\n`,
       );
+      process.stdout.write(`  ${style.muted(`runs: ${result.command}`)}\n`);
       if (result.notice) {
-        process.stdout.write(`${result.notice}\n`);
+        process.stdout.write(`  ${result.notice}\n`);
       }
       if (result.excludedFrom) {
         process.stdout.write(
-          `Added the file to ${result.excludedFrom} so that it is not committed\n`,
+          `  Added the file to ${result.excludedFrom} so that it is not committed\n`,
         );
       }
     } else {
-      process.stdout.write(`Would write ${result.file}:\n${result.json}`);
+      process.stdout.write(
+        `Would write ${result.file} (${result.agent}${preserved})\n`,
+      );
+      process.stdout.write(
+        `  SessionStart ${symbols.ok} ${style.muted(result.command)}\n`,
+      );
+      if (flags.verbose) {
+        process.stdout.write(`\n${result.json}`);
+      }
     }
   }
 };

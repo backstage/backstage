@@ -110,6 +110,7 @@ export async function runSkills(
   log: (message: string) => void = message =>
     process.stderr.write(`${message}\n`),
   cwd?: string,
+  onResult?: (invocation: SkillsInvocation, ok: boolean) => void,
 ): Promise<{ failed: string[] }> {
   const failed: string[] = [];
   for (const invocation of invocations) {
@@ -119,9 +120,11 @@ export async function runSkills(
         failed.push(invocation.ref);
         log(`skills add failed for ${invocation.ref} (exit code ${code})`);
       }
+      onResult?.(invocation, code === 0);
     } catch (error) {
       failed.push(invocation.ref);
       log(`skills add failed for ${invocation.ref}: ${errorMessage(error)}`);
+      onResult?.(invocation, false);
     }
   }
   return { failed };
