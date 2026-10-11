@@ -70,21 +70,14 @@ describe('template execute', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when neither a reference nor --template-ref is provided', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
-
-    await expect(templateExecute(ctx([]))).rejects.toThrow(
-      'Template reference or --template-ref is required',
-    );
-  });
-
   it('allows templates without input values', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'template-ref': 'template:default/my-tpl' },
+      flags: {},
+      _: { ref: 'template:default/my-tpl' },
     });
     mockExecute.mockResolvedValue({ taskId: 'task-123' });
 
-    await templateExecute(ctx([]));
+    await templateExecute(ctx(['template:default/my-tpl']));
 
     expect(mockExecute).toHaveBeenCalledWith({
       templateRef: 'template:default/my-tpl',
@@ -93,16 +86,14 @@ describe('template execute', () => {
     });
   });
 
-  it('executes template with --template-ref and --value', async () => {
+  it('executes template with a reference and --value', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: {
-        'template-ref': 'template:default/my-tpl',
-        value: ['name=my-app'],
-      },
+      flags: { value: ['name=my-app'] },
+      _: { ref: 'template:default/my-tpl' },
     });
     mockExecute.mockResolvedValue({ taskId: 'task-123' });
 
-    await templateExecute(ctx([]));
+    await templateExecute(ctx(['template:default/my-tpl']));
 
     expect(mockExecute).toHaveBeenCalledWith({
       templateRef: 'template:default/my-tpl',
@@ -116,21 +107,45 @@ describe('template execute', () => {
 
   it('passes secrets when provided', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: {
-        'template-ref': 'template:default/my-tpl',
-        value: ['name=app'],
-        secret: ['token=secret'],
-      },
+      flags: { value: ['name=app'], secret: ['token=secret'] },
+      _: { ref: 'template:default/my-tpl' },
     });
     mockExecute.mockResolvedValue({ taskId: 'task-456' });
 
-    await templateExecute(ctx([]));
+    await templateExecute(ctx(['template:default/my-tpl']));
 
     expect(mockExecute).toHaveBeenCalledWith({
       templateRef: 'template:default/my-tpl',
       values: { name: 'app' },
       secrets: { token: 'secret' },
     });
+  });
+
+  it('uses --namespace for a short reference without querying the catalog', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { namespace: 'prod' },
+      _: { ref: 'my-tpl' },
+    });
+    mockExecute.mockResolvedValue({ taskId: 'task-1' });
+
+    await templateExecute(ctx(['my-tpl', '--namespace', 'prod']));
+
+    expect(mockQueryEntities).not.toHaveBeenCalled();
+    expect(mockExecute).toHaveBeenCalledWith(
+      expect.objectContaining({ templateRef: 'template:prod/my-tpl' }),
+    );
+  });
+
+  it('rejects --namespace that conflicts with the reference', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { namespace: 'dev' },
+      _: { ref: 'template:prod/my-tpl' },
+    });
+
+    await expect(
+      templateExecute(ctx(['template:prod/my-tpl', '--namespace', 'dev'])),
+    ).rejects.toThrow('--namespace dev conflicts with the namespace "prod"');
+    expect(mockExecute).not.toHaveBeenCalled();
   });
 
   it('accepts a positional full template reference', async () => {
@@ -190,14 +205,14 @@ describe('template execute', () => {
   it('accepts repeatable values and secrets', async () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: {
-        'template-ref': 'template:default/my-tpl',
         value: ['name=my-app', 'owner=team-a', 'replicas=3'],
         secret: ['token=secret', 'enabled=true'],
       },
+      _: { ref: 'template:default/my-tpl' },
     });
     mockExecute.mockResolvedValue({ taskId: 'task-789' });
 
-    await templateExecute(ctx([]));
+    await templateExecute(ctx(['template:default/my-tpl']));
 
     expect(mockExecute).toHaveBeenCalledWith({
       templateRef: 'template:default/my-tpl',
@@ -209,12 +224,14 @@ describe('template execute', () => {
   it('rejects JSON objects containing equals signs for --value', async () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: {
-        'template-ref': 'template:default/my-tpl',
         value: ['{"url":"https://example.com?a=b"}'],
       },
+      _: { ref: 'template:default/my-tpl' },
     });
 
-    await expect(templateExecute(ctx([]))).rejects.toThrow(
+    await expect(
+      templateExecute(ctx(['template:default/my-tpl'])),
+    ).rejects.toThrow(
       'JSON object input is not supported; use repeatable key=value flags',
     );
   });
@@ -245,6 +262,32 @@ describe('template execute', () => {
         'Error: Unknown flag: --secrets. (Did you mean --secret?)',
       );
     } finally {
+      exitSpy.mockRestore();
+      errorSpy.mockRestore();
+    }
+  });
+
+  it('rejects the removed --template-ref flag and a missing reference', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(code => {
+      throw new Error(`process.exit(${code})`);
+    });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    (mockCli as jest.Mock)
+      .mockImplementationOnce(actualCli)
+      .mockImplementationOnce(actualCli);
+
+    try {
+      await expect(
+        templateExecute(ctx(['my-tpl', '--template-ref', 'x'])),
+      ).rejects.toThrow('process.exit(1)');
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Error: Unknown flag: --template-ref.',
+      );
+      await expect(templateExecute(ctx([]))).rejects.toThrow('process.exit(1)');
+      expect(mockExecute).not.toHaveBeenCalled();
+    } finally {
+      logSpy.mockRestore();
       exitSpy.mockRestore();
       errorSpy.mockRestore();
     }

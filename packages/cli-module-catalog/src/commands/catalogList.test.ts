@@ -17,9 +17,14 @@
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const mockQueryEntities = jest.fn();
+const mockPrompt = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
+}));
+jest.mock('inquirer', () => ({
+  __esModule: true,
+  default: { prompt: (...args: unknown[]) => mockPrompt(...args) },
 }));
 jest.mock('../lib/resolveAuth', () => ({
   resolveAuth: jest.fn().mockResolvedValue({
@@ -179,6 +184,189 @@ describe('catalog list', () => {
       totalItems: 1,
       hasMoreEntities: false,
       nextPageCursor: undefined,
+    });
+  });
+
+  it('rejects --cursor combined with query flags', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {
+        cursor: 'abc',
+        kind: 'Component',
+        type: 'service',
+        filter: ['a=b'],
+        fields: 'kind',
+      },
+    });
+
+    await expect(catalogList(ctx([]))).rejects.toThrow(
+      '--cursor cannot be combined with --kind, --type, --filter, --fields',
+    );
+    expect(mockQueryEntities).not.toHaveBeenCalled();
+  });
+
+  it('passes --cursor without query or fields', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { cursor: 'abc', limit: 5 },
+    });
+    mockQueryEntities.mockResolvedValue({
+      items: [],
+      totalItems: 0,
+      pageInfo: {},
+    });
+
+    await catalogList(ctx([]));
+
+    expect(mockQueryEntities).toHaveBeenCalledWith(
+      { cursor: 'abc', limit: 5 },
+      { token: 'tok' },
+    );
+  });
+
+  it('rejects shortcuts that conflict with --filter', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { kind: 'Component', filter: ['kind=API'] },
+    });
+    await expect(catalogList(ctx([]))).rejects.toThrow(
+      '--kind Component conflicts with --filter kind=',
+    );
+
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { type: 'service', filter: ['spec.type=website'] },
+    });
+    await expect(catalogList(ctx([]))).rejects.toThrow(
+      '--type service conflicts with --filter spec.type=',
+    );
+    expect(mockQueryEntities).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid --output values', async () => {
+    (mockCli as jest.Mock).mockReturnValue({ flags: { output: 'yaml' } });
+
+    await expect(catalogList(ctx(['--output', 'yaml']))).rejects.toThrow(
+      'Invalid --output value "yaml", expected "human" or "json"',
+    );
+    expect(mockQueryEntities).not.toHaveBeenCalled();
+  });
+
+  it('rejects unknown flags through strict flag parsing', async () => {
+    const actual = jest.requireActual('cleye');
+    (mockCli as jest.Mock).mockImplementationOnce(actual.cli);
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('exit');
+    });
+    const stderrSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      await expect(catalogList(ctx(['--bogus']))).rejects.toThrow('exit');
+      expect(mockQueryEntities).not.toHaveBeenCalled();
+    } finally {
+      exitSpy.mockRestore();
+      stderrSpy.mockRestore();
+    }
+  });
+
+  describe('paging in human mode', () => {
+    const entity = (name: string) => ({
+      kind: 'Component',
+      metadata: { name },
+    });
+    const output = () => stdoutSpy.mock.calls.map(c => c[0]).join('');
+    let ttyDescriptors: [PropertyDescriptor | undefined, PropertyDescriptor?];
+
+    const setTty = (value: boolean) => {
+      Object.defineProperty(process.stdout, 'isTTY', {
+        value,
+        configurable: true,
+      });
+      Object.defineProperty(process.stdin, 'isTTY', {
+        value,
+        configurable: true,
+      });
+    };
+
+    beforeEach(() => {
+      ttyDescriptors = [
+        Object.getOwnPropertyDescriptor(process.stdout, 'isTTY'),
+        Object.getOwnPropertyDescriptor(process.stdin, 'isTTY'),
+      ];
+      (mockCli as jest.Mock).mockReturnValue({ flags: { limit: 1 } });
+      mockQueryEntities
+        .mockResolvedValueOnce({
+          items: [entity('first')],
+          totalItems: 2,
+          pageInfo: { nextCursor: 'next-1' },
+        })
+        .mockResolvedValueOnce({
+          items: [entity('second')],
+          totalItems: 2,
+          pageInfo: {},
+        });
+    });
+
+    afterEach(() => {
+      mockQueryEntities.mockReset();
+      mockPrompt.mockReset();
+      for (const [stream, descriptor] of [
+        [process.stdout, ttyDescriptors[0]],
+        [process.stdin, ttyDescriptors[1]],
+      ] as const) {
+        if (descriptor) {
+          Object.defineProperty(stream, 'isTTY', descriptor);
+        } else {
+          delete (stream as { isTTY?: boolean }).isTTY;
+        }
+      }
+    });
+
+    it('fetches the next page with the cursor when confirmed on a TTY', async () => {
+      setTty(true);
+      mockPrompt.mockResolvedValue({ more: true });
+
+      await catalogList(ctx([]));
+
+      expect(mockPrompt).toHaveBeenCalledTimes(1);
+      expect(mockQueryEntities).toHaveBeenNthCalledWith(
+        2,
+        { cursor: 'next-1', limit: 1 },
+        { token: 'tok' },
+      );
+      expect(output()).toContain('first');
+      expect(output()).toContain('second');
+      expect(output()).toContain('Showing 1 of 2');
+      expect(output()).toContain('Showing 2 of 2');
+    });
+
+    it('stops when the prompt is declined on a TTY', async () => {
+      setTty(true);
+      mockPrompt.mockResolvedValue({ more: false });
+
+      await catalogList(ctx([]));
+
+      expect(mockQueryEntities).toHaveBeenCalledTimes(1);
+      expect(output()).not.toContain('second');
+    });
+
+    it('prints a footer with the cursor and does not prompt without a TTY', async () => {
+      setTty(false);
+
+      await catalogList(ctx([]));
+
+      expect(mockPrompt).not.toHaveBeenCalled();
+      expect(mockQueryEntities).toHaveBeenCalledTimes(1);
+      expect(output()).toContain('Showing 1 of 2');
+      expect(output()).toContain('--cursor next-1');
+    });
+
+    it('prints a single page in JSON mode even on a TTY', async () => {
+      setTty(true);
+      (mockCli as jest.Mock).mockReturnValue({
+        flags: { limit: 1, output: 'json' },
+      });
+
+      await catalogList(ctx([]));
+
+      expect(mockPrompt).not.toHaveBeenCalled();
+      expect(JSON.parse(output()).nextPageCursor).toBe('next-1');
     });
   });
 

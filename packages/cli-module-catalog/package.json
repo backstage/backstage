@@ -40,6 +40,7 @@
     "@backstage/filter-predicates": "workspace:^",
     "chalk": "^4.0.0",
     "cleye": "^2.6.0",
+    "inquirer": "^8.2.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

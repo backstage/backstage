@@ -15,11 +15,81 @@
  */
 
 import chalk from 'chalk';
+import inquirer from 'inquirer';
 
 export type OutputMode = 'human' | 'json';
 
+/**
+ * Shared `--output` flag definition for commands that support both formats.
+ */
+export const outputFlag = {
+  output: {
+    type: String,
+    description: 'Output format: "human" (default) or "json"',
+  },
+};
+
 export function parseOutputFlag(flags: Record<string, unknown>): OutputMode {
-  return flags.output === 'json' ? 'json' : 'human';
+  const output = flags.output;
+  if (output === undefined || output === 'human') return 'human';
+  if (output === 'json') return 'json';
+  throw new Error(
+    `Invalid --output value "${String(output)}", expected "human" or "json"`,
+  );
+}
+
+/**
+ * Describes one fetched page of a paginated list.
+ */
+export type PageResult = {
+  /** Number of items in this page */
+  count: number;
+  /** Total number of items across all pages, if known */
+  total?: number;
+  /** Cursor for the next page, if there is one */
+  nextCursor?: string;
+};
+
+/**
+ * Prints a page of results followed by a footer. When running in a terminal
+ * and more results exist, asks whether to show the next page. Otherwise a
+ * hint with the `--cursor` value to continue from is printed.
+ */
+export async function pageInteractively<T extends PageResult>(
+  fetchPage: (cursor?: string) => Promise<T>,
+  render: (page: T) => void,
+  initialCursor?: string,
+): Promise<void> {
+  const interactive = Boolean(process.stdout.isTTY && process.stdin.isTTY);
+  let cursor = initialCursor;
+  let shown = 0;
+
+  for (;;) {
+    const page = await fetchPage(cursor);
+    render(page);
+    shown += page.count;
+
+    if (shown > 0) {
+      const total = page.total === undefined ? '' : ` of ${page.total}`;
+      process.stdout.write(`${chalk.dim(`Showing ${shown}${total}`)}\n`);
+    }
+    if (!page.nextCursor) return;
+
+    if (!interactive) {
+      process.stdout.write(
+        `${chalk.dim(
+          `More results available, use --cursor ${page.nextCursor} to show them`,
+        )}\n`,
+      );
+      return;
+    }
+
+    const { more } = await inquirer.prompt<{ more: boolean }>([
+      { type: 'confirm', name: 'more', message: 'Show more?', default: false },
+    ]);
+    if (!more) return;
+    cursor = page.nextCursor;
+  }
 }
 
 export function writeJson(data: unknown): void {

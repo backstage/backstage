@@ -16,6 +16,7 @@
 
 import type { CliCommandContext } from '@backstage/cli-node';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { Readable } from 'node:stream';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -60,76 +61,89 @@ const validEntityYaml = [
 
 describe('catalog validate', () => {
   let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
+  let directory: string;
+  let entityPath: string;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    process.exitCode = undefined;
     stdoutSpy = jest
       .spyOn(process.stdout, 'write')
       .mockImplementation(() => true);
+    directory = mkdtempSync(join(tmpdir(), 'catalog-validate-'));
+    entityPath = join(directory, 'catalog-info.yaml');
   });
 
   afterEach(() => {
     stdoutSpy.mockRestore();
+    rmSync(directory, { recursive: true });
+    process.exitCode = undefined;
   });
 
-  it('throws when neither --entity nor --entity-file is provided', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
+  const readOutput = () =>
+    JSON.parse(stdoutSpy.mock.calls.map(c => c[0]).join(''));
+
+  it('requires a file argument', async () => {
+    (mockCli as jest.Mock).mockReturnValue({ flags: {}, _: {} });
 
     await expect(catalogValidate(ctx([]))).rejects.toThrow(
-      '--entity or --entity-file is required',
+      'An entity YAML file is required',
     );
   });
 
-  it('reports invalid YAML without calling the catalog', async () => {
+  it('reports invalid YAML without calling the catalog and exits with 1', async () => {
+    writeFileSync(entityPath, '{not: valid: yaml');
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { entity: '{not: valid: yaml' },
+      flags: {},
+      _: { file: entityPath },
     });
 
-    await catalogValidate(ctx([]));
+    await catalogValidate(ctx([entityPath]));
 
     expect(mockValidateEntity).not.toHaveBeenCalled();
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
+    const result = readOutput();
     expect(result.isValid).toBe(false);
     expect(result.isValidYaml).toBe(false);
+    expect(process.exitCode).toBe(1);
   });
 
-  it('validates a well-formed entity', async () => {
+  it('validates a well-formed entity read from a file', async () => {
+    writeFileSync(entityPath, validEntityYaml);
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { entity: validEntityYaml },
+      flags: {},
+      _: { file: entityPath },
     });
     mockValidateEntity.mockResolvedValue({ valid: true });
 
-    await catalogValidate(ctx([]));
+    await catalogValidate(ctx([entityPath]));
 
     expect(mockValidateEntity).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'Component' }),
       'url:https://localhost/entity-validator',
       { token: 'tok' },
     );
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
-    expect(result).toEqual({
+    expect(readOutput()).toEqual({
       isValid: true,
       isValidYaml: true,
       errors: [],
       entity: expect.objectContaining({ kind: 'Component' }),
     });
+    expect(process.exitCode).toBeUndefined();
   });
 
-  it('reads entity YAML from --entity-file', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'catalog-validate-'));
-    const entityPath = join(directory, 'catalog-info.yaml');
-    writeFileSync(entityPath, validEntityYaml);
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'entity-file': entityPath },
+  it('reads the entity from stdin when the file is "-"', async () => {
+    const stdin = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+    Object.defineProperty(process, 'stdin', {
+      value: Readable.from([validEntityYaml]),
+      configurable: true,
     });
+    (mockCli as jest.Mock).mockReturnValue({ flags: {}, _: { file: '-' } });
     mockValidateEntity.mockResolvedValue({ valid: true });
 
     try {
-      await catalogValidate(ctx(['--entity-file', entityPath]));
+      await catalogValidate(ctx(['-']));
     } finally {
-      rmSync(directory, { recursive: true });
+      Object.defineProperty(process, 'stdin', stdin);
     }
 
     expect(mockValidateEntity).toHaveBeenCalledWith(
@@ -140,12 +154,14 @@ describe('catalog validate', () => {
   });
 
   it('passes --location to the catalog', async () => {
+    writeFileSync(entityPath, validEntityYaml);
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { entity: validEntityYaml, location: 'url:https://example.com' },
+      flags: { location: 'url:https://example.com' },
+      _: { file: entityPath },
     });
     mockValidateEntity.mockResolvedValue({ valid: true });
 
-    await catalogValidate(ctx([]));
+    await catalogValidate(ctx([entityPath]));
 
     expect(mockValidateEntity).toHaveBeenCalledWith(
       expect.anything(),
@@ -154,38 +170,39 @@ describe('catalog validate', () => {
     );
   });
 
-  it('reports schema validation errors from the catalog', async () => {
+  it('reports schema validation errors from the catalog and exits with 1', async () => {
+    writeFileSync(entityPath, validEntityYaml);
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { entity: validEntityYaml },
+      flags: {},
+      _: { file: entityPath },
     });
     mockValidateEntity.mockResolvedValue({
       valid: false,
       errors: [{ name: 'Error', message: 'missing apiVersion' }],
     });
 
-    await catalogValidate(ctx([]));
+    await catalogValidate(ctx([entityPath]));
 
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
-    expect(result).toEqual({
+    expect(readOutput()).toEqual({
       isValid: false,
       isValidYaml: true,
       errors: ['missing apiVersion'],
       entity: undefined,
     });
+    expect(process.exitCode).toBe(1);
   });
 
-  it('reports an error if the catalog request fails', async () => {
+  it('propagates catalog request failures instead of reporting an invalid entity', async () => {
+    writeFileSync(entityPath, validEntityYaml);
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { entity: validEntityYaml },
+      flags: {},
+      _: { file: entityPath },
     });
     mockValidateEntity.mockRejectedValue(new Error('network error'));
 
-    await catalogValidate(ctx([]));
-
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
-    expect(result.isValid).toBe(false);
-    expect(result.errors[0]).toContain('network error');
+    await expect(catalogValidate(ctx([entityPath]))).rejects.toThrow(
+      'network error',
+    );
+    expect(stdoutSpy).not.toHaveBeenCalled();
   });
 });

@@ -20,8 +20,10 @@ import {
   type CliCommandContext,
 } from '@backstage/cli-node';
 import { createCatalogClient } from '../lib/catalogClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
+  outputFlag,
+  pageInteractively,
   parseOutputFlag,
   writeJson,
   extractEntities,
@@ -32,21 +34,24 @@ export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
     {
       name: info.usage,
+      strictFlags: true,
       flags: {
         filter: {
           type: [String] as const,
-          description: 'Query predicate as repeatable key=value input',
+          description: 'Filter templates by a field, as key=value (repeatable)',
           default: [] as string[],
         },
-        limit: { type: Number, description: 'Maximum results to return' },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
+        limit: {
+          type: Number,
+          description: 'Maximum number of templates to return per page',
         },
-        instance: {
+        cursor: {
           type: String,
-          description: 'Name of the instance to use',
+          description:
+            'Continue from the cursor returned by a previous page (cannot be combined with --filter)',
         },
+        ...outputFlag,
+        ...instanceFlag,
       },
     },
     undefined,
@@ -54,27 +59,52 @@ export default async ({ args, info }: CliCommandContext) => {
   );
 
   const mode = parseOutputFlag(flags as Record<string, unknown>);
+
+  if (flags.cursor && flags.filter?.length) {
+    throw new Error(
+      '--cursor cannot be combined with --filter, the cursor already contains the original query',
+    );
+  }
+  const filter = parseKeyValuePairs(flags.filter) ?? {};
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
-  const request: Record<string, unknown> = {
-    query: { kind: 'Template', ...parseKeyValuePairs(flags.filter) },
-  };
-  if (flags.limit) request.limit = flags.limit;
+  const fetchPage = async (cursor?: string) => {
+    const request: Record<string, unknown> = {};
+    if (cursor) {
+      request.cursor = cursor;
+    } else {
+      request.query = { kind: 'Template', ...filter };
+    }
+    if (flags.limit) request.limit = flags.limit;
 
-  const response = await client.queryEntities(request, {
-    token: accessToken,
-  });
-  const result = {
-    items: response.items,
-    totalItems: response.totalItems,
-    hasMoreEntities: Boolean(response.pageInfo?.nextCursor),
-    nextPageCursor: response.pageInfo?.nextCursor,
+    const response = await client.queryEntities(request as any, {
+      token: accessToken,
+    });
+    return {
+      items: response.items,
+      totalItems: response.totalItems,
+      hasMoreEntities: Boolean(response.pageInfo?.nextCursor),
+      nextPageCursor: response.pageInfo?.nextCursor,
+    };
   };
 
   if (mode === 'json') {
-    writeJson(result);
-  } else {
-    process.stdout.write(formatEntityTable(extractEntities(result)));
+    writeJson(await fetchPage(flags.cursor));
+    return;
   }
+
+  await pageInteractively(
+    async cursor => {
+      const page = await fetchPage(cursor);
+      return {
+        ...page,
+        count: page.items.length,
+        total: page.totalItems,
+        nextCursor: page.nextPageCursor,
+      };
+    },
+    page => process.stdout.write(formatEntityTable(extractEntities(page))),
+    flags.cursor,
+  );
 };

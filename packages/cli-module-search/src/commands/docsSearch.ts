@@ -17,89 +17,76 @@
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { SearchClient } from '../lib/SearchClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
+  outputFlag,
+  pageInteractively,
   parseOutputFlag,
   writeJson,
   formatSearchResults,
 } from '../lib/intentFormat';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const nonFlagArgs: string[] = [];
-  const flagArgs: string[] = [];
-  let skipNext = false;
-
-  for (let i = 0; i < args.length; i++) {
-    if (skipNext) {
-      skipNext = false;
-      continue;
-    }
-    if (args[i].startsWith('-')) {
-      flagArgs.push(args[i]);
-      if (
-        i + 1 < args.length &&
-        !args[i + 1].startsWith('-') &&
-        !args[i].includes('=')
-      ) {
-        flagArgs.push(args[i + 1]);
-        skipNext = true;
-      }
-    } else {
-      nonFlagArgs.push(args[i]);
-    }
-  }
-
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
+      strictFlags: true,
+      parameters: ['<term...>'],
       flags: {
-        'page-limit': {
+        limit: {
           type: Number,
-          description: 'Results per page (default: 10)',
+          description: 'Maximum number of results to return per page',
         },
-        'page-cursor': {
+        cursor: {
           type: String,
-          description: 'Pagination cursor',
+          description: 'Continue from the cursor returned by a previous page',
         },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
+        ...outputFlag,
+        ...instanceFlag,
       },
     },
     undefined,
-    flagArgs,
+    args,
   );
+  const { flags } = parsed;
 
-  const term = nonFlagArgs.join(' ');
-  if (!term) {
-    throw new Error('Search term is required. Usage: docs search <term>');
-  }
-
+  const term = parsed._.term.join(' ');
   const mode = parseOutputFlag(flags as Record<string, unknown>);
+
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = new SearchClient(baseUrl, accessToken);
 
-  const response = await client.query({
-    term,
-    types: ['techdocs'],
-    pageLimit: flags['page-limit'],
-    pageCursor: flags['page-cursor'],
-  });
-  const result = {
-    results: response.results,
-    nextPageCursor: response.nextPageCursor,
-    totalItems: response.numberOfResults,
-    hasMoreResults: response.nextPageCursor !== undefined,
+  const fetchPage = async (cursor?: string) => {
+    const response = await client.query({
+      term,
+      types: ['techdocs'],
+      pageLimit: flags.limit,
+      pageCursor: cursor,
+    });
+    return {
+      results: response.results,
+      nextPageCursor: response.nextPageCursor,
+      totalItems: response.numberOfResults,
+      hasMoreResults: response.nextPageCursor !== undefined,
+    };
   };
 
   if (mode === 'json') {
-    writeJson(result);
-  } else {
-    process.stdout.write(formatSearchResults(result.results));
+    writeJson(await fetchPage(flags.cursor));
+    return;
   }
+
+  await pageInteractively(
+    async cursor => {
+      const page = await fetchPage(cursor);
+      return {
+        ...page,
+        count: page.results.length,
+        total: page.totalItems,
+        nextCursor: page.nextPageCursor,
+      };
+    },
+    page => process.stdout.write(formatSearchResults(page.results)),
+    flags.cursor,
+  );
 };

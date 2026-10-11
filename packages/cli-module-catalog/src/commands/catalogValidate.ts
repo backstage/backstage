@@ -15,51 +15,41 @@
  */
 
 import { cli } from 'cleye';
-import { readFileSync } from 'node:fs';
 import yaml from 'yaml';
 import type { CliCommandContext } from '@backstage/cli-node';
 import type { Entity } from '@backstage/catalog-model';
 import { createCatalogClient } from '../lib/catalogClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
+import { readFileOrStdin } from '../lib/input';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
+      strictFlags: true,
+      parameters: ['[file]'],
       flags: {
-        entity: {
+        location: {
           type: String,
-          description: 'Entity YAML content',
+          description:
+            'Location to validate the entity as, for example a url: location',
         },
-        'entity-file': {
-          type: String,
-          description: 'Path to a file containing entity YAML',
-        },
-        location: { type: String, description: 'Location to validate' },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
+        ...instanceFlag,
       },
     },
     undefined,
     args,
   );
+  const { flags } = parsed;
+  const file = parsed._.file;
 
-  const entityYaml = flags['entity-file']
-    ? readFileSync(flags['entity-file'], 'utf8')
-    : flags.entity;
-
-  if (!entityYaml) {
+  if (!file) {
     throw new Error(
-      '--entity or --entity-file is required. Usage: catalog validate --entity-file entity.yaml',
+      'An entity YAML file is required, use "-" to read from stdin. Usage: catalog validate <file>',
     );
   }
+  const entityYaml = await readFileOrStdin(file);
 
   let entity: Entity;
   try {
@@ -70,30 +60,26 @@ export default async ({ args, info }: CliCommandContext) => {
       isValidYaml: false,
       errors: [`YAML parsing error: ${yamlError.message}`],
     });
+    process.exitCode = 1;
     return;
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
-  try {
-    const resp = await client.validateEntity(
-      entity,
-      flags.location ?? 'url:https://localhost/entity-validator',
-      { token: accessToken },
-    );
+  const resp = await client.validateEntity(
+    entity,
+    flags.location ?? 'url:https://localhost/entity-validator',
+    { token: accessToken },
+  );
 
-    writeJson({
-      isValid: resp.valid,
-      isValidYaml: true,
-      errors: resp.valid ? [] : resp.errors.map(e => e.message),
-      entity: resp.valid ? entity : undefined,
-    });
-  } catch (error: any) {
-    writeJson({
-      isValid: false,
-      isValidYaml: false,
-      errors: [`Validation error: ${error.message}`],
-    });
+  writeJson({
+    isValid: resp.valid,
+    isValidYaml: true,
+    errors: resp.valid ? [] : resp.errors.map(e => e.message),
+    entity: resp.valid ? entity : undefined,
+  });
+  if (!resp.valid) {
+    process.exitCode = 1;
   }
 };

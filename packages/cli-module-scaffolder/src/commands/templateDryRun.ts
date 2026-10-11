@@ -15,58 +15,37 @@
  */
 
 import { cli } from 'cleye';
-import { readFileSync } from 'node:fs';
 import yaml from 'yaml';
 import {
   parseKeyValuePairs,
   type CliCommandContext,
 } from '@backstage/cli-node';
 import { ScaffolderClient } from '../lib/ScaffolderClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
+import { readFileOrStdin } from '../lib/input';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
       strictFlags: true,
+      parameters: ['<file>'],
       flags: {
-        'template-ref': {
-          type: String,
-          description: 'Full template entity YAML content alias',
-        },
-        'template-file': {
-          type: String,
-          description: 'Path to a template YAML file',
-        },
         value: {
           type: [String] as const,
-          description: 'Template input value as repeatable key=value input',
+          description: 'Template input value, as key=value (repeatable)',
           default: [] as string[],
         },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
+        ...instanceFlag,
       },
     },
     undefined,
     args,
   );
+  const { flags } = parsed;
 
-  if (!flags['template-file'] && !flags['template-ref']) {
-    throw new Error(
-      '--template-file or --template-ref is required. Usage: template dry-run --template-file template.yaml',
-    );
-  }
-
-  const templateYaml = flags['template-file']
-    ? readFileSync(flags['template-file'], 'utf8')
-    : flags['template-ref']!;
+  const templateYaml = await readFileOrStdin(parsed._.file);
 
   let template: unknown;
   try {
@@ -82,13 +61,15 @@ export default async ({ args, info }: CliCommandContext) => {
           : '',
       ].filter(Boolean),
     });
+    process.exitCode = 1;
     return;
   }
+
+  const values = parseKeyValuePairs(flags.value) ?? {};
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = new ScaffolderClient(baseUrl, accessToken);
 
-  const values = parseKeyValuePairs(flags.value) ?? {};
   const result = await client.dryRun({ template, values });
 
   writeJson({
