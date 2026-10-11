@@ -38,7 +38,7 @@ async function generate(
   abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = targetPaths.resolveRoot(
+  const resolvedOutputDirectory = targetPaths.resolveWorkspaceRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
@@ -98,7 +98,9 @@ async function generate(
     signal: abortSignal?.signal,
   });
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
+  const prettier = targetPaths.resolveWorkspaceRoot(
+    'node_modules/.bin/prettier',
+  );
   if (await fs.pathExists(prettier)) {
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
