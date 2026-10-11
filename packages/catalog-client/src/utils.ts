@@ -56,7 +56,7 @@ export function cursorContainsQuery(cursor: string): boolean {
  * without keys. If a key has both string values and `CATALOG_FILTER_EXISTS`,
  * the string values take precedence.
  *
- * @public
+ * @internal
  * @returns The predicate, or `undefined` if the filter does not constrain
  *          the result in any way.
  */

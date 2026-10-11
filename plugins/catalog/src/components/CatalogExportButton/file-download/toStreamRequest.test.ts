@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { toStreamRequest } from './toStreamRequest';
-import { convertFilterToPredicate } from '@backstage/catalog-client';
 import {
   DefaultEntityFilters,
   EntityKindFilter,
@@ -80,9 +79,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
-        }),
+        },
       });
     });
 
@@ -107,10 +106,10 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
           type: 'service',
-        }),
+        },
       });
     });
 
@@ -128,9 +127,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component', 'API', 'Domain'],
-        }),
+        },
       });
     });
 
@@ -153,9 +152,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
-        }),
+        },
       });
     });
 
@@ -178,9 +177,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
-        }),
+        },
       });
     });
 
@@ -199,9 +198,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           type: 'service',
-        }),
+        },
       });
     });
 
@@ -221,9 +220,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
-        }),
+        },
       });
     });
 
@@ -257,10 +256,10 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           'spec.type': 'my-service',
           'metadata.namespace': 'default',
-        }),
+        },
       });
     });
   });
@@ -342,9 +341,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
-        }),
+        },
       });
     });
   });
@@ -369,9 +368,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        query: convertFilterToPredicate({
+        filter: {
           kind: ['Component'],
-        }),
+        },
         fullTextFilter: {
           term: 'search term',
           fields: [
@@ -388,7 +387,7 @@ describe('toStreamRequest', () => {
   });
 
   describe('with predicate filters', () => {
-    it('combines predicates and prefers them over legacy filters', () => {
+    it('passes predicates as a query alongside legacy filters', () => {
       const filters = {
         kind: new EntityKindFilter('component', 'Component'),
         legacy: {
@@ -403,9 +402,9 @@ describe('toStreamRequest', () => {
       } as DefaultEntityFilters;
 
       expect(toStreamRequest(filters)).toEqual({
+        filter: { 'spec.type': 'service' },
         query: {
           $all: [
-            { 'spec.type': 'service' },
             { kind: 'component' },
             { $not: { 'spec.lifecycle': 'experimental' } },
           ],

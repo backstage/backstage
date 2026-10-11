@@ -27,13 +27,11 @@ import {
   EntityUserFilter,
   UserListFilter,
 } from '../filters';
-import {
-  convertFilterToPredicate,
-  EntityOrderQuery,
-} from '@backstage/catalog-client';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 import { FilterPredicate } from '@backstage/filter-predicates';
 
 export interface CatalogFilters {
+  filter?: Record<string, string | symbol | (string | symbol)[]>;
   query?: FilterPredicate;
   fullTextFilter?: {
     term: string;
@@ -65,34 +63,35 @@ export function combinePredicates(
 }
 
 /**
- * Condenses the backend constraints of a set of filters into a single
- * predicate query. Filters that implement `getCatalogQuery` contribute only
- * through that method; others fall back to the deprecated
- * `getCatalogFilters`, which is converted to a predicate.
+ * Condenses the backend constraints of a set of filters. Filters that
+ * implement `getCatalogQuery` contribute only through that method, and their
+ * predicates are combined into a query. Others fall back to the deprecated
+ * `getCatalogFilters`, which are merged into a legacy filter. The catalog
+ * client applies both when given.
  */
-function reduceBackendQuery(
+function reduceBackendConstraints(
   filters: EntityFilter[],
-): FilterPredicate | undefined {
-  const legacyFilter: Record<string, string | symbol | (string | symbol)[]> =
-    {};
+): Pick<CatalogFilters, 'filter' | 'query'> {
+  const filter: NonNullable<CatalogFilters['filter']> = {};
   const predicates: Array<FilterPredicate | undefined> = [];
 
   for (const f of filters) {
     if (f.getCatalogQuery) {
       predicates.push(f.getCatalogQuery());
     } else if (f.getCatalogFilters) {
-      Object.assign(legacyFilter, f.getCatalogFilters());
+      Object.assign(filter, f.getCatalogFilters());
     }
   }
 
-  return combinePredicates([
-    convertFilterToPredicate(legacyFilter),
-    ...predicates,
-  ]);
+  const query = combinePredicates(predicates);
+  return {
+    ...(Object.keys(filter).length > 0 && { filter }),
+    ...(query !== undefined && { query }),
+  };
 }
 
 export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
-  const query = reduceBackendQuery(filters);
+  const constraints = reduceBackendConstraints(filters);
 
   const fullTextFilter = filters.find(isEntityTextFilter)?.getFullTextFilters();
 
@@ -103,7 +102,7 @@ export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
     },
   ];
   return {
-    ...(query !== undefined && { query }),
+    ...constraints,
     fullTextFilter,
     orderFields,
   };
@@ -118,8 +117,8 @@ export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
  */
 export function reduceBackendCatalogFilters(
   filters: EntityFilter[],
-): FilterPredicate | undefined {
-  return reduceBackendQuery(
+): Pick<CatalogFilters, 'filter' | 'query'> {
+  return reduceBackendConstraints(
     filters.filter(
       filter =>
         !(

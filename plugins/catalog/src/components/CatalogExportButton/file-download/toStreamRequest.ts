@@ -18,10 +18,9 @@ import {
   EntityTextFilter,
   EntityOrderFilter,
 } from '@backstage/plugin-catalog-react';
-import {
-  convertFilterToPredicate,
-  type StreamEntitiesRequest,
-  type EntityOrderQuery,
+import type {
+  StreamEntitiesRequest,
+  EntityOrderQuery,
 } from '@backstage/catalog-client';
 import type { FilterPredicate } from '@backstage/filter-predicates';
 
@@ -114,9 +113,8 @@ export const toStreamRequest = (
 
   const request: StreamEntitiesRequest = {};
 
-  const legacyPredicate = convertFilterToPredicate(backendFilters);
-  if (legacyPredicate) {
-    predicates.unshift(legacyPredicate);
+  if (Object.keys(backendFilters).length > 0) {
+    request.filter = backendFilters;
   }
 
   if (predicates.length === 1) {

@@ -36,7 +36,7 @@ export function useAllEntitiesCount() {
       limit: 0,
     };
 
-    if (catalogFilters.query === undefined) {
+    if (!catalogFilters.filter && !catalogFilters.query) {
       prevRequest.current = undefined;
       return prevRequest.current;
     }

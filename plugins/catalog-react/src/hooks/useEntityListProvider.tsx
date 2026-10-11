@@ -295,13 +295,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         };
       }
     } else {
-      const query = reduceBackendCatalogFilters(compacted);
+      const constraints = reduceBackendCatalogFilters(compacted);
       const { orderFields } = reduceCatalogFilters(compacted);
-      fetchParams = { query, orderFields };
+      fetchParams = { ...constraints, orderFields };
       doFetch = async () => {
         const backendEntities: Entity[] = [];
         for await (const page of catalogApi.streamEntities({
-          ...(query !== undefined && { query }),
+          ...constraints,
           orderFields,
           totalItems: 'exclude',
         })) {
