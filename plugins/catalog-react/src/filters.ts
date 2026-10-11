@@ -29,6 +29,21 @@ import { FilterPredicate } from '@backstage/filter-predicates';
 /**
  * Matches entities where the given field has any of the given values.
  */
+function ownedByPredicate(refs: string[]): FilterPredicate {
+  if (refs.length === 0) {
+    // Never matches anything
+    return { $any: [] };
+  }
+  return {
+    relations: {
+      $contains: {
+        type: RELATION_OWNED_BY,
+        targetRef: refs.length === 1 ? refs[0] : { $in: refs },
+      },
+    },
+  };
+}
+
 function anyOfPredicate(field: string, values: string[]): FilterPredicate {
   if (values.length === 1) {
     return { [field]: values[0] } as FilterPredicate;
@@ -117,9 +132,11 @@ export class EntityTagFilter implements EntityFilter {
       return undefined;
     }
     if (this.values.length === 1) {
-      return { 'metadata.tags': this.values[0] };
+      return { 'metadata.tags': { $contains: this.values[0] } };
     }
-    return { $all: this.values.map(tag => ({ 'metadata.tags': tag })) };
+    return {
+      $all: this.values.map(tag => ({ 'metadata.tags': { $contains: tag } })),
+    };
   }
 
   /**
@@ -220,7 +237,7 @@ export class EntityOwnerFilter implements EntityFilter {
   }
 
   getCatalogQuery(): FilterPredicate {
-    return anyOfPredicate('relations.ownedBy', this.values);
+    return ownedByPredicate(this.values);
   }
 
   /**
@@ -334,7 +351,7 @@ export class EntityUserFilter implements EntityFilter {
 
   getCatalogQuery(): FilterPredicate | undefined {
     if (this.value === 'owned') {
-      return anyOfPredicate('relations.ownedBy', this.refs ?? []);
+      return ownedByPredicate(this.refs ?? []);
     }
     if (this.value === 'starred') {
       return {

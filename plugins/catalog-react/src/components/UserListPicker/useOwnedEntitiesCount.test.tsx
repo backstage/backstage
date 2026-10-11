@@ -114,8 +114,13 @@ describe('useOwnedEntitiesCount', () => {
           $all: [
             { 'metadata.namespace': 'a-namespace' },
             {
-              'relations.ownedBy': {
-                $in: ['user:default/spiderman', 'user:group/a-group'],
+              relations: {
+                $contains: {
+                  type: 'ownedBy',
+                  targetRef: {
+                    $in: ['user:default/spiderman', 'user:group/a-group'],
+                  },
+                },
               },
             },
           ],
@@ -228,7 +233,11 @@ describe('useOwnedEntitiesCount', () => {
         query: {
           $all: [
             { 'metadata.namespace': 'a-namespace' },
-            { 'relations.ownedBy': 'user:group/a-group' },
+            {
+              relations: {
+                $contains: { type: 'ownedBy', targetRef: 'user:group/a-group' },
+              },
+            },
           ],
         },
         limit: 0,

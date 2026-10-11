@@ -134,7 +134,7 @@ describe('DefaultCatalogPage', () => {
       .fn()
       .mockImplementation(async (request: QueryEntitiesInitialRequest) => {
         const query = JSON.stringify(request.query ?? {});
-        if (query.includes('relations.ownedBy')) {
+        if (query.includes('ownedBy')) {
           // owned entities
           return { items: [], totalItems: 3, pageInfo: {} };
         }

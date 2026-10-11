@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,11 @@ describe('reduceCatalogFilters', () => {
       $all: [
         { kind: 'component' },
         { 'spec.type': { $in: ['service', 'website'] } },
-        { 'relations.ownedBy': 'group:default/a' },
+        {
+          relations: {
+            $contains: { type: 'ownedBy', targetRef: 'group:default/a' },
+          },
+        },
       ],
     });
     expect(result.orderFields).toEqual([
@@ -102,7 +106,7 @@ describe('reduceCatalogFilters', () => {
 
   it('never matches anything for an empty set of owned refs', () => {
     expect(reduceCatalogFilters([EntityUserFilter.owned([])]).query).toEqual({
-      'relations.ownedBy': { $in: [] },
+      $any: [],
     });
   });
 });
