@@ -39,7 +39,7 @@ async function generate(
   abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = targetPaths.resolveRoot(
+  const resolvedOutputDirectory = targetPaths.resolveWorkspaceRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
