@@ -23,6 +23,7 @@ creation-date: 2026-09-19
   - [Detection](#detection)
   - [Package Manager API](#package-manager-api)
   - [Commands](#commands)
+  - [Running Under a Build System](#running-under-a-build-system)
   - [Version Bumps](#version-bumps)
   - [App Template](#app-template)
   - [Testing](#testing)
@@ -47,9 +48,9 @@ creation-date: 2026-09-19
 
 The Backstage CLI only works with Yarn. `create-app` produces a Yarn workspace. Commands such as `versions:bump`, `repo test`, `package bundle`, and `build-workspace` call `yarn` directly or read `yarn.lock`.
 
-This BEP adds pnpm as a second supported package manager. `@backstage/cli-node` has an internal, unused `PackageManager` interface. This BEP completes it, makes it public, moves every command onto it, and adds a pnpm implementation. `create-app` gets a `--package-manager` option. The Backstage monorepo itself keeps using Yarn.
+This BEP adds pnpm as a second supported package manager. `@backstage/cli-node` has an internal, unused `PackageManager` interface. This BEP completes it, exports it as `@alpha`, moves every command onto it, and adds a pnpm implementation. `create-app` gets a `--package-manager` option. The Backstage monorepo itself keeps using Yarn.
 
-Support is limited to pnpm 12.4 or later, Node.js 24 or later, Linux and macOS, and the `hoisted` node linker.
+Support is limited to pnpm 12.7 or later, Node.js 24 or later, and Linux and macOS. The CLI and the backend work with both the `hoisted` and the `isolated` node linker, as long as hoisting is not turned off. Generated apps use `hoisted`.
 
 ## Motivation
 
@@ -63,8 +64,10 @@ Adopters cannot switch on their own. About 30 source files in `@backstage/cli-no
 - The CLI detects the package manager from the project. No extra configuration is needed.
 - Yarn behavior does not change.
 - The `PackageManager` API in `@backstage/cli-node` is complete enough that another package manager can be added later without touching the commands again. `package bundle` is the exception, see [Dynamic Plugin Bundles](#dynamic-plugin-bundles).
-- The CLI keeps the workspace root, the Backstage installation root, and the command directory apart, so that one workspace can hold several Backstage installations. See [Locations](#locations).
-- pnpm installations manage their Backstage versions through a catalog, so `versions:bump` has one place to write. See [Version Bumps](#version-bumps).
+- The CLI keeps the workspace root, the Backstage installation root, and the command directory apart, so that a Backstage installation can live inside a larger workspace. See [Locations](#locations).
+- `versions:bump` updates each dependency where it is declared, whether that is a plain range or a pnpm catalog. See [Version Bumps](#version-bumps).
+- The CLI and the backend work under both the `hoisted` and the `isolated` node linker, with pnpm's default hoisting. See [Node Linker](#node-linker).
+- Commands are safe to run under a build system that owns installs and caching. See [Running Under a Build System](#running-under-a-build-system).
 - pnpm gets end-to-end test coverage in CI on Linux.
 
 ### Non-Goals
@@ -72,16 +75,19 @@ Adopters cannot switch on their own. About 30 source files in `@backstage/cli-no
 - Migrating the Backstage monorepo to pnpm.
 - npm or Bun support. The API should not block them, but they are not implemented.
 - Windows support for pnpm apps.
-- The `isolated` node linker. See [Node Linker](#node-linker).
-- A pnpm equivalent of the `backstage:^` version protocol. pnpm uses catalogs instead. See [Version Bumps](#version-bumps).
-- pnpm support in `@backstage/repo-tools`, beyond the rename in [Lockfile Naming](#lockfile-naming). The package is public, and its package documentation, OpenAPI, and API report commands call Yarn and read `yarn.lock` directly. pnpm adopters who use those commands will hit this, so it is deferred rather than dismissed, and it is the first follow-up once the API is public.
+- A pnpm equivalent of the `backstage:^` version protocol. See [Version Bumps](#version-bumps).
+- Several Backstage versions in one workspace. The design assumes one Backstage version per workspace.
+- Catalog support under Yarn. Yarn 4.18, which this repository pins, supports the same `catalog:` protocol, and the version bump design extends to it, but Yarn keeps its current behavior in this BEP.
+- `create-app` into an existing pnpm workspace, which would skip `pnpm-workspace.yaml` and the lockfile and print the package entries to add. This is useful later but not part of the first release.
+- pnpm support in `@backstage/repo-tools`, beyond the rename in [Lockfile Naming](#lockfile-naming). These commands resolve binaries from the root `node_modules/.bin` or call Yarn directly, and are known gaps under pnpm: `package-docs`, the OpenAPI commands, `api-reports`, and `type-deps`. They are deferred, not dismissed, and are documented as gaps until they are fixed.
+- Layouts where a package can only see its own dependencies: `hoist: false`, and the global virtual store when the backend is started with plain `node`. Backend plugins cannot locate their own files there. See [Node Linker](#node-linker).
 - Changes to the Backstage Yarn plugin or to `pm verify-patches`.
 
 ## Proposal
 
 ### Supported Versions and Platforms
 
-pnpm 12.4 or later. Requiring the current release keeps the tested surface small. The features the CLI needs are older: native `pnpm view` and the `pnpm-workspace.yaml` settings model came in pnpm 11.0, catalogs came in pnpm 9.5, and `pnpm pack --out` exists in all supported versions. The minimum can be lowered later if someone tests older versions.
+pnpm 12.7 or later. It is the first release that links workspace packages into the root `node_modules` under the `hoisted` linker, as Yarn does, and the backend relies on that. See [Node Linker](#node-linker). Requiring a recent release also keeps the tested surface small. The features the CLI needs are older: native `pnpm view` and the `pnpm-workspace.yaml` settings model came in pnpm 11.0, catalogs came in pnpm 9.5, and `pnpm pack --out` exists in all supported versions.
 
 Older versions fail with an error that names the minimum version.
 
@@ -99,9 +105,9 @@ The CLI works with three locations that must not be conflated. A large monorepo 
 
 `targetPaths` in `@backstage/cli-common` models only two of these today: `dir` is the working directory and `rootDir` is the workspace root, which callers also use as the installation root. It gains `workspaceRootDir` and `installationRootDir`. `rootDir` keeps its current value and is deprecated in favor of the two explicit names, so that every existing caller has to say which one it meant.
 
-The workspace root lookup uses `@manypkg/find-root`, which already understands Yarn and pnpm workspaces, instead of the hand-written walk that looks only for a `workspaces` field. `@backstage/cli-node` already depends on it through `@manypkg/get-packages`; `@backstage/cli-common` takes it as a new dependency.
+The workspace root lookup keeps the existing walk in `@backstage/cli-common` and also accepts a directory that holds a `pnpm-workspace.yaml`. It does not use `@manypkg/find-root`. `@backstage/backend-plugin-api` and `@backstage/config-loader` depend on `@backstage/cli-common` at runtime, so a new dependency there lands in every backend installation, and `@manypkg/find-root` also treats a `lerna.json` directory as a root and fails outside a package. Workspace package discovery, which expands the globs, does use `@manypkg/get-packages` in `@backstage/cli-node`.
 
-A `PackageManager` instance is bound to one workspace root, because that is what fixes the lockfile and the settings. Every method takes the location it acts on rather than reading `process.cwd()`. This separation lands before the API becomes public, since it cannot be added afterwards without another breaking change.
+A `PackageManager` instance is bound to one workspace root, because that is what fixes the lockfile and the settings. Every method takes the location it acts on rather than reading `process.cwd()`. This separation lands before the API leaves `@alpha`, since it cannot be added afterwards without another breaking change.
 
 ### Detection
 
@@ -128,23 +134,23 @@ Detection reads only the workspace root. It never walks up past it, and it never
 
 ### Package Manager API
 
-The `PackageManager` interface in `@backstage/cli-node` grows to cover what the commands need. It becomes part of the public API of the package.
+The `PackageManager` interface in `@backstage/cli-node` grows to cover what the commands need. It is exported as `@alpha` while pnpm support is experimental, so its shape can still change. It is promoted once the locations have settled and pnpm support is stable.
 
-| Method                              | Yarn                               | pnpm                             |
-| ----------------------------------- | ---------------------------------- | -------------------------------- |
-| `name()`                            | `yarn`                             | `pnpm`                           |
-| `version()`                         | `yarn --version`                   | `pnpm --version`                 |
-| `lockfileName()`                    | `yarn.lock`                        | `pnpm-lock.yaml`                 |
-| `install(options)`                  | `yarn install --immutable`         | `pnpm install --frozen-lockfile` |
-| `run(args)`                         | `yarn <args>`                      | `pnpm <args>`                    |
-| `runScript(name, args)`             | `yarn run <name>`                  | `pnpm run <name>`                |
-| `runWorkspaceScript(pkg, name)`     | `yarn workspace <pkg> <name>`      | `pnpm --filter <pkg> run <name>` |
-| `pack(out, dir)`                    | `yarn pack --out`                  | `pnpm pack --out`                |
-| `fetchPackageInfo(name)`            | `yarn npm info --json`             | `pnpm view --json`               |
-| `loadLockfile()`, `parseLockfile()` | `yarn.lock` parser                 | `pnpm-lock.yaml` parser          |
-| `versionStrategy()`                 | `backstage-protocol` or `explicit` | `catalog`                        |
-| `readCatalogs()`, `writeCatalog()`  | not supported                      | `pnpm-workspace.yaml` catalogs   |
-| `getCommandHint(args)`              | `yarn backstage-cli repo fix`      | `pnpm backstage-cli repo fix`    |
+| Method                               | Yarn                          | pnpm                             |
+| ------------------------------------ | ----------------------------- | -------------------------------- |
+| `name()`                             | `yarn`                        | `pnpm`                           |
+| `version()`                          | `yarn --version`              | `pnpm --version`                 |
+| `lockfileName()`                     | `yarn.lock`                   | `pnpm-lock.yaml`                 |
+| `install(options)`                   | `yarn install --immutable`    | `pnpm install --frozen-lockfile` |
+| `run(args)`                          | `yarn <args>`                 | `pnpm <args>`                    |
+| `runScript(name, args)`              | `yarn run <name>`             | `pnpm run <name>`                |
+| `runWorkspaceScript(pkg, name)`      | `yarn workspace <pkg> <name>` | `pnpm --filter <pkg> run <name>` |
+| `pack(out, dir)`                     | `yarn pack --out`             | `pnpm pack --out`                |
+| `fetchPackageInfo(name)`             | `yarn npm info --json`        | `pnpm view --json`               |
+| `loadLockfile()`, `parseLockfile()`  | `yarn.lock` parser            | `pnpm-lock.yaml` parser          |
+| `supportsBackstageVersionProtocol()` | `true` with the Yarn plugin   | `false`                          |
+| `readCatalogs()`, `updateCatalog()`  | not in this BEP               | root `pnpm-workspace.yaml`       |
+| `getCommandHint(args)`               | `yarn backstage-cli repo fix` | `pnpm backstage-cli repo fix`    |
 
 `install()` acts on the whole workspace, and the API says so rather than leaving it to the caller's working directory. Neither package manager scopes an install to the directory it runs in: `pnpm install` inside a workspace project installs every project in that workspace, and Yarn behaves the same way. So `install()` takes no `cwd`. It runs at the workspace root the instance is bound to, and a caller that changes directory cannot accidentally install a whole monorepo.
 
@@ -161,7 +167,7 @@ Both implementations live in `@backstage/cli-node`. See [Alternatives](#alternat
 Every command that calls Yarn today moves to the API.
 
 - `repo test`, `repo lint`, `info`, `new`, and `versions:bump` read the lockfile through `loadLockfile()`. `repo build`, `repo test`, and `repo lint` with `--since` diff the lockfile at a git ref. They use `lockfileName()` to know which file changed. When the changed lockfile belongs to another package manager, when it cannot be read or parsed, or when its workspace entries cannot be named against that same ref, all packages count as changed. See [Importer Names and Historical Lockfiles](#importer-names-and-historical-lockfiles).
-- `versions:bump`, `versions:migrate`, and `new` run installs through `install()`. `new` runs `lint --fix` through `runScript()`. Under pnpm, `versions:bump` skips the Yarn plugin update step and writes a catalog instead. See [Version Bumps](#version-bumps).
+- `versions:bump` and `new` run installs through `install()`. `new` runs `lint --fix` through `runScript()`. Under pnpm, `versions:bump` skips the Yarn plugin update step and updates catalog entries where dependencies use them. See [Version Bumps](#version-bumps).
 - `package build` for backends and `build-workspace` copy the lockfile named by `lockfileName()` into the dist workspace. Under pnpm they also copy `pnpm-workspace.yaml`. Packages are packed with `pack()`. Custom build scripts run through `runScript()`.
 - `repo test` discovers workspace packages through `@manypkg/get-packages`, which reads the globs from `pnpm-workspace.yaml` or from the `workspaces` field as appropriate. Without this, it only tests the root package of a pnpm workspace. `@backstage/cli-node` already depends on that package, so this replaces hand-written glob handling rather than adding any.
 - `repo clean` runs the `clean` script through `runScript()`.
@@ -169,39 +175,36 @@ Every command that calls Yarn today moves to the API.
 - The `no-undeclared-imports` lint rule uses `pnpm add` and `pnpm remove` in its fixer. See [Lint Rule Fixer](#lint-rule-fixer).
 - Messages that tell the user to run `yarn <something>` use `getCommandHint()`.
 
+### Running Under a Build System
+
+pnpm workspaces are often driven by a build system, such as Bazel with `rules_js`, that owns installs and caching. Commands must be safe to run there:
+
+- No command installs implicitly. `versions:bump` and `new` keep their `--skip-install` flag, and nothing this BEP adds runs an install outside those commands and `package bundle`.
+- Caches can be turned off. The success caches of `repo test` and `repo lint` stay opt-in.
+- A readable lockfile is not a hard requirement. Commands that read the lockfile treat a missing or unreadable one as missing information: `--since` counts every package as changed, and `versions:bump` skips its report of breaking updates.
+
 ### Version Bumps
 
-Yarn keeps exactly the behavior it has today. With the Backstage Yarn plugin, `backstage:^` resolves through the plugin and `versions:bump` writes that range; without the plugin it writes explicit ranges. Nothing on the Yarn path changes.
+Yarn keeps exactly the behavior it has today. With the Backstage Yarn plugin, `backstage:^` resolves through the plugin and `versions:bump` writes that range; without the plugin it writes explicit ranges. The only addition on the Yarn path is the `--dry-run --json` flag described below.
 
-pnpm does not get an equivalent protocol. It uses catalogs, which pnpm supports natively and which give `versions:bump` a single place to write. The pnpm template declares a catalog named `backstage` in `pnpm-workspace.yaml`, and every `@backstage/*` dependency in the generated app refers to it:
+Under pnpm, `versions:bump` resolves the target version of every matching package once, from the release manifest as it does today. It then writes each version where the dependency is already declared:
 
-```yaml
-catalogs:
-  backstage:
-    '@backstage/plugin-catalog': ^1.0.0
-```
+- A plain range is updated in the `package.json` that declares it, as under Yarn without the plugin.
+- A `catalog:` reference is updated in the default catalog of the root `pnpm-workspace.yaml`.
 
-```json
-{
-  "dependencies": {
-    "@backstage/plugin-catalog": "catalog:backstage"
-  }
-}
-```
-
-`backstage` is the name `versions:bump` reads and writes by default. A plain `versions:bump` resolves the release manifest the way it does today and rewrites the entries of that catalog, leaving the `package.json` files alone. A dependency that is not in the catalog keeps its explicit range and is bumped in place, as it is under Yarn without the plugin.
-
-`versions:bump --catalog <name>` bumps a different catalog. Together with `--release` this lets one installation track more than one line:
+`--catalog <name>` updates the entries of the named catalog instead, and nothing else. It is for adopters who deliberately keep a second release line, such as a `backstage-next` catalog during a migration:
 
 ```bash
 backstage-cli versions:bump --catalog backstage-next --release next
 ```
 
-Only the `backstage` catalog has a default. For any other catalog the caller supplies the conditions on each run, since nothing in the repository records what a given catalog is meant to track.
+A named catalog that does not exist is an error. A typo must not create a catalog that nothing references. The BEP prescribes no catalog names.
 
-`versions:migrate` moves the `@backstage/*` dependencies of a pnpm installation into the `backstage` catalog, replacing their ranges with `catalog:backstage` and creating the catalog if it is missing. This is how an existing pnpm app opts in.
+`--dry-run --json` prints the resolved version map and writes nothing. Renovate, build systems, and other tools can then reuse the resolution without the CLI changing any files. It works under both package managers.
 
-Catalogs are a workspace-level feature, so the catalog lives at the workspace root while the packages being bumped live under the installation root. `versions:bump` uses the installation root to decide which packages it owns and the workspace root to find the catalog that serves them. See [Locations](#locations).
+The design assumes one Backstage version per workspace. Catalogs can only be defined in the root `pnpm-workspace.yaml`, so several Backstage installations in one workspace share them. Large monorepos tend to keep a one-version rule anyway.
+
+This needs no version protocol, no catalog naming policy, and no pnpm hooks or config dependencies. It also fits repositories that enforce catalog usage with lint rules, since `versions:bump` never moves a dependency between a range and a catalog.
 
 pnpm records the resolved catalog entries in `pnpm-lock.yaml`, so a catalog change is a lockfile change and `--since` sees it like any other.
 
@@ -213,8 +216,8 @@ The option is independent of the existing `--legacy` option. Both built-in templ
 
 The pnpm variant of the template differs in these files:
 
-- `package.json`: `packageManager` is set to pnpm. There is no `workspaces` field and no `resolutions` field. Every `@backstage/*` dependency is `catalog:backstage`. Scripts use `pnpm --filter backend` instead of `yarn workspace backend`.
-- `pnpm-workspace.yaml`: package globs, `nodeLinker: hoisted`, a `backstage` catalog holding the `@backstage/*` ranges, `minimumReleaseAge` with an exclusion for `@backstage/*`, `overrides` for the React type packages, and `allowBuilds`. See [pnpm Settings in the Template](#pnpm-settings-in-the-template).
+- `package.json`: `packageManager` is set to pnpm. There is no `workspaces` field and no `resolutions` field. Scripts use `pnpm --filter backend` instead of `yarn workspace backend`.
+- `pnpm-workspace.yaml`: package globs, `nodeLinker: hoisted`, `minimumReleaseAge` with an exclusion for `@backstage/*`, `overrides` for the React type packages, and `allowBuilds`. See [pnpm Settings in the Template](#pnpm-settings-in-the-template).
 - `.yarnrc.yml`, `.yarn/`, and `yarn.lock` are not written. `pnpm-workspace.yaml` is not written for Yarn apps.
 - `packages/backend/Dockerfile` installs pnpm with `npm install -g pnpm@<version>`, where the version is the one in the `packageManager` field. It copies `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `package.json`, `backstage.json`, and the skeleton archive. It installs with `pnpm install --frozen-lockfile --prod`, with the cache mount pointed at the pnpm store.
 - `.github/workflows/ci.yml` sets up pnpm with `pnpm/action-setup` and runs `pnpm install --frozen-lockfile`.
@@ -224,19 +227,21 @@ The pnpm variant of the template differs in these files:
 
 `create-app` downloads a seed `yarn.lock` today. It holds a few pins for dependency versions known to break new apps, added with a repo script. pnpm apps do not get a seed lockfile. If a pin is ever needed for pnpm, it goes into `overrides` in the template.
 
+The template writes plain ranges in the first release. Emitting `catalog:` references for the `@backstage/*` dependencies is a follow-up. `versions:bump` handles both, so apps created before and after that change bump the same way.
+
 ### Testing
 
 `e2e-test run` gets a `--package-manager` option. The workspace of local packages is still built with Yarn, since it is the Backstage repository. The generated app points at that workspace through `file:` overrides for every workspace package. For Yarn they go into `resolutions` in `package.json`, for pnpm into `overrides` in `pnpm-workspace.yaml`.
 
 The test also sets `frozenLockfile: false` in `pnpm-workspace.yaml`. pnpm turns on frozen installs when `CI` is set and a lockfile exists, and the installs that `backstage-cli new` runs after adding a plugin must be able to update the lockfile. This is the pnpm equivalent of the `YARN_ENABLE_IMMUTABLE_INSTALLS=false` setting the Yarn variant uses.
 
-The test then runs `pnpm install` in the app directory, followed by the same type-check, build, lint, and test scripts as the Yarn variant. A separate `E2E Linux pnpm` job in the Linux end-to-end workflow runs this on pull requests, on Node.js 24 with pnpm 12.4. The job installs pnpm with `pnpm/action-setup` and sets the version explicitly, since the root `package.json` of the repository pins Yarn.
+The test then runs `pnpm install` in the app directory, followed by the same type-check, build, lint, and test scripts as the Yarn variant. A separate `E2E Linux pnpm` job in the Linux end-to-end workflow runs this on pull requests, on Node.js 24 with pnpm 12.7, once with the `hoisted` linker the template generates and once with the app switched to `isolated`. The job installs pnpm with `pnpm/action-setup` and sets the version explicitly, since the root `package.json` of the repository pins Yarn.
 
-Unit tests cover detection, the three locations against a fixture monorepo that holds two Backstage installations, the pnpm lockfile parser with fixture files, catalog reads and writes, and every command that branches on the package manager.
+Unit tests cover detection, the three locations against a fixture monorepo with the Backstage installation nested below the workspace root, the pnpm lockfile parser with fixture files, version bumps through plain ranges, the default catalog, and a named catalog, and every command that branches on the package manager.
 
 ### Documentation
 
-A new `docs/tooling/package-managers.md` page describes which package managers are supported, how detection works, what the pnpm template contains and why, how catalogs replace the `backstage:^` protocol under pnpm, what differs per command, the limitations, and how to migrate an existing app from Yarn. The getting started guide, the "Keeping Backstage Updated" page, the CLI module overview, the Yarn package manager module page, and the local package linking page get short pnpm notes that link to it. The Yarn-plugin-only parts are marked as such.
+A new `docs/tooling/package-managers.md` page describes which package managers are supported, how detection works, what the pnpm template contains and why, how `versions:bump` treats catalogs, what differs per command, the node linkers, the known gaps, and how to migrate an existing app from Yarn. The getting started guide, the "Keeping Backstage Updated" page, the CLI module overview, the Yarn package manager module page, and the local package linking page get short pnpm notes that link to it. The Yarn-plugin-only parts are marked as such.
 
 ## Design Details
 
@@ -246,14 +251,14 @@ A new `docs/tooling/package-managers.md` page describes which package managers a
 
 Fixing that lookup is not enough on its own, because the single `rootDir` is used for two different questions. `targetPaths` gains the two roots described in [Locations](#locations):
 
-- `workspaceRootDir` walks up with `@manypkg/find-root`, which accepts a `workspaces` field or a `pnpm-workspace.yaml`. Callers that want the lockfile, the package manager settings, or the catalogs use this.
+- `workspaceRootDir` walks up to the nearest directory whose `package.json` has a `workspaces` field or that holds a `pnpm-workspace.yaml`. Callers that want the lockfile, the package manager settings, or the catalogs use this.
 - `installationRootDir` walks up for the nearest `backstage.json`. Callers that want the set of packages that make up one Backstage installation use this. `BACKSTAGE_JSON` is already exported from `@backstage/cli-common`; there is no helper that finds it today.
 
 Both are lazy and cached the way `rootDir` already is, and both re-resolve when the working directory changes. `rootDir` keeps returning the workspace root, and is deprecated. Every caller of `rootDir` in the repository is moved to one of the two explicit names, which is where the two questions get separated in practice.
 
 When there is no `backstage.json` above the working directory, `installationRootDir` falls back to the workspace root and the commands that need an installation say so in their error rather than operating on the wrong set of packages.
 
-This is the first change to make, because every other change depends on it, and because the `PackageManager` API cannot be made public before the locations it takes are settled.
+This is the first change to make, because every other change depends on it, and because the `PackageManager` API cannot leave `@alpha` before the locations it takes are settled.
 
 ### Lockfile Naming
 
@@ -294,13 +299,18 @@ Transitive packages have no specifier in pnpm lockfiles. Their entries use the r
 
 ### Node Linker
 
-Generated pnpm apps set `nodeLinker: hoisted`. This produces a flat `node_modules` layout equivalent to what Yarn produces with `nodeLinker: node-modules`. That layout is what the Backstage repository and all Backstage plugins are tested against.
+The CLI and the backend work under both the `hoisted` and the `isolated` node linker. Many pnpm monorepos run fully isolated, and a Backstage that only works hoisted does not work in those repositories at all. Turning hoisting off is not supported yet, see the end of this section.
 
-The `isolated` linker exposes undeclared imports, which are common in the plugin ecosystem. Supporting it is a separate effort.
+Generated apps still set `nodeLinker: hoisted`. It produces a flat `node_modules` layout equivalent to what Yarn produces with `nodeLinker: node-modules`, which is what the plugin ecosystem is tested against. Plugins with undeclared imports break under `isolated`, and a generated app must keep working with whatever plugins an adopter installs. Switching the template to `isolated` is a later decision.
 
-One difference from Yarn remains with the `hoisted` linker. pnpm does not link workspace packages into the root `node_modules`. A `workspace:` or `link:` dependency is linked only into the `node_modules` of the packages that depend on it. `hoistWorkspacePackages` and `publicHoistPattern` do not change this. This was checked with pnpm 12.4.2. Yarn links every workspace package into the root.
+The backend finds packages from the location of `@backstage/backend-plugin-api` or from the workspace root. Yarn links every workspace package into the root `node_modules`, and so does pnpm 12.7 and later under `hoisted`. Under `isolated` with the default `hoist: true`, every package is also linked into the hidden `node_modules/.pnpm/node_modules`, which Node.js finds when it resolves from inside the virtual store. Two places need a fix anyway, and both are correct under Yarn as well:
 
-This matters for the backend. `@backstage/backend-plugin-api` is hoisted to the root, and its `resolvePackagePath()` is how the backend finds the `app` package it serves. From the root, `app` is not visible. `resolvePackagePath()` now retries from the current working directory and from the directory of the main module when the normal lookup fails. Both lead to the backend package, which has `app` in its own `node_modules`. Plain `require.resolve()` calls from a hoisted dependency do not get this fallback.
+- `@backstage/plugin-app-backend` finds the app package it serves through `resolvePackagePath()`, which resolves from the location of `@backstage/backend-plugin-api`. That only works when the app package is hoisted. When that lookup does not find it, the app package is resolved from the backend package, which depends on it. The first lookup stays, so test overrides of the package path keep working. `resolvePackagePath()` itself does not change.
+- The dynamic plugin loader in `@backstage/backend-dynamic-feature-service` limits the module search of a dynamic plugin to the plugin's own `node_modules` and the root `node_modules`. Under `isolated`, the packages a dynamic plugin shares with the host backend are not in the root `node_modules`, so the loader also searches the backend package's `node_modules`. It is searched after the root, so a module that the root provides resolves as before.
+
+Other failures under `isolated` are expected to come from undeclared imports, which the `no-undeclared-imports` lint rule already reports. The `isolated` end-to-end run is there to catch the rest.
+
+Layouts where a package can only see its own dependencies are not supported yet: `hoist: false`, and the global virtual store when the backend is started with plain `node` instead of through `pnpm`. `resolvePackagePath()` cannot find other packages there, so every backend plugin that locates its own files with it fails to start, whether it is published or part of the workspace. 16 packages in this repository call it, among them the catalog, scaffolder, and auth backends, and the database documentation shows adopters the same pattern. Making these layouts work means resolving from the caller instead, which changes how every backend plugin locates its files and is left to a separate proposal. Until then, these layouts need hoisting enabled for the backend packages, or, under the global virtual store, the backend started through `pnpm`.
 
 ### pnpm Settings in the Template
 
@@ -354,27 +364,30 @@ Breaking change, shipped as a `minor` bump:
 
 Non-breaking changes, shipped as `patch` bumps:
 
-- `PackageManager`, `Lockfile`, `detectPackageManager()`, and the two implementations become public exports of `@backstage/cli-node`.
+- `PackageManager`, the `Lockfile` interface, `detectPackageManager()`, and the two implementations are exported from `@backstage/cli-node` as `@alpha`.
 - `targetPaths` in `@backstage/cli-common` gains `workspaceRootDir` and `installationRootDir`. `rootDir` keeps its value and is deprecated.
-- `hasBackstageYarnPlugin()` stays. It is marked deprecated in favor of `versionStrategy()` on the detected package manager.
+- `hasBackstageYarnPlugin()` stays. It is deprecated when the `PackageManager` API leaves `@alpha`.
 - The `--alwaysYarnPack` alias of `build-workspace` stays.
-- `resolvePackagePath()` in `@backstage/backend-plugin-api` gains the retry described in [Node Linker](#node-linker). Packages found by the normal lookup resolve as before.
+- `versions:bump` gains `--catalog` and `--dry-run --json`, and no longer fails when the lockfile cannot be read.
+- `@backstage/plugin-app-backend` resolves the app package from the backend package, and the dynamic plugin loader also searches the backend package's `node_modules`. Anything found before is found the same way. See [Node Linker](#node-linker).
 - `repo test` finds the packages of pnpm workspaces. Yarn workspaces are read as before.
 - No CLI command is renamed or removed.
 
 ## Release Plan
 
-The work is split into stacked pull requests.
+The two backend fixes in [Node Linker](#node-linker) do not depend on anything else here and land first, as their own pull request. They change nothing for apps where every package is hoisted.
 
-1. The three locations in `@backstage/cli-common`: `workspaceRootDir` and `installationRootDir`, the `@manypkg/find-root` lookup, and moving every caller of `rootDir` onto one of the two names. No behavior change for a repository where all three coincide, which is every Yarn repository today.
-2. Package manager API in `@backstage/cli-node` and the `YarnLockfile` rename, on top of the settled locations. Detection warnings go to stderr, and `--since` treats every package as changed when the lockfile cannot be diffed or its workspace entries cannot be named. No other behavior change for Yarn projects.
-3. Move every command onto the API. No behavior change.
+The rest is split into stacked pull requests.
+
+1. The three locations in `@backstage/cli-common`: `workspaceRootDir` and `installationRootDir`, the workspace root lookup that accepts `pnpm-workspace.yaml`, and moving every caller of `rootDir` onto one of the two names. No behavior change for a repository where all three coincide, which is every Yarn repository today.
+2. Package manager API in `@backstage/cli-node` as `@alpha`, and the `YarnLockfile` rename. Detection warnings go to stderr, and `--since` treats every package as changed when the lockfile cannot be diffed or its workspace entries cannot be named. No other behavior change for Yarn projects.
+3. Move every command onto the API, and make the lockfile optional where [Running Under a Build System](#running-under-a-build-system) requires it.
 4. pnpm implementation and detection, workspace discovery through `@manypkg/get-packages`, and the lockfile parser on `@pnpm/*`. Existing pnpm projects start working with the CLI.
-5. Catalogs: `versionStrategy()`, catalog reads and writes, `versions:bump --catalog`, and `versions:migrate` moving an existing pnpm app into the `backstage` catalog.
+5. Version bumps under pnpm: plain ranges and catalogs, `--catalog`, and `--dry-run --json`.
 6. `package bundle` under pnpm.
-7. `create-app --package-manager pnpm` and the template, together with the `resolvePackagePath()` retry in `@backstage/backend-plugin-api`. The generated backend needs it to find the `app` package.
-8. End-to-end tests and the `E2E Linux pnpm` job.
-9. Documentation.
+7. `create-app --package-manager pnpm` and the template.
+8. End-to-end tests and the `E2E Linux pnpm` job, under both linkers.
+9. Documentation, including the known gaps.
 
 pnpm support is documented as experimental in the first release that ships it. It is documented as stable after one full release cycle with the end-to-end job green.
 
@@ -388,10 +401,14 @@ None on other BEPs. The work builds on the CLI module system and the internal `P
 
 **Hand-write the lockfile parser on top of the `yaml` package.** This is what an earlier draft proposed, to avoid an ESM-only dependency while Backstage still supported Node.js 22.0. With the floor at Node.js 24 the only cost left is a dynamic `import()` from a CommonJS build, which is far cheaper than owning a parser for a format pnpm keeps evolving.
 
-**Support the `isolated` linker first.** This breaks plugins with undeclared imports. `hoisted` is a drop-in for what Yarn produces today.
+**Generate `isolated` in the template from the start.** The CLI and the backend work under `isolated`, but plugins with undeclared imports do not, and a generated app must work with any plugin an adopter installs. `hoisted` is a drop-in for what Yarn produces today.
 
-**Explicit ranges under pnpm instead of catalogs.** This is what an earlier draft proposed: `versions:bump` would rewrite every `@backstage/*` range in every `package.json`, as Yarn does without the plugin. It works, but it spreads one decision across every package in the installation and gives no way to track two release lines at once. Catalogs are a native pnpm feature that solves both, so the extra scope is worth it.
+**A fallback in `resolvePackagePath()`.** An earlier draft retried the lookup from the working directory and the main module when the normal lookup failed. That hides the actual problem, which is that the app backend resolves the app package from the wrong place, and it only helps callers of that one function.
 
-**A custom pnpm resolver for a `backstage:` protocol.** Custom resolvers arrived in pnpm 11 and could reproduce `backstage:^` under pnpm. That would mean shipping and maintaining a pnpm plugin as well as the Yarn one, to reach a place catalogs already reach natively. A follow-up at most.
+**A `backstage` catalog that `versions:bump` owns.** An earlier draft put every `@backstage/*` dependency in a named `backstage` catalog and had `versions:migrate` move existing apps into it. That makes the CLI own a catalog naming policy, conflicts with repositories that enforce their own catalog rules, and does not fit large workspaces where catalogs are defined once at the root. Writing each version where the dependency is already declared needs none of that.
+
+**One catalog per Backstage installation.** This would let several installations in one workspace run different Backstage versions. Catalogs live in the root `pnpm-workspace.yaml`, so a large shared workspace would accumulate one catalog per installation with no clear owner. One Backstage version per workspace is simpler and matches how large monorepos usually work.
+
+**A custom pnpm resolver for a `backstage:` protocol.** Custom resolvers arrived in pnpm 11 and could reproduce `backstage:^` under pnpm. That would mean shipping and maintaining a pnpm plugin as well as the Yarn one, when plain ranges and catalogs already cover the need.
 
 **Keep Yarn and set `nodeLinker: pnpm`.** This gives Yarn users a pnpm-style layout but does not help adopters who want the pnpm CLI, its lockfile, or a pnpm monorepo.
