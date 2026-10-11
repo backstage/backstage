@@ -77,28 +77,38 @@ const mergeSpecs = async ({
   baseUrl: string;
   specs: OpenAPIObject[];
 }) => {
-  const mergeResult = merge([
-    // Add the full API information as the first item for other items to merge against it with.
-    {
-      oas: {
-        openapi: '3.0.3',
-        info: {
-          title: 'Backstage API',
-          version: '1',
+  const mergeResult = merge(
+    [
+      // Add the full API information as the first item for other items to merge against it with.
+      {
+        oas: {
+          openapi: '3.0.3',
+          info: {
+            title: 'Backstage API',
+            version: '1',
+          },
+          servers: [{ url: baseUrl }],
+          paths: {},
         },
-        servers: [{ url: baseUrl }],
-        paths: {},
       },
+      // For each plugin, load its spec and the known endpoint that it sits under.
+      ...specs.map(
+        spec =>
+          ({
+            oas: spec,
+            // Weird typing differences between this package and the client package's openapi 3.
+          } as any),
+      ),
+    ],
+    {
+      // Fail loudly when two plugins define the same `securitySchemes` name
+      // with different shapes, rather than silently renaming one of them
+      // via the default `'merge'` dispute-prefix behaviour. See the
+      // "OpenAPI spec conventions" section of this plugin's README for the
+      // conventions plugin authors are expected to follow.
+      securitySchemesStrategy: 'error',
     },
-    // For each plugin, load its spec and the known endpoint that it sits under.
-    ...specs.map(
-      spec =>
-        ({
-          oas: spec,
-          // Weird typing differences between this package and the client package's openapi 3.
-        } as any),
-    ),
-  ]);
+  );
 
   if (isErrorResult(mergeResult)) {
     throw new ForwardedError(
