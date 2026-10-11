@@ -52,53 +52,51 @@ describe('DefaultCatalogPage', () => {
   });
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              name: 'Entity1',
-              namespace: 'default',
-            },
-            spec: {
-              owner: 'tools',
-              type: 'service',
-            },
-            relations: [
-              {
-                type: RELATION_OWNED_BY,
-                targetRef: 'group:default/tools',
-              },
-            ],
+    streamEntities: jest.fn().mockImplementation(async function* stream() {
+      yield [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'Entity1',
+            namespace: 'default',
           },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              name: 'Entity2',
-              namespace: 'default',
-            },
-            spec: {
-              owner: 'not-tools',
-              type: 'service',
-            },
-            relations: [
-              {
-                type: RELATION_OWNED_BY,
-                targetRef: 'group:default/not-tools',
-                target: {
-                  kind: 'group',
-                  name: 'not-tools',
-                  namespace: 'default',
-                },
-              },
-            ],
+          spec: {
+            owner: 'tools',
+            type: 'service',
           },
-        ],
-      }),
-    ),
+          relations: [
+            {
+              type: RELATION_OWNED_BY,
+              targetRef: 'group:default/tools',
+            },
+          ],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'Entity2',
+            namespace: 'default',
+          },
+          spec: {
+            owner: 'not-tools',
+            type: 'service',
+          },
+          relations: [
+            {
+              type: RELATION_OWNED_BY,
+              targetRef: 'group:default/not-tools',
+              target: {
+                kind: 'group',
+                name: 'not-tools',
+                namespace: 'default',
+              },
+            },
+          ],
+        },
+      ];
+    }),
     getLocationByRef: jest
       .fn()
       .mockImplementation(() =>
@@ -135,12 +133,13 @@ describe('DefaultCatalogPage', () => {
     queryEntities: jest
       .fn()
       .mockImplementation(async (request: QueryEntitiesInitialRequest) => {
-        if ((request.filter as any)['relations.ownedBy']) {
+        const query = JSON.stringify(request.query ?? {});
+        if (query.includes('relations.ownedBy')) {
           // owned entities
           return { items: [], totalItems: 3, pageInfo: {} };
         }
 
-        if ((request.filter as any)['metadata.name']) {
+        if (query.includes('$any')) {
           // starred entities
           return {
             items: [

@@ -30,6 +30,7 @@ import {
 import {
   CatalogApi,
   QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
 } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import {
@@ -85,45 +86,30 @@ const apis = TestApiRegistry.from(
   [starredEntitiesApiRef, mockStarredEntitiesApi],
 );
 
+function queryOf(request?: QueryEntitiesRequest): string {
+  return JSON.stringify(
+    (request as QueryEntitiesInitialRequest | undefined)?.query ?? {},
+  );
+}
+
+function isOwnedRequest(request?: QueryEntitiesRequest): boolean {
+  return queryOf(request).includes('relations.ownedBy');
+}
+
+function isStarredRequest(request?: QueryEntitiesRequest): boolean {
+  return queryOf(request).includes('$any');
+}
+
 describe('<UserListPicker />', () => {
   const mockQueryEntitiesImplementation: CatalogApi['queryEntities'] =
     async request => {
-      if (
-        (
-          (request as QueryEntitiesInitialRequest).filter as Record<
-            string,
-            string
-          >
-        )['relations.ownedBy']
-      ) {
+      if (isOwnedRequest(request)) {
         // owned entities
         return { items: [], totalItems: 3, pageInfo: {} };
       }
-      if (
-        (
-          (request as QueryEntitiesInitialRequest).filter as Record<
-            string,
-            string
-          >
-        )['metadata.name']
-      ) {
+      if (isStarredRequest(request)) {
         // starred entities
-        return {
-          items: [
-            {
-              apiVersion: '1',
-              kind: 'component',
-              metadata: { name: 'e-1', namespace: 'default' },
-            },
-            {
-              apiVersion: '1',
-              kind: 'component',
-              metadata: { name: 'e-2', namespace: 'default' },
-            },
-          ],
-          totalItems: 2,
-          pageInfo: {},
-        };
+        return { items: [], totalItems: 2, pageInfo: {} };
       }
       // all items
       return { items: [], totalItems: 10, pageInfo: {} };
@@ -187,24 +173,39 @@ describe('<UserListPicker />', () => {
     );
 
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {
-        'metadata.namespace': ['default'],
+      query: { 'metadata.namespace': 'default' },
+      limit: 0,
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+      query: {
+        $all: [
+          { 'metadata.namespace': 'default' },
+          { 'relations.ownedBy': 'user:default/testuser' },
+        ],
       },
       limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {
-        'metadata.namespace': ['default'],
-        'relations.ownedBy': ['user:default/testuser'],
+      query: {
+        $all: [
+          { 'metadata.namespace': 'default' },
+          {
+            $any: [
+              {
+                kind: 'component',
+                'metadata.namespace': 'default',
+                'metadata.name': 'e-1',
+              },
+              {
+                kind: 'component',
+                'metadata.namespace': 'default',
+                'metadata.name': 'e-2',
+              },
+            ],
+          },
+        ],
       },
       limit: 0,
-    });
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {
-        'metadata.namespace': ['default'],
-        'metadata.name': ['e-1', 'e-2'],
-      },
-      limit: 1000,
     });
   });
 
@@ -228,17 +229,37 @@ describe('<UserListPicker />', () => {
     });
 
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { 'metadata.tags': ['tag1'] },
+      query: { 'metadata.tags': 'tag1' },
       limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { 'metadata.name': ['e-1', 'e-2'], 'metadata.tags': ['tag1'] },
-      limit: 1000,
+      query: {
+        $all: [
+          { 'metadata.tags': 'tag1' },
+          {
+            $any: [
+              {
+                kind: 'component',
+                'metadata.namespace': 'default',
+                'metadata.name': 'e-1',
+              },
+              {
+                kind: 'component',
+                'metadata.namespace': 'default',
+                'metadata.name': 'e-2',
+              },
+            ],
+          },
+        ],
+      },
+      limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {
-        'relations.ownedBy': ['user:default/testuser'],
-        'metadata.tags': ['tag1'],
+      query: {
+        $all: [
+          { 'metadata.tags': 'tag1' },
+          { 'relations.ownedBy': 'user:default/testuser' },
+        ],
       },
       limit: 0,
     });
@@ -271,17 +292,37 @@ describe('<UserListPicker />', () => {
     );
 
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { kind: 'component' },
+      query: { kind: 'component' },
       limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { kind: 'component', 'metadata.name': ['e-1', 'e-2'] },
-      limit: 1000,
+      query: {
+        $all: [
+          { kind: 'component' },
+          {
+            $any: [
+              {
+                kind: 'component',
+                'metadata.namespace': 'default',
+                'metadata.name': 'e-1',
+              },
+              {
+                kind: 'component',
+                'metadata.namespace': 'default',
+                'metadata.name': 'e-2',
+              },
+            ],
+          },
+        ],
+      },
+      limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {
-        kind: 'component',
-        'relations.ownedBy': ['user:default/testuser'],
+      query: {
+        $all: [
+          { kind: 'component' },
+          { 'relations.ownedBy': 'user:default/testuser' },
+        ],
       },
       limit: 0,
     });
@@ -307,17 +348,37 @@ describe('<UserListPicker />', () => {
     // wait until the component has finished loading
     await waitFor(() => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        filter: { kind: 'component', 'metadata.name': ['e-1', 'e-2'] },
-        limit: 1000,
-      });
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        filter: { kind: 'component' },
+        query: {
+          $all: [
+            { kind: 'component' },
+            {
+              $any: [
+                {
+                  kind: 'component',
+                  'metadata.namespace': 'default',
+                  'metadata.name': 'e-1',
+                },
+                {
+                  kind: 'component',
+                  'metadata.namespace': 'default',
+                  'metadata.name': 'e-2',
+                },
+              ],
+            },
+          ],
+        },
         limit: 0,
       });
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: 'component',
-          'relations.ownedBy': ['user:default/testuser'],
+        query: { kind: 'component' },
+        limit: 0,
+      });
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+        query: {
+          $all: [
+            { kind: 'component' },
+            { 'relations.ownedBy': 'user:default/testuser' },
+          ],
         },
         limit: 0,
       });
@@ -421,14 +482,7 @@ describe('<UserListPicker />', () => {
 
       it('does not reset the filter while owned entities are loading', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
-              >
-            )['relations.ownedBy']
-          ) {
+          if (isOwnedRequest(request)) {
             return new Promise(() => {});
           }
           return mockQueryEntitiesImplementation(request);
@@ -450,8 +504,21 @@ describe('<UserListPicker />', () => {
         await waitFor(() => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-            filter: { 'metadata.name': ['e-1', 'e-2'] },
-            limit: 1000,
+            query: {
+              $any: [
+                {
+                  kind: 'component',
+                  'metadata.namespace': 'default',
+                  'metadata.name': 'e-1',
+                },
+                {
+                  kind: 'component',
+                  'metadata.namespace': 'default',
+                  'metadata.name': 'e-2',
+                },
+              ],
+            },
+            limit: 0,
           });
         });
         expect(updateFilters).not.toHaveBeenCalledWith({
@@ -461,14 +528,7 @@ describe('<UserListPicker />', () => {
 
       it('resets the filter to "all" when entities are loaded', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(async request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
-              >
-            )['relations.ownedBy']
-          ) {
+          if (isOwnedRequest(request)) {
             return { items: [], totalItems: 0, pageInfo: {} };
           }
           return mockQueryEntitiesImplementation(request);
@@ -500,14 +560,7 @@ describe('<UserListPicker />', () => {
 
       it('does not reset the filter while starred entities are loading', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
-              >
-            )['metadata.name']
-          ) {
+          if (isStarredRequest(request)) {
             return new Promise(() => {});
           }
           return mockQueryEntitiesImplementation(request);
@@ -525,14 +578,7 @@ describe('<UserListPicker />', () => {
 
       it('resets the filter to "all" when entities are loaded', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(async request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
-              >
-            )['metadata.name']
-          ) {
+          if (isStarredRequest(request)) {
             return { items: [], totalItems: 0, pageInfo: {} };
           }
           return mockQueryEntitiesImplementation(request);
@@ -550,14 +596,7 @@ describe('<UserListPicker />', () => {
 
     it('doesn\nt reset the filter to "all" when entities are loaded and alwaysKeepFilters is set to true', async () => {
       mockCatalogApi.queryEntities?.mockImplementation(async request => {
-        if (
-          (
-            (request as QueryEntitiesInitialRequest).filter as Record<
-              string,
-              string
-            >
-          )['metadata.name']
-        ) {
+        if (isStarredRequest(request)) {
           return { items: [], totalItems: 0, pageInfo: {} };
         }
         return mockQueryEntitiesImplementation(request);
@@ -580,14 +619,7 @@ describe('<UserListPicker />', () => {
     describe(`when there are some owned entities present`, () => {
       it('does not reset the filter while entities are loading', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
-              >
-            )['relations.ownedBy']
-          ) {
+          if (isOwnedRequest(request)) {
             return new Promise(() => {});
           }
           return mockQueryEntitiesImplementation(request);
@@ -623,8 +655,21 @@ describe('<UserListPicker />', () => {
         await waitFor(() => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-            filter: { 'metadata.name': ['e-1', 'e-2'] },
-            limit: 1000,
+            query: {
+              $any: [
+                {
+                  kind: 'component',
+                  'metadata.namespace': 'default',
+                  'metadata.name': 'e-1',
+                },
+                {
+                  kind: 'component',
+                  'metadata.namespace': 'default',
+                  'metadata.name': 'e-2',
+                },
+              ],
+            },
+            limit: 0,
           });
         });
         expect(updateFilters).not.toHaveBeenCalledWith({
@@ -636,14 +681,7 @@ describe('<UserListPicker />', () => {
     describe(`when there are some starred entities present`, () => {
       it('does not reset the filter while entities are loading', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
-              >
-            )['metadata.name']
-          ) {
+          if (isStarredRequest(request)) {
             return new Promise(() => {});
           }
           return mockQueryEntitiesImplementation(request);

@@ -87,7 +87,6 @@ describe('<EntityAutocompletePicker/>', () => {
     // should have called catalog backend without any filters applied
     expect(catalogApi.getEntityFacets).toHaveBeenCalledWith({
       facets: ['spec.options'],
-      filter: {},
     });
 
     fireEvent.click(screen.getByTestId('options-picker-expand'));
@@ -356,9 +355,7 @@ describe('<EntityAutocompletePicker/>', () => {
     await waitFor(() =>
       expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
-        filter: {
-          kind: 'component',
-        },
+        query: { kind: 'component' },
       }),
     );
   });
@@ -389,9 +386,8 @@ describe('<EntityAutocompletePicker/>', () => {
     await waitFor(() =>
       expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
-        filter: {
-          kind: 'component',
-          'spec.type': ['service'],
+        query: {
+          $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
         },
       }),
     );

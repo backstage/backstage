@@ -226,6 +226,11 @@ export interface CatalogRequestOptions {
 }
 
 // @public
+export function convertFilterToPredicate(
+  filter: EntityFilterQuery,
+): FilterPredicate | undefined;
+
+// @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
