@@ -1462,6 +1462,38 @@ describe('<EntityListProvider /> with predicate queries', () => {
     window.history.replaceState = origReplaceState;
   });
 
+  it('stops streaming once a newer request supersedes it', async () => {
+    const gate = createDeferred<void>();
+    let pulled = 0;
+    mockCatalogApi.streamEntities!.mockImplementationOnce(
+      async function* stream() {
+        pulled += 1;
+        yield [entities[0]];
+        await gate;
+        pulled += 1;
+        yield [entities[1]];
+        pulled += 1;
+        yield [entities[1]];
+      },
+    );
+
+    const { result } = renderHook(() => useEntityList<Filters>(), {
+      wrapper: createWrapper({ pagination: false }),
+    });
+
+    await waitFor(() => expect(pulled).toBe(1));
+    act(() => result.current.updateFilters({ notExperimental }));
+    await waitFor(() => {
+      expect(mockCatalogApi.streamEntities).toHaveBeenCalledTimes(2);
+    });
+    gate.resolve();
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+    expect(pulled).toBe(2);
+  });
+
   it('combines predicates with other filters when not paginating', async () => {
     const { result } = renderHook(() => useEntityList<Filters>(), {
       wrapper: createWrapper({ pagination: false }),

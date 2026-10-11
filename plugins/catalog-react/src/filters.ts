@@ -45,6 +45,10 @@ function ownedByPredicate(refs: string[]): FilterPredicate {
 }
 
 function anyOfPredicate(field: string, values: string[]): FilterPredicate {
+  if (values.length === 0) {
+    // Never matches anything
+    return { $any: [] };
+  }
   if (values.length === 1) {
     return { [field]: values[0] } as FilterPredicate;
   }
@@ -96,8 +100,12 @@ export class EntityTypeFilter implements EntityFilter {
     return Array.isArray(this.value) ? this.value : [this.value];
   }
 
-  getCatalogQuery(): FilterPredicate {
-    return anyOfPredicate('spec.type', this.getTypes());
+  getCatalogQuery(): FilterPredicate | undefined {
+    const types = this.getTypes();
+    if (types.length === 0) {
+      return undefined;
+    }
+    return anyOfPredicate('spec.type', types);
   }
 
   /**

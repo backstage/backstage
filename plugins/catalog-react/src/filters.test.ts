@@ -289,6 +289,7 @@ describe('getCatalogQuery', () => {
       'spec.type': 'service',
     });
     expect(new EntityTagFilter([]).getCatalogQuery()).toBeUndefined();
+    expect(new EntityTypeFilter([]).getCatalogQuery()).toBeUndefined();
     expect(new EntityTagFilter(['a', 'b']).getCatalogQuery()).toEqual({
       $all: [
         { 'metadata.tags': { $contains: 'a' } },
@@ -370,6 +371,8 @@ describe('getCatalogQuery evaluation', () => {
     ['lifecycle', new EntityLifecycleFilter(['production'])],
     ['owned', EntityUserFilter.owned(['group:default/y'])],
     ['owned by nobody', EntityUserFilter.owned([])],
+    ['no lifecycles', new EntityLifecycleFilter([])],
+    ['no owners', new EntityOwnerFilter([])],
     ['starred', EntityUserFilter.starred(['component:default/c'])],
   ])('agrees with filterEntity for %s', (_name, filter) => {
     const predicate = filter.getCatalogQuery();
