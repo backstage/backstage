@@ -19,9 +19,15 @@ import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   EntityErrorFilter,
+  EntityKindFilter,
+  EntityLifecycleFilter,
+  EntityNamespaceFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
+  EntityTagFilter,
   EntityTextFilter,
+  EntityTypeFilter,
+  EntityUserFilter,
 } from './filters';
 
 const entities: Entity[] = [
@@ -270,5 +276,55 @@ describe('EntityOwnerFilter', () => {
       } as Entity),
     ).toBeTruthy();
     expect(filter.values).toStrictEqual(['user:default/my-user']);
+  });
+});
+
+describe('getCatalogQuery', () => {
+  it('builds predicates for builtin filters', () => {
+    expect(
+      new EntityKindFilter('component', 'Component').getCatalogQuery(),
+    ).toEqual({ kind: 'component' });
+    expect(new EntityTypeFilter('service').getCatalogQuery()).toEqual({
+      'spec.type': 'service',
+    });
+    expect(new EntityTagFilter([]).getCatalogQuery()).toBeUndefined();
+    expect(new EntityTagFilter(['a', 'b']).getCatalogQuery()).toEqual({
+      $all: [{ 'metadata.tags': 'a' }, { 'metadata.tags': 'b' }],
+    });
+    expect(new EntityOwnerFilter(['team-a']).getCatalogQuery()).toEqual({
+      'relations.ownedBy': 'group:default/team-a',
+    });
+    expect(new EntityLifecycleFilter(['prod']).getCatalogQuery()).toEqual({
+      'spec.lifecycle': 'prod',
+    });
+    expect(new EntityNamespaceFilter(['ns']).getCatalogQuery()).toEqual({
+      'metadata.namespace': 'ns',
+    });
+    expect(new EntityOrphanFilter(true).getCatalogQuery()).toEqual({
+      'metadata.annotations.backstage.io/orphan': 'true',
+    });
+    expect(new EntityOrphanFilter(false).getCatalogQuery()).toBeUndefined();
+  });
+
+  it('builds predicates for EntityUserFilter', () => {
+    expect(EntityUserFilter.all().getCatalogQuery()).toBeUndefined();
+    expect(
+      EntityUserFilter.owned(['group:default/a']).getCatalogQuery(),
+    ).toEqual({ 'relations.ownedBy': 'group:default/a' });
+    expect(
+      EntityUserFilter.starred([
+        'component:default/a',
+        'api:other/b',
+      ]).getCatalogQuery(),
+    ).toEqual({
+      $any: [
+        {
+          kind: 'component',
+          'metadata.namespace': 'default',
+          'metadata.name': 'a',
+        },
+        { kind: 'api', 'metadata.namespace': 'other', 'metadata.name': 'b' },
+      ],
+    });
   });
 });

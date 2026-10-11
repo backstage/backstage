@@ -82,10 +82,21 @@ describe('useStarredEntitiesCount', () => {
 
     await waitFor(() => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        filter: {
-          'metadata.name': ['favourite1', 'favourite2'],
+        query: {
+          $any: [
+            {
+              kind: 'component',
+              'metadata.namespace': 'default',
+              'metadata.name': 'favourite1',
+            },
+            {
+              kind: 'component',
+              'metadata.namespace': 'default',
+              'metadata.name': 'favourite2',
+            },
+          ],
         },
-        limit: 1000,
+        limit: 0,
       });
       expect(result.current).toEqual({
         count: 2,

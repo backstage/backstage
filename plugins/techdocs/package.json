@@ -65,6 +65,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-react": "workspace:^",

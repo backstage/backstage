@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { toStreamRequest } from './toStreamRequest';
+import { convertFilterToPredicate } from '@backstage/catalog-client';
 import {
   DefaultEntityFilters,
+  EntityKindFilter,
   EntityTextFilter,
   EntityOrderFilter,
 } from '@backstage/plugin-catalog-react';
@@ -78,9 +80,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
-        },
+        }),
       });
     });
 
@@ -105,10 +107,10 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
           type: 'service',
-        },
+        }),
       });
     });
 
@@ -126,9 +128,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component', 'API', 'Domain'],
-        },
+        }),
       });
     });
 
@@ -151,9 +153,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
-        },
+        }),
       });
     });
 
@@ -176,9 +178,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
-        },
+        }),
       });
     });
 
@@ -197,9 +199,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           type: 'service',
-        },
+        }),
       });
     });
 
@@ -219,9 +221,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
-        },
+        }),
       });
     });
 
@@ -255,10 +257,10 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           'spec.type': 'my-service',
           'metadata.namespace': 'default',
-        },
+        }),
       });
     });
   });
@@ -340,9 +342,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
-        },
+        }),
       });
     });
   });
@@ -367,9 +369,9 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toEqual({
-        filter: {
+        query: convertFilterToPredicate({
           kind: ['Component'],
-        },
+        }),
         fullTextFilter: {
           term: 'search term',
           fields: [
@@ -381,6 +383,33 @@ describe('toStreamRequest', () => {
           ],
         },
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+  });
+
+  describe('with predicate filters', () => {
+    it('combines predicates and prefers them over legacy filters', () => {
+      const filters = {
+        kind: new EntityKindFilter('component', 'Component'),
+        legacy: {
+          getCatalogFilters: () => ({ 'spec.type': 'service' }),
+        },
+        both: {
+          getCatalogFilters: () => ({ 'spec.lifecycle': 'ignored' }),
+          getCatalogQuery: () => ({
+            $not: { 'spec.lifecycle': 'experimental' },
+          }),
+        },
+      } as DefaultEntityFilters;
+
+      expect(toStreamRequest(filters)).toEqual({
+        query: {
+          $all: [
+            { 'spec.type': 'service' },
+            { kind: 'component' },
+            { $not: { 'spec.lifecycle': 'experimental' } },
+          ],
+        },
       });
     });
   });

@@ -108,12 +108,7 @@ describe('CatalogTable component', () => {
                 () => false,
                 () => false,
               ),
-              kind: {
-                value: 'component',
-                label: 'Component',
-                getCatalogFilters: () => ({ kind: 'component' }),
-                toQueryValue: () => 'component',
-              },
+              kind: new EntityKindFilter('component', 'Component'),
             },
           }}
         >
@@ -425,12 +420,7 @@ describe('CatalogTable component', () => {
           value={{
             entities: [entity],
             filters: {
-              kind: {
-                value: 'api',
-                label: 'API',
-                getCatalogFilters: () => ({ kind: 'api' }),
-                toQueryValue: () => 'api',
-              },
+              kind: new EntityKindFilter('api', 'API'),
             },
           }}
         >

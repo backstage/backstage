@@ -295,15 +295,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         };
       }
     } else {
-      const backendFilter = reduceBackendCatalogFilters(compacted);
+      const query = reduceBackendCatalogFilters(compacted);
       const { orderFields } = reduceCatalogFilters(compacted);
-      fetchParams = { filter: backendFilter, order: orderFields };
+      fetchParams = { query, orderFields };
       doFetch = async () => {
-        const response = await catalogApi.getEntities({
-          filter: backendFilter,
-          order: orderFields,
-        });
-        return { backendEntities: response.items };
+        const backendEntities: Entity[] = [];
+        for await (const page of catalogApi.streamEntities({
+          ...(query !== undefined && { query }),
+          orderFields,
+          totalItems: 'exclude',
+        })) {
+          backendEntities.push(...page);
+        }
+        return { backendEntities };
       };
     }
 

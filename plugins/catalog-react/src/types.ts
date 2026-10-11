@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /** @public */
 export type EntityFilter = {
@@ -23,11 +24,26 @@ export type EntityFilter = {
    * value(s) to accept, extracted on the backend by parseEntityFilterParams. For example:
    *   `{ field: 'kind', values: ['component'] }`
    *   `{ field: 'metadata.name', values: ['component-1', 'component-2'] }`
+   *
+   * @deprecated Use `getCatalogQuery` instead. If a filter implements both,
+   * only `getCatalogQuery` is used.
    */
   getCatalogFilters?: () => Record<
     string,
     string | symbol | (string | symbol)[]
   >;
+
+  /**
+   * Get a filter predicate to add to the catalog-backend request. Predicates
+   * from all active filters are combined using `$all`. For example:
+   *   `{ kind: 'component' }`
+   *   `{ 'spec.type': { $in: ['service', 'website'] } }`
+   *   `{ $not: { 'metadata.annotations.backstage.io/orphan': 'true' } }`
+   *
+   * Return `undefined` if the filter does not currently constrain the
+   * backend request.
+   */
+  getCatalogQuery?: () => FilterPredicate | undefined;
 
   /**
    * Filter entities on the frontend after a catalog-backend request. This function will be called

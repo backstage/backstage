@@ -24,6 +24,17 @@ import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils/getEntityRelations';
 import { EntityOrderQuery } from '@backstage/catalog-client';
+import { FilterPredicate } from '@backstage/filter-predicates';
+
+/**
+ * Matches entities where the given field has any of the given values.
+ */
+function anyOfPredicate(field: string, values: string[]): FilterPredicate {
+  if (values.length === 1) {
+    return { [field]: values[0] } as FilterPredicate;
+  }
+  return { [field]: { $in: values } } as FilterPredicate;
+}
 
 /**
  * Filter entities based on Kind.
@@ -38,6 +49,13 @@ export class EntityKindFilter implements EntityFilter {
     this.label = label;
   }
 
+  getCatalogQuery(): FilterPredicate {
+    return { kind: this.value };
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
   }
@@ -63,6 +81,13 @@ export class EntityTypeFilter implements EntityFilter {
     return Array.isArray(this.value) ? this.value : [this.value];
   }
 
+  getCatalogQuery(): FilterPredicate {
+    return anyOfPredicate('spec.type', this.getTypes());
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'spec.type': this.getTypes() };
   }
@@ -87,6 +112,19 @@ export class EntityTagFilter implements EntityFilter {
     return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
   }
 
+  getCatalogQuery(): FilterPredicate | undefined {
+    if (this.values.length === 0) {
+      return undefined;
+    }
+    if (this.values.length === 1) {
+      return { 'metadata.tags': this.values[0] };
+    }
+    return { $all: this.values.map(tag => ({ 'metadata.tags': tag })) };
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'metadata.tags': this.values };
   }
@@ -181,6 +219,13 @@ export class EntityOwnerFilter implements EntityFilter {
     }, [] as string[]);
   }
 
+  getCatalogQuery(): FilterPredicate {
+    return anyOfPredicate('relations.ownedBy', this.values);
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'relations.ownedBy': this.values };
   }
@@ -213,6 +258,13 @@ export class EntityLifecycleFilter implements EntityFilter {
     this.values = values;
   }
 
+  getCatalogQuery(): FilterPredicate {
+    return anyOfPredicate('spec.lifecycle', this.values);
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'spec.lifecycle': this.values };
   }
@@ -237,6 +289,13 @@ export class EntityNamespaceFilter implements EntityFilter {
     this.values = values;
   }
 
+  getCatalogQuery(): FilterPredicate {
+    return anyOfPredicate('metadata.namespace', this.values);
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'metadata.namespace': this.values };
   }
@@ -273,6 +332,28 @@ export class EntityUserFilter implements EntityFilter {
     return new EntityUserFilter('starred', starredEntityRefs);
   }
 
+  getCatalogQuery(): FilterPredicate | undefined {
+    if (this.value === 'owned') {
+      return anyOfPredicate('relations.ownedBy', this.refs ?? []);
+    }
+    if (this.value === 'starred') {
+      return {
+        $any: (this.refs ?? []).map(ref => {
+          const { kind, namespace, name } = parseEntityRef(ref);
+          return {
+            kind,
+            'metadata.namespace': namespace,
+            'metadata.name': name,
+          };
+        }),
+      };
+    }
+    return undefined;
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string[]> {
     if (this.value === 'owned') {
       return { 'relations.ownedBy': this.refs ?? [] };
@@ -356,6 +437,16 @@ export class EntityOrphanFilter implements EntityFilter {
     this.value = value;
   }
 
+  getCatalogQuery(): FilterPredicate | undefined {
+    if (this.value) {
+      return { 'metadata.annotations.backstage.io/orphan': 'true' };
+    }
+    return undefined;
+  }
+
+  /**
+   * @deprecated Use `getCatalogQuery` instead.
+   */
   getCatalogFilters(): Record<string, string | string[]> {
     if (this.value) {
       return { 'metadata.annotations.backstage.io/orphan': String(this.value) };
