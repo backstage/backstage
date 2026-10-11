@@ -16,7 +16,6 @@
 
 import {
   DatabaseService,
-  resolvePackagePath,
   resolveSafeChildPath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
@@ -36,6 +35,7 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
+import { resolveAppPackagePath } from '../lib/resolveAppPackagePath';
 import type { ConfigSchema } from '@backstage/config-loader';
 import {
   AuthService,
@@ -118,7 +118,7 @@ export async function createRouter(
     'app.disableStaticFallbackCache',
   );
 
-  const appDistDir = resolvePackagePath(appPackageName, 'dist');
+  const appDistDir = resolveAppPackagePath(appPackageName, 'dist');
   const staticDir = resolvePath(appDistDir, 'static');
 
   if (!(await fs.pathExists(staticDir))) {

@@ -15,6 +15,7 @@
  */
 import { ModuleLoader } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { isChildPath } from '@backstage/cli-common';
 import path from 'node:path';
 import { ScannedPluginManifest } from '../scanner';
 
@@ -53,6 +54,15 @@ export class CommonJSModuleLoader implements ModuleLoader {
       ...dynamicPluginsPaths.map(p => path.resolve(p, 'node_modules')),
     ];
     const oldNodeModulePaths = this.module._nodeModulePaths;
+    // Some package managers, for example pnpm with the isolated linker, do not
+    // link every package into the root node_modules. The packages that a
+    // dynamic plugin shares with the backend are then only visible from the
+    // backend package itself. These are searched after the root, so a module
+    // that the root provides still resolves from there.
+    const hostNodeModulesPaths = getHostNodeModulesPaths(
+      backstageRoot,
+      oldNodeModulePaths,
+    ).filter(p => p !== backstageRootNodeModulesPath);
     this.module._nodeModulePaths = (from: string): string[] => {
       const result: string[] = oldNodeModulePaths(from);
       if (!dynamicPluginsPaths.some(p => from.startsWith(p))) {
@@ -64,10 +74,14 @@ export class CommonJSModuleLoader implements ModuleLoader {
           dynamicNodeModulesPaths.some(p => nodeModulePath.startsWith(p))
         );
       });
+      const searchPaths = [
+        ...filtered,
+        ...hostNodeModulesPaths.filter(p => !filtered.includes(p)),
+      ];
       this.options.logger.debug(
-        `Overriding node_modules search path for dynamic plugin ${from} to: ${filtered}`,
+        `Overriding node_modules search path for dynamic plugin ${from} to: ${searchPaths}`,
       );
-      return filtered;
+      return searchPaths;
     };
 
     // The whole piece of code below is a way to accommodate the limitations of
@@ -160,4 +174,21 @@ export class CommonJSModuleLoader implements ModuleLoader {
   async load(packagePath: string): Promise<any> {
     return await this.module.prototype.require(packagePath);
   }
+}
+
+/**
+ * Returns the node_modules directories of the backend package that is running,
+ * limited to those within the Backstage root.
+ */
+function getHostNodeModulesPaths(
+  backstageRoot: string,
+  nodeModulePaths: (from: string) => string[],
+): string[] {
+  const mainFilename = require.main?.filename;
+  if (!mainFilename) {
+    return [];
+  }
+  return nodeModulePaths(path.dirname(mainFilename)).filter(p =>
+    isChildPath(backstageRoot, p),
+  );
 }
