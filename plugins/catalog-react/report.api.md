@@ -808,7 +808,7 @@ export class EntityTypeFilter implements EntityFilter {
   // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
   // (undocumented)
-  getCatalogQuery(): FilterPredicate;
+  getCatalogQuery(): FilterPredicate | undefined;
   // (undocumented)
   getTypes(): string[];
   // (undocumented)

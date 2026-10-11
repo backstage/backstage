@@ -262,7 +262,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     const compacted = compact(Object.values(adjustedFilters));
 
     let fetchParams: unknown;
-    let doFetch: () => Promise<BackendState>;
+    let doFetch: (isStale: () => boolean) => Promise<BackendState>;
 
     if (paginationMode !== 'none') {
       if (cursor) {
@@ -298,13 +298,17 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       const constraints = reduceBackendCatalogFilters(compacted);
       const { orderFields } = reduceCatalogFilters(compacted);
       fetchParams = { ...constraints, orderFields };
-      doFetch = async () => {
+      doFetch = async isStale => {
         const backendEntities: Entity[] = [];
         for await (const page of catalogApi.streamEntities({
           ...constraints,
           orderFields,
           totalItems: 'exclude',
         })) {
+          // Stop traversing the catalog once a newer request supersedes this one
+          if (isStale()) {
+            break;
+          }
           backendEntities.push(...page);
         }
         return { backendEntities };
@@ -334,7 +338,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     setError(undefined);
 
     try {
-      const result = await doFetch();
+      const result = await doFetch(() => gen !== fetchGenRef.current);
       if (gen === fetchGenRef.current) {
         setBackendState(result);
       }
