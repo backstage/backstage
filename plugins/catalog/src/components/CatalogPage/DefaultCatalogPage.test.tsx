@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import { identityApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
+  CatalogApi,
   catalogApiRef,
   entityRouteRef,
   MockStarredEntitiesApi,
@@ -41,6 +41,18 @@ import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
+function component(name: string, owner: string): Entity {
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name, namespace: 'default' },
+    spec: { owner, type: 'service' },
+    relations: [
+      { type: RELATION_OWNED_BY, targetRef: `group:default/${owner}` },
+    ],
+  };
+}
+
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
   beforeEach(() => {
@@ -51,120 +63,13 @@ describe('DefaultCatalogPage', () => {
     jest.clearAllMocks();
   });
 
-  const catalogApi = catalogApiMock.mock({
-    streamEntities: jest.fn().mockImplementation(async function* stream() {
-      yield [
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            name: 'Entity1',
-            namespace: 'default',
-          },
-          spec: {
-            owner: 'tools',
-            type: 'service',
-          },
-          relations: [
-            {
-              type: RELATION_OWNED_BY,
-              targetRef: 'group:default/tools',
-            },
-          ],
-        },
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            name: 'Entity2',
-            namespace: 'default',
-          },
-          spec: {
-            owner: 'not-tools',
-            type: 'service',
-          },
-          relations: [
-            {
-              type: RELATION_OWNED_BY,
-              targetRef: 'group:default/not-tools',
-              target: {
-                kind: 'group',
-                name: 'not-tools',
-                namespace: 'default',
-              },
-            },
-          ],
-        },
-      ];
-    }),
-    getLocationByRef: jest
-      .fn()
-      .mockImplementation(() =>
-        Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
-      ),
-    getEntityFacets: jest.fn().mockImplementation(async () => ({
-      facets: {
-        'relations.ownedBy': [
-          { count: 1, value: 'group:default/not-tools' },
-          { count: 1, value: 'group:default/tools' },
-        ],
-      },
-    })),
-    getEntitiesByRefs: jest.fn().mockImplementation(async () => ({
-      items: [
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Group',
-          metadata: {
-            name: 'not-tools',
-            namespace: 'default',
-          },
-        },
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Group',
-          metadata: {
-            name: 'tools',
-            namespace: 'default',
-          },
-        },
-      ],
-    })),
-    queryEntities: jest
-      .fn()
-      .mockImplementation(async (request: QueryEntitiesInitialRequest) => {
-        const query = JSON.stringify(request.query ?? {});
-        if (query.includes('ownedBy')) {
-          // owned entities
-          return { items: [], totalItems: 3, pageInfo: {} };
-        }
-
-        if (query.includes('$any')) {
-          // starred entities
-          return {
-            items: [
-              {
-                apiVersion: '1',
-                kind: 'component',
-                metadata: { name: 'Entity1', namespace: 'default' },
-              },
-            ],
-            totalItems: 1,
-            pageInfo: {},
-          };
-        }
-        // all items
-        return { items: [], totalItems: 2, pageInfo: {} };
-      }),
-  });
-
   const identityApi = mockApis.identity({
     userEntityRef: 'user:default/guest',
     ownershipEntityRefs: ['user:default/guest', 'group:default/tools'],
     displayName: 'Display Name',
   });
 
-  const renderWrapped = (children: ReactNode) =>
+  const renderWrapped = (children: ReactNode, catalogApi: CatalogApi) =>
     renderInTestApp(
       <TestApiProvider
         apis={[
@@ -190,7 +95,8 @@ describe('DefaultCatalogPage', () => {
   // limit. We should investigate why these timeouts happen.
 
   it('should render the default column of the grid', async () => {
-    await renderWrapped(<DefaultCatalogPage />);
+    const catalogApi = catalogApiMock();
+    await renderWrapped(<DefaultCatalogPage />, catalogApi);
 
     const columnHeader = screen
       .getAllByRole('button')
@@ -215,7 +121,8 @@ describe('DefaultCatalogPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    await renderWrapped(<DefaultCatalogPage columns={columns} />);
+    const catalogApi = catalogApiMock();
+    await renderWrapped(<DefaultCatalogPage columns={columns} />, catalogApi);
 
     const columnHeader = screen
       .getAllByRole('button')
@@ -234,22 +141,32 @@ describe('DefaultCatalogPage', () => {
           ]
         : [];
     };
-    await renderWrapped(<DefaultCatalogPage columns={columns} />);
+    const catalogApi = catalogApiMock({
+      entities: [component('Entity1', 'tools')],
+    });
+    await renderWrapped(<DefaultCatalogPage columns={columns} />, catalogApi);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    await waitFor(() => {
+      const columnHeader = screen
+        .getAllByRole('button')
+        .filter(c => c.tagName === 'SPAN');
+      const columnHeaderLabels = columnHeader.map(c => c.textContent);
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    });
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
-    await renderWrapped(<DefaultCatalogPage />);
-    await waitFor(() => expect(catalogApi.queryEntities).toHaveBeenCalled());
+    const catalogApi = catalogApiMock({
+      entities: [
+        component('Entity1', 'tools'),
+        component('Entity2', 'not-tools'),
+      ],
+    });
+    await renderWrapped(<DefaultCatalogPage />, catalogApi);
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned components \(1\)/i),
     ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/View/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Edit/)).resolves.toBeInTheDocument();
@@ -278,12 +195,17 @@ describe('DefaultCatalogPage', () => {
       },
     ];
 
-    await renderWrapped(<DefaultCatalogPage actions={actions} />);
-    await waitFor(() => expect(catalogApi.queryEntities).toHaveBeenCalled());
+    const catalogApi = catalogApiMock({
+      entities: [
+        component('Entity1', 'tools'),
+        component('Entity2', 'not-tools'),
+      ],
+    });
+    await renderWrapped(<DefaultCatalogPage actions={actions} />, catalogApi);
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned components \(1\)/i),
     ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
@@ -296,36 +218,55 @@ describe('DefaultCatalogPage', () => {
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    await renderWrapped(<DefaultCatalogPage />);
-    await waitFor(() => expect(catalogApi.queryEntities).toHaveBeenCalled());
+    const catalogApi = catalogApiMock({
+      entities: [
+        component('Entity1', 'tools'),
+        component('Entity2', 'not-tools'),
+      ],
+    });
+    await renderWrapped(<DefaultCatalogPage />, catalogApi);
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
 
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned components \(1\)/i),
     ).resolves.toBeInTheDocument();
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All components \(2\)/i),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should set initial filter correctly', async () => {
-    await renderWrapped(<DefaultCatalogPage initiallySelectedFilter="all" />);
+    const catalogApi = catalogApiMock({
+      entities: [
+        component('Entity1', 'tools'),
+        component('Entity2', 'not-tools'),
+      ],
+    });
+    await renderWrapped(
+      <DefaultCatalogPage initiallySelectedFilter="all" />,
+      catalogApi,
+    );
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All components \(2\)/i),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
-    await renderWrapped(<DefaultCatalogPage />);
-    await waitFor(() => expect(catalogApi.queryEntities).toHaveBeenCalled());
+    const catalogApi = catalogApiMock({
+      entities: [
+        component('Entity1', 'tools'),
+        component('Entity2', 'not-tools'),
+      ],
+    });
+    await renderWrapped(<DefaultCatalogPage />, catalogApi);
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned components \(1\)/i),
     ).resolves.toBeInTheDocument();
     // The "Starred" menu option should initially be disabled, since there
     // aren't any starred entities.
@@ -335,13 +276,13 @@ describe('DefaultCatalogPage', () => {
     );
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All components \(2\)/i),
     ).resolves.toBeInTheDocument();
 
     const starredIcons = await screen.findAllByTitle('Add to favorites');
     fireEvent.click(starredIcons[0]);
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All components \(2\)/i),
     ).resolves.toBeInTheDocument();
 
     // Now that we've starred an entity, the "Starred" menu option should be
@@ -351,13 +292,14 @@ describe('DefaultCatalogPage', () => {
     ).not.toHaveAttribute('aria-disabled', 'true');
     fireEvent.click(screen.getByTestId('user-picker-starred'));
     await expect(
-      screen.findByText(/Starred components \(1\)/),
+      screen.findByText(/Starred components \(1\)/i),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should wrap filter in drawer on smaller screens', async () => {
     mockBreakpoint({ matches: true });
-    await renderWrapped(<DefaultCatalogPage />);
+    const catalogApi = catalogApiMock();
+    await renderWrapped(<DefaultCatalogPage />, catalogApi);
     const button = screen.getByRole('button', { name: 'Filters' });
     expect(
       screen.getByRole('presentation', { hidden: true }),

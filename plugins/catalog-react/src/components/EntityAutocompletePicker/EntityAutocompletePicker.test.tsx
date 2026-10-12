@@ -51,23 +51,25 @@ class EntityOptionFilter implements EntityFilter {
   }
 }
 
-function makeMockCatalogApi(opts: string[] = defaultOptions) {
-  return catalogApiMock.mock({
-    getEntityFacets: jest.fn().mockResolvedValue({
-      facets: {
-        'spec.options': opts.map((value, idx) => ({ value, count: idx })),
-      },
-    }),
-  });
+/**
+ * Creates entities where the nth option is present on n entities, so that
+ * the first option has a count of 1, the second a count of 2, and so on.
+ */
+function entitiesWithOptions(opts: string[]): Entity[] {
+  return opts.map((_, index) => ({
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name: `component-${index}` },
+    spec: { type: 'service', options: opts.slice(index) },
+  }));
 }
 
 describe('<EntityAutocompletePicker/>', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('renders all options', async () => {
-    const catalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
+    jest.spyOn(catalogApi, 'getEntityFacets');
     render(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
@@ -96,9 +98,11 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('hides filter if there are no available options', async () => {
-    const mockCatalogApi = makeMockCatalogApi([]);
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions([]),
+    });
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityAutocompletePicker<EntityFilters>
             label="Options"
@@ -115,9 +119,11 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('renders filter if there is one available option', async () => {
-    const mockCatalogApi = makeMockCatalogApi(['option1']);
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(['option1']),
+    });
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityAutocompletePicker<EntityFilters>
             label="Options"
@@ -134,9 +140,11 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('renders unique options in alphabetical order', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityAutocompletePicker<EntityFilters>
             label="Options"
@@ -162,9 +170,11 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('renders options with counts', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityAutocompletePicker<EntityFilters>
             label="Options"
@@ -183,19 +193,21 @@ describe('<EntityAutocompletePicker/>', () => {
     fireEvent.click(screen.getByTestId('options-picker-expand'));
 
     expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
-      'option1 (0)',
-      'option2 (1)',
-      'option3 (2)',
-      'option4 (3)',
+      'option1 (1)',
+      'option2 (2)',
+      'option3 (3)',
+      'option4 (4)',
     ]);
   });
 
   it('respects the query parameter filter value', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     const updateFilters = jest.fn();
     const queryParameters = { options: ['option3'] };
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider<EntityFilters>
           value={{
             updateFilters,
@@ -220,10 +232,12 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('adds options to filters', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     const updateFilters = jest.fn();
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
           value={{
             updateFilters,
@@ -250,10 +264,12 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('removes options from filters', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     const updateFilters = jest.fn();
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider<EntityFilters>
           value={{
             updateFilters,
@@ -284,7 +300,9 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('responds to external filter changes', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     const ChangeFilterButton = () => {
       const { updateFilters } = useEntityList<EntityFilters>();
 
@@ -301,7 +319,7 @@ describe('<EntityAutocompletePicker/>', () => {
     };
 
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider<EntityFilters>
           value={{
             filters: { options: new EntityOptionFilter(['option2']) },
@@ -331,9 +349,12 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('filters available values by kind as default', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
+    jest.spyOn(catalogApi, 'getEntityFacets');
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
           value={{
             filters: {
@@ -353,7 +374,7 @@ describe('<EntityAutocompletePicker/>', () => {
     );
 
     await waitFor(() =>
-      expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+      expect(catalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
         query: { kind: 'component' },
       }),
@@ -361,9 +382,12 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('can be supplied with filters for available values', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
+    jest.spyOn(catalogApi, 'getEntityFacets');
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
           value={{
             filters: {
@@ -384,7 +408,7 @@ describe('<EntityAutocompletePicker/>', () => {
     );
 
     await waitFor(() =>
-      expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+      expect(catalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
         query: {
           $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
@@ -394,7 +418,9 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it("doesn't render when hidden", async () => {
-    const catalogApi = makeMockCatalogApi();
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
     render(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
