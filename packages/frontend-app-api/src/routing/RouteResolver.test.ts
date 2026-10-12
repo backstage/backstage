@@ -30,11 +30,17 @@ import {
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
+import { matchRouteRefs } from './matchRouteRefs';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
   createExactRouteAliasResolver,
   createRouteAliasResolver,
 } from './RouteAliasResolver';
+
+jest.mock('./matchRouteRefs', () => {
+  const actual = jest.requireActual('./matchRouteRefs');
+  return { ...actual, matchRouteRefs: jest.fn(actual.matchRouteRefs) };
+});
 
 const rest = {
   caseSensitive: false,
@@ -59,6 +65,65 @@ function src(sourcePath: string) {
 const emptyResolver = createExactRouteAliasResolver(new Map());
 
 describe('RouteResolver', () => {
+  it('shares route matches across consumers and evicts the least recently used pathname', () => {
+    const resolver = new RouteResolver(
+      new Map<RouteRef, string>([
+        [ref2, 'parent/:x'],
+        [ref1, 'child'],
+      ]),
+      new Map([[ref1, ref2]]),
+      [
+        {
+          routeRefs: new Set([ref2]),
+          path: 'parent/:x',
+          ...rest,
+          children: [
+            MATCH_ALL_ROUTE,
+            { routeRefs: new Set([ref1]), path: 'child', ...rest },
+          ],
+        },
+      ],
+      new Map([[externalRef1, ref1]]),
+      '/base',
+      emptyResolver,
+      new Map(),
+    );
+    jest.mocked(matchRouteRefs).mockClear();
+
+    const resolve = (value: string) =>
+      resolver.resolve(ref1, src(`/base/parent/${value}/child`))?.();
+    expect(resolve('0')).toBe('/parent/0/child');
+    expect(resolver.resolve(subRef1, src('/base/parent/0/child'))?.()).toBe(
+      '/parent/0/child/foo',
+    );
+    expect(
+      resolver.resolvePath({ pathname: '/parent/0/child' }).matches,
+    ).toEqual([]);
+    expect(matchRouteRefs).toHaveBeenCalledTimes(1);
+
+    expect(resolver.resolve(ref2, src('/base/missing'))?.({ x: 'new' })).toBe(
+      '/parent/new',
+    );
+    expect(resolver.resolve(ref2, src('/base/missing'))?.({ x: 'next' })).toBe(
+      '/parent/next',
+    );
+    expect(matchRouteRefs).toHaveBeenCalledTimes(2);
+
+    for (let i = 1; i < 31; i++) {
+      expect(resolve(String(i))).toBe(`/parent/${i}/child`);
+    }
+    expect(matchRouteRefs).toHaveBeenCalledTimes(32);
+    expect(resolve('0')).toBe('/parent/0/child');
+    expect(resolve('31')).toBe('/parent/31/child');
+    expect(resolve('0')).toBe('/parent/0/child');
+    expect(matchRouteRefs).toHaveBeenCalledTimes(33);
+    expect(resolver.resolve(ref2, src('/base/missing'))?.({ x: 'again' })).toBe(
+      '/parent/again',
+    );
+    expect(resolve('1')).toBe('/parent/1/child');
+    expect(matchRouteRefs).toHaveBeenCalledTimes(35);
+  });
+
   it('resolves node ancestry from the selected branch and shares matches across consumers', () => {
     function node(id: string, parent?: AppNode): AppNode {
       const result: AppNode = {

@@ -516,6 +516,7 @@ need a page adapter. Use `useAppLocation` for the app-absolute location and
 history and fall back to React Router in the old frontend system.
 
 Use `useRouteRefParams` with a route reference for framework route parameters,
-and `useAppNavigate` for app-absolute or route-relative navigation. Keep a library adapter when
+and `useAppNavigate` for app-absolute navigation, including destinations from route
+refs. Relative paths belong to a page routing adapter. Keep an adapter when
 content renders that library's nested routes, outlets, or other library-specific
 features. Declaring an adapter for a shared link or query hook alone is unnecessary.
