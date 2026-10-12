@@ -58,7 +58,7 @@ module.exports = (function () {
     const result = {
       map: new Map(packages.packages.map(pkg => [pkg.packageJson.name, pkg])),
       list: packages.packages,
-      root: packages.root,
+      root: packages.rootPackage,
       byPath(filePath) {
         return packages.packages.find(
           pkg => !path.relative(pkg.dir, filePath).startsWith('..'),

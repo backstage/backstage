@@ -102,7 +102,7 @@ ruleTester.run(RULE, rule, {
     },
     {
       // Non-literal require can't be validated
-      code: `require('lod' + 'ash')`,
+      code: `require(['lodash'].join(''))`,
       filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
     },
     {

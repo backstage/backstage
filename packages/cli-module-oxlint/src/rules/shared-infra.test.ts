@@ -86,12 +86,7 @@ childProcess.execFileSync = function(file, args, options) {
     tracePath,
     env: {
       ...process.env,
-      NODE_OPTIONS: [
-        process.env.NODE_OPTIONS,
-        `--require="${preloadPath.replace(/\\/g, '/')}"`,
-      ]
-        .filter(Boolean)
-        .join(' '),
+      NODE_OPTIONS: `--require="${preloadPath.replace(/\\/g, '/')}"`,
       FAKE_YARN_SCRIPT: fakeYarnPath,
       YARN_TRACE: tracePath,
     },
@@ -108,6 +103,23 @@ function readYarnCalls(tracePath: string) {
 }
 
 describe('Oxlint JavaScript plugin lifecycle', () => {
+  it('does not pass Jest heap settings to test subprocesses', () => {
+    const tempRoot = mkdtempSync(path.join(os.tmpdir(), 'oxlint-yarn-'));
+    const nodeOptions = process.env.NODE_OPTIONS;
+    try {
+      process.env.NODE_OPTIONS = '--max-old-space-size=8192';
+      const recorder = createYarnRecorder(tempRoot);
+      expect(recorder.env.NODE_OPTIONS).not.toContain('--max-old-space-size');
+    } finally {
+      if (nodeOptions === undefined) {
+        delete process.env.NODE_OPTIONS;
+      } else {
+        process.env.NODE_OPTIONS = nodeOptions;
+      }
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   it('loads only native createOnce rules without ESLint or its plugin', () => {
     const pluginPath = path.resolve(__dirname, '../../config/index.js');
     const result = spawnSync(
@@ -308,6 +320,7 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
         workspaces: ['packages/*'],
       }),
     );
+    writeFileSync(path.join(workspace, 'yarn.lock'), '');
     writeFileSync(
       path.join(barDir, 'package.json'),
       JSON.stringify({
@@ -389,6 +402,7 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
         workspaces: ['packages/*'],
       }),
     );
+    writeFileSync(path.join(workspace, 'yarn.lock'), '');
     writeFileSync(
       path.join(appDir, 'package.json'),
       JSON.stringify({
@@ -534,6 +548,7 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
         workspaces: ['packages/*'],
       }),
     );
+    writeFileSync(path.join(workspace, 'yarn.lock'), '');
     writeFileSync(
       path.join(directDir, 'package.json'),
       JSON.stringify({
@@ -667,7 +682,7 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
     );
     writeFileSync(
       configFile,
-      "module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(__dirname, { preset: 'agentic', ignorePatterns: ['**/dist/**'] });\n",
+      "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, { preset: 'agentic', ignorePatterns: ['**/dist/**'] });\n",
     );
 
     try {

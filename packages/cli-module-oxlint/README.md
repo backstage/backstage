@@ -17,17 +17,16 @@ Add the module as a development dependency to opt the project into its
 yarn add --dev @backstage/cli-module-oxlint
 ```
 
-The module supplies Oxlint 1.85.0, `oxlint-tsgolint` 7.0.2002, `cleye` 2.7.0,
-and `fast-xml-parser` 5.11.1. Keep ESLint configuration and lint commands until
-you choose to switch the project; the module does not migrate source comments
-or ESLint configuration for you.
+Keep ESLint configuration and lint commands until you choose to switch the
+project. The module does not migrate source comments or ESLint configuration
+for you.
 
 ## Configuration
 
 Create a CommonJS `.oxlintrc.js` beside each package's `package.json`:
 
 ```javascript
-module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
+module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
   __dirname,
   {
     ignorePatterns: ['templates/**'],
@@ -36,8 +35,8 @@ module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
 );
 ```
 
-The default factory reads `backstage.role` from the package manifest and returns
-native Oxlint configuration. It exports the same callable as
+The `/oxlint-factory` entry point reads `backstage.role` from the package
+manifest and returns native Oxlint configuration. It exports the same callable as
 `createPackageConfig`, plus named `createConfig` and `createConfigForRole`
 methods. Use `createConfig` for a workspace root without a package role and
 `createConfigForRole` when the role is supplied directly. The root config uses
@@ -69,7 +68,7 @@ not loaded or executed.
 Select `agentic` for stricter linting:
 
 ```javascript
-module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
+module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
   __dirname,
   { preset: 'agentic' },
 );
