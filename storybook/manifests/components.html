@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><span class="filter-pill ok" aria-disabled="true">550 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><span class="filter-pill ok" aria-disabled="true">552 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.1s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -15972,7 +15972,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
       <div class="badges">
         <label for="c-48-app-toast-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-48-app-toast-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-48-app-toast-stories" class="badge ok as-toggle">13 stories</label>
         
         
       </div>
@@ -16068,6 +16068,24 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PreviewToast = () =&gt; &lt;ToastContainer queue={previewQueue} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Long Title</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LongTitle = () =&gt; &lt;ToastContainer queue={longTitleQueue} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Long Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LongDescription = () =&gt; &lt;ToastContainer queue={longDescriptionQueue} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
