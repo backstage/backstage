@@ -19,7 +19,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import { RouterProvider } from 'react-aria';
+import { RouterProvider } from 'react-aria-components';
 import {
   Link,
   type NavigateOptions,
