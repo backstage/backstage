@@ -174,11 +174,20 @@ describe('docs search', () => {
 
   describe('paging in human mode', () => {
     const output = () => stdoutSpy.mock.calls.map(c => c[0]).join('');
+    const statuses = () => output().match(/Page \d+( of \d+)?/g) ?? [];
     const setTty = (value: boolean) => {
       for (const stream of [process.stdout, process.stdin]) {
         Object.defineProperty(stream, 'isTTY', { value, configurable: true });
       }
     };
+    const waitForStatuses = async (count: number) => {
+      while (statuses().length < count) {
+        await new Promise(resolve => setImmediate(resolve));
+      }
+    };
+    const press = (name: string, ctrl = false) =>
+      process.stdin.emit('keypress', undefined, { name, ctrl });
+    let setRawMode: jest.Mock;
     const page = (title: string, nextPageCursor?: string) => ({
       results: [{ document: { title } }],
       numberOfResults: 2,
@@ -186,6 +195,14 @@ describe('docs search', () => {
     });
 
     beforeEach(() => {
+      setRawMode = jest.fn();
+      (process.stdin as { setRawMode?: unknown }).setRawMode = setRawMode;
+      jest
+        .spyOn(process.stdin, 'resume')
+        .mockImplementation(() => process.stdin);
+      jest
+        .spyOn(process.stdin, 'pause')
+        .mockImplementation(() => process.stdin);
       (mockCli as jest.Mock).mockReturnValue({
         flags: { limit: 1 },
         _: { term: ['term'] },
@@ -196,23 +213,92 @@ describe('docs search', () => {
     });
 
     afterEach(() => {
+      delete (process.stdin as { setRawMode?: unknown }).setRawMode;
+      jest.restoreAllMocks();
       mockQuery.mockReset();
       for (const stream of [process.stdout, process.stdin]) {
         delete (stream as { isTTY?: boolean }).isTTY;
       }
     });
 
-    it.each([true, false])(
-      'prints a single page with a footer and the cursor hint (TTY: %s)',
-      async tty => {
-        setTty(tty);
+    it('pages with the arrow keys and restores the terminal on quit', async () => {
+      setTty(true);
 
-        await docsSearch(ctx(['term']));
+      const run = docsSearch(ctx(['term']));
+      await waitForStatuses(1);
+      expect(output()).toContain('first');
+      expect(output()).not.toContain('second');
+      press('right');
+      await waitForStatuses(2);
+      expect(output()).toContain('second');
+      press('left');
+      await waitForStatuses(3);
+      press('q');
+      await run;
 
-        expect(mockQuery).toHaveBeenCalledTimes(1);
-        expect(output()).toContain('Showing 1 of 2');
-        expect(output()).toContain('--cursor next-1');
-      },
-    );
+      expect(mockQuery).toHaveBeenCalledTimes(2);
+      expect(mockQuery).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ pageCursor: 'next-1', pageLimit: 1 }),
+      );
+      expect(statuses()).toEqual(['Page 1 of 2', 'Page 2 of 2', 'Page 1 of 2']);
+      expect(output()).toContain('←/→ page · q/esc quit');
+      expect(setRawMode.mock.calls).toEqual([[true], [false]]);
+      expect(output()).toContain('\x1b[?1049h\x1b[?25l');
+      // The last page stays in the scrollback after leaving the pager
+      expect(output().split('\x1b[?1049l')[1]).toContain('first');
+      expect(output()).toContain('\x1b[?25h\x1b[?1049l');
+      expect(process.stdin.listenerCount('keypress')).toBe(0);
+    });
+
+    it('exits on escape and ctrl+c', async () => {
+      setTty(true);
+
+      const escRun = docsSearch(ctx(['term']));
+      await waitForStatuses(1);
+      press('escape');
+      await escRun;
+      expect(mockQuery).toHaveBeenCalledTimes(1);
+
+      mockQuery.mockReset();
+      mockQuery
+        .mockResolvedValueOnce(page('first', 'next-1'))
+        .mockResolvedValueOnce(page('second'));
+      const ctrlRun = docsSearch(ctx(['term']));
+      await waitForStatuses(2);
+      press('c', true);
+      await ctrlRun;
+      expect(process.exitCode).toBe(130);
+      process.exitCode = undefined;
+      expect(setRawMode.mock.calls).toEqual([[true], [false], [true], [false]]);
+    });
+
+    it('restores the terminal when fetching the next page fails', async () => {
+      setTty(true);
+      mockQuery.mockReset();
+      mockQuery.mockResolvedValueOnce(page('first', 'next-1'));
+      mockQuery.mockRejectedValueOnce(new Error('boom'));
+
+      const run = docsSearch(ctx(['term']));
+      await Promise.all([
+        expect(run).rejects.toThrow('boom'),
+        waitForStatuses(1).then(() => press('right')),
+      ]);
+
+      expect(setRawMode.mock.calls).toEqual([[true], [false]]);
+      expect(output()).toContain('\x1b[?25h\x1b[?1049l');
+      expect(process.stdin.listenerCount('keypress')).toBe(0);
+    });
+
+    it('prints a footer with the cursor and does not page without a TTY', async () => {
+      setTty(false);
+
+      await docsSearch(ctx(['term']));
+
+      expect(setRawMode).not.toHaveBeenCalled();
+      expect(mockQuery).toHaveBeenCalledTimes(1);
+      expect(output()).toContain('Showing 1 of 2');
+      expect(output()).toContain('--cursor next-1');
+    });
   });
 });

@@ -35,9 +35,11 @@ Options:
 ```
 
 Only entities of kind `Template` are listed, so a `kind` filter is an error. `--cursor` cannot be combined with
-`--filter`, because the cursor already encodes it. Human output shows how
-many templates were shown and, when more are available, prints the `--cursor`
-value to continue from.
+`--filter`, because the cursor already encodes it. In human output on a
+terminal, the command shows one page at a time with a status line such as
+`Page 2 of 7`. Press the right arrow key for the next page, the left arrow key
+for the previous page, and `q`, `Esc`, or `Ctrl+C` to quit. Otherwise it prints
+the `--cursor` value to continue from.
 
 ### Examples
 

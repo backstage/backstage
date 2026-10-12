@@ -24,7 +24,7 @@ import { createCatalogClient } from '../lib/catalogClient';
 import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
   outputFlag,
-  printPage,
+  pageInteractively,
   parseOutputFlag,
   writeJson,
   extractEntities,
@@ -75,11 +75,11 @@ export default async ({ args, info }: CliCommandContext) => {
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
-  const fetchPage = async (cursor?: string) => {
+  const fetchPage = async (cursor?: string, limit = flags.limit) => {
     const request: QueryEntitiesRequest = cursor
       ? { cursor }
       : { query: { kind: 'Template', ...filter } };
-    if (flags.limit) request.limit = flags.limit;
+    if (limit) request.limit = limit;
 
     const response = await client.queryEntities(request, {
       token: accessToken,
@@ -97,9 +97,9 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  await printPage(
-    async cursor => {
-      const page = await fetchPage(cursor);
+  await pageInteractively(
+    async (cursor, limit) => {
+      const page = await fetchPage(cursor, limit);
       return {
         ...page,
         count: page.items.length,
@@ -107,7 +107,7 @@ export default async ({ args, info }: CliCommandContext) => {
         nextCursor: page.nextPageCursor,
       };
     },
-    page => process.stdout.write(formatEntityTable(extractEntities(page))),
-    flags.cursor,
+    page => formatEntityTable(extractEntities(page)),
+    { cursor: flags.cursor, limit: flags.limit, headerLines: 1 },
   );
 };
