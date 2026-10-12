@@ -17,9 +17,8 @@ plugin source using [`actions sources add search`](./module-actions.md#actions-s
 All commands support `--output human|json` and `--instance <name>` to target a
 specific authenticated instance. Unknown flags are rejected.
 
-In human output on a terminal, the commands show how many results were found
-and ask whether to show the next page. Otherwise they print the `--cursor`
-value to continue from. JSON output contains a single page and
+Human output shows how many results were shown and, when more are available,
+prints the `--cursor` value to continue from. JSON output contains a single page and
 `nextPageCursor`.
 
 ## search

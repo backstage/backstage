@@ -23,7 +23,7 @@ import { SearchClient } from '../lib/SearchClient';
 import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
   outputFlag,
-  pageInteractively,
+  printPage,
   parseOutputFlag,
   writeJson,
   formatSearchResults,
@@ -93,7 +93,7 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  await pageInteractively(
+  await printPage(
     async cursor => {
       const page = await fetchPage(cursor);
       return {

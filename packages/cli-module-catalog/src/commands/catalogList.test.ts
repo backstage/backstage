@@ -17,14 +17,9 @@
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const mockQueryEntities = jest.fn();
-const mockPrompt = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
-}));
-jest.mock('inquirer', () => ({
-  __esModule: true,
-  default: { prompt: (...args: unknown[]) => mockPrompt(...args) },
 }));
 jest.mock('../lib/resolveAuth', () => ({
   resolveAuth: jest.fn().mockResolvedValue({
@@ -305,7 +300,6 @@ describe('catalog list', () => {
 
     afterEach(() => {
       mockQueryEntities.mockReset();
-      mockPrompt.mockReset();
       for (const [stream, descriptor] of [
         [process.stdout, ttyDescriptors[0]],
         [process.stdin, ttyDescriptors[1]],
@@ -318,44 +312,18 @@ describe('catalog list', () => {
       }
     });
 
-    it('fetches the next page with the cursor when confirmed on a TTY', async () => {
-      setTty(true);
-      mockPrompt.mockResolvedValue({ more: true });
+    it.each([true, false])(
+      'prints a single page with a footer and the cursor hint (TTY: %s)',
+      async tty => {
+        setTty(tty);
 
-      await catalogList(ctx([]));
+        await catalogList(ctx([]));
 
-      expect(mockPrompt).toHaveBeenCalledTimes(1);
-      expect(mockQueryEntities).toHaveBeenNthCalledWith(
-        2,
-        { cursor: 'next-1', limit: 1 },
-        { token: 'tok' },
-      );
-      expect(output()).toContain('first');
-      expect(output()).toContain('second');
-      expect(output()).toContain('Showing 1 of 2');
-      expect(output()).toContain('Showing 2 of 2');
-    });
-
-    it('stops when the prompt is declined on a TTY', async () => {
-      setTty(true);
-      mockPrompt.mockResolvedValue({ more: false });
-
-      await catalogList(ctx([]));
-
-      expect(mockQueryEntities).toHaveBeenCalledTimes(1);
-      expect(output()).not.toContain('second');
-    });
-
-    it('prints a footer with the cursor and does not prompt without a TTY', async () => {
-      setTty(false);
-
-      await catalogList(ctx([]));
-
-      expect(mockPrompt).not.toHaveBeenCalled();
-      expect(mockQueryEntities).toHaveBeenCalledTimes(1);
-      expect(output()).toContain('Showing 1 of 2');
-      expect(output()).toContain('--cursor next-1');
-    });
+        expect(mockQueryEntities).toHaveBeenCalledTimes(1);
+        expect(output()).toContain('Showing 1 of 2');
+        expect(output()).toContain('--cursor next-1');
+      },
+    );
 
     it('prints a single page in JSON mode even on a TTY', async () => {
       setTty(true);
@@ -365,7 +333,6 @@ describe('catalog list', () => {
 
       await catalogList(ctx([]));
 
-      expect(mockPrompt).not.toHaveBeenCalled();
       expect(JSON.parse(output()).nextPageCursor).toBe('next-1');
     });
   });

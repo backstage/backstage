@@ -19,11 +19,12 @@ import {
   parseKeyValuePairs,
   type CliCommandContext,
 } from '@backstage/cli-node';
+import type { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { createCatalogClient } from '../lib/catalogClient';
 import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
   outputFlag,
-  pageInteractively,
+  printPage,
   parseOutputFlag,
   writeJson,
   extractEntities,
@@ -70,15 +71,12 @@ export default async ({ args, info }: CliCommandContext) => {
   const client = createCatalogClient(baseUrl);
 
   const fetchPage = async (cursor?: string) => {
-    const request: Record<string, unknown> = {};
-    if (cursor) {
-      request.cursor = cursor;
-    } else {
-      request.query = { kind: 'Template', ...filter };
-    }
+    const request: QueryEntitiesRequest = cursor
+      ? { cursor }
+      : { query: { kind: 'Template', ...filter } };
     if (flags.limit) request.limit = flags.limit;
 
-    const response = await client.queryEntities(request as any, {
+    const response = await client.queryEntities(request, {
       token: accessToken,
     });
     return {
@@ -94,7 +92,7 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  await pageInteractively(
+  await printPage(
     async cursor => {
       const page = await fetchPage(cursor);
       return {

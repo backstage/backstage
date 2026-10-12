@@ -20,11 +20,16 @@ import {
   parseKeyValuePairs,
   type CliCommandContext,
 } from '@backstage/cli-node';
+import type {
+  QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
+} from '@backstage/catalog-client';
+import type { FilterPredicateExpression } from '@backstage/filter-predicates';
 import { createCatalogClient } from '../lib/catalogClient';
 import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
   outputFlag,
-  pageInteractively,
+  printPage,
   parseOutputFlag,
   writeJson,
   extractEntities,
@@ -110,16 +115,15 @@ export default async ({ args, info }: CliCommandContext) => {
   const client = createCatalogClient(baseUrl);
 
   const fetchPage = async (cursor?: string) => {
-    const request: Record<string, unknown> = {};
-    if (cursor) {
-      request.cursor = cursor;
-    } else {
-      if (Object.keys(query).length > 0) request.query = query;
-      if (fields) request.fields = fields;
+    const initial: QueryEntitiesInitialRequest = {};
+    if (Object.keys(query).length > 0) {
+      initial.query = query as FilterPredicateExpression;
     }
+    if (fields) initial.fields = fields;
+    const request: QueryEntitiesRequest = cursor ? { cursor } : initial;
     if (flags.limit) request.limit = flags.limit;
 
-    const response = await client.queryEntities(request as any, {
+    const response = await client.queryEntities(request, {
       token: accessToken,
     });
     return {
@@ -135,7 +139,7 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  await pageInteractively(
+  await printPage(
     async cursor => {
       const page = await fetchPage(cursor);
       return {

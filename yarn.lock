@@ -2238,7 +2238,6 @@ __metadata:
     "@backstage/filter-predicates": "workspace:^"
     chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
-    inquirer: "npm:^8.2.0"
     yaml: "npm:^2.0.0"
   bin:
     cli-module-catalog: bin/backstage-cli-module-catalog
@@ -2432,7 +2431,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
-    inquirer: "npm:^8.2.0"
     yaml: "npm:^2.0.0"
   bin:
     cli-module-scaffolder: bin/backstage-cli-module-scaffolder
@@ -2448,7 +2446,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
-    inquirer: "npm:^8.2.0"
   bin:
     cli-module-search: bin/backstage-cli-module-search
   languageName: unknown

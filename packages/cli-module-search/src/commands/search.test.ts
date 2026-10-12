@@ -17,14 +17,9 @@
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const mockQuery = jest.fn();
-const mockPrompt = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
-}));
-jest.mock('inquirer', () => ({
-  __esModule: true,
-  default: { prompt: (...args: unknown[]) => mockPrompt(...args) },
 }));
 jest.mock('../lib/resolveAuth', () => ({
   resolveAuth: jest.fn().mockResolvedValue({
@@ -309,36 +304,22 @@ describe('search', () => {
 
     afterEach(() => {
       mockQuery.mockReset();
-      mockPrompt.mockReset();
       for (const stream of [process.stdout, process.stdin]) {
         delete (stream as { isTTY?: boolean }).isTTY;
       }
     });
 
-    it('fetches the next page with the cursor when confirmed on a TTY', async () => {
-      setTty(true);
-      mockPrompt.mockResolvedValue({ more: true });
+    it.each([true, false])(
+      'prints a single page with a footer and the cursor hint (TTY: %s)',
+      async tty => {
+        setTty(tty);
 
-      await searchCommand(ctx(['term']));
+        await searchCommand(ctx(['term']));
 
-      expect(mockQuery).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({ pageCursor: 'next-1', pageLimit: 1 }),
-      );
-      expect(output()).toContain('first');
-      expect(output()).toContain('second');
-      expect(output()).toContain('Showing 2 of 2');
-    });
-
-    it('prints a footer with the cursor and does not prompt without a TTY', async () => {
-      setTty(false);
-
-      await searchCommand(ctx(['term']));
-
-      expect(mockPrompt).not.toHaveBeenCalled();
-      expect(mockQuery).toHaveBeenCalledTimes(1);
-      expect(output()).toContain('Showing 1 of 2');
-      expect(output()).toContain('--cursor next-1');
-    });
+        expect(mockQuery).toHaveBeenCalledTimes(1);
+        expect(output()).toContain('Showing 1 of 2');
+        expect(output()).toContain('--cursor next-1');
+      },
+    );
   });
 });

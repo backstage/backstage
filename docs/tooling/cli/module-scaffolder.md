@@ -35,9 +35,9 @@ Options:
 ```
 
 Only entities of kind `Template` are listed. `--cursor` cannot be combined with
-`--filter`, because the cursor already encodes it. In human output on a
-terminal, the command asks whether to show the next page. Otherwise it prints
-the `--cursor` value to continue from.
+`--filter`, because the cursor already encodes it. Human output shows how
+many templates were shown and, when more are available, prints the `--cursor`
+value to continue from.
 
 ### Examples
 

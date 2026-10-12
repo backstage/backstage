@@ -42,9 +42,8 @@ same key as `--kind` or `--type` is an error. `--cursor` cannot be combined with
 `--kind`, `--type`, `--filter` or `--fields`, because the cursor already
 encodes them.
 
-In human output on a terminal, the command shows how many entities were found
-and asks whether to show the next page. Otherwise it prints the `--cursor` value
-to continue from. JSON output contains a single page and `nextPageCursor`.
+Human output shows how many entities were shown and, when more are available,
+prints the `--cursor` value to continue from. JSON output contains a single page and `nextPageCursor`.
 
 ### Examples
 

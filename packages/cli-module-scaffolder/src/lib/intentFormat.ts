@@ -15,7 +15,6 @@
  */
 
 import chalk from 'chalk';
-import inquirer from 'inquirer';
 
 export type OutputMode = 'human' | 'json';
 
@@ -51,44 +50,28 @@ export type PageResult = {
 };
 
 /**
- * Prints a page of results followed by a footer. When running in a terminal
- * and more results exist, asks whether to show the next page. Otherwise a
- * hint with the `--cursor` value to continue from is printed.
+ * Prints a single page of results followed by a footer with the number of
+ * results shown. When more results exist, a hint with the `--cursor` value to
+ * continue from is printed.
  */
-export async function pageInteractively<T extends PageResult>(
+export async function printPage<T extends PageResult>(
   fetchPage: (cursor?: string) => Promise<T>,
   render: (page: T) => void,
-  initialCursor?: string,
+  cursor?: string,
 ): Promise<void> {
-  const interactive = Boolean(process.stdout.isTTY && process.stdin.isTTY);
-  let cursor = initialCursor;
-  let shown = 0;
+  const page = await fetchPage(cursor);
+  render(page);
 
-  for (;;) {
-    const page = await fetchPage(cursor);
-    render(page);
-    shown += page.count;
-
-    if (shown > 0) {
-      const total = page.total === undefined ? '' : ` of ${page.total}`;
-      process.stdout.write(`${chalk.dim(`Showing ${shown}${total}`)}\n`);
-    }
-    if (!page.nextCursor) return;
-
-    if (!interactive) {
-      process.stdout.write(
-        `${chalk.dim(
-          `More results available, use --cursor ${page.nextCursor} to show them`,
-        )}\n`,
-      );
-      return;
-    }
-
-    const { more } = await inquirer.prompt<{ more: boolean }>([
-      { type: 'confirm', name: 'more', message: 'Show more?', default: false },
-    ]);
-    if (!more) return;
-    cursor = page.nextCursor;
+  if (page.count > 0) {
+    const total = page.total === undefined ? '' : ` of ${page.total}`;
+    process.stdout.write(`${chalk.dim(`Showing ${page.count}${total}`)}\n`);
+  }
+  if (page.nextCursor) {
+    process.stdout.write(
+      `${chalk.dim(
+        `More results available, use --cursor ${page.nextCursor} to show them`,
+      )}\n`,
+    );
   }
 }
 
