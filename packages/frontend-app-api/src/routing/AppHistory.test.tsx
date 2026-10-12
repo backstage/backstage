@@ -502,17 +502,46 @@ describe('AppHistory', () => {
       );
     });
 
-    it('should resolve paths against the app root and preserve trailing slashes', () => {
-      history.navigate('/catalog/foo');
-
-      expect(history.createHref('widgets')).toBe('/widgets');
-      expect(history.createHref('./widgets')).toBe('/widgets');
-      expect(history.createHref('../bar')).toBe('/bar');
-      expect(history.createHref('../../..')).toBe('/');
-      expect(history.createHref('/catalog/foo/../bar')).toBe('/catalog/bar');
-      expect(history.createHref('widgets/')).toBe('/widgets/');
-      expect(history.createHref('')).toBe('/');
-      expect(history.createHref('.')).toBe('/');
+    it('rejects relative paths and preserves app-absolute destinations', () => {
+      const appHistory = history;
+      appHistory.navigate('/catalog/foo');
+      for (const target of [
+        'widgets',
+        './widgets',
+        '../bar',
+        '../../..',
+        'widgets/',
+        '.',
+      ]) {
+        expect(() => appHistory.createHref(target)).toThrow(
+          'App routing requires',
+        );
+        expect(() => appHistory.navigate(target)).toThrow(
+          'App routing requires',
+        );
+        expect(appHistory.location.pathname).toBe('/catalog/foo');
+      }
+      expect(appHistory.createHref('/catalog/foo/../bar')).toBe('/catalog/bar');
+      expect(appHistory.createHref('/widgets/')).toBe('/widgets/');
+      appHistory.navigate('?tab=docs#intro');
+      expect(appHistory.location).toMatchObject({
+        pathname: '/catalog/foo',
+        search: '?tab=docs',
+        hash: '#intro',
+      });
+      expect(appHistory.createHref('')).toBe('/catalog/foo');
+      appHistory.navigate('');
+      expect(appHistory.location).toMatchObject({
+        pathname: '/catalog/foo',
+        search: '',
+        hash: '',
+      });
+      appHistory.navigate('#latest');
+      expect(appHistory.location).toMatchObject({
+        pathname: '/catalog/foo',
+        search: '',
+        hash: '#latest',
+      });
     });
 
     it('should keep a target with no pathname of its own at the current location', () => {

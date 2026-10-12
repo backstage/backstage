@@ -50,7 +50,7 @@ import {
   TabPanelDefinition,
 } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
-import { getBUIRouterPathname } from '../../provider/BUIRouter';
+import { getBUINavigationPathname } from '../../provider/BUINavigation';
 import {
   BUIRoutingProvider,
   useBUIRouting,
@@ -344,7 +344,7 @@ export const Tab = (props: TabProps) => {
         <TabSelectionEffects
           id={id as string}
           pathname={router.pathname}
-          targetPathname={getBUIRouterPathname(router.resolveHref(href))}
+          targetPathname={getBUINavigationPathname(router.createHref(href))}
           matchStrategy={matchStrategy}
         />
       )}

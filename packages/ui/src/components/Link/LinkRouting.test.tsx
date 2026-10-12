@@ -18,7 +18,7 @@ import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createContext, useContext, useState } from 'react';
 import { BUIProvider } from '../../provider/BUIProvider';
-import type { BUIRouter } from '../../provider/BUIRouter';
+import type { BUINavigation } from '../../provider/BUINavigation';
 import { Link } from './Link';
 import type { ButtonLink } from '../ButtonLink';
 import type * as TabComponents from '../Tabs';
@@ -35,10 +35,10 @@ describe('BUI control routing', () => {
     );
     const router = createRouter({
       navigate,
-      resolveHref: href => `/base/${href}`,
+      createHref: href => `/base/${href}`,
     });
     const { unmount } = render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <Link href="cancelled" onClick={cancelled}>
           Cancelled
         </Link>
@@ -72,10 +72,10 @@ describe('BUI control routing', () => {
   it('updates links and active items from a hook at the consumer scope without remounting', () => {
     const Scope = createContext({ base: '/root', active: 'overview' });
     const navigate = jest.fn();
-    function useHostRouter(): BUIRouter {
+    function useHostRouter(): BUINavigation {
       const { base, active } = useContext(Scope);
       return {
-        resolveHref: href => '/base' + base + '/' + href,
+        createHref: href => '/base' + base + '/' + href,
         navigate: (href, options) => navigate(base + '/' + href, options),
         pathname: '/base' + base + '/' + active,
       };
@@ -118,7 +118,7 @@ describe('BUI control routing', () => {
       extra?: boolean;
     }) {
       return (
-        <BUIProvider useRouter={useHostRouter}>
+        <BUIProvider useNavigation={useHostRouter}>
           <Scope.Provider value={{ base, active }}>
             <Content extra={extra} />
           </Scope.Provider>
@@ -170,8 +170,8 @@ describe('BUI control routing', () => {
     const navigate = jest.fn();
     render(
       <BUIProvider
-        useRouter={() =>
-          createRouter({ navigate, resolveHref: href => `/base${href}` })
+        useNavigation={() =>
+          createRouter({ navigate, createHref: href => `/base${href}` })
         }
       >
         <BUIProvider>
@@ -234,13 +234,13 @@ describe('BUI control routing', () => {
       const captureEvent = jest.fn();
       const router = createRouter({
         navigate,
-        resolveHref: href =>
+        createHref: href =>
           href.startsWith('/') ? `/base${href}` : `/base/catalog/${href}`,
         pathname: '/base/catalog/overview',
       });
       render(
         <BUIProvider
-          useRouter={() => router}
+          useNavigation={() => router}
           useAnalytics={() => ({ captureEvent })}
         >
           <IsolatedLink
@@ -316,10 +316,10 @@ describe('BUI control routing', () => {
   );
 });
 
-function createRouter(overrides: Partial<BUIRouter> = {}): BUIRouter {
+function createRouter(overrides: Partial<BUINavigation> = {}): BUINavigation {
   return {
     navigate: jest.fn(),
-    resolveHref: href => href,
+    createHref: href => href,
     pathname: '/',
     ...overrides,
   };

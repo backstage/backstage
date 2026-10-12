@@ -21,7 +21,7 @@ import type {
   TabProps as AriaTabProps,
 } from 'react-aria-components';
 import { MutableRefObject } from 'react';
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 
 /**
  * Strategies for matching the current route to determine which tab should be active.
@@ -96,7 +96,7 @@ export interface TabProps
     Omit<AriaTabProps, keyof TabOwnProps | 'render' | 'routerOptions'> {
   /** Options passed to the host router when the tab is activated. */
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 /** Context for sharing refs between Tabs and TabList

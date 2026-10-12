@@ -33,7 +33,13 @@ import type { AppLocation, AppNavigateOptions } from './AppLocation';
  */
 export interface AppHistoryApi {
   /**
-   * Navigate to an app-relative path or an external URL.
+   * Navigate to an app-absolute path or an external URL.
+   *
+   * Path targets must start with `/` and exclude the deployment basename.
+   * Empty, query-only, and hash-only targets use the current pathname.
+   * An empty target clears query and hash. Path-relative
+   * targets, including `.` and `..`, are rejected; use a page routing adapter
+   * for library-relative navigation.
    *
    * Absolute URLs (including same-origin URLs), protocol-relative URLs, and
    * schemes such as `mailto:` are handled by the browser. The `replace`
@@ -66,10 +72,9 @@ export interface AppHistoryApi {
    *
    * Executable URL schemes are replaced with `about:blank` and a warning.
    *
-   * Paths resolve against the app root. Use {@link useAppHref} for targets
-   * relative to the current page: it resolves the matched route ancestry
-   * before calling this method. A target with no pathname of its own, such
-   * as `?tab=readme` or `#section`, stays at the current location.
+   * Paths must start with `/` and exclude the deployment basename. Relative
+   * paths are rejected. Empty, query-only, and hash-only targets, such as `?tab=readme`
+   * or `#section`, use the current pathname.
    *
    * Absolute URLs, protocol-relative URLs, and schemes such as `mailto:`
    * and `tel:` pass through without the basename, after sanitization.

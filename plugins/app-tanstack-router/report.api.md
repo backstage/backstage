@@ -18,7 +18,10 @@ export function createTanStackPageRouter(
 
 // @public
 export interface CreateTanStackPageRouterOptions {
-  createRouter(options: { history: RouterHistory }): AnyRouter;
+  createRouter(options: {
+    history: RouterHistory;
+    routePaths: readonly string[];
+  }): AnyRouter;
 }
 
 // @public

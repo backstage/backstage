@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import {
   CellProps as ReactAriaCellProps,
   ColumnProps as ReactAriaColumnProps,
@@ -85,7 +85,7 @@ export interface RowProps<T>
   extends RowOwnProps<T>,
     Omit<ReactAriaRowProps<T>, keyof RowOwnProps | 'routerOptions'> {
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }
 
 /** @public */

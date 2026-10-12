@@ -46,7 +46,6 @@ export function TestRouteResolver(props: {
     const api: RouteResolutionApi = {
       resolve: (...args) => parent.get(routeResolutionApiRef)?.resolve(...args),
       resolvePath: options => resolver.resolvePath(options),
-      resolveTarget: options => resolver.resolveTarget(options),
     };
     return {
       get<T>(ref: ApiRef<T>): T | undefined {
