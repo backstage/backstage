@@ -22,7 +22,7 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['catalog', 'list'],
-      description: 'List catalog entities with optional kind/type filter',
+      description: 'List catalog entities with optional filters',
       execute: { loader: () => import('./commands/catalogList') },
     });
     reg.addCommand({
@@ -32,7 +32,8 @@ export default createCliModule({
     });
     reg.addCommand({
       path: ['catalog', 'validate'],
-      description: 'Validate entity YAML against the catalog schema',
+      description:
+        'Validate an entity YAML file or stdin against the catalog schema',
       execute: { loader: () => import('./commands/catalogValidate') },
     });
     reg.addCommand({

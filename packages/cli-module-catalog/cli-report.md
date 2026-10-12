@@ -37,14 +37,12 @@ Commands:
 ### `backstage-cli-module-catalog catalog get`
 
 ```
-Usage: @backstage/cli-module-catalog catalog get [flags...] [ref]
+Usage: @backstage/cli-module-catalog catalog get [flags...] <ref>
 
 Options:
   --instance <string>
   --kind <string>
-  --name <string>
   --namespace <string>
-  --output <string>
   -h, --help
 ```
 
@@ -54,6 +52,7 @@ Options:
 Usage: @backstage/cli-module-catalog catalog list [flags...]
 
 Options:
+  --cursor <string>
   --fields <string>
   --filter <string>
   --instance <string>
@@ -67,12 +66,10 @@ Options:
 ### `backstage-cli-module-catalog catalog register`
 
 ```
-Usage: @backstage/cli-module-catalog catalog register [flags...]
+Usage: @backstage/cli-module-catalog catalog register [flags...] <url>
 
 Options:
   --instance <string>
-  --location-url <string>
-  --output <string>
   -h, --help
 ```
 
@@ -85,20 +82,16 @@ Options:
   --instance <string>
   --location-id <string>
   --location-url <string>
-  --output <string>
   -h, --help
 ```
 
 ### `backstage-cli-module-catalog catalog validate`
 
 ```
-Usage: @backstage/cli-module-catalog catalog validate [flags...]
+Usage: @backstage/cli-module-catalog catalog validate [flags...] <file>
 
 Options:
-  --entity <string>
-  --entity-file <string>
   --instance <string>
   --location <string>
-  --output <string>
   -h, --help
 ```

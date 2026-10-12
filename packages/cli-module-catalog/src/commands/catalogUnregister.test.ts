@@ -69,8 +69,20 @@ describe('catalog unregister', () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
 
     await expect(catalogUnregister(ctx([]))).rejects.toThrow(
-      '--location-id or --location-url is required',
+      'One of --location-id or --location-url is required',
     );
+  });
+
+  it('throws when both --location-id and --location-url are provided', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { 'location-id': 'loc-1', 'location-url': 'https://x.test/a' },
+    });
+
+    await expect(catalogUnregister(ctx([]))).rejects.toThrow(
+      '--location-id and --location-url cannot be used together',
+    );
+    expect(mockRemoveLocationById).not.toHaveBeenCalled();
+    expect(mockGetLocations).not.toHaveBeenCalled();
   });
 
   it('removes the location by id', async () => {

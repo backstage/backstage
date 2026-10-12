@@ -35,13 +35,10 @@ Commands:
 ### `backstage-cli-module-scaffolder template dry-run`
 
 ```
-Usage: @backstage/cli-module-scaffolder template dry-run [flags...]
+Usage: @backstage/cli-module-scaffolder template dry-run [flags...] <file>
 
 Options:
   --instance <string>
-  --output <string>
-  --template-file <string>
-  --template-ref <string>
   --value <string>
   -h, --help
 ```
@@ -49,14 +46,12 @@ Options:
 ### `backstage-cli-module-scaffolder template execute`
 
 ```
-Usage: @backstage/cli-module-scaffolder template execute [flags...] [ref]
+Usage: @backstage/cli-module-scaffolder template execute [flags...] <ref>
 
 Options:
   --instance <string>
   --namespace <string>
-  --output <string>
   --secret <string>
-  --template-ref <string>
   --value <string>
   -h, --help
 ```
@@ -67,6 +62,7 @@ Options:
 Usage: @backstage/cli-module-scaffolder template list [flags...]
 
 Options:
+  --cursor <string>
   --filter <string>
   --instance <string>
   --limit <number>

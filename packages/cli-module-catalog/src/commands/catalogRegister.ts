@@ -17,50 +17,35 @@
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { createCatalogClient } from '../lib/catalogClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
-      flags: {
-        'location-url': {
-          type: String,
-          description: 'URL to the catalog-info.yaml file (required)',
-        },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
-      },
+      strictFlags: true,
+      parameters: ['<url>'],
+      flags: { ...instanceFlag },
     },
     undefined,
     args,
   );
-
-  if (!flags['location-url']) {
-    throw new Error(
-      '--location-url is required. Usage: catalog register --location-url <url>',
-    );
-  }
+  const { flags } = parsed;
+  const url = parsed._.url;
 
   try {
     // eslint-disable-next-line no-new
-    new URL(flags['location-url']);
+    new URL(url);
   } catch {
-    throw new Error(`${flags['location-url']} is an invalid URL`);
+    throw new Error(`${url} is an invalid URL`);
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
   const result = await client.addLocation(
-    { type: 'url', target: flags['location-url'] },
+    { type: 'url', target: url },
     { token: accessToken },
   );
   writeJson({ locationId: result.location.id });

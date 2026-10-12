@@ -16,71 +16,47 @@
 
 import { cli } from 'cleye';
 import {
-  parseCommaSeparatedList,
   parseKeyValuePairs,
   type CliCommandContext,
 } from '@backstage/cli-node';
 import { SearchClient } from '../lib/SearchClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
+  outputFlag,
+  printPage,
   parseOutputFlag,
   writeJson,
   formatSearchResults,
 } from '../lib/intentFormat';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const nonFlagArgs: string[] = [];
-  let skipNext = false;
-
-  for (let i = 0; i < args.length; i++) {
-    if (skipNext) {
-      skipNext = false;
-      continue;
-    }
-    if (args[i].startsWith('-')) {
-      if (
-        i + 1 < args.length &&
-        !args[i + 1].startsWith('-') &&
-        !args[i].includes('=')
-      ) {
-        skipNext = true;
-      }
-    } else {
-      nonFlagArgs.push(args[i]);
-    }
-  }
-
   const parsed = cli(
     {
       name: info.usage,
       strictFlags: true,
       parameters: ['<term...>'],
       flags: {
-        types: {
-          type: String,
-          description: 'Comma-separated document types',
+        type: {
+          type: [String] as const,
+          description:
+            'Only search documents of this type, for example techdocs (repeatable)',
+          default: [] as string[],
         },
         filter: {
           type: [String] as const,
-          description: 'Query filter as repeatable key=value input',
+          description: 'Filter results by a field, as key=value (repeatable)',
           default: [] as string[],
         },
-        'page-limit': {
+        limit: {
           type: Number,
-          description: 'Results per page (default: 10)',
+          description: 'Maximum number of results to return per page',
         },
-        'page-cursor': {
+        cursor: {
           type: String,
-          description: 'Pagination cursor',
+          description: 'Continue from the cursor returned by a previous page',
         },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
+        ...outputFlag,
+        ...instanceFlag,
       },
     },
     undefined,
@@ -88,35 +64,46 @@ export default async ({ args, info }: CliCommandContext) => {
   );
   const { flags } = parsed;
 
-  const termParts = parsed._?.term ?? nonFlagArgs;
-  const term = termParts.join(' ');
-  if (!term) {
-    throw new Error(
-      'Search term is required. Usage: search <term> [--types techdocs]',
-    );
-  }
-
+  const term = parsed._.term.join(' ');
   const mode = parseOutputFlag(flags as Record<string, unknown>);
+  const types = flags.type.length > 0 ? flags.type : undefined;
+  const filters = parseKeyValuePairs(flags.filter);
+
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = new SearchClient(baseUrl, accessToken);
 
-  const response = await client.query({
-    term,
-    types: parseCommaSeparatedList(flags.types),
-    filters: parseKeyValuePairs(flags.filter),
-    pageLimit: flags['page-limit'],
-    pageCursor: flags['page-cursor'],
-  });
-  const result = {
-    results: response.results,
-    nextPageCursor: response.nextPageCursor,
-    totalItems: response.numberOfResults,
-    hasMoreResults: response.nextPageCursor !== undefined,
+  const fetchPage = async (cursor?: string) => {
+    const response = await client.query({
+      term,
+      types,
+      filters,
+      pageLimit: flags.limit,
+      pageCursor: cursor,
+    });
+    return {
+      results: response.results,
+      nextPageCursor: response.nextPageCursor,
+      totalItems: response.numberOfResults,
+      hasMoreResults: response.nextPageCursor !== undefined,
+    };
   };
 
   if (mode === 'json') {
-    writeJson(result);
-  } else {
-    process.stdout.write(formatSearchResults(result.results));
+    writeJson(await fetchPage(flags.cursor));
+    return;
   }
+
+  await printPage(
+    async cursor => {
+      const page = await fetchPage(cursor);
+      return {
+        ...page,
+        count: page.results.length,
+        total: page.totalItems,
+        nextCursor: page.nextPageCursor,
+      };
+    },
+    page => process.stdout.write(formatSearchResults(page.results)),
+    flags.cursor,
+  );
 };
