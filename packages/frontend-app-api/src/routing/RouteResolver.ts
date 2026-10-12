@@ -95,16 +95,10 @@ function resolveTargetRef(
  */
 function resolveBasePath(
   targetRef: RouteRef,
-  sourceLocation: string,
+  match: NonNullable<ReturnType<typeof matchRouteRefs>>,
   routePaths: Map<RouteRef, string>,
   routeParents: Map<RouteRef, RouteRef | undefined>,
 ) {
-  // While traversing the app element tree we build up the routeObjects structure
-  // used here. It is the same kind of structure that react-router creates, with the
-  // addition that associated route refs are stored throughout the tree. This lets
-  // us look up all route refs that can be reached from our source location.
-  const match = matchRouteRefs(routeObjects, sourceLocation) ?? [];
-
   // While we search for a common routing root between our current location and
   // the target route, we build a list of all route refs we find that we need
   // to traverse to reach the target.
@@ -174,7 +168,7 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
   private readonly routeMatches = new Map<
     string,
-    RouteMatch<string, BackstageRouteObject>[]
+    NonNullable<ReturnType<typeof matchRouteRefs>>
   >();
 
   private readonly nodeAncestors = new WeakMap<AppNode, ReadonlySet<AppNode>>();
@@ -236,9 +230,7 @@ export class RouteResolver implements RouteResolutionApi {
   } {
     if (options.pathname !== this.matchedPathname) {
       this.matchedRoutes = {
-        matches: (
-          matchRouteRefs(this.routeObjects, options.pathname) ?? []
-        ).flatMap(match => {
+        matches: this.matchSourceLocation(options.pathname).flatMap(match => {
           const node = match.routeObject.appNode;
           return node
             ? [
@@ -322,7 +314,7 @@ export class RouteResolver implements RouteResolutionApi {
     if (match) {
       this.routeMatches.delete(sourceLocation);
     } else {
-      match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
+      match = matchRouteRefs(this.routeObjects, sourceLocation) ?? [];
     }
     this.routeMatches.set(sourceLocation, match);
     if (this.routeMatches.size > MAX_CACHED_SOURCE_LOCATIONS) {
