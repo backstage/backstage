@@ -28,9 +28,9 @@ function collectSourceFiles(directory: string): string[] {
 }
 
 describe('new frontend system router dependency boundary', () => {
-  // Library bindings belong to the page adapters and the framework's
-  // temporary root projection, which AppRoot composes through app history.
-  it('keeps direct React Router imports out of the app plugin', () => {
+  // Library bindings belong to page adapters and the legacy BUI V2 bridge.
+  // The app root composes its temporary projection through app history.
+  it('keeps direct React Router imports out of the app plugin except the legacy bridge', () => {
     const sourceRoot = path.resolve(__dirname);
     const violations = collectSourceFiles(sourceRoot)
       .filter(file => !/\.(?:test|stories)\.tsx?$/.test(file))
@@ -41,6 +41,8 @@ describe('new frontend system router dependency boundary', () => {
       )
       .map(file => path.relative(sourceRoot, file));
 
-    expect(violations).toEqual([]);
+    expect(violations).toEqual([
+      path.join('extensions', 'LegacyBUIProvider.tsx'),
+    ]);
   });
 });

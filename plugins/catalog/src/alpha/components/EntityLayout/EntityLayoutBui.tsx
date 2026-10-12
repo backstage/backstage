@@ -21,6 +21,7 @@ import { Alert, Container } from '@backstage/ui';
 import {
   configApiRef,
   useApi,
+  useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -162,8 +163,11 @@ export function EntityLayoutBui(props: {
     HeaderComponent,
   } = props;
   const { entity } = useAsyncEntity();
+  const entityLink = useRouteRef(entityRouteRef);
+  const params = useRouteRefParams(entityRouteRef);
   const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
   const tabs = useEntityTabs({
+    baseHref: entityLink(params),
     routes: visibleRoutes,
     groupDefinitions,
     defaultContentOrder,
