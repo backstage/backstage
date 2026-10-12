@@ -119,6 +119,17 @@ describe('template list', () => {
     );
   });
 
+  it('rejects a kind filter', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { filter: ['kind=Component'] },
+    });
+
+    await expect(templateList(ctx([]))).rejects.toThrow(
+      '--filter kind=... is not supported',
+    );
+    expect(mockQueryEntities).not.toHaveBeenCalled();
+  });
+
   it('outputs JSON when --output json', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: { output: 'json' } });
     mockQueryEntities.mockResolvedValue({

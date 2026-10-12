@@ -39,8 +39,9 @@ Options:
 The `--kind` and `--type` flags are translated into a query predicate
 automatically. Repeat `--filter` to add predicates. Using `--filter` with the
 same key as `--kind` or `--type` is an error. `--cursor` cannot be combined with
-`--kind`, `--type`, `--filter` or `--fields`, because the cursor already
-encodes them.
+`--kind`, `--type` or `--filter`, because the cursor already encodes the query.
+Use `--fields` together with `--cursor` to keep the same field selection on
+later pages.
 
 Human output shows how many entities were shown and, when more are available,
 prints the `--cursor` value to continue from. JSON output contains a single page and `nextPageCursor`.

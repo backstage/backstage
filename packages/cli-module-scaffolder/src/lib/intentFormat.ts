@@ -51,7 +51,7 @@ export type PageResult = {
 
 /**
  * Prints a single page of results followed by a footer with the number of
- * results shown. When more results exist, a hint with the `--cursor` value to
+ * results shown, unless the page is empty. When more results exist, a hint with the `--cursor` value to
  * continue from is printed.
  */
 export async function printPage<T extends PageResult>(

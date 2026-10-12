@@ -67,6 +67,11 @@ export default async ({ args, info }: CliCommandContext) => {
     );
   }
   const filter = parseKeyValuePairs(flags.filter) ?? {};
+  if ('kind' in filter) {
+    throw new Error(
+      '--filter kind=... is not supported, template list only lists templates',
+    );
+  }
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 

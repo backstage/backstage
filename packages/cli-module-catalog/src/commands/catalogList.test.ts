@@ -189,19 +189,18 @@ describe('catalog list', () => {
         kind: 'Component',
         type: 'service',
         filter: ['a=b'],
-        fields: 'kind',
       },
     });
 
     await expect(catalogList(ctx([]))).rejects.toThrow(
-      '--cursor cannot be combined with --kind, --type, --filter, --fields',
+      '--cursor cannot be combined with --kind, --type, --filter',
     );
     expect(mockQueryEntities).not.toHaveBeenCalled();
   });
 
-  it('passes --cursor without query or fields', async () => {
+  it('passes --cursor without query but keeps --fields', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { cursor: 'abc', limit: 5 },
+      flags: { cursor: 'abc', limit: 5, fields: 'metadata.name' },
     });
     mockQueryEntities.mockResolvedValue({
       items: [],
@@ -212,7 +211,7 @@ describe('catalog list', () => {
     await catalogList(ctx([]));
 
     expect(mockQueryEntities).toHaveBeenCalledWith(
-      { cursor: 'abc', limit: 5 },
+      { cursor: 'abc', limit: 5, fields: ['metadata.name'] },
       { token: 'tok' },
     );
   });

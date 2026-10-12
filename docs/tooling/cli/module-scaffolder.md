@@ -34,7 +34,7 @@ Options:
   --instance <name>    Instance name
 ```
 
-Only entities of kind `Template` are listed. `--cursor` cannot be combined with
+Only entities of kind `Template` are listed, so a `kind` filter is an error. `--cursor` cannot be combined with
 `--filter`, because the cursor already encodes it. Human output shows how
 many templates were shown and, when more are available, prints the `--cursor`
 value to continue from.

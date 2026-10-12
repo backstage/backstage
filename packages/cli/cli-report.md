@@ -278,7 +278,7 @@ Options:
 ### `backstage-cli catalog validate`
 
 ```
-Usage: backstage-cli catalog validate [flags...] [file]
+Usage: backstage-cli catalog validate [flags...] <file>
 
 Options:
   --instance <string>

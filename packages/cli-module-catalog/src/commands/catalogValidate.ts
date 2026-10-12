@@ -28,7 +28,7 @@ export default async ({ args, info }: CliCommandContext) => {
     {
       name: info.usage,
       strictFlags: true,
-      parameters: ['[file]'],
+      parameters: ['<file>'],
       flags: {
         location: {
           type: String,

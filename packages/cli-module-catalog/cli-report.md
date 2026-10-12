@@ -88,7 +88,7 @@ Options:
 ### `backstage-cli-module-catalog catalog validate`
 
 ```
-Usage: @backstage/cli-module-catalog catalog validate [flags...] [file]
+Usage: @backstage/cli-module-catalog catalog validate [flags...] <file>
 
 Options:
   --instance <string>

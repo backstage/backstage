@@ -68,7 +68,7 @@ export default async ({ args, info }: CliCommandContext) => {
         cursor: {
           type: String,
           description:
-            'Continue from the cursor returned by a previous page (cannot be combined with --kind, --type, --filter or --fields)',
+            'Continue from the cursor returned by a previous page (cannot be combined with --kind, --type or --filter)',
         },
         ...outputFlag,
         ...instanceFlag,
@@ -85,7 +85,6 @@ export default async ({ args, info }: CliCommandContext) => {
       flags.kind && '--kind',
       flags.type && '--type',
       flags.filter?.length && '--filter',
-      flags.fields && '--fields',
     ].filter(Boolean);
     if (conflicting.length > 0) {
       throw new Error(
@@ -120,7 +119,9 @@ export default async ({ args, info }: CliCommandContext) => {
       initial.query = query as FilterPredicateExpression;
     }
     if (fields) initial.fields = fields;
-    const request: QueryEntitiesRequest = cursor ? { cursor } : initial;
+    const request: QueryEntitiesRequest = cursor
+      ? { cursor, ...(fields && { fields }) }
+      : initial;
     if (flags.limit) request.limit = flags.limit;
 
     const response = await client.queryEntities(request, {
