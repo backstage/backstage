@@ -60,7 +60,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         events: {
           modules: {
             msgraph: {
-              resources: ['users', 'groups'],
+              subscriptionResources: ['users', 'groups'],
             },
           },
         },
@@ -84,7 +84,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         events: {
           modules: {
             msgraph: {
-              resources: ['users', 'unsupported'],
+              subscriptionResources: ['users', 'unsupported'],
             },
           },
         },
