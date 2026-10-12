@@ -30,7 +30,7 @@ import {
 import { RouterProvider } from 'react-aria-components';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIContext, type BUIContextVersions } from '../../provider/BUIContext';
-import { BUIProvider, type BUIRouter } from '../../provider';
+import { BUIProvider, type BUINavigation } from '../../provider';
 import { Tab, TabList, Tabs } from './Tabs';
 
 function LocationStatus() {
@@ -332,7 +332,7 @@ function V1AnalyticsProvider({
   );
 
   return (
-    <RouterProvider navigate={router.navigate} useHref={router.resolveHref}>
+    <RouterProvider navigate={router.navigate} useHref={router.createHref}>
       <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
     </RouterProvider>
   );
@@ -345,21 +345,21 @@ describe('Tabs', () => {
       pathname: '/base/inner/details',
       navigate: (_pathname: string) => {},
     });
-    function useHostRouter(): BUIRouter {
+    function useHostRouter(): BUINavigation {
       const scope = useContext(Scope);
       const location = useContext(Location);
-      const resolveHref = (href: string) => `/base${scope}/${href}`;
+      const createHref = (href: string) => `/base${scope}/${href}`;
       return {
         pathname: location.pathname,
-        resolveHref,
-        navigate: href => location.navigate(resolveHref(href)),
+        createHref,
+        navigate: href => location.navigate(createHref(href)),
       };
     }
     function Host() {
       const [pathname, navigate] = useState('/base/inner/details');
       return (
         <Location.Provider value={{ pathname, navigate }}>
-          <BUIProvider useRouter={useHostRouter}>
+          <BUIProvider useNavigation={useHostRouter}>
             <Tabs>
               <TabList>
                 <Scope.Provider value="/inner">
@@ -390,14 +390,14 @@ describe('Tabs', () => {
   });
 
   it('passes native activation and router options through the explicit host', () => {
-    const router: BUIRouter = {
+    const router: BUINavigation = {
       navigate: jest.fn(),
-      resolveHref: href => `/app/catalog/${href}`,
+      createHref: href => `/app/catalog/${href}`,
       pathname: '/app/catalog/overview',
     };
     const routerOptions = { replace: true, state: { from: 'tab' } };
     render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <Tabs>
           <TabList>
             <Tab id="settings" href="settings" routerOptions={routerOptions}>
@@ -417,14 +417,14 @@ describe('Tabs', () => {
   });
 
   it('selects routed tabs from the injected router without React Router context', async () => {
-    const router: BUIRouter = {
+    const router: BUINavigation = {
       navigate: jest.fn(),
-      resolveHref: href => href,
+      createHref: href => href,
       pathname: '/catalog/entity/overview/details',
     };
 
     render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <Tabs>
           <TabList>
             <Tab
@@ -456,15 +456,15 @@ describe('Tabs', () => {
   });
 
   it('resolves relative routed tabs through the injected router for active selection', async () => {
-    const router: BUIRouter = {
+    const router: BUINavigation = {
       navigate: jest.fn(),
-      resolveHref: href =>
+      createHref: href =>
         href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
       pathname: '/app/catalog/settings/details',
     };
 
     render(
-      <BUIProvider useRouter={() => router}>
+      <BUIProvider useNavigation={() => router}>
         <Tabs>
           <TabList>
             <Tab id="overview" href="overview" matchStrategy="prefix">

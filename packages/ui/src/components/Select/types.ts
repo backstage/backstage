@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type { Breakpoint } from '../..';
 import type { ReactElement, ReactNode } from 'react';
 import type {
@@ -309,7 +309,7 @@ export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
   > & {
     textValue: string;
     /** Options passed to the router configured on BUIProvider. */
-    routerOptions?: BUIRouterOptions;
+    routerOptions?: BUINavigationOptions;
   };
 
 /** @public */

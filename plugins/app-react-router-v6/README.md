@@ -85,6 +85,19 @@ shared component in the adapter. The old frontend system supplies neither half,
 so the wrap is invisible there rather than a crash. The same holds in a plugin's
 own `render()` unit tests, which stand up no app at all.
 
+## Navigation targets
+
+Paths starting with `/` are absolute from the app root, without the deployment
+basename. Route-ref destinations work unchanged through this adapter's native
+navigation APIs and through BUI controls, including navigation to other plugins.
+
+The adapter supplies `NavigationProvider` from `@backstage/frontend-plugin-api`.
+`useNavigation`, `RouterLink`, and BUI controls resolve relative targets using
+the routing library at the consuming control's route scope. Other component
+libraries can integrate through the same public hook; the adapter has no BUI
+runtime dependency. Outside an adapter, framework routing accepts only app-absolute
+paths, empty/query/hash targets, and external URLs.
+
 ## Documentation
 
 - [Scoped plugin routing](https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing)

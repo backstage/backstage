@@ -65,6 +65,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-app-tanstack-router": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@tanstack/history": "1.131.2",
     "@tanstack/react-router": "1.131.2",
     "@testing-library/dom": "^10.0.0",

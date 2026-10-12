@@ -26,21 +26,21 @@ import { useAnalytics } from '../analytics/useAnalytics';
 import { BUIRoutingProvider } from '../navigation/BUIRoutingProvider';
 import { type BUIContextVersions, type BUIContextValueV1 } from './BUIContext';
 import { BUIProvider } from './BUIProvider';
-import type { BUIRouter } from './BUIRouter';
+import type { BUINavigation } from './BUINavigation';
 
 describe('BUIProvider', () => {
   it('publishes stable analytics and explicit host capabilities', () => {
     const captureEvent = jest.fn();
     const useProvidedAnalytics = () => ({ captureEvent });
-    const useProvidedRouter = (): BUIRouter => ({
+    const useProvidedRouter = (): BUINavigation => ({
       navigate: jest.fn(),
-      resolveHref: href => href,
+      createHref: href => href,
       pathname: '/',
     });
     const wrapper = ({ children }: PropsWithChildren) => (
       <BUIProvider
         useAnalytics={useProvidedAnalytics}
-        useRouter={useProvidedRouter}
+        useNavigation={useProvidedRouter}
       >
         {children}
       </BUIProvider>
@@ -59,7 +59,7 @@ describe('BUIProvider', () => {
     expect(result.current.context?.atVersion(2)).toBeUndefined();
     expect(result.current.context?.atVersion(3)).toEqual({
       useAnalytics: useProvidedAnalytics,
-      useRouter: useProvidedRouter,
+      useNavigation: useProvidedRouter,
     });
     result.current.analytics.captureEvent('click', 'Destination');
     expect(captureEvent).toHaveBeenCalledWith('click', 'Destination');
@@ -72,9 +72,9 @@ describe('BUIProvider', () => {
     const navigate = jest.fn();
     render(
       <BUIProvider
-        useRouter={() => ({
+        useNavigation={() => ({
           navigate,
-          resolveHref: href => `/base${href}`,
+          createHref: href => `/base${href}`,
           pathname: '/base',
         })}
       >
@@ -89,6 +89,36 @@ describe('BUIProvider', () => {
     expect(link).toHaveAttribute('href', '/base/catalog');
     fireEvent.click(link);
     expect(navigate).toHaveBeenCalledWith('/catalog', undefined);
+  });
+
+  it('preserves analytics when an adapter overrides only routing', () => {
+    const captureEvent = jest.fn();
+    const useParentAnalytics = () => ({ captureEvent });
+    const override = jest.fn();
+    const useOverride = () => ({ captureEvent: override });
+    const useNavigation = (): BUINavigation => ({
+      navigate: jest.fn(),
+      createHref: to => to,
+      pathname: '/',
+    });
+    for (const useChildAnalytics of [undefined, useOverride]) {
+      const { result, unmount } = renderHook(() => useAnalytics(), {
+        wrapper: ({ children }) => (
+          <BUIProvider useAnalytics={useParentAnalytics}>
+            <BUIProvider
+              useNavigation={useNavigation}
+              useAnalytics={useChildAnalytics}
+            >
+              {children}
+            </BUIProvider>
+          </BUIProvider>
+        ),
+      });
+      result.current.captureEvent('click', 'Link');
+      unmount();
+    }
+    expect(captureEvent).toHaveBeenCalledTimes(1);
+    expect(override).toHaveBeenCalledTimes(1);
   });
 
   it('reads analytics from older providers without requiring their routing capabilities', () => {

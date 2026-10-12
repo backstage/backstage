@@ -141,6 +141,21 @@ describe('useAppHref', () => {
     expect(renderTargets(withNeitherAuthority)).toEqual(targets);
   });
 
+  it('rejects relative paths with app history and with the legacy router', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      for (const wrapper of [withAppHistory, withReactRouterOnly]) {
+        for (const to of ['details', '../edit', '.']) {
+          expect(() => renderHook(() => useAppHref(to), { wrapper })).toThrow(
+            'App routing requires',
+          );
+        }
+      }
+    } finally {
+      error.mockRestore();
+    }
+  });
+
   it('should return an inert href for targets a browser would execute', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const inert = executableTargets.map(() => 'about:blank');
@@ -281,20 +296,11 @@ const trees: Array<{
 ];
 
 const targets = [
-  '',
-  '.',
-  './',
-  'widgets',
-  'widgets/',
-  'a/b',
   '/catalog',
   '/catalog/',
   '/catalog?kind=component',
   '/catalog#frag',
   '/search?query=https://example.com',
-  '..',
-  '../x',
-  '../../x',
   '?tab=readme',
   '#section',
 ];
@@ -470,15 +476,7 @@ describe('the framework authority', () => {
 
     const hrefs = (wrapper: (props: PropsWithChildren<{}>) => JSX.Element) =>
       Object.fromEntries(
-        [
-          '#frag',
-          '?query=x',
-          'sub',
-          './x',
-          '..',
-          '/x',
-          'https://example.com/x',
-        ].map(to => [
+        ['#frag', '?query=x', '/x', 'https://example.com/x'].map(to => [
           to,
           renderHook(() => useAppHref(to), { wrapper }).result.current,
         ]),
@@ -489,12 +487,6 @@ describe('the framework authority', () => {
       // at rather than falling back to the app root.
       '#frag': '/backstage/catalog/foo#frag',
       '?query=x': '/backstage/catalog/foo?query=x',
-      // Relative to the page's base, which is a segment above the location.
-      sub: '/backstage/catalog/sub',
-      './x': '/backstage/catalog/x',
-      // The page is mounted a segment below the app root, so `..` climbs off
-      // it.
-      '..': '/backstage/',
       '/x': '/backstage/x',
       'https://example.com/x': 'https://example.com/x',
     };
@@ -504,82 +496,7 @@ describe('the framework authority', () => {
     // independent of the routing library hosting it.
     expect(hrefs(chrome)).toEqual(onThePage);
     expect(hrefs(content)).toEqual(onThePage);
-    expect(hrefs(legacy)).toEqual({ ...onThePage, '..': '/backstage' });
-  });
-
-  it('climbs one match per leading `..` inside a sub-page', () => {
-    const SUB_PAGE_URL = '/backstage/catalog/foo/tab-1';
-    const appHistory = createMockAppHistory({
-      initialLocation: SUB_PAGE_URL,
-      basename: '/backstage',
-    });
-    const subPageMount: Pick<
-      RouteResolutionMatch,
-      'basePath' | 'routePattern'
-    > = {
-      basePath: '/catalog/foo/tab-1',
-      routePattern: '/catalog/:name/tab-1',
-    };
-
-    // The stack a sub-page runs under on the legacy path: the parent page's
-    // match with the sub-page's own appended.
-    const subPageTree = (element: React.ReactNode) => (
-      <MemoryRouter basename="/backstage" initialEntries={[SUB_PAGE_URL]}>
-        <Routes>
-          <Route path="/catalog/:name" element={<Outlet />}>
-            <Route path="tab-1/*" element={element} />
-          </Route>
-        </Routes>
-      </MemoryRouter>
-    );
-
-    const framework = (to: string) =>
-      renderHook(() => useAppHref(to), {
-        wrapper: ({ children }: PropsWithChildren<{}>) => (
-          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-            {subPageTree(
-              <TestApiProvider
-                apis={[
-                  mockApis.routeResolution({
-                    resolvePath: {
-                      matches: [
-                        {
-                          basePath: '/catalog/foo',
-                          routePattern: '/catalog/:name',
-                        },
-                        subPageMount,
-                      ].map(mount => ({ ...mount, node: mockRouteNode })),
-                    },
-                  }),
-                ]}
-              >
-                {children}
-              </TestApiProvider>,
-            )}
-          </TestApiProvider>
-        ),
-      }).result.current;
-
-    const legacy = (to: string) =>
-      renderHook(() => useAppHref(to), {
-        wrapper: ({ children }: PropsWithChildren<{}>) => (
-          <TestApiProvider apis={[]}>{subPageTree(children)}</TestApiProvider>
-        ),
-      }).result.current;
-
-    // One `..` lands on the parent page, which is what makes a sub-page's
-    // `../sibling` point at the sibling tab rather than at the app root. The
-    // sub-page's pattern is its page's with `tab-1` appended, so the framework
-    // reads the same boundary React Router does: the page's match ends where
-    // its parameters do.
-    expect(framework('..')).toBe('/backstage/catalog/foo');
-    expect(framework('../tab-2')).toBe('/backstage/catalog/foo/tab-2');
-    // A second `..` climbs off the page, rather than into
-    // `/backstage/catalog`, which no route claims.
-    expect(framework('../..')).toBe('/backstage/');
-    expect(legacy('..')).toBe('/backstage/catalog/foo');
-    expect(legacy('../tab-2')).toBe('/backstage/catalog/foo/tab-2');
-    expect(legacy('../..')).toBe('/backstage');
+    expect(hrefs(legacy)).toEqual(onThePage);
   });
 });
 
@@ -738,26 +655,15 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const href = (to: string) =>
       renderHook(() => versioned.useAppHref(to), { wrapper }).result.current;
 
-    // The answers the framework authority gives above, unchanged: targets with
-    // no pathname of their own keep the location they were written at,
-    // relative ones resolve against the page's base, `..` climbs off the page,
-    // and the deploy basename is applied on the way out. Rendering any of them
-    // runs the vendored `parsePath`, `createPath` and `resolvePath`, none of
-    // which the beta exports.
+    // The basename is applied once, independently of the React Router version.
     expect({
       '#frag': href('#frag'),
       '?query=x': href('?query=x'),
-      sub: href('sub'),
-      './x': href('./x'),
-      '..': href('..'),
       '/x': href('/x'),
       'https://example.com/x': href('https://example.com/x'),
     }).toEqual({
       '#frag': '/backstage/catalog/foo#frag',
       '?query=x': '/backstage/catalog/foo?query=x',
-      sub: '/backstage/catalog/sub',
-      './x': '/backstage/catalog/x',
-      '..': '/backstage/',
       '/x': '/backstage/x',
       'https://example.com/x': 'https://example.com/x',
     });
@@ -774,7 +680,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     // The stand-in contexts report no router under beta, and under stable
     // there is no router in this tree to report one.
     expect(result.current.href).toBe('/catalog');
-    expect(result.current.fragmentHref).toBe('#section');
+    expect(result.current.fragmentHref).toBe('/#section');
     expect(result.current.externalHref).toBe('mailto:someone@example.com');
   });
 });

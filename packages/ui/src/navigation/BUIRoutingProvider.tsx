@@ -17,13 +17,13 @@
 import { createContext, useCallback, useContext, type ReactNode } from 'react';
 import { RouterProvider } from 'react-aria-components';
 import {
-  useBUIRouter,
-  type BUIRouter,
-  type BUIRouterOptions,
-} from '../provider/BUIRouter';
+  useBUINavigation,
+  type BUINavigation,
+  type BUINavigationOptions,
+} from '../provider/BUINavigation';
 import { isBrowserOwnedHref } from '../utils/linkUtils';
 
-const BUIRoutingContext = createContext<BUIRouter | undefined>(undefined);
+const BUIRoutingContext = createContext<BUINavigation | undefined>(undefined);
 
 /**
  * Returns the router captured by the control's React Aria routing provider.
@@ -41,9 +41,11 @@ export function useBUIRouting() {
  * @internal
  */
 export function BUIRoutingProvider({ children }: { children: ReactNode }) {
-  const useRouter = useBUIRouter();
-  return useRouter ? (
-    <HostRoutingProvider useRouter={useRouter}>{children}</HostRoutingProvider>
+  const useNavigation = useBUINavigation();
+  return useNavigation ? (
+    <HostRoutingProvider useNavigation={useNavigation}>
+      {children}
+    </HostRoutingProvider>
   ) : (
     children
   );
@@ -51,14 +53,14 @@ export function BUIRoutingProvider({ children }: { children: ReactNode }) {
 
 function HostRoutingProvider({
   children,
-  useRouter,
+  useNavigation,
 }: {
   children: ReactNode;
-  useRouter: () => BUIRouter;
+  useNavigation: () => BUINavigation;
 }) {
-  const router = useRouter();
+  const router = useNavigation();
   const navigate = useCallback(
-    (href: string, options?: BUIRouterOptions) => {
+    (href: string, options?: BUINavigationOptions) => {
       // React Aria delegates same-origin absolute URLs too. Keep authored
       // absolute URLs browser-owned instead of passing them to an app router.
       if (isBrowserOwnedHref(href)) {
@@ -72,7 +74,7 @@ function HostRoutingProvider({
 
   return (
     <BUIRoutingContext.Provider value={router}>
-      <RouterProvider navigate={navigate} useHref={router.resolveHref}>
+      <RouterProvider navigate={navigate} useHref={router.createHref}>
         {children}
       </RouterProvider>
     </BUIRoutingContext.Provider>

@@ -32,10 +32,10 @@ import type {
   HeaderNavTabItem,
 } from './types';
 import {
-  getBUIRouterPathname,
-  useBUIRouter,
-  type BUIRouter,
-} from '../../provider/BUIRouter';
+  getBUINavigationPathname,
+  useBUINavigation,
+  type BUINavigation,
+} from '../../provider/BUINavigation';
 import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 function isTabGroup(tab: HeaderNavTabItem): tab is HeaderNavTabGroup {
@@ -148,17 +148,17 @@ interface HeaderNavProps {
 
 function HeaderNavHostAutoDetect({
   tabs,
-  useRouter,
+  useNavigation,
 }: {
   tabs: HeaderNavTabItem[];
-  useRouter: () => BUIRouter;
+  useNavigation: () => BUINavigation;
 }) {
-  const router = useRouter();
+  const router = useNavigation();
   const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
   let activeTabId: string | undefined;
   let activeScore = -1;
   for (const tab of allTabs) {
-    const pathname = getBUIRouterPathname(router.resolveHref(tab.href));
+    const pathname = getBUINavigationPathname(router.createHref(tab.href));
     if (
       pathname !== undefined &&
       (router.pathname === pathname ||
@@ -254,10 +254,15 @@ function HeaderNavInner(props: HeaderNavProps) {
 
 /** @internal */
 export function HeaderNav(props: HeaderNavProps) {
-  const useRouter = useBUIRouter();
+  const useNavigation = useBUINavigation();
 
-  if (props.activeTabId === undefined && useRouter) {
-    return <HeaderNavHostAutoDetect tabs={props.tabs} useRouter={useRouter} />;
+  if (props.activeTabId === undefined && useNavigation) {
+    return (
+      <HeaderNavHostAutoDetect
+        tabs={props.tabs}
+        useNavigation={useNavigation}
+      />
+    );
   }
 
   return <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />;
