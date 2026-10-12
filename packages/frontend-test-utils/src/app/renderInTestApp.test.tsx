@@ -362,20 +362,11 @@ describe('renderInTestApp', () => {
     expect(await screen.findByText('Path: /catalog')).toBeInTheDocument();
   });
 
-  // The element renders as a page mounted at `mountPath`, so page-relative
-  // targets have to resolve against that mount. Nothing here publishes one
-  // the way a real app's route switch does, and without it every target
-  // below resolves against the app root instead.
+  // A framework page mount binds route params, but app hrefs remain absolute.
+  // Page-relative targets belong to a page router adapter.
   describe('mountPath', () => {
     it.each([
-      [
-        'a relative target',
-        'techdocs',
-        '/catalog/default/component/foo/techdocs',
-      ],
-      // The whole pattern is one match, so `..` climbs off the page rather
-      // than into `/catalog/default/component`, where no page is mounted.
-      ['a climbing target', '../bar', '/bar'],
+      ['an app-absolute target', '/techdocs', '/techdocs'],
       [
         'a query-only target',
         '?tab=readme',
@@ -392,7 +383,7 @@ describe('renderInTestApp', () => {
     });
 
     it('leaves the mount unpublished when the location does not reach it', async () => {
-      renderInTestApp(<HrefProbe to="techdocs" />, {
+      renderInTestApp(<HrefProbe to="/techdocs" />, {
         mountPath: '/catalog/:namespace/:kind/:name',
         initialRouteEntries: ['/somewhere-else'],
       });
@@ -413,7 +404,7 @@ describe('renderInTestApp', () => {
           return (
             <>
               <span>Mount: {mount?.basePath ?? 'none'}</span>
-              <HrefProbe to="techdocs" />
+              <HrefProbe to="/techdocs" />
             </>
           );
         }
@@ -469,7 +460,7 @@ describe('renderInTestApp', () => {
           <div>
             <span>Link: {link?.({ name: 'test-name' }) ?? 'none'}</span>
             <span>Name: {params.name ?? 'none'}</span>
-            <HrefProbe to="techdocs" />
+            <HrefProbe to="/techdocs" />
           </div>
         );
       }
@@ -486,10 +477,7 @@ describe('renderInTestApp', () => {
       // Bound from the pattern the page is mounted at, which is where params
       // come from once React Router is not the one answering.
       expect(screen.getByText('Name: foo')).toBeInTheDocument();
-      expect(screen.getByTestId('probe')).toHaveAttribute(
-        'href',
-        '/catalog/default/component/foo/techdocs',
-      );
+      expect(screen.getByTestId('probe')).toHaveAttribute('href', '/techdocs');
     });
   });
 
@@ -535,17 +523,14 @@ describe('renderInTestApp', () => {
       expect(screen.getByText('Id: alpha')).toBeInTheDocument();
     });
 
-    it('keeps the page mount, so framework routing still answers', async () => {
-      renderInTestApp(<HrefProbe to="techdocs" />, {
+    it('keeps framework hrefs app-absolute inside the adapter', async () => {
+      renderInTestApp(<HrefProbe to="/techdocs" />, {
         router: TestPageRouter,
         mountPath: '/catalog/:namespace/:kind/:name',
         initialRouteEntries: ['/catalog/default/component/foo'],
       });
 
-      expect(screen.getByTestId('probe')).toHaveAttribute(
-        'href',
-        '/catalog/default/component/foo/techdocs',
-      );
+      expect(screen.getByTestId('probe')).toHaveAttribute('href', '/techdocs');
     });
   });
 
