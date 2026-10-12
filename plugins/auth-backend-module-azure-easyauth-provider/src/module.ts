@@ -33,7 +33,7 @@ export const authModuleAzureEasyAuthProvider = createBackendModule({
         providers: authProvidersExtensionPoint,
       },
       async init({ providers }) {
-        validateAppServiceConfiguration(process.env);
+        validateAzureEnvironment(process.env);
         providers.registerProvider({
           providerId: 'azureEasyAuth',
           factory: createProxyAuthProviderFactory({
@@ -50,20 +50,6 @@ export const authModuleAzureEasyAuthProvider = createBackendModule({
 });
 
 function validateAppServiceConfiguration(env: NodeJS.ProcessEnv) {
-  // Based on https://github.com/AzureAD/microsoft-identity-web/blob/f7403779d1a91f4a3fec0ed0993bd82f50f299e1/src/Microsoft.Identity.Web/AppServicesAuth/AppServicesAuthenticationInformation.cs#L38-L59
-  //
-  // It's critical to validate we're really running in a correctly configured Azure App Services or Azure Container Apps,
-  // As we rely on them to manage & validate the identity headers.
-  // Without that, users can be trivially impersonated.
-  if (env.CONTAINER_APP_NAME !== undefined) {
-    return;
-  }
-
-  if (env.WEBSITE_SKU === undefined) {
-    throw new Error(
-      'Backstage is not running on Azure App Services or Azure Container Apps',
-    );
-  }
   if (env.WEBSITE_AUTH_ENABLED?.toLocaleLowerCase('en-US') !== 'true') {
     throw new Error('Azure App Services does not have authentication enabled');
   }
@@ -75,5 +61,27 @@ function validateAppServiceConfiguration(env: NodeJS.ProcessEnv) {
   }
   if (env.WEBSITE_AUTH_TOKEN_STORE?.toLocaleLowerCase('en-US') !== 'true') {
     throw new Error('Token Store is not enabled');
+  }
+}
+
+function validateAzureEnvironment(env: NodeJS.ProcessEnv) {
+  // Based on https://github.com/AzureAD/microsoft-identity-web/blob/f7403779d1a91f4a3fec0ed0993bd82f50f299e1/src/Microsoft.Identity.Web/AppServicesAuth/AppServicesAuthenticationInformation.cs#L38-L59
+  //
+  // It's critical to validate we're really running in a correctly configured Azure App Services or Azure Container Apps,
+  // As we rely on them to manage & validate the identity headers.
+  // Without that, users can be trivially impersonated.
+  const isAppService = Boolean(
+    env.WEBSITE_AUTH_ENABLED || env.WEBSITE_INSTANCE_ID || env.WEBSITE_SKU,
+  );
+  const isContainerApp = Boolean(env.CONTAINER_APP_NAME);
+
+  if (!isAppService && !isContainerApp) {
+    throw new Error(
+      'Backstage is not running on Azure App Services or Azure Container Apps',
+    );
+  }
+
+  if (isAppService) {
+    validateAppServiceConfiguration(env);
   }
 }

@@ -96,4 +96,23 @@ describe('authModuleAzureEasyAuthProvider', () => {
       Object,
     );
   });
+
+  it('should start successfully when running in Azure App Services identified by WEBSITE_INSTANCE_ID', async () => {
+    process.env.WEBSITE_INSTANCE_ID = 'instance-123';
+    process.env.WEBSITE_AUTH_ENABLED = 'True';
+    process.env.WEBSITE_AUTH_DEFAULT_PROVIDER = 'AzureActiveDirectory';
+    process.env.WEBSITE_AUTH_TOKEN_STORE = 'True';
+    await expect(startTestBackend({ features })).resolves.toBeInstanceOf(
+      Object,
+    );
+  });
+
+  it('should fail when running in Azure App Services with disabled auth even if CONTAINER_APP_NAME is set', async () => {
+    process.env.CONTAINER_APP_NAME = 'my-container-app';
+    process.env.WEBSITE_SKU = 'Standard';
+    process.env.WEBSITE_AUTH_ENABLED = 'False';
+    await expect(startTestBackend({ features })).rejects.toThrow(
+      'Azure App Services does not have authentication enabled',
+    );
+  });
 });
