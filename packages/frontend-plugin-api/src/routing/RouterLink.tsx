@@ -16,7 +16,9 @@
 
 import { AnchorHTMLAttributes, forwardRef } from 'react';
 import { isExternalTarget } from '@internal/frontend';
-import { useNavigation } from './NavigationProvider';
+import { useHasNavigationProvider, useNavigation } from './NavigationProvider';
+import { appHistoryApiRef } from './AppHistoryApi';
+import { useApiHolder } from '../apis/system';
 import type { AppNavigateOptions } from './AppLocation';
 
 /**
@@ -46,9 +48,11 @@ export interface RouterLinkProps
  * @public
  */
 export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
-  function RouterLink(props, ref) {
+  function RouterLinkComponent(props, ref) {
     const { href: to, replace, state, onClick, children, ...rest } = props;
     const { createHref, navigate } = useNavigation();
+    const hasNavigationProvider = useHasNavigationProvider();
+    const appHistory = useApiHolder().get(appHistoryApiRef);
     const href = createHref(to);
 
     return (
@@ -60,6 +64,7 @@ export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
           onClick?.(event);
           if (
             event.defaultPrevented ||
+            (!appHistory && !hasNavigationProvider) ||
             isExternalTarget(to) ||
             event.button !== 0 ||
             event.metaKey ||

@@ -26,8 +26,8 @@ import type { AppLocation, AppNavigateOptions } from './AppLocation';
  * The public navigation surface mirrors the `navigate` + `useHref` pattern
  * used by libraries like react-aria: `AppHistoryApi.navigate` performs
  * navigation, and {@link AppHistoryApi.createHref} (paired with the public
- * {@link useAppHref} hook) resolves an app-relative path to a browser-ready
- * href (including the app's deploy basename).
+ * {@link useAppHref} hook) resolves an app-absolute path (starting at `/`,
+ * without the deployment basename) to a browser-ready href.
  *
  * @public
  */
@@ -44,11 +44,11 @@ export interface AppHistoryApi {
    * Absolute URLs (including same-origin URLs), protocol-relative URLs, and
    * schemes such as `mailto:` are handled by the browser. The `replace`
    * option replaces the browser history entry; `state` is only used for
-   * app-relative navigation. Executable URL schemes are replaced with
+   * app-absolute path navigation. Executable URL schemes are replaced with
    * `about:blank` and a warning.
    *
    * Implementations used with the TanStack page adapter must expose the new
-   * `location` synchronously when an app-relative push or replace completes.
+   * `location` synchronously when an app-absolute push or replace completes.
    * Numeric history traversal may complete asynchronously and is observed
    * through `location$`. External navigation does not synchronously update
    * the app location.
@@ -57,14 +57,14 @@ export interface AppHistoryApi {
   /** Traverse a relative number of history entries. */
   navigate(delta: number): void;
   /**
-   * The current location (basename-stripped, app-relative).
+   * The current location (pathname starts with `/` and excludes the basename).
    *
    * The reference only changes when the location changes, so this can be read
    * directly as the snapshot for `useSyncExternalStore` and compared by
    * identity.
    */
   readonly location: AppLocation;
-  /** Observable of the current location (basename-stripped, app-relative). */
+  /** Observable of the current location (pathname excludes the basename). */
   readonly location$: Observable<AppLocation>;
   /**
    * Resolve a path to a browser-ready href, including the app's deploy
@@ -80,7 +80,7 @@ export interface AppHistoryApi {
    * and `tel:` pass through without the basename, after sanitization.
    *
    * Only the path portion is inspected, so `/search?query=https://example.com`
-   * is an ordinary app-relative target.
+   * is an ordinary app-absolute target.
    */
   createHref(to: string): string;
 }
