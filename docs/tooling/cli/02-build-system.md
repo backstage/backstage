@@ -180,9 +180,8 @@ The configuration factory also provides utilities for extending the configuratio
 ### Oxlint (experimental)
 
 The `@backstage/cli-module-oxlint` package adds Oxlint commands to the Backstage
-CLI. Oxlint is a Rust-based linter. The module uses Oxlint 1.85.0 and
-`oxlint-tsgolint` 7.0.2002, with `cleye` 2.7.0 and `fast-xml-parser` 5.11.1.
-It requires Node.js 22.12 or later in the supported Node 22 or 24 release lines.
+CLI. Oxlint is a Rust-based linter. The module requires Node.js 22.12 or later
+in the supported Node 22 or 24 release lines.
 
 By default, `backstage-cli package lint` and `backstage-cli repo lint` use
 ESLint. Adding `@backstage/cli-module-oxlint` to the project root opts its CLI
@@ -196,14 +195,14 @@ workflow.
 Add a CommonJS `.oxlintrc.js` file beside each package's `package.json`:
 
 ```javascript title=".oxlintrc.js"
-module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
+module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
   __dirname,
   { ignorePatterns: ['templates/**'], rules: { 'no-console': 'off' } },
 );
 ```
 
-The default factory reads `backstage.role` from the package manifest and
-returns native Oxlint configuration. It exports the same callable as
+The `/oxlint-factory` entry point reads `backstage.role` from the package
+manifest and returns native Oxlint configuration. It exports the same callable as
 `createPackageConfig`, plus named `createConfig` and `createConfigForRole`
 methods. Use `createConfig` for a workspace root without a package role and
 `createConfigForRole` when the role is supplied directly. Place each config in
@@ -224,7 +223,7 @@ enable type-aware linting and type checking, and report unused disable
 directives as errors:
 
 ```javascript
-module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
+module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
   __dirname,
   { preset: 'agentic' },
 );

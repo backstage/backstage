@@ -44,7 +44,9 @@ const BACKEND_ROLES = new Set([
   'backend-plugin',
   'backend-plugin-module',
 ]);
-const BACKSTAGE_PLUGIN = path.join(__dirname, 'index.js').replace(/\\/g, '/');
+const BACKSTAGE_PLUGIN = path
+  .join(__dirname, '../config/index.js')
+  .replace(/\\/g, '/');
 const BACKSTAGE_RULES = {
   'backstage/no-forbidden-package-imports': 'error',
   'backstage/no-relative-monorepo-imports': 'error',

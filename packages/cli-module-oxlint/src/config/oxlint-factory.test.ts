@@ -116,9 +116,18 @@ function codesFor(report: OxlintReport, basename: string): string[] {
 }
 
 describe('Oxlint configuration factory', () => {
+  it('uses script export mounts supported by the package builder', () => {
+    const { exports } = require('../../package.json');
+    for (const [mount, source] of Object.entries(exports)) {
+      if (/\.[jt]sx?$/.test(source as string)) {
+        expect(mount.slice(2)).not.toContain('/');
+      }
+    }
+  });
+
   it('exports the CommonJS package factory and named factory methods', () => {
     const publicFactory =
-      require('@backstage/cli-module-oxlint/config/oxlint-factory') as OxlintFactory;
+      require('@backstage/cli-module-oxlint/oxlint-factory') as OxlintFactory;
     expect(publicFactory).toBe(factory);
     expect(publicFactory).toBe(publicFactory.createPackageConfig);
     expect(typeof publicFactory.createConfig).toBe('function');
@@ -287,7 +296,7 @@ describe('Oxlint configuration factory', () => {
     };
     const nodeModules = path.resolve(__dirname, '../../../../node_modules');
     const factoryUsage =
-      "module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(__dirname, {});\n";
+      "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, {});\n";
 
     try {
       writeFileSync(
@@ -298,6 +307,7 @@ describe('Oxlint configuration factory', () => {
           workspaces: ['packages/*'],
         }),
       );
+      writeFileSync(path.join(workspace, 'yarn.lock'), '');
       symlinkSync(
         nodeModules,
         path.join(workspace, 'node_modules'),

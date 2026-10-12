@@ -7,3 +7,4 @@ module.exports = {
     '@backstage/no-deprecated-bui-tokens': 'warn',
   },
 };
+

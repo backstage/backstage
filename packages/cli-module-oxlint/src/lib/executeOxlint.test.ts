@@ -684,7 +684,7 @@ describe('Oxlint through runCli subprocess', () => {
       );
       writeFileSync(
         configFile,
-        "module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(__dirname, { preset: 'agentic' });\n",
+        "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, { preset: 'agentic' });\n",
       );
 
       const result = runDispatcher(workspace, {
