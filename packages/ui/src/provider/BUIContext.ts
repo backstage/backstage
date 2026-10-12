@@ -16,7 +16,7 @@
 
 import { createVersionedContext } from '@backstage/version-bridge';
 import type { UseAnalyticsFn } from '../analytics/types';
-import type { BUIRouter } from './BUIRouter';
+import type { BUINavigation } from './BUINavigation';
 
 /** @internal */
 export type BUIContextValueV1 = {
@@ -25,15 +25,14 @@ export type BUIContextValueV1 = {
 
 /** @internal */
 export type BUIContextValueV3 = BUIContextValueV1 & {
-  useRouter?: () => BUIRouter;
+  useNavigation?: () => BUINavigation;
 };
 
 /** @internal */
 export type BUIContextVersions = {
   1: BUIContextValueV1;
-  // Only analytics is read from legacy V2 providers. Their router-specific
-  // integration is deliberately neither consumed nor published anymore.
-  2?: BUIContextValueV1;
+  // Legacy routing is opaque here; the app supplies the frozen V2 contract.
+  2?: BUIContextValueV1 & { routing?: unknown };
   3?: BUIContextValueV3;
 };
 

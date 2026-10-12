@@ -24,7 +24,7 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
+import { ExtensionBoundary, PageLayout } from '../components';
 import { AppNodeProvider } from '../components/AppNodeProvider';
 import { BreadcrumbEntry } from '../breadcrumbs';
 import { useApi, useApiHolder } from '../apis/system';
@@ -123,7 +123,6 @@ function PluginPageShell(props: {
   title: string;
   icon?: IconElement;
   noHeader?: boolean;
-  tabs?: PageLayoutTab[];
   subPages?: readonly PageSubPage[];
   titleRouteRef?: RouteRef;
   pluginId: string;
@@ -134,7 +133,6 @@ function PluginPageShell(props: {
     title,
     icon,
     noHeader,
-    tabs,
     subPages,
     titleRouteRef,
     pluginId,
@@ -142,6 +140,21 @@ function PluginPageShell(props: {
   } = props;
   const routeResolutionApi = useApi(routeResolutionApiRef);
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
+  const history = useApiHolder().get(appHistoryApiRef);
+  const location = useAppHistoryLocation(history);
+  const mount =
+    location &&
+    routeResolutionApi
+      .resolvePath({ pathname: location.pathname, node })
+      .matches.at(-1);
+  const tabs =
+    mount &&
+    subPages?.map(({ path, label, icon: tabIcon }) => ({
+      id: path,
+      label,
+      icon: tabIcon,
+      href: joinRoutePath(mount.basePath, path),
+    }));
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
@@ -323,14 +336,6 @@ function createPageElement(options: {
   const Content = loader
     ? lazy(() => loader().then(element => ({ default: () => element })))
     : undefined;
-  const tabs = subPages.length
-    ? subPages.map(({ path, label, icon }) => ({
-        id: path,
-        label,
-        icon,
-        href: path,
-      }))
-    : undefined;
 
   return (
     <PluginPageShell
@@ -338,7 +343,6 @@ function createPageElement(options: {
       title={resolvedTitle}
       icon={resolvedIcon}
       noHeader={noHeader}
-      tabs={tabs}
       subPages={subPages}
       titleRouteRef={titleRouteRef}
       pluginId={pluginId}

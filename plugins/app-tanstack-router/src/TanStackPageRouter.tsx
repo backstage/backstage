@@ -17,7 +17,6 @@
 import {
   createContext,
   useContext,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -26,13 +25,19 @@ import {
 } from 'react';
 import {
   appHistoryApiRef,
+  NavigationProvider,
+  type Navigation,
+  useApi,
   useApiHolder,
   useRouteResolution,
-  routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
+import { isExternalTarget, sanitizeHref } from '@internal/frontend';
 import type { RouterHistory } from '@tanstack/history';
 import {
   Outlet,
+  useRouter,
+  useMatch,
+  useLocation,
   RouterProvider,
   createRootRoute,
   createRoute,
@@ -40,6 +45,51 @@ import {
   type AnyRouter,
 } from '@tanstack/react-router';
 import { createTanStackHistory } from './createTanStackHistory';
+
+/** Resolves authored targets using the same route scope as a native TanStack Link. */
+function useAdapterNavigation(): Navigation {
+  const history = useApi(appHistoryApiRef);
+  const router = useRouter();
+  const from = useMatch({
+    strict: false,
+    select: (match): string => match.fullPath,
+  });
+  const location = useLocation();
+  const resolve = (to: string) => {
+    const safeTo = sanitizeHref(to);
+    if (isExternalTarget(safeTo)) {
+      return safeTo;
+    }
+    // TanStack exposes search and hash as separate options, while this contract accepts string targets.
+    const url = new URL(safeTo, 'http://backstage.local');
+    const pathname = safeTo.split(/[?#]/, 1)[0];
+    return router.buildLocation({
+      from,
+      to: pathname || location.pathname,
+      search: router.options.parseSearch!(url.search),
+      hash: url.hash.slice(1),
+    }).href;
+  };
+  return {
+    createHref: to => history.createHref(resolve(to)),
+    navigate: (to, options) => {
+      const target = resolve(to);
+      if (isExternalTarget(target)) {
+        history.navigate(target, options);
+      } else {
+        void router.navigate({
+          href: target,
+          replace: options?.replace,
+          state: options?.state as Record<string, unknown>,
+        });
+      }
+    },
+    pathname: new URL(
+      history.createHref(location.pathname),
+      'http://backstage.local',
+    ).pathname,
+  };
+}
 
 // Content changes without rebuilding the route tree or losing router state.
 const PageContentContext = createContext<ReactNode>(undefined);
@@ -62,7 +112,15 @@ export interface CreateTanStackPageRouterOptions {
    * The route tree may render `TanStackPageContent` wherever the opaque
    * Backstage page element belongs.
    */
-  createRouter(options: { history: RouterHistory }): AnyRouter;
+  createRouter(options: {
+    history: RouterHistory;
+    /**
+     * App-absolute mount patterns in TanStack syntax. Optional static segments
+     * produce multiple patterns. Mount a route tree at each pattern, never by
+     * setting basepath. For `/`, attach the routes directly to the root route.
+     */
+    routePaths: readonly string[];
+  }): AnyRouter;
 }
 
 /**
@@ -87,29 +145,44 @@ export function createTanStackPageRouter(
   return function TanStackPageRouterAdapter(props: { children?: ReactNode }) {
     const mount = useRouteResolution().matches.at(-1);
     const routePattern = mount?.routePattern;
-    const node = mount?.node;
-    const apiHolder = useApiHolder();
-    const routes = apiHolder.get(routeResolutionApiRef);
-    const resolveMount = useCallback(
-      (pathname: string) => {
-        const match = routes?.resolvePath({ pathname, node }).matches.at(-1);
-        return match?.node === node ? match : undefined;
-      },
-      [routes, node],
-    );
-    const appHistory = routePattern
-      ? apiHolder.get(appHistoryApiRef)
-      : undefined;
+    const appHistory = useApiHolder().get(appHistoryApiRef);
     const scoped = useMemo(() => {
       if (!routePattern || !appHistory) {
         return undefined;
       }
-      const history = createTanStackHistory(appHistory, {
-        routePattern,
-        resolveMount,
-      });
-      return { router: options.createRouter({ history }), history };
-    }, [appHistory, routePattern, resolveMount]);
+      const history = createTanStackHistory(appHistory);
+      // TanStack supports optional parameters, but not optional static segments.
+      // Expand only the latter so parameter changes keep the same route tree.
+      const routePaths = routePattern
+        .replace(/\/\*$/, '')
+        .split('/')
+        .filter(Boolean)
+        .reduce<string[]>(
+          (paths, segment) => {
+            const param = segment.match(/^:([\w-]+)(\?)?$/);
+            let part = segment.replace(/\?$/, '');
+            let expandOptional = segment.endsWith('?');
+            if (param) {
+              part = `$${param[1]}`;
+              if (param[2] && /^[a-zA-Z_$][\w$]*$/.test(param[1])) {
+                part = `{-$${param[1]}}`;
+                expandOptional = false;
+              }
+            }
+            const included = paths.map(path => `${path}/${part}`);
+            return expandOptional ? [...included, ...paths] : included;
+          },
+          [''],
+        )
+        .map(path => path || '/');
+      const router = options.createRouter({ history, routePaths });
+      if (router.basepath !== '/') {
+        throw new Error(
+          'TanStack page routers must use the app root as basepath. Mount routes using routePaths instead.',
+        );
+      }
+      return { router, history };
+    }, [appHistory, routePattern]);
     const lifecycleRef = useRef<{
       generation: number;
       history?: RouterHistory;
@@ -146,23 +219,27 @@ export function createTanStackPageRouter(
 
     return (
       <PageContentContext.Provider value={props.children}>
-        <RouterProvider router={scoped.router} />
+        <NavigationProvider useNavigation={useAdapterNavigation}>
+          <RouterProvider router={scoped.router} />
+        </NavigationProvider>
       </PageContentContext.Provider>
     );
   };
 }
 
 const DefaultTanStackPageRouter = createTanStackPageRouter({
-  createRouter: ({ history }) => {
+  createRouter: ({ history, routePaths }) => {
     const rootRoute = createRootRoute({ component: Outlet });
-    // The root and splat keep framework-selected content opaque to TanStack.
+    // The mount and splat keep framework-selected content opaque to TanStack.
     const routeTree = rootRoute.addChildren(
-      ['/', '/$'].map(path =>
-        createRoute({
-          getParentRoute: () => rootRoute,
-          path,
-          component: TanStackPageContent,
-        }),
+      routePaths.flatMap(routePath =>
+        [routePath, `${routePath === '/' ? '' : routePath}/$`].map(path =>
+          createRoute({
+            getParentRoute: () => rootRoute,
+            path,
+            component: TanStackPageContent,
+          }),
+        ),
       ),
     );
     return createRouter({ routeTree, history });
@@ -171,7 +248,7 @@ const DefaultTanStackPageRouter = createTanStackPageRouter({
 
 /**
  * TanStack Router page adapter. Projects the framework's `AppHistoryApi`
- * into a TanStack history, scoped to the page's own mount, and
+ * into a TanStack history with app-absolute paths, and
  * renders the page under a TanStack route tree. Never writes
  * `window.history` via push/replace.
  *

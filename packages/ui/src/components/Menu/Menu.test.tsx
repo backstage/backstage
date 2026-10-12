@@ -191,7 +191,7 @@ function V1AnalyticsProvider({
   );
 
   return (
-    <RouterProvider navigate={router.navigate} useHref={router.resolveHref}>
+    <RouterProvider navigate={router.navigate} useHref={router.createHref}>
       <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
     </RouterProvider>
   );
@@ -201,8 +201,8 @@ function TrackingProvider({
   children,
   navigate,
 }: PropsWithChildren<{ navigate: jest.Mock }>) {
-  function useRouter() {
+  function useNavigation() {
     return { ...useTestRouter(), navigate };
   }
-  return <BUIProvider useRouter={useRouter}>{children}</BUIProvider>;
+  return <BUIProvider useNavigation={useNavigation}>{children}</BUIProvider>;
 }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { isExternalTarget } from './isExternalTarget';
+import { sanitizeHref } from './sanitizeHref';
 
 /**
  * Shared path resolution for AppHistory and legacy React Router consumers.
@@ -270,17 +270,21 @@ export function resolveAppPath(
   return resolved;
 }
 
-/** Resolves an authored target using already selected framework matches. */
-export function resolveAppTarget(
-  to: string,
-  pathname: string,
-  matches: readonly RouteResolutionMatch[],
-): string {
-  if (isExternalTarget(to)) {
-    return to;
+/** Validates framework targets and resolves query/hash targets at the current path. */
+export function resolveAppTarget(to: string, pathname: string): string {
+  const safeTo = sanitizeHref(to);
+  if (isExternalTarget(safeTo)) {
+    return safeTo;
   }
-  const basePaths = matches
-    .filter((match, index) => index === 0 || match.contributesPath)
-    .map(match => match.basePath);
-  return createPath(resolveAppPath(to, basePaths, pathname));
+  if (
+    safeTo !== '' &&
+    !safeTo.startsWith('/') &&
+    !safeTo.startsWith('?') &&
+    !safeTo.startsWith('#')
+  ) {
+    throw new Error(
+      `App routing requires a path starting with '/', received '${to}'. Use a routing adapter for relative paths.`,
+    );
+  }
+  return createPath(resolvePath(safeTo, pathname));
 }

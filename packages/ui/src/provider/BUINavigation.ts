@@ -23,7 +23,7 @@ import { isBrowserOwnedHref } from '../utils/linkUtils';
  *
  * @public
  */
-export type BUIRouterOptions = {
+export type BUINavigationOptions = {
   /** Replace the current history entry instead of adding one. */
   replace?: boolean;
   /** State associated with the destination history entry. */
@@ -40,17 +40,17 @@ export type BUIRouterOptions = {
  *
  * @public
  */
-export type BUIRouter = {
-  /** Navigates to an authored target using the same scope as resolveHref. */
-  navigate: (href: string, options?: BUIRouterOptions) => void;
+export type BUINavigation = {
+  /** Navigates to an authored target using the same scope as createHref. */
+  navigate: (href: string, options?: BUINavigationOptions) => void;
   /** Returns a browser-ready href, leaving external targets unchanged. */
-  resolveHref: (href: string) => string;
+  createHref: (href: string) => string;
   /** Current browser pathname, including any deployment basename. */
   pathname: string;
 };
 
 /** Returns the internal pathname of a resolved href, excluding query/hash. */
-export function getBUIRouterPathname(href: string): string | undefined {
+export function getBUINavigationPathname(href: string): string | undefined {
   if (isBrowserOwnedHref(href)) {
     return undefined;
   }
@@ -62,7 +62,7 @@ export function getBUIRouterPathname(href: string): string | undefined {
 }
 
 /** Returns the host hook, to be called at each consuming component's scope. */
-export function useBUIRouter(): (() => BUIRouter) | undefined {
+export function useBUINavigation(): (() => BUINavigation) | undefined {
   return useVersionedContext<BUIContextVersions>('bui')?.atVersion(3)
-    ?.useRouter;
+    ?.useNavigation;
 }

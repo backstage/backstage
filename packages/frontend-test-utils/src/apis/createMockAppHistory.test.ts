@@ -173,7 +173,9 @@ describe('createMockAppHistory', () => {
     expect(appHistory.createHref('/catalog?q=1#top')).toBe('/catalog?q=1#top');
     // Without a basename there is nothing to prepend, but the target is still
     // resolved to an app-absolute path, exactly as in production.
-    expect(appHistory.createHref('catalog')).toBe('/catalog');
+    expect(() => appHistory.createHref('catalog')).toThrow(
+      'App routing requires',
+    );
     expect(appHistory.createHref('/a/../b')).toBe('/b');
   });
 

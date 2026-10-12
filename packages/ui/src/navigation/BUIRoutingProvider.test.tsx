@@ -19,20 +19,20 @@ import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import { Link, RouterProvider, type LinkProps } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../provider/BUIProvider';
-import type { BUIRouter } from '../provider/BUIRouter';
+import type { BUINavigation } from '../provider/BUINavigation';
 import { BUIRoutingProvider } from './BUIRoutingProvider';
 
 describe('BUIRoutingProvider', () => {
   it('does not bind a host at the outer BUIProvider', () => {
     const useHostRouter = jest.fn(
-      (): BUIRouter => ({
+      (): BUINavigation => ({
         navigate: jest.fn(),
-        resolveHref: href => `/root/${href}`,
+        createHref: href => `/root/${href}`,
         pathname: '/root',
       }),
     );
     render(
-      <BUIProvider useRouter={useHostRouter}>
+      <BUIProvider useNavigation={useHostRouter}>
         <Link href="details">Direct Aria link</Link>
       </BUIProvider>,
     );
@@ -69,9 +69,9 @@ describe('BUIRoutingProvider', () => {
     const options = { replace: true, state: { from: 'isolated' } };
     render(
       <BUIProvider
-        useRouter={() => ({
+        useNavigation={() => ({
           navigate,
-          resolveHref: href => `/base/catalog/${href}`,
+          createHref: href => `/base/catalog/${href}`,
           pathname: '/base/catalog',
         })}
       >
@@ -100,10 +100,10 @@ describe('BUIRoutingProvider', () => {
   it('binds resolution and navigation at the same scope and updates without remounting', () => {
     const Scope = createContext('/root');
     const navigate = jest.fn();
-    function useHostRouter(): BUIRouter {
+    function useHostRouter(): BUINavigation {
       const base = useContext(Scope);
       return {
-        resolveHref: href => `/base${base}/${href}`,
+        createHref: href => `/base${base}/${href}`,
         navigate: (href, options) => navigate(`${base}/${href}`, options),
         pathname: `/base${base}`,
       };
@@ -126,7 +126,7 @@ describe('BUIRoutingProvider', () => {
     }
     function Host({ base }: { base: string }) {
       return (
-        <BUIProvider useRouter={useHostRouter}>
+        <BUIProvider useNavigation={useHostRouter}>
           <Scope.Provider value={base}>
             <BUIRoutingProvider>
               <Scope.Provider value="/deeper">
@@ -163,9 +163,9 @@ describe('BUIRoutingProvider', () => {
     const navigate = jest.fn();
     render(
       <BUIProvider
-        useRouter={() => ({
+        useNavigation={() => ({
           navigate,
-          resolveHref: href => href,
+          createHref: href => href,
           pathname: '/',
         })}
       >
@@ -208,9 +208,9 @@ describe('BUIRoutingProvider', () => {
     const href = `${window.location.origin}/#browser-owned`;
     render(
       <BUIProvider
-        useRouter={() => ({
+        useNavigation={() => ({
           navigate,
-          resolveHref: value => value,
+          createHref: value => value,
           pathname: '/',
         })}
       >

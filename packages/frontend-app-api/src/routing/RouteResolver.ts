@@ -28,7 +28,6 @@ import {
 import { AnyRouteRef, BackstageRouteObject } from './types';
 import {
   generatePath,
-  resolveAppTarget,
   OpaqueRouteRef,
   OpaqueExternalRouteRef,
   OpaqueSubRouteRef,
@@ -230,16 +229,6 @@ export class RouteResolver implements RouteResolutionApi {
     for (const root of roots) {
       indexNode(root, new Set());
     }
-  }
-
-  resolveTarget(
-    options: Parameters<RouteResolutionApi['resolveTarget']>[0],
-  ): string {
-    return resolveAppTarget(
-      options.to,
-      options.pathname,
-      options.node ? this.resolvePath(options).matches : [],
-    );
   }
 
   resolvePath(options: { pathname: string; node?: AppNode }): {

@@ -16,8 +16,7 @@
 
 import { AnchorHTMLAttributes, forwardRef } from 'react';
 import { isExternalTarget } from '@internal/frontend';
-import { useAppHref } from './useAppHref';
-import { useOptionalAppNavigate } from './useAppNavigate';
+import { useNavigation } from './NavigationProvider';
 import type { AppNavigateOptions } from './AppLocation';
 
 /**
@@ -28,7 +27,7 @@ import type { AppNavigateOptions } from './AppLocation';
 export interface RouterLinkProps
   extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
     AppNavigateOptions {
-  /** Target resolved against the calling extension's route ancestry. */
+  /** Authored target; relative paths use the nearest routing adapter. */
   href: string;
 }
 
@@ -37,8 +36,10 @@ export interface RouterLinkProps
  *
  * Use the Backstage UI Link for standard UI links. This primitive forwards
  * anchor props and refs, and can be supplied through React Aria's render prop.
- * It resolves relative targets in its own extension scope and handles internal
- * navigation through app history. Without app history, it uses browser navigation.
+ * Uses contextual navigation, including relative targets inside adapters.
+ * Outside adapters, paths must start with `/`, excluding the deployment basename.
+ * Empty/query/hash targets and external URLs are supported. Framework hooks
+ * such as useAppNavigate remain strict regardless of surrounding adapters.
  * External URLs, modified clicks, downloads, and other targets retain native
  * browser behavior.
  *
@@ -47,8 +48,8 @@ export interface RouterLinkProps
 export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
   function RouterLink(props, ref) {
     const { href: to, replace, state, onClick, children, ...rest } = props;
-    const href = useAppHref(to);
-    const navigate = useOptionalAppNavigate();
+    const { createHref, navigate } = useNavigation();
+    const href = createHref(to);
 
     return (
       <a
@@ -59,7 +60,6 @@ export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
           onClick?.(event);
           if (
             event.defaultPrevented ||
-            !navigate ||
             isExternalTarget(to) ||
             event.button !== 0 ||
             event.metaKey ||

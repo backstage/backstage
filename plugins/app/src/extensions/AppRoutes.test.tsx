@@ -72,8 +72,8 @@ describe('AppRoutes', () => {
     async ({ path, location, childHref }) => {
       const Content = () => (
         <>
-          <a href={useAppHref('details')}>Static page</a>
-          <a href={useAppHref('..')}>Static parent</a>
+          <a href={useAppHref(childHref)}>Static page</a>
+          <a href={useAppHref('/')}>Static parent</a>
         </>
       );
       const page = PageBlueprint.make({
@@ -120,7 +120,7 @@ describe('AppRoutes', () => {
     async ({ childPath, tail, id: expectedId, parentHref }) => {
       const parentRef = createRouteRef({ params: ['name'] });
       const childRef = createRouteRef({ params: ['id'] });
-      const ParentLinks = () => <a href={useAppHref('..')}>Parent up</a>;
+      const ParentLinks = () => <a href={useAppHref('/')}>Parent up</a>;
       const ChildContent = () => {
         const { name } = useRouteRefParams(parentRef);
         const { id } = useRouteRefParams(childRef);
@@ -129,7 +129,7 @@ describe('AppRoutes', () => {
             <p>
               Child {name} {id}
             </p>
-            <a href={useAppHref('..')}>Child up</a>
+            <a href={useAppHref(parentHref)}>Child up</a>
             <Link to="..">Router up</Link>
           </>
         );

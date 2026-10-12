@@ -17,45 +17,29 @@
 import {
   APP_ROOT_PATH,
   isExternalTarget,
-  resolveAppPath,
-  sanitizeHref,
+  resolveAppTarget,
+  parsePath,
   useAppHistoryLocation,
 } from '@internal/frontend';
-import { useAppNode } from '../components/AppNodeProvider';
-import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { useApiHolder } from '../apis/system';
 import { appHistoryApiRef } from './AppHistoryApi';
 import {
   LocationContext,
   NavigationContext,
-  useRouteBasePaths,
   useRouterContext,
 } from './reactRouterContext';
 
 /**
- * Resolves an app-relative path to a browser-ready href (including the app's
+ * Resolves an app-absolute path to a browser-ready href (including the app's
  * deploy basename), the react-aria-style counterpart to {@link useAppNavigate}.
  *
  * Falls back to React Router when no {@link appHistoryApiRef} is registered
  * (old frontend system).
  *
- * Both answers come from the same shared resolver that {@link RouteLink} uses,
- * and both give the href React Router gives for the same target on the same
- * page: a relative target resolves against the page, and each leading `..`
- * climbs one route match, so on a page mounted at
- * `/catalog/:namespace/:kind/:name` a single `..` climbs off the page rather
- * than into a path no route claims. A target therefore cannot be turned into
- * one href here and a different one in the `Link` beside it.
- *
- * Calling React Router's own `useHref` instead would also make this hook throw
- * in routerless new frontend system chrome or a specialized app that mounts no
- * React Router provider. With neither authority present the target is handed
- * back as written.
- *
- * Targets that are not app-relative are returned unchanged under both
- * frontend systems — see {@link AppHistoryApi.createHref}. React Router has no
- * equivalent guard — it resolves the path and joins the basename regardless —
- * so the fallback path applies its own.
+ * Paths must start with `/` and are relative to the app root, excluding the
+ * deployment basename. Empty, query-only, and hash-only targets use the current path.
+ * Relative paths belong to routing adapters and are rejected by this hook.
+ * External URLs are returned unchanged.
  *
  * A target whose scheme a browser executes rather than navigates to —
  * `javascript:`, `data:` or `vbscript:`, however it is spelled — is replaced
@@ -66,6 +50,11 @@ import {
  * @public
  */
 export function useAppHref(to: string): string {
+  return useAppCreateHref()(to);
+}
+
+/** @internal */
+export function useAppCreateHref(): (to: string) => string {
   /*
    * Reading React Router's contexts rather than calling `useHref` /
    * `useResolvedPath` /
@@ -82,41 +71,36 @@ export function useAppHref(to: string): string {
 
   const apis = useApiHolder();
   const appHistory = apis.get(appHistoryApiRef);
-  const node = useAppNode();
-  const routes = apis.get(routeResolutionApiRef);
   const location = useAppHistoryLocation(appHistory);
   const navigation = useRouterContext(NavigationContext);
-  const routeBasePaths = useRouteBasePaths();
   const routerLocation = useRouterContext(LocationContext)?.location;
 
-  if (appHistory && location) {
-    const target = routes
-      ? routes.resolveTarget({ to, pathname: location.pathname, node })
-      : to;
-    return appHistory.createHref(target);
-  }
-  const safeTo = sanitizeHref(to);
-  if (isExternalTarget(safeTo)) {
-    return safeTo;
-  }
-  if (!navigation) {
-    return safeTo;
-  }
+  return (to: string) => {
+    if (appHistory && location) {
+      return appHistory.createHref(to);
+    }
+    const safeTo = resolveAppTarget(
+      to,
+      routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
+    );
+    if (isExternalTarget(safeTo)) {
+      return safeTo;
+    }
+    if (!navigation) {
+      return safeTo;
+    }
 
-  // React Router's `useHref`: the resolved path, prefixed with the router
-  // basename, handed to the navigator to render.
-  const { basename, navigator } = navigation;
-  const { pathname, search, hash } = resolveAppPath(
-    safeTo,
-    routeBasePaths,
-    routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
-  );
-  let joinedPathname = pathname;
-  if (basename !== '/') {
-    joinedPathname =
-      pathname === '/'
-        ? basename
-        : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
-  }
-  return navigator.createHref({ pathname: joinedPathname, search, hash });
+    // React Router's `useHref`: the resolved path, prefixed with the router
+    // basename, handed to the navigator to render.
+    const { basename, navigator } = navigation;
+    const { pathname = '/', search, hash } = parsePath(safeTo);
+    let joinedPathname = pathname;
+    if (basename !== '/') {
+      joinedPathname =
+        pathname === '/'
+          ? basename
+          : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
+    }
+    return navigator.createHref({ pathname: joinedPathname, search, hash });
+  };
 }

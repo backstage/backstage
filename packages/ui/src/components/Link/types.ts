@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BUIRouterOptions } from '../../provider/BUIRouter';
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type {
   Breakpoint,
   TextColors,
@@ -49,5 +49,5 @@ export interface LinkProps
     >,
     LinkOwnProps {
   /** Options passed to the router configured on BUIProvider. */
-  routerOptions?: BUIRouterOptions;
+  routerOptions?: BUINavigationOptions;
 }

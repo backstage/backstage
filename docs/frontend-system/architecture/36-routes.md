@@ -517,7 +517,7 @@ For the design background, see [RFC #33603](https://github.com/backstage/backsta
 
 Route refs work in every page, with or without a routing library. `useRouteRef`
 resolves a route ref to a path, `useRouteRefParams` reads the parameters the
-route pattern names, `useAppHref` turns a page-relative path into a browser-ready
+route pattern names, `useAppHref` turns an app-absolute path into a browser-ready
 href, and `RouteLink` renders a link straight from a route ref. None of them
 require a page router, so a plugin using only these hooks needs no adapter.
 
@@ -531,31 +531,27 @@ system, the hook reads parameters from React Router.
 and updates query parameters. Both use app history in the new frontend system
 and fall back to React Router in the old frontend system.
 
-`AppHistoryApi.navigate` accepts app-relative destinations or a numeric history
-delta for Back and Forward navigation. External destinations use browser
-navigation, with `replace` honored and `state` ignored.
-`AppHistoryApi.createHref` adds the deployment basename and preserves external
-URLs. Both methods replace executable schemes with `about:blank` and a warning. For scoped
-link destinations, use `useAppHref`.
+Framework destinations must start with `/`, excluding the deployment basename.
+Paths returned by `useRouteRef` can be passed to `useAppNavigate`, `useAppHref`,
+BUI controls, or a page router's native navigation APIs. `/catalog` always means
+that path from the app root, even inside another plugin's adapter.
 
-Custom integrations can call
-`RouteResolutionApi.resolveTarget({ to, pathname, node })` to resolve an authored
-target against an extension's route ancestry. Without a node, resolution uses
-app-root scope. Query-only and hash-only targets retain the supplied pathname;
-external URLs pass through unchanged. Pass the result to
-`AppHistoryApi.createHref` for a safe browser href, or to `navigate` for navigation.
+`AppHistoryApi.navigate` accepts these destinations or a numeric history delta
+for Back and Forward navigation. External destinations use browser navigation,
+with `replace` honored and `state` ignored. `AppHistoryApi.createHref` adds the
+deployment basename. Both methods replace executable URL schemes with
+`about:blank` and a warning.
 
-`resolvePath` remains available for adapters and parameter consumers that need
-matched ancestry rather than a destination. Relative-path resolution belongs to
-the app's route resolution API, and basename handling and href sanitization
-belong to its history API. A BUI integration only connects these APIs to the
-current app node and location.
+Empty, query-only, and hash-only targets keep the current pathname. An empty
+target clears query and hash. Path-relative
+targets such as `details`, `.` and `../edit` are rejected by framework navigation,
+including explicit framework hooks. `RouterLink` and `useNavigation` instead
+follow the nearest adapter when relative navigation is needed.
+The adapter supplies its library's relative-path semantics to BUI controls too.
 
-`useAppHref` resolves relative paths against the matched extension ancestry. Each
-leading `..` climbs one route, even when that route spans multiple URL segments.
-Query-only and fragment-only targets keep the current pathname. External URLs
-are preserved, except that `javascript:`, `data:`, and `vbscript:` targets become
-inert `about:blank` links with a console warning.
+`RouteResolutionApi.resolvePath` supplies matched ancestry for adapters and
+parameter consumers. It does not resolve link destinations. Custom framework
+integrations can use `AppHistoryApi.createHref` and `navigate` directly.
 
 React Router's own APIs — `useParams`, `useNavigate`, `useLocation`, `<Routes>`
 and relative `Link` targets — read React Router context. A page needs an
@@ -654,7 +650,7 @@ adapter's content adds a second context instead of displacing the first.
 Declare an adapter in the content owned by a route-bearing extension.
 `PageBlueprint` and `SubPageBlueprint` are conveniences for common layouts;
 ordinary extensions with `coreExtensionData.routePath` participate in the same
-matched route tree. Their `ExtensionBoundary` scopes framework navigation and
+matched route tree. Their `ExtensionBoundary` scopes parameter resolution and
 adapter context to the extension's actual position in that tree.
 
 Each parent extension still chooses how to render its children. Route matching
@@ -721,14 +717,24 @@ For the steps to attach one, see [Choose a router for a page](../building-plugin
 
 ### Limits of the model
 
-The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. First-party chrome does not.
+The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. Legacy core-components also retain their React Router dependency.
 
-Backstage UI receives a `useRouter` hook through `BUIProvider`. The hook runs at each consuming component and returns navigation, a plain href resolver, and the current browser pathname. Hrefs and the pathname include the deployment basename. The app plugin binds both href resolution and clicks to the same matched extension ancestry and `AppHistoryApi`, so relative links navigate to the destination they display.
+Routing adapters supply a component-library-neutral `NavigationProvider`. Its
+hook runs at each consumer's route scope and returns href creation, navigation,
+and the current browser pathname. Generated hrefs and pathname include the
+deployment basename; navigation accepts the original authored target. Outside
+adapters the default uses app history with strict framework semantics.
+
+Backstage UI receives a `useNavigation` hook through `BUIProvider`. The app binds
+that hook to the public `useNavigation` contract. Other component libraries can
+consume the same contract without BUI dependencies or duplicated resolution.
+The separate frozen V2 BUI integration retains React Router behavior for older
+consumers and is preserved through nested providers.
 
 BUI controls bind that integration to a local React Aria provider. React Aria
 owns link activation and native browser behavior; BUI does not detect a routing
 library or handle modified clicks itself. This integration applies to BUI controls;
-plugins using React Aria directly can [configure their own routing provider](../building-plugins/10-page-routers.md#use-react-aria-components-directly) using the public routing APIs.
+plugins using React Aria directly can [compose with RouterLink](../building-plugins/10-page-routers.md#use-react-aria-components-directly) using the public routing APIs.
 
 An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
 
