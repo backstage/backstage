@@ -98,7 +98,9 @@ export class MicrosoftGraphSubscriptionManager {
       msGraphClient,
     }: MicrosoftGraphSubscriptionManagerOptions,
   ): Promise<MicrosoftGraphSubscriptionManager> {
-    const resources = config.getStringArray('events.modules.msgraph.resources');
+    const resources = config.getStringArray(
+      'events.modules.msgraph.subscriptionResources',
+    );
     validateResources(resources);
 
     return new MicrosoftGraphSubscriptionManager(
