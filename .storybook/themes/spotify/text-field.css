@@ -1,0 +1,34 @@
+@layer theme {
+  [data-theme-name='spotify'] {
+    .bui-Input {
+      box-shadow: inset 0 0 0 1px var(--bui-input-border-color);
+
+      &:hover:not([data-disabled]):not([data-focused]):not([data-invalid]) {
+        box-shadow: inset 0 0 0 1px var(--bui-input-border-color-hover);
+      }
+
+      &[data-focused] {
+        box-shadow: inset 0 0 0 1px var(--bui-ring);
+      }
+
+      &[data-invalid] {
+        box-shadow: inset 0 0 0 1px var(--bui-border-danger);
+      }
+    }
+
+    .bui-InputWrapper[data-size='medium'] .bui-Input {
+      height: 48px;
+      font-size: 1rem;
+    }
+  }
+
+  [data-theme-mode='light'][data-theme-name='spotify'] {
+    --bui-input-border-color: #818181;
+    --bui-input-border-color-hover: #000000;
+  }
+
+  [data-theme-mode='dark'][data-theme-name='spotify'] {
+    --bui-input-border-color: #7c7c7c;
+    --bui-input-border-color-hover: #ffffff;
+  }
+}

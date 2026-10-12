@@ -1,0 +1,12 @@
+@layer theme {
+  [data-theme-name='spotify'] {
+    .bui-Button {
+      border-radius: var(--bui-radius-3);
+      padding-inline: var(--bui-space-3);
+    }
+
+    .bui-ButtonIcon {
+      padding: 0;
+    }
+  }
+}

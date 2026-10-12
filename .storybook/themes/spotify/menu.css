@@ -1,0 +1,14 @@
+@layer theme {
+  [data-theme-name='spotify'] {
+    .bui-MenuPopup {
+      box-sizing: border-box;
+      max-width: 21.25rem;
+    }
+
+    .bui-MenuSubmenuTrigger,
+    .bui-MenuItem {
+      height: auto;
+      min-height: 2rem;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+@layer theme {
+  [data-theme-name='spotify'] {
+    .bui-Text {
+      font-family: var(--bui-font-text);
+    }
+
+    .bui-Heading {
+      font-family: var(--bui-font-title);
+    }
+  }
+}

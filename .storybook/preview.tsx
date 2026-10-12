@@ -18,7 +18,7 @@ import '../packages/ui/src/css/styles.css';
 import './storybook.css';
 
 // Custom themes
-import './themes/spotify.css';
+import './themes/spotify/index.css';
 import { Box } from '../packages/ui/src/components/Box';
 
 export default definePreview({

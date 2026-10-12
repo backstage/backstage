@@ -1,0 +1,7 @@
+@layer theme {
+  [data-theme-name='spotify'] {
+    .bui-Tag {
+      border-radius: var(--bui-radius-full);
+    }
+  }
+}
