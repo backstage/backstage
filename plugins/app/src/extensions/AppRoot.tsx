@@ -208,9 +208,9 @@ export interface AppRouterProps {
  * History authority is the AppHistory. `BUIProvider` receives navigation,
  * href resolution, and active pathname through one hook backed by that
  * history, so first-party chrome does not depend on an ambient router.
- * The hook captures each consumer's route ancestry, which lets a target
- * resolve against the page the anchor is written in and produces a
- * browser-ready href with the deployment basename.
+ * Outside page adapters, the hook accepts app-absolute paths; inside an
+ * adapter, it follows that library's relative-path semantics at the consuming
+ * component. Browser hrefs include the deployment basename.
  *
  * `RootHistoryRouter` is a residual projection for third-party new frontend
  * system chrome that still reads React Router v6 context. It owns no browser

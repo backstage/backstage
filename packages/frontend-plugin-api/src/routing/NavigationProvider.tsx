@@ -110,3 +110,12 @@ export function useNavigation(): Navigation {
     )?.useNavigation ?? useFrameworkNavigation;
   return useScopedNavigation();
 }
+
+/** @internal */
+export function useHasNavigationProvider(): boolean {
+  return Boolean(
+    useVersionedContext<NavigationContextVersions>('app-navigation')?.atVersion(
+      1,
+    ),
+  );
+}

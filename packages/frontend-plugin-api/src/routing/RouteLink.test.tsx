@@ -23,6 +23,7 @@ import {
   createMockRouteResolutionApi,
 } from '@backstage/frontend-test-utils';
 import { RouteLink } from './RouteLink';
+import { NavigationProvider } from './NavigationProvider';
 import { createRouteRef } from './RouteRef';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { routeResolutionApiRef } from '../apis';
@@ -193,6 +194,34 @@ describe('RouteLink', () => {
     expect(legacyLink).toHaveAttribute(
       'href',
       '/backstage/catalog/default/component/widget',
+    );
+  });
+
+  it('uses a scoped navigation provider without app history', () => {
+    const scopedNavigate = jest.fn();
+    render(widgetLink, {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
+          <NavigationProvider
+            useNavigation={() => ({
+              createHref: target => target,
+              navigate: scopedNavigate,
+              pathname: '/',
+            })}
+          >
+            {children}
+          </NavigationProvider>
+        </TestApiProvider>
+      ),
+    });
+
+    const link = screen.getByRole('link', { name: 'Widget' });
+    const click = createEvent.click(link);
+    fireEvent(link, click);
+    expect(click.defaultPrevented).toBe(true);
+    expect(scopedNavigate).toHaveBeenCalledWith(
+      '/catalog/default/component/widget',
+      undefined,
     );
   });
 
