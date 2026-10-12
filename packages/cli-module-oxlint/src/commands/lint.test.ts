@@ -44,9 +44,9 @@ jest.mock('../lib/oxlint', () => ({
 
 const commandInfo = { usage: 'backstage-cli lint', name: 'lint' };
 const runPackage = (args: string[]) =>
-  packageLint({ args, info: commandInfo } as any);
+  packageLint({ args, info: commandInfo } as Parameters<typeof packageLint>[0]);
 const runRepo = (args: string[]) =>
-  repoLint({ args, info: commandInfo } as any);
+  repoLint({ args, info: commandInfo } as Parameters<typeof repoLint>[0]);
 function mockPackage(name: string, lint = 'backstage-cli package lint') {
   return {
     dir: `/repo/packages/${name}`,
@@ -111,8 +111,8 @@ function jsonReport(
 beforeEach(() => {
   jest.clearAllMocks();
   process.exitCode = 0;
-  const acknowledgeWrite = (...args: any[]) => {
-    args.find(arg => typeof arg === 'function')?.();
+  const acknowledgeWrite = (...args: unknown[]) => {
+    args.find((arg): arg is () => void => typeof arg === 'function')?.();
     return true;
   };
   jest.spyOn(process.stdout, 'write').mockImplementation(acknowledgeWrite);
@@ -131,12 +131,12 @@ beforeEach(() => {
   packageGraph.listTargetPackages.mockResolvedValue([
     mockPackage('one'),
     mockPackage('two'),
-  ] as any);
+  ] as unknown as Awaited<ReturnType<typeof PackageGraph.listTargetPackages>>);
   packageGraph.fromPackages.mockReturnValue({
     listChangedPackages: jest
       .fn()
       .mockResolvedValue([mockPackage('one'), mockPackage('two')]),
-  } as any);
+  } as unknown as ReturnType<typeof PackageGraph.fromPackages>);
 });
 
 afterEach(() => {
@@ -197,9 +197,15 @@ describe('oxlint command execution', () => {
       mockPackage('missing', ''),
       mockPackage('unrelated', 'backstage-cli package lint-something'),
     ];
-    packageGraph.listTargetPackages.mockResolvedValue(packages as any);
+    packageGraph.listTargetPackages.mockResolvedValue(
+      packages as unknown as Awaited<
+        ReturnType<typeof PackageGraph.listTargetPackages>
+      >,
+    );
     const listChangedPackages = jest.fn().mockResolvedValue(packages);
-    packageGraph.fromPackages.mockReturnValue({ listChangedPackages } as any);
+    packageGraph.fromPackages.mockReturnValue({
+      listChangedPackages,
+    } as unknown as ReturnType<typeof PackageGraph.fromPackages>);
 
     await runRepo(['--since', 'origin/master', '--max-warnings=-1']);
 
@@ -278,10 +284,11 @@ describe('oxlint command execution', () => {
     await runRepo(['--format', 'sarif', '--output-file', 'report.sarif']);
 
     const report = JSON.parse(writeFile.mock.calls[0][1] as string);
-    expect(report.runs.map((run: any) => run.results[0].ruleId)).toEqual([
-      'one',
-      'two',
-    ]);
+    expect(
+      report.runs.map(
+        (run: { results: Array<{ ruleId: string }> }) => run.results[0].ruleId,
+      ),
+    ).toEqual(['one', 'two']);
 
     for (const format of ['checkstyle', 'junit']) {
       spawn.mockClear();
@@ -321,7 +328,9 @@ describe('oxlint command execution', () => {
       mockPackage('one'),
       mockPackage('two'),
       mockPackage('three'),
-    ] as any);
+    ] as unknown as Awaited<
+      ReturnType<typeof PackageGraph.listTargetPackages>
+    >);
 
     await expect(runRepo([])).rejects.toMatchObject({ code: 1 });
 

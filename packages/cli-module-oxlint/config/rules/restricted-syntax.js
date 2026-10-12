@@ -31,6 +31,7 @@ const noBareLowerCase = {
           node.arguments.length === 0 &&
           node.callee &&
           node.callee.type === 'MemberExpression' &&
+          node.callee.property.type === 'Identifier' &&
           node.callee.property.name === 'toLowerCase'
         ) {
           context.report({
@@ -59,6 +60,7 @@ const noBareUpperCase = {
           node.arguments.length === 0 &&
           node.callee &&
           node.callee.type === 'MemberExpression' &&
+          node.callee.property.type === 'Identifier' &&
           node.callee.property.name === 'toUpperCase'
         ) {
           context.report({

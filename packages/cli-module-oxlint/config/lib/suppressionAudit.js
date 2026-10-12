@@ -66,9 +66,9 @@ function validateSuppressionComments(comments) {
         ruleNames.every(
           ruleName =>
             ruleName !== '*' &&
-            ruleName.toLowerCase() !== 'all' &&
+            ruleName.toLocaleLowerCase('en-US') !== 'all' &&
             RULE_ID_PATTERN.test(ruleName) &&
-            ruleName.toLowerCase() !== RULE_ID,
+            ruleName.toLocaleLowerCase('en-US') !== RULE_ID,
         );
       const validExplanation =
         Boolean(explanation) && !PLACEHOLDER_EXPLANATIONS.test(explanation);

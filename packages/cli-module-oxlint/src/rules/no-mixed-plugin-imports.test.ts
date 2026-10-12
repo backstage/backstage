@@ -22,7 +22,6 @@ const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 const FIXTURE_GLOB = FIXTURE.split(path.sep).join('/');
 const INCLUDE_FIXTURE_SRC = `${FIXTURE_GLOB}/**/src/**`;
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 const rule = require('../../config/rules/no-mixed-plugin-imports');
 
 const ERR = (

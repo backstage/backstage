@@ -79,12 +79,11 @@ export interface SuppressionAuditResult {
   agentic: boolean;
 }
 
-const { validateSuppressionComments } =
-  require('../../config/lib/suppressionAudit') as {
-    validateSuppressionComments(
-      comments: SuppressionComment[],
-    ): SuppressionIssue[];
-  };
+const suppressionAudit = require('../../config/lib/suppressionAudit') as {
+  validateSuppressionComments(
+    comments: SuppressionComment[],
+  ): SuppressionIssue[];
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -334,7 +333,8 @@ export function auditSuppressionReceipts(
     try {
       const source = readFileSync(receipt.filePath, 'utf8');
       const comments = parseComments(source, receipt.filePath);
-      const issues: unknown = validateSuppressionComments(comments);
+      const issues: unknown =
+        suppressionAudit.validateSuppressionComments(comments);
       if (!Array.isArray(issues) || !issues.every(isSuppressionIssue)) {
         throw new Error(
           `Suppression validator returned invalid issues for ${receipt.filePath}`,

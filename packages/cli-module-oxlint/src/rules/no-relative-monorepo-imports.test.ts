@@ -20,7 +20,6 @@ import path from 'node:path';
 const RULE = 'no-relative-monorepo-imports';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 const rule = require('../../config/rules/no-relative-monorepo-imports');
 
 const ERR_OUTSIDE = (filePath: string) => ({

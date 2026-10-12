@@ -50,7 +50,7 @@ function addVersionQuery(name, flag, packages) {
 
 /**
  * Add missing package imports.
- * @param {Array<{name: string, flag: string, node: import('estree').Node}>} toAdd
+ * @param {Array<{name: string, flag: string}>} toAdd
  * @param {import('./getPackages').PackageMap} packages
  * @param {import('./getPackages').ExtendedPackage} localPkg
  */
@@ -86,7 +86,7 @@ function addMissingImports(toAdd, packages, localPkg) {
 
 /**
  * Removes dependency entries pointing to inlined workspace packages.
- * @param {Array<{pkg: import('./getPackages').ExtendedPackage, node: import('estree').Node}>} toInline
+ * @param {Array<{pkg: import('./getPackages').ExtendedPackage}>} toInline
  * @param {import('./getPackages').ExtendedPackage} localPkg
  */
 function removeInlineImports(toInline, localPkg) {
@@ -111,7 +111,7 @@ function removeInlineImports(toInline, localPkg) {
 
 /**
  * Adds dependencies that are not properly forwarded from inline dependencies.
- * @param {Array<{pkg: import('./getPackages').ExtendedPackage, node: import('estree').Node}>} toInline
+ * @param {Array<{pkg: import('./getPackages').ExtendedPackage}>} toInline
  * @param {import('./getPackages').ExtendedPackage} localPkg
  */
 function addForwardedInlineImports(toInline, localPkg) {

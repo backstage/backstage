@@ -15,5 +15,5 @@
  */
 
 module.exports = require('./config/oxlint-factory')(__dirname, {
-  preset: 'backstage',
+  preset: 'agentic',
 });

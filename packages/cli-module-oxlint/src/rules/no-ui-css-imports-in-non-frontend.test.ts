@@ -20,7 +20,6 @@ import path from 'node:path';
 const RULE = 'no-ui-css-imports-in-non-frontend';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 const rule = require('../../config/rules/no-ui-css-imports-in-non-frontend');
 
 const ERR = (role: string) => ({

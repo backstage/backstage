@@ -60,9 +60,9 @@ module.exports = {
     let filePath = '';
     /** @type {import('../lib/getPackages.js').ExtendedPackage | undefined} */
     let localPkg;
-    /** @type {Array<{name: string, flag: string, node: import('estree').Node}>} */
+    /** @type {Array<{name: string, flag: string, node: NonNullable<Parameters<typeof context.report>[0]['node']>}>} */
     let importsToAdd = [];
-    /** @type {Array<{pkg: import('../lib/getPackages.js').ExtendedPackage, node: import('estree').Node}>} */
+    /** @type {Array<{pkg: import('../lib/getPackages.js').ExtendedPackage, node: NonNullable<Parameters<typeof context.report>[0]['node']>}>} */
     let importsToInline = [];
 
     return {

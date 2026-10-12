@@ -74,7 +74,10 @@ module.exports = {
 
     return {
       before() {
-        const options = context.options?.[0] || {};
+        const options =
+          /** @type {{ excludedTargetPackages?: string[], excludedFiles?: string[], includedFiles?: string[] }} */ (
+            context.options?.[0] || {}
+          );
         ignoreTargetPackages = options.excludedTargetPackages || [];
         excludePatterns = options.excludedFiles || [];
         includePatterns = options.includedFiles || ['**/src/**'];
@@ -103,6 +106,7 @@ module.exports = {
         /** @type {ExtendedPackage | undefined} */
         const targetPackage = imp.package;
         if (
+          !targetPackage ||
           !isForbiddenMixedPluginImport(
             pkg,
             targetPackage,

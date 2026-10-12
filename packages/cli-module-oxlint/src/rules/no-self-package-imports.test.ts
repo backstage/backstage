@@ -21,7 +21,6 @@ const RULE = 'no-self-package-imports';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 const PKG_DIR = path.join(FIXTURE, 'packages/self-import-pkg');
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 const rule = require('../../config/rules/no-self-package-imports');
 
 const sameEntryErr = (entry = '.') => ({
