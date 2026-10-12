@@ -93,7 +93,7 @@ export class MicrosoftGraphClient {
     clientWrapper?: ClientWrapper,
   ): MicrosoftGraphClient {
     // Fail fast if the configuration is missing or incomplete
-    config.getConfig('events.modules.msgraph.notificationUrl');
+    config.getString('events.modules.msgraph.notificationUrl');
 
     return new MicrosoftGraphClient(
       config,
