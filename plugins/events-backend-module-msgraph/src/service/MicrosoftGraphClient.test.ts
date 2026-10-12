@@ -73,6 +73,17 @@ describe('MicrosoftGraphClient', () => {
       expect(() => MicrosoftGraphClient.fromConfig(badConfig)).toThrow();
     });
 
+    it('throws if notificationUrl is not a string', () => {
+      const badConfig = mockServices.rootConfig({
+        data: {
+          events: { modules: { msgraph: { notificationUrl: { a: 'b' } } } },
+        },
+      });
+      expect(() =>
+        MicrosoftGraphClient.fromConfig(badConfig, apiClientMock),
+      ).toThrow(/notificationUrl/);
+    });
+
     it('returns a client if config is valid', () => {
       expect(MicrosoftGraphClient.fromConfig(config)).toBeInstanceOf(
         MicrosoftGraphClient,
