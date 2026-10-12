@@ -30,17 +30,11 @@ import {
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
-import { matchRoutes } from 'react-router-dom';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
   createExactRouteAliasResolver,
   createRouteAliasResolver,
 } from './RouteAliasResolver';
-
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
-  return { ...actual, matchRoutes: jest.fn(actual.matchRoutes) };
-});
 
 const rest = {
   caseSensitive: false,
