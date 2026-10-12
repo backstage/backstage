@@ -27,7 +27,7 @@ import { createRouteRef } from './RouteRef';
 import { createSubRouteRef } from './SubRouteRef';
 import { createBrowserHistory } from 'history';
 import { TestApiProvider } from '@backstage/test-utils';
-import { routeResolutionApiRef } from '../apis';
+import { appLifecycleApiRef, routeResolutionApiRef } from '../apis';
 import { appHistoryApiRef } from './AppHistoryApi';
 
 describe('framework routing', () => {
@@ -71,6 +71,55 @@ describe('framework routing', () => {
       routeRef,
       expect.objectContaining({ sourcePath: '/my-new-page' }),
     );
+  });
+
+  it('re-resolves a route after app finalization without losing its app history scope', () => {
+    const routeRef = createRouteRef();
+    const appHistory = createMockAppHistory({ initialLocation: '/my-page' });
+    let finalized = false;
+    let notify = () => {};
+    const lifecycle = {
+      isFinalized: () => finalized,
+      subscribe: (listener: () => void) => {
+        notify = listener;
+        return () => {
+          notify = () => {};
+        };
+      },
+    };
+    const routeResolution = createMockRouteResolutionApi({
+      resolve: () => (finalized ? () => '/hello' : undefined),
+    });
+
+    const { result } = renderHook(() => useRouteRef(routeRef), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            [routeResolutionApiRef, routeResolution],
+            [appHistoryApiRef, appHistory],
+            [appLifecycleApiRef, lifecycle],
+          ]}
+          children={children}
+        />
+      ),
+    });
+
+    expect(result.current).toBeUndefined();
+    expect(routeResolution.resolve).toHaveBeenCalledWith(routeRef, {
+      sourcePath: '/my-page',
+    });
+
+    act(() => {
+      finalized = true;
+      notify();
+    });
+    expect(result.current?.()).toBe('/hello');
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(2);
+
+    act(() => appHistory.navigate('/another-page'));
+    expect(routeResolution.resolve).toHaveBeenLastCalledWith(routeRef, {
+      sourcePath: '/another-page',
+    });
   });
 
   it('should resolve routes with neither authority present', () => {

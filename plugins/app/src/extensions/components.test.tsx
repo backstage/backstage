@@ -94,7 +94,7 @@ describe('PageLayout', () => {
     });
   });
 
-  it('uses the host scope for tab hrefs, navigation, and prefix selection', async () => {
+  it('uses app-absolute tab hrefs for navigation and prefix selection', async () => {
     const myPlugin = createFrontendPlugin({
       pluginId: 'my-plugin',
       extensions: [
@@ -117,7 +117,7 @@ describe('PageLayout', () => {
                   {
                     id: 'overview',
                     label: 'Overview',
-                    href: 'overview?view=all#details',
+                    href: '/my-plugin/example/tasks/overview?view=all#details',
                   },
                   { id: 'settings', label: 'Settings', href: '/settings' },
                   {
@@ -237,13 +237,14 @@ describe('PageLayout', () => {
     }
   });
 
-  it('falls back to the ambient route match when there is no page mount', async () => {
-    // No AppRouteSwitch above the layout, so there is no routing scope to read and
-    // the surrounding React Router match is the only base available.
+  it('uses an app-absolute tab and breadcrumb when there is no page mount', async () => {
+    // No AppRouteSwitch above the layout; the ambient route supplies the breadcrumb.
     renderInTestApp(
       <PageLayout
         title="My Plugin"
-        tabs={[{ id: 'overview', label: 'Overview', href: 'overview' }]}
+        tabs={[
+          { id: 'overview', label: 'Overview', href: '/my-plugin/overview' },
+        ]}
       >
         <div>Plugin content</div>
       </PageLayout>,
@@ -264,13 +265,12 @@ describe('PageLayout', () => {
     ).toHaveAttribute('href', '/my-plugin');
   });
 
-  it('falls back to the app root when nothing above the layout has a path', async () => {
-    // Neither routing scope nor a route match, which is also what a layout sees
-    // when the app has no root router at all.
+  it('uses app-root tabs and breadcrumbs when the layout has no page path', async () => {
+    // The app has no root router or page mount.
     renderInTestApp(
       <PageLayout
         title="My Plugin"
-        tabs={[{ id: 'overview', label: 'Overview', href: 'overview' }]}
+        tabs={[{ id: 'overview', label: 'Overview', href: '/overview' }]}
       >
         <div>Plugin content</div>
       </PageLayout>,

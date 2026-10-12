@@ -52,7 +52,7 @@ export type RouteLinkProps<TParams extends AnyRouteRefParams> = {
  *
  * @public
  */
-export const RouteLink = forwardRef(function RouteLink<
+export const RouteLink = forwardRef(function RouteLinkComponent<
   TParams extends AnyRouteRefParams,
 >(props: RouteLinkProps<TParams>, ref: React.ForwardedRef<HTMLAnchorElement>) {
   const { routeRef, params, children, ...rest } = props;
