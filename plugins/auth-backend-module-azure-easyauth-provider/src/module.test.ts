@@ -47,9 +47,9 @@ describe('authModuleAzureEasyAuthProvider', () => {
     process.env = env;
   });
 
-  it('should fail when run outside of Azure App Services', async () => {
+  it('should fail when run outside of Azure App Services or Azure Container Apps', async () => {
     await expect(startTestBackend({ features })).rejects.toThrow(
-      'Backstage is not running on Azure App Services',
+      'Backstage is not running on Azure App Services or Azure Container Apps',
     );
   });
 
@@ -85,6 +85,13 @@ describe('authModuleAzureEasyAuthProvider', () => {
     process.env.WEBSITE_AUTH_ENABLED = 'True';
     process.env.WEBSITE_AUTH_DEFAULT_PROVIDER = 'AzureActiveDirectory';
     process.env.WEBSITE_AUTH_TOKEN_STORE = 'True';
+    await expect(startTestBackend({ features })).resolves.toBeInstanceOf(
+      Object,
+    );
+  });
+
+  it('should start successfully when running in Azure Container Apps', async () => {
+    process.env.CONTAINER_APP_NAME = 'my-container-app';
     await expect(startTestBackend({ features })).resolves.toBeInstanceOf(
       Object,
     );
