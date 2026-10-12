@@ -23,6 +23,7 @@ import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
 import webpack from 'webpack';
 import { optimization } from './optimization';
 import { transforms } from './transforms';
+import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
 
 // Compile a feature with a lazy renderer in the same npm scope, and a shared
 // workspace module. Naming chunks by scope pulls the renderer into discovery;
@@ -31,6 +32,7 @@ type CompilationStats = {
   errors?: unknown[];
   warnings?: unknown[];
   modules?: Array<Pick<webpack.StatsModule, 'name' | 'chunks'>>;
+  chunks?: Array<{ id?: string | number; files?: string[] }>;
   namedChunkGroups?: Record<
     string,
     Pick<webpack.StatsChunkGroup, 'chunks' | 'assets'>
@@ -42,8 +44,11 @@ async function compileFixture(
   isDev: boolean,
   remote: boolean,
   webpackImpl?: typeof webpack,
+  rendererContent: string = 'renderer'.repeat(15_000),
+  fixtureRoot?: string,
 ): Promise<CompilationStats> {
-  const root = await fs.mkdtemp(join(tmpdir(), 'backstage-chunks-'));
+  const root =
+    fixtureRoot ?? (await fs.mkdtemp(join(tmpdir(), 'backstage-chunks-')));
   try {
     const files = {
       'entry.js': remote
@@ -81,7 +86,7 @@ export default { heavy, shared };`,
         main: 'index.js',
       }),
       'node_modules/@fixture/renderer/index.js': `export const heavy = ${JSON.stringify(
-        'renderer'.repeat(15_000),
+        rendererContent,
       )};`,
     };
     await Promise.all(
@@ -108,7 +113,14 @@ export default { heavy, shared };`,
       mode: isDev ? 'development' : 'production',
       context: root,
       entry: './entry.js',
-      output: { path: join(root, 'dist'), publicPath: '/' },
+      // Mirrors the chunk file names used by the bundler config.
+      output: {
+        path: join(root, 'dist'),
+        publicPath: '/',
+        chunkFilename: isDev
+          ? '[name].chunk.js'
+          : `static/[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].chunk.js`,
+      },
       optimization: {
         ...optimization(options),
         // Keep module-to-chunk assertions independent of scope hoisting.
@@ -154,6 +166,7 @@ export default { heavy, shared };`,
                 modules: true,
                 nestedModules: true,
                 ids: true,
+                chunks: true,
                 chunkGroups: true,
               }),
             );
@@ -183,7 +196,7 @@ export default { heavy, shared };`,
     );
     return { ...stats, stylesheetSelectors };
   } finally {
-    await fs.remove(root);
+    await fs.remove(fixtureRoot ? join(root, 'dist') : root);
   }
 }
 
@@ -230,6 +243,57 @@ describe.each([
     },
     30_000,
   );
+
+  it('names shared remote chunks by content hash', async () => {
+    const filesOf = (stats: CompilationStats, moduleSuffix: string) => {
+      const module = stats.modules?.find(m => m.name?.endsWith(moduleSuffix));
+      return stats.chunks
+        ?.filter(chunk => module?.chunks?.includes(chunk.id!))
+        .flatMap(chunk => chunk.files ?? [])
+        .filter(file => file.endsWith('.js'));
+    };
+
+    // Rebuild in the same directory, as consecutive deployments would.
+    const root = await fs.mkdtemp(join(tmpdir(), 'backstage-chunks-'));
+    const [before, after] = await (async () => {
+      try {
+        const first = await compileFixture(
+          false,
+          true,
+          webpackImpl,
+          undefined,
+          root,
+        );
+        const second = await compileFixture(
+          false,
+          true,
+          webpackImpl,
+          'changed'.repeat(15_000),
+          root,
+        );
+        return [first, second];
+      } finally {
+        await fs.remove(root);
+      }
+    })();
+    expect(before.errors).toEqual([]);
+    expect(after.errors).toEqual([]);
+
+    const sharedBefore = filesOf(before, '/shared.js');
+    expect(sharedBefore).toEqual([
+      expect.stringMatching(
+        new RegExp(
+          `^static/[^.]+\\.[0-9a-f]{${STATIC_ASSET_HASH_LENGTH}}\\.chunk\\.js$`,
+        ),
+      ),
+    ]);
+    // Unrelated changes in another lazy boundary leave the shared chunk's
+    // file name untouched, so it stays cached across deployments.
+    expect(filesOf(after, '/shared.js')).toEqual(sharedBefore);
+    expect(filesOf(after, '@fixture/renderer/index.js')).not.toEqual(
+      filesOf(before, '@fixture/renderer/index.js'),
+    );
+  }, 60_000);
 
   it.each([false, true])(
     'preserves named initial app dependency chunks (isDev=%s)',
