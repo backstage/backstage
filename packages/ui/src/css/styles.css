@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-@layer tokens, base, components, utilities;
+/* BUI leaves the theme layer empty so apps can override component styles without raising specificity. */
+@layer tokens, base, components, theme, utilities;
 
 /* Tokens */
 @import './tokens.css';
