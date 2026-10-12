@@ -44,13 +44,13 @@ function getHeaderText() {
 `;
 }
 
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: { fixable: 'code' },
   createOnce(context) {
     return {
       Program(node) {
-        const sourceText = context.getSourceCode().getText();
+        const sourceText = context.sourceCode.text;
 
         const shebangMatch = sourceText.match(SHEBANG_REGEX);
         const offset = shebangMatch ? shebangMatch[0].length : 0;

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 
 const raw = require('../../config/rules/restricted-syntax');
-const noBareLowerCase = adaptRule(raw.noBareLowerCase);
-const noBareUpperCase = adaptRule(raw.noBareUpperCase);
-const noReactDefaultImport = adaptRule(raw.noReactDefaultImport);
-const noWinstonDefaultImport = adaptRule(raw.noWinstonDefaultImport);
-const noDirnameInSrc = adaptRule(raw.noDirnameInSrc);
+const noBareLowerCase = raw.noBareLowerCase;
+const noBareUpperCase = raw.noBareUpperCase;
+const noReactDefaultImport = raw.noReactDefaultImport;
+const noWinstonDefaultImport = raw.noWinstonDefaultImport;
+const noDirnameInSrc = raw.noDirnameInSrc;
 
 const ruleTester = new RuleTester({
-  parserOptions: { sourceType: 'module', ecmaVersion: 2021 },
+  languageOptions: { sourceType: 'module' },
 });
 
 describe('restricted-syntax rules', () => {

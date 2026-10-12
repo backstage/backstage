@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 
-const rule = adaptRule(require('../../config/rules/notice'));
+const rule = require('../../config/rules/notice');
 
 const VALID_HEADER = `/*
  * Copyright 2024 The Backstage Authors
@@ -41,7 +40,7 @@ const CURRENT_YEAR_HEADER = VALID_HEADER.replace(
 );
 
 const ruleTester = new RuleTester({
-  parserOptions: { sourceType: 'module', ecmaVersion: 2021 },
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run('notice', rule, {

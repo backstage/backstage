@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 import { join as joinPath } from 'node:path';
+
+jest.mock('node:child_process', () => ({
+  execFileSync: jest.fn(),
+}));
 
 const RULE = 'no-undeclared-imports';
 const FIXTURE = joinPath(__dirname, '../__fixtures__/monorepo');
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(require('../../config/rules/no-undeclared-imports'));
+const rule = require('../../config/rules/no-undeclared-imports');
 
 const ERR_UNDECLARED = (
   name: string,
@@ -55,18 +58,9 @@ const ERR_INLINE_MISSING = (name: string, missing: string) => ({
   message: `Each production dependency from the inline package ${name} must be re-declared by this package, the following dependencies are missing: ${missing}`,
 });
 
-// cwd must be restored
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
-process.chdir(FIXTURE);
-
 const ruleTester = new RuleTester({
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  cwd: FIXTURE,
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {

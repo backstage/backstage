@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { spawnSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
 import { cli } from 'cleye';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { resolveOxlintBin, resolveOxlintConfig } from '../../lib/oxlint';
+import { executeOxlint } from '../../lib/executeOxlint';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
@@ -48,12 +46,22 @@ export default async ({ args, info }: CliCommandContext) => {
         maxWarnings: {
           type: Number,
           description:
-            'Specify a warning threshold, which can be used to force exit with an error status if there are too many warning-level rule violations',
+            'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
         },
         since: {
           type: String,
           description:
             'Only lint packages that changed since the specified ref',
+        },
+        successCache: {
+          type: Boolean,
+          description:
+            'Accepted for compatibility; Oxlint always checks selected packages.',
+        },
+        successCacheDir: {
+          type: String,
+          description:
+            'Accepted for compatibility; no success cache is read or written.',
         },
       },
     },
@@ -75,68 +83,21 @@ export default async ({ args, info }: CliCommandContext) => {
     });
   }
 
-  // Group packages by their nearest oxlint config so we can run one
-  // invocation per config. Most packages share the root config, but
-  // packages with a local oxlint.config.mts get their own invocation.
-  const configGroups = new Map<string | undefined, string[]>();
-  for (const pkg of packages) {
-    const configPath = resolveOxlintConfig(pkg.dir);
-    const group = configGroups.get(configPath);
-    if (group) {
-      group.push(relativePath(targetPaths.rootDir, pkg.dir));
-    } else {
-      configGroups.set(configPath, [
-        relativePath(targetPaths.rootDir, pkg.dir),
-      ]);
-    }
-  }
-
-  const oxlintBin = resolveOxlintBin();
-  let failed = false;
-  let output = '';
-
-  for (const [configPath, dirs] of configGroups) {
-    const oxlintArgs: string[] = [];
-
-    if (configPath) {
-      oxlintArgs.push('-c', configPath);
-    }
-
-    oxlintArgs.push('--type-aware', '--type-check');
-
-    if (fix) {
-      oxlintArgs.push('--fix');
-    }
-
-    if (format && format !== 'default') {
-      oxlintArgs.push('--format', format);
-    }
-
-    if (maxWarnings !== undefined) {
-      oxlintArgs.push('--max-warnings', String(maxWarnings));
-    }
-
-    oxlintArgs.push(...dirs);
-
-    const result = spawnSync(oxlintBin, oxlintArgs, {
-      cwd: targetPaths.rootDir,
-      stdio: outputFile ? ['inherit', 'pipe', 'inherit'] : 'inherit',
-    });
-
-    if (outputFile && result.stdout) {
-      output += result.stdout;
-    }
-
-    if (result.status !== 0 && result.status !== null) {
-      failed = true;
-    }
-  }
-
-  if (outputFile && output) {
-    writeFileSync(outputFile, output);
-  }
-
-  if (failed) {
-    process.exit(1);
-  }
+  await executeOxlint({
+    targets: packages
+      .filter(pkg =>
+        /^(?:backstage-cli|node bin\/backstage-cli-module-oxlint) package lint(?: |$)/.test(
+          pkg.packageJson.scripts?.lint ?? '',
+        ),
+      )
+      .map(pkg => ({
+        configDir: pkg.dir,
+        directories: [relativePath(targetPaths.rootDir, pkg.dir)],
+      })),
+    cwd: targetPaths.rootDir,
+    fix,
+    format,
+    outputFile,
+    maxWarnings,
+  });
 };

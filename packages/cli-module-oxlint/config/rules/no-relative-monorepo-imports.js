@@ -16,16 +16,14 @@
 
 // @ts-check
 
-const path = require('node:path');
 const visitImports = require('../lib/visitImports');
 const getPackages = require('../lib/getPackages');
-const { resolveCwd, resolveFilePath } = require('../lib/resolveContext');
+const { getRelativeMonorepoImport } = require('../lib/importPolicies');
 
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
     type: 'problem',
-    fixable: 'code',
     messages: {
       outside: 'Import of {{path}} is outside of any known monorepo package',
       forbidden:
@@ -44,8 +42,8 @@ module.exports = {
 
     return {
       before() {
-        packages = getPackages(resolveCwd(context));
-        filePath = resolveFilePath(context);
+        packages = getPackages(context.cwd);
+        filePath = context.physicalFilename;
         localPkg = packages?.byPath(filePath);
         if (!localPkg) {
           return false;
@@ -57,38 +55,28 @@ module.exports = {
           return;
         }
 
-        const target = path.resolve(path.dirname(filePath), imp.path);
-        if (!path.relative(localPkg.dir, target).startsWith('..')) {
+        const result = getRelativeMonorepoImport(
+          packages,
+          localPkg,
+          filePath,
+          imp.path,
+        );
+        if (!result) {
           return;
         }
-
-        const targetPkg = packages.byPath(target);
-        if (!targetPkg) {
+        if (result.type === 'outside') {
           context.report({
-            node: node,
+            node,
             messageId: 'outside',
-            data: {
-              path: target,
-            },
+            data: { path: result.path },
           });
           return;
         }
 
-        const targetPath = path.relative(targetPkg.dir, target);
-        const targetName = targetPkg.packageJson.name ?? '<unknown>';
-        const newImport = targetPath
-          ? `${targetName}/${targetPath}`
-          : targetName;
-
         context.report({
-          node: node,
+          node,
           messageId: 'forbidden',
-          data: { newImport },
-          fix(fixer) {
-            const raw = /** @type {import('estree').Literal} */ (imp.node).raw;
-            const quote = raw ? raw[0] : "'";
-            return fixer.replaceText(imp.node, `${quote}${newImport}${quote}`);
-          },
+          data: { newImport: result.newImport },
         });
       }),
     };

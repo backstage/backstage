@@ -17,8 +17,9 @@
 // @ts-check
 
 const visitImports = require('../lib/visitImports');
+const { isForbiddenPackageImport } = require('../lib/importPolicies');
 
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
     type: 'problem',
@@ -36,29 +37,8 @@ module.exports = {
       if (imp.type !== 'internal') {
         return;
       }
-      // Empty subpaths are always allowed
-      if (!imp.path) {
+      if (!isForbiddenPackageImport(imp.package.packageJson, imp.path)) {
         return;
-      }
-
-      // If the import is listed in the package.json exports field, we allow it
-      const exp = imp.package.packageJson.exports;
-      if (exp && (exp[imp.path] || exp[`./${imp.path}`])) {
-        return;
-      }
-      if (!exp) {
-        // If there's no exports field, we allow anything listed in files, except dist
-        const files = imp.package.packageJson.files;
-        if (
-          !files ||
-          files.some(f => !f.startsWith('dist') && imp.path.startsWith(f))
-        ) {
-          return;
-        }
-        // And also package.json
-        if (imp.path === 'package.json') {
-          return;
-        }
       }
 
       context.report({

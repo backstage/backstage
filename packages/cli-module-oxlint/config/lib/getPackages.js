@@ -21,12 +21,12 @@ const manypkg = require('@manypkg/get-packages');
 
 /**
  * @typedef ExtendedPackage
- * @type {import('@manypkg/get-packages').Package & { packageJson: { exports?: Record<string, string>, files?: Array<string>, backstage?: { inline?: boolean, role?: string, pluginId?: string } }}}
+ * @type {import('@manypkg/get-packages').Package & { packageJson: { exports?: Record<string, string>, files?: Array<string>, backstage?: { inline?: boolean, role?: string, pluginId?: string } }}} packageJson
  */
 
 /**
  * @typedef PackageMap
- * @type {object}
+ * @type object
  *
  * @property {ExtendedPackage} root
  * @property {ExtendedPackage[]} list
@@ -35,28 +35,27 @@ const manypkg = require('@manypkg/get-packages');
  * @property {(path: string) => ExtendedPackage | undefined} byPath
  */
 
-// Loads all packages in the monorepo once, and caches the result
-module.exports = (function getPackagesFactory() {
-  /** @type {PackageMap | undefined} */
-  let result = undefined;
-  /** @type {number} */
-  let lastLoadAt = 0;
+// Cache workspace metadata by the lookup directory so linting multiple workspaces in one process stays isolated.
+module.exports = (function () {
+  /** @type {Map<string, {result: PackageMap, loadedAt: number}>} */
+  const cache = new Map();
 
   /** @returns {PackageMap | undefined} */
   return function getPackages(/** @type {string} */ dir) {
-    if (result) {
-      // Only cache for 5 seconds, to avoid the need to reload servers
-      if (Date.now() - lastLoadAt > 5000) {
-        result = undefined;
-      } else {
-        return result;
-      }
+    const key = path.resolve(dir);
+    const cached = cache.get(key);
+    if (cached && Date.now() - cached.loadedAt <= 5000) {
+      return cached.result;
     }
+
     const packages = manypkg.getPackagesSync(dir);
     if (!packages) {
+      cache.delete(key);
       return undefined;
     }
-    result = {
+
+    /** @type {PackageMap} */
+    const result = {
       map: new Map(packages.packages.map(pkg => [pkg.packageJson.name, pkg])),
       list: packages.packages,
       root: packages.root,
@@ -66,10 +65,10 @@ module.exports = (function getPackagesFactory() {
         );
       },
       clearCache() {
-        result = undefined;
+        cache.clear();
       },
     };
-    lastLoadAt = Date.now();
+    cache.set(key, { result, loadedAt: Date.now() });
     return result;
   };
 })();

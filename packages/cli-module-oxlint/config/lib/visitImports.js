@@ -18,70 +18,15 @@
 
 const { builtinModules } = require('node:module');
 const getPackages = require('./getPackages');
-const { resolveCwd } = require('./resolveContext');
 
 /**
- * @typedef LocalImport
- * @type {object}
- * @property {'local'} type
- * @property {'value' | 'type'} kind
- * @property {import('estree').Node} node
- * @property {string} path
- */
-
-/**
- * @typedef ImportDirective
- * @type {object}
- * @property {'directive'} type
- * @property {'value' | 'type'} kind
- * @property {import('estree').Node} node
- * @property {string} path
- */
-
-/**
- * @typedef InternalImport
- * @type {object}
- * @property {'internal'} type
- * @property {'value' | 'type'} kind
- * @property {import('estree').Node} node
- * @property {string} path
- * @property {ExtendedPackage} package
- * @property {string} packageName
- */
-
-/**
- * @typedef ExternalImport
- * @type {object}
- * @property {'external'} type
- * @property {'value' | 'type'} kind
- * @property {import('estree').Node} node
- * @property {string} path
- * @property {string} packageName
- */
-
-/**
- * @typedef BuiltinImport
- * @type {object}
- * @property {'builtin'} type
- * @property {'value' | 'type'} kind
- * @property {import('estree').Literal} node
- * @property {string} path
- * @property {string} packageName
- */
-
-/**
- * @typedef {import('./getPackages').ExtendedPackage} ExtendedPackage
+ * @typedef {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression} ConsideredNode
  */
 
 /**
  * @callback ImportVisitor
  * @param {ConsideredNode} node
- * @param {ImportDirective | LocalImport | InternalImport | ExternalImport | BuiltinImport} imp
- */
-
-/**
- * @typedef ConsideredNode
- * @type {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression}
+ * @param {any} imp
  */
 
 /**
@@ -95,7 +40,7 @@ function getImportInfo(node) {
   if (node.type === 'CallExpression') {
     if (
       node.callee.type === 'Identifier' &&
-      node.callee.name === 'require' &&
+      node.callee.name == 'require' &&
       node.arguments.length === 1
     ) {
       pathNode = node.arguments[0];
@@ -121,90 +66,78 @@ function getImportInfo(node) {
 }
 
 /**
- * Creates AST visitor handlers that classify imports and call the visitor.
+ * Classify an import using workspace package metadata.
  *
- * Adapted for oxlint's context API: uses `context.cwd` (a property)
- * rather than ESLint's `context.getCwd()` (a method). Falls back to
- * `context.getCwd()` for compatibility in test environments.
- *
- * @param {object} context - The rule context (oxlint or ESLint compatible)
- * @param {ImportVisitor} visitor
+ * @param {ConsideredNode} node
+ * @param {ReturnType<typeof getPackages>} packages
  */
-module.exports = function visitImports(context, visitor) {
-  /**
-   * @param {ConsideredNode} node
-   */
-  function visit(node) {
-    const cwd = resolveCwd(context);
-    const packages = getPackages(cwd);
-    if (!packages) {
-      return;
-    }
+function classifyImport(node, packages) {
+  const info = getImportInfo(node);
+  if (!info || !packages) {
+    return undefined;
+  }
 
-    const info = getImportInfo(node);
-    if (!info) {
-      return;
-    }
+  if (info.path[0] === '.') {
+    return { type: 'local', ...info };
+  }
+  if (info.path.startsWith('directive:')) {
+    return { type: 'directive', ...info };
+  }
 
-    if (info.path[0] === '.') {
-      visitor(node, { type: 'local', ...info });
-      return;
-    }
-
-    if (info.path.startsWith('directive:')) {
-      visitor(node, { type: 'directive', ...info });
-      return;
-    }
-
-    const pathParts = info.path.split('/');
-
-    // Check for match with plain name, then namespaced name
-    let packageName;
-    let subPath;
-    if (info.path[0] === '@') {
-      packageName = pathParts.slice(0, 2).join('/');
-      subPath = pathParts.slice(2).join('/');
-    } else {
-      packageName = pathParts[0];
-      subPath = pathParts.slice(1).join('/');
-    }
-    const pkg = packages?.map.get(packageName);
-    if (!pkg) {
-      if (
-        packageName.startsWith('node:') ||
-        builtinModules.includes(packageName)
-      ) {
-        visitor(node, {
-          type: 'builtin',
-          kind: info.kind,
-          node: info.node,
-          path: subPath,
-          packageName,
-        });
-        return;
-      }
-
-      visitor(node, {
-        type: 'external',
-        kind: info.kind,
-        node: info.node,
-        path: subPath,
-        packageName,
-      });
-      return;
-    }
-
-    visitor(node, {
-      type: 'internal',
+  const pathParts = info.path.split('/');
+  const packageName =
+    info.path[0] === '@' ? pathParts.slice(0, 2).join('/') : pathParts[0];
+  const subPath =
+    info.path[0] === '@'
+      ? pathParts.slice(2).join('/')
+      : pathParts.slice(1).join('/');
+  const pkg = packages.map.get(packageName);
+  if (!pkg) {
+    const type =
+      packageName.startsWith('node:') || builtinModules.includes(packageName)
+        ? 'builtin'
+        : 'external';
+    return {
+      type,
       kind: info.kind,
       node: info.node,
       path: subPath,
-      package: pkg,
       packageName,
-    });
+    };
   }
 
   return {
+    type: 'internal',
+    kind: info.kind,
+    node: info.node,
+    path: subPath,
+    package: pkg,
+    packageName,
+  };
+}
+
+/**
+ * Visits imports using Oxlint's per-file context.
+ *
+ * @param {{cwd: string}} context
+ * @param {ImportVisitor} visitor
+ */
+module.exports = function visitImports(context, visitor) {
+  /** @type {ReturnType<typeof getPackages>} */
+  let packages;
+
+  /** @param {ConsideredNode} node */
+  function visit(node) {
+    const imp = classifyImport(node, packages);
+    if (imp) {
+      visitor(node, imp);
+    }
+  }
+
+  return {
+    Program() {
+      packages = getPackages(context.cwd);
+    },
     ImportDeclaration: visit,
     ExportAllDeclaration: visit,
     ExportNamedDeclaration: visit,

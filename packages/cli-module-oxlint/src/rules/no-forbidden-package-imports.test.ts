@@ -14,34 +14,22 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 import path from 'node:path';
 
 const RULE = 'no-forbidden-package-imports';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(
-  require('../../config/rules/no-forbidden-package-imports'),
-);
+const rule = require('../../config/rules/no-forbidden-package-imports');
 
 const ERR = (name: string, subPath: string) => ({
   message: `${name} does not export ${subPath}`,
 });
 
-// cwd must be restored
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
-process.chdir(FIXTURE);
-
 const ruleTester = new RuleTester({
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  cwd: FIXTURE,
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {

@@ -20,7 +20,7 @@
  * Flags `.toLowerCase()` calls with no arguments.
  * Suggests `.toLocaleLowerCase('en-US')` instead.
  *
- * @type {import('eslint').Rule.RuleModule}
+ * @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]}
  */
 const noBareLowerCase = {
   meta: { type: 'suggestion' },
@@ -48,7 +48,7 @@ const noBareLowerCase = {
  * Flags `.toUpperCase()` calls with no arguments.
  * Suggests `.toLocaleUpperCase('en-US')` instead.
  *
- * @type {import('eslint').Rule.RuleModule}
+ * @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]}
  */
 const noBareUpperCase = {
   meta: { type: 'suggestion' },
@@ -76,7 +76,7 @@ const noBareUpperCase = {
  * Flags default or namespace imports from 'react'.
  * Named imports should be used instead.
  *
- * @type {import('eslint').Rule.RuleModule}
+ * @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]}
  */
 const noReactDefaultImport = {
   meta: { type: 'suggestion' },
@@ -106,7 +106,7 @@ const noReactDefaultImport = {
  * Flags default imports from 'winston'.
  * `import * as winston` should be used instead.
  *
- * @type {import('eslint').Rule.RuleModule}
+ * @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]}
  */
 const noWinstonDefaultImport = {
   meta: { type: 'suggestion' },
@@ -133,7 +133,7 @@ const noWinstonDefaultImport = {
  * Flags `__dirname` usage inside src/ (excluding test files).
  * `resolvePackagePath()` should be used instead in production builds.
  *
- * @type {import('eslint').Rule.RuleModule}
+ * @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]}
  */
 const noDirnameInSrc = {
   meta: { type: 'problem' },
@@ -144,11 +144,7 @@ const noDirnameInSrc = {
           return;
         }
 
-        const filename =
-          context.getPhysicalFilename?.() ??
-          context.getFilename?.() ??
-          context.filename ??
-          '';
+        const filename = context.physicalFilename;
 
         const inSrc =
           filename.includes('/src/') || filename.includes('\\src\\');
