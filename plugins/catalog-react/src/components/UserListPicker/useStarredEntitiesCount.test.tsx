@@ -15,89 +15,63 @@
  */
 
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { EntityListProvider, useStarredEntities } from '../../hooks';
+import { EntityListProvider } from '../../hooks';
 import { catalogApiRef } from '../../api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../../apis';
 import { MemoryRouter } from 'react-router-dom';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';
-
-const mockCatalogApi = catalogApiMock.mock();
-
-const mockStarredEntities: jest.MockedFn<() => Set<string>> = jest.fn();
-
-const mockUseStarredEntities: ReturnType<typeof useStarredEntities> = {
-  get starredEntities() {
-    return mockStarredEntities();
-  },
-} as ReturnType<typeof useStarredEntities>;
-
-jest.mock('../../hooks', () => {
-  const actual = jest.requireActual('../../hooks');
-  return { ...actual, useStarredEntities: () => mockUseStarredEntities };
-});
-
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
-  return {
-    ...actual,
-    useApi: (ref: ApiRef<any>) =>
-      ref === catalogApiRef ? mockCatalogApi : actual.useApi(ref),
-  };
-});
+import { TestApiProvider } from '@backstage/test-utils';
 
 describe('useStarredEntitiesCount', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should return the count', async () => {
-    mockStarredEntities.mockReturnValue(
-      new Set(['component:default/favourite1', 'component:default/favourite2']),
-    );
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [
+    // The namespaces are explicit since the in-memory catalog client does not
+    // yet treat a missing namespace as "default" like the catalog backend does
+    const catalogApi = catalogApiMock({
+      entities: [
         {
-          apiVersion: '1',
-          kind: 'component',
-          metadata: { name: 'favourite1' },
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'favourite1', namespace: 'default' },
         },
         {
-          apiVersion: '1',
-          kind: 'component',
-          metadata: { name: 'favourite2' },
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'favourite2', namespace: 'default' },
+        },
+        {
+          // Same name as a starred entity, but a different kind
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'API',
+          metadata: { name: 'favourite1', namespace: 'default' },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'not-a-favourite', namespace: 'default' },
         },
       ],
-      totalItems: 2,
-      pageInfo: {},
     });
+    const starredEntitiesApi = new MockStarredEntitiesApi();
+    starredEntitiesApi.toggleStarred('component:default/favourite1');
+    starredEntitiesApi.toggleStarred('component:default/favourite2');
 
     const { result } = renderHook(() => useStarredEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
-          <EntityListProvider>{children}</EntityListProvider>
-        </MemoryRouter>
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApi],
+            [starredEntitiesApiRef, starredEntitiesApi],
+          ]}
+        >
+          <MemoryRouter>
+            <EntityListProvider>{children}</EntityListProvider>
+          </MemoryRouter>
+        </TestApiProvider>
       ),
     });
 
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        query: {
-          $any: [
-            {
-              kind: 'component',
-              'metadata.namespace': 'default',
-              'metadata.name': 'favourite1',
-            },
-            {
-              kind: 'component',
-              'metadata.namespace': 'default',
-              'metadata.name': 'favourite2',
-            },
-          ],
-        },
-        limit: 0,
-      });
       expect(result.current).toEqual({
         count: 2,
         loading: false,
@@ -113,18 +87,26 @@ describe('useStarredEntitiesCount', () => {
   });
 
   it(`shouldn't invoke the endpoint if there are no starred entities`, async () => {
-    mockStarredEntities.mockReturnValue(new Set());
+    const catalogApi = catalogApiMock();
+    const queryEntities = jest.spyOn(catalogApi, 'queryEntities');
 
     const { result } = renderHook(() => useStarredEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
-          <EntityListProvider>{children}</EntityListProvider>
-        </MemoryRouter>
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApi],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          ]}
+        >
+          <MemoryRouter>
+            <EntityListProvider>{children}</EntityListProvider>
+          </MemoryRouter>
+        </TestApiProvider>
       ),
     });
 
     await expect(
-      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
     expect(result.current).toEqual({
       count: 0,

@@ -19,32 +19,34 @@ import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';
 import { EntityListProvider, useEntityList } from '../../hooks';
 import { catalogApiRef } from '../../api';
-import { ApiRef } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { EntityOwnerFilter } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
-
-const mockCatalogApi = catalogApiMock.mock();
-
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
-  return {
-    ...actual,
-    useApi: (ref: ApiRef<any>) =>
-      ref === catalogApiRef ? mockCatalogApi : actual.useApi(ref),
-  };
-});
+import { TestApiProvider } from '@backstage/test-utils';
 
 describe('useAllEntitiesCount', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should return the count', async () => {
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-1' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/owner' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-2' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/owner' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'not-owned' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/other' }],
+        },
+      ],
     });
 
     function WrapFilters(props: PropsWithChildren<{}>) {
@@ -60,44 +62,37 @@ describe('useAllEntitiesCount', () => {
 
     const { result } = renderHook(() => useAllEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
-          <EntityListProvider>
-            <WrapFilters>{children}</WrapFilters>
-          </EntityListProvider>
-        </MemoryRouter>
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <MemoryRouter>
+            <EntityListProvider>
+              <WrapFilters>{children}</WrapFilters>
+            </EntityListProvider>
+          </MemoryRouter>
+        </TestApiProvider>
       ),
     });
 
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        query: {
-          relations: {
-            $contains: { type: 'ownedBy', targetRef: 'user:default/owner' },
-          },
-        },
-        limit: 0,
-      });
-      expect(result.current).toEqual({ count: 10, loading: false });
+      expect(result.current).toEqual({ count: 2, loading: false });
     });
   });
 
   it(`shouldn't invoke the endpoint at startup, when filters are missing`, async () => {
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
-    });
+    const catalogApi = catalogApiMock();
+    const queryEntities = jest.spyOn(catalogApi, 'queryEntities');
 
     const { result } = renderHook(() => useAllEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
-          <EntityListProvider>{children}</EntityListProvider>
-        </MemoryRouter>
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <MemoryRouter>
+            <EntityListProvider>{children}</EntityListProvider>
+          </MemoryRouter>
+        </TestApiProvider>
       ),
     });
 
     await expect(
-      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
     expect(result.current).toEqual({ count: 0, loading: false });
   });
