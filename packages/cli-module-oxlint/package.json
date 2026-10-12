@@ -12,7 +12,7 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs.js"
       },
-      "./oxlint-factory": "./config/oxlint-factory.js",
+      "./oxlint-factory": "./config/oxlint-factory.cjs",
       "./package.json": "./package.json"
     }
   },
@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./oxlint-factory": "./config/oxlint-factory.js",
+    "./oxlint-factory": "./config/oxlint-factory.cjs",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",

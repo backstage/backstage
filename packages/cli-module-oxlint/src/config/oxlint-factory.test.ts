@@ -116,8 +116,13 @@ function codesFor(report: OxlintReport, basename: string): string[] {
 }
 
 describe('Oxlint configuration factory', () => {
-  it('uses script export mounts supported by the package builder', () => {
-    const { exports } = require('../../package.json');
+  it('uses export mounts supported by the package builder', () => {
+    const { exports, files, publishConfig } = require('../../package.json');
+    expect(exports['./oxlint-factory']).toBe('./config/oxlint-factory.cjs');
+    expect(publishConfig.exports['./oxlint-factory']).toBe(
+      exports['./oxlint-factory'],
+    );
+    expect(files).toContain('config');
     for (const [mount, source] of Object.entries(exports)) {
       if (/\.[jt]sx?$/.test(source as string)) {
         expect(mount.slice(2)).not.toContain('/');

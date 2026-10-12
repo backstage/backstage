@@ -32,52 +32,46 @@ import path from 'node:path';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 
 function createYarnRecorder(tempRoot: string) {
-  const fakeYarnPath = path.join(tempRoot, 'fake-yarn.cjs');
   const preloadPath = path.join(tempRoot, 'fake-yarn-preload.cjs');
   const tracePath = path.join(tempRoot, 'yarn-trace.jsonl');
   writeFileSync(
-    fakeYarnPath,
+    preloadPath,
     `const fs = require('node:fs');
 const path = require('node:path');
-const args = process.argv.slice(2);
-fs.appendFileSync(process.env.YARN_TRACE, JSON.stringify({ args, cwd: process.cwd() }) + '\\n');
-const packageJsonPath = path.join(process.cwd(), 'package.json');
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-const action = args.shift();
-if (action === 'add') {
-  const field = args.includes('--peer') ? 'peerDependencies' : args.includes('--dev') ? 'devDependencies' : 'dependencies';
-  packageJson[field] ||= {};
-  for (const spec of args.filter(arg => !arg.startsWith('-'))) {
-    const at = spec.lastIndexOf('@');
-    const slash = spec.indexOf('/');
-    const hasVersion = at > slash;
-    packageJson[field][hasVersion ? spec.slice(0, at) : spec] = hasVersion ? spec.slice(at + 1) : '*';
-  }
-} else if (action === 'remove') {
-  for (const name of args) {
-    for (const field of ['dependencies', 'devDependencies', 'peerDependencies']) {
-      delete packageJson[field]?.[name];
-    }
-  }
-} else {
-  throw new Error('Unexpected fake yarn action: ' + action);
-}
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\\n');
-`,
-  );
-
-  writeFileSync(
-    preloadPath,
-    `const childProcess = require('node:child_process');
+const childProcess = require('node:child_process');
 const execFileSync = childProcess.execFileSync;
 childProcess.execFileSync = function(file, args, options) {
-  if (file === 'yarn') {
-    if (!process.env.FAKE_YARN_SCRIPT) {
-      throw new Error('Yarn execution is blocked in Oxlint tests');
-    }
-    return execFileSync.call(this, process.execPath, [process.env.FAKE_YARN_SCRIPT, ...args], options);
+  if (file !== 'yarn') {
+    return execFileSync.call(this, file, args, options);
   }
-  return execFileSync.call(this, file, args, options);
+  if (!process.env.YARN_TRACE) {
+    throw new Error('Yarn execution is blocked in Oxlint tests');
+  }
+  const cwd = options.cwd;
+  const remaining = [...args];
+  fs.appendFileSync(process.env.YARN_TRACE, JSON.stringify({ args, cwd }) + '\\n');
+  const packageJsonPath = path.join(cwd, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const action = remaining.shift();
+  if (action === 'add') {
+    const field = remaining.includes('--peer') ? 'peerDependencies' : remaining.includes('--dev') ? 'devDependencies' : 'dependencies';
+    packageJson[field] ||= {};
+    for (const spec of remaining.filter(arg => !arg.startsWith('-'))) {
+      const at = spec.lastIndexOf('@');
+      const slash = spec.indexOf('/');
+      const hasVersion = at > slash;
+      packageJson[field][hasVersion ? spec.slice(0, at) : spec] = hasVersion ? spec.slice(at + 1) : '*';
+    }
+  } else if (action === 'remove') {
+    for (const name of remaining) {
+      for (const field of ['dependencies', 'devDependencies', 'peerDependencies']) {
+        delete packageJson[field]?.[name];
+      }
+    }
+  } else {
+    throw new Error('Unexpected fake yarn action: ' + action);
+  }
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\\n');
 };
 `,
   );
@@ -87,7 +81,6 @@ childProcess.execFileSync = function(file, args, options) {
     env: {
       ...process.env,
       NODE_OPTIONS: `--require="${preloadPath.replace(/\\/g, '/')}"`,
-      FAKE_YARN_SCRIPT: fakeYarnPath,
       YARN_TRACE: tracePath,
     },
   };
