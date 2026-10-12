@@ -32,9 +32,6 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "oxlint-factory": [
-        "config/oxlint-factory.js"
-      ],
       "package.json": [
         "package.json"
       ]
