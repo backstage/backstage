@@ -16,6 +16,8 @@
 
 // @ts-check
 
+const { isTopLevelMaterialUi4Import } = require('../lib/importPolicies');
+
 /**
  * @typedef {object} FixerValues
  * @property {string} value
@@ -104,7 +106,7 @@ function getNamedImportValue(values) {
     : `${values.value}`;
 }
 
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
     type: 'problem',
@@ -119,21 +121,12 @@ module.exports = {
   },
   createOnce: context => ({
     ImportDeclaration: node => {
-      // Return if empty import
-      if (node.specifiers.length === 0) return;
-      // Return if empty source value
-      if (!node.source.value) return;
-      // Return if source value not a string
       if (typeof node.source.value !== 'string') return;
-      // Return if import does not start with '@material-ui/'
-      if (!node.source.value.startsWith('@material-ui/')) return;
-      // Return if import is from '@material-ui/core/styles', as it's valid already
-      if (node.source.value === '@material-ui/core/styles') return;
-      // Ignore the @material-ui/data-grid library which shares this namespace
-      if (node.source.value === '@material-ui/data-grid') return;
-      // Return if proper import eg. `import Box from '@material-ui/core/Box'`
-      // Or if third level or deeper imports
-      if (node.source.value?.split('/').length >= 3) return;
+      if (
+        !isTopLevelMaterialUi4Import(node.source.value, node.specifiers.length)
+      ) {
+        return;
+      }
 
       // Report all other imports
       context.report({

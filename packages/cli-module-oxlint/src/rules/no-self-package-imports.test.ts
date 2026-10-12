@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 import path from 'node:path';
 
 const RULE = 'no-self-package-imports';
@@ -23,7 +22,7 @@ const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 const PKG_DIR = path.join(FIXTURE, 'packages/self-import-pkg');
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(require('../../config/rules/no-self-package-imports'));
+const rule = require('../../config/rules/no-self-package-imports');
 
 const sameEntryErr = (entry = '.') => ({
   messageId: 'sameEntrySelfImport',
@@ -35,18 +34,9 @@ const crossEntryErr = (importPath: string) => ({
   data: { packageName: '@internal/self-import-pkg', importPath },
 });
 
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
-process.chdir(FIXTURE);
-
 const ruleTester = new RuleTester({
-  parser: require.resolve('@typescript-eslint/parser'),
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  cwd: FIXTURE,
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {

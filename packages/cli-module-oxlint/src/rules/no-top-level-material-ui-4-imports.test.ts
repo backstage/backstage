@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 
 const RULE = 'no-top-level-material-ui-4-imports';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(
-  require('../../config/rules/no-top-level-material-ui-4-imports'),
-);
+const rule = require('../../config/rules/no-top-level-material-ui-4-imports');
 
 const ruleTester = new RuleTester({
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {

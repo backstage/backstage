@@ -14,34 +14,22 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 import path from 'node:path';
 
 const RULE = 'no-ui-css-imports-in-non-frontend';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(
-  require('../../config/rules/no-ui-css-imports-in-non-frontend'),
-);
+const rule = require('../../config/rules/no-ui-css-imports-in-non-frontend');
 
 const ERR = (role: string) => ({
   message: `CSS imports from @backstage/ui are only allowed in packages with backstage.role set to "frontend". Current role: "${role}"`,
 });
 
-// cwd must be restored
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
-process.chdir(FIXTURE);
-
 const ruleTester = new RuleTester({
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  cwd: FIXTURE,
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {

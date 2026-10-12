@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { resolveOxlintBin, resolveOxlintConfig } from '../../lib/oxlint';
 
@@ -27,26 +29,56 @@ describe('package lint command', () => {
   });
 
   describe('resolveOxlintConfig', () => {
-    it('resolves the root config when starting from the repo root', () => {
-      const configPath = resolveOxlintConfig();
-      expect(configPath).toBeDefined();
-      expect(configPath).toMatch(/oxlint\.config\.mts$/);
+    it('resolves the nearest config and falls back to a parent config', () => {
+      const rootDir = mkdtempSync(join(tmpdir(), 'oxlint-config-hierarchy-'));
+      const packageDir = join(rootDir, 'packages', 'example');
+      const sourceDir = join(packageDir, 'src');
+      const rootConfig = join(rootDir, '.oxlintrc.js');
+      const packageConfig = join(packageDir, '.oxlintrc.js');
+      try {
+        mkdirSync(sourceDir, { recursive: true });
+        writeFileSync(rootConfig, 'module.exports = {};');
+        expect(resolveOxlintConfig(rootDir)).toBe(rootConfig);
+        expect(resolveOxlintConfig(packageDir)).toBe(rootConfig);
+
+        writeFileSync(packageConfig, 'module.exports = {};');
+        expect(resolveOxlintConfig(packageDir)).toBe(packageConfig);
+        expect(resolveOxlintConfig(sourceDir)).toBe(packageConfig);
+
+        rmSync(packageConfig);
+        expect(resolveOxlintConfig(sourceDir)).toBe(rootConfig);
+      } finally {
+        rmSync(rootDir, { recursive: true, force: true });
+      }
     });
 
-    it('finds a per-package config before the root config', () => {
-      const cliDir = join(process.cwd(), 'packages', 'cli');
-      const configPath = resolveOxlintConfig(cliDir);
-      expect(configPath).toBeDefined();
-      expect(configPath).toMatch(/packages[\\/]cli[\\/]oxlint\.config\.mts$/);
+    it.each([
+      '.oxlintrc.js',
+      '.oxlintrc.json',
+      '.oxlintrc.jsonc',
+      'oxlint.config.ts',
+      'oxlint.config.mts',
+    ])('discovers %s for an explicit --config path', name => {
+      const tempDir = mkdtempSync(join(tmpdir(), 'oxlint-config-discovery-'));
+      try {
+        writeFileSync(join(tempDir, name), '{}');
+        expect(resolveOxlintConfig(tempDir)).toBe(join(tempDir, name));
+      } finally {
+        rmSync(tempDir, { recursive: true, force: true });
+      }
     });
 
-    it('walks up to the root config when no local config exists', () => {
-      const appDir = join(process.cwd(), 'packages', 'app');
-      const configPath = resolveOxlintConfig(appDir);
-      expect(configPath).toBeDefined();
-      // Should find the root config, not a per-package one
-      expect(configPath).not.toContain('packages');
-      expect(configPath).toMatch(/oxlint\.config\.mts$/);
+    it('rejects ambiguous configs in one directory', () => {
+      const tempDir = mkdtempSync(join(tmpdir(), 'oxlint-config-ambiguous-'));
+      try {
+        writeFileSync(join(tempDir, '.oxlintrc.js'), 'module.exports = {};');
+        writeFileSync(join(tempDir, 'oxlint.config.mts'), 'export default {};');
+        expect(() => resolveOxlintConfig(tempDir)).toThrow(
+          /Multiple Oxlint config files found.*\.oxlintrc\.js.*oxlint\.config\.mts/,
+        );
+      } finally {
+        rmSync(tempDir, { recursive: true, force: true });
+      }
     });
   });
 });

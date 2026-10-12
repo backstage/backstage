@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 import path from 'node:path';
 
 const RULE = 'no-mixed-plugin-imports';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
+const FIXTURE_GLOB = FIXTURE.split(path.sep).join('/');
+const INCLUDE_FIXTURE_SRC = `${FIXTURE_GLOB}/**/src/**`;
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(require('../../config/rules/no-mixed-plugin-imports'));
+const rule = require('../../config/rules/no-mixed-plugin-imports');
 
 const ERR = (
   sourcePackage: string,
@@ -33,18 +34,9 @@ const ERR = (
   message: `${sourcePackage} (${sourceRole}) uses forbidden import from ${targetPackage} (${targetRole}).`,
 });
 
-// cwd must be restored
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
-process.chdir(FIXTURE);
-
 const ruleTester = new RuleTester({
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  cwd: FIXTURE,
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {
@@ -79,13 +71,13 @@ ruleTester.run(RULE, rule, {
     {
       code: `import '@internal/foo'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
-      options: [{ includedFiles: ['**/nonexistent/**'] }],
+      options: [{ includedFiles: [`${FIXTURE_GLOB}/**/nonexistent/**`] }],
     },
     // File matching excludedFiles pattern — skipped
     {
       code: `import '@internal/foo'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
-      options: [{ excludedFiles: ['**/src/**'] }],
+      options: [{ excludedFiles: [INCLUDE_FIXTURE_SRC] }],
     },
     // Source package has no role (no-role-pkg) — no violation
     {
@@ -103,6 +95,7 @@ ruleTester.run(RULE, rule, {
     {
       code: `import '@internal/foo'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
+      options: [{ includedFiles: [INCLUDE_FIXTURE_SRC] }],
       errors: [
         ERR(
           '@internal/bar',
@@ -116,6 +109,7 @@ ruleTester.run(RULE, rule, {
     {
       code: `import '@internal/backend-plugin-pkg'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
+      options: [{ includedFiles: [INCLUDE_FIXTURE_SRC] }],
       errors: [
         ERR(
           '@internal/bar',
@@ -129,6 +123,7 @@ ruleTester.run(RULE, rule, {
     {
       code: `import '@internal/foo'`,
       filename: path.join(FIXTURE, 'packages/self-import-pkg/src/index.ts'),
+      options: [{ includedFiles: [INCLUDE_FIXTURE_SRC] }],
       errors: [
         ERR(
           '@internal/self-import-pkg',
@@ -142,6 +137,7 @@ ruleTester.run(RULE, rule, {
     {
       code: `import '@internal/self-import-pkg'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
+      options: [{ includedFiles: [INCLUDE_FIXTURE_SRC] }],
       errors: [
         ERR(
           '@internal/bar',

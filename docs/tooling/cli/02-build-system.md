@@ -177,53 +177,102 @@ The configuration factory also provides utilities for extending the configuratio
 | `restrictedSrcSyntax`      | Additional patterns to add to `no-restricted-syntax` in src files  |
 | `restrictedTestSyntax`     | Additional patterns to add to `no-restricted-syntax` in test files |
 
-### oxlint (experimental)
+### Oxlint (experimental)
 
-The `@backstage/cli-module-oxlint` package provides an alternative lint engine
-powered by [oxlint](https://oxc.rs/docs/guide/usage/linter.html), a Rust-based
-linter that is significantly faster than ESLint. It includes all Backstage-specific
-lint rules ported as oxlint JS plugins.
+The `@backstage/cli-module-oxlint` package adds Oxlint commands to the Backstage
+CLI. Oxlint is a Rust-based linter. The module uses Oxlint 1.85.0 and
+`oxlint-tsgolint` 7.0.2002, with `cleye` 2.7.0 and `fast-xml-parser` 5.11.1.
+It requires Node.js 22.12 or later in the supported Node 22 or 24 release lines.
 
-#### Switching to oxlint
+By default, `backstage-cli package lint` and `backstage-cli repo lint` use
+ESLint. Adding `@backstage/cli-module-oxlint` to the project root opts its CLI
+lint commands into Oxlint. This does not migrate ESLint configuration or source
+suppressions. Keep `.eslintrc.js` files and `.eslintignore` while migrating; run
+Oxlint against selected packages before changing the project's default lint
+workflow.
 
-To switch from ESLint to oxlint, install the package alongside your existing
-CLI setup:
+#### Configure Oxlint
 
-```sh
-yarn add --dev @backstage/cli-module-oxlint oxlint
+Add a CommonJS `.oxlintrc.js` file beside each package's `package.json`:
+
+```javascript title=".oxlintrc.js"
+module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
+  __dirname,
+  { ignorePatterns: ['templates/**'], rules: { 'no-console': 'off' } },
+);
 ```
 
-The oxlint module registers the same `package lint` and `repo lint` commands as
-the ESLint module. When both are installed, the oxlint module takes priority and
-overrides the ESLint-based commands.
+The default factory reads `backstage.role` from the package manifest and
+returns native Oxlint configuration. It exports the same callable as
+`createPackageConfig`, plus named `createConfig` and `createConfigForRole`
+methods. Use `createConfig` for a workspace root without a package role and
+`createConfigForRole` when the role is supplied directly. Place each config in
+the directory passed to the factory so Oxlint resolves its role and file scopes
+from the intended package.
 
-Next, create an `oxlint.config.mts` file at the root of your project:
+The default `backstage` preset enables a selected set of native correctness and
+Backstage rules, with frontend, backend, TypeScript, and test rules scoped to
+matching files. Pass native Oxlint options such as `plugins`, `rules`,
+`overrides`, `ignorePatterns`, `categories`, and `options` to customize the
+config. Unknown preset names are rejected, and `preset` is not passed to
+Oxlint. This factory is not an ESLint configuration translator and does not
+load arbitrary `.eslintrc` files. Keep repository-specific rules and
+exceptions in repository configuration.
 
-```ts title="oxlint.config.mts"
-import { defineBackstageConfig } from '@backstage/cli-module-oxlint/defineBackstageConfig';
+Use the `agentic` preset to make enabled rules and file-scoped overrides errors,
+enable type-aware linting and type checking, and report unused disable
+directives as errors:
 
-export default await defineBackstageConfig({
-  ignorePatterns: ['**/dist/**', '**/node_modules/**'],
-});
+```javascript
+module.exports = require('@backstage/cli-module-oxlint/config/oxlint-factory')(
+  __dirname,
+  { preset: 'agentic' },
+);
 ```
 
-The `backstage-cli package lint` and `backstage-cli repo lint` commands will now
-use oxlint. Both commands accept `--fix` for auto-fixing violations. The
-`repo lint` command also accepts `--since <ref>` to limit linting to packages
-changed since a given git ref.
+The agentic suppression audit runs at the Backstage CLI boundary over files
+Oxlint selected, after `--fix`. It cannot be disabled by source comments.
+Blanket or self-suppressions and missing or placeholder explanations fail;
+rule-specific suppressions need a useful explanation. Update suppression
+comments to use configured Oxlint rule IDs, not diagnostic codes: `eqeqeq`
+works, while `eslint(eqeqeq)` cannot be used in a directive. Legacy ESLint IDs
+have no alias bridge. The audit requires the Backstage CLI and does not run for
+raw Oxlint config invocations.
 
-#### Configuration
+#### Fixes and reports
 
-The `defineBackstageConfig` factory scans the monorepo package graph, classifies
-each package by its `backstage.role` into web or node groups, and returns a
-complete oxlint configuration object. The following options are available:
+Dependency diagnostics retain manual Yarn guidance, but autofixes that generate
+dependency directives for ordinary imports are disabled. Other safe fixes,
+including unrelated import additions, remain enabled. Existing explicit
+dependency directives still support their package-manager commands without
+`--fix`. Oxlint applies fixes in one pass; overlapping or
+sequential fixes may need another pass. Always run plain lint after `--fix`,
+since a fix pass can exit successfully while exposing new violations. The CLI
+does not loop automatically.
 
-| Option           | Description                                                                                                                               |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `jsPlugins`      | Additional JS plugin file paths to load. The bundled Backstage plugin is included automatically; use this for custom third-party plugins. |
-| `ignorePatterns` | Glob patterns to exclude from linting, such as build output or generated files.                                                           |
-| `overrides`      | File-scoped rule overrides. Each entry has a `files` array and a `rules` map.                                                             |
-| `rules`          | Rules applied to all files. Merges on top of the 7 built-in Backstage rules.                                                              |
+Both lint commands accept `--fix`, `--format`, `--output-file`, and
+`--max-warnings`; `repo lint` also accepts `--since <ref>` and accepts
+`--success-cache` and `--success-cache-dir` for script compatibility. These
+cache flags are no-ops because Oxlint checks every selected package. Supported formats
+are `default`, `checkstyle`, `github`, `gitlab`, `json`, `junit`, `sarif`,
+`stylish`, and `unix`. JSON, SARIF, and GitLab Code Quality reports merge across
+config groups. Grouped Checkstyle and JUnit reports are rejected before linting
+when multiple config groups are selected. The CLI runs all groups, writes the
+complete report, then exits nonzero if any lint or audit error occurred.
+
+### Staged linting in the Backstage repository
+
+The repository's pre-commit hook groups staged source files by workspace
+package and runs that package's `lint` script with `--fix` and the selected
+filenames. A package's lint script must accept those arguments. Engine
+selection comes from the script and CLI module configuration, not a separate
+package-to-engine list in lint-staged.
+
+Changing a package's lint script also changes its staged-file linting. Only
+the selected files are passed to the linter; other package files are not
+autofixed. Files outside workspace packages, and packages without a lint
+script, use the default `backstage-cli package lint` command. Prettier runs
+after lint fixes, and lint-staged handles partial staging and restaging.
 
 ## Type Checking
 

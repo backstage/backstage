@@ -18,9 +18,9 @@
 
 const visitImports = require('../lib/visitImports');
 const getPackages = require('../lib/getPackages');
-const { resolveCwd, resolveFilePath } = require('../lib/resolveContext');
+const { isForbiddenUiCssImport } = require('../lib/importPolicies');
 
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
     type: 'problem',
@@ -39,41 +39,23 @@ module.exports = {
 
     return {
       before() {
-        const packages = getPackages(resolveCwd(context));
-        currentPackage = packages?.byPath(resolveFilePath(context));
+        const packages = getPackages(context.cwd);
+        currentPackage = packages?.byPath(context.physicalFilename);
         if (!currentPackage) {
           return false;
         }
       },
       ...visitImports(context, (node, imp) => {
         if (!currentPackage) return;
-        const isBuiImport =
-          (imp.type === 'external' || imp.type === 'internal') &&
-          imp.packageName === '@backstage/ui';
-        if (!isBuiImport) {
-          return;
-        }
-
-        const isCssImport = imp.path?.endsWith('.css');
-        if (!isCssImport) {
-          return;
-        }
-
         const backstageRole = currentPackage.packageJson.backstage?.role;
-        if (!backstageRole) {
-          // Allow if no role is defined
+        if (!isForbiddenUiCssImport(imp, backstageRole)) {
           return;
         }
-
-        if (backstageRole !== 'frontend') {
-          context.report({
-            node: node,
-            messageId: 'noCssImport',
-            data: {
-              role: backstageRole,
-            },
-          });
-        }
+        context.report({
+          node,
+          messageId: 'noCssImport',
+          data: { role: backstageRole },
+        });
       }),
     };
   },

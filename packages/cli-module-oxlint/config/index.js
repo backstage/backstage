@@ -23,6 +23,8 @@ const noTopLevelMaterialUi4Imports = require('./rules/no-top-level-material-ui-4
 const noUiCssImportsInNonFrontend = require('./rules/no-ui-css-imports-in-non-frontend');
 const noSelfPackageImports = require('./rules/no-self-package-imports');
 const noUndeclaredImports = require('./rules/no-undeclared-imports');
+const noDeprecatedBuiTokens = require('./rules/no-deprecated-bui-tokens');
+const noUnexplainedSuppressions = require('./rules/no-unexplained-suppressions');
 const notice = require('./rules/notice');
 const {
   noBareLowerCase,
@@ -37,7 +39,7 @@ const {
  *
  * Exports the `backstage` namespace with Backstage-specific lint rules.
  *
- * @type {{ meta: { name: string }, rules: Record<string, import('eslint').Rule.RuleModule> }}
+ * @type {{ meta: { name: string }, rules: Record<string, Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]> }}
  */
 module.exports = {
   meta: { name: 'backstage' },
@@ -49,6 +51,8 @@ module.exports = {
     'no-top-level-material-ui-4-imports': noTopLevelMaterialUi4Imports,
     'no-ui-css-imports-in-non-frontend': noUiCssImportsInNonFrontend,
     'no-undeclared-imports': noUndeclaredImports,
+    'no-deprecated-bui-tokens': noDeprecatedBuiTokens,
+    'no-unexplained-suppressions': noUnexplainedSuppressions,
     notice: notice,
     'no-bare-to-lower-case': noBareLowerCase,
     'no-bare-to-upper-case': noBareUpperCase,

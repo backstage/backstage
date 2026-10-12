@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { spawnSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
 import { cli } from 'cleye';
 import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { resolveOxlintBin, resolveOxlintConfig } from '../../lib/oxlint';
+import { executeOxlint } from '../../lib/executeOxlint';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
@@ -48,7 +46,7 @@ export default async ({ args, info }: CliCommandContext) => {
         maxWarnings: {
           type: Number,
           description:
-            'Specify a warning threshold, which can be used to force exit with an error status if there are too many warning-level rule violations',
+            'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
         },
       },
     },
@@ -56,39 +54,17 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  const oxlintArgs: string[] = [];
-
-  const configPath = resolveOxlintConfig(targetPaths.dir);
-  if (configPath) {
-    oxlintArgs.push('-c', configPath);
-  }
-
-  oxlintArgs.push('--type-aware', '--type-check');
-
-  if (fix) {
-    oxlintArgs.push('--fix');
-  }
-
-  if (format && format !== 'default') {
-    oxlintArgs.push('--format', format);
-  }
-
-  if (maxWarnings !== undefined) {
-    oxlintArgs.push('--max-warnings', String(maxWarnings));
-  }
-
-  oxlintArgs.push(...(directories.length ? directories : ['.']));
-
-  const result = spawnSync(resolveOxlintBin(), oxlintArgs, {
+  await executeOxlint({
+    targets: [
+      {
+        configDir: targetPaths.dir,
+        directories: directories.length ? directories : ['.'],
+      },
+    ],
     cwd: targetPaths.dir,
-    stdio: outputFile ? ['inherit', 'pipe', 'inherit'] : 'inherit',
+    fix,
+    format,
+    outputFile,
+    maxWarnings,
   });
-
-  if (outputFile && result.stdout) {
-    writeFileSync(outputFile, result.stdout);
-  }
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
-  }
 };

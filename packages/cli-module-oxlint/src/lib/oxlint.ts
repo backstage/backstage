@@ -18,7 +18,13 @@ import { resolve, dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { targetPaths } from '@backstage/cli-common';
 
-const CONFIG_NAMES = ['oxlint.config.mts', 'oxlint.config.ts'];
+const CONFIG_NAMES = [
+  '.oxlintrc.js',
+  '.oxlintrc.json',
+  '.oxlintrc.jsonc',
+  'oxlint.config.ts',
+  'oxlint.config.mts',
+];
 
 export function resolveOxlintBin(): string {
   // require.resolve('oxlint') gives us .../dist/index.js, so we go up
@@ -37,8 +43,8 @@ export function resolveOxlintBin(): string {
 }
 
 /**
- * Walks up from `startDir` looking for an oxlint config file
- * (`oxlint.config.mts` or `oxlint.config.ts`). Stops at the repo root.
+ * Walks up from `startDir` looking for a native Oxlint config file. Stops at
+ * the repo root and rejects ambiguous configs in the same directory.
  *
  * @param startDir - Directory to start searching from
  * @returns The absolute path to the nearest config file, or undefined
@@ -50,11 +56,14 @@ export function resolveOxlintConfig(
   let dir = resolve(startDir);
 
   while (true) {
-    for (const name of CONFIG_NAMES) {
-      const configPath = join(dir, name);
-      if (existsSync(configPath)) {
-        return configPath;
-      }
+    const matches = CONFIG_NAMES.filter(name => existsSync(join(dir, name)));
+    if (matches.length > 1) {
+      throw new Error(
+        `Multiple Oxlint config files found in ${dir}: ${matches.join(', ')}`,
+      );
+    }
+    if (matches.length === 1) {
+      return join(dir, matches[0]);
     }
 
     // Stop at the repo root

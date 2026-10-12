@@ -18,49 +18,14 @@
 
 const visitImports = require('../lib/visitImports');
 const getPackages = require('../lib/getPackages');
-const { resolveCwd, resolveFilePath } = require('../lib/resolveContext');
-const minimatch = require('minimatch');
+const {
+  isForbiddenMixedPluginImport,
+  matchesFilePattern,
+} = require('../lib/importPolicies');
 
 /** @typedef {import('../lib/getPackages.js').ExtendedPackage} ExtendedPackage */
 
-/**
- * @param {string} pattern
- * @param {string} filePath
- * @returns {boolean}
- */
-const matchesPattern = (pattern, filePath) => {
-  // Normalize Windows backslashes for minimatch compatibility
-  const normalized = filePath.split('\\').join('/');
-  return new minimatch.Minimatch(pattern, { dot: true }).match(normalized);
-};
-
-const roleRules = [
-  {
-    sourceRole: ['frontend-plugin', 'web-library'],
-    targetRole: [
-      'backend-plugin',
-      'node-library',
-      'backend-plugin-module',
-      'frontend-plugin',
-    ],
-  },
-  {
-    sourceRole: ['backend-plugin', 'node-library', 'backend-plugin-module'],
-    targetRole: ['frontend-plugin', 'web-library', 'backend-plugin'],
-  },
-  {
-    sourceRole: ['common-library'],
-    targetRole: [
-      'frontend-plugin',
-      'web-library',
-      'backend-plugin',
-      'node-library',
-      'backend-plugin-module',
-    ],
-  },
-];
-
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
     type: 'problem',
@@ -97,28 +62,34 @@ module.exports = {
     ],
   },
   createOnce(context) {
-    const options = context.options?.[0] || {};
     /** @type {string[]} */
-    const ignoreTargetPackages = options.excludedTargetPackages || [];
+    let ignoreTargetPackages = [];
     /** @type {string[]} */
-    const excludePatterns = options.excludedFiles || [];
+    let excludePatterns = [];
     /** @type {string[]} */
-    const includePatterns = options.includedFiles || ['**/src/**'];
+    let includePatterns = [];
 
     /** @type {ExtendedPackage | undefined} */
     let pkg;
 
     return {
       before() {
-        const packages = getPackages(resolveCwd(context));
-        const filePath = resolveFilePath(context);
+        const options = context.options?.[0] || {};
+        ignoreTargetPackages = options.excludedTargetPackages || [];
+        excludePatterns = options.excludedFiles || [];
+        includePatterns = options.includedFiles || ['**/src/**'];
+
+        const packages = getPackages(context.cwd);
+        const filePath = context.physicalFilename;
         pkg = packages?.byPath(filePath);
         if (!pkg) {
           return false;
         }
         if (
-          !includePatterns.some(pattern => matchesPattern(pattern, filePath)) ||
-          excludePatterns.some(pattern => matchesPattern(pattern, filePath))
+          !includePatterns.some(pattern =>
+            matchesFilePattern(pattern, filePath),
+          ) ||
+          excludePatterns.some(pattern => matchesFilePattern(pattern, filePath))
         ) {
           return false;
         }
@@ -131,50 +102,28 @@ module.exports = {
 
         /** @type {ExtendedPackage | undefined} */
         const targetPackage = imp.package;
-        const targetName = targetPackage?.packageJson.name;
-        const sourceName = pkg.packageJson.name;
-        if (sourceName === targetName) {
-          return;
-        }
-
-        const sourceRole = pkg.packageJson.backstage?.role;
-        const sourcePluginId = pkg.packageJson.backstage?.pluginId;
-        const targetRole = targetPackage.packageJson.backstage?.role;
-        const targetPluginId = targetPackage.packageJson.backstage?.pluginId;
-        if (!sourceRole || !targetRole) {
-          return;
-        }
-
-        // Allow frontend plugins to import from other frontend plugins with the same pluginId for NFS
         if (
-          sourceRole === 'frontend-plugin' &&
-          targetRole === 'frontend-plugin' &&
-          sourcePluginId &&
-          targetPluginId &&
-          sourcePluginId === targetPluginId
-        ) {
-          return;
-        }
-
-        if (
-          roleRules.some(
-            rule =>
-              rule.sourceRole.includes(sourceRole) &&
-              rule.targetRole.includes(targetRole) &&
-              !ignoreTargetPackages.includes(targetName),
+          !isForbiddenMixedPluginImport(
+            pkg,
+            targetPackage,
+            ignoreTargetPackages,
           )
         ) {
-          context.report({
-            node: node,
-            messageId: 'forbidden',
-            data: {
-              sourcePackage: pkg.packageJson.name || imp.package.dir,
-              sourceRole,
-              targetPackage: targetPackage.packageJson.name || imp.package.dir,
-              targetRole,
-            },
-          });
+          return;
         }
+        const sourceRole = pkg.packageJson.backstage?.role;
+        const targetRole = targetPackage.packageJson.backstage?.role;
+
+        context.report({
+          node,
+          messageId: 'forbidden',
+          data: {
+            sourcePackage: pkg.packageJson.name || imp.package.dir,
+            sourceRole,
+            targetPackage: targetPackage.packageJson.name || imp.package.dir,
+            targetRole,
+          },
+        });
       }),
     };
   },

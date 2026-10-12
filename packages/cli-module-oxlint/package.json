@@ -12,7 +12,7 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs.js"
       },
-      "./defineBackstageConfig": "./config/defineBackstageConfig.ts",
+      "./config/oxlint-factory": "./config/oxlint-factory.js",
       "./package.json": "./package.json"
     }
   },
@@ -23,24 +23,24 @@
     "directory": "packages/cli-module-oxlint"
   },
   "license": "Apache-2.0",
-  "bin": "bin/backstage-cli-module-oxlint",
   "exports": {
     ".": "./src/index.ts",
-    "./defineBackstageConfig": "./config/defineBackstageConfig.ts",
+    "./config/oxlint-factory": "./config/oxlint-factory.js",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "defineBackstageConfig": [
-        "config/defineBackstageConfig.ts"
+      "config/oxlint-factory": [
+        "config/oxlint-factory.js"
       ],
       "package.json": [
         "package.json"
       ]
     }
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-oxlint",
   "files": [
     "bin",
     "dist",
@@ -49,7 +49,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "lint": "backstage-cli package lint",
+    "lint": "node bin/backstage-cli-module-oxlint package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
@@ -58,12 +58,16 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "cleye": "^2.3.0",
-    "minimatch": "^10.0.0",
-    "oxlint": "^1.56.0",
-    "oxlint-tsgolint": "^0.22.1"
+    "cleye": "^2.7.0",
+    "fast-xml-parser": "^5.11.1",
+    "minimatch": "^10.2.1",
+    "oxlint": "^1.85.0",
+    "oxlint-tsgolint": "^7.0.2002"
   },
   "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  },
+  "peerDependencies": {
     "@backstage/cli": "workspace:^"
   }
 }

@@ -19,143 +19,26 @@
 const path = require('node:path');
 const getPackages = require('../lib/getPackages');
 const visitImports = require('../lib/visitImports');
-const { resolveCwd, resolveFilePath } = require('../lib/resolveContext');
+const {
+  depFields,
+  getExpectedDepType,
+  findDependencyConflict: findConflict,
+  getAddFlagForDepsField,
+} = require('../lib/importPolicies');
+const {
+  addMissingImports,
+  removeInlineImports,
+  addForwardedInlineImports,
+} = require('../lib/importActions');
 
-const depFields = /** @type {const} */ ({
-  dep: 'dependencies',
-  dev: 'devDependencies',
-  peer: 'peerDependencies',
-});
-
-/**
- * Checks whether a module path corresponds to a dev-only file (test, story,
- * mock, or anything outside `src/`). Replaces the original minimatch-based
- * `devModulePatterns` with simple string checks for clarity and performance.
- *
- * @param {string} modulePath - File path relative to the package root.
- * @returns {boolean}
- */
-function isDevModulePath(modulePath) {
-  const normalized = modulePath.replace(/\\/g, '/');
-
-  // Anything outside src/ is considered dev
-  if (!normalized.startsWith('src/')) {
-    return true;
-  }
-
-  const parts = normalized.split('/');
-  const filename = parts[parts.length - 1];
-
-  if (filename.includes('.test.') || filename.includes('.stories.')) {
-    return true;
-  }
-  if (parts.includes('__testUtils__') || parts.includes('__mocks__')) {
-    return true;
-  }
-  if (filename.startsWith('setupTests.')) {
-    return true;
-  }
-
-  return false;
-}
-
-/**
- * Determines the expected dependency type for an import based on the
- * package's `backstage.role` and the file location.
- *
- * @param {any} localPkg - The package.json contents of the importing package.
- * @param {string} impPath - The imported package name.
- * @param {string} modulePath - File path relative to the package root.
- * @returns {'dep' | 'dev' | 'peer'}
- */
-function getExpectedDepType(localPkg, impPath, modulePath) {
-  const role = localPkg?.backstage?.role;
-
-  // Some package roles have known dependency types
-  switch (role) {
-    case 'common-library':
-    case 'web-library':
-    case 'frontend-plugin':
-    case 'frontend-plugin-module':
-    case 'node-library':
-    case 'backend-plugin':
-    case 'backend-plugin-module':
-      switch (impPath) {
-        case 'react':
-        case 'react-dom':
-        case 'react-router':
-        case 'react-router-dom':
-          return 'peer';
-      }
-      break;
-    case 'cli':
-    case 'frontend':
-    case 'backend':
-    default:
-      break;
-  }
-
-  if (isDevModulePath(modulePath)) {
-    return 'dev';
-  }
-  return 'dep';
-}
-
-/**
- * Checks whether a dependency is declared in the expected dependency field.
- *
- * @param {import('@manypkg/get-packages').Package['packageJson']} pkg
- * @param {string} name
- * @param {ReturnType<typeof getExpectedDepType>} expectedType
- * @returns {{oldDepsField?: string, depsField: string} | undefined}
- */
-function findConflict(pkg, name, expectedType) {
-  const isDep = pkg.dependencies?.[name];
-  const isDevDep = pkg.devDependencies?.[name];
-  const isPeerDep = pkg.peerDependencies?.[name];
-  const depsField = depFields[expectedType];
-
-  if (expectedType === 'dep' && !isDep && !isPeerDep) {
-    const oldDepsField = isDevDep ? depFields.dev : undefined;
-    return { oldDepsField, depsField };
-  } else if (expectedType === 'dev' && !isDevDep && !isDep && !isPeerDep) {
-    return { oldDepsField: undefined, depsField };
-  } else if (expectedType === 'peer' && !isPeerDep) {
-    const oldDepsField = isDep
-      ? depFields.dep
-      : isDevDep
-      ? depFields.dev
-      : undefined;
-
-    return { oldDepsField, depsField };
-  }
-  return undefined;
-}
-
-/**
- * Returns the `yarn add` flag for a dependency field.
- *
- * @param {string} depsField
- * @returns {string}
- */
-function getAddFlagForDepsField(depsField) {
-  switch (depsField) {
-    case depFields.dep:
-      return '';
-    case depFields.dev:
-      return ' --dev';
-    case depFields.peer:
-      return ' --peer';
-    default:
-      return '';
-  }
-}
-
-/** @type {import('eslint').Rule.RuleModule} */
+/** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
     type: 'problem',
+    // Existing directives are restorable; ordinary dependency findings aren't fixable.
+    fixable: 'code',
     messages: {
+      switchBack: 'Switch back to import declaration',
       undeclared:
         "{{ packageName }} must be declared in {{ depsField }} of {{ packageJsonPath }}, run 'yarn --cwd {{ packagePath }} add{{ addFlag }} {{ packageName }}' from the project root.",
       switch:
@@ -172,28 +55,99 @@ module.exports = {
     },
   },
   createOnce(context) {
+    /** @type {ReturnType<typeof getPackages>} */
     let packages;
-    let filePath;
+    let filePath = '';
+    /** @type {import('../lib/getPackages.js').ExtendedPackage | undefined} */
     let localPkg;
+    /** @type {Array<{name: string, flag: string, node: import('estree').Node}>} */
+    let importsToAdd = [];
+    /** @type {Array<{pkg: import('../lib/getPackages.js').ExtendedPackage, node: import('estree').Node}>} */
+    let importsToInline = [];
 
     return {
       before() {
-        packages = getPackages(resolveCwd(context));
-        filePath = resolveFilePath(context);
+        packages = getPackages(context.cwd);
+        filePath = context.physicalFilename;
         localPkg = packages?.byPath(filePath);
+        importsToAdd = [];
+        importsToInline = [];
+      },
+      'Program:exit'() {
+        if (!packages || !localPkg) {
+          return;
+        }
+
+        if (importsToAdd.length > 0) {
+          addMissingImports(importsToAdd, packages, localPkg);
+          packages.clearCache();
+          for (const added of importsToAdd) {
+            context.report({
+              node: added.node,
+              messageId: 'switchBack',
+              fix(fixer) {
+                return fixer.replaceText(added.node, `'${added.name}'`);
+              },
+            });
+          }
+          importsToAdd.length = 0;
+        }
+
+        if (importsToInline.length > 0) {
+          removeInlineImports(importsToInline, localPkg);
+          addForwardedInlineImports(importsToInline, localPkg);
+          packages.clearCache();
+          for (const inlined of importsToInline) {
+            context.report({
+              node: inlined.node,
+              messageId: 'switchBack',
+              fix(fixer) {
+                return fixer.replaceText(
+                  inlined.node,
+                  `'${inlined.pkg.packageJson.name}'`,
+                );
+              },
+            });
+          }
+          importsToInline.length = 0;
+        }
       },
       ...visitImports(context, (node, imp) => {
         if (!packages || !localPkg) {
           return;
         }
 
-        // Skip type imports, builtins, local imports, and directives
         if (
           imp.kind === 'type' ||
           imp.type === 'builtin' ||
-          imp.type === 'local' ||
-          imp.type === 'directive'
+          imp.type === 'local'
         ) {
+          return;
+        }
+
+        if (imp.type === 'directive') {
+          const [, directive, ...args] = imp.path.split(':');
+          if (directive === 'add-import') {
+            const [type, name] = args;
+            if (!name.match(/^(@[-\w.~]+\/)?[-\w.~]*$/i)) {
+              throw new Error(
+                `Invalid package name to add as dependency: '${name}'`,
+              );
+            }
+            importsToAdd.push({
+              flag: getAddFlagForDepsField(type).trim(),
+              name,
+              node: imp.node,
+            });
+          }
+          if (directive === 'inline-imports') {
+            const [name] = args;
+            const pkg = packages.map.get(name);
+            if (!pkg) {
+              throw new Error(`Unexpectedly missing inline package: ${name}`);
+            }
+            importsToInline.push({ pkg, node: imp.node });
+          }
           return;
         }
 

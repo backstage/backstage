@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import { RuleTester } from 'eslint';
-import { adaptRule } from './testUtils';
+import { RuleTester } from './testUtils';
 import path from 'node:path';
 
 const RULE = 'no-relative-monorepo-imports';
 const FIXTURE = path.resolve(__dirname, '../__fixtures__/monorepo');
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-const rule = adaptRule(
-  require('../../config/rules/no-relative-monorepo-imports'),
-);
+const rule = require('../../config/rules/no-relative-monorepo-imports');
 
 const ERR_OUTSIDE = (filePath: string) => ({
   message: `Import of ${filePath} is outside of any known monorepo package`,
@@ -33,18 +30,9 @@ const ERR_FORBIDDEN = (newImp: string) => ({
   message: `Relative imports of monorepo packages are forbidden, use '${newImp}' instead`,
 });
 
-// cwd must be restored
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
-process.chdir(FIXTURE);
-
 const ruleTester = new RuleTester({
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+  cwd: FIXTURE,
+  languageOptions: { sourceType: 'module' },
 });
 
 ruleTester.run(RULE, rule, {
@@ -76,14 +64,12 @@ ruleTester.run(RULE, rule, {
       code: `import { version } from '../../foo'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
       errors: [ERR_FORBIDDEN('@internal/foo')],
-      output: `import { version } from '@internal/foo'`,
     },
     {
       // Relative import crossing into another package with subpath
       code: `import { version } from '../../foo/src'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
       errors: [ERR_FORBIDDEN('@internal/foo/src')],
-      output: `import { version } from '@internal/foo/src'`,
     },
     {
       // Relative import going above all packages — outside

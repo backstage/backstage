@@ -14,47 +14,12 @@
  * limitations under the License.
  */
 
-import type { Rule } from 'eslint';
+import { createRequire } from 'node:module';
 
-/**
- * Wraps an oxlint rule that uses `createOnce` so it can be tested with
- * ESLint's `RuleTester`, which only understands `create`.
- *
- * Also handles the oxlint `before()` visitor hook by running it at the
- * start of each `Program` visit, which approximates oxlint's per-file
- * lifecycle in ESLint's single-file test runner.
- */
-export function adaptRule(rule: any): Rule.RuleModule {
-  if (rule.createOnce && !rule.create) {
-    return {
-      ...rule,
-      create(context: Rule.RuleContext) {
-        const visitors = rule.createOnce(context);
-        if (visitors && typeof visitors.before === 'function') {
-          const { before, ...rest } = visitors;
-          let skipped = false;
-          // Wrap every visitor to skip if before() returned false
-          const wrapped: Record<string, Function> = {};
-          wrapped.Program = (node: any) => {
-            skipped = before() === false;
-            if (!skipped && rest.Program) {
-              rest.Program(node);
-            }
-          };
-          for (const [key, fn] of Object.entries(rest)) {
-            if (key !== 'Program' && typeof fn === 'function') {
-              wrapped[key] = (...args: any[]) => {
-                if (!skipped) {
-                  (fn as Function)(...args);
-                }
-              };
-            }
-          }
-          return wrapped;
-        }
-        return visitors;
-      },
-    };
-  }
-  return rule;
-}
+// Load the native ESM tester outside Jest's CommonJS module loader.
+export const RuleTester = createRequire(__filename)('oxlint/plugins-dev')
+  .RuleTester as typeof import('oxlint/plugins-dev').RuleTester;
+
+RuleTester.describe = describe;
+RuleTester.it = it;
+RuleTester.itOnly = it.only;

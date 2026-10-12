@@ -5,28 +5,29 @@
 ### `backstage-cli-module-oxlint`
 
 ```
-Usage: @backstage/cli-module-oxlint [options] [command]
+Usage: @backstage/cli-module-oxlint [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  package [command]
-  repo [command]
+  help
+  package
+  repo
 ```
 
 ### `backstage-cli-module-oxlint package`
 
 ```
-Usage: @backstage/cli-module-oxlint package [options] [command] [command]
+Usage: @backstage/cli-module-oxlint package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   lint
 ```
 
@@ -46,13 +47,14 @@ Options:
 ### `backstage-cli-module-oxlint repo`
 
 ```
-Usage: @backstage/cli-module-oxlint repo [options] [command] [command]
+Usage: @backstage/cli-module-oxlint repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   lint
 ```
 
@@ -67,5 +69,7 @@ Options:
   --max-warnings <number>
   --output-file <string>
   --since <string>
+  --success-cache
+  --success-cache-dir <string>
   -h, --help
 ```
