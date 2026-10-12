@@ -18,7 +18,6 @@ import { RuleTester } from './testUtils';
 
 const RULE = 'no-top-level-material-ui-4-imports';
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 const rule = require('../../config/rules/no-top-level-material-ui-4-imports');
 
 const ruleTester = new RuleTester({

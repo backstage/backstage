@@ -81,18 +81,6 @@ const KNOWN_STYLES = [
 ];
 
 /**
- * filter function to keep only ImportSpecifier nodes
- * @param {import('estree').ImportSpecifier | import('estree').ImportDefaultSpecifier | import('estree').ImportNamespaceSpecifier} specifier
- * @returns {specifier is import('estree').ImportSpecifier}
- */
-function importSpecifiersFilter(specifier) {
-  return (
-    specifier.type === 'ImportSpecifier' &&
-    specifier.imported.type !== 'Literal'
-  );
-}
-
-/**
  * Gets the value of the named import depending on if it has an alias or not
  * @param {FixerValues} values
  * @returns {string}
@@ -136,7 +124,10 @@ module.exports = {
           const replacements = [];
           const styles = [];
 
-          const specifiers = node.specifiers.filter(importSpecifiersFilter);
+          const specifiers = node.specifiers.filter(
+            /** @returns {s is Extract<typeof node.specifiers[number], {type: 'ImportSpecifier'}>} */
+            s => s.type === 'ImportSpecifier' && s.imported.type !== 'Literal',
+          );
 
           const specifiersMap = specifiers.flatMap(
             /**

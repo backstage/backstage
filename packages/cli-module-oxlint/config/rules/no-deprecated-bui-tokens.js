@@ -88,7 +88,7 @@ module.exports = {
 
   createOnce(context) {
     /**
-     * @param {import('estree').Node} node
+     * @param {NonNullable<Parameters<typeof context.report>[0]['node']>} node
      * @param {string} value
      */
     function checkValue(node, value) {

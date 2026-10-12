@@ -140,7 +140,7 @@ describe('Oxlint configuration factory', () => {
     const publicFactory =
       require('@backstage/cli-module-oxlint/oxlint-factory') as OxlintFactory;
     expect(publicFactory).toBe(factory);
-    expect(publicFactory).toBe(publicFactory.createPackageConfig);
+    expect(publicFactory === publicFactory.createPackageConfig).toBe(true);
     expect(typeof publicFactory.createConfig).toBe('function');
     expect(typeof publicFactory.createConfigForRole).toBe('function');
     expect(factory.createConfig(PACKAGE_DIR).plugins).toEqual(BASE_PLUGINS);

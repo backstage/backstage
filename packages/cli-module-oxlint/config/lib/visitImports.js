@@ -19,9 +19,10 @@
 const { builtinModules } = require('node:module');
 const getPackages = require('./getPackages');
 
-/**
- * @typedef {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression} ConsideredNode
- */
+/** @typedef {Extract<Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1], {createOnce: unknown}>} OxlintRule */
+/** @typedef {ReturnType<OxlintRule['createOnce']>} OxlintVisitor */
+/** @typedef {'ImportDeclaration' | 'ExportAllDeclaration' | 'ExportNamedDeclaration' | 'ImportExpression' | 'CallExpression'} ImportNodeType */
+/** @typedef {Parameters<NonNullable<OxlintVisitor[ImportNodeType]>>[0]} ConsideredNode */
 
 /**
  * @callback ImportVisitor
@@ -31,10 +32,9 @@ const getPackages = require('./getPackages');
 
 /**
  * @param {ConsideredNode} node
- * @returns {undefined | {path: string, node: import('estree').Literal, kind: 'type' | 'value'}}
+ * @returns {undefined | {path: string, node: {value: string, range: [number, number]}, kind: 'type' | 'value'}}
  */
 function getImportInfo(node) {
-  /** @type {import('estree').Expression | import('estree').SpreadElement | undefined | null} */
   let pathNode;
 
   if (node.type === 'CallExpression') {

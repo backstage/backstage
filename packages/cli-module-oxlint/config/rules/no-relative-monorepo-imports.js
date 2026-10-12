@@ -36,8 +36,11 @@ module.exports = {
     },
   },
   createOnce(context) {
+    /** @type {ReturnType<typeof getPackages>} */
     let packages;
+    /** @type {string} */
     let filePath;
+    /** @type {import('../lib/getPackages.js').ExtendedPackage | undefined} */
     let localPkg;
 
     return {

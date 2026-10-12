@@ -118,7 +118,3 @@ enabled. Existing explicit dependency directives can still run their suggested
 Yarn command without `--fix`. A fix pass can expose new violations
 while exiting successfully, so run plain lint after every `--fix`. The CLI does
 not repeat fixes automatically.
-
-## Development
-
-Dogfood the module with `yarn workspace @backstage/cli-module-oxlint lint`.

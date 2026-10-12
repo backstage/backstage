@@ -717,7 +717,11 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
       expect(result.stdout).not.toContain('valid.js');
       expect(result.stdout).toContain('stale.js');
       expect(result.stdout).toMatch(/unused.*directive/i);
-      expect(receipts.map(receipt => receipt.filePath).sort()).toEqual(
+      expect(
+        receipts
+          .map(receipt => receipt.filePath)
+          .sort((a, b) => a.localeCompare(b)),
+      ).toEqual(
         [blanketFile, missingExplanationFile, staleFile, validFile].sort(),
       );
     } finally {
@@ -823,7 +827,6 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
 });
 
 describe('getPackages', () => {
-  // eslint-disable-next-line @backstage/no-relative-monorepo-imports
   const getPackages = require('../../config/lib/getPackages');
 
   afterEach(() => {
@@ -873,9 +876,7 @@ describe('getPackages', () => {
 });
 
 describe('visitImports', () => {
-  // eslint-disable-next-line @backstage/no-relative-monorepo-imports
   const visitImports = require('../../config/lib/visitImports');
-  // eslint-disable-next-line @backstage/no-relative-monorepo-imports
   const getPackages = require('../../config/lib/getPackages');
 
   afterEach(() => {
@@ -935,10 +936,20 @@ describe('visitImports', () => {
 
   it('classifies local imports', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     // Simulate an ImportDeclaration with a local path
     const mockNode = {
@@ -954,10 +965,20 @@ describe('visitImports', () => {
 
   it('classifies internal imports for known packages', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     const mockNode = {
       type: 'ImportDeclaration',
@@ -973,10 +994,20 @@ describe('visitImports', () => {
 
   it('classifies internal imports with subpaths', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     const mockNode = {
       type: 'ImportDeclaration',
@@ -992,10 +1023,20 @@ describe('visitImports', () => {
 
   it('classifies external imports', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     const mockNode = {
       type: 'ImportDeclaration',
@@ -1010,10 +1051,20 @@ describe('visitImports', () => {
 
   it('classifies builtin imports', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     const mockNode = {
       type: 'ImportDeclaration',
@@ -1028,10 +1079,20 @@ describe('visitImports', () => {
 
   it('classifies directive imports', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     const mockNode = {
       type: 'ImportDeclaration',
@@ -1045,10 +1106,20 @@ describe('visitImports', () => {
 
   it('classifies require() calls', () => {
     const context = createMockContext(FIXTURE);
-    const results: any[] = [];
-    const handlers = createVisitors(context, (_node: any, imp: any) => {
-      results.push(imp);
-    });
+    const results: Array<{
+      type: string;
+      path?: string;
+      packageName?: string;
+    }> = [];
+    const handlers = createVisitors(
+      context,
+      (
+        _node: unknown,
+        imp: { type: string; path?: string; packageName?: string },
+      ) => {
+        results.push(imp);
+      },
+    );
 
     const mockNode = {
       type: 'CallExpression',

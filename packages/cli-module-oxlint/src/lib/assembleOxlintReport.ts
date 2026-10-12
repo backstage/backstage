@@ -76,7 +76,9 @@ function reportPath(filePath: string, cwd: string): string {
 
 function pathKey(filePath: string, cwd: string): string {
   const normalized = resolve(cwd, filePath).replace(/[\\/]+/g, '/');
-  return process.platform === 'win32' ? normalized.toLowerCase() : normalized;
+  return process.platform === 'win32'
+    ? normalized.toLocaleLowerCase('en-US')
+    : normalized;
 }
 
 function samePath(left: string, right: string, cwd: string): boolean {

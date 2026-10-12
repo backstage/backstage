@@ -35,6 +35,7 @@ module.exports = {
     },
   },
   createOnce(context) {
+    /** @type {import('../lib/getPackages.js').ExtendedPackage | undefined} */
     let currentPackage;
 
     return {

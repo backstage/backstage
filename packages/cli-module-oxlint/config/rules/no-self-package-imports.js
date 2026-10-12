@@ -53,14 +53,20 @@ module.exports = {
   },
   createOnce(context) {
     let allowCrossEntry = true;
+    /** @type {import('../lib/getPackages.js').ExtendedPackage | undefined} */
     let selfPkg;
+    /** @type {string | undefined} */
     let selfName;
+    /** @type {ReturnType<typeof readEntries>} */
     let entries;
+    /** @type {Set<string> | undefined} */
     let fileEntries;
 
     return {
       before() {
-        const options = context.options?.[0] || {};
+        const options = /** @type {{ allowCrossEntry?: boolean }} */ (
+          context.options?.[0] || {}
+        );
         allowCrossEntry = options.allowCrossEntry !== false;
 
         const packages = getPackages(context.cwd);
@@ -82,7 +88,7 @@ module.exports = {
         }
       },
       ...visitImports(context, (node, imp) => {
-        if (!selfPkg) return;
+        if (!selfPkg || !selfName || !fileEntries) return;
         if (imp.type !== 'internal') return;
         if (imp.packageName !== selfName) return;
         // Type-only imports are erased at runtime and can't cause circular init.

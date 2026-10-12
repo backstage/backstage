@@ -545,11 +545,14 @@ describe('Oxlint through runCli subprocess', () => {
           attributeNamePrefix: '@_',
         }).parse(result.stdout);
         if (format === 'checkstyle') {
-          const files = Array.isArray(report.checkstyle.file)
+          type XmlError = { '@_source'?: string; '@_column'?: string };
+          const files: Array<{ error: XmlError | XmlError[] }> = Array.isArray(
+            report.checkstyle.file,
+          )
             ? report.checkstyle.file
             : [report.checkstyle.file];
           expect(
-            files.flatMap((file: any) =>
+            files.flatMap(file =>
               Array.isArray(file.error) ? file.error : [file.error],
             ),
           ).toContainEqual(
@@ -560,14 +563,14 @@ describe('Oxlint through runCli subprocess', () => {
           );
           expect(JSON.stringify(report)).toContain('fixture/native');
           expect(JSON.stringify(report)).toContain('Native & warning');
-          const errors = files.flatMap((file: any) =>
+          const errors = files.flatMap(file =>
             Array.isArray(file.error) ? file.error : [file.error],
           );
           expect(
             errors.find(
               (error: { '@_source'?: string }) =>
                 error['@_source'] === 'backstage/no-unexplained-suppressions',
-            )['@_column'],
+            )?.['@_column'],
           ).toBe(String(expectedByteColumn));
         } else {
           expect(report.testsuites['@_tests']).toBe('2');

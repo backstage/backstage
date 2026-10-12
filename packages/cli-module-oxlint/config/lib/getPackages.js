@@ -49,7 +49,7 @@ module.exports = (function () {
     }
 
     const packages = manypkg.getPackagesSync(dir);
-    if (!packages) {
+    if (!packages?.rootPackage) {
       cache.delete(key);
       return undefined;
     }

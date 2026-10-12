@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/// <reference types="node" />
 // @ts-check
 
 const { mkdirSync, readFileSync, writeFileSync } = require('node:fs');
@@ -70,15 +71,18 @@ const AGENTIC_RULES = {
   'backstage/no-dirname-in-src': 'error',
 };
 
+/** @param {string[]} plugins @param {string[]} [additional] */
 function withPlugins(plugins, additional = []) {
   return [...new Set([...plugins, ...additional])];
 }
 
+/** @param {any} rule */
 function isDisabled(rule) {
   const severity = Array.isArray(rule) ? rule[0] : rule;
   return severity === 'off' || severity === 'allow' || severity === 0;
 }
 
+/** @param {any} rule */
 function asError(rule) {
   if (isDisabled(rule)) {
     return rule;
@@ -86,12 +90,14 @@ function asError(rule) {
   return Array.isArray(rule) ? ['error', ...rule.slice(1)] : 'error';
 }
 
+/** @param {Record<string, any>} rules */
 function normalizeRules(rules) {
   return Object.fromEntries(
     Object.entries(rules).map(([name, rule]) => [name, asError(rule)]),
   );
 }
 
+/** @param {Record<string, any>} categories */
 function normalizeCategories(categories) {
   return Object.fromEntries(
     Object.entries(categories).map(([name, severity]) => [
@@ -101,6 +107,7 @@ function normalizeCategories(categories) {
   );
 }
 
+/** @param {string[]} plugins @param {any[]} extraOverrides */
 function createOverrides(plugins, extraOverrides) {
   return [
     {
@@ -117,6 +124,7 @@ function createOverrides(plugins, extraOverrides) {
   ];
 }
 
+/** @param {string} preset */
 function prepareAgenticAudit(preset) {
   if (preset !== 'agentic') {
     return;
@@ -221,7 +229,11 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       if (isDisabled(extraRules[rule])) {
         throw new Error(`The agentic preset cannot disable ${rule}`);
       }
-      if (extraOverrides.some(override => isDisabled(override.rules?.[rule]))) {
+      if (
+        /** @type {Array<{rules?: Record<string, any>}>} */ (
+          extraOverrides
+        ).some(override => isDisabled(override.rules?.[rule]))
+      ) {
         throw new Error(
           `The agentic preset cannot disable ${rule} in an override`,
         );
@@ -284,7 +296,8 @@ function createPackageConfig(dir, extraConfig) {
   return createConfigForRole(dir, pkg.backstage.role, extraConfig);
 }
 
-module.exports = createPackageConfig;
-module.exports.createConfig = createConfig;
-module.exports.createConfigForRole = createConfigForRole;
-module.exports.createPackageConfig = createPackageConfig;
+module.exports = Object.assign(createPackageConfig, {
+  createConfig,
+  createConfigForRole,
+  createPackageConfig,
+});

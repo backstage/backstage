@@ -24,7 +24,6 @@ jest.mock('node:child_process', () => ({
 const RULE = 'no-undeclared-imports';
 const FIXTURE = joinPath(__dirname, '../__fixtures__/monorepo');
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 const rule = require('../../config/rules/no-undeclared-imports');
 
 const ERR_UNDECLARED = (
