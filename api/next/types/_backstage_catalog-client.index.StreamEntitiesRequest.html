@@ -12,7 +12,7 @@
 <li><a href="../modules/_backstage_catalog-client.index.html">index</a></li>
 <li><a href="" aria-current="page">StreamEntitiesRequest</a></li></ul>
 <h1>Type Alias StreamEntitiesRequest</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">StreamEntitiesRequest</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="_backstage_catalog-client.index.QueryEntitiesInitialRequest.html" class="tsd-signature-type tsd-kind-type-alias">QueryEntitiesInitialRequest</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;limit&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;offset&quot;</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">pageSize</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">StreamEntitiesRequest</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><br/>    <a href="_backstage_catalog-client.index.QueryEntitiesInitialRequest.html" class="tsd-signature-type tsd-kind-type-alias">QueryEntitiesInitialRequest</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-type">&quot;limit&quot;</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;offset&quot;</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;totalItems&quot;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">pageSize</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">totalItems</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_catalog-client.index.QueryEntitiesInitialRequest.html" class="tsd-signature-type tsd-kind-type-alias">QueryEntitiesInitialRequest</a><span class="tsd-signature-symbol">[</span><a href="_backstage_catalog-client.index.QueryEntitiesInitialRequest.html#totalitems"><span class="tsd-signature-type">&quot;totalItems&quot;</span></a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>Stream entities request for <a href="../interfaces/_backstage_catalog-client.index.CatalogApi.html#streamentities" class="tsd-kind-method">CatalogApi.streamEntities</a>.</p>
 </div>
 <div class="tsd-type-declaration">
@@ -21,9 +21,16 @@
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Optional</code><span class="tsd-kind-property">pageSize</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
 <div class="tsd-comment tsd-typography"><p>The number of entities to fetch in each page. Defaults to 500.</p>
-</div></li></ul></div><aside class="tsd-sources">
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag">Optional</code><span class="tsd-kind-property">totalItems</span><span class="tsd-signature-symbol">?: </span><a href="_backstage_catalog-client.index.QueryEntitiesInitialRequest.html" class="tsd-signature-type tsd-kind-type-alias">QueryEntitiesInitialRequest</a><span class="tsd-signature-symbol">[</span><a href="_backstage_catalog-client.index.QueryEntitiesInitialRequest.html#totalitems"><span class="tsd-signature-type">&quot;totalItems&quot;</span></a><span class="tsd-signature-symbol">]</span></h5>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-deprecated">
+<h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>This option is ignored. Streaming never computes the total
+number of matching items, since it is not part of the response.</p>
+</div></div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/b60c255ec20494d860cb6e93ec19bfaa2a465b63/packages/catalog-client/src/types/api.ts#L538">packages/catalog-client/src/types/api.ts:538</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e84492173a7223d774ebd69bf6a61289afc7d214/packages/catalog-client/src/types/api.ts#L538">packages/catalog-client/src/types/api.ts:538</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
