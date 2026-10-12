@@ -72,9 +72,14 @@ function HostRoutingProvider({
     [router],
   );
 
+  const createHref = useCallback(
+    (href: string) => (href === '' ? href : router.createHref(href)),
+    [router],
+  );
+
   return (
     <BUIRoutingContext.Provider value={router}>
-      <RouterProvider navigate={navigate} useHref={router.createHref}>
+      <RouterProvider navigate={navigate} useHref={createHref}>
         {children}
       </RouterProvider>
     </BUIRoutingContext.Provider>
