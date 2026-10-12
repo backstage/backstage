@@ -1,1 +1,0 @@
-import{$ as r,a as $}from"./utils-C39--9xx.js";import{$ as o}from"./Hidden-Dsa08sWj.js";import{R as b,r as m}from"./iframe-D5t0zV2Z.js";const s=m.createContext({}),l=o(function(e,t){[e,t]=r(e,t,s);let{elementType:a="span",...c}=e,f=$[a];return b.createElement(f,{className:"react-aria-Text",...c,ref:t})});export{l as $,s as a};
