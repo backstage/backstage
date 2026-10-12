@@ -411,11 +411,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
             >['initialTab']) || undefined
           }
           onSelect={newTab =>
-            setSearchParams(prev => {
-              const newParams = new URLSearchParams(prev);
-              newParams.set('inspect', newTab);
-              return newParams;
-            })
+            setSearchParams(
+              prev => {
+                const newParams = new URLSearchParams(prev);
+                newParams.set('inspect', newTab);
+                return newParams;
+              },
+              { replace: true },
+            )
           }
           open
           onClose={() =>

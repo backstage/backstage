@@ -45,7 +45,7 @@ import { mockApis } from '@backstage/frontend-test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { ReactNode, useEffect } from 'react';
 
 describe('EntityLayout', () => {
@@ -546,5 +546,62 @@ describe('EntityLayout - inspect dialog', () => {
     expect(mountCount).toBe(mountsBefore);
     expect(renderCount).toBe(rendersBefore);
     expect(analyticsRenderCount).toBe(analyticsRendersBefore);
+  });
+
+  it('opens dialog with query param, uses replace when switching tabs, and removes query param on close', async () => {
+    const LocationProbe = () => {
+      const location = useLocation();
+      return <div data-testid="location-search">{location.search}</div>;
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <FakeCatalogEntityPage>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <LocationProbe />
+            </EntityLayout.Route>
+          </EntityLayout>
+        </FakeCatalogEntityPage>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByTestId('location-search')).toHaveTextContent('');
+    expect(screen.queryByText('Entity Inspector')).not.toBeInTheDocument();
+
+    // Open inspect dialog via menu
+    const menuButton = screen.getByTestId('menu-button');
+    fireEvent.click(menuButton);
+    const listItemInspect = screen.getByRole('menuitem', {
+      name: /Inspect entity/i,
+    });
+    fireEvent.click(listItemInspect);
+
+    expect(await screen.findByText('Entity Inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('location-search')).toHaveTextContent(
+      '?inspect=',
+    );
+
+    // Switch tabs within dialog - should replace rather than push to history
+    fireEvent.click(screen.getByRole('tab', { name: 'Ancestry' }));
+    expect(await screen.findByText('Entity Inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('location-search')).toHaveTextContent(
+      '?inspect=ancestry',
+    );
+
+    // Close dialog
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Entity Inspector')).not.toBeInTheDocument();
+    });
+    expect(screen.getByTestId('location-search')).toHaveTextContent('');
   });
 });
