@@ -117,7 +117,13 @@ function codesFor(report: OxlintReport, basename: string): string[] {
 
 describe('Oxlint configuration factory', () => {
   it('uses export mounts supported by the package builder', () => {
-    const { exports, files, publishConfig } = require('../../package.json');
+    const {
+      exports,
+      files,
+      publishConfig,
+      typesVersions,
+    } = require('../../package.json');
+    expect(typesVersions['*']).toEqual({ 'package.json': ['package.json'] });
     expect(exports['./oxlint-factory']).toBe('./config/oxlint-factory.cjs');
     expect(publishConfig.exports['./oxlint-factory']).toBe(
       exports['./oxlint-factory'],
