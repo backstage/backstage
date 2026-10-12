@@ -31,7 +31,7 @@ import {
   renderInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
@@ -151,11 +151,13 @@ describe('DefaultCatalogPage', () => {
       timeout: 10_000,
     });
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    await waitFor(() => {
+      const columnHeader = screen
+        .getAllByRole('button')
+        .filter(c => c.tagName === 'SPAN');
+      const columnHeaderLabels = columnHeader.map(c => c.textContent);
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    });
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
