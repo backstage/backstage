@@ -908,7 +908,7 @@ describe('ElasticSearchSearchEngine', () => {
               phase: 'fetch',
               caused_by: {
                 type: 'index_not_found_exception',
-                reason: 'no such index [pBSEXqABRDbtk34rDuds]',
+                reason: 'no such index [techdocs-index__123]',
               },
             },
             status: 404,
