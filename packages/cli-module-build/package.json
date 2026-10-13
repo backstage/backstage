@@ -36,6 +36,7 @@
   },
   "jest": {
     "coveragePathIgnorePatterns": [
+      "/node_modules/",
       "/__fixtures__/"
     ]
   },
