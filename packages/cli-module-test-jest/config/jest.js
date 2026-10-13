@@ -271,7 +271,8 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
     ...getRoleConfig(pkgJson.backstage?.role, pkgJson),
   };
 
-  options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];
+  // Copy the array, since it may be shared with other projects through the root config
+  options.setupFilesAfterEnv = [...(options.setupFilesAfterEnv ?? [])];
 
   if (
     extraOptions.rejectFrontendNetworkRequests &&
