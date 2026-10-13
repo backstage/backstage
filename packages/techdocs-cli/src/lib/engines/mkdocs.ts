@@ -18,33 +18,10 @@ import http from 'node:http';
 import {
   injectLivereloadParameters,
   proxyMkdocsLivereload,
-} from './livereload';
+} from '../livereload';
+import { EngineConfig } from './types';
 
-export type ServeOptions = {
-  configFile?: string;
-  clean?: boolean;
-  dirtyReload?: boolean;
-  strict?: boolean;
-  useDocker?: boolean;
-};
-
-export type EngineConfig = {
-  binary: string;
-  defaultImage: string;
-  serveCommand: string;
-  startupLogPattern: string;
-  buildArgs(outputDir: string, configFile: string): string[];
-  serveArgs(port: string, options: ServeOptions): string[];
-  transformHtml(html: string): string;
-  handleReloadRequest(
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    targetAddress: string,
-    onError: (error: Error) => void,
-  ): void;
-};
-
-const mkdocsConfig: EngineConfig = {
+export const mkdocsConfig: EngineConfig = {
   binary: 'mkdocs',
   defaultImage: 'spotify/techdocs',
   serveCommand: 'serve',
@@ -52,7 +29,7 @@ const mkdocsConfig: EngineConfig = {
   buildArgs(outputDir: string, configFile: string): string[] {
     return ['build', '-f', configFile, '-d', outputDir, '-v'];
   },
-  serveArgs(port: string, options: ServeOptions): string[] {
+  serveArgs(port: string, options): string[] {
     const addr = options.useDocker ? `0.0.0.0:${port}` : `127.0.0.1:${port}`;
     return [
       'serve',
@@ -82,18 +59,3 @@ const mkdocsConfig: EngineConfig = {
     });
   },
 };
-
-const engineConfigs: Record<string, EngineConfig> = {
-  mkdocs: mkdocsConfig,
-};
-
-export function getEngineConfig(engine: string): EngineConfig {
-  const config = engineConfigs[engine];
-  if (!config) {
-    const supported = Object.keys(engineConfigs).join(', ');
-    throw new Error(
-      `Unknown engine: "${engine}". Supported engines: ${supported}`,
-    );
-  }
-  return config;
-}

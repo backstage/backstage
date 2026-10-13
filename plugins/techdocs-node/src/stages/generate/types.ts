@@ -23,6 +23,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 /**
  * Determines where the generator will be run. `'docker'` is a shorthand for running the generator in a container.
  * If no {@link GeneratorOptions.containerRunner} is specified, the internal `DockerContainerRunner` will be used.
+ * @public
  */
 export type GeneratorRunInType = 'docker' | 'local';
 
@@ -54,6 +55,7 @@ export type ContainerRunnerPullOptions = {
 
 /**
  * The techdocs generator configurations options.
+ * @public
  */
 export type GeneratorConfig = {
   runIn: GeneratorRunInType;

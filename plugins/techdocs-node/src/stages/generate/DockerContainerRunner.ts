@@ -30,7 +30,9 @@ export type UserOptions = {
 };
 
 /**
- * @internal
+ * Runs TechDocs generator containers with the local Docker daemon.
+ *
+ * @public
  */
 export class DockerContainerRunner implements TechDocsContainerRunner {
   private readonly dockerClient: Docker;

@@ -47,6 +47,7 @@ export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
   return 'techdocs';
 }
 
+/** @public */
 export type RunCommandOptions = {
   /** command to run */
   command: string;
@@ -60,6 +61,7 @@ export type RunCommandOptions = {
 
 /**
  * Run a command in a sub-process, normally a shell command.
+ * @public
  */
 export const runCommand = async ({
   command,
@@ -184,7 +186,11 @@ export class UnknownTag {
   }
 }
 
-/** Preserve YAML merge keys and MkDocs-specific tags while inspecting config. */
+/**
+ * Preserve YAML merge keys and MkDocs-specific tags while inspecting config.
+ *
+ * @public
+ */
 export const MKDOCS_SCHEMA = YAML11_SCHEMA.withTags(
   defineScalarTag('', {
     matchByTagPrefix: true,
@@ -396,6 +402,7 @@ export const ALLOWED_THEME_KEYS = new Set([
  * @param mkdocsYmlFileString - The string contents of the loaded
  *   mkdocs.yml or equivalent of a docs site
  * @returns the parsed docs_dir or undefined
+ * @public
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
@@ -432,6 +439,7 @@ export const validateMkdocsYaml = async (
  * because MkDocs extensions can read files from anywhere in the input directory.
  *
  * @param inputDir - The input directory to validate (absolute path)
+ * @public
  */
 export const validateInputDirectory = async (
   inputDir: string,
@@ -461,6 +469,7 @@ export const validateInputDirectory = async (
  * Update docs/index.md file before TechDocs generator uses it to generate docs site,
  * falling back to docs/README.md or README.md in case a default docs/index.md
  * is not provided.
+ * @public
  */
 export const patchIndexPreBuild = async ({
   inputDir,
@@ -519,6 +528,7 @@ export const patchIndexPreBuild = async ({
  * - The list of files generated
  *
  * @param techdocsMetadataPath - File path to techdocs_metadata.json
+ * @public
  */
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
@@ -577,6 +587,7 @@ export const createOrUpdateMetadata = async (
  *
  * @param techdocsMetadataPath - File path to techdocs_metadata.json
  * @param etag - The ETag to use
+ * @public
  */
 export const storeEtagMetadata = async (
   techdocsMetadataPath: string,
