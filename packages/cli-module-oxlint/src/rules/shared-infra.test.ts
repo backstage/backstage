@@ -675,7 +675,7 @@ describe('Oxlint JavaScript plugin lifecycle', () => {
     );
     writeFileSync(
       configFile,
-      "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, { preset: 'agentic', ignorePatterns: ['**/dist/**'] });\n",
+      "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, { preset: 'strict', ignorePatterns: ['**/dist/**'] });\n",
     );
 
     try {

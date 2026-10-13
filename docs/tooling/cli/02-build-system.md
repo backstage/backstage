@@ -218,18 +218,18 @@ Oxlint. This factory is not an ESLint configuration translator and does not
 load arbitrary `.eslintrc` files. Keep repository-specific rules and
 exceptions in repository configuration.
 
-Use the `agentic` preset to make enabled rules and file-scoped overrides errors,
+Use the `strict` preset to make enabled rules and file-scoped overrides errors,
 enable type-aware linting and type checking, and report unused disable
 directives as errors:
 
 ```javascript
 module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
   __dirname,
-  { preset: 'agentic' },
+  { preset: 'strict' },
 );
 ```
 
-The agentic suppression audit runs at the Backstage CLI boundary over files
+The strict suppression audit runs at the Backstage CLI boundary over files
 Oxlint selected, after `--fix`. It cannot be disabled by source comments.
 Blanket or self-suppressions and missing or placeholder explanations fail;
 rule-specific suppressions need a useful explanation. Update suppression

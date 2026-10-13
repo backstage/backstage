@@ -76,13 +76,13 @@ const { randomUUID } = require('node:crypto');
     fs.appendFileSync(process.env.OXLINT_AUDIT_PATHS_FILE, auditDir + '\\n');
   }
   const auditFiles = JSON.parse(process.env.OXLINT_AUDIT_FILES || '[]');
-  const agentic = mode === 'audit' ||
-    (mode === 'mixed' && process.argv.includes(process.env.OXLINT_AGENTIC_TARGET));
-  if (agentic) {
+  const strict = mode === 'audit' ||
+    (mode === 'mixed' && process.argv.includes(process.env.OXLINT_STRICT_TARGET));
+  if (strict) {
     const auditState = process.env.OXLINT_AUDIT_STATE;
     if (auditState !== 'receipt-without-marker') {
       fs.writeFileSync(
-        path.join(auditDir, 'agentic.json'),
+        path.join(auditDir, 'strict.json'),
         JSON.stringify({ version: auditState === 'invalid-marker' ? 2 : 1 }),
       );
     }
@@ -179,7 +179,7 @@ function runDispatcher(
     inheritedAuditDir?: string;
     finalSource?: string;
     auditState?: string;
-    agenticTarget?: string;
+    strictTarget?: string;
     nativeReport?: string;
   } = {},
 ) {
@@ -209,7 +209,7 @@ function runDispatcher(
       OXLINT_FIX_FILE: options.auditFiles?.[0] ?? '',
       OXLINT_FINAL_SOURCE: options.finalSource,
       OXLINT_AUDIT_STATE: options.auditState ?? '',
-      OXLINT_AGENTIC_TARGET: options.agenticTarget ?? '',
+      OXLINT_STRICT_TARGET: options.strictTarget ?? '',
       OXLINT_CUSTOM_REPORT: options.nativeReport,
       BACKSTAGE_OXLINT_AUDIT_DIR: options.inheritedAuditDir ?? '',
     },
@@ -299,7 +299,7 @@ describe('Oxlint through runCli subprocess', () => {
     }
   });
 
-  it('deduplicates concurrent receipts and allows an agentic empty selection', () => {
+  it('deduplicates concurrent receipts and allows a strict empty selection', () => {
     const workspace = createWorkspace();
     const sourceFile = join(workspace.dir, 'selected.js');
     writeFileSync(
@@ -362,19 +362,19 @@ describe('Oxlint through runCli subprocess', () => {
     }
   });
 
-  it('keeps mixed compatibility and agentic groups isolated', () => {
+  it('keeps mixed compatibility and strict groups isolated', () => {
     const workspace = createWorkspace();
     const compatibilityDir = join(workspace.dir, 'compatibility');
-    const agenticDir = join(workspace.dir, 'agentic');
-    const sourceFile = join(agenticDir, 'selected.js');
+    const strictDir = join(workspace.dir, 'strict');
+    const sourceFile = join(strictDir, 'selected.js');
     const auditPathFile = join(workspace.dir, 'audit-paths.txt');
     mkdirSync(compatibilityDir);
-    mkdirSync(agenticDir);
+    mkdirSync(strictDir);
     writeFileSync(
       join(compatibilityDir, 'oxlint.config.mts'),
       'export default {};',
     );
-    writeFileSync(join(agenticDir, 'oxlint.config.mts'), 'export default {};');
+    writeFileSync(join(strictDir, 'oxlint.config.mts'), 'export default {};');
     writeFileSync(sourceFile, '/* oxlint-disable * -- no reason */');
     writeFileSync(auditPathFile, '');
     try {
@@ -382,12 +382,12 @@ describe('Oxlint through runCli subprocess', () => {
         mode: 'mixed',
         targets: [
           { configDir: compatibilityDir, directories: [compatibilityDir] },
-          { configDir: agenticDir, directories: [agenticDir] },
+          { configDir: strictDir, directories: [strictDir] },
         ],
         auditFiles: [sourceFile],
         auditPathFile,
         inheritedAuditDir: workspace.dir,
-        agenticTarget: agenticDir,
+        strictTarget: strictDir,
       });
 
       expect(result.status).toBe(1);
@@ -660,9 +660,9 @@ describe('Oxlint through runCli subprocess', () => {
     }
   });
 
-  it('audits native-selected files from the agentic factory and reports failures', () => {
+  it('audits native-selected files from the strict factory and reports failures', () => {
     const workspace = createWorkspace();
-    const packageDir = mkdtempSync(join(tmpdir(), 'oxlint-agentic-package-'));
+    const packageDir = mkdtempSync(join(tmpdir(), 'oxlint-strict-package-'));
     const sourceDir = join(packageDir, 'src');
     const sourceFile = join(sourceDir, 'index.js');
     const configFile = join(packageDir, '.oxlintrc.js');
@@ -672,7 +672,7 @@ describe('Oxlint through runCli subprocess', () => {
       writeFileSync(
         join(packageDir, 'package.json'),
         JSON.stringify({
-          name: '@internal/oxlint-agentic-e2e',
+          name: '@internal/oxlint-strict-e2e',
           backstage: { role: 'node-library' },
         }),
       );
@@ -687,7 +687,7 @@ describe('Oxlint through runCli subprocess', () => {
       );
       writeFileSync(
         configFile,
-        "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, { preset: 'agentic' });\n",
+        "module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(__dirname, { preset: 'strict' });\n",
       );
 
       const result = runDispatcher(workspace, {

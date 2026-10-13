@@ -63,24 +63,25 @@ and Backstage rules are enabled. Repository-specific rules and exceptions
 belong in the repository's `.oxlintrc.js`; arbitrary `.eslintrc` extensions are
 not loaded or executed.
 
-## Agentic preset
+## Strict preset
 
-Select `agentic` for stricter linting:
+Select `strict` for stricter linting:
 
 ```javascript
 module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
   __dirname,
-  { preset: 'agentic' },
+  { preset: 'strict' },
 );
 ```
 
 The preset turns enabled rules and override rules into errors, enables
 `typeAware` and `typeCheck`, and reports unused disable directives as errors.
-It also enables existing Backstage checks for bare identifier casing, React and
-Winston default imports, and `__dirname` in `src`. The preset collects files
+It uses native Oxlint restrictions to reject `.toLowerCase` and `.toUpperCase`
+property access and default or namespace imports from React and Winston. The
+Backstage `__dirname` check still applies in `src`. The preset collects files
 selected by Oxlint and has the Backstage CLI validate final source comments
 after fixes, before returning. This audit requires
-`BACKSTAGE_OXLINT_AUDIT_DIR`, which the CLI provides; an agentic config cannot
+`BACKSTAGE_OXLINT_AUDIT_DIR`, which the CLI provides; a strict config cannot
 be run directly with raw Oxlint. Use narrow, explained directives with
 configured Oxlint rule IDs, for example:
 
