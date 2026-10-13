@@ -1,5 +1,12 @@
 # @backstage/frontend-plugin-api
 
+## 0.18.2-next.1
+
+### Patch Changes
+
+- a650c4f: Added `AppLifecycleApi` and `appLifecycleApiRef`, which let you check whether the app has been finalized and subscribe to changes in its lifecycle.
+- a650c4f: The `useRouteRef` hook now resolves the route again once the app has been finalized, so that elements rendered before finalization, such as `app/root.elements` extensions, can link to pages instead of getting `undefined`.
+
 ## 0.18.2-next.0
 
 ### Patch Changes

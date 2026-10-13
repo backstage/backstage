@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs
 
+## 1.19.0-next.2
+
+### Patch Changes
+
+- 6c74f3f: Migrated the `TechDocsPicker` filter from the deprecated `getCatalogFilters` to `getCatalogQuery`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
 ## 1.19.0-next.1
 
 ### Minor Changes

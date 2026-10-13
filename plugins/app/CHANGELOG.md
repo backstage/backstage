@@ -1,5 +1,16 @@
 # @backstage/plugin-app
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- 1eeab07: Fixed long words in toast titles and descriptions overflowing the notification and overlapping the close button.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
 ## 0.5.4-next.0
 
 ### Patch Changes

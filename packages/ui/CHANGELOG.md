@@ -1,5 +1,25 @@
 # @backstage/ui
 
+## 0.19.0-next.0
+
+### Minor Changes
+
+- 4e7a710: Updated React Aria dependencies to React Aria Components 1.22.0, React Aria 3.53.0, and React Stately 3.51.0. Existing Checkbox, Radio, and Switch implementations are retained.
+
+  **Migration:**
+
+  `MenuSection` no longer accepts `disabledKeys`. Move `disabledKeys` to `Menu` or set `isDisabled` on the affected `MenuItem` components.
+
+  Programmatic clicks on Checkbox and Switch labels no longer toggle their selection. Target the input when activating these controls programmatically, and use a full pointer interaction when simulating label clicks in tests.
+
+  **Affected components:** Checkbox, Menu, Switch
+
+### Patch Changes
+
+- 6c9ed14: Fixed `Combobox` keyboard selection while filtering. With `search`, or with `items` and no `search`, the arrow keys now move through the matching options only, and Enter selects the highlighted one. Screen readers also announce the number of matching options. As with a `Combobox` without `search`, opening the list with the button or on focus shows every option until the user types. With `search.filter`, Escape and blur now restore the label of the selected option even when the filter excludes it. In that case, the number of options announced to screen readers still counts the hidden selected option.
+
+  **Affected components:** Combobox
+
 ## 0.18.0
 
 ### Minor Changes
