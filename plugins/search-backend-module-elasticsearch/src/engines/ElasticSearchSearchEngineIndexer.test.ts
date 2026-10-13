@@ -80,6 +80,11 @@ describe('ElasticSearchSearchEngineIndexer', () => {
         mappings: {},
         settings: {},
       },
+      'some-type-index__789current': {
+        aliases: { 'some-type-index__search': {} },
+        mappings: {},
+        settings: {},
+      },
     });
     mock.add(
       {
@@ -161,7 +166,9 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       add: { index: createdIndex, alias: 'some-type-index__search' },
     });
 
-    // Old index should be cleaned up.
+    // Old index should be cleaned up, but the index that was behind the alias
+    // is kept until the next run so that in-flight queries can complete.
+    expect(deleteSpy).toHaveBeenCalledTimes(1);
     expect(deleteSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         path: '/some-type-index__123tobedeleted,some-type-index__456tobedeleted',

@@ -898,6 +898,52 @@ describe('ElasticSearchSearchEngine', () => {
         'Missing index for unknown__search. This means there are no documents to search through.',
       );
     });
+
+    it('should throw missing index error when nested in a search phase failure', async () => {
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue({
+        meta: {
+          body: {
+            error: {
+              type: 'search_phase_execution_exception',
+              phase: 'fetch',
+              caused_by: {
+                type: 'index_not_found_exception',
+                reason: 'no such index [pBSEXqABRDbtk34rDuds]',
+              },
+            },
+            status: 404,
+          },
+        },
+      });
+
+      await expect(
+        testSearchEngine.query({
+          term: 'testTerm',
+          types: ['techdocs'],
+          filters: {},
+        }),
+      ).rejects.toMatchObject({
+        name: 'MissingIndexError',
+        message: expect.stringContaining('Missing index for techdocs__search'),
+      });
+    });
+
+    it('should reject with a descriptive error for other query failures', async () => {
+      const cause = new Error('search_phase_execution_exception: boom');
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue(cause);
+
+      await expect(
+        testSearchEngine.query({
+          term: 'testTerm',
+          types: ['techdocs'],
+          filters: {},
+        }),
+      ).rejects.toMatchObject({
+        message:
+          'Failed to query documents for indices techdocs__search: search_phase_execution_exception: boom',
+        cause,
+      });
+    });
   });
 
   describe('indexer', () => {
