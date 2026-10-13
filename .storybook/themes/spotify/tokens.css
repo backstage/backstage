@@ -9,7 +9,27 @@
   }
 
   [data-theme-mode='light'][data-theme-name='spotify'] {
+    /* Backgrounds */
+    --bui-bg-app: #f5f5f5;
+    --bui-bg-neutral-1: #ffffff;
+    --bui-bg-neutral-2: #f5f5f5;
+
+    /* Foreground */
+    --bui-fg-primary: #000000;
+    --bui-fg-secondary: #656565;
+    --bui-fg-positive: #107434;
+    --bui-fg-negative: #c91123;
+    --bui-fg-warning: #955500;
+    --bui-fg-announcement: #0b62c8;
+
+    /* Borders */
+    --bui-border-1: #dedede;
+    --bui-border-2: #818181;
+
+    /* Focus ring */
     --bui-ring: rgba(0, 0, 0, 0.2);
+
+    /* Accent */
     --bui-accent-bg: #1ed760;
     --bui-accent-bg-hover: #3be477;
     --bui-accent-bg-disabled: #0f6c30;
@@ -29,16 +49,29 @@
   }
 
   [data-theme-mode='dark'][data-theme-name='spotify'] {
-    --bui-bg-app: var(--bui-black);
+    /* Backgrounds */
+    --bui-bg-app: #000000;
     --bui-bg-neutral-1: #121212;
     --bui-bg-neutral-2: #2a2a2a;
     --bui-bg-neutral-3: #3a3a3a;
     --bui-bg-neutral-4: #484848;
 
-    --bui-border-1: var(--bui-gray-8);
-    --bui-border-2: var(--bui-gray-6);
+    /* Foreground */
+    --bui-fg-primary: #ffffff;
+    --bui-fg-secondary: #b3b3b3;
+    --bui-fg-positive: #1ed760;
+    --bui-fg-negative: #f3727f;
+    --bui-fg-warning: #ffa42b;
+    --bui-fg-announcement: #539df5;
 
+    /* Borders */
+    --bui-border-1: #292929;
+    --bui-border-2: #7c7c7c;
+
+    /* Focus ring */
     --bui-ring: rgba(255, 255, 255, 0.2);
+
+    /* Accent */
     --bui-accent-bg: #1ed760;
     --bui-accent-bg-hover: #3be477;
     --bui-accent-bg-disabled: #0f6c30;
@@ -50,11 +83,11 @@
     --bui-bg-solid-hover: #3be477;
     --bui-bg-solid-pressed: #1abc54;
     --bui-bg-solid-disabled: #0f6c30;
+    --bui-fg-solid: var(--bui-black);
+    --bui-fg-solid-disabled: #072f15;
     --bui-bg-danger: #3b1219;
     --bui-bg-warning: #302008;
     --bui-bg-success: #132d21;
-    --bui-fg-solid: var(--bui-black);
-    --bui-fg-solid-disabled: #072f15;
     --bui-fg-danger: #e22b2b;
     --bui-fg-success: #1db954;
     --bui-border-danger: #f87a7a;
