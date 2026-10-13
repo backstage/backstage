@@ -7295,6 +7295,7 @@ __metadata:
     codeowners-utils: "npm:^1.0.2"
     command-exists: "npm:^1.2.9"
     commander: "npm:^14.0.3"
+    diff: "npm:^9.0.0"
     fs-extra: "npm:^11.2.0"
     glob: "npm:^13.0.0"
     globby: "npm:^11.0.0"

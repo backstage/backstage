@@ -67,6 +67,7 @@
     "codeowners-utils": "^1.0.2",
     "command-exists": "^1.2.9",
     "commander": "^14.0.3",
+    "diff": "^9.0.0",
     "fs-extra": "^11.2.0",
     "glob": "^13.0.0",
     "globby": "^11.0.0",
