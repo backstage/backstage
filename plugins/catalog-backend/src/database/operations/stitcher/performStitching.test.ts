@@ -578,7 +578,14 @@ describe.each(databases.eachSupportedId())(
           expect(await knex('catalog_generation_counter')).toEqual(
             counterBefore,
           );
-          expect(await knex('stitch_queue')).toEqual(queueBefore);
+          // The queued work survives with its claim intact; only the failed
+          // attempt is recorded.
+          expect(await knex('stitch_queue')).toEqual(
+            queueBefore.map(row => ({
+              ...row,
+              failure_count: row.failure_count + 1,
+            })),
+          );
         } finally {
           await knex.raw(
             'DROP TRIGGER reject_generation_assignment ON final_entities',
