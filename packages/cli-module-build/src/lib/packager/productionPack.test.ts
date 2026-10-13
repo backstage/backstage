@@ -46,6 +46,41 @@ describe('productionPack', () => {
     ...configSchema,
   };
 
+  it('should package a source main using root index outputs without adding exports', async () => {
+    const sourcePackage = {
+      name: 'test-package',
+      version: '1.0.0',
+      main: 'src/plugin.tsx',
+      types: 'src/plugin.tsx',
+      files: ['dist'],
+    };
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify(sourcePackage),
+        src: { 'plugin.tsx': 'export const value = 1;' },
+        dist: {
+          'index.cjs.js': 'exports.value = 1;',
+          'index.esm.js': 'export const value = 1;',
+          'index.d.ts': 'export declare const value = 1;',
+        },
+      },
+    });
+    await productionPack({
+      packageDir: mockDir.resolve('package'),
+      targetDir: mockDir.resolve('target'),
+    });
+    const content = mockDir.content({
+      path: 'target',
+      shouldReadAsText: true,
+    }) as Record<string, string>;
+    expect(JSON.parse(content['package.json'])).toMatchObject({
+      main: './dist/index.cjs.js',
+      module: './dist/index.esm.js',
+      types: './dist/index.d.ts',
+    });
+    expect(JSON.parse(content['package.json']).exports).toBeUndefined();
+  });
+
   it('should replace TypeScript schemas in dist packages', async () => {
     mockDir.setContent({
       package: {
