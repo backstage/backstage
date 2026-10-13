@@ -48,7 +48,7 @@ export function createRouteRef<
   /** A list of parameter names that the path that this route ref is bound to must contain */
   readonly params?: TParamKey[];
 
-  /** The ID of the routable extension that this reference resolves through. */
+  /** The ID of the target extension, such as a page or entity content extension. */
   readonly extensionId: string;
 }): RouteRef<
   [TParamKey] extends [never] ? undefined : { [param in TParamKey]: string }

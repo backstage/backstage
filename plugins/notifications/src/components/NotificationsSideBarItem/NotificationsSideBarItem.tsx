@@ -18,7 +18,7 @@ import { useNotificationsApi } from '../../hooks';
 import { SidebarItem } from '@backstage/core-components';
 import { IconComponent, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import {
   Notification,

@@ -23,7 +23,7 @@ import type {
   FieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 
-import { editRouteRef } from '../../../routes';
+import { editRouteRef } from '../../../legacyRoutes';
 
 import { useTemplateDirectory } from './useTemplateDirectory';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';

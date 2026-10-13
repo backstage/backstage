@@ -31,7 +31,7 @@ import { catalogApiMock as catalogApiMockFactory } from '@backstage/plugin-catal
 
 import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
 
-import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
+import { rootRouteRef, rootDocsRouteRef } from '../../../legacyRoutes';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';

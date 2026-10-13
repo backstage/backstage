@@ -31,7 +31,7 @@ import { RouteResolver as LegacyRouteResolver } from '../../../packages/core-app
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { collectLegacyRoutes } from '../../../packages/core-compat-api/src/collectLegacyRoutes';
 import { CatalogIndexPage, catalogPlugin } from './plugin';
-import { rootRouteRef } from './routes';
+import { rootRouteRef } from './legacyRoutes';
 
 function Probe() {
   const shared = useRouteRef(rootRouteRef);

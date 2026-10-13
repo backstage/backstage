@@ -16,7 +16,7 @@
 
 import DocsIcon from '@material-ui/icons/Description';
 
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import {

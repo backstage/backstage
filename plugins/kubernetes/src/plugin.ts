@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { rootCatalogKubernetesRouteRef as rootCatalogKubernetesRouteRefNew } from './routes';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   KubernetesBackendClient,
   kubernetesApiRef,
@@ -28,7 +30,6 @@ import {
 import {
   createApiFactory,
   createPlugin,
-  createRouteRef,
   discoveryApiRef,
   gitlabAuthApiRef,
   googleAuthApiRef,
@@ -39,9 +40,9 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-export const rootCatalogKubernetesRouteRef = createRouteRef({
-  id: 'kubernetes',
-});
+export const rootCatalogKubernetesRouteRef = convertLegacyRouteRef(
+  rootCatalogKubernetesRouteRefNew,
+);
 
 export const kubernetesPlugin = createPlugin({
   id: 'kubernetes',

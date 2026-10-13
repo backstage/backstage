@@ -31,7 +31,7 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import { CatalogImportClient, catalogImportApiRef } from './api';
-import { rootRouteRef } from './plugin';
+import { rootRouteRef } from './routes';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 

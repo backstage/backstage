@@ -20,7 +20,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 import { userEvent } from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';

@@ -14,8 +14,7 @@ import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/core-plugin-api';
-import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -53,7 +52,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -79,7 +78,7 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
-              RouteRef_2<AnyRouteRefParams>,
+              RouteRef<AnyRouteRefParams>,
               'core.routing.ref',
               {
                 optional: true;
@@ -111,7 +110,7 @@ const _default: OverridableFrontendPlugin<
         title?: string;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
         noHeader?: boolean;
       };
     }>;
@@ -129,7 +128,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -150,7 +149,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
       };
     }>;
   }

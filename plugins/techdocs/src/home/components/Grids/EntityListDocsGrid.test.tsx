@@ -31,7 +31,7 @@ import {
   mockApis,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { EntityListDocsGrid } from './EntityListDocsGrid';
 
 const entities = [

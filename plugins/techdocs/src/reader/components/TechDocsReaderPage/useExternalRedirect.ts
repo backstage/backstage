@@ -25,7 +25,7 @@ import {
 } from '@backstage/catalog-model';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 
 /**
  * Hook to handle external TechDocs redirects based on entity annotations.

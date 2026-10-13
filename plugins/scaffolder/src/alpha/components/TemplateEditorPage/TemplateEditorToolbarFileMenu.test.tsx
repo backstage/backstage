@@ -18,7 +18,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { TemplateEditorToolbarFileMenu } from './TemplateEditorToolbarFileMenu';
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef } from '../../../legacyRoutes';
 
 describe('TemplateEditorToolbarFileMenu', () => {
   it('should disable open directory by default', async () => {

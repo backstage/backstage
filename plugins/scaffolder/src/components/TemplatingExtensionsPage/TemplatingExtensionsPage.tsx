@@ -21,7 +21,7 @@ import {
   rootRouteRef,
   scaffolderListTaskRouteRef,
   templatingExtensionsRouteRef,
-} from '../../routes';
+} from '../../legacyRoutes';
 
 import { makeStyles } from '@material-ui/core/styles';
 

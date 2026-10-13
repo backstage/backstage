@@ -98,7 +98,8 @@ export function resolveRouteBindings(
         const providedRoute = externalRoutes[key];
         const id =
           providedRoute &&
-          OpaqueExternalRouteRef.toInternal(providedRoute).getId?.();
+          (routesById.externalRouteIds?.get(providedRoute) ??
+            OpaqueExternalRouteRef.toInternal(providedRoute).getId?.());
         const externalRoute =
           (id && routesById.externalRoutes.get(id)) || providedRoute;
         if (!externalRoute) {

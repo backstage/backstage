@@ -39,6 +39,7 @@ export interface RouteRefsById {
   allRoutes?: Set<RouteRef | SubRouteRef>;
   redirects?: RouteRedirects;
   externalRoutes: Map<string, ExternalRouteRef>;
+  externalRouteIds?: Map<ExternalRouteRef, string>;
 }
 
 /** @internal */
@@ -49,6 +50,7 @@ export function collectRouteIds(
   const allRoutes = new Set<RouteRef | SubRouteRef>();
   const routesById = new Map<string, RouteRef | SubRouteRef>();
   const externalRoutesById = new Map<string, ExternalRouteRef>();
+  const externalRouteIds = new Map<ExternalRouteRef, string>();
 
   for (const feature of features) {
     if (!OpaqueFrontendPlugin.isType(feature)) {
@@ -92,6 +94,7 @@ export function collectRouteIds(
 
       const internalRef = OpaqueExternalRouteRef.toInternal(ref);
       internalRef.setId(refId);
+      externalRouteIds.set(ref, refId);
       externalRoutesById.set(refId, ref);
     }
   }
@@ -125,6 +128,7 @@ export function collectRouteIds(
     for (const [name, ref] of Object.entries(module.externalRoutes ?? {})) {
       const refId = `${module.pluginId}.${name}`;
       OpaqueExternalRouteRef.toInternal(ref).setId(refId);
+      externalRouteIds.set(ref, refId);
       externalRoutesById.set(refId, ref);
     }
   }
@@ -144,6 +148,7 @@ export function collectRouteIds(
   return {
     routes: routesById,
     externalRoutes: externalRoutesById,
+    externalRouteIds,
     allRoutes,
     redirects,
   };

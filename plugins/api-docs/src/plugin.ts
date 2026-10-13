@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { ApiEntity } from '@backstage/catalog-model';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { apiDocsConfigRef } from './config';
-import { registerComponentRouteRef, rootRoute } from './routes';
+import { registerComponentRouteRef, rootRoute as rootRouteNew } from './routes';
 import {
   createApiFactory,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+
+const rootRoute = convertLegacyRouteRef(rootRouteNew);
 
 /** @public */
 export const apiDocsPlugin = createPlugin({

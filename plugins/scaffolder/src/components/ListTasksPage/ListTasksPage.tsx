@@ -43,7 +43,7 @@ import {
   editRouteRef,
   rootRouteRef,
   templatingExtensionsRouteRef,
-} from '../../routes';
+} from '../../legacyRoutes';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

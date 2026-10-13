@@ -16,8 +16,7 @@ import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
-import { RouteRef } from '@backstage/core-plugin-api';
-import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -107,7 +106,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -153,7 +152,7 @@ const _default: OverridableFrontendPlugin<
         group?: keyof defaultEntityContentGroups | (string & {});
         icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;

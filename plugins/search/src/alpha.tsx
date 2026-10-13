@@ -34,7 +34,7 @@ import {
 } from '@backstage/plugin-search-react/alpha';
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
-import { rootRouteRef } from './plugin';
+import { rootRouteRef } from './routes';
 import { SearchClient } from './apis';
 
 /** @alpha */

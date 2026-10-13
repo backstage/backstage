@@ -2,7 +2,7 @@
 '@backstage/frontend-app-api': patch
 ---
 
-Added resolution of route references by installed extension ID, alongside historical page-associated routes. Named module routes and external routes follow extension override precedence, and app assembly validates target extensions and parameter contracts. External bindings also support duplicated named refs and preserve explicitly disabled defaults. Selected external route overrides with no available target stay unbound, including when accessed through older ref copies.
+Added resolution of route references by installed extension ID, alongside historical page-associated routes. Named module routes and external routes follow extension override precedence, and app assembly validates target extensions and parameter contracts. External bindings also support duplicated named refs and preserve explicitly disabled defaults. Module external route overrides apply to references from older frontend system versions and the old frontend compatibility APIs. Selected external route overrides with no available target stay unbound, including when accessed through older ref copies.
 
 Deprecated page registrations provide a fallback for extension-targeted refs when the target extension is absent, preserving hybrid conversion with generated or overridden extension IDs. Installed targets, including disabled ones, take precedence.
 

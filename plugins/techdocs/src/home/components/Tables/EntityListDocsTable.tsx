@@ -46,7 +46,7 @@ import {
   DocsTableColumnFactories,
   DocsTableActionFactories,
 } from './types';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { entitiesToDocsMapper } from './helpers';
 
 /**

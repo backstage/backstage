@@ -16,7 +16,6 @@
 
 import { createExternalRouteRef } from '@backstage/core-plugin-api';
 import { createRouteRef } from '@backstage/frontend-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 
 export const createComponentRouteRef = createExternalRouteRef({
   id: 'create-component',
@@ -43,6 +42,4 @@ export const unregisterRedirectRouteRef = createExternalRouteRef({
   optional: true,
 });
 
-export const rootRouteRef = convertLegacyRouteRef(
-  createRouteRef({ extensionId: 'page:catalog' }),
-);
+export const rootRouteRef = createRouteRef({ extensionId: 'page:catalog' });

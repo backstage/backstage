@@ -23,7 +23,6 @@ import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-r
 import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-common';
 import { LogEvent as LogEvent_2 } from '@backstage/plugin-scaffolder-common';
-import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
@@ -582,10 +581,13 @@ export const ScaffolderPage: (
 export const scaffolderPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
-    selectedTemplate: SubRouteRef<
-      PathParams<'/templates/:namespace/:templateName'>
-    >;
-    ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    selectedTemplate: SubRouteRef<{
+      namespace: string;
+      templateName: string;
+    }>;
+    ongoingTask: SubRouteRef<{
+      taskId: string;
+    }>;
     actions: SubRouteRef<undefined>;
     listTasks: SubRouteRef<undefined>;
     edit: SubRouteRef<undefined>;

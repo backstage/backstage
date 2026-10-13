@@ -17,7 +17,7 @@
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { TemplateIntroPage } from './TemplateIntroPage';
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef } from '../../../legacyRoutes';
 
 describe('TemplateIntroPage', () => {
   it('Should render without exploding', async () => {

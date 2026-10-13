@@ -22,7 +22,7 @@ import {
   SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorPage } from './TemplateEditorPage';
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef } from '../../../legacyRoutes';
 import { formDecoratorsApiRef } from '../../api';
 
 describe('TemplateEditorPage', () => {

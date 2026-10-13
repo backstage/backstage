@@ -57,7 +57,7 @@ jest.mock('@backstage/plugin-techdocs-react', () => ({
   useShadowRootElements: () => [],
 }));
 
-import { rootCatalogDocsRouteRef, rootDocsRouteRef } from '../../routes';
+import { rootCatalogDocsRouteRef, rootDocsRouteRef } from '../../legacyRoutes';
 import {
   TechDocsEntityContent,
   TechDocsReaderPage,

@@ -23,7 +23,7 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
   rootCatalogDocsRouteRef,
-} from './routes';
+} from './legacyRoutes';
 import {
   configApiRef,
   createApiFactory,

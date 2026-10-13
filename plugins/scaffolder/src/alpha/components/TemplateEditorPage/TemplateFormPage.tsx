@@ -28,7 +28,7 @@ import {
   FieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 
-import { editRouteRef } from '../../../routes';
+import { editRouteRef } from '../../../legacyRoutes';
 import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';

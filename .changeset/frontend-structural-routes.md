@@ -2,7 +2,7 @@
 '@backstage/frontend-plugin-api': minor
 ---
 
-**BREAKING** `createRouteRef` now requires an `extensionId` identifying the routable extension. Remove `aliasFor` from source code and use `extensionId` instead. The `routeRef` options of `PageBlueprint` and `SubPageBlueprint` are deprecated. See the [migration guide](https://backstage.io/docs/tutorials/extension-route-reference-migration).
+**BREAKING** `createRouteRef` now requires an `extensionId` identifying the target extension, such as a page or entity content extension. Remove `aliasFor` from source code and use `extensionId` instead. The `routeRef` options of `PageBlueprint` and `SubPageBlueprint` are deprecated, but published plugins should retain them to support older frontend system versions until the options are removed. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#route-references-target-extension-ids).
 
 ```ts
 const rootRouteRef = createRouteRef({ extensionId: 'page:example' });

@@ -23,7 +23,7 @@ import {
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { fireEvent, within } from '@testing-library/react';
 import { capitalize } from 'lodash';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 import { TemplatingExtensionsPage } from './TemplatingExtensionsPage';
 import { ExtensionKind } from './navigation';
 

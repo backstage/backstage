@@ -28,6 +28,7 @@ const rootRouteRef = createRouteRef({ extensionId: 'page:app-visualizer' });
 const appVisualizerPage = PageBlueprint.make({
   params: {
     path: '/visualizer',
+    routeRef: rootRouteRef,
 
     title: 'Visualizer',
     icon: <RiEyeLine />,

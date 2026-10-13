@@ -19,7 +19,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
-import { editRouteRef } from '../../../routes';
+import { editRouteRef } from '../../../legacyRoutes';
 import { scaffolderTranslationRef } from '../../../translation';
 
 import { CustomFieldExplorer } from './CustomFieldExplorer';

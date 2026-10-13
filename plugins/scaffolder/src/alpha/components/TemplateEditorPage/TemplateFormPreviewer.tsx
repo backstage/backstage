@@ -32,7 +32,7 @@ import {
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
 
-import { editRouteRef } from '../../../routes';
+import { editRouteRef } from '../../../legacyRoutes';
 
 import {
   TemplateEditorLayout,
