@@ -1,5 +1,12 @@
 # @backstage/cli-module-build
 
+## 0.1.9-next.2
+
+### Patch Changes
+
+- cc4ef47: Restored the default exclusion of `node_modules` from test coverage for this package.
+- f163298: Improved code splitting for frontend module federation remotes to reduce unnecessary downloads of unrelated lazy components from the same dependency scope. Shared dependencies and workspace code are extracted across lazy boundaries when the resulting shared chunk meets the size threshold. Regular application builds are unchanged.
+
 ## 0.1.9-next.1
 
 ### Patch Changes

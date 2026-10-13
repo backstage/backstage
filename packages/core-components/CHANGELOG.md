@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.18.15-next.3
+
+### Patch Changes
+
+- e415488: Stop clearing the selected provider from `localStorage` when a sign-in loader is cancelled. Only clear it when the loader actually fails. Memoize `getSignInProviders` so it does not recreate the providers object on every render.
+- Updated dependencies
+  - @backstage/ui@0.19.0-next.0
+
 ## 0.18.15-next.2
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+
 ## 0.12.24-next.0
 
 ### Patch Changes

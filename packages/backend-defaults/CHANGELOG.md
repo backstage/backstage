@@ -1,5 +1,15 @@
 # @backstage/backend-defaults
 
+## 0.18.1-next.3
+
+### Patch Changes
+
+- f6054ac: Backends created with `createBackend` now provide the experimental connections service by default. Custom backends can install `connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
+- bd1ff39: Fixed AWS RDS IAM authentication tokens being reused after their signing credentials expire, which could cause database connection failures when using temporary AWS credentials.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+  - @backstage/backend-app-api@1.8.0-next.2
+
 ## 0.18.1-next.2
 
 ### Patch Changes

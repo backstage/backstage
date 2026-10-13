@@ -1,5 +1,15 @@
 # @backstage/backend-test-utils
 
+## 1.11.8-next.2
+
+### Patch Changes
+
+- f6054ac: Test backends now provide the default experimental connections service for plugins and modules that declare connection dependencies.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.1-next.3
+  - @backstage/backend-plugin-api@1.11.0-next.2
+  - @backstage/backend-app-api@1.8.0-next.2
+
 ## 1.11.8-next.1
 
 ### Patch Changes

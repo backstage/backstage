@@ -1,5 +1,11 @@
 # @backstage/backend-plugin-api
 
+## 1.11.0-next.2
+
+### Minor Changes
+
+- f6054ac: Added experimental `declareConnection` and `connectionsServiceRef` exports to `@backstage/backend-plugin-api/alpha`. Plugins and modules can declare connection dependencies and request the connections service without importing private packages.
+
 ## 1.11.0-next.1
 
 ### Minor Changes

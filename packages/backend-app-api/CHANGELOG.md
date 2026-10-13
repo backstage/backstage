@@ -1,5 +1,13 @@
 # @backstage/backend-app-api
 
+## 1.8.0-next.2
+
+### Patch Changes
+
+- f6054ac: Updated undeclared-connection errors to direct plugin authors to `declareConnection` from `@backstage/backend-plugin-api/alpha`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
 ## 1.8.0-next.1
 
 ### Minor Changes

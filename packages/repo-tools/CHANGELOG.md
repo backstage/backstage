@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.19.2-next.3
+
+### Patch Changes
+
+- dec6175: When an API, CLI, SQL, or knip report is out of date in CI, the error output now shows a diff of the changes that need to be committed instead of printing the full expected report.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
 ## 0.19.2-next.2
 
 ### Patch Changes

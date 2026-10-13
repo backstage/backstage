@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.1-next.3
+
+### Patch Changes
+
+- aa6e7c6: Reduce repeated work for entities that fail stitching by gradually increasing retry delays with jitter. Failed entities remain eligible for recovery, and new stitching requests reset their failure count.
+- d7cc6e5: Reject non-positive stitching polling intervals and lease durations at startup to prevent continuous polling and immediate lease expiry. Configuration errors identify the setting that needs correction.
+- 7c376ff: Improved the performance and planner stability of orphan entity cleanup on large PostgreSQL catalogs. Orphan deletion and updates to related entities are now atomic, so a failed cleanup does not leave related entities waiting indefinitely for updated relations. Cleanup also preserves entities when a new reference is committed while it waits to delete them.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
 ## 4.0.1-next.2
 
 ### Patch Changes
