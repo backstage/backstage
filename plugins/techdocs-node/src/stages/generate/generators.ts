@@ -55,9 +55,9 @@ export class Generators implements GeneratorBuilder {
 
     options.logger.info(`TechDocs generator defaultEngine: ${defaultEngine}`);
 
-    const techdocsGenerator =
+    const mkdocsGenerator =
       options.customGenerator ?? TechdocsGenerator.fromConfig(config, options);
-    generators.register(defaultEngine, techdocsGenerator);
+    generators.register('mkdocs', mkdocsGenerator);
 
     return generators;
   }

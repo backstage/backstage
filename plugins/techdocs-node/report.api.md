@@ -327,6 +327,8 @@ export class TechdocsGenerator implements GeneratorBase {
 // @public
 export interface TechdocsGeneratorExtensionPoint {
   // (undocumented)
+  registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase): void;
+  // (undocumented)
   setTechdocsGenerator(generator: GeneratorBase): void;
 }
 

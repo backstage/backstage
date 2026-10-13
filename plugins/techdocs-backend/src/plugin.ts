@@ -21,6 +21,7 @@ import {
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import {
   DocsBuildStrategy,
+  GeneratorBase,
   Generators,
   PreparerBase,
   Preparers,
@@ -29,6 +30,7 @@ import {
   PublisherSettings,
   PublisherType,
   RemoteProtocol,
+  SupportedGeneratorKey,
   techdocsBuildsExtensionPoint,
   TechdocsGenerator,
   techdocsGeneratorExtensionPoint,
@@ -65,13 +67,21 @@ export const techdocsPlugin = createBackendPlugin({
     });
 
     let customTechdocsGenerator: TechdocsGenerator | undefined;
+    const customGenerators = new Map<SupportedGeneratorKey, GeneratorBase>();
     env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
       setTechdocsGenerator(generator: TechdocsGenerator) {
         if (customTechdocsGenerator) {
           throw new Error('TechdocsGenerator may only be set once');
         }
-
         customTechdocsGenerator = generator;
+      },
+      registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase) {
+        if (customGenerators.has(key)) {
+          throw new Error(
+            `Generator for engine "${key}" is already registered`,
+          );
+        }
+        customGenerators.set(key, generator);
       },
     });
 
@@ -143,6 +153,9 @@ export const techdocsPlugin = createBackendPlugin({
           logger: logger,
           customGenerator: customTechdocsGenerator,
         });
+        for (const [key, generator] of customGenerators.entries()) {
+          generators.register(key, generator);
+        }
 
         // Publisher is used for
         // 1. Publishing generated files to storage
