@@ -196,7 +196,7 @@ export const useTechDocsReaderDom = (
           entityId: entityRef,
           path: contentPath,
         }),
-        rewriteDocLinks(),
+        rewriteDocLinks(configApi.has('techdocs.migration.rendering')),
         addSidebarToggle(),
         removeMkdocsHeader(),
         simplifyMkdocsFooter(),
@@ -206,6 +206,7 @@ export const useTechDocsReaderDom = (
     [
       // only add dependencies that are in state or memorized variables to avoid unnecessary calls between re-renders
       entityRef,
+      configApi,
       scmIntegrationsApi,
       techdocsStorageApi,
       sanitizerTransformer,

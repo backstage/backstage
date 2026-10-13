@@ -15,6 +15,7 @@ Commands:
   generate|build [options]
   help [command]
   migrate [options]
+  migrate-config [options]
   publish [options]
   serve [options]
   serve:mkdocs [options]
@@ -36,6 +37,7 @@ Options:
   --no-pull
   --omitTechdocsCoreMkdocsPlugin
   --output-dir <PATH>
+  --publishing <MODE>
   --runAsDefaultUser
   --site-name
   --source-dir <PATH>
@@ -65,6 +67,16 @@ Options:
   --storage-name <BUCKET/CONTAINER NAME>
   -h, --help
   -v, --verbose
+```
+
+### `techdocs-cli migrate-config`
+
+```
+Usage: techdocs-cli migrate-config [options]
+
+Options:
+  --source-dir <PATH>
+  -h, --help
 ```
 
 ### `techdocs-cli publish`
@@ -111,7 +123,9 @@ Options:
   --no-docker
   --preview-app-bundle-path <PATH_TO_BUNDLE>
   --preview-app-port <PORT>
+  --publishing <MODE>
   --site-name
+  --source-dir <PATH>
   -c, --mkdocs-config-file-name <FILENAME>
   -h, --help
   -i, --docker-image <DOCKER_IMAGE>

@@ -22,6 +22,7 @@ import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
 import { appApis, techdocsPluginApis } from './apis';
 import { configLoader } from './config';
+import { SourceLiveReload } from './components/SourceLiveReload';
 
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { SidebarContent } from './components/Sidebar';
@@ -53,4 +54,9 @@ const app = createApp({
   },
 });
 
-export default app.createRoot();
+export default (
+  <>
+    <SourceLiveReload />
+    {app.createRoot()}
+  </>
+);

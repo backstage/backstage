@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getCompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
@@ -133,6 +134,22 @@ export class Publisher implements PublisherBuilder {
         );
     }
 
-    return publishers.get(config);
+    return supportSourceDocuments(publishers.get(config));
   }
+}
+
+function supportSourceDocuments(publisher: PublisherBase): PublisherBase {
+  const hasHtml = publisher.hasDocsBeenGenerated.bind(publisher);
+  publisher.hasDocsBeenGenerated = async entity => {
+    if (await hasHtml(entity)) return true;
+    try {
+      const metadata = await publisher.fetchTechDocsMetadata(
+        getCompoundEntityRef(entity),
+      );
+      return metadata.source === true;
+    } catch {
+      return false;
+    }
+  };
+  return publisher;
 }

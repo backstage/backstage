@@ -60,7 +60,18 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^",
+    "node-emoji": "^2.2.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-directive": "^3.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

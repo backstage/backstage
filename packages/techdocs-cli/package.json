@@ -49,6 +49,7 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
+    "chokidar": "^4.0.3",
     "commander": "^14.0.3",
     "fs-extra": "^11.0.0",
     "http-proxy": "^1.18.1",

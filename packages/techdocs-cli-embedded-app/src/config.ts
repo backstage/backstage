@@ -22,6 +22,7 @@ const PRODUCTION_CONFIG = {
   },
   techdocs: {
     builder: 'external',
+    migration: { rendering: 'prefer-source' },
   },
 };
 
@@ -31,10 +32,11 @@ const DEVELOPMENT_CONFIG = {
   },
   techdocs: {
     builder: 'external',
+    migration: { rendering: 'prefer-source' },
   },
 };
 
-async function isProductionServe() {
+export async function isProductionServe() {
   const res = await fetch('/.detect');
   if (!res.ok) {
     return false;

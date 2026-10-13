@@ -159,7 +159,28 @@ export class LocalPublish implements PublisherBase {
 
     try {
       await validateNoExternalSymlinks(directory, directory);
-      await fs.copy(directory, publishDir);
+      if (
+        !(await fs.pathExists(
+          path.join(directory, '_techdocs/source/manifest.json'),
+        ))
+      ) {
+        await fs.remove(path.join(publishDir, '_techdocs/source'));
+      }
+      const sourceManifest = path.join(
+        directory,
+        '_techdocs/source/manifest.json',
+      );
+      await fs.copy(directory, publishDir, {
+        filter: source => source !== sourceManifest,
+      });
+      if (await fs.pathExists(sourceManifest)) {
+        const destination = path.join(
+          publishDir,
+          '_techdocs/source/manifest.json',
+        );
+        await fs.copyFile(sourceManifest, `${destination}.tmp`);
+        await fs.rename(`${destination}.tmp`, destination);
+      }
       this.logger.info(`Published site stored at ${publishDir}`);
     } catch (error) {
       this.logger.debug(

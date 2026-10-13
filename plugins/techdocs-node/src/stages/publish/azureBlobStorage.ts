@@ -208,7 +208,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
       container = this.storageClient.getContainerClient(this.containerName);
-      const failedOperations: Error[] = [];
       await bulkStorageOperation(
         async absoluteFilePath => {
           const relativeFilePath = path.normalize(
@@ -225,10 +224,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
             .uploadFile(absoluteFilePath);
 
           if (response._response.status >= 400) {
-            failedOperations.push(
-              new Error(
-                `Upload failed for ${absoluteFilePath} with status code ${response._response.status}`,
-              ),
+            throw new Error(
+              `Upload failed for ${absoluteFilePath} with status code ${response._response.status}`,
             );
           }
 
@@ -237,15 +234,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
         absoluteFilesToUpload,
         { concurrencyLimit: BATCH_CONCURRENCY },
       );
-
-      if (failedOperations.length > 0) {
-        throw new Error(
-          failedOperations
-            .map(r => r.message)
-            .filter(Boolean)
-            .join(' '),
-        );
-      }
 
       this.logger.info(
         `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${absoluteFilesToUpload.length}`,
