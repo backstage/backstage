@@ -293,13 +293,11 @@ export async function runApiExtraction({
         showVerboseMessages: false,
         showDiagnostics: false,
         messageCallback(message) {
-          if (message.text.includes('The API report file is missing')) {
-            shouldLogInstructions = true;
-          }
-
           // Detect messages like the following being output by the generator:
           // Warning: You have changed the API signature for this project. Please copy the file "/home/runner/work/backstage/backstage/node_modules/.cache/api-extractor/backend-test-utils/report.api.md" to "report.api.md", or perform a local build (which does this automatically). See the Git repo documentation for more info.
+          // The same instruction follows "The API report file is missing." for new reports.
           if (
+            message.text.includes('The API report file is missing') ||
             message.text.includes(
               'You have changed the API signature for this project.',
             )

@@ -182,15 +182,13 @@ async function runSingleSqlExtraction(
     } else {
       logApiReportInstructions();
 
-      if (existingReport) {
-        logReportDiff(
-          relativePath(targetPaths.rootDir, reportPath),
-          existingReport,
-          report,
-        );
+      logReportDiff(
+        relativePath(targetPaths.rootDir, reportPath),
+        existingReport,
+        report,
+      );
 
-        logApiReportInstructions();
-      }
+      logApiReportInstructions();
       throw new Error(`Report ${reportPath} is out of date`);
     }
   }
