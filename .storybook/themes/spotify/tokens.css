@@ -90,9 +90,10 @@
     --bui-fg-danger: #c91123;
     --bui-fg-success: #107434;
     --bui-fg-info: #0b62c8;
-    --bui-border-danger: #f87a7a;
-    --bui-border-warning: #e36d05;
-    --bui-border-success: #53db83;
+    --bui-border-danger: #c91123;
+    --bui-border-warning: #955500;
+    --bui-border-success: #107434;
+    --bui-border-info: #0b62c8;
   }
 
   [data-theme-mode='dark'][data-theme-name='spotify'] {
@@ -179,8 +180,9 @@
     --bui-fg-danger: #f3727f;
     --bui-fg-success: #1ed760;
     --bui-fg-info: #539df5;
-    --bui-border-danger: #f87a7a;
-    --bui-border-warning: #e36d05;
-    --bui-border-success: #53db83;
+    --bui-border-danger: #f3727f;
+    --bui-border-warning: #ffa42b;
+    --bui-border-success: #1ed760;
+    --bui-border-info: #539df5;
   }
 }
