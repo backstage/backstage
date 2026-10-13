@@ -96,7 +96,10 @@
   },
   "prettier": "@backstage/cli/config/prettier",
   "jest": {
-    "rejectFrontendNetworkRequests": true
+    "rejectFrontendNetworkRequests": true,
+    "setupFilesAfterEnv": [
+      "<rootDir>/../../../scripts/jest-setup.js"
+    ]
   },
   "resolutions": {
     "@inquirer/type@npm:^4.0.5": "4.0.7",
