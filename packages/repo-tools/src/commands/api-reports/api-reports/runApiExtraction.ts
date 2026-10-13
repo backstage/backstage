@@ -32,10 +32,8 @@ import {
 } from 'node:path';
 import { getPackageExportDetails } from '../../../lib/getPackageExportDetails';
 import { targetPaths } from '@backstage/cli-common';
-import { logApiReportInstructions } from '../common';
+import { logApiReportInstructions, logReportDiff } from '../common';
 import { patchApiReportGeneration } from './patchApiReportGeneration';
-
-const tmpDir = targetPaths.resolveRoot('./node_modules/.cache/api-extractor');
 
 export async function countApiReportWarnings(reportPath: string) {
   try {
@@ -358,17 +356,15 @@ export async function runApiExtraction({
           logApiReportInstructions();
 
           if (conflictingFile) {
-            console.log('');
-            console.log(
-              `The conflicting file is ${relativePath(
-                tmpDir,
-                conflictingFile,
-              )}, with the following content:`,
+            const existing = await fs
+              .readFile(extractorConfig.reportFilePath, 'utf8')
+              .catch(() => undefined);
+            const expected = await fs.readFile(conflictingFile, 'utf8');
+            logReportDiff(
+              relativePath(targetPaths.rootDir, extractorConfig.reportFilePath),
+              existing,
+              expected,
             );
-            console.log('');
-
-            const content = await fs.readFile(conflictingFile, 'utf8');
-            console.log(content);
 
             logApiReportInstructions();
           }

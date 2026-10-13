@@ -26,7 +26,7 @@ import { createBinRunner } from '../../util';
 import { CliHelpPage, CliModel } from './types';
 import { targetPaths } from '@backstage/cli-common';
 import { generateCliReport } from './generateCliReport';
-import { logApiReportInstructions } from '../common';
+import { logApiReportInstructions, logReportDiff } from '../common';
 
 export function parseHelpPage(helpPageContent: string) {
   let usage: string | undefined;
@@ -185,16 +185,11 @@ export async function runCliExtraction({
             logApiReportInstructions();
 
             if (existingReport) {
-              console.log('');
-              console.log(
-                `The conflicting file is ${relativePath(
-                  targetPaths.rootDir,
-                  reportPath,
-                )}, expecting the following content:`,
+              logReportDiff(
+                relativePath(targetPaths.rootDir, reportPath),
+                existingReport,
+                report,
               );
-              console.log('');
-
-              console.log(report);
 
               logApiReportInstructions();
             }

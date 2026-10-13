@@ -20,6 +20,7 @@ import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
 import type { KnipConfig } from 'knip';
 import { createBinRunner } from '../util';
+import { logReportDiff } from '../api-reports/common';
 
 interface KnipExtractionOptions {
   packageDirs: string[];
@@ -146,16 +147,11 @@ async function handlePackage({
       logKnipReportInstructions();
 
       if (existingReport) {
-        console.log('');
-        console.log(
-          `The conflicting file is ${relativePath(
-            targetPaths.rootDir,
-            reportPath,
-          )}, expecting the following content:`,
+        logReportDiff(
+          relativePath(targetPaths.rootDir, reportPath),
+          existingReport,
+          report,
         );
-        console.log('');
-
-        console.log(report);
 
         logKnipReportInstructions();
       }
