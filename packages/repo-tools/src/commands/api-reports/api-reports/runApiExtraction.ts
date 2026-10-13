@@ -304,7 +304,7 @@ export async function runApiExtraction({
           ) {
             shouldLogInstructions = true;
             const match = message.text.match(
-              /Please copy the file "(.*)" to "report\.api\.md"/,
+              /Please copy the file "(.*)" to "[^"]*\.api\.md"/,
             );
             if (match) {
               conflictingFile = match[1];
@@ -356,7 +356,12 @@ export async function runApiExtraction({
           if (conflictingFile) {
             const existing = await fs
               .readFile(extractorConfig.reportFilePath, 'utf8')
-              .catch(() => undefined);
+              .catch(error => {
+                if (error.code === 'ENOENT') {
+                  return undefined;
+                }
+                throw error;
+              });
             const expected = await fs.readFile(conflictingFile, 'utf8');
             logReportDiff(
               relativePath(targetPaths.rootDir, extractorConfig.reportFilePath),
