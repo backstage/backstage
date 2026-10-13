@@ -29,6 +29,9 @@
     /* Focus ring */
     --bui-ring: #000000;
 
+    /* Shadow */
+    --bui-shadow: 0 4px 12px 0 rgb(0 0 0 / 30%);
+
     /* Accent */
     --bui-accent-bg: #1ed760;
     --bui-accent-bg-hover: #3be477;
@@ -118,6 +121,9 @@
 
     /* Focus ring */
     --bui-ring: #ffffff;
+
+    /* Shadow */
+    --bui-shadow: 0 4px 12px 0 rgb(0 0 0 / 30%);
 
     /* Accent */
     --bui-accent-bg: #1ed760;
