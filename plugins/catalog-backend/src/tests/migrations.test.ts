@@ -66,7 +66,7 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       const knex = await databases.init(databaseId);
       await knex.migrate.latest({ directory: migrationsDir });
       const migration = jest.requireActual<{ up: (db: Knex) => Promise<void> }>(
-        '../../migrations/20261006000000_final_entity_generations',
+        '../../migrations/20261013000000_final_entity_generations',
       );
       const readIndex = async () => {
         const { rows } = await knex.raw(`
@@ -129,12 +129,12 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     const knex = await databases.init(databaseId);
     await migrateUntilBefore(
       knex,
-      '20261006000000_final_entity_generations.js',
+      '20261013000000_final_entity_generations.js',
     );
 
     const migration = jest.requireActual<{
       up: (db: Knex) => Promise<void>;
-    }>('../../migrations/20261006000000_final_entity_generations');
+    }>('../../migrations/20261013000000_final_entity_generations');
     await knex('refresh_state').insert({
       entity_id: 'legacy',
       entity_ref: 'k:ns/legacy',
