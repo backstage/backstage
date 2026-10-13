@@ -28,14 +28,12 @@ import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { PathParams } from '@backstage/core-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
-import { RouteRef } from '@backstage/core-plugin-api';
-import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
-import { SubRouteRef } from '@backstage/core-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -44,10 +42,13 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
-    selectedTemplate: SubRouteRef<
-      PathParams<'/templates/:namespace/:templateName'>
-    >;
-    ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    selectedTemplate: SubRouteRef<{
+      namespace: string;
+      templateName: string;
+    }>;
+    ongoingTask: SubRouteRef<{
+      taskId: string;
+    }>;
     actions: SubRouteRef<undefined>;
     listTasks: SubRouteRef<undefined>;
     edit: SubRouteRef<undefined>;
@@ -202,7 +203,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -228,7 +229,7 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
-              RouteRef_2<AnyRouteRefParams>,
+              RouteRef<AnyRouteRefParams>,
               'core.routing.ref',
               {
                 optional: true;
@@ -274,7 +275,7 @@ const _default: OverridableFrontendPlugin<
         title?: string;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
         noHeader?: boolean;
       };
     }>;
@@ -442,7 +443,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -463,7 +464,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
       };
     }>;
     'sub-page:scaffolder/editor': OverridableExtensionDefinition<{
@@ -480,7 +481,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -501,7 +502,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
       };
     }>;
     'sub-page:scaffolder/tasks': OverridableExtensionDefinition<{
@@ -516,7 +517,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -557,7 +558,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
       };
     }>;
     'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
@@ -588,7 +589,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -611,7 +612,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
       };
     }>;
     'sub-page:scaffolder/templating-extensions': OverridableExtensionDefinition<{
@@ -628,7 +629,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -649,7 +650,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
       };
     }>;
   }

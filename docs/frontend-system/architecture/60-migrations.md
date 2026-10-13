@@ -11,6 +11,74 @@ This section provides migration guides for different versions of the frontend sy
 
 This guide is intended for app and plugin authors who have already migrated their code to the new frontend system, and are looking to keep it up to date with the latest changes. These guides do not cover trivial migrations that can be explained in a deprecation message, such as a renamed export.
 
+## 1.56
+
+### Route references target extension IDs
+
+The new frontend system's routing is now more resilient to duplicated route
+reference instances, such as those introduced by package duplication, avoiding
+subtle bugs that can be difficult to diagnose. Absolute route references identify
+their destination by extension ID rather than object identity, so independently
+created references to the same target resolve consistently. This also removes
+the need for `aliasFor`, since references can point directly to their target
+extension.
+
+`createRouteRef` from `@backstage/frontend-plugin-api` now requires an
+`extensionId` identifying the target extension, often a page or entity content
+extension. Add this ID to your existing route reference. Parameters are
+unaffected: keep any existing `params`. Replace `aliasFor` with `extensionId`
+pointing to the same target extension.
+
+#### Supporting older frontend system versions
+
+If you publish a plugin and want to retain support for older versions of the
+new frontend system, keep the blueprint's `routeRef` parameter as well. Those
+versions still rely on this registration. Remove it only when the option is
+removed from `PageBlueprint`. The same applies to `SubPageBlueprint`.
+
+The following example shows the updated reference, page, and plugin together:
+
+```tsx
+import {
+  createFrontendPlugin,
+  createRouteRef,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
+
+const rootRouteRef = createRouteRef({ extensionId: 'page:example' });
+
+const examplePage = PageBlueprint.make({
+  params: {
+    path: '/example',
+    // Published plugins supporting older new frontend system versions must
+    // keep routeRef until this option is removed from PageBlueprint.
+    routeRef: rootRouteRef,
+    loader: () => import('./ExamplePage').then(m => <m.ExamplePage />),
+  },
+});
+
+export default createFrontendPlugin({
+  pluginId: 'example',
+  routes: { root: rootRouteRef },
+  extensions: [examplePage],
+});
+```
+
+For a plugin with `pluginId: 'example'`, an unnamed `PageBlueprint` extension
+has the ID `page:example`; adding `name: 'details'` gives it the ID
+`page:example/details`. Use the extension ID rather than the named route key,
+such as `example.root`. See [extension IDs](./20-extensions.md#id).
+
+If you upgrade your app and its plugins together and only support frontend
+system versions with extension-ID routing, you can remove the blueprint's
+`routeRef` parameter immediately. Previously compiled plugins continue to work
+with their existing registrations in the updated frontend system.
+
+For plugins that also support the old frontend system, see the
+[plugin migration guide](../building-plugins/05-migrating.md#migrating-pages).
+For page replacements and route-name aliases, see
+[overriding routes with modules](./36-routes.md#overriding-routes-with-modules).
+
 ## 1.50
 
 ### New `configSchema` option for extension config

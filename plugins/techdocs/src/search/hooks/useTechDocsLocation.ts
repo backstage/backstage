@@ -18,7 +18,7 @@ import { useMemo } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-import { rootCatalogDocsRouteRef, rootDocsRouteRef } from '../../routes';
+import { rootCatalogDocsRouteRef, rootDocsRouteRef } from '../../legacyRoutes';
 
 const trimStartSlash = (path: string) => path.replace(/^\/+/, '');
 const trimEndSlash = (path: string) => path.replace(/\/+$/, '');

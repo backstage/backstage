@@ -34,7 +34,9 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 
 ### Providing Route References to Plugins
 
-The `extensionId` identifies the routable extension. The page supplies its path and content:
+The `extensionId` identifies the target extension. This is often a page or entity
+content extension, but can be any extension that provides a route in the app.
+In this example, the target is a page that supplies its path and content:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
@@ -456,7 +458,13 @@ export default createFrontendPlugin({
 
 A module can [override a page extension](./25-extension-overrides.md#creating-a-frontend-module)
 by providing the same extension ID. References targeting that ID resolve through
-the replacement page automatically.
+the replacement page automatically. When replacing a page that still uses a
+page-associated reference, pass the plugin's existing route reference to the
+replacement page's `routeRef` parameter. Keep that registration when supporting
+older frontend system versions.
+
+Module route overrides require an app runtime with support for module `routes`
+and `externalRoutes`; older versions of the new frontend system ignore these fields.
 
 Modules can also add or override named routes using `routes`:
 
@@ -516,5 +524,5 @@ export default createFrontendModule({
 
 App bindings for `example.viewItem` take precedence over its default target.
 
-For existing plugins, see the [route reference migration guide](../../tutorials/extension-route-reference-migration.md)
+For existing plugins, see the [route reference migration guide](./60-migrations.md#route-references-target-extension-ids)
 or the [old frontend system plugin migration guide](../building-plugins/05-migrating.md).

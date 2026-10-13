@@ -26,7 +26,7 @@ import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider } from '@backstage/core-app-api';
-import { rootDocsRouteRef } from '../../routes';
+import { rootDocsRouteRef } from '../../legacyRoutes';
 
 const mockCatalogApi = catalogApiMock({
   entities: [

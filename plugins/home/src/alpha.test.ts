@@ -16,6 +16,8 @@
 
 import { mockApis } from '@backstage/test-utils';
 import homePlugin from './alpha';
+import { homePlugin as legacyHomePlugin } from './plugin';
+import { rootRouteRef } from './routes';
 import { VisitsStorageApi, VisitsWebStorageApi } from './api';
 
 // Mock localStorage for testing
@@ -89,7 +91,8 @@ describe('Home Plugin Alpha', () => {
   describe('Plugin Structure', () => {
     it('should have correct plugin metadata', () => {
       expect(homePlugin.id).toBe('home');
-      expect(homePlugin.routes.root).toBeDefined();
+      expect(homePlugin.routes.root).toBe(rootRouteRef);
+      expect(legacyHomePlugin.routes.root).toBe(rootRouteRef);
     });
 
     it('should include all extensions in the correct order', () => {

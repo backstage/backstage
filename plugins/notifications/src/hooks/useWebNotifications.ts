@@ -16,7 +16,7 @@
 import { useCallback, useState } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { notificationsApiRef } from '../api';
-import { rootRouteRef } from '../routes';
+import { rootRouteRef } from '../legacyRoutes';
 
 /** @internal */
 export function useWebNotifications(enabled: boolean) {

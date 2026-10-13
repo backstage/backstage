@@ -47,7 +47,7 @@ import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
-} from '../../../routes';
+} from '../../../legacyRoutes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 

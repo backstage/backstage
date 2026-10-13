@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef } from '../../../legacyRoutes';
 
 import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
 import { waitFor } from '@testing-library/react';

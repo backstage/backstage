@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
-import { catalogEntityRouteRef, catalogGraphRouteRef } from './routes';
+import { catalogEntityRouteRef, catalogGraphRouteRef } from './legacyRoutes';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
 
 /**

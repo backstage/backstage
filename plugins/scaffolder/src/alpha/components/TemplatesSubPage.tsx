@@ -57,7 +57,7 @@ import {
   registerComponentRouteRef,
   selectedTemplateRouteRef,
   viewTechDocRouteRef,
-} from '../../routes';
+} from '../../legacyRoutes';
 import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';

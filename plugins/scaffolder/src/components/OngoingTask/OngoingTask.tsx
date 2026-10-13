@@ -32,7 +32,7 @@ import {
   ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
-import { selectedTemplateRouteRef } from '../../routes';
+import { selectedTemplateRouteRef } from '../../legacyRoutes';
 import {
   AnalyticsContext,
   useAnalytics,

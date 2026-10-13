@@ -78,16 +78,35 @@ The code above binds all the extensions to the plugin. _Important_: Make sure to
   },
 ```
 
-## Migrating Pages
+## Migrating pages
 
-Pages that were previously created using the `createRoutableExtension` extension function can be migrated to the new Frontend System using the `PageBlueprint` [extension blueprint](../architecture/23-extension-blueprints.md), exported by `@backstage/frontend-plugin-api`.
+Keep the legacy route and page exports when adding new frontend system support
+to a shared plugin. Convert the route reference for the new plugin entry point
+and register it on the new page.
 
-In the new system plugins provide more information than they used to. For example, the plugin is now responsible for providing the path for the page, rather than it being part of the app code.
+For example, start with this legacy route:
 
-For example, given the following page:
+```ts title="my-plugin/src/routes.ts"
+import { createRouteRef } from '@backstage/core-plugin-api';
 
-```ts
-export const FooPage = fooPlugin.provide(
+export const rootRouteRef = createRouteRef({ id: 'my-plugin' });
+```
+
+The legacy plugin exposes the route and uses it as the page's mount point:
+
+```ts title="my-plugin/src/plugin.ts"
+import {
+  createPlugin,
+  createRoutableExtension,
+} from '@backstage/core-plugin-api';
+import { rootRouteRef } from './routes';
+
+export const myPlugin = createPlugin({
+  id: 'my-plugin',
+  routes: { root: rootRouteRef },
+});
+
+export const FooPage = myPlugin.provide(
   createRoutableExtension({
     name: 'FooPage',
     component: () => import('./components').then(m => m.FooPage),
@@ -96,59 +115,83 @@ export const FooPage = fooPlugin.provide(
 );
 ```
 
-and the following instruction in the plugin README:
+If apps mount this page at `/foo`, use `/foo` as the new page's default path.
+Apps can customize that path through extension configuration.
 
-```tsx
-<Route path="/foo" element={<FooPage />} />
-```
+Add the new frontend entry point:
 
-it can be migrated as the following, keeping in mind that you may need to switch from `.ts` to `.tsx`:
+```tsx title="my-plugin/src/alpha.tsx"
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  createFrontendPlugin,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
+import { rootRouteRef } from './routes';
 
-```tsx
-import { PageBlueprint } from '@backstage/frontend-plugin-api';
+const convertedRootRouteRef = convertLegacyRouteRef(rootRouteRef);
 
 const fooPage = PageBlueprint.make({
   params: {
-    // This is the path that was previously defined in the app code.
-    // It's labelled as the default one because it can be changed via configuration.
     path: '/foo',
-    // You can reuse the existing routeRef.
-    routeRef: rootRouteRef,
-    // these inputs usually match the props required by the component.
-    loader: () => import('./components/').then(m => <m.FooPage />),
+    routeRef: convertedRootRouteRef,
+    loader: () => import('./components').then(m => <m.FooPage />),
   },
+});
+
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  routes: { root: convertedRootRouteRef },
+  extensions: [fooPage],
 });
 ```
 
-Route references converted with `convertLegacyRouteRef` retain their association
-with the page's `routeRef` output. Keep this registration when reusing an old
-frontend system route reference.
+The converted reference retains its association with the page's `routeRef`
+output. Keep that registration when reusing a legacy reference. Apply the same
+conversion to other legacy route references exposed by the new plugin.
 
-When a shared reference has been updated to target an `extensionId`, keep the
-`routeRef` registration if the page is also used through hybrid conversion
-utilities. Converted pages can have generated or overridden extension IDs. If
-the reference's target ID is absent from the app, its explicit registration
-provides the fallback mount. Registering multiple different fallback mounts for
-the same target is ambiguous and throws when that fallback is needed.
+### Updating a shared reference to target an extension ID
+
+Once the new page has a stable extension ID, create the shared route reference
+with the new frontend API:
+
+```ts title="my-plugin/src/routes.ts"
+import { createRouteRef } from '@backstage/frontend-plugin-api';
+
+export const rootRouteRef = createRouteRef({ extensionId: 'page:my-plugin' });
+```
+
+Move the conversion to the legacy plugin entry point, using the converted
+reference for its `routes` and `mountPoint`:
+
+```ts title="my-plugin/src/plugin.ts"
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import { rootRouteRef as rootRouteRefNew } from './routes';
+
+const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
+```
+
+In the new frontend entry point, import `rootRouteRef` directly from `./routes`
+and use it in place of `convertedRootRouteRef`, removing the conversion there.
+The conversion preserves object identity, so both entry points share the same
+reference. Shared components that still use legacy routing hooks can import
+converted references from a separate `legacyRoutes.ts` module.
+
+Keep any route `params` when changing the declaration. For pages with a `name`,
+include it in the ID, for example `page:my-plugin/details` for
+`PageBlueprint.make({ name: 'details', ... })`.
+
+Keep the new page's `routeRef` registration to support older versions of the
+new frontend system, as described in the [release migration guide](../architecture/60-migrations.md#supporting-older-frontend-system-versions).
+It is also needed when supporting hybrid conversion utilities such as
+`convertLegacyPageExtension`. Converted pages can have
+generated or overridden extension IDs. If the reference's target ID is absent
+from the app, its explicit registration provides the fallback mount. Multiple
+different fallback mounts for the same target are ambiguous and throw when
+that fallback is needed.
 
 An installed target takes precedence over fallback mounts, including when it is
-disabled or conditionally unavailable.
-
-Then add the `fooPage` extension to the plugin:
-
-```ts title="my-plugin/src/alpha.tsx"
-  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-
-  export default createFrontendPlugin({
-    pluginId: 'my-plugin',
-    // bind all the extensions to the plugin
-    /* highlight-remove-next-line */
-    extensions: [],
-    /* highlight-add-next-line */
-    extensions: [fooPage],
-    ...
-  });
-```
+disabled or conditionally unavailable. For plugins that use only the new frontend
+system, follow the [route reference migration](../architecture/60-migrations.md#route-references-target-extension-ids).
 
 ## Migrating Components
 

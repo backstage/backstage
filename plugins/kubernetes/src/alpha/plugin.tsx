@@ -16,7 +16,7 @@
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { entityKubernetesContent } from './entityContents';
-import { rootCatalogKubernetesRouteRef } from '../plugin';
+import { rootCatalogKubernetesRouteRef } from '../routes';
 import {
   kubernetesApiExtension as kubernetesApi,
   kubernetesAuthProvidersApi,

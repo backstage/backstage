@@ -161,6 +161,7 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
       routeRefsById.routes,
       validation?.tree.nodes.keys(),
       routeRefsById.redirects,
+      routeRefsById.externalRouteIds,
     );
     if (validation?.refs) {
       this.#delegate.validate(validation.tree, validation.refs);

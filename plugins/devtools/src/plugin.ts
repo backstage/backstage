@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createApiFactory,
   createPlugin,
@@ -23,7 +24,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { devToolsApiRef, DevToolsClient } from './api';
 
-import { rootRouteRef } from './routes';
+import { rootRouteRef as rootRouteRefNew } from './routes';
+
+const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
 
 /** @public */
 export const devToolsPlugin = createPlugin({

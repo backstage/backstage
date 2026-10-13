@@ -18,7 +18,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { catalogGraphPlugin } from './plugin';
-import { catalogGraphRouteRef } from './routes';
+import { catalogGraphRouteRef } from './legacyRoutes';
 
 /**
  * A card that displays the directly related entities to the current entity.

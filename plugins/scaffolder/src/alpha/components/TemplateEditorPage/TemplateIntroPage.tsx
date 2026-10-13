@@ -24,7 +24,7 @@ import {
   editorRouteRef,
   templateFormRouteRef,
   customFieldsRouteRef,
-} from '../../../routes';
+} from '../../../legacyRoutes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 import { useTemplateDirectory } from './useTemplateDirectory';

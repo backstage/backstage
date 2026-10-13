@@ -21,7 +21,7 @@ import {
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { settingsRouteRef } from './plugin';
+import { settingsRouteRef } from './routes';
 
 import { userSettingsTranslationRef as _userSettingsTranslationRef } from './translation';
 

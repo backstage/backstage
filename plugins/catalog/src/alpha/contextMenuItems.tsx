@@ -20,9 +20,10 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { RiBugLine, RiDeleteBinLine, RiFileCopyLine } from '@remixicon/react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   dialogApiRef,
+  useRouteRef,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
@@ -131,9 +132,7 @@ export const unregisterEntityContextMenuItem =
                 onConfirm={() => {
                   dialog.close();
                   navigate(
-                    unregisterRedirectRoute
-                      ? unregisterRedirectRoute()
-                      : catalogRoute(),
+                    unregisterRedirectRoute?.() ?? catalogRoute?.() ?? '/',
                   );
                 }}
               />

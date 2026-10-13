@@ -28,7 +28,7 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { toLowerMaybe } from '../../../helpers';
 
 /** @public */

@@ -26,7 +26,8 @@ import {
   routeResolutionApiRef,
   RouteRef,
 } from '@backstage/frontend-plugin-api';
-import { OpaqueRouteRef } from '@internal/frontend';
+import { createExternalRouteRef as createLegacyExternalRouteRef } from '@backstage/core-plugin-api';
+import { OpaqueExternalRouteRef, OpaqueRouteRef } from '@internal/frontend';
 import { ConfigReader } from '@backstage/config';
 import { createSpecializedApp } from '../wiring/createSpecializedApp';
 
@@ -577,4 +578,80 @@ it('redirects routes first introduced by a module after selecting the final over
   }).apis.get(routeResolutionApiRef)!;
   expect(resolution.resolve(original)?.()).toBe('/final');
   expect(resolution.resolve(copy)?.()).toBe('/final');
+});
+
+it('uses registered identities for historical and legacy-compatible external overrides', () => {
+  const historical = createExternalRouteRef({ defaultTarget: 'test.root' });
+  delete OpaqueExternalRouteRef.toInternal(historical).getId;
+  const legacy = createLegacyExternalRouteRef({
+    id: 'legacy',
+    defaultTarget: 'test.root',
+  });
+  const misleading = createExternalRouteRef({ defaultTarget: 'test.root' });
+  OpaqueExternalRouteRef.toInternal(misleading).getId = () =>
+    'unregistered.route';
+
+  for (const original of [historical, legacy, misleading]) {
+    const root = createRouteRef({ extensionId: 'page:test/root' });
+    const other = createRouteRef({ extensionId: 'page:test/other' });
+    const replacement = createExternalRouteRef({ defaultTarget: 'test.other' });
+    delete OpaqueExternalRouteRef.toInternal(replacement).getId;
+    const plugin = createFrontendPlugin({
+      pluginId: 'test',
+      routes: { root, other },
+      externalRoutes: { home: original },
+      extensions: [page('root', '/root'), page('other', '/other')],
+    });
+    const module = createFrontendModule({
+      pluginId: 'test',
+      externalRoutes: { home: replacement },
+    });
+    const features = [app, plugin, module];
+    const defaults = createSpecializedApp({ features }).apis.get(
+      routeResolutionApiRef,
+    )!;
+    for (const ref of [original, replacement]) {
+      expect(defaults.resolve(ref)?.()).toBe('/other');
+    }
+    const configured = createSpecializedApp({
+      features,
+      config: new ConfigReader({
+        app: { routes: { bindings: { 'test.home': 'test.root' } } },
+      }),
+    }).apis.get(routeResolutionApiRef)!;
+    expect(configured.resolve(original)?.()).toBe('/root');
+    const explicit = createSpecializedApp({
+      features,
+      bindRoutes({ bind }) {
+        bind({ home: original }, { home: root });
+      },
+    }).apis.get(routeResolutionApiRef)!;
+    expect(explicit.resolve(original)?.()).toBe('/root');
+    expect(explicit.resolve(replacement)?.()).toBe('/root');
+    for (const boundRef of [original, replacement]) {
+      const disabled = createSpecializedApp({
+        features,
+        bindRoutes({ bind }) {
+          bind({ home: boundRef }, { home: false });
+        },
+      }).apis.get(routeResolutionApiRef)!;
+      expect(disabled.resolve(original)).toBeUndefined();
+      expect(disabled.resolve(replacement)).toBeUndefined();
+    }
+    for (const defaultTarget of [undefined, 'missing.root']) {
+      const unbound = createExternalRouteRef({ defaultTarget });
+      const resolution = createSpecializedApp({
+        features: [
+          app,
+          plugin,
+          createFrontendModule({
+            pluginId: 'test',
+            externalRoutes: { home: unbound },
+          }),
+        ],
+      }).apis.get(routeResolutionApiRef)!;
+      expect(resolution.resolve(original)).toBeUndefined();
+      expect(resolution.resolve(unbound)).toBeUndefined();
+    }
+  }
 });

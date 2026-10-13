@@ -31,7 +31,7 @@ import {
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { catalogGraphRouteRef } from '../../routes';
+import { catalogGraphRouteRef } from '../../legacyRoutes';
 import { CatalogGraphCard } from './CatalogGraphCard';
 import Button from '@material-ui/core/Button';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';

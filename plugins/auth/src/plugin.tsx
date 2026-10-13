@@ -22,6 +22,7 @@ import { rootRouteRef } from './routes';
 export const AuthPage = PageBlueprint.make({
   params: {
     path: '/oauth2',
+    routeRef: rootRouteRef,
     loader: () => import('./components/Router').then(m => <m.Router />),
   },
 });

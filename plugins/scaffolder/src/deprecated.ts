@@ -55,7 +55,7 @@ import {
   type FieldExtensionComponent as FieldExtensionComponentTemp,
 } from '@backstage/plugin-scaffolder-react';
 
-import { rootRouteRef as rootRouteRefTemp } from './routes';
+import { rootRouteRef as rootRouteRefTemp } from './legacyRoutes';
 
 /**
  * @public

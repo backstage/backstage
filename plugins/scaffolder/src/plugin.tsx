@@ -72,7 +72,7 @@ import {
   customFieldsRouteRef,
   templateFormRouteRef,
   templatingExtensionsRouteRef,
-} from './routes';
+} from './legacyRoutes';
 import {
   MyGroupsPicker,
   MyGroupsPickerSchema,

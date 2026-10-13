@@ -28,7 +28,7 @@ import {
   renderInTestApp,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { rootDocsRouteRef } from '../../routes';
+import { rootDocsRouteRef } from '../../legacyRoutes';
 import { TechDocsIndexPageContent } from './TechDocsIndexPageContent';
 
 const mockCatalogApi = catalogApiMock({

@@ -13,8 +13,8 @@ import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/core-plugin-api';
-import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const BuiThemerPage: () => JSX_3.Element;
@@ -22,7 +22,7 @@ export const BuiThemerPage: () => JSX_3.Element;
 // @public (undocumented)
 export const buiThemerPlugin: BackstagePlugin<
   {
-    root: RouteRef<undefined>;
+    root: RouteRef_2<undefined>;
   },
   {}
 >;
@@ -48,7 +48,7 @@ const _default: OverridableFrontendPlugin<
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
+            RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -74,7 +74,7 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
-              RouteRef_2<AnyRouteRefParams>,
+              RouteRef<AnyRouteRefParams>,
               'core.routing.ref',
               {
                 optional: true;
@@ -106,7 +106,7 @@ const _default: OverridableFrontendPlugin<
         title?: string;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
-        routeRef?: RouteRef_2;
+        routeRef?: RouteRef;
         noHeader?: boolean;
       };
     }>;

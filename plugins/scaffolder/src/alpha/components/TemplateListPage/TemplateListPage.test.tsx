@@ -27,7 +27,7 @@ import {
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import { rootRouteRef, viewTechDocRouteRef } from '../../../routes';
+import { rootRouteRef, viewTechDocRouteRef } from '../../../legacyRoutes';
 import { TemplateListPage } from './TemplateListPage';
 import {
   TECHDOCS_ANNOTATION,

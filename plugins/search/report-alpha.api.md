@@ -17,7 +17,6 @@ import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -26,7 +25,7 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
   {
-    root: RouteRef_2<undefined>;
+    root: RouteRef<undefined>;
   },
   {},
   {

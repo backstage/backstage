@@ -66,7 +66,7 @@ import {
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../../legacyRoutes';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
 /** @public */

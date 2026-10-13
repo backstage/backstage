@@ -76,7 +76,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       loader: () => Promise<JSX.Element>;
       /**
-       * @deprecated Set extensionId when creating the route reference instead.
+       * @deprecated Set extensionId when creating the route reference. Keep this registration to support older frontend system versions.
        */
       routeRef?: RouteRef;
     },

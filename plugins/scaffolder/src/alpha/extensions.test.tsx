@@ -22,7 +22,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { rootRouteRef } from '../routes';
+import { rootRouteRef } from '../legacyRoutes';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   catalogApiRef,
