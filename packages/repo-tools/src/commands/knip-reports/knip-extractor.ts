@@ -146,15 +146,13 @@ async function handlePackage({
     } else {
       logKnipReportInstructions();
 
-      if (existingReport) {
-        logReportDiff(
-          relativePath(targetPaths.rootDir, reportPath),
-          existingReport,
-          report,
-        );
+      logReportDiff(
+        relativePath(targetPaths.rootDir, reportPath),
+        existingReport,
+        report,
+      );
 
-        logKnipReportInstructions();
-      }
+      logKnipReportInstructions();
       throw new Error(`Knip report changed for ${packageDir}, `);
     }
   }

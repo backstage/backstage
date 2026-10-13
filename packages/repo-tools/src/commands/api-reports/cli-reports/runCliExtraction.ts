@@ -184,15 +184,13 @@ export async function runCliExtraction({
           } else {
             logApiReportInstructions();
 
-            if (existingReport) {
-              logReportDiff(
-                relativePath(targetPaths.rootDir, reportPath),
-                existingReport,
-                report,
-              );
+            logReportDiff(
+              relativePath(targetPaths.rootDir, reportPath),
+              existingReport,
+              report,
+            );
 
-              logApiReportInstructions();
-            }
+            logApiReportInstructions();
             throw new Error(`CLI report changed for ${packageDir}`);
           }
         }
