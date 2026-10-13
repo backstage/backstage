@@ -17,7 +17,12 @@ import { ReviewStateContent, ReviewItem } from './ReviewStateContent';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { isJsonObject, formatKey, findSchemaForKey } from './util';
+import {
+  isJsonObject,
+  formatKey,
+  findSchemaForKey,
+  escapePointerSegment,
+} from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -43,13 +48,13 @@ function processSchema(
   const name =
     definitionInSchema?.['ui:backstage']?.review?.name ??
     definitionInSchema?.title ??
-    formatKey(key);
+    formatKey(key.replace(/~1/g, '/').replace(/~0/g, '~'));
 
   const item = (
     displayValue: JsonValue | undefined,
     masked = false,
   ): ReviewItem => ({
-    path: key,
+    path: `/${key}`,
     label: name,
     // Detach objects and arrays from the state used by submission.
     displayValue:
@@ -91,7 +96,12 @@ function processSchema(
     if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
       // Recurse nested objects
       return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
-        processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
+        processSchema(
+          `${key}/${escapePointerSegment(nestedKey)}`,
+          nestedValue,
+          schema,
+          formState,
+        ),
       );
     }
   }
@@ -108,10 +118,15 @@ export const ReviewState = (props: ReviewStateProps) => {
     ([key, value]) => {
       const schema = findSchemaForKey(key, props.schemas, props.formState);
       return schema
-        ? processSchema(key, value, schema, props.formState)
+        ? processSchema(
+            escapePointerSegment(key),
+            value,
+            schema,
+            props.formState,
+          )
         : [
             {
-              path: key,
+              path: `/${escapePointerSegment(key)}`,
               label: formatKey(key),
               displayValue:
                 value === undefined

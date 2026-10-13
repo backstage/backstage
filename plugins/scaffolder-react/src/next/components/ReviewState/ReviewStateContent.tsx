@@ -31,6 +31,7 @@ export type ReviewDisplayValue =
 
 /** A visible review item. Excluded items are never supplied. @alpha */
 export type ReviewItem = Readonly<{
+  /** RFC 6901 JSON Pointer identifying the field in submission state. */
   path: string;
   label: string;
   displayValue: ReviewDisplayValue | undefined;
@@ -55,7 +56,8 @@ const SwappableReviewStateContent =
  * The default implementation preserves the existing metadata table.
  * Apps using the new frontend system can replace it with a
  * `SwappableComponentBlueprint` registered in an `app` frontend module.
- * Its loader receives only visible, prepared review items. Replacements should
+ * Its zero-argument loader returns the replacement component. That component
+ * receives only visible, prepared review items as props. Replacements should
  * preserve masked values and use the supplied field path and type for formatting.
  * It does not expose submission state or wizard controls.
  *

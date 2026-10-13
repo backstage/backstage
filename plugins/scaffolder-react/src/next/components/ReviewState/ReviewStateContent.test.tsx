@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
@@ -103,17 +103,105 @@ it('loads a real NFS swap after masking and detaches values from submission stat
   expect(JSON.stringify(captured)).not.toMatch(
     /hidden-original|secret-original|password-original|masked-original/,
   );
-  expect(captured?.items.find(x => x.path === 'owner')?.fieldType).toBe(
+  expect(captured?.items.find(x => x.path === '/owner')?.fieldType).toBe(
     'EntityPicker',
   );
-  expect(captured?.items.find(x => x.path === 'nested/repo')?.label).toBe(
+  expect(captured?.items.find(x => x.path === '/nested/repo')?.label).toBe(
     'Repository',
   );
-  const list = captured?.items.find(x => x.path === 'list')
+  const list = captured?.items.find(x => x.path === '/list')
     ?.displayValue as string[];
   list.push('presentation-only');
   expect(JSON.stringify(state)).toBe(before);
   expect(
-    captured?.items.find(x => x.path === 'environment')?.displayValue,
+    captured?.items.find(x => x.path === '/environment')?.displayValue,
   ).toBe('Development');
+});
+
+it('distinguishes literal separators from nested field paths', async () => {
+  let captured: ReviewStateContentProps | undefined;
+  const replacement = (props: ReviewStateContentProps) => {
+    captured = props;
+    return <div>Escaped review</div>;
+  };
+  const module = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      SwappableComponentBlueprint.make({
+        name: 'escaped-review',
+        params: defineParams =>
+          defineParams({
+            component: ReviewStateContent,
+            loader: () => replacement,
+          }),
+      }),
+    ],
+  });
+  const escapedSchema = {
+    title: 'Escaped fields',
+    mergedSchema: {
+      type: 'object',
+      properties: {
+        'a/b': { type: 'string', title: 'Literal slash' },
+        a: {
+          type: 'object',
+          properties: { b: { type: 'string', title: 'Nested' } },
+        },
+        'a~b': { type: 'string', title: 'Literal tilde' },
+      },
+    },
+  } as unknown as ParsedTemplateSchema;
+  renderInTestApp(
+    <ReviewState
+      schemas={[escapedSchema]}
+      formState={{
+        'a/b': 'literal',
+        a: { b: 'nested' },
+        'a~b': 'tilde',
+        'unknown/~': 'fallback',
+      }}
+    />,
+    { features: [module] },
+  );
+  expect(await screen.findByText('Escaped review')).toBeInTheDocument();
+  expect(
+    captured?.items.map(item => [item.path, item.label, item.displayValue]),
+  ).toEqual([
+    ['/a~1b', 'Literal slash', 'literal'],
+    ['/a/b', 'Nested', 'nested'],
+    ['/a~0b', 'Literal tilde', 'tilde'],
+    ['/unknown~1~0', 'Unknown > ', 'fallback'],
+  ]);
+});
+
+it('keeps native metadata visible until a deferred replacement resolves', async () => {
+  const replacement = () => <div>Deferred review</div>;
+  let resolveLoader!: (component: typeof replacement) => void;
+  const pending = new Promise<typeof replacement>(resolve => {
+    resolveLoader = resolve;
+  });
+  const loader = jest.fn(() => pending);
+  const module = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      SwappableComponentBlueprint.make({
+        name: 'deferred-review',
+        params: defineParams =>
+          defineParams({ component: ReviewStateContent, loader }),
+      }),
+    ],
+  });
+  renderInTestApp(<ReviewState schemas={[schema]} formState={state} />, {
+    features: [module],
+  });
+  expect(await screen.findByText('Responsible')).toBeInTheDocument();
+  expect(loader).toHaveBeenCalled();
+  expect(screen.getByText('Development')).toBeInTheDocument();
+  expect(screen.queryByText('Deferred review')).not.toBeInTheDocument();
+  expect(screen.queryByText('secret-original')).not.toBeInTheDocument();
+  await act(async () => {
+    resolveLoader(replacement);
+  });
+  expect(await screen.findByText('Deferred review')).toBeInTheDocument();
+  expect(screen.queryByText('Responsible')).not.toBeInTheDocument();
 });
