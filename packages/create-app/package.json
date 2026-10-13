@@ -6,7 +6,8 @@
     "role": "cli"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js"
   },
   "keywords": [
     "backstage"
@@ -18,7 +19,7 @@
     "directory": "packages/create-app"
   },
   "license": "Apache-2.0",
-  "main": "dist/index.cjs.js",
+  "main": "src/index.ts",
   "bin": {
     "backstage-create-app": "bin/backstage-create-app"
   },

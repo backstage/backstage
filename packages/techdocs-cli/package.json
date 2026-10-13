@@ -6,7 +6,8 @@
     "role": "cli"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js"
   },
   "keywords": [
     "backstage",
@@ -19,7 +20,7 @@
     "directory": "packages/techdocs-cli"
   },
   "license": "Apache-2.0",
-  "main": "dist/index.cjs.js",
+  "main": "src/index.ts",
   "types": "",
   "bin": {
     "techdocs-cli": "bin/techdocs-cli"
