@@ -19,7 +19,7 @@ import http from 'node:http';
 import httpProxy from 'http-proxy';
 import { createLogger } from './utility';
 import { proxyHtmlWithLivereloadInjection } from './livereload';
-import { EngineConfig } from './engineConfig';
+import { EngineConfig } from './engines';
 
 export default class HTTPServer {
   private readonly proxyEndpoint: string;

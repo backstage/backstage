@@ -32,7 +32,7 @@ import {
   getLogStream,
 } from '../../lib/utility';
 import { computeDirectoryEtag } from '../../lib/etag';
-import { getEngineConfig } from '../../lib/engineConfig';
+import { getEngineConfig } from '../../lib/engines';
 import { resolveEngine } from '../../lib/catalogEntity';
 
 const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';

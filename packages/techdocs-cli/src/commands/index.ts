@@ -15,9 +15,7 @@
  */
 
 import { Command } from 'commander';
-import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
-const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
@@ -37,7 +35,6 @@ export function registerCommands(program: Command) {
     .option(
       '--docker-image <DOCKER_IMAGE>',
       'The mkdocs docker container to use',
-      defaultDockerImage,
     )
     .option('--no-pull', 'Do not pull the latest docker image')
     .option(
@@ -255,11 +252,7 @@ export function registerCommands(program: Command) {
     .description(
       'Serve a documentation project locally using the configured engine.',
     )
-    .option(
-      '-i, --docker-image <DOCKER_IMAGE>',
-      'The docker container to use',
-      defaultDockerImage,
-    )
+    .option('-i, --docker-image <DOCKER_IMAGE>', 'The docker container to use')
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
       'Override the image entrypoint',
@@ -293,7 +286,6 @@ export function registerCommands(program: Command) {
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
       'The mkdocs docker container to use',
-      defaultDockerImage,
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -331,7 +323,6 @@ export function registerCommands(program: Command) {
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
       'The mkdocs docker container to use',
-      defaultDockerImage,
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',

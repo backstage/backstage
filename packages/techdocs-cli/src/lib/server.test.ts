@@ -15,9 +15,7 @@
  */
 
 import { runEngineServer } from './server';
-import { getEngineConfig } from './engineConfig';
-
-const mkdocsConfig = getEngineConfig('mkdocs');
+import { mkdocsConfig } from './engines/mkdocs';
 import { run } from '@backstage/cli-common';
 
 jest.mock('@backstage/cli-common', () => {

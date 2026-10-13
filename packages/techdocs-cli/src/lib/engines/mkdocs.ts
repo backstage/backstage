@@ -15,38 +15,13 @@
  */
 
 import http from 'node:http';
-import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '@backstage/plugin-techdocs-node';
-import type { EngineSource } from './catalogEntity';
 import {
   injectLivereloadParameters,
   proxyMkdocsLivereload,
-} from './livereload';
+} from '../livereload';
+import { EngineConfig } from './types';
 
-export type ServeOptions = {
-  configFile?: string;
-  clean?: boolean;
-  dirtyReload?: boolean;
-  strict?: boolean;
-  useDocker?: boolean;
-};
-
-export type EngineConfig = {
-  binary: string;
-  defaultImage: string;
-  serveCommand: string;
-  startupLogPattern: string;
-  buildArgs(outputDir: string, configFile: string): string[];
-  serveArgs(port: string, options: ServeOptions): string[];
-  transformHtml(html: string): string;
-  handleReloadRequest(
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    targetAddress: string,
-    onError: (error: Error) => void,
-  ): void;
-};
-
-const mkdocsConfig: EngineConfig = {
+export const mkdocsConfig: EngineConfig = {
   binary: 'mkdocs',
   defaultImage: 'spotify/techdocs',
   serveCommand: 'serve',
@@ -54,7 +29,7 @@ const mkdocsConfig: EngineConfig = {
   buildArgs(outputDir: string, configFile: string): string[] {
     return ['build', '-f', configFile, '-d', outputDir, '-v'];
   },
-  serveArgs(port: string, options: ServeOptions): string[] {
+  serveArgs(port: string, options): string[] {
     const addr = options.useDocker ? `0.0.0.0:${port}` : `127.0.0.1:${port}`;
     return [
       'serve',
@@ -84,27 +59,3 @@ const mkdocsConfig: EngineConfig = {
     });
   },
 };
-
-const engineConfigs: Record<string, EngineConfig> = {
-  mkdocs: mkdocsConfig,
-};
-
-export function getEngineConfig(
-  engine: string,
-  source: EngineSource = 'default',
-): EngineConfig {
-  const config = engineConfigs[engine];
-  if (!config) {
-    const supported = Object.keys(engineConfigs).join(', ');
-    const origin = {
-      flag: 'from --engine',
-      annotation: `from the ${TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY} annotation in catalog-info.yaml`,
-      default: 'default',
-    }[source];
-    const hint = source === 'annotation' ? ' Pass --engine to override.' : '';
-    throw new Error(
-      `Engine "${engine}" (${origin}) is not supported by techdocs-cli. Supported engines: ${supported}.${hint}`,
-    );
-  }
-  return config;
-}

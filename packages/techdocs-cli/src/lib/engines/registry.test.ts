@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getEngineConfig } from './engineConfig';
+import { getEngineConfig } from './registry';
 
 describe('getEngineConfig', () => {
   it('should return mkdocs config by default', () => {
@@ -80,19 +80,59 @@ describe('getEngineConfig', () => {
 
   it('should throw for unknown engine', () => {
     expect(() => getEngineConfig('unknown')).toThrow(
-      'Engine "unknown" (default) is not supported by techdocs-cli. Supported engines: mkdocs.',
+      'Engine "unknown" (default) is not supported by techdocs-cli. Supported engines: mkdocs, zensical.',
     );
   });
 
   it('names the --engine flag as the source', () => {
-    expect(() => getEngineConfig('zensical', 'flag')).toThrow(
-      'Engine "zensical" (from --engine) is not supported by techdocs-cli. Supported engines: mkdocs.',
+    expect(() => getEngineConfig('hugo', 'flag')).toThrow(
+      'Engine "hugo" (from --engine) is not supported by techdocs-cli. Supported engines: mkdocs, zensical.',
     );
   });
 
   it('names the annotation as the source and suggests --engine', () => {
-    expect(() => getEngineConfig('zensical', 'annotation')).toThrow(
-      'Engine "zensical" (from the backstage.io/techdocs-engine annotation in catalog-info.yaml) is not supported by techdocs-cli. Supported engines: mkdocs. Pass --engine to override.',
+    expect(() => getEngineConfig('hugo', 'annotation')).toThrow(
+      'Engine "hugo" (from the backstage.io/techdocs-engine annotation in catalog-info.yaml) is not supported by techdocs-cli. Supported engines: mkdocs, zensical. Pass --engine to override.',
     );
+  });
+
+  describe('zensical', () => {
+    const config = getEngineConfig('zensical');
+
+    it('uses the zensical binary and image', () => {
+      expect(config.binary).toBe('zensical');
+      expect(config.defaultImage).toBe('ghcr.io/backstage/techdocs-zensical');
+    });
+
+    it('omits -d from build args since output comes from site_dir', () => {
+      expect(config.buildArgs('/output', 'mkdocs.yml')).toEqual([
+        'build',
+        '-f',
+        'mkdocs.yml',
+      ]);
+    });
+
+    it('builds serve args without mkdocs-only flags', () => {
+      expect(
+        config.serveArgs('8000', { useDocker: true, configFile: 'c.yml' }),
+      ).toEqual(['serve', '--dev-addr', '0.0.0.0:8000', '-f', 'c.yml']);
+    });
+
+    it('replaces the native websocket script with the live-reload element', () => {
+      const html =
+        '<html><body dir="ltr"><p>hi</p>' +
+        '<script type="module">const socket = new WebSocket(url.href);</script>' +
+        '</body></html>';
+      const result = config.transformHtml(html);
+      expect(result).not.toContain('new WebSocket');
+      expect(result).toContain(
+        '<body dir="ltr"><live-reload live-reload-epoch="1" live-reload-request-id="1"></live-reload><p>hi</p>',
+      );
+    });
+
+    it('leaves other module scripts untouched', () => {
+      const html = '<body><script type="module">console.log(1)</script></body>';
+      expect(config.transformHtml(html)).toContain('console.log(1)');
+    });
   });
 });
