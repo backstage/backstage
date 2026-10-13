@@ -27,7 +27,7 @@
     --bui-border-2: #818181;
 
     /* Focus ring */
-    --bui-ring: rgba(0, 0, 0, 0.2);
+    --bui-ring: #000000;
 
     /* Accent */
     --bui-accent-bg: #1ed760;
@@ -117,7 +117,7 @@
     --bui-border-2: #7c7c7c;
 
     /* Focus ring */
-    --bui-ring: rgba(255, 255, 255, 0.2);
+    --bui-ring: #ffffff;
 
     /* Accent */
     --bui-accent-bg: #1ed760;
