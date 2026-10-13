@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StructuredMetadataTable } from '@backstage/core-components';
+import { ReviewStateContent, ReviewItem } from './ReviewStateContent';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
@@ -33,7 +33,7 @@ function processSchema(
   value: JsonValue | undefined,
   schema: ParsedTemplateSchema,
   formState: JsonObject,
-): [string, JsonValue | undefined][] {
+): ReviewItem[] {
   const parsedSchema = new JSONSchema(schema.mergedSchema);
   const definitionInSchema = parsedSchema.getSchema({
     pointer: `#/${key}`,
@@ -45,11 +45,26 @@ function processSchema(
     definitionInSchema?.title ??
     formatKey(key);
 
+  const item = (
+    displayValue: JsonValue | undefined,
+    masked = false,
+  ): ReviewItem => ({
+    path: key,
+    label: name,
+    // Detach objects and arrays from the state used by submission.
+    displayValue:
+      displayValue === undefined
+        ? undefined
+        : JSON.parse(JSON.stringify(displayValue)),
+    presentation: masked ? 'masked' : 'value',
+    fieldType: masked ? undefined : definitionInSchema?.['ui:field'],
+  });
+
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
     if (backstageReviewOptions) {
       if (backstageReviewOptions.mask) {
-        return [[name, backstageReviewOptions.mask]];
+        return [item(backstageReviewOptions.mask, true)];
       }
       if (backstageReviewOptions.show === false) {
         return [];
@@ -60,17 +75,16 @@ function processSchema(
       definitionInSchema['ui:widget'] === 'password' ||
       definitionInSchema['ui:field']?.toLowerCase() === 'secret'
     ) {
-      return [[name, '******']];
+      return [item('******', true)];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
-        [
-          name,
+        item(
           definitionInSchema.enumNames[
             definitionInSchema.enum.indexOf(value)
           ] || value,
-        ],
+        ),
       ];
     }
 
@@ -82,7 +96,7 @@ function processSchema(
     }
   }
 
-  return [[name, value]];
+  return [item(value)];
 }
 
 /**
@@ -90,20 +104,23 @@ function processSchema(
  * @alpha
  */
 export const ReviewState = (props: ReviewStateProps) => {
-  const reviewData = Object.fromEntries(
-    Object.entries(props.formState)
-      .flatMap(([key, value]) => {
-        const schema = findSchemaForKey(key, props.schemas, props.formState);
-        return schema
-          ? processSchema(key, value, schema, props.formState)
-          : [[formatKey(key), value]];
-      })
-      .filter(prop => prop.length > 0),
+  const items: ReviewItem[] = Object.entries(props.formState).flatMap(
+    ([key, value]) => {
+      const schema = findSchemaForKey(key, props.schemas, props.formState);
+      return schema
+        ? processSchema(key, value, schema, props.formState)
+        : [
+            {
+              path: key,
+              label: formatKey(key),
+              displayValue:
+                value === undefined
+                  ? undefined
+                  : JSON.parse(JSON.stringify(value)),
+              presentation: 'value' as const,
+            },
+          ];
+    },
   );
-  return (
-    <StructuredMetadataTable
-      metadata={reviewData}
-      options={{ titleFormat: key => key }}
-    />
-  );
+  return <ReviewStateContent items={items} />;
 };
