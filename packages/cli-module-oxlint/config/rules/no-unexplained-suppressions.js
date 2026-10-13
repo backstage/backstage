@@ -36,7 +36,7 @@ module.exports = {
         const auditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
         if (!auditDir) {
           throw new Error(
-            'The agentic preset requires BACKSTAGE_OXLINT_AUDIT_DIR from the Backstage CLI.',
+            'The strict preset requires BACKSTAGE_OXLINT_AUDIT_DIR from the Backstage CLI.',
           );
         }
 

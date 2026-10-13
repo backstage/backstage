@@ -219,7 +219,7 @@ export async function executeOxlint(
           diagnostics: [{ code: 'backstage/oxlint-audit', message }],
           errors: [message],
           receiptCount: 0,
-          agentic: false,
+          strict: false,
         };
       }
       auditDiagnostics.push(...audit.diagnostics);

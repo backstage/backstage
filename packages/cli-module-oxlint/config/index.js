@@ -26,13 +26,7 @@ const noUndeclaredImports = require('./rules/no-undeclared-imports');
 const noDeprecatedBuiTokens = require('./rules/no-deprecated-bui-tokens');
 const noUnexplainedSuppressions = require('./rules/no-unexplained-suppressions');
 const notice = require('./rules/notice');
-const {
-  noBareLowerCase,
-  noBareUpperCase,
-  noReactDefaultImport,
-  noWinstonDefaultImport,
-  noDirnameInSrc,
-} = require('./rules/restricted-syntax');
+const noDirnameInSrc = require('./rules/no-dirname-in-src');
 
 /**
  * Backstage oxlint JS plugin.
@@ -54,10 +48,6 @@ module.exports = {
     'no-deprecated-bui-tokens': noDeprecatedBuiTokens,
     'no-unexplained-suppressions': noUnexplainedSuppressions,
     notice: notice,
-    'no-bare-to-lower-case': noBareLowerCase,
-    'no-bare-to-upper-case': noBareUpperCase,
-    'no-react-default-import': noReactDefaultImport,
-    'no-winston-default-import': noWinstonDefaultImport,
     'no-dirname-in-src': noDirnameInSrc,
   },
 };

@@ -71,6 +71,23 @@ const BASE_PLUGINS = [
   'promise',
 ];
 const factory = require('../../config/oxlint-factory') as OxlintFactory;
+const backstageRules = require('../../config').rules as Record<
+  string,
+  { createOnce?: unknown }
+>;
+
+function expectRegisteredBackstageRules(config: OxlintConfig, count: number) {
+  const ruleIds = [
+    ...Object.keys(config.rules),
+    ...config.overrides.flatMap(override => Object.keys(override.rules ?? {})),
+  ].filter(ruleId => ruleId.startsWith('backstage/'));
+  expect(ruleIds).toHaveLength(count);
+  for (const ruleId of ruleIds) {
+    expect(backstageRules[ruleId.slice('backstage/'.length)]).toEqual(
+      expect.objectContaining({ createOnce: expect.any(Function) }),
+    );
+  }
+}
 
 function runOxlint(
   configFile: string,
@@ -159,9 +176,12 @@ describe('Oxlint configuration factory', () => {
     });
     expect(config.ignorePatterns).toContain('templates/**');
     expect(config).not.toHaveProperty('preset');
-    expect(() => factory(PACKAGE_DIR, { preset: 'compatibility' })).toThrow(
-      'Unknown Oxlint preset: compatibility',
-    );
+    expectRegisteredBackstageRules(config, 7);
+    for (const preset of ['agentic', 'compatibility']) {
+      expect(() => factory(PACKAGE_DIR, { preset })).toThrow(
+        `Unknown Oxlint preset: ${preset}`,
+      );
+    }
     expect(config.overrides).toHaveLength(1);
     expect(config.overrides[0].plugins).toEqual([
       ...BASE_PLUGINS,
@@ -207,7 +227,7 @@ describe('Oxlint configuration factory', () => {
     }
   });
 
-  it('keeps agentic strict rules and writes its CLI audit marker', () => {
+  it('enables native restrictions in the strict preset and writes its CLI audit marker', () => {
     const priorAuditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
     const auditDir = mkdtempSync(
       path.join(os.tmpdir(), 'oxlint-factory-audit-'),
@@ -221,18 +241,23 @@ describe('Oxlint configuration factory', () => {
     try {
       process.env.BACKSTAGE_OXLINT_AUDIT_DIR = auditDir;
       const config = factory.createConfig(PACKAGE_DIR, {
-        preset: 'agentic',
+        preset: 'strict',
         categories: { style: 'warn' },
-        rules: { 'custom/rule': 'warn' },
+        rules: {
+          'custom/rule': 'warn',
+          'no-restricted-imports': ['warn', { paths: ['lodash'] }],
+          'no-restricted-properties': ['warn', { property: 'trim' }],
+        },
         overrides: inputOverrides,
       });
 
       expect(
-        JSON.parse(readFileSync(path.join(auditDir, 'agentic.json'), 'utf8')),
+        JSON.parse(readFileSync(path.join(auditDir, 'strict.json'), 'utf8')),
       ).toEqual({
         version: 1,
       });
       expect(config).not.toHaveProperty('preset');
+      expectRegisteredBackstageRules(config, 9);
       expect(config.options).toMatchObject({
         typeAware: true,
         typeCheck: true,
@@ -241,13 +266,31 @@ describe('Oxlint configuration factory', () => {
       expect(config.categories).toMatchObject({ style: 'error' });
       expect(config.rules).toMatchObject({
         'backstage/no-unexplained-suppressions': 'error',
-        'backstage/no-bare-to-lower-case': 'error',
-        'backstage/no-bare-to-upper-case': 'error',
-        'backstage/no-react-default-import': 'error',
-        'backstage/no-winston-default-import': 'error',
         'backstage/no-dirname-in-src': 'error',
         'custom/rule': 'error',
       });
+      expect(config.rules['no-restricted-imports']).toEqual([
+        'error',
+        { paths: ['lodash'] },
+        expect.objectContaining({
+          paths: expect.arrayContaining([
+            expect.objectContaining({
+              name: 'react',
+              importNames: ['default'],
+            }),
+            expect.objectContaining({
+              name: 'winston',
+              importNames: ['default'],
+            }),
+          ]),
+        }),
+      ]);
+      expect(config.rules['no-restricted-properties']).toEqual([
+        'error',
+        { property: 'trim' },
+        expect.objectContaining({ property: 'toLowerCase' }),
+        expect.objectContaining({ property: 'toUpperCase' }),
+      ]);
       expect(config.overrides.at(-1)?.rules).toEqual({
         'custom/test': 'error',
       });
@@ -257,26 +300,26 @@ describe('Oxlint configuration factory', () => {
       for (const severity of ['off', 0, 'allow']) {
         expect(() =>
           factory.createConfig(PACKAGE_DIR, {
-            preset: 'agentic',
+            preset: 'strict',
             categories: { correctness: severity },
           }),
-        ).toThrow('The agentic preset cannot disable the correctness category');
+        ).toThrow('The strict preset cannot disable the correctness category');
       }
       expect(
         factory.createConfig(PACKAGE_DIR, {
-          preset: 'agentic',
+          preset: 'strict',
           categories: { style: 'off' },
         }).categories.style,
       ).toBe('off');
       expect(() =>
         factory.createConfig(PACKAGE_DIR, {
-          preset: 'agentic',
+          preset: 'strict',
           rules: { 'jest/no-focused-tests': 'off' },
         }),
-      ).toThrow('The agentic preset cannot disable jest/no-focused-tests');
+      ).toThrow('The strict preset cannot disable jest/no-focused-tests');
       expect(() =>
         factory.createConfig(PACKAGE_DIR, {
-          preset: 'agentic',
+          preset: 'strict',
           overrides: [
             {
               files: ['**/*.test.js'],
@@ -285,7 +328,7 @@ describe('Oxlint configuration factory', () => {
           ],
         }),
       ).toThrow(
-        'The agentic preset cannot disable jest/no-focused-tests in an override',
+        'The strict preset cannot disable jest/no-focused-tests in an override',
       );
     } finally {
       if (priorAuditDir === undefined) {
@@ -294,6 +337,48 @@ describe('Oxlint configuration factory', () => {
         process.env.BACKSTAGE_OXLINT_AUDIT_DIR = priorAuditDir;
       }
       rmSync(auditDir, { recursive: true, force: true });
+    }
+  });
+
+  it('enforces strict import and property restrictions with native Oxlint rules', () => {
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'oxlint-strict-native-'));
+    const priorAuditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+    try {
+      process.env.BACKSTAGE_OXLINT_AUDIT_DIR = path.join(dir, 'audit');
+      const source = path.join(dir, 'input.js');
+      writeFileSync(
+        source,
+        "import React from 'react'; import * as winston from 'winston'; const value = 'A'.toLowerCase('en-US'); void React; void winston; void value;\n",
+      );
+      const configs = ['backstage', 'strict'].map(preset => {
+        const file = path.join(dir, `${preset}.json`);
+        writeFileSync(
+          file,
+          JSON.stringify(factory.createConfig(dir, { preset })),
+        );
+        return runOxlint(file, dir, [source]);
+      });
+      expect(codesFor(configs[0].report, 'input.js')).not.toContain(
+        'eslint(no-restricted-imports)',
+      );
+      expect(codesFor(configs[1].report, 'input.js')).toEqual(
+        expect.arrayContaining([
+          'eslint(no-restricted-imports)',
+          'eslint(no-restricted-properties)',
+        ]),
+      );
+      expect(
+        codesFor(configs[1].report, 'input.js').filter(
+          code => code === 'eslint(no-restricted-imports)',
+        ),
+      ).toHaveLength(2);
+    } finally {
+      if (priorAuditDir === undefined) {
+        delete process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+      } else {
+        process.env.BACKSTAGE_OXLINT_AUDIT_DIR = priorAuditDir;
+      }
+      rmSync(dir, { recursive: true, force: true });
     }
   });
 

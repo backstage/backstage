@@ -76,7 +76,7 @@ export interface SuppressionAuditResult {
   diagnostics: AuditDiagnostic[];
   errors: string[];
   receiptCount: number;
-  agentic: boolean;
+  strict: boolean;
 }
 
 const suppressionAudit = require('../../config/lib/suppressionAudit') as {
@@ -224,13 +224,13 @@ export function auditSuppressionReceipts(
       `Could not read Oxlint audit directory ${auditDir}: ${String(error)}`,
       auditDir,
     );
-    return { diagnostics, errors, receiptCount: 0, agentic: false };
+    return { diagnostics, errors, receiptCount: 0, strict: false };
   }
 
-  const markerEntry = entries.find(entry => entry.name === 'agentic.json');
+  const markerEntry = entries.find(entry => entry.name === 'strict.json');
   const receiptEntries = entries.filter(entry => RECEIPT_NAME.test(entry.name));
   const unexpectedEntries = entries.filter(
-    entry => entry.name !== 'agentic.json' && !RECEIPT_NAME.test(entry.name),
+    entry => entry.name !== 'strict.json' && !RECEIPT_NAME.test(entry.name),
   );
   for (const entry of unexpectedEntries) {
     auditError(
@@ -246,20 +246,20 @@ export function auditSuppressionReceipts(
       auditError(
         diagnostics,
         errors,
-        'Oxlint wrote suppression audit receipts without an agentic marker',
+        'Oxlint wrote suppression audit receipts without a strict marker',
         auditDir,
       );
     }
-    return { diagnostics, errors, receiptCount: 0, agentic: false };
+    return { diagnostics, errors, receiptCount: 0, strict: false };
   }
   if (!markerEntry.isFile()) {
     auditError(
       diagnostics,
       errors,
-      'Oxlint agentic audit marker is not a regular file',
+      'Oxlint strict audit marker is not a regular file',
       resolve(auditDir, markerEntry.name),
     );
-    return { diagnostics, errors, receiptCount: 0, agentic: true };
+    return { diagnostics, errors, receiptCount: 0, strict: true };
   }
 
   const markerPath = resolve(auditDir, markerEntry.name);
@@ -270,21 +270,21 @@ export function auditSuppressionReceipts(
     auditError(
       diagnostics,
       errors,
-      `Could not read Oxlint agentic audit marker ${markerPath}: ${String(
+      `Could not read Oxlint strict audit marker ${markerPath}: ${String(
         error,
       )}`,
       markerPath,
     );
-    return { diagnostics, errors, receiptCount: 0, agentic: true };
+    return { diagnostics, errors, receiptCount: 0, strict: true };
   }
   if (!isRecord(marker) || marker.version !== 1) {
     auditError(
       diagnostics,
       errors,
-      `Invalid Oxlint agentic audit marker ${markerPath}: expected version 1`,
+      `Invalid Oxlint strict audit marker ${markerPath}: expected version 1`,
       markerPath,
     );
-    return { diagnostics, errors, receiptCount: 0, agentic: true };
+    return { diagnostics, errors, receiptCount: 0, strict: true };
   }
 
   const seenPaths = new Set<string>();
@@ -379,5 +379,5 @@ export function auditSuppressionReceipts(
     );
   }
 
-  return { diagnostics, errors, receiptCount, agentic: true };
+  return { diagnostics, errors, receiptCount, strict: true };
 }

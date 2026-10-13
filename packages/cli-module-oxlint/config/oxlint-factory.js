@@ -62,12 +62,36 @@ const BACKSTAGE_RULES = {
   'use-isnan': 'off',
   'no-var': 'off',
 };
-const AGENTIC_RULES = {
+const STRICT_RULES = {
   'backstage/no-unexplained-suppressions': 'error',
-  'backstage/no-bare-to-lower-case': 'error',
-  'backstage/no-bare-to-upper-case': 'error',
-  'backstage/no-react-default-import': 'error',
-  'backstage/no-winston-default-import': 'error',
+  'no-restricted-properties': [
+    'error',
+    {
+      property: 'toLowerCase',
+      message: "Use .toLocaleLowerCase('en-US') instead",
+    },
+    {
+      property: 'toUpperCase',
+      message: "Use .toLocaleUpperCase('en-US') instead",
+    },
+  ],
+  'no-restricted-imports': [
+    'error',
+    {
+      paths: [
+        {
+          name: 'react',
+          importNames: ['default'],
+          message: 'Use named imports from React instead',
+        },
+        {
+          name: 'winston',
+          importNames: ['default'],
+          message: 'Use named imports from winston instead',
+        },
+      ],
+    },
+  ],
   'backstage/no-dirname-in-src': 'error',
 };
 
@@ -125,19 +149,19 @@ function createOverrides(plugins, extraOverrides) {
 }
 
 /** @param {string} preset */
-function prepareAgenticAudit(preset) {
-  if (preset !== 'agentic') {
+function prepareStrictAudit(preset) {
+  if (preset !== 'strict') {
     return;
   }
   const auditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
   if (!auditDir) {
     throw new Error(
-      'The agentic preset requires BACKSTAGE_OXLINT_AUDIT_DIR from the Backstage CLI.',
+      'The strict preset requires BACKSTAGE_OXLINT_AUDIT_DIR from the Backstage CLI.',
     );
   }
   mkdirSync(auditDir, { recursive: true });
   writeFileSync(
-    path.join(auditDir, 'agentic.json'),
+    path.join(auditDir, 'strict.json'),
     JSON.stringify({ version: 1 }),
   );
 }
@@ -189,12 +213,12 @@ function createConfigForRole(dir, role, extraConfig = {}) {
     options: extraOptions = {},
     ...extraConfigFields
   } = extraConfig;
-  if (preset !== 'backstage' && preset !== 'agentic') {
+  if (preset !== 'backstage' && preset !== 'strict') {
     throw new Error(`Unknown Oxlint preset: ${String(preset)}`);
   }
-  if (preset === 'agentic' && isDisabled(extraCategories.correctness)) {
+  if (preset === 'strict' && isDisabled(extraCategories.correctness)) {
     throw new Error(
-      'The agentic preset cannot disable the correctness category',
+      'The strict preset cannot disable the correctness category',
     );
   }
   const rolePlugins = withPlugins(BASE_PLUGINS, [
@@ -217,17 +241,17 @@ function createConfigForRole(dir, role, extraConfig = {}) {
   };
   const rules = { ...baseRules, ...extraRules };
   const overrides = createOverrides(rolePlugins, extraOverrides);
-  if (preset === 'agentic') {
+  if (preset === 'strict') {
     const protectedRules = new Set([
       ...Object.entries(baseRules)
         .filter(([, rule]) => !isDisabled(rule))
         .map(([rule]) => rule),
-      ...Object.keys(AGENTIC_RULES),
+      ...Object.keys(STRICT_RULES),
       ...Object.keys(JEST_RULES),
     ]);
     for (const rule of protectedRules) {
       if (isDisabled(extraRules[rule])) {
-        throw new Error(`The agentic preset cannot disable ${rule}`);
+        throw new Error(`The strict preset cannot disable ${rule}`);
       }
       if (
         /** @type {Array<{rules?: Record<string, any>}>} */ (
@@ -235,11 +259,16 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         ).some(override => isDisabled(override.rules?.[rule]))
       ) {
         throw new Error(
-          `The agentic preset cannot disable ${rule} in an override`,
+          `The strict preset cannot disable ${rule} in an override`,
         );
       }
     }
-    Object.assign(rules, AGENTIC_RULES);
+    for (const [name, setting] of Object.entries(STRICT_RULES)) {
+      rules[name] =
+        Array.isArray(extraRules[name]) && Array.isArray(setting)
+          ? ['error', ...extraRules[name].slice(1), ...setting.slice(1)]
+          : setting;
+    }
     Object.assign(rules, normalizeRules(rules));
     for (const override of overrides) {
       if (override.rules) {
@@ -247,7 +276,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       }
     }
   }
-  prepareAgenticAudit(preset);
+  prepareStrictAudit(preset);
 
   return {
     ...extraConfigFields,
@@ -256,7 +285,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
     categories: {
       correctness: 'error',
       ...extraCategories,
-      ...(preset === 'agentic' ? normalizeCategories(extraCategories) : {}),
+      ...(preset === 'strict' ? normalizeCategories(extraCategories) : {}),
     },
     rules,
     overrides,
@@ -269,7 +298,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
     ],
     options: {
       ...extraOptions,
-      ...(preset === 'agentic'
+      ...(preset === 'strict'
         ? {
             typeAware: true,
             typeCheck: true,
