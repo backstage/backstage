@@ -36,6 +36,42 @@
     --bui-accent-fg: var(--bui-black);
     --bui-accent-fg-disabled: #62ab7c;
 
+    /* Announcement */
+    --bui-announcement-bg: #0d72ea;
+    --bui-announcement-bg-hover: #0c69d8;
+    --bui-announcement-bg-subdued: #c8e0fc;
+    --bui-announcement-bg-subdued-hover: #e0edfd;
+    --bui-announcement-border: #a5ccfa;
+    --bui-announcement-fg: #ffffff;
+    --bui-announcement-fg-subdued: #052a56;
+
+    /* Warning */
+    --bui-warning-bg: #ffa42b;
+    --bui-warning-bg-hover: #ffb656;
+    --bui-warning-bg-subdued: #ffd97e;
+    --bui-warning-bg-subdued-hover: #ffeab8;
+    --bui-warning-border: #ffc742;
+    --bui-warning-fg: #000000;
+    --bui-warning-fg-subdued: #491e00;
+
+    /* Negative */
+    --bui-negative-bg: #e91429;
+    --bui-negative-bg-hover: #d81326;
+    --bui-negative-bg-subdued: #ffd2d7;
+    --bui-negative-bg-subdued-hover: #ffe5e8;
+    --bui-negative-border: #ffb9c1;
+    --bui-negative-fg: #ffffff;
+    --bui-negative-fg-subdued: #590810;
+
+    /* Positive */
+    --bui-positive-bg: #1ed760;
+    --bui-positive-bg-hover: #3be477;
+    --bui-positive-bg-subdued: #96f0b6;
+    --bui-positive-bg-subdued-hover: #c5f7d7;
+    --bui-positive-border: #60e890;
+    --bui-positive-fg: #000000;
+    --bui-positive-fg-subdued: #073116;
+
     /* Deprecated tokens */
     --bui-bg-solid: #1ed760;
     --bui-bg-solid-hover: #3be477;
@@ -43,6 +79,17 @@
     --bui-bg-solid-disabled: #0f6c30;
     --bui-fg-solid: var(--bui-black);
     --bui-fg-solid-disabled: #62ab7c;
+    --bui-bg-danger: #ffd2d7;
+    --bui-bg-warning: #ffd97e;
+    --bui-bg-success: #96f0b6;
+    --bui-bg-info: #c8e0fc;
+    --bui-fg-danger-on-bg: #590810;
+    --bui-fg-warning-on-bg: #491e00;
+    --bui-fg-success-on-bg: #073116;
+    --bui-fg-info-on-bg: #052a56;
+    --bui-fg-danger: #c91123;
+    --bui-fg-success: #107434;
+    --bui-fg-info: #0b62c8;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
@@ -78,6 +125,42 @@
     --bui-accent-fg: var(--bui-black);
     --bui-accent-fg-disabled: #62ab7c;
 
+    /* Announcement */
+    --bui-announcement-bg: #0d72ea;
+    --bui-announcement-bg-hover: #0c69d8;
+    --bui-announcement-bg-subdued: #052a56;
+    --bui-announcement-bg-subdued-hover: #063368;
+    --bui-announcement-border: #073c7b;
+    --bui-announcement-fg: #ffffff;
+    --bui-announcement-fg-subdued: #c8e0fc;
+
+    /* Warning */
+    --bui-warning-bg: #ffa42b;
+    --bui-warning-bg-hover: #ffb656;
+    --bui-warning-bg-subdued: #491e00;
+    --bui-warning-bg-subdued-hover: #582400;
+    --bui-warning-border: #652a00;
+    --bui-warning-fg: #000000;
+    --bui-warning-fg-subdued: #ffd97e;
+
+    /* Negative */
+    --bui-negative-bg: #e91429;
+    --bui-negative-bg-hover: #d81326;
+    --bui-negative-bg-subdued: #590810;
+    --bui-negative-bg-subdued-hover: #6b0a13;
+    --bui-negative-border: #7b0b16;
+    --bui-negative-fg: #ffffff;
+    --bui-negative-fg-subdued: #ffd2d7;
+
+    /* Positive */
+    --bui-positive-bg: #1ed760;
+    --bui-positive-bg-hover: #3be477;
+    --bui-positive-bg-subdued: #073116;
+    --bui-positive-bg-subdued-hover: #093c1b;
+    --bui-positive-border: #0a4620;
+    --bui-positive-fg: #000000;
+    --bui-positive-fg-subdued: #96f0b6;
+
     /* Deprecated tokens */
     --bui-bg-solid: #1ed760;
     --bui-bg-solid-hover: #3be477;
@@ -85,11 +168,17 @@
     --bui-bg-solid-disabled: #0f6c30;
     --bui-fg-solid: var(--bui-black);
     --bui-fg-solid-disabled: #072f15;
-    --bui-bg-danger: #3b1219;
-    --bui-bg-warning: #302008;
-    --bui-bg-success: #132d21;
-    --bui-fg-danger: #e22b2b;
-    --bui-fg-success: #1db954;
+    --bui-bg-danger: #590810;
+    --bui-bg-warning: #491e00;
+    --bui-bg-success: #073116;
+    --bui-bg-info: #052a56;
+    --bui-fg-danger-on-bg: #ffd2d7;
+    --bui-fg-warning-on-bg: #ffd97e;
+    --bui-fg-success-on-bg: #96f0b6;
+    --bui-fg-info-on-bg: #c8e0fc;
+    --bui-fg-danger: #f3727f;
+    --bui-fg-success: #1ed760;
+    --bui-fg-info: #539df5;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
