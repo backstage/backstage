@@ -867,6 +867,26 @@ the value of `firstName` from the parameters). This is great for passing the
 values from the form into different steps and reusing these input variables.
 These template strings preserve the type of the parameter.
 
+A complete conditional statement also returns a boolean when each branch contains
+only the literal text `true` or `false`:
+
+```yaml
+if: "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}"
+```
+
+This also supports `elif`, nested conditionals, and an omitted `else`. If no branch
+is selected and there is no `else`, the result remains an empty string. Text or
+whitespace outside the statement keeps the result a string, even when
+whitespace-control tags remove that whitespace from the rendered output.
+
+Other statement templates, including loops, interpolated branch values, numbers,
+and quoted text, continue to render as strings. For more complex
+conditions or other native value types, use a single expression instead:
+
+```yaml
+if: ${{ true if parameters.selection == 'new' else false }}
+```
+
 The `${{ parameters.firstName }}` pattern will work only in the template file.
 If you want to start using values provided from the UI in your code, you will have to use
 the `${{ values.firstName }}` pattern. Additionally, you have to pass

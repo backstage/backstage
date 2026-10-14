@@ -532,6 +532,36 @@ describe('NunjucksWorkflowRunner', () => {
       },
     );
 
+    it('should preserve string conditions from adjacent blocks and surrounding text', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'adjacent',
+            name: 'adjacent',
+            action: 'output-action',
+            if: '{% if false %}true{% endif %}{% if true %}false{% else %}true{% endif %}',
+          },
+          {
+            id: 'whitespace',
+            name: 'whitespace',
+            action: 'output-action',
+            if: ' {% if false %}true{% else %}false{% endif %} ',
+          },
+        ],
+        output: {
+          adjacent: '${{ steps.adjacent.output.mock }}',
+          whitespace: '${{ steps.whitespace.output.mock }}',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output).toEqual({
+        adjacent: 'backstage',
+        whitespace: 'backstage',
+      });
+    });
+
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -860,7 +890,7 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should only coerce complete conditional templates with literal boolean branches', async () => {
       const task = createMockTaskWithSpec({
-        parameters: { string: 'false', selected: false },
+        parameters: { string: 'false', selected: false, delimiter: '%}' },
         steps: [
           {
             id: 'test',
@@ -882,6 +912,29 @@ describe('NunjucksWorkflowRunner', () => {
                 '{%- if parameters.selected -%}false{%- else -%}true{%- endif -%}',
               inverted:
                 '{% if parameters.selected %}false{% else %}true{% endif %}',
+              quotedDelimiter:
+                '{% if parameters.delimiter == "%}" %}false{% else %}true{% endif %}',
+              singleQuotedDelimiter:
+                "{% if parameters.delimiter == '%}' %}false{% else %}true{% endif %}",
+              elif: '{% if false %}true{% elif true %}false{% else %}true{% endif %}',
+              noElse: '{% if true %}false{% endif %}',
+              emptyBranch: '{% if false %}true{% endif %}',
+              empty: '',
+              nested:
+                '{% if true %}{% if false %}true{% else %}false{% endif %}{% endif %}',
+              invalid: '{% if missing() %}true{% else %}false{% endif %}',
+              trimmedOuter:
+                ' \n{%- if false -%}true{%- else -%}false{%- endif -%} \n',
+              quotedVariableMarker:
+                '{% if "${{" == "${{" %}false{% else %}true{% endif %}',
+              escapedDelimiter:
+                '{% if "quote\\"%}" == \'quote"%}\' %}false{% else %}true{% endif %}',
+              regexDelimiter:
+                "{% if parameters.delimiter | replace(r/%}/, '') == '' %}false{% else %}true{% endif %}",
+              comment:
+                '{% if true %}false{# branch note #}{% else %}true{% endif %}',
+              leadingComment:
+                '{# note #}{% if true %}false{% else %}true{% endif %}',
               native: '${{ parameters.selected }}',
             },
           },
@@ -904,6 +957,20 @@ describe('NunjucksWorkflowRunner', () => {
             whitespace: false,
             trimmed: true,
             inverted: true,
+            quotedDelimiter: false,
+            singleQuotedDelimiter: false,
+            elif: false,
+            noElse: false,
+            emptyBranch: '',
+            empty: '',
+            nested: false,
+            invalid: '{% if missing() %}true{% else %}false{% endif %}',
+            trimmedOuter: 'false',
+            quotedVariableMarker: false,
+            escapedDelimiter: false,
+            regexDelimiter: false,
+            comment: false,
+            leadingComment: false,
             native: false,
           },
         }),

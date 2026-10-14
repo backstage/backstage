@@ -124,6 +124,34 @@ type TemplateContext = {
   };
 };
 
+function isLiteralBooleanConditionalTemplate(value: string): boolean {
+  // Nunjitsu has already validated the syntax before this check.
+  const normalized = value.replace(
+    /{#[\s\S]*?#}|(?<![\w$.])r\/(?:\\[\s\S]|\[(?:\\[\s\S]|[^\]\\])*\]|[^/\\[])*\/[a-z]*|"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'/g,
+    token => (token.startsWith('{#') ? '' : '\0'),
+  );
+  const parts = normalized.split(/({%[\s\S]*?%})/);
+  if (parts.length < 5) return false;
+
+  if (parts[0] !== '' || parts[parts.length - 1] !== '') return false;
+
+  let depth = 0;
+  for (let i = 1; i < parts.length - 1; i += 2) {
+    if (/^{%-?\s*if\b/.test(parts[i])) {
+      depth += 1;
+    } else if (/^{%-?\s*endif\s*-?%}$/.test(parts[i])) {
+      depth -= 1;
+    } else if (!/^{%-?\s*(?:elif\b|else\b)/.test(parts[i])) {
+      return false;
+    }
+
+    if (depth === 0 && i !== parts.length - 2) return false;
+    if (!/^(?:true|false)?$/.test(parts[i + 1].trim())) return false;
+  }
+
+  return depth === 0;
+}
+
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
 };
@@ -331,13 +359,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       try {
         if (typeof value === 'string') {
           const rendered = templateRenderer.renderValue(value, context);
+          const booleanText =
+            typeof rendered === 'string' ? rendered.trim() : undefined;
           if (
-            typeof rendered === 'string' &&
-            /^{%-?\s*if\b(?:(?!%})[\s\S])*%}\s*(?:true|false)\s*{%-?\s*else\s*-?%}\s*(?:true|false)\s*{%-?\s*endif\s*-?%}$/.test(
-              value,
-            )
+            (booleanText === 'true' || booleanText === 'false') &&
+            isLiteralBooleanConditionalTemplate(value)
           ) {
-            return rendered.trim() === 'true';
+            return booleanText === 'true';
           }
           return rendered;
         }
