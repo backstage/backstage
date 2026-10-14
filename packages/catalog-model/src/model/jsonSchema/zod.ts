@@ -37,4 +37,6 @@ export const jsonSchemaSchema = z
         message: isError(error) ? error.message : 'Invalid JSON schema',
       });
     }
-  });
+  })
+  // Unlike in zod v3, superRefine does not narrow the output type
+  .transform(x => x as JsonObject);

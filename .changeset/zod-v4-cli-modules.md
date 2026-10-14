@@ -1,5 +1,4 @@
 ---
-'@backstage/cli-module-auth': patch
 '@backstage/cli-module-new': patch
 ---
 
