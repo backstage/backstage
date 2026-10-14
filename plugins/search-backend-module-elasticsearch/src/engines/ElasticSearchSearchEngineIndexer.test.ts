@@ -176,6 +176,57 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     );
   });
 
+  it('deletes the previously aliased index on the following run', async () => {
+    const newIndexer = () =>
+      new ElasticSearchSearchEngineIndexer({
+        type: 'some-type',
+        indexPrefix: '',
+        indexSeparator: '-index__',
+        alias: 'some-type-index__search',
+        logger: mockServices.logger.mock(),
+        elasticSearchClientWrapper: clientWrapper,
+        batchSize: 1000,
+        skipRefresh: false,
+      });
+    const documents = [{ title: 'a', text: 'a', location: 'a' }];
+
+    // First run: only the currently aliased index exists, so it is retained.
+    getSpy.mockReturnValue({
+      'some-type-index__previous': {
+        aliases: { 'some-type-index__search': {} },
+        mappings: {},
+        settings: {},
+      },
+    });
+    const firstRunIndexer = newIndexer();
+    await TestPipeline.fromIndexer(firstRunIndexer)
+      .withDocuments(documents)
+      .execute();
+    expect(deleteSpy).not.toHaveBeenCalled();
+
+    // Second run: the alias has moved to the first run's index.
+    getSpy.mockReturnValue({
+      'some-type-index__previous': {
+        aliases: {},
+        mappings: {},
+        settings: {},
+      },
+      [firstRunIndexer.indexName]: {
+        aliases: { 'some-type-index__search': {} },
+        mappings: {},
+        settings: {},
+      },
+    });
+    await TestPipeline.fromIndexer(newIndexer())
+      .withDocuments(documents)
+      .execute();
+
+    expect(deleteSpy).toHaveBeenCalledTimes(1);
+    expect(deleteSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/some-type-index__previous' }),
+    );
+  });
+
   it('handles when no documents are received', async () => {
     await TestPipeline.fromIndexer(indexer).withDocuments([]).execute();
 
