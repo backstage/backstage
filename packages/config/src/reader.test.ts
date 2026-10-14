@@ -520,6 +520,30 @@ describe('ConfigReader with fallback', () => {
         .getOptionalString('b'),
     ).toBeUndefined();
   });
+
+  it('should handle primitive types in fallback when performing optional lookups', () => {
+    const config = new ConfigReader(
+      { x: { y: 1 } },
+      'main',
+      new ConfigReader({ x: 1 }, 'fallback'),
+    );
+
+    expect(config.getOptional('x.z')).toBeUndefined();
+    expect(config.getOptionalNumber('x.z')).toBeUndefined();
+    expect(config.getOptionalString('x.z')).toBeUndefined();
+    expect(config.getOptionalBoolean('x.z')).toBeUndefined();
+    expect(config.getOptionalStringArray('x.z')).toBeUndefined();
+    expect(config.getOptionalConfig('x.z')).toBeUndefined();
+    expect(config.getOptionalConfigArray('x.z')).toBeUndefined();
+
+    // Required lookups should still throw type error from fallback
+    expect(() => config.get('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'fallback', got number, wanted object",
+    );
+    expect(() => config.getNumber('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'fallback', got number, wanted object",
+    );
+  });
 });
 
 describe('ConfigReader.get()', () => {
