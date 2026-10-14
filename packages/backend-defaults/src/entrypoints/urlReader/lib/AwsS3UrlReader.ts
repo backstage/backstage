@@ -278,8 +278,13 @@ export class AwsS3UrlReader implements UrlReaderService {
       // The account config may already assume this exact role, for example
       // through a web identity token file. Assuming the role again using its
       // own credentials would require the role to trust itself, so use the
-      // credentials directly instead. This is skipped when an external ID is
-      // configured, so that it is always passed when assuming the role.
+      // credentials directly instead.
+      //
+      // This is skipped when an external ID is configured. An external ID is
+      // a condition that the role's trust policy can require, and it is only
+      // checked when calling AssumeRole. Reusing the account credentials
+      // would never send it, silently bypassing a check that was explicitly
+      // asked for, so the role is assumed again with the external ID instead.
       if (
         accountProvider?.roleArn === roleArn &&
         !integration.config.externalId
