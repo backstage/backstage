@@ -892,7 +892,7 @@ describe('createOAuthRouteHandlers', () => {
           expect(errorUrl.pathname).toBe('/');
           expect([...errorUrl.searchParams.keys()]).toEqual(['error']);
           expect(errorUrl.searchParams.get('error')).toMatch(
-            /^(No redirectUrl provided|Redirect URL is invalid|Redirect origin .* is not allowed)/,
+            /^(No redirectUrl provided|Redirect URL is invalid|Redirect URL is not an allowed origin)/,
           );
           expect(res.get('Set-Cookie')).toBeUndefined();
         }
