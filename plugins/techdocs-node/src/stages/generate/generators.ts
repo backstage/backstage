@@ -27,6 +27,14 @@ import { TechDocsContainerRunner } from './types';
 import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '../../techdocsTypes';
 
 /**
+ * 'techdocs' was the generator key before engines were introduced, and is
+ * kept as an alias of 'mkdocs' so that existing registrations keep working.
+ */
+function normalizeGeneratorKey(key: SupportedGeneratorKey): string {
+  return key === 'techdocs' ? 'mkdocs' : key;
+}
+
+/**
  * Collection of docs generators
  * @public
  */
@@ -44,7 +52,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: GeneratorBase;
     },
   ): Promise<GeneratorBuilder> {
     const generators = new Generators();
@@ -68,7 +76,7 @@ export class Generators implements GeneratorBuilder {
    * @param generator - The generator instance to register
    */
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase) {
-    this.generatorMap.set(generatorKey, generator);
+    this.generatorMap.set(normalizeGeneratorKey(generatorKey), generator);
   }
 
   /**
@@ -80,13 +88,21 @@ export class Generators implements GeneratorBuilder {
       throw new Error('No entity provided');
     }
 
-    const generatorKey =
-      entity.metadata?.annotations?.[TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY] ??
-      this.defaultEngine;
+    const annotatedEngine =
+      entity.metadata?.annotations?.[TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY];
+    const generatorKey = normalizeGeneratorKey(
+      annotatedEngine ?? this.defaultEngine,
+    );
     const generator = this.generatorMap.get(generatorKey);
 
     if (!generator) {
-      throw new Error(`No generator registered for entity: "${generatorKey}"`);
+      const source = annotatedEngine
+        ? `the ${TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY} annotation`
+        : 'techdocs.generator.defaultEngine';
+      throw new Error(
+        `No TechDocs generator registered for engine "${generatorKey}" (from ${source}). ` +
+          `Registered engines: ${[...this.generatorMap.keys()].join(', ')}`,
+      );
     }
 
     return generator;

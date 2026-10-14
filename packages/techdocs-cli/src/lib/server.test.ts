@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { runMkdocsServer } from './mkdocsServer';
+import { runEngineServer } from './server';
+import { getEngineConfig } from './engineConfig';
+
+const mkdocsConfig = getEngineConfig('mkdocs');
 import { run } from '@backstage/cli-common';
 
 jest.mock('@backstage/cli-common', () => {
@@ -23,14 +26,22 @@ jest.mock('@backstage/cli-common', () => {
   };
 });
 
-describe('runMkdocsServer', () => {
+const mkdocs = (
+  port = '8000',
+  options: Parameters<typeof mkdocsConfig.serveArgs>[1] = {},
+) => ({
+  engineBinary: mkdocsConfig.binary,
+  engineServeArgs: mkdocsConfig.serveArgs(port, options),
+});
+
+describe('runEngineServer', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('docker', () => {
     it('should run docker directly by default', () => {
-      runMkdocsServer({});
+      runEngineServer(mkdocs('8000', { useDocker: true }));
 
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -49,7 +60,10 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept port option', () => {
-      runMkdocsServer({ port: '5678' });
+      runEngineServer({
+        port: '5678',
+        ...mkdocs('5678', { useDocker: true }),
+      });
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining(['docker', '5678:5678', '0.0.0.0:5678']),
         expect.objectContaining({}),
@@ -57,7 +71,10 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept custom docker image', () => {
-      runMkdocsServer({ dockerImage: 'my-org/techdocs' });
+      runEngineServer({
+        dockerImage: 'my-org/techdocs',
+        ...mkdocs('8000', { useDocker: true }),
+      });
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining(['docker', 'my-org/techdocs']),
         expect.objectContaining({}),
@@ -65,16 +82,17 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept custom docker options', () => {
-      runMkdocsServer({
+      runEngineServer({
         dockerOptions: [
           '--add-host=internal.host:192.168.11.12',
           '--name',
           'my-techdocs-container',
         ],
+        ...mkdocs('8000', { useDocker: true }),
       });
 
       expect(run).toHaveBeenCalledWith(
-        expect.arrayContaining([
+        [
           'docker',
           'run',
           '--rm',
@@ -93,57 +111,34 @@ describe('runMkdocsServer', () => {
           '--dev-addr',
           '0.0.0.0:8000',
           '--livereload',
-        ]),
+        ],
         expect.objectContaining({}),
       );
     });
 
-    it('should accept additinoal mkdocs CLI parameters', () => {
-      runMkdocsServer({
-        mkdocsParameterClean: true,
-        mkdocsParameterStrict: true,
-      });
+    it('should pass engine serve args through', () => {
+      runEngineServer(
+        mkdocs('8000', { useDocker: true, clean: true, strict: true }),
+      );
       expect(run).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          'docker',
-          'serve',
-          '--dev-addr',
-          '0.0.0.0:8000',
-          '--livereload',
-          '--clean',
-          '--strict',
-        ]),
+        expect.arrayContaining(['docker', '--clean', '--strict']),
         expect.objectContaining({}),
       );
     });
   });
 
-  describe('mkdocs', () => {
-    it('should run mkdocs if specified', () => {
-      runMkdocsServer({ useDocker: false });
+  describe('local', () => {
+    it('should run the engine binary directly', () => {
+      runEngineServer({ useDocker: false, ...mkdocs() });
 
       expect(run).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          'mkdocs',
-          'serve',
-          '--dev-addr',
-          '127.0.0.1:8000',
-          '--livereload',
-        ]),
+        ['mkdocs', 'serve', '--dev-addr', '127.0.0.1:8000', '--livereload'],
         expect.objectContaining({}),
       );
     });
 
-    it('should accept port option', () => {
-      runMkdocsServer({ useDocker: false, port: '5678' });
-      expect(run).toHaveBeenCalledWith(
-        expect.arrayContaining(['mkdocs', '127.0.0.1:5678']),
-        expect.objectContaining({}),
-      );
-    });
-
-    it('should use custom engine binary when provided', () => {
-      runMkdocsServer({
+    it('should use a custom engine binary', () => {
+      runEngineServer({
         useDocker: false,
         engineBinary: 'zensical',
         engineServeArgs: ['serve', '--dev-addr', '127.0.0.1:8000'],

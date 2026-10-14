@@ -19,7 +19,7 @@ import path from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { findOwnPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
-import { runMkdocsServer } from '../../lib/mkdocsServer';
+import { runEngineServer } from '../../lib/server';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
@@ -71,6 +71,13 @@ export default async function serve(opts: OptionValues) {
       '--mkdocs-port is deprecated and will be removed in a future release. Use --engine-port instead.',
     );
   }
+  for (const flag of ['Clean', 'Dirtyreload', 'Strict']) {
+    if (opts[`mkdocsParameter${flag}`]) {
+      logger.warn(
+        `--mkdocs-parameter-${flag.toLowerCase()} is deprecated and will be removed in a future release. Use --parameter-${flag.toLowerCase()} instead.`,
+      );
+    }
+  }
 
   const engineDockerAddr = `http://0.0.0.0:${enginePort}`;
   const engineLocalAddr = `http://127.0.0.1:${enginePort}`;
@@ -119,7 +126,7 @@ export default async function serve(opts: OptionValues) {
     });
   };
   logger.info(`Starting ${engine} server.`);
-  const docsChildProcess = runMkdocsServer({
+  const docsChildProcess = runEngineServer({
     port: enginePort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
@@ -127,11 +134,6 @@ export default async function serve(opts: OptionValues) {
     useDocker: opts.docker,
     onStdout: docsLogFunc,
     onStderr: docsLogFunc,
-    mkdocsConfigFileName: mkdocsYmlPath,
-    mkdocsParameterClean: opts.parameterClean || opts.mkdocsParameterClean,
-    mkdocsParameterDirtyReload:
-      opts.parameterDirtyreload || opts.mkdocsParameterDirtyreload,
-    mkdocsParameterStrict: opts.parameterStrict || opts.mkdocsParameterStrict,
     engineBinary: engineConfig.binary,
     engineServeArgs: engineConfig.serveArgs(enginePort, {
       configFile: mkdocsYmlPath,

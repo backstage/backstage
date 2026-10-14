@@ -45,7 +45,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       dockerImage: undefined,
       pullImage: undefined,
@@ -62,7 +61,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'local',
     });
   });
@@ -77,7 +75,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
     });
   });
@@ -93,7 +90,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
     });
@@ -111,7 +107,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
       pullImage: false,
@@ -136,7 +131,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       pullOptions,
     });
@@ -153,7 +147,6 @@ describe('readGeneratorConfig', () => {
       });
 
       expect(readGeneratorConfig(config, logger)).toEqual({
-        type: 'mkdocs',
         runIn: 'docker',
       });
     });
@@ -168,7 +161,6 @@ describe('readGeneratorConfig', () => {
       });
 
       expect(readGeneratorConfig(config, logger)).toEqual({
-        type: 'mkdocs',
         runIn: 'local',
       });
       expect(logger.warn).toHaveBeenCalledWith(
@@ -191,7 +183,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
       pullImage: false,
@@ -212,7 +203,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
       pullImage: false,
@@ -233,7 +223,6 @@ describe('readGeneratorConfig', () => {
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
-      type: 'mkdocs',
       runIn: 'docker',
       dockerImage: undefined,
       pullImage: undefined,
@@ -244,28 +233,6 @@ describe('readGeneratorConfig', () => {
       dangerouslyAllowAdditionalPlugins: ['mkdocs-custom-plugin'],
       disableExternalFonts: undefined,
     });
-  });
-
-  it('should default type to mkdocs when defaultEngine is not set', () => {
-    const config = new ConfigReader({});
-
-    const result = readGeneratorConfig(config, logger);
-
-    expect(result.type).toEqual('mkdocs');
-  });
-
-  it('should read type from techdocs.generator.defaultEngine', () => {
-    const config = new ConfigReader({
-      techdocs: {
-        generator: {
-          defaultEngine: 'zensical',
-        },
-      },
-    });
-
-    const result = readGeneratorConfig(config, logger);
-
-    expect(result.type).toEqual('zensical');
   });
 });
 

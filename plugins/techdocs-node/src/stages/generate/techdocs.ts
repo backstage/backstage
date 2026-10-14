@@ -284,8 +284,6 @@ export function readGeneratorConfig(
   }
 
   return {
-    type:
-      config.getOptionalString('techdocs.generator.defaultEngine') ?? 'mkdocs',
     runIn:
       legacyGeneratorType ??
       config.getOptionalString('techdocs.generator.runIn') ??

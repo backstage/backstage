@@ -22,16 +22,40 @@ import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '@backstage/plugin-techdo
 
 const CATALOG_FILE_CANDIDATES = ['catalog-info.yaml', 'catalog-info.yml'];
 
+type CatalogLogger = {
+  info: (msg: string) => void;
+  warn: (msg: string) => void;
+};
+
+/**
+ * Reads the entity from the first catalog file found in sourceDir. Catalog
+ * files may hold several YAML documents; the entity carrying TechDocs
+ * annotations is preferred, falling back to the first entity in the file.
+ */
 export async function readEntityFromCatalog(
   sourceDir: string,
+  logger?: CatalogLogger,
 ): Promise<Entity | undefined> {
   for (const candidate of CATALOG_FILE_CANDIDATES) {
     const filePath = join(sourceDir, candidate);
     if (await fs.pathExists(filePath)) {
       try {
         const content = await fs.readFile(filePath, 'utf8');
-        return yaml.load(content) as Entity;
-      } catch {
+        const entities = (yaml.loadAll(content) as Entity[]).filter(
+          doc => doc && typeof doc === 'object' && doc.metadata,
+        );
+        const annotations = (e: Entity) => e.metadata.annotations ?? {};
+        return (
+          entities.find(
+            e => TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY in annotations(e),
+          ) ??
+          entities.find(e => 'backstage.io/techdocs-ref' in annotations(e)) ??
+          entities[0]
+        );
+      } catch (error) {
+        logger?.warn(
+          `Failed to parse ${filePath}, ignoring catalog annotations: ${error}`,
+        );
         return undefined;
       }
     }
@@ -54,9 +78,9 @@ export function getEngineFromEntity(
 export async function resolveEngine(
   sourceDir: string,
   explicitEngine: string | undefined,
-  logger: { info: (msg: string) => void },
+  logger: CatalogLogger,
 ): Promise<{ engine: string; entity: Entity | undefined }> {
-  const catalogEntity = await readEntityFromCatalog(sourceDir);
+  const catalogEntity = await readEntityFromCatalog(sourceDir, logger);
   const catalogEngine = getEngineFromEntity(catalogEntity);
 
   const engine = explicitEngine ?? catalogEngine ?? 'mkdocs';

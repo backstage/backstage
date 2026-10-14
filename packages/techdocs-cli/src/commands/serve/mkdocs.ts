@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
-import { runMkdocsServer } from '../../lib/mkdocsServer';
+import { runEngineServer } from '../../lib/server';
 import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
@@ -72,17 +72,15 @@ export default async function serveMkdocs(opts: OptionValues) {
       }
     });
   };
-  // mkdocs writes all of its logs to stderr by default, and not stdout.
-  // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
-  // Had me questioning this whole implementation for half an hour.
+  // Engines may log to stderr rather than stdout (mkdocs does, see
+  // https://github.com/mkdocs/mkdocs/issues/879), so watch both streams.
 
-  const childProcess = runMkdocsServer({
+  const childProcess = runEngineServer({
     port: opts.port,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    mkdocsConfigFileName: mkdocsYmlPath,
     onStdout: logFunc,
     onStderr: logFunc,
     engineBinary: engineConfig.binary,

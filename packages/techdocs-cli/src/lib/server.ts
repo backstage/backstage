@@ -16,7 +16,7 @@
 
 import { run, RunChildProcess, RunOnOutput } from '@backstage/cli-common';
 
-export const runMkdocsServer = (options: {
+export const runEngineServer = (options: {
   port?: string;
   useDocker?: boolean;
   dockerImage?: string;
@@ -24,34 +24,14 @@ export const runMkdocsServer = (options: {
   dockerOptions?: string[];
   onStdout?: RunOnOutput;
   onStderr?: RunOnOutput;
-  mkdocsConfigFileName?: string;
-  mkdocsParameterClean?: boolean;
-  mkdocsParameterDirtyReload?: boolean;
-  mkdocsParameterStrict?: boolean;
-  engineBinary?: string;
-  engineServeArgs?: string[];
+  engineBinary: string;
+  engineServeArgs: string[];
 }): RunChildProcess => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
   const dockerImage = options.dockerImage ?? 'spotify/techdocs';
 
-  const buildDefaultServeArgs = (addr: string) => [
-    'serve',
-    '--dev-addr',
-    addr,
-    '--livereload',
-    ...(options.mkdocsConfigFileName
-      ? ['--config-file', options.mkdocsConfigFileName]
-      : []),
-    ...(options.mkdocsParameterClean ? ['--clean'] : []),
-    ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
-    ...(options.mkdocsParameterStrict ? ['--strict'] : []),
-  ];
-
   if (useDocker) {
-    const serveArgs =
-      options.engineServeArgs ?? buildDefaultServeArgs(`0.0.0.0:${port}`);
-
     return run(
       [
         'docker',
@@ -69,7 +49,7 @@ export const runMkdocsServer = (options: {
           : []),
         ...(options.dockerOptions || []),
         dockerImage,
-        ...serveArgs,
+        ...options.engineServeArgs,
       ],
       {
         onStdout: options.onStdout,
@@ -78,11 +58,7 @@ export const runMkdocsServer = (options: {
     );
   }
 
-  const binary = options.engineBinary ?? 'mkdocs';
-  const serveArgs =
-    options.engineServeArgs ?? buildDefaultServeArgs(`127.0.0.1:${port}`);
-
-  return run([binary, ...serveArgs], {
+  return run([options.engineBinary, ...options.engineServeArgs], {
     onStdout: options.onStdout,
     onStderr: options.onStderr,
   });

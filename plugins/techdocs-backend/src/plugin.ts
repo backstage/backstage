@@ -32,7 +32,6 @@ import {
   RemoteProtocol,
   SupportedGeneratorKey,
   techdocsBuildsExtensionPoint,
-  TechdocsGenerator,
   techdocsGeneratorExtensionPoint,
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
@@ -66,10 +65,10 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
-    let customTechdocsGenerator: TechdocsGenerator | undefined;
+    let customTechdocsGenerator: GeneratorBase | undefined;
     const customGenerators = new Map<SupportedGeneratorKey, GeneratorBase>();
     env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
-      setTechdocsGenerator(generator: TechdocsGenerator) {
+      setTechdocsGenerator(generator: GeneratorBase) {
         if (customTechdocsGenerator) {
           throw new Error('TechdocsGenerator may only be set once');
         }
@@ -155,6 +154,21 @@ export const techdocsPlugin = createBackendPlugin({
         });
         for (const [key, generator] of customGenerators.entries()) {
           generators.register(key, generator);
+        }
+        const defaultEngine =
+          config.getOptionalString('techdocs.generator.defaultEngine') ??
+          'mkdocs';
+        const registeredEngines = [
+          'mkdocs',
+          'techdocs',
+          ...customGenerators.keys(),
+        ];
+        if (!registeredEngines.includes(defaultEngine)) {
+          logger.warn(
+            `techdocs.generator.defaultEngine is set to "${defaultEngine}", but no generator is registered for it. ` +
+              `Builds for entities without a backstage.io/techdocs-engine annotation will fail. ` +
+              `Install the backend module that provides this engine.`,
+          );
         }
 
         // Publisher is used for

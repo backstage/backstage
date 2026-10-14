@@ -85,7 +85,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: GeneratorBase;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;

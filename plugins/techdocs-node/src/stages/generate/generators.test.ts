@@ -34,8 +34,34 @@ describe('generators', () => {
     const generators = new Generators();
 
     expect(() => generators.get(mockEntity)).toThrow(
-      'No generator registered for entity: "mkdocs"',
+      'No TechDocs generator registered for engine "mkdocs" (from techdocs.generator.defaultEngine)',
     );
+  });
+
+  it('should name the annotation when an annotated engine is not registered', async () => {
+    const generators = new Generators();
+    generators.register('mkdocs', { run: jest.fn() });
+
+    expect(() =>
+      generators.get({
+        ...mockEntity,
+        metadata: {
+          name: 'testName',
+          annotations: { 'backstage.io/techdocs-engine': 'unknown' },
+        },
+      }),
+    ).toThrow(
+      'No TechDocs generator registered for engine "unknown" (from the backstage.io/techdocs-engine annotation). Registered engines: mkdocs',
+    );
+  });
+
+  it('should treat the legacy techdocs key as an alias of mkdocs', async () => {
+    const generators = new Generators();
+    const custom = { run: jest.fn() };
+
+    generators.register('techdocs', custom);
+
+    expect(generators.get(mockEntity)).toBe(custom);
   });
 
   it('should return correct registered generator', async () => {

@@ -22,6 +22,7 @@ import {
   Generators,
   ParsedLocationAnnotation,
   getMkdocsYml,
+  TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY,
 } from '@backstage/plugin-techdocs-node';
 import { ConfigReader } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -118,10 +119,22 @@ export default async function generate(opts: OptionValues) {
     logger,
   });
 
-  const entity: Entity = catalogEntity ?? {
+  // Stamp the resolved engine onto the entity so that an explicit --engine
+  // flag takes precedence over the catalog annotation in generators.get().
+  const baseEntity: Entity = catalogEntity ?? {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: { name: 'local' },
+  };
+  const entity: Entity = {
+    ...baseEntity,
+    metadata: {
+      ...baseEntity.metadata,
+      annotations: {
+        ...baseEntity.metadata.annotations,
+        [TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY]: engine,
+      },
+    },
   };
   const generator = generators.get(entity);
 
