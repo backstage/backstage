@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createRequire } from 'node:module';
 import { readFileSync, readdirSync, type Dirent } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 
@@ -137,13 +136,10 @@ let parserCache: TypeScriptParser | undefined;
 
 function loadParser(): TypeScriptParser {
   if (!parserCache) {
-    const cliRequire = createRequire(
-      require.resolve('@backstage/cli/package.json'),
-    );
-    const parser: unknown = cliRequire('@typescript-eslint/parser');
+    const parser: unknown = require('@typescript-eslint/parser');
     if (!isTypeScriptParser(parser)) {
       throw new Error(
-        'Could not load @typescript-eslint/parser from the Backstage CLI installation',
+        'Could not load @typescript-eslint/parser from the module installation',
       );
     }
     parserCache = parser;

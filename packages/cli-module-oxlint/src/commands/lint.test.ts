@@ -15,6 +15,7 @@
  */
 
 import * as childProcess from 'node:child_process';
+import { EventEmitter } from 'node:events';
 import * as fs from 'node:fs';
 import { normalize, resolve } from 'node:path';
 import packageLint from './package/lint';
@@ -22,7 +23,7 @@ import repoLint from './repo/lint';
 import { PackageGraph } from '@backstage/cli-node';
 import { resolveOxlintConfig } from '../lib/oxlint';
 
-jest.mock('node:child_process', () => ({ spawnSync: jest.fn() }));
+jest.mock('node:child_process', () => ({ spawn: jest.fn() }));
 jest.mock('node:fs', () => ({
   ...jest.requireActual('node:fs'),
   writeFileSync: jest.fn(),
@@ -31,12 +32,16 @@ jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
   targetPaths: { dir: '/repo/packages/one', rootDir: '/repo' },
 }));
-jest.mock('@backstage/cli-node', () => ({
-  PackageGraph: {
-    listTargetPackages: jest.fn(),
-    fromPackages: jest.fn(),
-  },
-}));
+jest.mock('@backstage/cli-node', () => {
+  const actual = jest.requireActual('@backstage/cli-node');
+  return {
+    ...actual,
+    PackageGraph: {
+      listTargetPackages: jest.fn(),
+      fromPackages: jest.fn(),
+    },
+  };
+});
 jest.mock('../lib/oxlint', () => ({
   resolveOxlintBin: () => '/repo/node_modules/oxlint/bin/oxlint',
   resolveOxlintConfig: jest.fn(),
@@ -47,7 +52,10 @@ const runPackage = (args: string[]) =>
   packageLint({ args, info: commandInfo } as Parameters<typeof packageLint>[0]);
 const runRepo = (args: string[]) =>
   repoLint({ args, info: commandInfo } as Parameters<typeof repoLint>[0]);
-function mockPackage(name: string, lint = 'backstage-cli package lint') {
+function mockPackage(
+  name: string,
+  lint = 'node bin/backstage-cli-module-oxlint package lint',
+) {
   return {
     dir: `/repo/packages/${name}`,
     packageJson: { name, scripts: { lint } },
@@ -56,23 +64,24 @@ function mockPackage(name: string, lint = 'backstage-cli package lint') {
 
 let stderr: jest.SpyInstance;
 const writeFile = jest.mocked(fs.writeFileSync);
-const spawn = jest.mocked(childProcess.spawnSync);
+const spawn = jest.mocked(childProcess.spawn);
 const resolveConfig = jest.mocked(resolveOxlintConfig);
 const packageGraph = jest.mocked(PackageGraph);
 
-function result(
+function mockSpawnResult(
   status: number | null,
   options: { error?: Error; signal?: NodeJS.Signals | null } = {},
-): childProcess.SpawnSyncReturns<Buffer<ArrayBuffer>> {
-  return {
-    pid: 1,
-    output: [],
-    stdout: Buffer.alloc(0),
-    stderr: Buffer.alloc(0),
-    status,
-    signal: options.signal ?? null,
-    error: options.error,
-  };
+): childProcess.ChildProcess {
+  const child = new EventEmitter() as childProcess.ChildProcess;
+  // The mock only implements the EventEmitter surface that executeOxlint uses
+  (child as unknown as { stderr: EventEmitter }).stderr = new EventEmitter();
+  setImmediate(() => {
+    if (options.error) {
+      child.emit('error', options.error);
+    }
+    child.emit('close', status, options.signal ?? null);
+  });
+  return child;
 }
 
 function setSpawnResult(
@@ -85,26 +94,28 @@ function setSpawnResult(
     if (output && typeof fd === 'number') {
       fs.writeSync(fd, output);
     }
-    return result(status, options);
+    return mockSpawnResult(status, options);
   });
 }
 
 function jsonReport(
   diagnostic: string,
   metadata: Partial<{
+    severity: string;
     number_of_files: number;
     number_of_rules: number;
     threads_count: number;
     start_time: number;
   }> = {},
 ) {
+  const { severity, ...rest } = metadata;
   return JSON.stringify({
-    diagnostics: [{ message: diagnostic }],
+    diagnostics: [{ message: diagnostic, ...(severity ? { severity } : {}) }],
     number_of_files: 1,
     number_of_rules: 10,
     threads_count: 2,
     start_time: 0.25,
-    ...metadata,
+    ...rest,
   });
 }
 
@@ -126,7 +137,7 @@ beforeEach(() => {
     if (typeof fd === 'number') {
       fs.writeSync(fd, 'lint output');
     }
-    return result(0);
+    return mockSpawnResult(0);
   });
   packageGraph.listTargetPackages.mockResolvedValue([
     mockPackage('one'),
@@ -169,7 +180,6 @@ describe('oxlint command execution', () => {
     ]);
     expect(args).not.toContain('--type-aware');
     expect(args).not.toContain('--type-check');
-    expect(options?.maxBuffer).toBeUndefined();
     expect(typeof options?.stdio?.[1]).toBe('number');
     expect(writeFile).toHaveBeenCalledWith(
       resolve('/repo/packages/one', 'report.txt'),
@@ -189,12 +199,16 @@ describe('oxlint command execution', () => {
     expect(spawn).toHaveBeenCalledTimes(2);
   });
 
-  it('preserves package selection and warning-threshold flags without invoking custom lint scripts', async () => {
+  it('preserves package selection and warning thresholds without invoking custom lint scripts', async () => {
     const packages = [
       mockPackage('one'),
-      mockPackage('two', 'node bin/backstage-cli-module-oxlint package lint'),
+      mockPackage(
+        'two',
+        'node bin/backstage-cli-module-oxlint package lint --max-warnings 0',
+      ),
       mockPackage('custom', 'eslint .'),
       mockPackage('missing', ''),
+      mockPackage('eslint-module', 'backstage-cli package lint'),
       mockPackage('unrelated', 'backstage-cli package lint-something'),
     ];
     packageGraph.listTargetPackages.mockResolvedValue(
@@ -207,7 +221,12 @@ describe('oxlint command execution', () => {
       listChangedPackages,
     } as unknown as ReturnType<typeof PackageGraph.fromPackages>);
 
-    await runRepo(['--since', 'origin/master', '--max-warnings=-1']);
+    setSpawnResult(0, jsonReport('first', { severity: 'warning' }));
+    setSpawnResult(0, jsonReport('second', { severity: 'warning' }));
+
+    await expect(
+      runRepo(['--since', 'origin/master', '--format', 'json']),
+    ).rejects.toMatchObject({ code: 1 });
 
     expect(listChangedPackages).toHaveBeenCalledWith({
       ref: 'origin/master',
@@ -218,15 +237,24 @@ describe('oxlint command execution', () => {
       [normalize('packages/one'), normalize('packages/two')],
     );
     expect(spawn.mock.calls[0][1]).not.toContain('--max-warnings');
+    // The second package declares --max-warnings 0 in its own lint script
+    expect(
+      stderr.mock.calls.map(([message]) => String(message)).join('\n'),
+    ).toContain('exceeding the package threshold of 0');
 
     spawn.mockClear();
-    await runPackage(['--max-warnings', '0']);
-    expect(spawn.mock.calls[0][1]).toEqual(
-      expect.arrayContaining(['--max-warnings', '0']),
-    );
+    setSpawnResult(0, jsonReport('checked', { severity: 'warning' }));
+    await expect(
+      runPackage(['--format', 'json', '--max-warnings', '0']),
+    ).rejects.toMatchObject({ code: 1 });
+    expect(
+      stderr.mock.calls.map(([message]) => String(message)).join('\n'),
+    ).toContain('exceeding the maximum of 0');
+
     spawn.mockClear();
-    await runPackage(['--max-warnings=-1']);
-    expect(spawn.mock.calls[0][1]).not.toContain('--max-warnings');
+    setSpawnResult(0, jsonReport('checked', { severity: 'warning' }));
+    await runPackage(['--format', 'json', '--max-warnings=-1']);
+    expect(spawn).toHaveBeenCalledTimes(1);
   });
 
   it('runs every config group and writes one valid merged JSON report before returning failure', async () => {
@@ -343,15 +371,13 @@ describe('oxlint command execution', () => {
     expect(messages).toContain('no exit status');
   });
 
-  it('rejects XML output for an empty package selection before spawning or writing', async () => {
+  it('writes an empty XML report when no packages are selected', async () => {
     packageGraph.listTargetPackages.mockResolvedValue([]);
 
-    await expect(
-      runRepo(['--format', 'junit', '--output-file', 'report.xml']),
-    ).rejects.toThrow(/found 0/);
+    await runRepo(['--format', 'junit', '--output-file', 'report.xml']);
 
+    expect(writeFile.mock.calls[0][1]).toContain('<testsuites');
     expect(spawn).not.toHaveBeenCalled();
-    expect(writeFile).not.toHaveBeenCalled();
   });
 
   it('writes a synthetic empty report only when no packages were selected', async () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import { relative as relativePath } from 'node:path';
-import { PackageGraph } from '@backstage/cli-node';
+import { createScriptOptionsParser, PackageGraph } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { executeOxlint } from '../../lib/executeOxlint';
@@ -83,18 +83,33 @@ export default async ({ args, info }: CliCommandContext) => {
     });
   }
 
+  // Per-package lint script options are honored, so that a package cannot
+  // pass `repo lint` on CI while failing its own `yarn lint`.
+  const parseLintScript = createScriptOptionsParser(
+    'node bin/backstage-cli-module-oxlint package lint',
+    {
+      fix: { type: 'boolean' },
+      'max-warnings': { type: 'string' },
+    },
+  );
+
   await executeOxlint({
     targets: packages
-      .filter(pkg =>
-        /^(?:backstage-cli|node bin\/backstage-cli-module-oxlint) package lint(?: |$)/.test(
-          pkg.packageJson.scripts?.lint ?? '',
-        ),
-      )
       .map(pkg => ({
+        pkg,
+        lintOptions: parseLintScript(pkg.packageJson.scripts?.lint),
+      }))
+      .filter(({ lintOptions }) => lintOptions !== undefined)
+      .map(({ pkg, lintOptions }) => ({
         configDir: pkg.dir,
         directories: [relativePath(targetPaths.rootDir, pkg.dir)],
+        maxWarnings:
+          lintOptions?.['max-warnings'] === undefined
+            ? undefined
+            : Number(lintOptions['max-warnings']),
       })),
     cwd: targetPaths.rootDir,
+    command: 'repo lint',
     fix,
     format,
     outputFile,

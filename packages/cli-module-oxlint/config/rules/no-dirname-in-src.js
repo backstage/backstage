@@ -16,6 +16,9 @@
 
 // @ts-check
 
+const path = require('node:path');
+const getPackages = require('../lib/getPackages');
+
 /**
  * Flags `__dirname` usage inside src/ (excluding test files).
  * `resolvePackagePath()` should be used instead in production builds.
@@ -32,10 +35,13 @@ module.exports = {
         }
 
         const filename = context.physicalFilename;
-
-        const inSrc =
-          filename.includes('/src/') || filename.includes('\\src\\');
-        if (!inSrc) {
+        const pkg = getPackages(context.cwd)?.byPath(filename);
+        // The check is relative to the enclosing package so that a checkout
+        // under a directory named `src` does not flag every file.
+        const relativePath = pkg
+          ? path.relative(pkg.dir, filename)
+          : path.relative(context.cwd, filename);
+        if (!relativePath.startsWith(`src${path.sep}`)) {
           return;
         }
 

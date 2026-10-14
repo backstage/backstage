@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import {
   closeSync,
   mkdtempSync,
@@ -27,6 +27,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { ExitCodeError } from '@backstage/cli-common';
 import { assembleOxlintReport } from './assembleOxlintReport';
+import { countWarnings } from './countWarnings';
 import {
   auditSuppressionReceipts,
   type SuppressionAuditResult,
@@ -35,14 +36,27 @@ import { resolveOxlintBin, resolveOxlintConfig } from './oxlint';
 
 const XML_FORMATS = new Set(['checkstyle', 'junit']);
 
+// Oxlint parallelizes linting across all available cores itself, so process
+// level concurrency mainly overlaps startup and TypeScript program loading.
+// The cap keeps the memory footprint of concurrent type-aware runs bounded.
+const MAX_CONCURRENT_OXLINT = 4;
+
 export interface OxlintTarget {
   configDir: string;
   directories: string[];
+  /**
+   * Fail when the target produces more than this number of warnings, as
+   * declared by the package's own lint script. Takes the strictest value
+   * when several targets share a configuration group.
+   */
+  maxWarnings?: number;
 }
 
 export interface OxlintExecutionOptions {
   targets: OxlintTarget[];
   cwd: string;
+  /** Command name used in error messages, for example `repo lint`. */
+  command: string;
   fix?: boolean;
   format: string;
   outputFile?: string;
@@ -53,6 +67,16 @@ export interface OxlintExecutionOptions {
 interface ConfigGroup {
   configPath?: string;
   directories: string[];
+  maxWarnings?: number;
+}
+
+interface GroupResult {
+  output: string;
+  status: number | null;
+  signal: string | null;
+  error?: Error;
+  stderr: string;
+  auditDir: string;
 }
 
 function groupTargets(targets: OxlintTarget[]): ConfigGroup[] {
@@ -65,6 +89,12 @@ function groupTargets(targets: OxlintTarget[]): ConfigGroup[] {
       groups.set(configPath, group);
     }
     group.directories.push(...target.directories);
+    if (target.maxWarnings !== undefined) {
+      group.maxWarnings =
+        group.maxWarnings === undefined
+          ? target.maxWarnings
+          : Math.min(group.maxWarnings, target.maxWarnings);
+    }
   }
   return [...groups.values()];
 }
@@ -82,9 +112,6 @@ function makeArgs(
   }
   if (options.format && options.format !== 'default') {
     args.push('--format', options.format);
-  }
-  if (options.maxWarnings !== undefined && options.maxWarnings !== -1) {
-    args.push('--max-warnings', String(options.maxWarnings));
   }
   args.push(...group.directories);
   return args;
@@ -110,6 +137,21 @@ function reportedFileCount(format: string, output: string): number | undefined {
   return undefined;
 }
 
+/** Empty report seed used when no config groups are selected at all. */
+function emptyReport(format: string): string[] {
+  if (format === 'checkstyle') {
+    return [
+      '<?xml version="1.0" encoding="utf-8"?><checkstyle version="4.3"></checkstyle>',
+    ];
+  }
+  if (format === 'junit') {
+    return [
+      '<?xml version="1.0" encoding="UTF-8"?><testsuites name="Oxlint" tests="0" failures="0" errors="0"></testsuites>',
+    ];
+  }
+  return [];
+}
+
 function writeStream(
   stream: NodeJS.WriteStream,
   output: string,
@@ -119,102 +161,205 @@ function writeStream(
   });
 }
 
+function runOxlintGroup(
+  group: ConfigGroup,
+  index: number,
+  tempDir: string,
+  options: OxlintExecutionOptions,
+  oxlintBin: string,
+): Promise<GroupResult> {
+  return new Promise(resolve => {
+    const outputPath = join(tempDir, `${index}.stdout`);
+    const result: GroupResult = {
+      output: '',
+      status: null,
+      signal: null,
+      stderr: '',
+      auditDir: '',
+    };
+    try {
+      result.auditDir = mkdtempSync(join(tempDir, `${index}.audit-`));
+    } catch (error) {
+      resolve({
+        ...result,
+        error: new Error(
+          `Could not create Oxlint audit directory: ${String(error)}`,
+        ),
+      });
+      return;
+    }
+
+    let outputFd: number | undefined;
+    try {
+      outputFd = openSync(outputPath, 'w');
+    } catch (error) {
+      resolve({
+        ...result,
+        error: new Error(
+          `Could not create Oxlint output file: ${String(error)}`,
+        ),
+      });
+      return;
+    }
+
+    const child = spawn(
+      process.execPath,
+      [oxlintBin, ...makeArgs(group, options)],
+      {
+        cwd: options.cwd,
+        env: {
+          ...process.env,
+          BACKSTAGE_OXLINT_AUDIT_DIR: result.auditDir,
+        },
+        stdio: ['ignore', outputFd, 'pipe'],
+      },
+    );
+
+    child.stderr?.on('data', (chunk: Buffer | string) => {
+      result.stderr += chunk.toString();
+    });
+    child.on('error', (error: Error) => {
+      result.error = error;
+    });
+    child.on('close', (status, signal) => {
+      closeSync(outputFd);
+      result.status = status;
+      result.signal = signal;
+      try {
+        result.output = readFileSync(outputPath, 'utf8');
+      } catch (error) {
+        result.error = result.error ?? new Error(String(error));
+      }
+      resolve(result);
+    });
+  });
+}
+
+async function runWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  let index = 0;
+  const workers = Array.from(
+    { length: Math.max(1, Math.min(limit, items.length)) },
+    async () => {
+      while (index < items.length) {
+        const current = items[index];
+        index += 1;
+        await worker(current);
+      }
+    },
+  );
+  await Promise.all(workers);
+}
+
 export async function executeOxlint(
   options: OxlintExecutionOptions,
 ): Promise<void> {
   const groups = groupTargets(options.targets);
-  if (groups.length !== 1 && XML_FORMATS.has(options.format)) {
+  if (groups.length > 1 && XML_FORMATS.has(options.format)) {
     throw new Error(
-      `The repo lint command requires exactly one config group for ${options.format} output, but found ${groups.length}; use JSON, SARIF, or a text format instead.`,
+      `The ${options.command} command requires exactly one config group for ${options.format} output, but found ${groups.length}; use JSON, SARIF, or a text format instead.`,
     );
   }
 
   const oxlintBin = options.oxlintBin ?? resolveOxlintBin();
   const tempDir = mkdtempSync(join(tmpdir(), 'backstage-oxlint-'));
-  const reports: string[] = [];
+  const warnings: string[] = [];
   const errors: string[] = [];
   const auditDiagnostics: SuppressionAuditResult['diagnostics'] = [];
   let failed = false;
 
   try {
-    for (const [index, group] of groups.entries()) {
-      const outputPath = join(tempDir, `${index}.stdout`);
-      let auditDir: string;
-      try {
-        auditDir = mkdtempSync(join(tempDir, `${index}.audit-`));
-      } catch (error) {
-        reports.push('');
-        failed = true;
-        errors.push(
-          `Could not create Oxlint audit directory: ${String(error)}`,
-        );
-        continue;
+    if (groups.length === 0) {
+      const assembled = assembleOxlintReport(
+        emptyReport(options.format),
+        options.format,
+        [],
+        options.cwd,
+      );
+      if (assembled.errors.length) {
+        throw new Error(assembled.errors.join('\n'));
       }
-
-      let output = '';
-      let result: SpawnSyncReturns<string | Buffer> | undefined;
-      try {
-        const outputFd = openSync(outputPath, 'w');
-        try {
-          result = spawnSync(
-            process.execPath,
-            [oxlintBin, ...makeArgs(group, options)],
-            {
-              cwd: options.cwd,
-              env: {
-                ...process.env,
-                BACKSTAGE_OXLINT_AUDIT_DIR: auditDir,
-              },
-              stdio: ['inherit', outputFd, 'inherit'],
-            },
-          );
-        } finally {
-          closeSync(outputFd);
-        }
-        output = readFileSync(outputPath, 'utf8');
-      } catch (error) {
-        failed = true;
-        errors.push(
-          `Could not execute oxlint for ${group.directories.join(
-            ', ',
-          )}: ${String(error)}`,
+      if (options.outputFile !== undefined) {
+        writeFileSync(
+          resolve(options.cwd, options.outputFile),
+          assembled.output,
         );
+      } else if (assembled.output) {
+        await writeStream(process.stdout, assembled.output);
       }
-      reports.push(output);
+      return;
+    }
 
-      if (result) {
-        if (result.error || result.status === null || result.signal) {
-          failed = true;
-          const errorCode = (result.error as NodeJS.ErrnoException | undefined)
-            ?.code;
-          errors.push(
-            result.error
-              ? `Oxlint could not start (${errorCode ?? 'unknown'}): ${
-                  result.error.message
-                }`
-              : result.signal
-              ? `Oxlint was terminated by ${result.signal}`
-              : 'Oxlint returned no exit status',
+    const results: Array<GroupResult | undefined> = Array.from({
+      length: groups.length,
+    });
+    await runWithConcurrency(
+      groups.map((group, index) => ({ group, index })),
+      MAX_CONCURRENT_OXLINT,
+      async ({ group, index }) => {
+        if (!group.configPath) {
+          warnings.push(
+            `No Oxlint config file found for ${group.directories.join(
+              ', ',
+            )}; falling back to Oxlint built-in defaults`,
           );
         }
-        if (result.status !== 0) {
-          failed = true;
-          if (typeof result.status === 'number') {
-            errors.push(`Oxlint exited with code ${result.status}`);
-          }
+        results[index] = await runOxlintGroup(
+          group,
+          index,
+          tempDir,
+          options,
+          oxlintBin,
+        );
+      },
+    );
+
+    const reports: string[] = [];
+    const groupWarnings: Array<number | undefined> = [];
+    for (const [index] of groups.entries()) {
+      const result = results[index]!;
+      reports.push(result.output);
+
+      if (result.error || result.status === null || result.signal) {
+        failed = true;
+        const errorCode = (result.error as NodeJS.ErrnoException | undefined)
+          ?.code;
+        errors.push(
+          result.error
+            ? `Oxlint could not start (${errorCode ?? 'unknown'}): ${
+                result.error.message
+              }`
+            : result.signal
+            ? `Oxlint was terminated by ${result.signal}`
+            : 'Oxlint returned no exit status',
+        );
+      } else if (result.status !== 0) {
+        failed = true;
+        // Ordinary lint findings are already in the report; only surface
+        // exit codes that the report does not explain.
+        if (result.status !== 1 || !result.output.trim()) {
+          errors.push(`Oxlint exited with code ${result.status}`);
         }
       }
+      if (result.status !== 0 && result.stderr.trim()) {
+        errors.push(result.stderr.trim());
+      }
+
+      groupWarnings.push(countWarnings(options.format, result.output));
 
       let audit: SuppressionAuditResult;
       try {
         audit = auditSuppressionReceipts(
-          auditDir,
-          reportedFileCount(options.format, output),
+          result.auditDir,
+          reportedFileCount(options.format, result.output),
         );
       } catch (error) {
-        const message = `Could not validate Oxlint audit directory ${auditDir}: ${String(
-          error,
-        )}`;
+        const message = `Could not validate Oxlint audit directory ${
+          result.auditDir
+        }: ${String(error)}`;
         audit = {
           diagnostics: [{ code: 'backstage/oxlint-audit', message }],
           errors: [message],
@@ -227,6 +372,41 @@ export async function executeOxlint(
         failed = true;
       }
       errors.push(...audit.errors);
+    }
+
+    // Warning thresholds apply across the whole run, not per config group.
+    for (const [index, group] of groups.entries()) {
+      const warningCount = groupWarnings[index];
+      if (
+        group.maxWarnings !== undefined &&
+        warningCount !== undefined &&
+        warningCount > group.maxWarnings
+      ) {
+        failed = true;
+        errors.push(
+          `Oxlint found ${warningCount} warning(s) in ${group.directories.join(
+            ', ',
+          )}, exceeding the package threshold of ${group.maxWarnings}`,
+        );
+      }
+    }
+    if (options.maxWarnings !== undefined && options.maxWarnings !== -1) {
+      const countable = groupWarnings.filter(
+        (count): count is number => count !== undefined,
+      );
+      if (countable.length === groupWarnings.length) {
+        const total = countable.reduce((sum, count) => sum + count, 0);
+        if (total > options.maxWarnings) {
+          failed = true;
+          errors.push(
+            `Oxlint found ${total} warning(s), exceeding the maximum of ${options.maxWarnings}`,
+          );
+        }
+      } else {
+        warnings.push(
+          `The ${options.format} report does not expose warning counts; --max-warnings could not be verified`,
+        );
+      }
     }
 
     const assembled = assembleOxlintReport(
@@ -244,6 +424,9 @@ export async function executeOxlint(
       writeFileSync(resolve(options.cwd, options.outputFile), assembled.output);
     } else if (assembled.output) {
       await writeStream(process.stdout, assembled.output);
+    }
+    if (warnings.length) {
+      await writeStream(process.stderr, `${warnings.join('\n')}\n`);
     }
     if (errors.length) {
       await writeStream(process.stderr, `${errors.join('\n')}\n`);

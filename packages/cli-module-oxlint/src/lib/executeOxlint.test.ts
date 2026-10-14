@@ -44,8 +44,14 @@ const cliPlugin = createCliModule({
     execute: async () => executeOxlint({
       targets: JSON.parse(process.env.OXLINT_TARGETS),
       cwd: root,
+      command: 'lint',
       format: process.env.OXLINT_FORMAT || 'json',
       fix: process.env.OXLINT_FIX === 'true',
+      maxWarnings:
+        process.env.OXLINT_MAX_WARNINGS === undefined ||
+        process.env.OXLINT_MAX_WARNINGS === ''
+          ? undefined
+          : Number(process.env.OXLINT_MAX_WARNINGS),
       oxlintBin: process.env.OXLINT_BIN || undefined,
     }),
   }),
@@ -166,7 +172,11 @@ function createWorkspace() {
 function runDispatcher(
   workspace: ReturnType<typeof createWorkspace>,
   options: {
-    targets?: { configDir: string; directories: string[] }[];
+    targets?: {
+      configDir: string;
+      directories: string[];
+      maxWarnings?: number;
+    }[];
     mode?: string;
     launcher?: string | null;
     exitCode?: number;
@@ -174,6 +184,7 @@ function runDispatcher(
     nodePath?: string;
     format?: string;
     fix?: boolean;
+    maxWarnings?: number;
     auditFiles?: string[];
     auditPathFile?: string;
     inheritedAuditDir?: string;
@@ -204,6 +215,8 @@ function runDispatcher(
       OXLINT_NODE_PATH: options.nodePath ?? '',
       OXLINT_FORMAT: options.format ?? 'json',
       OXLINT_FIX: String(options.fix ?? false),
+      OXLINT_MAX_WARNINGS:
+        options.maxWarnings === undefined ? '' : String(options.maxWarnings),
       OXLINT_AUDIT_FILES: JSON.stringify(options.auditFiles ?? []),
       OXLINT_AUDIT_PATHS_FILE: options.auditPathFile ?? '',
       OXLINT_FIX_FILE: options.auditFiles?.[0] ?? '',
@@ -224,6 +237,94 @@ function runDispatcher(
 }
 
 describe('Oxlint through runCli subprocess', () => {
+  it.each(['json', 'junit'])(
+    'writes an empty %s report and exits zero with no groups selected',
+    format => {
+      const workspace = createWorkspace();
+      try {
+        const result = runDispatcher(workspace, {
+          targets: [],
+          format,
+        });
+
+        expect(result.status).toBe(0);
+        if (format === 'json') {
+          expect(JSON.parse(result.stdout).diagnostics).toEqual([]);
+        } else {
+          expect(XMLValidator.validate(result.stdout)).toBe(true);
+        }
+      } finally {
+        rmSync(workspace.dir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it('enforces the warning threshold across all groups, not per group', () => {
+    const workspace = createWorkspace();
+    const first = join(workspace.dir, 'first');
+    const second = join(workspace.dir, 'second');
+    mkdirSync(first);
+    mkdirSync(second);
+    writeFileSync(join(first, 'oxlint.config.mts'), 'export default {};');
+    writeFileSync(join(second, 'oxlint.config.mts'), 'export default {};');
+    try {
+      // Each group reports a single warning; per-group enforcement would pass.
+      const result = runDispatcher(workspace, {
+        targets: [
+          { configDir: first, directories: [first] },
+          { configDir: second, directories: [second] },
+        ],
+        maxWarnings: 1,
+      });
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(
+        'found 2 warning(s), exceeding the maximum of 1',
+      );
+    } finally {
+      rmSync(workspace.dir, { recursive: true, force: true });
+    }
+  });
+
+  it('enforces per-target warning thresholds from package lint scripts', () => {
+    const workspace = createWorkspace();
+    try {
+      const result = runDispatcher(workspace, {
+        targets: [
+          {
+            configDir: workspace.dir,
+            directories: [workspace.dir],
+            maxWarnings: 0,
+          },
+        ],
+      });
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain('exceeding the package threshold of 0');
+    } finally {
+      rmSync(workspace.dir, { recursive: true, force: true });
+    }
+  });
+
+  it('surfaces exit code 1 only when the report does not explain it', () => {
+    const workspace = createWorkspace();
+    try {
+      const explained = runDispatcher(workspace, { exitCode: 1 });
+      expect(explained.status).toBe(1);
+      expect(explained.stderr).toContain("Command 'oxlint' exited with code 1");
+      expect(explained.stderr).not.toContain('Oxlint exited with code');
+
+      const silent = runDispatcher(workspace, {
+        mode: 'empty',
+        exitCode: 1,
+      });
+      expect(silent.status).toBe(1);
+      expect(silent.stderr).toContain('Oxlint exited with code 1');
+    } finally {
+      rmSync(workspace.dir, { recursive: true, force: true });
+    }
+  });
+
   it('fails blanket and self-suppression bypasses and replaces inherited audit paths', () => {
     const workspace = createWorkspace();
     const sourceFile = join(workspace.dir, 'selected.js');

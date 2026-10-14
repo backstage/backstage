@@ -18,7 +18,7 @@ import { spawnSync } from 'node:child_process';
 import {
   mkdirSync,
   mkdtempSync,
-  readFileSync,
+  readdirSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -31,6 +31,7 @@ type OxlintOverride = {
   plugins?: string[];
   rules?: Record<string, unknown>;
 };
+const rootDir = path.resolve(__dirname, '../../../..');
 type OxlintConfig = {
   categories: Record<string, string | number>;
   ignorePatterns: string[];
@@ -109,7 +110,19 @@ function runOxlint(
       'json',
       ...files,
     ],
-    { cwd, encoding: 'utf8' },
+    {
+      cwd,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        // Oxlint resolves the tsgolint executable from the working
+        // directory or PATH; fixture directories have neither.
+        PATH: [
+          path.resolve(rootDir, 'node_modules/.bin'),
+          process.env.PATH,
+        ].join(path.delimiter),
+      },
+    },
   );
   if (result.error) {
     throw result.error;
@@ -227,8 +240,7 @@ describe('Oxlint configuration factory', () => {
     }
   });
 
-  it('enables native restrictions in the strict preset and writes its CLI audit marker', () => {
-    const priorAuditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+  it('enables native restrictions in the strict preset and stays side-effect free', () => {
     const auditDir = mkdtempSync(
       path.join(os.tmpdir(), 'oxlint-factory-audit-'),
     );
@@ -239,7 +251,6 @@ describe('Oxlint configuration factory', () => {
     });
     const inputOverrides = Object.freeze([inputOverride]);
     try {
-      process.env.BACKSTAGE_OXLINT_AUDIT_DIR = auditDir;
       const config = factory.createConfig(PACKAGE_DIR, {
         preset: 'strict',
         categories: { style: 'warn' },
@@ -251,11 +262,9 @@ describe('Oxlint configuration factory', () => {
         overrides: inputOverrides,
       });
 
-      expect(
-        JSON.parse(readFileSync(path.join(auditDir, 'strict.json'), 'utf8')),
-      ).toEqual({
-        version: 1,
-      });
+      // Loading the config must not touch the audit directory; editors and
+      // raw Oxlint invocations load it without CLI-provided environment.
+      expect(readdirSync(auditDir)).toEqual([]);
       expect(config).not.toHaveProperty('preset');
       expectRegisteredBackstageRules(config, 9);
       expect(config.options).toMatchObject({
@@ -271,9 +280,9 @@ describe('Oxlint configuration factory', () => {
       });
       expect(config.rules['no-restricted-imports']).toEqual([
         'error',
-        { paths: ['lodash'] },
-        expect.objectContaining({
-          paths: expect.arrayContaining([
+        {
+          paths: [
+            'lodash',
             expect.objectContaining({
               name: 'react',
               importNames: ['default'],
@@ -282,8 +291,8 @@ describe('Oxlint configuration factory', () => {
               name: 'winston',
               importNames: ['default'],
             }),
-          ]),
-        }),
+          ],
+        },
       ]);
       expect(config.rules['no-restricted-properties']).toEqual([
         'error',
@@ -331,11 +340,6 @@ describe('Oxlint configuration factory', () => {
         'The strict preset cannot disable jest/no-focused-tests in an override',
       );
     } finally {
-      if (priorAuditDir === undefined) {
-        delete process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
-      } else {
-        process.env.BACKSTAGE_OXLINT_AUDIT_DIR = priorAuditDir;
-      }
       rmSync(auditDir, { recursive: true, force: true });
     }
   });

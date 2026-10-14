@@ -210,8 +210,10 @@ the directory passed to the factory so Oxlint resolves its role and file scopes
 from the intended package.
 
 The default `backstage` preset enables a selected set of native correctness and
-Backstage rules, with frontend, backend, TypeScript, and test rules scoped to
-matching files. Pass native Oxlint options such as `plugins`, `rules`,
+Backstage rules. Frontend roles load React and JSX accessibility plugins at
+the top level of the package config; backend and CLI roles load Node rules at
+the top level; Jest rules are scoped to test-file overrides. Pass native
+Oxlint options such as `plugins`, `rules`,
 `overrides`, `ignorePatterns`, `categories`, and `options` to customize the
 config. Unknown preset names are rejected, and `preset` is not passed to
 Oxlint. This factory is not an ESLint configuration translator and does not

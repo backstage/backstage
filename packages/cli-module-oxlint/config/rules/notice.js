@@ -18,10 +18,8 @@
 
 const SHEBANG_REGEX = /^#![^\r\n]*\r?\n/;
 
-const HEADER_REGEX =
-  /^\/\*\r?\n \* Copyright 20\d{2} The Backstage Authors\r?\n \*\r?\n \* Licensed under the Apache License, Version 2\.0/;
-
 const EXISTING_COMMENT_REGEX = /^\/\*[\s\S]*?\*\/\s*/;
+const LICENSE_COMMENT_REGEX = /Copyright|Apache License|@license/i;
 
 function getHeaderText() {
   const year = new Date().getFullYear();
@@ -42,6 +40,14 @@ function getHeaderText() {
  */
 
 `;
+}
+const HEADER_REGEX =
+  /^\/\*\r?\n \* Copyright 20\d{2} The Backstage Authors\r?\n \*\r?\n \* Licensed under the Apache License, Version 2\.0/;
+
+/** @param {string} sourceText */
+function findLeadingComment(sourceText) {
+  const match = sourceText.match(EXISTING_COMMENT_REGEX);
+  return match && match.index === 0 ? match[0] : undefined;
 }
 
 /** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
@@ -66,11 +72,15 @@ module.exports = {
           message: 'Missing or incorrect Apache 2.0 copyright header',
           fix(fixer) {
             const headerText = getHeaderText();
-            const match = textAfterShebang.match(EXISTING_COMMENT_REGEX);
 
-            if (match && match.index === 0) {
+            // Replace an existing leading comment only when it looks like a
+            // license header; pragma comments such as `@jest-environment` or
+            // rule suppressions are kept and the header is inserted in front
+            // of them instead.
+            const leadingComment = findLeadingComment(textAfterShebang);
+            if (leadingComment && LICENSE_COMMENT_REGEX.test(leadingComment)) {
               return fixer.replaceTextRange(
-                [offset, offset + match[0].length],
+                [offset, offset + leadingComment.length],
                 headerText,
               );
             }

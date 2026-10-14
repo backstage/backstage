@@ -17,7 +17,7 @@
 /// <reference types="node" />
 // @ts-check
 
-const { mkdirSync, readFileSync, writeFileSync } = require('node:fs');
+const { readFileSync } = require('node:fs');
 const path = require('node:path');
 
 const BASE_PLUGINS = [
@@ -148,22 +148,37 @@ function createOverrides(plugins, extraOverrides) {
   ];
 }
 
-/** @param {string} preset */
-function prepareStrictAudit(preset) {
-  if (preset !== 'strict') {
-    return;
-  }
-  const auditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
-  if (!auditDir) {
-    throw new Error(
-      'The strict preset requires BACKSTAGE_OXLINT_AUDIT_DIR from the Backstage CLI.',
+/**
+ * Merges a user rule setting with a strict preset setting, keeping both sets
+ * of restrictions. Rules that take a single options object are merged key by
+ * key, concatenating shared array keys such as `paths`. Rules that accept a
+ * variadic list of option objects are concatenated instead.
+ *
+ * @param {any} user - User rule setting, e.g. `['error', {paths: [...]}]`
+ * @param {any} strict - Strict preset rule setting
+ */
+function mergeStrictRuleSetting(user, strict) {
+  const userOptions = user.slice(1);
+  const strictOptions = strict.slice(1);
+  const singleObject =
+    userOptions.length === 1 &&
+    strictOptions.length === 1 &&
+    userOptions.every(
+      /** @param {any} option */ option => option && typeof option === 'object',
     );
+  if (!singleObject) {
+    return ['error', ...userOptions, ...strictOptions];
   }
-  mkdirSync(auditDir, { recursive: true });
-  writeFileSync(
-    path.join(auditDir, 'strict.json'),
-    JSON.stringify({ version: 1 }),
-  );
+  const merged = { ...userOptions[0], ...strictOptions[0] };
+  for (const key of Object.keys(userOptions[0])) {
+    if (
+      Array.isArray(userOptions[0][key]) &&
+      Array.isArray(strictOptions[0][key])
+    ) {
+      merged[key] = [...userOptions[0][key], ...strictOptions[0][key]];
+    }
+  }
+  return ['error', merged];
 }
 
 /**
@@ -264,10 +279,9 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       }
     }
     for (const [name, setting] of Object.entries(STRICT_RULES)) {
-      rules[name] =
-        Array.isArray(extraRules[name]) && Array.isArray(setting)
-          ? ['error', ...extraRules[name].slice(1), ...setting.slice(1)]
-          : setting;
+      rules[name] = Array.isArray(extraRules[name])
+        ? mergeStrictRuleSetting(extraRules[name], setting)
+        : setting;
     }
     Object.assign(rules, normalizeRules(rules));
     for (const override of overrides) {
@@ -276,7 +290,6 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       }
     }
   }
-  prepareStrictAudit(preset);
 
   return {
     ...extraConfigFields,

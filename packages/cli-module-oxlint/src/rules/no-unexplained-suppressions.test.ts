@@ -14,9 +14,78 @@
  * limitations under the License.
  */
 
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { RuleTester } from './testUtils';
+
 const {
   validateSuppressionComments,
 } = require('../../config/lib/suppressionAudit');
+const rule = require('../../config/rules/no-unexplained-suppressions');
+
+describe('no-unexplained-suppressions rule', () => {
+  const auditDir = mkdtempSync(path.join(tmpdir(), 'oxlint-suppression-rule-'));
+  let previousAuditDir: string | undefined;
+
+  beforeAll(() => {
+    previousAuditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+    process.env.BACKSTAGE_OXLINT_AUDIT_DIR = auditDir;
+  });
+
+  afterAll(() => {
+    if (previousAuditDir === undefined) {
+      delete process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+    } else {
+      process.env.BACKSTAGE_OXLINT_AUDIT_DIR = previousAuditDir;
+    }
+    rmSync(auditDir, { recursive: true, force: true });
+  });
+
+  new RuleTester({
+    languageOptions: { sourceType: 'module' },
+  }).run('no-unexplained-suppressions with an audit directory', rule, {
+    valid: [{ code: 'const value = 1;' }],
+    invalid: [],
+  });
+
+  it('writes a marker and one receipt per linted file', () => {
+    const entries = readdirSync(auditDir);
+    expect(entries).toContain('strict.json');
+    expect(
+      JSON.parse(readFileSync(path.join(auditDir, 'strict.json'), 'utf8')),
+    ).toEqual({ version: 1 });
+    const receipts = entries.filter(name => name.startsWith('file-'));
+    expect(receipts).toHaveLength(1);
+    expect(
+      JSON.parse(readFileSync(path.join(auditDir, receipts[0]), 'utf8'))
+        .version,
+    ).toBe(1);
+  });
+});
+
+describe('no-unexplained-suppressions rule without an audit directory', () => {
+  let previousAuditDir: string | undefined;
+
+  beforeAll(() => {
+    previousAuditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+    delete process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
+  });
+
+  afterAll(() => {
+    if (previousAuditDir !== undefined) {
+      process.env.BACKSTAGE_OXLINT_AUDIT_DIR = previousAuditDir;
+    }
+  });
+
+  // Staying inert keeps strict configs loadable in editors and raw Oxlint.
+  new RuleTester({
+    languageOptions: { sourceType: 'module' },
+  }).run('no-unexplained-suppressions without an audit directory', rule, {
+    valid: [{ code: 'const value = 1;' }],
+    invalid: [],
+  });
+});
 
 describe('validateSuppressionComments', () => {
   it('accepts URL-only and short useful explanations without reparsing rule names in prose', () => {

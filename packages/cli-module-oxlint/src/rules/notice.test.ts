@@ -64,8 +64,20 @@ ruleTester.run('notice', rule, {
       errors: [{ message: 'Missing or incorrect Apache 2.0 copyright header' }],
     },
     {
-      code: `/* some other comment */\nexport const x = 1;`,
+      // A license-like leading comment is replaced
+      code: `/*\n * Copyright 2019 Some Other Project\n * Licensed under MIT\n */\nexport const x = 1;`,
       output: `${CURRENT_YEAR_HEADER}\n\nexport const x = 1;`,
+      errors: [{ message: 'Missing or incorrect Apache 2.0 copyright header' }],
+    },
+    {
+      // A meaningful leading comment is kept and the header inserted in front
+      code: `/**\n * @jest-environment jsdom\n */\nexport const x = 1;`,
+      output: `${CURRENT_YEAR_HEADER}\n\n/**\n * @jest-environment jsdom\n */\nexport const x = 1;`,
+      errors: [{ message: 'Missing or incorrect Apache 2.0 copyright header' }],
+    },
+    {
+      code: `/* eslint-disable-next-line no-console */\nexport const x = 1;`,
+      output: `${CURRENT_YEAR_HEADER}\n\n/* eslint-disable-next-line no-console */\nexport const x = 1;`,
       errors: [{ message: 'Missing or incorrect Apache 2.0 copyright header' }],
     },
   ],
