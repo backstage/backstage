@@ -39,40 +39,56 @@ function main(files) {
   }
 
   packages.sort((a, b) => b.dir.length - a.dir.length);
-  const groups = new Map();
+  // Files in packages that lint through the Backstage CLI are fixed with a
+  // single ESLint run from the root; other packages use their own lint script
+  const eslintFiles = [];
+  const scriptGroups = new Map();
   for (const file of files) {
     const absolutePath = resolve(file);
     if (!contains(root.dir, absolutePath)) {
       throw new Error(`Staged file is outside the repository: ${file}`);
     }
-    const pkg =
-      packages.find(candidate => contains(candidate.dir, absolutePath)) ?? root;
-    if (!groups.has(pkg)) {
-      groups.set(pkg, new Set());
+    const pkg = packages.find(candidate =>
+      contains(candidate.dir, absolutePath),
+    );
+    const lintScript = pkg?.packageJson.scripts?.lint;
+    if (!pkg || !lintScript || lintScript.startsWith('backstage-cli ')) {
+      eslintFiles.push(absolutePath);
+      continue;
+    }
+    if (!scriptGroups.has(pkg)) {
+      scriptGroups.set(pkg, new Set());
     }
     // Prefix paths so filenames starting with "-" cannot become lint flags.
-    groups
+    scriptGroups
       .get(pkg)
       .add(`./${relative(pkg.dir, absolutePath).split(sep).join('/')}`);
   }
 
-  for (const [pkg, paths] of groups) {
-    const command =
-      pkg !== root && pkg.packageJson.scripts?.lint
-        ? ['run', 'lint']
-        : ['exec', 'backstage-cli', 'package', 'lint'];
+  const runs = [];
+  if (eslintFiles.length > 0) {
+    runs.push({
+      cwd: root.dir,
+      args: ['eslint', '--fix', '--', ...eslintFiles],
+    });
+  }
+  for (const [pkg, paths] of scriptGroups) {
+    runs.push({ cwd: pkg.dir, args: ['run', 'lint', '--fix', ...paths] });
+  }
+
+  // Every group runs even if an earlier one fails, so all files get fixed
+  for (const { cwd, args } of runs) {
     // Run the pinned Yarn entry through Node; no shell or Windows .cmd handling.
     const result = spawnSync(
       process.execPath,
-      [resolve(root.dir, yarnPath), ...command, '--fix', ...paths],
-      { cwd: pkg.dir, stdio: 'inherit' },
+      [resolve(root.dir, yarnPath), ...args],
+      { cwd, stdio: 'inherit' },
     );
     if (result.error) {
       throw result.error;
     }
     if (result.status !== 0) {
       process.exitCode = result.status ?? 1;
-      return;
     }
   }
 }

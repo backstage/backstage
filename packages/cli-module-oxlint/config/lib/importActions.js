@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/// <reference types="node" />
 // @ts-check
 
 const { execFileSync } = require('node:child_process');

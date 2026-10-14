@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/// <reference types="node" />
 // @ts-check
 
 const fs = require('node:fs');
