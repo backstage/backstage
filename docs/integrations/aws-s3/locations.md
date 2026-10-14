@@ -57,7 +57,9 @@ integrations:
 ```
 
 The role is still assumed a second time if `externalId` is set on the
-integration, so that the external ID is always checked.
+integration. An external ID is only checked when assuming a role, so reusing
+the account credentials would skip the check that the role's trust policy may
+require.
 
 Configuration allows specifying custom S3 endpoint, along with
 [path-style access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html)
