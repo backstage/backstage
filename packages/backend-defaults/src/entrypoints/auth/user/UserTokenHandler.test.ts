@@ -23,7 +23,24 @@ import {
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthenticationError } from '@backstage/errors';
-import { SignJWT, GeneralSign, importJWK, base64url } from 'jose';
+import {
+  SignJWT,
+  GeneralSign,
+  importJWK,
+  base64url,
+  exportJWK,
+  generateKeyPair,
+} from 'jose';
+import { randomUUID as uuid } from 'node:crypto';
+
+async function supportsAlgorithm(algorithm: string): Promise<boolean> {
+  try {
+    await generateKeyPair(algorithm);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const mockPublicKey = {
   kty: 'EC',
@@ -194,6 +211,46 @@ describe('UserTokenHandler', () => {
         userEntityRef: parts.payload.sub,
       });
     });
+
+    it.each(['ML-DSA-65', 'ML-DSA-87'] as const)(
+      'should verify a valid user token signed with %s',
+      async algorithm => {
+        if (!(await supportsAlgorithm(algorithm))) {
+          return;
+        }
+
+        const pair = await generateKeyPair(algorithm);
+        const publicKey = await exportJWK(pair.publicKey);
+        const kid = uuid();
+        publicKey.kid = kid;
+        publicKey.alg = algorithm;
+
+        server.use(
+          http.get('http://localhost:0/api/auth/.well-known/jwks.json', () =>
+            HttpResponse.json({ keys: [publicKey] }),
+          ),
+        );
+
+        const sub = 'user:development/guest';
+        const iat = Math.floor(Date.now() / 1000);
+        const token = await new SignJWT({
+          sub,
+          aud: 'backstage',
+          iat,
+          exp: iat + 3600,
+        })
+          .setProtectedHeader({
+            typ: 'vnd.backstage.user',
+            alg: algorithm,
+            kid,
+          })
+          .sign(pair.privateKey);
+
+        await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
+          userEntityRef: sub,
+        });
+      },
+    );
 
     it('should fail to verify when the sub claim is missing', async () => {
       const expectedIssuedAt = 1712071714;

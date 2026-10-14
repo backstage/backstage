@@ -86,7 +86,8 @@ export class DatabasePluginKeySource implements PluginKeySource {
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
       const kid = uuid();
-      const key = await generateKeyPair(this.algorithm);
+      // {extractable: true} is required for jose v6 to generate extractable private keys
+      const key = await generateKeyPair(this.algorithm, { extractable: true });
       const publicKey = await exportJWK(key.publicKey);
       const privateKey = await exportJWK(key.privateKey);
       publicKey.kid = privateKey.kid = kid;
