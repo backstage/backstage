@@ -40,6 +40,10 @@ export async function buildBackend(options: BuildBackendOptions) {
   await buildPackage({
     targetDir,
     packageJson: pkg,
+    // Backend main fields describe runtime output, not the application source entry.
+    entryPoints: pkg.exports
+      ? undefined
+      : [{ mount: '.', path: 'src/index.ts', name: 'index', ext: '.ts' }],
     outputs: new Set([Output.cjs]),
     minify,
     workspacePackages: await PackageGraph.listTargetPackages(),
