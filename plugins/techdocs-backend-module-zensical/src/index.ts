@@ -22,3 +22,4 @@
 
 export { techdocsModuleZensical as default } from './module';
 export { patchZensicalConfig, cleanupZensicalConfig } from './zensicalHelpers';
+export { TechdocsZensicalGenerator } from './TechdocsZensicalGenerator';

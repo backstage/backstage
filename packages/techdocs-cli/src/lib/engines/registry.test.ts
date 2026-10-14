@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
+import { TechdocsZensicalGenerator } from '@backstage/plugin-techdocs-backend-module-zensical';
 import { getEngineConfig } from './registry';
 
 describe('getEngineConfig', () => {
@@ -121,6 +123,28 @@ describe('getEngineConfig', () => {
     it('leaves other module scripts untouched', () => {
       const html = '<body><script type="module">console.log(1)</script></body>';
       expect(config.transformHtml(html)).toContain('console.log(1)');
+    });
+  });
+
+  describe('createGenerator', () => {
+    const logger = {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      debug: jest.fn(),
+      child: jest.fn(),
+    } as any;
+
+    it('leaves mkdocs to the built-in generator', () => {
+      expect(getEngineConfig('mkdocs').createGenerator).toBeUndefined();
+    });
+
+    it('creates the Zensical generator for zensical', () => {
+      const generator = getEngineConfig('zensical').createGenerator!(
+        new ConfigReader({}),
+        { logger },
+      );
+      expect(generator).toBeInstanceOf(TechdocsZensicalGenerator);
     });
   });
 });
