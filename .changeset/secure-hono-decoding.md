@@ -2,4 +2,4 @@
 '@backstage/plugin-mcp-actions-backend': patch
 ---
 
-Updated Hono to a version that fixes a double-decoding vulnerability.
+Updated the HTTP library dependency to address a double-decoding vulnerability.
