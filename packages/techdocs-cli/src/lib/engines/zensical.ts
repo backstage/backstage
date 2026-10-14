@@ -19,7 +19,10 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import fs from 'fs-extra';
 import WebSocket from 'ws';
-import { patchZensicalConfig } from '@backstage/plugin-techdocs-backend-module-zensical';
+import {
+  TechdocsZensicalGenerator,
+  patchZensicalConfig,
+} from '@backstage/plugin-techdocs-backend-module-zensical';
 import { injectLiveReloadElement, setCorsHeaders } from '../livereload';
 import { EngineConfig } from './types';
 
@@ -99,6 +102,9 @@ export const zensicalConfig: EngineConfig = {
       addr,
       ...(options.configFile ? ['-f', options.configFile] : []),
     ];
+  },
+  createGenerator(config, options) {
+    return TechdocsZensicalGenerator.fromConfig(config, options);
   },
   async prepareServeConfig(configPath, logger) {
     // Same patching the backend generator applies, so preview == published.

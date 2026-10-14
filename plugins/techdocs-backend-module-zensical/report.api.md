@@ -4,7 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
+import type { GeneratorBase } from '@backstage/plugin-techdocs-node';
+import type { GeneratorOptions } from '@backstage/plugin-techdocs-node';
+import type { GeneratorRunOptions } from '@backstage/plugin-techdocs-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import type { TechDocsContainerRunner } from '@backstage/plugin-techdocs-node';
 
 // @public
 export function cleanupZensicalConfig(
@@ -21,4 +26,23 @@ export function patchZensicalConfig(
 // @public
 const techdocsModuleZensical: BackendFeature;
 export default techdocsModuleZensical;
+
+// @public
+export class TechdocsZensicalGenerator implements GeneratorBase {
+  constructor(options: {
+    logger: LoggerService;
+    containerRunner?: TechDocsContainerRunner;
+    config: Config;
+  });
+  // (undocumented)
+  static readonly defaultDockerImage =
+    'ghcr.io/backstage/techdocs-zensical:latest';
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: GeneratorOptions,
+  ): TechdocsZensicalGenerator;
+  // (undocumented)
+  run(options: GeneratorRunOptions): Promise<void>;
+}
 ```

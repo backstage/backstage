@@ -15,6 +15,11 @@
  */
 
 import http from 'node:http';
+import { Config } from '@backstage/config';
+import {
+  GeneratorBase,
+  GeneratorOptions,
+} from '@backstage/plugin-techdocs-node';
 
 export type ServeOptions = {
   configFile?: string;
@@ -31,6 +36,11 @@ export type EngineConfig = {
   startupLogPattern: string;
   buildArgs(outputDir: string, configFile: string): string[];
   serveArgs(port: string, options: ServeOptions): string[];
+  /**
+   * Creates the generator `generate` uses for this engine. Engines without one
+   * use the built-in MkDocs generator registered by Generators.fromConfig.
+   */
+  createGenerator?(config: Config, options: GeneratorOptions): GeneratorBase;
   /** Rewrites the config before serving so preview matches published output. */
   prepareServeConfig?(
     configPath: string,
