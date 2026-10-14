@@ -127,6 +127,7 @@ export function createWebhookRequestValidator(
       logger.warn(
         `Only ${validValues} valid notification items found among ${value.length} items`,
       );
+      context.reject();
     } else {
       logger.debug(`All ${validValues} notification items are valid`);
     }

@@ -69,7 +69,8 @@ describe('createWebhookRequestValidator', () => {
 
   it('responds to validationToken with decoded token and text/plain', async () => {
     const request = createRequest({
-      query: { validationToken: encodeURIComponent('foo bar') },
+      // no explicit URL encoding here - validator implementation relies on Express to decode the query string
+      query: { validationToken: 'foo bar' },
     });
     await target(request, context);
     expect(logger.info).toHaveBeenCalledWith(
@@ -152,7 +153,7 @@ describe('createWebhookRequestValidator', () => {
     expect(context.reject).toHaveBeenCalledWith();
   });
 
-  it('accepts if at least one notification item is valid', async () => {
+  it('rejects if at least one notification item is invalid', async () => {
     const request = createRequest({
       body: {
         value: [
@@ -179,7 +180,7 @@ describe('createWebhookRequestValidator', () => {
         'Only 1 valid notification items found among 2 items',
       ),
     );
-    expect(context.reject).not.toHaveBeenCalled();
+    expect(context.reject).toHaveBeenCalled();
   });
 
   it('accepts and logs debug if all notification items are valid', async () => {
