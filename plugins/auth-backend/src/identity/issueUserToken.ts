@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { omit } from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { GeneralSign, importJWK, JWK, KeyLike, SignJWT } from 'jose';
+import { CryptoKey, GeneralSign, importJWK, JWK, SignJWT } from 'jose';
 import { BackstageTokenPayload } from './TokenFactory';
 
 const MS_IN_S = 1000;
@@ -149,7 +149,7 @@ async function createUserIdentityClaim(options: {
     kid?: string;
   };
   payload: BackstageUserIdentityProofPayload;
-  key: KeyLike | Uint8Array;
+  key: CryptoKey | Uint8Array;
 }): Promise<string> {
   // NOTE: We reconstruct the header and payload structures carefully to
   // perfectly guarantee ordering. The reason for this is that we store only
