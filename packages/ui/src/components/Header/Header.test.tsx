@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Header } from './Header';
@@ -181,5 +187,167 @@ describe('Header navigation', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       '/catalog/entity/docs',
     );
+  });
+});
+
+describe('Header tabs overflow', () => {
+  const originalResizeObserver = global.ResizeObserver;
+  let resizeCallbacks: (() => void)[];
+  let disconnect: jest.Mock;
+  let width: number;
+  let contentWidth: number;
+
+  beforeEach(() => {
+    resizeCallbacks = [];
+    disconnect = jest.fn();
+    width = 300;
+    contentWidth = 900;
+    Object.defineProperty(global, 'ResizeObserver', {
+      configurable: true,
+      value: jest.fn((callback: () => void) => {
+        resizeCallbacks.push(callback);
+        return { observe: jest.fn(), disconnect };
+      }),
+    });
+    jest
+      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+      .mockImplementation(() => width);
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+      .mockImplementation(() => contentWidth);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    Object.defineProperty(global, 'ResizeObserver', {
+      configurable: true,
+      value: originalResizeObserver,
+    });
+  });
+
+  it('marks each overflowing side of the tab row and shows scroll buttons', () => {
+    const { container, unmount } = renderHeader({
+      tabs: [{ id: 'overview', label: 'Overview', href: 'overview' }],
+    });
+    const wrapper = screen.getByRole('navigation', {
+      name: 'Content navigation',
+    }).parentElement!;
+    const scrollButton = (side: string) =>
+      container.querySelector(`button[data-side="${side}"]`);
+
+    expect(wrapper).toHaveAttribute('data-overflow-end');
+    expect(wrapper).not.toHaveAttribute('data-overflow-start');
+    expect(scrollButton('end')).toHaveAttribute('aria-hidden', 'true');
+    expect(scrollButton('end')).toHaveAttribute('tabindex', '-1');
+    expect(scrollButton('start')).toBeNull();
+
+    wrapper.scrollLeft = 350;
+    fireEvent.scroll(wrapper);
+    expect(wrapper).toHaveAttribute('data-overflow-start');
+    expect(wrapper).toHaveAttribute('data-overflow-end');
+    expect(scrollButton('start')).not.toBeNull();
+
+    wrapper.scrollLeft = 600;
+    fireEvent.scroll(wrapper);
+    expect(wrapper).not.toHaveAttribute('data-overflow-end');
+    expect(scrollButton('end')).toBeNull();
+
+    wrapper.scrollLeft = 0;
+    fireEvent.scroll(wrapper);
+    expect(wrapper).not.toHaveAttribute('data-overflow-start');
+    expect(wrapper).toHaveAttribute('data-overflow-end');
+
+    width = 1000;
+    act(() => {
+      for (const resize of resizeCallbacks) resize();
+    });
+    expect(wrapper).not.toHaveAttribute('data-overflow-end');
+    expect(scrollButton('end')).toBeNull();
+
+    unmount();
+    expect(disconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it('scrolls the tab row from the buttons, respecting reduced motion', () => {
+    const originalMatchMedia = window.matchMedia;
+    const originalScrollBy = HTMLElement.prototype.scrollBy;
+    const scrollBy = jest.fn();
+    HTMLElement.prototype.scrollBy = scrollBy;
+    let reduceMotion = false;
+    window.matchMedia = () =>
+      ({ matches: reduceMotion } as unknown as MediaQueryList);
+
+    try {
+      const { container } = renderHeader({
+        tabs: [{ id: 'overview', label: 'Overview', href: 'overview' }],
+      });
+      const wrapper = screen.getByRole('navigation', {
+        name: 'Content navigation',
+      }).parentElement!;
+
+      fireEvent.click(container.querySelector('button[data-side="end"]')!);
+      expect(scrollBy).toHaveBeenLastCalledWith({
+        left: 240,
+        behavior: 'smooth',
+      });
+
+      wrapper.scrollLeft = 350;
+      fireEvent.scroll(wrapper);
+      reduceMotion = true;
+      fireEvent.click(container.querySelector('button[data-side="start"]')!);
+      expect(scrollBy).toHaveBeenLastCalledWith({
+        left: -240,
+        behavior: 'auto',
+      });
+    } finally {
+      window.matchMedia = originalMatchMedia;
+      HTMLElement.prototype.scrollBy = originalScrollBy;
+    }
+  });
+
+  it('scrolls the active tab into view on load and when the route changes', async () => {
+    const originalScrollBy = HTMLElement.prototype.scrollBy;
+    const scrollBy = jest.fn();
+    HTMLElement.prototype.scrollBy = scrollBy;
+    jest
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function rect(this: HTMLElement) {
+        const [left, right] =
+          this.textContent === 'Docs' && this.tagName === 'A'
+            ? [700, 800]
+            : [0, 300];
+        return { left, right } as DOMRect;
+      });
+
+    try {
+      const tabs = [
+        { id: 'overview', label: 'Overview', href: 'overview' },
+        { id: 'docs', label: 'Docs', href: 'docs' },
+      ];
+
+      const { unmount } = renderHeader({ tabs }, '/app/catalog/entity/docs');
+      expect(scrollBy).toHaveBeenCalledWith({ left: 532, behavior: 'auto' });
+      unmount();
+      scrollBy.mockClear();
+
+      renderHeader(
+        { tabs, description: '[Read the docs](docs)' },
+        '/app/catalog/entity/overview',
+      );
+      expect(scrollBy).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByRole('link', { name: 'Read the docs' }));
+      expect(screen.getByRole('status')).toHaveTextContent(
+        '/catalog/entity/docs',
+      );
+      await waitFor(() =>
+        expect(scrollBy).toHaveBeenCalledWith({
+          left: 532,
+          behavior: 'smooth',
+        }),
+      );
+    } finally {
+      HTMLElement.prototype.scrollBy = originalScrollBy;
+    }
   });
 });

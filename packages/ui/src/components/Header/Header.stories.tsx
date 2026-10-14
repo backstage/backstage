@@ -386,6 +386,45 @@ export const WithGroupedTabs = meta.story({
   },
 });
 
+export const WithManyTabs = meta.story({
+  decorators: [
+    withRouter,
+    (Story: StoryFn) => (
+      <div
+        style={{
+          width: 480,
+          maxWidth: '100%',
+          resize: 'horizontal',
+          overflow: 'hidden',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    ...Default.input.args,
+    tabs: [
+      ...tabs,
+      ...[
+        'Dependencies',
+        'Deployments',
+        'Pull Requests',
+        'Documentation',
+        'API Definition',
+        'Cost Insights',
+        'Security Scans',
+        'Feature Flags',
+        'On-call Schedule',
+      ].map(label => ({
+        id: label.toLowerCase().replace(/ /g, '-'),
+        label,
+        href: `/${label.toLowerCase().replace(/ /g, '-')}`,
+      })),
+    ],
+  },
+});
+
 export const WithExplicitActiveTab = meta.story({
   decorators: [withRouter],
   args: {

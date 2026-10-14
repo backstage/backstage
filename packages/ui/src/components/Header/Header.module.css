@@ -89,8 +89,124 @@
     opacity: 1;
   }
 
+  .bui-HeaderTabsRow {
+    position: relative;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* The tab row keeps its natural width inside a bounded scroll viewport. */
   .bui-HeaderTabsWrapper {
     margin-left: -8px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scroll-padding-inline: var(--bui-space-4);
+    padding-block: var(--bui-space-1);
+  }
+
+  .bui-HeaderTabsWrapper > .bui-HeaderNav {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .bui-HeaderTabsWrapper .bui-HeaderNavItem,
+  .bui-HeaderTabsWrapper .bui-HeaderNavGroup {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* A transparent edge hint works over every header background and theme. */
+  .bui-HeaderTabsWrapper[data-overflow-end] {
+    mask-image: linear-gradient(
+      to right,
+      black calc(100% - var(--bui-space-8)),
+      transparent
+    );
+  }
+
+  .bui-HeaderTabsWrapper[data-overflow-start] {
+    mask-image: linear-gradient(
+      to left,
+      black calc(100% - var(--bui-space-8)),
+      transparent
+    );
+  }
+
+  .bui-HeaderTabsWrapper[data-overflow-start][data-overflow-end] {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--bui-space-8),
+      black calc(100% - var(--bui-space-8)),
+      transparent
+    );
+  }
+
+  [dir='rtl'] .bui-HeaderTabsWrapper[data-overflow-end],
+  .bui-HeaderTabsWrapper[data-overflow-end]:dir(rtl) {
+    mask-image: linear-gradient(
+      to left,
+      black calc(100% - var(--bui-space-8)),
+      transparent
+    );
+  }
+
+  [dir='rtl'] .bui-HeaderTabsWrapper[data-overflow-start],
+  .bui-HeaderTabsWrapper[data-overflow-start]:dir(rtl) {
+    mask-image: linear-gradient(
+      to right,
+      black calc(100% - var(--bui-space-8)),
+      transparent
+    );
+  }
+
+  /* Keep keyboard focus rings fully visible, including at the viewport edge. */
+  .bui-HeaderTabsWrapper.bui-HeaderTabsWrapper:has(:focus-visible) {
+    mask-image: none;
+  }
+
+  /*
+   * Mouse users who zoom in or narrow the window may have no easy way to scroll
+   * sideways, so they get buttons. Small touch screens swipe and keep the fade.
+   */
+  .bui-HeaderTabsScrollButton {
+    position: absolute;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid var(--bui-border-1);
+    border-radius: 50%;
+    background-color: var(--bui-bg-app);
+    color: var(--bui-fg-primary);
+    cursor: pointer;
+    transform: translateY(-50%);
+
+    &[data-side='start'] {
+      inset-inline-start: 0;
+    }
+
+    &[data-side='end'] {
+      inset-inline-end: 0;
+    }
+
+    &:hover {
+      background-color: var(--bui-bg-neutral-1);
+    }
+
+    &:dir(rtl) svg {
+      transform: scaleX(-1);
+    }
+
+    @media (max-width: 767px) and (pointer: coarse) {
+      display: none;
+    }
   }
 
   .bui-HeaderControls {
