@@ -17,8 +17,7 @@
 import { Config } from '@backstage/config';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { promises as fs } from 'node:fs';
-import { JWK, exportJWK, importPKCS8, importSPKI } from 'jose';
-import { KeyLike } from 'jose';
+import { CryptoKey, JWK, exportJWK, importPKCS8, importSPKI } from 'jose';
 import { KeyPayload } from './types';
 import { PluginKeySource } from './types';
 
@@ -160,7 +159,7 @@ export class StaticConfigPluginKeySource implements PluginKeySource {
     path: string,
     keyId: string,
     algorithm: string,
-    importer: (content: string, algorithm: string) => Promise<KeyLike>,
+    importer: (content: string, algorithm: string) => Promise<CryptoKey>,
   ): Promise<JWK> {
     const content = await fs.readFile(path, { encoding: 'utf8', flag: 'r' });
     const key = await importer(content, algorithm);
