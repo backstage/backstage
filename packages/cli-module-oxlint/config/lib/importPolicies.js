@@ -65,9 +65,19 @@ function isDevModulePath(modulePath) {
   return devModulePatterns.some(pattern => pattern.match(modulePath));
 }
 
+// Compiled patterns are reused, since the same few patterns from the rule
+// options are matched against every linted file
+/** @type {Map<string, InstanceType<typeof minimatch.Minimatch>>} */
+const filePatternCache = new Map();
+
 /** @param {string} pattern @param {string} filePath */
 function matchesFilePattern(pattern, filePath) {
-  return new minimatch.Minimatch(pattern).match(filePath.split('\\').join('/'));
+  let matcher = filePatternCache.get(pattern);
+  if (!matcher) {
+    matcher = new minimatch.Minimatch(pattern);
+    filePatternCache.set(pattern, matcher);
+  }
+  return matcher.match(filePath.split('\\').join('/'));
 }
 
 /**
