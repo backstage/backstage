@@ -17,3 +17,19 @@
 import { z } from 'zod/v3';
 
 export const pluginSourcesSchema = z.array(z.string()).default([]);
+export const excludedSourcesSchema = z.array(z.string()).default([]);
+
+export function mergePluginSources(options: {
+  serverSources: string[];
+  localAdditions: string[];
+  localExclusions: string[];
+}): string[] {
+  const combined = new Set([
+    ...options.serverSources,
+    ...options.localAdditions,
+  ]);
+  for (const excluded of options.localExclusions) {
+    combined.delete(excluded);
+  }
+  return Array.from(combined);
+}
