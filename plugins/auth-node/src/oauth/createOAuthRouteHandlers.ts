@@ -50,8 +50,10 @@ import { CookieScopeManager } from './CookieScopeManager';
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
   authenticator: OAuthAuthenticator<any, TProfile>;
+  /** App URL to return to when the redirect flow fails. */
   appUrl: string;
   baseUrl: string;
+  /** Checks allowed app origins for web messages and redirect destinations. */
   isOriginAllowed: (origin: string) => boolean;
   providerId: string;
   config: Config;
@@ -127,6 +129,30 @@ export function createOAuthRouteHandlers<TProfile>(
     additionalScopes: options.additionalScopes,
   });
 
+  function parseRedirectUrl(value: string | undefined): URL {
+    if (!value) {
+      throw new InputError(
+        'No redirectUrl provided in request query parameters',
+      );
+    }
+
+    let url: URL;
+    try {
+      url = new URL(value);
+    } catch {
+      throw new InputError('Redirect URL is invalid, failed to parse');
+    }
+
+    if (
+      !['http:', 'https:'].includes(url.protocol) ||
+      !isOriginAllowed(url.origin)
+    ) {
+      throw new NotAllowedError(`Redirect URL is not an allowed origin`);
+    }
+
+    return url;
+  }
+
   return {
     async start(
       this: never,
@@ -148,6 +174,10 @@ export function createOAuthRouteHandlers<TProfile>(
       }
       const redirectUrl = req.query.redirectUrl?.toString();
       const flow = req.query.flow?.toString();
+
+      if (flow === 'redirect') {
+        parseRedirectUrl(redirectUrl);
+      }
 
       if (!env) {
         throw new InputError('No env provided in request query parameters');
@@ -184,9 +214,14 @@ export function createOAuthRouteHandlers<TProfile>(
     ): Promise<void> {
       let origin = defaultAppOrigin;
       let state;
+      let redirectUrl: URL | undefined;
 
       try {
         state = decodeOAuthState(req.query.state?.toString() ?? '');
+
+        if (state.flow === 'redirect') {
+          redirectUrl = parseRedirectUrl(state.redirectUrl);
+        }
 
         if (state.origin) {
           try {
@@ -249,13 +284,8 @@ export function createOAuthRouteHandlers<TProfile>(
 
         // When using the redirect flow we rely on refresh token we just
         // acquired to get a new session once we're back in the app.
-        if (state.flow === 'redirect') {
-          if (!state.redirectUrl) {
-            throw new InputError(
-              'No redirectUrl provided in request query parameters',
-            );
-          }
-          res.redirect(state.redirectUrl);
+        if (redirectUrl) {
+          res.redirect(redirectUrl.toString());
           return;
         }
 
@@ -269,12 +299,13 @@ export function createOAuthRouteHandlers<TProfile>(
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
 
-        if (state?.flow === 'redirect' && state?.redirectUrl) {
-          const redirectUrl = new URL(state.redirectUrl);
-          redirectUrl.searchParams.set('error', message);
+        if (state?.flow === 'redirect') {
+          const errorUrl = new URL(appUrl);
+          errorUrl.search = new URLSearchParams({ error: message }).toString();
+          errorUrl.hash = '';
 
-          // set the error in a cookie and redirect user back to sign in where the error can be rendered
-          res.redirect(redirectUrl.toString());
+          // Redirect back to sign in where the error can be rendered.
+          res.redirect(errorUrl.toString());
         } else {
           // post error message back to popup if failure
           sendWebMessageResponse(res, origin, {
