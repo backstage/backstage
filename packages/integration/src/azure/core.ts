@@ -25,8 +25,11 @@ export { isVisualStudioDomain } from './isVisualStudioDomain';
  * @remarks
  *
  * Converts
- * - from: `https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents`
- * - to:   `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&version={commitOrBranch}`
+ * - from: `https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{branch}&_a=contents`
+ * - to:   `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&versionDescriptor.version={branch}&versionDescriptor.versionType=branch`
+ *
+ * Branch (`GB`) and tag (`GT`) references retain their name and type in the
+ * download URL. URLs without a reference use the default branch.
  *
  * @param url - A URL pointing to a file
  * @public
@@ -38,6 +41,9 @@ export function getAzureFileFetchUrl(url: string): string {
 /**
  * Given a URL pointing to a path on a provider, returns a URL that is suitable
  * for downloading the subtree.
+ *
+ * Branch (`GB`) and tag (`GT`) references retain their name and type in the
+ * download URL. URLs without a reference use the default branch.
  *
  * @param url - A URL pointing to a path
  * @public
