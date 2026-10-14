@@ -865,6 +865,57 @@ describe('getPackages', () => {
     expect(found).toBeUndefined();
   });
 
+  it('byPath resolves package directories, relative paths, and nested packages', () => {
+    const tempRoot = mkdtempSync(path.join(os.tmpdir(), 'oxlint-bypath-'));
+    try {
+      const writePackage = (dir: string, json: object) => {
+        mkdirSync(path.join(tempRoot, dir), { recursive: true });
+        writeFileSync(
+          path.join(tempRoot, dir, 'package.json'),
+          JSON.stringify(json),
+        );
+      };
+      writePackage('.', {
+        name: 'root',
+        private: true,
+        workspaces: ['packages/*', 'packages/outer/inner'],
+      });
+      // Required for Yarn workspace detection by @manypkg/get-packages
+      writeFileSync(path.join(tempRoot, 'yarn.lock'), '');
+      writePackage('packages/outer', { name: '@internal/outer' });
+      writePackage('packages/outer/inner', { name: '@internal/inner' });
+
+      const pkgs = getPackages(tempRoot);
+      const nameOf = (p: string) => pkgs!.byPath(p)?.packageJson.name;
+      const outerDir = path.join(tempRoot, 'packages/outer');
+      const innerDir = path.join(outerDir, 'inner');
+
+      expect(nameOf(path.join(outerDir, 'src/index.ts'))).toBe(
+        '@internal/outer',
+      );
+      // The nearest package wins for nested packages
+      expect(nameOf(path.join(innerDir, 'src/deep/a.ts'))).toBe(
+        '@internal/inner',
+      );
+      expect(nameOf(path.join(innerDir, 'src/deep/b.ts'))).toBe(
+        '@internal/inner',
+      );
+      expect(nameOf(outerDir)).toBe('@internal/outer');
+      expect(nameOf(innerDir)).toBe('@internal/inner');
+      expect(
+        nameOf(path.relative(process.cwd(), path.join(innerDir, 'src/a.ts'))),
+      ).toBe('@internal/inner');
+      expect(nameOf(path.join(innerDir, '../src/index.ts'))).toBe(
+        '@internal/outer',
+      );
+      expect(nameOf(path.join(tempRoot, 'package.json'))).toBeUndefined();
+      expect(nameOf(path.join(tempRoot, 'scripts/build.js'))).toBeUndefined();
+      pkgs!.clearCache();
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   it('clearCache forces a reload on next call', () => {
     const first = getPackages(FIXTURE);
     first!.clearCache();
