@@ -122,7 +122,7 @@ describe('AzureUrlReader', () => {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         config: createConfig('my-pat'),
         response: expect.objectContaining({
-          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&versionDescriptor.version=master&versionDescriptor.versionType=branch',
         }),
       },
       {

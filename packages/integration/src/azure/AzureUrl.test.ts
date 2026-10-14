@@ -85,10 +85,10 @@ describe('AzureUrl', () => {
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GBtest-branch',
     );
     expect(url.toFileUrl()).toBe(
-      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?api-version=6.0&path=%2Ftest.yaml&version=test-branch',
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?api-version=6.0&path=%2Ftest.yaml&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
     );
     expect(url.toArchiveUrl()).toBe(
-      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&version=test-branch',
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
     );
     expect(url.toCommitsUrl()).toBe(
       'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch',
@@ -111,10 +111,10 @@ describe('AzureUrl', () => {
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GTtest-tag',
     );
     expect(url.toFileUrl()).toBe(
-      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?api-version=6.0&path=%2Ftest.yaml&version=test-tag',
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?api-version=6.0&path=%2Ftest.yaml&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
     );
     expect(url.toArchiveUrl()).toBe(
-      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&version=test-tag',
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
     );
     expect(url.toCommitsUrl()).toBe(
       'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag',
@@ -163,10 +163,10 @@ describe('AzureUrl', () => {
       'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
     );
     expect(url.toFileUrl()).toBe(
-      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&version=test-branch',
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
     );
     expect(url.toArchiveUrl()).toBe(
-      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&version=test-branch',
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
     );
     expect(url.toCommitsUrl()).toBe(
       'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch',
@@ -189,10 +189,10 @@ describe('AzureUrl', () => {
       'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GTtest-tag',
     );
     expect(url.toFileUrl()).toBe(
-      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&version=test-tag',
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
     );
     expect(url.toArchiveUrl()).toBe(
-      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&version=test-tag',
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
     );
     expect(url.toCommitsUrl()).toBe(
       'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag',

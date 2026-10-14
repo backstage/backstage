@@ -165,7 +165,11 @@ export class AzureUrl {
     url.searchParams.set('path', this.#path);
 
     if (this.#ref) {
-      url.searchParams.set('version', this.#ref);
+      url.searchParams.set('versionDescriptor.version', this.#ref);
+      url.searchParams.set(
+        'versionDescriptor.versionType',
+        this.#prefix === 'GT' ? 'tag' : 'branch',
+      );
     }
 
     return url.toString();
@@ -207,7 +211,11 @@ export class AzureUrl {
       url.searchParams.set('scopePath', this.#path);
     }
     if (this.#ref) {
-      url.searchParams.set('version', this.#ref);
+      url.searchParams.set('versionDescriptor.version', this.#ref);
+      url.searchParams.set(
+        'versionDescriptor.versionType',
+        this.#prefix === 'GT' ? 'tag' : 'branch',
+      );
     }
 
     return url.toString();
