@@ -456,6 +456,82 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('conditionals', () => {
+    it.each([true, false])(
+      'should preserve a literal statement boolean (%s) through action outputs',
+      async shouldRun => {
+        actionRegistry.register(
+          createTemplateAction({
+            id: 'flag-action',
+            handler: async ctx => {
+              ctx.output('flag', ctx.input.flag);
+            },
+          }),
+        );
+        const condition =
+          "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}";
+        const task = createMockTaskWithSpec({
+          parameters: { selection: shouldRun ? 'new' : 'existing' },
+          steps: [
+            {
+              id: 'flag',
+              name: 'flag',
+              action: 'flag-action',
+              input: { flag: condition },
+            },
+            {
+              id: 'direct',
+              name: 'direct',
+              action: 'output-action',
+              if: condition,
+            },
+            {
+              id: 'indirect',
+              name: 'indirect',
+              action: 'output-action',
+              if: '${{ steps.flag.output.flag }}',
+            },
+          ],
+          output: {
+            flag: '${{ steps.flag.output.flag }}',
+            direct: '${{ steps.direct.output.mock }}',
+            indirect: '${{ steps.indirect.output.mock }}',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.flag).toBe(shouldRun);
+        expect(output.direct).toBe(shouldRun ? 'backstage' : undefined);
+        expect(output.indirect).toBe(shouldRun ? 'backstage' : undefined);
+      },
+    );
+
+    it.each([true, false])(
+      'should evaluate literal statement booleans (%s) during dry runs',
+      async shouldRun => {
+        const task = createMockTaskWithSpec(
+          {
+            parameters: { selection: shouldRun ? 'new' : 'existing' },
+            steps: [
+              {
+                id: 'conditional',
+                name: 'conditional',
+                action: 'jest-validated-action',
+                if: "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}",
+                input: { foo: 1 },
+              },
+            ],
+          },
+          undefined,
+          true,
+        );
+
+        await runner.execute(task);
+
+        expect(fakeActionHandler).toHaveBeenCalledTimes(shouldRun ? 1 : 0);
+      },
+    );
+
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -780,6 +856,58 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(logger.error).not.toHaveBeenCalled();
+    });
+
+    it('should only coerce complete conditional templates with literal boolean branches', async () => {
+      const task = createMockTaskWithSpec({
+        parameters: { string: 'false', selected: false },
+        steps: [
+          {
+            id: 'test',
+            name: 'test',
+            action: 'jest-mock-action',
+            input: {
+              literal: 'false',
+              interpolated: '${{ parameters.string }}',
+              statementInterpolation:
+                '{% if true %}${{ parameters.string }}{% else %}true{% endif %}',
+              prefix: ' {% if true %}false{% else %}true{% endif %}',
+              suffix: '{% if true %}false{% else %}true{% endif %} ',
+              adjacent:
+                '{% if false %}true{% endif %}{% if true %}false{% else %}true{% endif %}',
+              number: '{% if true %}0{% else %}1{% endif %}',
+              quoted: '{% if true %}"false"{% else %}"true"{% endif %}',
+              whitespace: '{% if true %}\n false \n{% else %}true{% endif %}',
+              trimmed:
+                '{%- if parameters.selected -%}false{%- else -%}true{%- endif -%}',
+              inverted:
+                '{% if parameters.selected %}false{% else %}true{% endif %}',
+              native: '${{ parameters.selected }}',
+            },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            literal: 'false',
+            interpolated: 'false',
+            statementInterpolation: 'false',
+            prefix: ' false',
+            suffix: 'false ',
+            adjacent: 'false',
+            number: '0',
+            quoted: '"false"',
+            whitespace: false,
+            trimmed: true,
+            inverted: true,
+            native: false,
+          },
+        }),
+      );
     });
 
     it('should preserve native input value types', async () => {
