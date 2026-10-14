@@ -27936,14 +27936,14 @@ __metadata:
   linkType: hard
 
 "express-rate-limit@npm:^8.2.1, express-rate-limit@npm:^8.2.2":
-  version: 8.7.0
-  resolution: "express-rate-limit@npm:8.7.0"
+  version: 8.7.1
+  resolution: "express-rate-limit@npm:8.7.1"
   dependencies:
     debug: "npm:^4.4.3"
     ip-address: "npm:^10.2.0"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 10/aff2995369d8a14380a46eefa9f7f720ef6c5d6c4478d09b20544f1e91d8fa21dfe442bf8ef5e652b226ee2dea110d3f8e57dc5cf44331d51106ecdef3d85470
+  checksum: 10/64c27b98d5ed0f3dcf6625c319c9118415d6cfd51638d7b847f6166c5ca738379fcc880bc620332624a78b31e90918304cc4f74b050fd06745c06e1a4e9bbcad
   languageName: node
   linkType: hard
 
