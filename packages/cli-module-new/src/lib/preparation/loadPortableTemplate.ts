@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import { z } from 'zod';
 import fs from 'fs-extra';
 import recursiveReaddir from 'recursive-readdir';
 import { resolve as resolvePath, relative as relativePath } from 'node:path';
@@ -29,7 +29,7 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
-import { fromZodError } from 'zod-validation-error/v3';
+import { fromZodError } from 'zod-validation-error';
 
 const templateDefinitionSchema = z
   .object({

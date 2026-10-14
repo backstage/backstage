@@ -16,7 +16,7 @@
 
 import { isError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 import { isJsonObjectDeep } from './util';
 import { validateMetaSchema } from './validateMetaSchema';
 
