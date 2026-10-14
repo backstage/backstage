@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Header } from './Header';
@@ -181,5 +181,72 @@ describe('Header navigation', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       '/catalog/entity/docs',
     );
+  });
+});
+
+describe('Header tabs overflow', () => {
+  const originalResizeObserver = global.ResizeObserver;
+  let resizeCallbacks: (() => void)[];
+  let disconnect: jest.Mock;
+  let width: number;
+  let contentWidth: number;
+
+  beforeEach(() => {
+    resizeCallbacks = [];
+    disconnect = jest.fn();
+    width = 300;
+    contentWidth = 900;
+    Object.defineProperty(global, 'ResizeObserver', {
+      configurable: true,
+      value: jest.fn((callback: () => void) => {
+        resizeCallbacks.push(callback);
+        return { observe: jest.fn(), disconnect };
+      }),
+    });
+    jest
+      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+      .mockImplementation(() => width);
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+      .mockImplementation(() => contentWidth);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    Object.defineProperty(global, 'ResizeObserver', {
+      configurable: true,
+      value: originalResizeObserver,
+    });
+  });
+
+  it('marks the tab row while more tabs remain to the right', () => {
+    const { unmount } = renderHeader({
+      tabs: [{ id: 'overview', label: 'Overview', href: 'overview' }],
+    });
+    const wrapper = screen.getByRole('navigation', {
+      name: 'Content navigation',
+    }).parentElement!;
+    expect(wrapper).toHaveAttribute('data-overflow-right');
+
+    wrapper.scrollLeft = 350;
+    fireEvent.scroll(wrapper);
+    expect(wrapper).toHaveAttribute('data-overflow-right');
+
+    wrapper.scrollLeft = 600;
+    fireEvent.scroll(wrapper);
+    expect(wrapper).not.toHaveAttribute('data-overflow-right');
+
+    wrapper.scrollLeft = 0;
+    fireEvent.scroll(wrapper);
+    expect(wrapper).toHaveAttribute('data-overflow-right');
+
+    width = 1000;
+    act(() => {
+      for (const resize of resizeCallbacks) resize();
+    });
+    expect(wrapper).not.toHaveAttribute('data-overflow-right');
+
+    unmount();
+    expect(disconnect).toHaveBeenCalledTimes(1);
   });
 });

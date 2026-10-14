@@ -89,8 +89,41 @@
     opacity: 1;
   }
 
+  /* The tab row keeps its natural width inside a bounded scroll viewport. */
   .bui-HeaderTabsWrapper {
     margin-left: -8px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scroll-padding-inline: var(--bui-space-4);
+    padding-block: var(--bui-space-1);
+  }
+
+  .bui-HeaderTabsWrapper > .bui-HeaderNav {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .bui-HeaderTabsWrapper .bui-HeaderNavItem,
+  .bui-HeaderTabsWrapper .bui-HeaderNavGroup {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* A transparent edge hint works over every header background and theme. */
+  .bui-HeaderTabsWrapper[data-overflow-right] {
+    mask-image: linear-gradient(
+      to right,
+      black calc(100% - var(--bui-space-8)),
+      transparent
+    );
+  }
+
+  /* Keep keyboard focus rings fully visible, including at the viewport edge. */
+  .bui-HeaderTabsWrapper:has(:focus-visible) {
+    mask-image: none;
   }
 
   .bui-HeaderControls {
