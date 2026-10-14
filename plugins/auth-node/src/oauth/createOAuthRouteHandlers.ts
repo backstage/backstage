@@ -148,7 +148,7 @@ export function createOAuthRouteHandlers<TProfile>(
       !isOriginAllowed(url.origin)
     ) {
       throw new NotAllowedError(
-        `Redirect origin '${url.origin}' is not allowed`,
+        `Redirect URL is not an allowed origin`,
       );
     }
 
