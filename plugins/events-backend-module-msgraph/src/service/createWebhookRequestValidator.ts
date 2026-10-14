@@ -44,17 +44,23 @@ export function createWebhookRequestValidator(
     request: RequestDetails,
     context: RequestValidationContext,
   ): Promise<void> {
-    if (request.query.validationToken) {
+    const validationToken = request.query.validationToken;
+    if (validationToken) {
       logger.info('Received validation request from MS Graph.');
-      logger.debug('Responding with URL-decoded token through context.reject.');
 
+      if (typeof validationToken !== 'string') {
+        logger.debug('Rejecting request due to invalid validation token.');
+        context.reject();
+        return;
+      }
+
+      logger.debug('Responding with URL-decoded token through context.reject.');
       // This is a validation request, the token needs to be decoded and sent back
       context.reject({
         status: 200,
-        payload: decodeURIComponent(request.query.validationToken as string),
+        payload: validationToken,
         contentType: 'text/plain',
       });
-
       return;
     }
 
