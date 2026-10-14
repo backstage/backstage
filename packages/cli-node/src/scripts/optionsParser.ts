@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,26 @@
 import { parseArgs, type ParseArgsConfig } from 'node:util';
 import { parse as parseShellArgs } from 'shell-quote';
 
+/**
+ * Creates a parser for package.json script options that follow a known
+ * command prefix, such as `backstage-cli package lint --fix`.
+ *
+ * The prefix is either a list of command path segments, which is joined onto
+ * the `backstage-cli` command, or a full script prefix string for other
+ * commands such as `node bin/backstage-cli-module-oxlint package lint`.
+ *
+ * @param commandPath - Command path segments, or an exact script prefix
+ * @param options - The script options to parse, see `util.parseArgs`
+ * @public
+ */
 export function createScriptOptionsParser(
-  commandPath: string[],
+  commandPath: string[] | string,
   options: ParseArgsConfig['options'],
 ) {
-  const expectedScript = `backstage-cli ${commandPath.join(' ')}`;
+  const expectedScript =
+    typeof commandPath === 'string'
+      ? commandPath
+      : `backstage-cli ${commandPath.join(' ')}`;
 
   return (scriptStr?: string) => {
     if (!scriptStr || !scriptStr.startsWith(expectedScript)) {

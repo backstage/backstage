@@ -162,8 +162,6 @@
     "madge": "^8.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^12.0.0",
-    "oxlint": "^1.87.0",
-    "oxlint-tsgolint": "^7.0.2004",
     "prettier": "^2.2.1",
     "semver": "^7.5.3",
     "shx": "^0.4.0",

@@ -59,7 +59,10 @@ This is a native Oxlint policy, not an ESLint configuration translator or a
 promise of complete ESLint parity. Backstage rules use Oxlint's `createOnce`
 lifecycle and per-file context; the module does not load ESLint or change the
 ESLint plugin. Only deliberately selected native plugins
-and Backstage rules are enabled. Repository-specific rules and exceptions
+and Backstage rules are enabled. Rules ported from the ESLint plugin do not
+carry over their editor quick-fix suggestions, such as the plugin switch
+suggestions of `no-mixed-plugin-imports`; their diagnostics and `--fix`
+behavior remain. Repository-specific rules and exceptions
 belong in the repository's `.oxlintrc.js`; arbitrary `.eslintrc` extensions are
 not loaded or executed.
 
@@ -80,9 +83,9 @@ It uses native Oxlint restrictions to reject `.toLowerCase` and `.toUpperCase`
 property access and default or namespace imports from React and Winston. The
 Backstage `__dirname` check still applies in `src`. The preset collects files
 selected by Oxlint and has the Backstage CLI validate final source comments
-after fixes, before returning. This audit requires
-`BACKSTAGE_OXLINT_AUDIT_DIR`, which the CLI provides; a strict config cannot
-be run directly with raw Oxlint. Use narrow, explained directives with
+after fixes, before returning. The audit runs only through the Backstage CLI;
+loading a strict config in an editor or with raw Oxlint lints without the
+audit. Use narrow, explained directives with
 configured Oxlint rule IDs, for example:
 
 ```javascript
@@ -99,17 +102,21 @@ not have an alias bridge.
 
 Both commands accept `--fix`, `--format`, `--output-file`, and `--max-warnings`;
 `repo lint` also accepts `--since` and selects packages with a Backstage
-`package lint` script, without executing custom lint scripts. `--max-warnings=-1`
+`package lint` script, without executing custom lint scripts. Warning
+thresholds apply across the whole run rather than per config group, and
+`repo lint` honors a `--max-warnings` value declared in a package's own lint
+script. `--max-warnings=-1`
 allows warnings, matching the ESLint module. Relative output paths resolve from
 the package directory for `package lint` and repository root for `repo lint`.
 Supported formats are `default`, `checkstyle`,
 `github`, `gitlab`, `json`, `junit`, `sarif`, `stylish`, and `unix`. JSON, SARIF,
 and GitLab Code Quality reports are merged across config groups. Checkstyle and
 JUnit are rejected before linting when a command selects multiple config
-groups. `repo lint` accepts `--success-cache` and `--success-cache-dir` for
+groups, and a run with no groups writes an empty report. `repo lint` accepts
+`--success-cache` and `--success-cache-dir` for
 script compatibility, but Oxlint always checks selected packages and does not
-read or write a success cache. Linting continues across groups, writes the
-complete report, and then returns a nonzero exit status if any group or
+read or write a success cache. Config groups lint concurrently, the complete
+report is written, and a nonzero exit status is returned if any group or
 suppression audit fails.
 
 Oxlint applies `--fix` in one pass. Autofixes that generate dependency

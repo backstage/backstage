@@ -21,6 +21,24 @@ const { randomUUID } = require('node:crypto');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
+/** @type {Set<string>} */
+const writtenMarkers = new Set();
+
+/** @param {string} auditDir */
+function writeAuditMarker(auditDir) {
+  // The marker tells the Backstage CLI that this group ran with the strict
+  // preset, so it can distinguish an empty audit from a non-strict one. It is
+  // written once per process and audit directory.
+  if (writtenMarkers.has(auditDir)) {
+    return;
+  }
+  writeFileSync(
+    path.join(auditDir, 'strict.json'),
+    JSON.stringify({ version: 1 }),
+  );
+  writtenMarkers.add(auditDir);
+}
+
 /** @type {Parameters<import('oxlint/plugins-dev').RuleTester['run']>[1]} */
 module.exports = {
   meta: {
@@ -34,15 +52,17 @@ module.exports = {
   createOnce(context) {
     return {
       before() {
+        // Receipts are only collected when the Backstage CLI provides an
+        // audit directory; loading the config outside the CLI, for example in
+        // an editor, must stay side-effect free.
         const auditDir = process.env.BACKSTAGE_OXLINT_AUDIT_DIR;
         if (!auditDir) {
-          throw new Error(
-            'The strict preset requires BACKSTAGE_OXLINT_AUDIT_DIR from the Backstage CLI.',
-          );
+          return;
         }
 
         const filePath = path.resolve(context.cwd, context.physicalFilename);
         mkdirSync(auditDir, { recursive: true });
+        writeAuditMarker(auditDir);
         writeFileSync(
           path.join(auditDir, `file-${randomUUID()}.json`),
           JSON.stringify({ version: 1, filePath }),
