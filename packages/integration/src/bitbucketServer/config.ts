@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { isValidHost } from '../helpers';
 
 /**
@@ -93,7 +93,7 @@ export function readBitbucketServerIntegrationConfig(
   }
 
   if (apiBaseUrl) {
-    apiBaseUrl = trimEnd(apiBaseUrl, '/');
+    apiBaseUrl = lodash.trimEnd(apiBaseUrl, '/');
   } else {
     apiBaseUrl = `https://${host}/rest/api/1.0`;
   }

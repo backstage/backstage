@@ -208,7 +208,21 @@ function createConfig(dir, extraConfig = {}) {
 function createConfigForRole(dir, role, extraConfig = {}) {
   switch (role) {
     case 'common-library':
-      return createConfig(dir, extraConfig);
+      return createConfig(dir, {
+        ...extraConfig,
+        restrictedSrcSyntax: [
+          {
+            // Common libraries are published with an ESM build that Node.js
+            // loads natively, and Node.js can't resolve named imports from
+            // CommonJS modules such as lodash.
+            message:
+              "Named imports from 'lodash' break ESM consumers of common libraries, use `import lodash from 'lodash'` instead.",
+            selector:
+              "ImportDeclaration[source.value='lodash'] > ImportSpecifier",
+          },
+          ...(extraConfig.restrictedSrcSyntax ?? []),
+        ],
+      });
 
     case 'web-library':
     case 'frontend':
