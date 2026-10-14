@@ -24,8 +24,9 @@ import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
-import { getEngineConfig } from '../../lib/engineConfig';
+import { getEngineConfig } from '../../lib/engines';
 import { resolveEngine } from '../../lib/catalogEntity';
+import { prepareServeConfig } from '../../lib/prepareServeConfig';
 
 function findPreviewBundlePath(): string {
   try {
@@ -98,6 +99,12 @@ export default async function serve(opts: OptionValues) {
     mkdocsConfigFileName: configFileName,
   });
 
+  const serveConfigPath = await prepareServeConfig(
+    engineConfig,
+    mkdocsYmlPath,
+    logger,
+  );
+
   // Validate that Docker is up and running
   if (opts.docker) {
     const isDockerOperational = await checkIfDockerIsOperational(logger);
@@ -128,7 +135,7 @@ export default async function serve(opts: OptionValues) {
   logger.info(`Starting ${engine} server.`);
   const docsChildProcess = runEngineServer({
     port: enginePort,
-    dockerImage: opts.dockerImage,
+    dockerImage: opts.dockerImage ?? engineConfig.defaultImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
@@ -136,7 +143,7 @@ export default async function serve(opts: OptionValues) {
     onStderr: docsLogFunc,
     engineBinary: engineConfig.binary,
     engineServeArgs: engineConfig.serveArgs(enginePort, {
-      configFile: mkdocsYmlPath,
+      configFile: serveConfigPath,
       clean: opts.parameterClean || opts.mkdocsParameterClean,
       dirtyReload: opts.parameterDirtyreload || opts.mkdocsParameterDirtyreload,
       strict: opts.parameterStrict || opts.mkdocsParameterStrict,

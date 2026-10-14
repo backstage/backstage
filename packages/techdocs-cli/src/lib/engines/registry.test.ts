@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { getEngineConfig } from './engineConfig';
+import { ConfigReader } from '@backstage/config';
+import { TechdocsZensicalGenerator } from '@backstage/plugin-techdocs-backend-module-zensical';
+import { getEngineConfig } from './registry';
 
 describe('getEngineConfig', () => {
   it('should return mkdocs config by default', () => {
@@ -80,7 +82,69 @@ describe('getEngineConfig', () => {
 
   it('should throw for unknown engine', () => {
     expect(() => getEngineConfig('unknown')).toThrow(
-      'Unknown engine: "unknown". Supported engines: mkdocs',
+      'Unknown engine: "unknown". Supported engines: mkdocs, zensical',
     );
+  });
+
+  describe('zensical', () => {
+    const config = getEngineConfig('zensical');
+
+    it('uses the zensical binary and image', () => {
+      expect(config.binary).toBe('zensical');
+      expect(config.defaultImage).toBe('ghcr.io/backstage/techdocs-zensical');
+    });
+
+    it('omits -d from build args since output comes from site_dir', () => {
+      expect(config.buildArgs('/output', 'mkdocs.yml')).toEqual([
+        'build',
+        '-f',
+        'mkdocs.yml',
+      ]);
+    });
+
+    it('builds serve args without mkdocs-only flags', () => {
+      expect(
+        config.serveArgs('8000', { useDocker: true, configFile: 'c.yml' }),
+      ).toEqual(['serve', '--dev-addr', '0.0.0.0:8000', '-f', 'c.yml']);
+    });
+
+    it('replaces the native websocket script with the live-reload element', () => {
+      const html =
+        '<html><body dir="ltr"><p>hi</p>' +
+        '<script type="module">const socket = new WebSocket(url.href);</script>' +
+        '</body></html>';
+      const result = config.transformHtml(html);
+      expect(result).not.toContain('new WebSocket');
+      expect(result).toContain(
+        '<body dir="ltr"><live-reload live-reload-epoch="1" live-reload-request-id="1"></live-reload><p>hi</p>',
+      );
+    });
+
+    it('leaves other module scripts untouched', () => {
+      const html = '<body><script type="module">console.log(1)</script></body>';
+      expect(config.transformHtml(html)).toContain('console.log(1)');
+    });
+  });
+
+  describe('createGenerator', () => {
+    const logger = {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      debug: jest.fn(),
+      child: jest.fn(),
+    } as any;
+
+    it('leaves mkdocs to the built-in generator', () => {
+      expect(getEngineConfig('mkdocs').createGenerator).toBeUndefined();
+    });
+
+    it('creates the Zensical generator for zensical', () => {
+      const generator = getEngineConfig('zensical').createGenerator!(
+        new ConfigReader({}),
+        { logger },
+      );
+      expect(generator).toBeInstanceOf(TechdocsZensicalGenerator);
+    });
   });
 });

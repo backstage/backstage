@@ -614,3 +614,5 @@ zod
 Zolotusky
 zoomable
 zsh
+Zensical
+zensical
