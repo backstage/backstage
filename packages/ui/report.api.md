@@ -2245,7 +2245,9 @@ export const HeaderDefinition: {
     readonly titleStack: 'bui-HeaderTitleStack';
     readonly title: 'bui-HeaderTitle';
     readonly titleSmall: 'bui-HeaderTitleSmall';
+    readonly tabsRow: 'bui-HeaderTabsRow';
     readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly tabsScrollButton: 'bui-HeaderTabsScrollButton';
     readonly controls: 'bui-HeaderControls';
     readonly tags: 'bui-HeaderTags';
     readonly tag: 'bui-HeaderTag';
@@ -2431,7 +2433,9 @@ export const HeaderPageDefinition: {
     readonly titleStack: 'bui-HeaderTitleStack';
     readonly title: 'bui-HeaderTitle';
     readonly titleSmall: 'bui-HeaderTitleSmall';
+    readonly tabsRow: 'bui-HeaderTabsRow';
     readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly tabsScrollButton: 'bui-HeaderTabsScrollButton';
     readonly controls: 'bui-HeaderControls';
     readonly tags: 'bui-HeaderTags';
     readonly tag: 'bui-HeaderTag';
