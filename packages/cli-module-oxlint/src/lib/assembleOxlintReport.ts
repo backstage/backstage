@@ -160,6 +160,101 @@ function parseJsonReport(output: string): JsonReport {
   return report;
 }
 
+/**
+ * Counts the warnings in one raw Oxlint group report, so warning thresholds
+ * can be enforced across a whole run. Returns undefined when the report does
+ * not expose a warning count.
+ *
+ * @param format - The Oxlint output format the report was produced with
+ * @param output - The raw Oxlint report
+ */
+function countReportWarnings(
+  format: string,
+  output: string,
+): number | undefined {
+  if (!output.trim()) {
+    return 0;
+  }
+  switch (format) {
+    case 'json': {
+      let report: unknown;
+      try {
+        report = JSON.parse(output);
+      } catch {
+        return undefined;
+      }
+      const diagnostics = (report as { diagnostics?: unknown })?.diagnostics;
+      if (!Array.isArray(diagnostics)) {
+        return undefined;
+      }
+      return diagnostics.filter(
+        diagnostic =>
+          (diagnostic as { severity?: unknown })?.severity === 'warning',
+      ).length;
+    }
+    case 'sarif': {
+      let report: unknown;
+      try {
+        report = JSON.parse(output);
+      } catch {
+        return undefined;
+      }
+      const runs = (report as { runs?: unknown })?.runs;
+      if (!Array.isArray(runs)) {
+        return undefined;
+      }
+      return runs.reduce((total, run) => {
+        const results = (run as { results?: unknown })?.results;
+        return Array.isArray(results)
+          ? total +
+              results.filter(
+                result => (result as { level?: unknown })?.level === 'warning',
+              ).length
+          : total;
+      }, 0);
+    }
+    case 'gitlab': {
+      let report: unknown;
+      try {
+        report = JSON.parse(output);
+      } catch {
+        return undefined;
+      }
+      if (!Array.isArray(report)) {
+        return undefined;
+      }
+      // The GitLab Code Quality formatter maps lint warnings to "major".
+      return report.filter(
+        issue => (issue as { severity?: unknown })?.severity === 'major',
+      ).length;
+    }
+    case 'checkstyle': {
+      const matches = output.match(/severity="warning"/g);
+      return matches ? matches.length : 0;
+    }
+    case 'junit':
+      // The JUnit formatter does not represent warnings.
+      return 0;
+    case 'default':
+    case 'github': {
+      // Both formatters print a "Found N warnings and M errors." summary.
+      const match = /Found (\d+) warnings? and \d+ errors?/.exec(output);
+      return match ? Number(match[1]) : undefined;
+    }
+    case 'stylish': {
+      const match = /\(\d+ errors?, (\d+) warnings?\)/.exec(output);
+      return match ? Number(match[1]) : undefined;
+    }
+    case 'unix': {
+      // Each diagnostic line ends with an "[Error/...]" or "[Warning/...]" tag.
+      const matches = output.match(/ \[Warning\//g);
+      return matches ? matches.length : 0;
+    }
+    default:
+      return undefined;
+  }
+}
+
 function jsonDiagnostic(
   diagnostic: AuditDiagnostic,
   cwd: string,
@@ -846,6 +941,28 @@ function assembleXml(
 }
 
 export function assembleOxlintReport(
+  reports: string[],
+  format: string,
+  diagnostics: AuditDiagnostic[],
+  cwd: string,
+): {
+  output: string;
+  errors: string[];
+  warningCounts: Array<number | undefined>;
+} {
+  const assembled = assembleOxlintReportOutput(
+    reports,
+    format,
+    diagnostics,
+    cwd,
+  );
+  return {
+    ...assembled,
+    warningCounts: reports.map(report => countReportWarnings(format, report)),
+  };
+}
+
+function assembleOxlintReportOutput(
   reports: string[],
   format: string,
   diagnostics: AuditDiagnostic[],
