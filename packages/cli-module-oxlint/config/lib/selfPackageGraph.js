@@ -17,6 +17,9 @@
 /// <reference types="node" />
 // @ts-check
 
+// Ported from the ESLint plugin (packages/eslint-plugin) and adapted to the
+// Oxlint plugin host; behavior between the two can drift.
+
 const fs = require('node:fs');
 const path = require('node:path');
 

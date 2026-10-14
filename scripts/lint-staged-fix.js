@@ -19,6 +19,9 @@ const { readFileSync } = require('node:fs');
 const { isAbsolute, join, relative, resolve, sep } = require('node:path');
 const { getPackagesSync } = require('@manypkg/get-packages');
 const YAML = require('yaml');
+const {
+  OXLINT_PACKAGE_LINT_SCRIPT,
+} = require('../packages/cli-module-oxlint/config/lintScripts');
 
 function contains(directory, file) {
   const path = relative(directory, file);
@@ -52,7 +55,13 @@ function main(files) {
       contains(candidate.dir, absolutePath),
     );
     const lintScript = pkg?.packageJson.scripts?.lint;
-    if (!pkg || !lintScript || lintScript.startsWith('backstage-cli ')) {
+    // Packages that lint through the Backstage CLI are fixed with a single
+    // ESLint run from the root; the Oxlint module and any other package with
+    // its own lint script is fixed through that script.
+    const usesOwnLintScript =
+      lintScript?.startsWith(OXLINT_PACKAGE_LINT_SCRIPT) ||
+      (Boolean(lintScript) && !lintScript.startsWith('backstage-cli '));
+    if (!pkg || !lintScript || !usesOwnLintScript) {
       eslintFiles.push(absolutePath);
       continue;
     }

@@ -21,6 +21,11 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { executeOxlint } from '../../lib/executeOxlint';
 
+const { OXLINT_PACKAGE_LINT_SCRIPT } =
+  require('../../../config/lintScripts') as {
+    OXLINT_PACKAGE_LINT_SCRIPT: string;
+  };
+
 export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { fix, format, outputFile, maxWarnings, since },
@@ -86,7 +91,7 @@ export default async ({ args, info }: CliCommandContext) => {
   // Per-package lint script options are honored, so that a package cannot
   // pass `repo lint` on CI while failing its own `yarn lint`.
   const parseLintScript = createScriptOptionsParser(
-    'node bin/backstage-cli-module-oxlint package lint',
+    OXLINT_PACKAGE_LINT_SCRIPT,
     {
       fix: { type: 'boolean' },
       'max-warnings': { type: 'string' },

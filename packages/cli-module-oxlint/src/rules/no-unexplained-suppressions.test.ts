@@ -21,7 +21,7 @@ import { RuleTester } from './testUtils';
 
 const {
   validateSuppressionComments,
-} = require('../../config/lib/suppressionAudit');
+} = require('../../config/lib/validateSuppressionComments');
 const rule = require('../../config/rules/no-unexplained-suppressions');
 
 describe('no-unexplained-suppressions rule', () => {

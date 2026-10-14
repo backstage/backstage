@@ -48,6 +48,7 @@ jest.mock('../lib/oxlint', () => ({
 }));
 
 const commandInfo = { usage: 'backstage-cli lint', name: 'lint' };
+const { OXLINT_PACKAGE_LINT_SCRIPT } = require('../../config/lintScripts');
 const runPackage = (args: string[]) =>
   packageLint({ args, info: commandInfo } as Parameters<typeof packageLint>[0]);
 const runRepo = (args: string[]) =>
@@ -156,6 +157,13 @@ afterEach(() => {
 });
 
 describe('oxlint command execution', () => {
+  it('keeps the lint script convention in sync with the module manifest', () => {
+    // `repo lint` selects packages by this exact prefix, so the module's own
+    // script must keep matching it.
+    expect(require('../../package.json').scripts.lint).toBe(
+      OXLINT_PACKAGE_LINT_SCRIPT,
+    );
+  });
   it('launches the JS entry through Node, keeps config in control of type options, and captures output above Node’s default limit', async () => {
     const output = 'x'.repeat(2 * 1024 * 1024);
     setSpawnResult(0, output);

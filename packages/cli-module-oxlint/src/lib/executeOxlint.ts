@@ -27,7 +27,6 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { ExitCodeError } from '@backstage/cli-common';
 import { assembleOxlintReport } from './assembleOxlintReport';
-import { countWarnings } from './countWarnings';
 import {
   auditSuppressionReceipts,
   type SuppressionAuditResult,
@@ -318,7 +317,6 @@ export async function executeOxlint(
     );
 
     const reports: string[] = [];
-    const groupWarnings: Array<number | undefined> = [];
     for (const [index] of groups.entries()) {
       const result = results[index]!;
       reports.push(result.output);
@@ -348,8 +346,6 @@ export async function executeOxlint(
         errors.push(result.stderr.trim());
       }
 
-      groupWarnings.push(countWarnings(options.format, result.output));
-
       let audit: SuppressionAuditResult;
       try {
         audit = auditSuppressionReceipts(
@@ -374,9 +370,16 @@ export async function executeOxlint(
       errors.push(...audit.errors);
     }
 
+    const assembled = assembleOxlintReport(
+      reports,
+      options.format,
+      auditDiagnostics,
+      options.cwd,
+    );
+
     // Warning thresholds apply across the whole run, not per config group.
     for (const [index, group] of groups.entries()) {
-      const warningCount = groupWarnings[index];
+      const warningCount = assembled.warningCounts[index];
       if (
         group.maxWarnings !== undefined &&
         warningCount !== undefined &&
@@ -391,11 +394,11 @@ export async function executeOxlint(
       }
     }
     if (options.maxWarnings !== undefined && options.maxWarnings !== -1) {
-      const countable = groupWarnings.filter(
-        (count): count is number => count !== undefined,
-      );
-      if (countable.length === groupWarnings.length) {
-        const total = countable.reduce((sum, count) => sum + count, 0);
+      if (assembled.warningCounts.every(count => count !== undefined)) {
+        const total = assembled.warningCounts.reduce(
+          (sum, count) => sum + (count ?? 0),
+          0,
+        );
         if (total > options.maxWarnings) {
           failed = true;
           errors.push(
@@ -409,12 +412,6 @@ export async function executeOxlint(
       }
     }
 
-    const assembled = assembleOxlintReport(
-      reports,
-      options.format,
-      auditDiagnostics,
-      options.cwd,
-    );
     if (assembled.errors.length) {
       failed = true;
       errors.push(...assembled.errors);
