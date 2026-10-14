@@ -36,7 +36,7 @@ const templateDefinitionSchema = z
     name: z.string(),
     role: z.enum(TEMPLATE_ROLES),
     description: z.string().optional(),
-    values: z.record(z.string()).optional(),
+    values: z.record(z.string(), z.string()).optional(),
   })
   .strict();
 
