@@ -1,0 +1,1 @@
+@layer tokens,base,components,theme,utilities;@layer components{._bui-CheckboxGroup_uwmks_4{display:flex;flex-direction:column}._bui-CheckboxGroup_uwmks_4[data-orientation=horizontal] ._bui-CheckboxGroupContent_uwmks_9{flex-direction:row;gap:var(--bui-space-4)}._bui-CheckboxGroupContent_uwmks_9{display:flex;flex-direction:column;gap:var(--bui-space-2)}}
