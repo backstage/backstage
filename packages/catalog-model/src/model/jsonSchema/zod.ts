@@ -28,14 +28,13 @@ export const jsonObjectSchema = z
 
 export const jsonSchemaSchema = z
   .record(z.string(), z.unknown())
-  .superRefine((x, ctx): x is JsonObject => {
+  .superRefine((x, ctx) => {
     try {
-      return validateMetaSchema(x);
+      validateMetaSchema(x);
     } catch (error) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: isError(error) ? error.message : 'Invalid JSON schema',
       });
-      return false;
     }
   });
