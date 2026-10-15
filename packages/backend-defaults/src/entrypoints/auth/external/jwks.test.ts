@@ -168,7 +168,7 @@ describe('JWKSHandler', () => {
     });
   });
 
-  it('accepts a token whose claims match the required values', async () => {
+  it('accepts and rejects tokens based on the claims filter predicate', async () => {
     const context = jwksTokenHandler.initialize({
       options: new ConfigReader({
         url: `${mockBaseUrl}/.well-known/jwks.json`,
@@ -179,75 +179,96 @@ describe('JWKSHandler', () => {
           // single exact value
           department: 'platform',
           // one-of a configured list
-          tier: ['gold', 'silver'],
+          tier: { $in: ['gold', 'silver'] },
           // matched against one entry of a claim that is an array
-          groups: 'admins',
-          // matched against one token of the space-delimited `scope` claim
-          scope: 'catalog:read',
+          groups: { $contains: 'admins' },
+          // matched against one entry of the space-delimited `scope` claim
+          scope: { $contains: 'catalog:read' },
+          // nested claims are matched by dot-separated path
+          'realm_access.roles': { $contains: 'operator' },
+          // numbers and booleans are matched by value
+          ver: 2,
+          verified: true,
         },
       }),
     });
 
-    const token = await factory.issueToken({
-      claims: {
-        sub: mockSubject,
-        department: 'platform',
-        tier: 'silver',
-        groups: ['viewers', 'admins'],
-        scope: 'catalog:read catalog:write',
-      },
-    });
+    const claims = {
+      sub: mockSubject,
+      department: 'platform',
+      tier: 'silver',
+      groups: ['viewers', 'admins'],
+      scope: 'catalog:read catalog:write',
+      realm_access: { roles: ['operator'] },
+      ver: 2,
+      verified: true,
+    };
 
-    const result = await jwksTokenHandler.verifyToken(token, context);
+    // All claims must match, so a single mismatching or missing claim rejects
+    const { department: _, ...withoutDepartment } = claims;
+    const mismatches = [
+      { ...claims, tier: 'bronze' },
+      { ...claims, groups: ['viewers'] },
+      { ...claims, scope: 'catalog:write' },
+      { ...claims, realm_access: { roles: ['auditor'] } },
+      { ...claims, ver: 3 },
+      { ...claims, verified: false },
+      withoutDepartment,
+    ];
 
-    expect(result).toEqual({ subject: `external:${mockSubject}` });
-  });
+    // All tokens are issued before the first verification, since the JWKS is
+    // only fetched once and would not contain keys created afterwards
+    const matchingToken = await factory.issueToken({ claims });
+    const mismatchingTokens = await Promise.all(
+      mismatches.map(mismatch => factory.issueToken({ claims: mismatch })),
+    );
 
-  it('matches numeric and boolean claim values by their string form', async () => {
-    const context = jwksTokenHandler.initialize({
-      options: new ConfigReader({
-        url: `${mockBaseUrl}/.well-known/jwks.json`,
-        algorithm: 'RS256',
-        issuer: mockBaseUrl,
-        audience: 'backstage',
-        claims: { ver: 2, verified: true },
-      }),
-    });
-
-    const token = await factory.issueToken({
-      claims: { sub: mockSubject, ver: 2, verified: true },
-    });
-
-    const result = await jwksTokenHandler.verifyToken(token, context);
-
-    expect(result).toEqual({ subject: `external:${mockSubject}` });
-  });
-
-  it('treats a single string allowed value as one exact value, not comma/space-split', async () => {
-    const context = jwksTokenHandler.initialize({
-      options: new ConfigReader({
-        url: `${mockBaseUrl}/.well-known/jwks.json`,
-        algorithm: 'RS256',
-        issuer: mockBaseUrl,
-        audience: 'backstage',
-        claims: { department: 'platform, other-department' },
-      }),
-    });
-
-    // Unlike `issuer`/`audience`/`algorithm`, a single `claims` string value is
-    // not split on comma/space - use an array for multiple allowed values.
-    const exactMatch = await factory.issueToken({
-      claims: { sub: mockSubject, department: 'platform, other-department' },
-    });
     await expect(
-      jwksTokenHandler.verifyToken(exactMatch, context),
+      jwksTokenHandler.verifyToken(matchingToken, context),
     ).resolves.toEqual({ subject: `external:${mockSubject}` });
+    for (const token of mismatchingTokens) {
+      await expect(
+        jwksTokenHandler.verifyToken(token, context),
+      ).resolves.toBeUndefined();
+    }
+  });
 
-    const partialMatch = await factory.issueToken({
-      claims: { sub: mockSubject, department: 'platform' },
+  it('supports logical operators in the claims filter predicate', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: {
+          $any: [
+            { department: 'platform' },
+            { scope: { $contains: 'catalog:admin' } },
+          ],
+        },
+      }),
     });
+
+    const [departmentToken, scopeToken, otherToken] = await Promise.all([
+      factory.issueToken({
+        claims: { sub: mockSubject, department: 'platform' },
+      }),
+      factory.issueToken({
+        claims: { sub: mockSubject, scope: 'catalog:read catalog:admin' },
+      }),
+      factory.issueToken({
+        claims: { sub: mockSubject, department: 'sales', scope: 'other' },
+      }),
+    ]);
+
     await expect(
-      jwksTokenHandler.verifyToken(partialMatch, context),
+      jwksTokenHandler.verifyToken(departmentToken, context),
+    ).resolves.toEqual({ subject: `external:${mockSubject}` });
+    await expect(
+      jwksTokenHandler.verifyToken(scopeToken, context),
+    ).resolves.toEqual({ subject: `external:${mockSubject}` });
+    await expect(
+      jwksTokenHandler.verifyToken(otherToken, context),
     ).resolves.toBeUndefined();
   });
 
@@ -258,47 +279,19 @@ describe('JWKSHandler', () => {
         algorithm: 'RS256',
         issuer: mockBaseUrl,
         audience: 'backstage',
-        claims: { name: 'jane', scope: 'catalog:read' },
+        claims: { name: { $contains: 'jane' } },
       }),
     });
 
-    // A `name` of "jane doe" must not match an allowed value of "jane" just
-    // because "jane" is one of its space-separated words.
+    // A `name` of "jane doe" must not match "jane" just because "jane" is one
+    // of its space-separated words.
     const token = await factory.issueToken({
-      claims: {
-        sub: mockSubject,
-        name: 'jane doe',
-        scope: 'catalog:read catalog:write',
-      },
+      claims: { sub: mockSubject, name: 'jane doe' },
     });
 
-    const result = await jwksTokenHandler.verifyToken(token, context);
-
-    expect(result).toBeUndefined();
-  });
-
-  it('rejects a token when a required claim does not match', async () => {
-    const context = jwksTokenHandler.initialize({
-      options: new ConfigReader({
-        url: `${mockBaseUrl}/.well-known/jwks.json`,
-        algorithm: 'RS256',
-        issuer: mockBaseUrl,
-        audience: 'backstage',
-        claims: {
-          department: 'platform',
-          tier: ['gold', 'silver'],
-        },
-      }),
-    });
-
-    // `tier` is not one of the allowed values, even though `department` matches
-    const token = await factory.issueToken({
-      claims: { sub: mockSubject, department: 'platform', tier: 'bronze' },
-    });
-
-    const result = await jwksTokenHandler.verifyToken(token, context);
-
-    expect(result).toBeUndefined();
+    await expect(
+      jwksTokenHandler.verifyToken(token, context),
+    ).resolves.toBeUndefined();
   });
 
   it('rejects an invalid claims config value', () => {
@@ -306,39 +299,15 @@ describe('JWKSHandler', () => {
       jwksTokenHandler.initialize({
         options: new ConfigReader({
           url: `${mockBaseUrl}/.well-known/jwks.json`,
-          claims: { department: {} },
+          claims: { department: ['platform', 'sales'] },
         }),
       });
-    }).toThrow(
-      "Invalid value for 'claims.department' in JWKS external access config, expected a non-empty string, number, boolean, or array of those",
-    );
-  });
-
-  it('rejects a token that is missing a required claim entirely', async () => {
-    const context = jwksTokenHandler.initialize({
-      options: new ConfigReader({
-        url: `${mockBaseUrl}/.well-known/jwks.json`,
-        algorithm: 'RS256',
-        issuer: mockBaseUrl,
-        audience: 'backstage',
-        claims: { department: 'platform' },
-      }),
-    });
-
-    const token = await factory.issueToken({
-      claims: { sub: mockSubject },
-    });
-
-    const result = await jwksTokenHandler.verifyToken(token, context);
-
-    expect(result).toBeUndefined();
+    }).toThrow(/Could not read filter predicate from config at 'claims':/);
   });
 
   it('supports claim names containing dots and slashes', async () => {
-    // Regression test: claim names are commonly namespaced with dots and
-    // slashes, which are not valid `Config` key path segments. Reading them via
-    // `Config.get(claimName)` would throw `Invalid config key`, so both config
-    // parsing and matching must treat claim names as opaque strings.
+    // Claim names are commonly namespaced with dots and slashes, which must
+    // still be matched as opaque keys.
     const context = jwksTokenHandler.initialize({
       options: new ConfigReader({
         url: `${mockBaseUrl}/.well-known/jwks.json`,
@@ -347,7 +316,7 @@ describe('JWKSHandler', () => {
         audience: 'backstage',
         claims: {
           'example.com/access_policy': 'allow',
-          'https://example.com/roles': ['operator', 'auditor'],
+          'https://example.com/roles': { $contains: 'auditor' },
         },
       }),
     });
@@ -380,15 +349,15 @@ describe('JWKSHandler', () => {
     const matching = await factory.issueToken({
       claims: { sub: mockSubject },
     });
+    // Same valid issuer/audience, but a `sub` that is not in the allowed set.
+    const wrongSubject = await factory.issueToken({
+      claims: { sub: 'someone_else' },
+    });
+
     await expect(
       jwksTokenHandler.verifyToken(matching, context),
     ).resolves.toEqual({
       subject: `external:custom-prefix:${mockSubject}`,
-    });
-
-    // Same valid issuer/audience, but a `sub` that is not in the allowed set.
-    const wrongSubject = await factory.issueToken({
-      claims: { sub: 'someone_else' },
     });
     await expect(
       jwksTokenHandler.verifyToken(wrongSubject, context),

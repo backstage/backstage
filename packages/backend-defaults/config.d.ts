@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { HumanDuration, JsonObject } from '@backstage/types';
 
 export interface Config {
@@ -541,18 +542,25 @@ export interface Config {
               subjectPrefix?: string;
               /**
                * Restricts which callers are accepted based on the claims in their JWT.
-               * Each entry maps a claim name to a single allowed value or a list of allowed values.
-               * A token is accepted only if every listed claim is present and matches one of its allowed values;
-               * for claims whose value is an array or a space-delimited string, it is enough that one of those values matches.
-               * Numbers and booleans are compared by their string representation.
+               *
+               * @remarks
+               *
+               * The value should be a filter predicate expression, which is
+               * evaluated against the verified JWT payload. Tokens that do not
+               * match the predicate are rejected. The `scope` claim, if it is a
+               * space-delimited string, is split into an array before evaluation
+               * so that individual scopes can be matched using `$contains`.
+               *
+               * @example
+               *
+               * ```yaml
+               * claims:
+               *   department: platform
+               *   tier: { $in: [gold, silver] }
+               *   scope: { $contains: catalog:read }
+               * ```
                */
-              claims?: {
-                [claim: string]:
-                  | string
-                  | number
-                  | boolean
-                  | Array<string | number | boolean>;
-              };
+              claims?: FilterPredicate;
             };
             /**
              * Restricts what types of access that are permitted for this access

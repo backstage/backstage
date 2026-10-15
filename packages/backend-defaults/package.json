@@ -145,6 +145,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",

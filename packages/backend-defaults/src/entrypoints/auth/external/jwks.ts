@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import { jwtVerify, createRemoteJWKSet, JWTVerifyGetKey } from 'jose';
+import {
+  evaluateFilterPredicate,
+  FilterPredicate,
+  readOptionalFilterPredicateFromConfig,
+} from '@backstage/filter-predicates';
+import {
+  jwtVerify,
+  createRemoteJWKSet,
+  JWTPayload,
+  JWTVerifyGetKey,
+} from 'jose';
 import {
   createExternalTokenHandler,
   readAccessRestrictionsFromConfig,
@@ -30,63 +40,21 @@ type JWKSTokenContext = {
   url: URL;
   jwks: JWTVerifyGetKey;
   allAccessRestrictions?: AccessRestrictionsMap;
-  claims: Array<{ claim: string; anyOf: string[] }>;
+  claims?: FilterPredicate;
 };
 
-// Normalizes a configured `claims` value into a deduped list of allowed
-// string values. Each string/number/boolean is one exact allowed value; use
-// an array for multiple. Works off an already-extracted raw value rather
-// than a `Config` key lookup (see the call site in `initialize`).
-const readClaimAllowedValues = (value: unknown): string[] | undefined => {
-  const rawValues = Array.isArray(value) ? value : [value];
-
-  const values: string[] = [];
-  for (const rawValue of rawValues) {
-    if (typeof rawValue === 'string') {
-      if (rawValue.length === 0) {
-        return undefined;
-      }
-      values.push(rawValue);
-      continue;
-    }
-
-    if (typeof rawValue === 'number' || typeof rawValue === 'boolean') {
-      values.push(String(rawValue));
-      continue;
-    }
-
-    return undefined;
-  }
-
-  const deduped = [...new Set(values)];
-  return deduped.length ? deduped : undefined;
-};
-
-// Normalizes a verified JWT claim value into the set of values it satisfies:
-// the value itself, plus each entry of an array claim.
+// Prepares a verified JWT payload for evaluation against the `claims` filter
+// predicate.
 //
-// Note: `scope` is the only claim the OAuth2/JWT RFCs (RFC 6749 §3.3,
-// RFC 8693 §4.2, RFC 9068 §2.2.3) define as space-delimited.
-const claimValues = (claim: string, claimValue: unknown): Set<string> => {
-  let values: unknown[];
-  if (Array.isArray(claimValue)) {
-    values = claimValue;
-  } else if (claim === 'scope' && typeof claimValue === 'string') {
-    values = [claimValue, ...claimValue.split(' ')];
-  } else {
-    values = [claimValue];
+// `scope` is the only claim the OAuth2/JWT RFCs (RFC 6749 §3.3, RFC 8693 §4.2,
+// RFC 9068 §2.2.3) define as a space-delimited string, so it is split into an
+// array to allow matching individual scopes using `$contains`.
+const toClaimsFilterValue = (payload: JWTPayload): JWTPayload => {
+  const { scope } = payload;
+  if (typeof scope !== 'string') {
+    return payload;
   }
-
-  return new Set(
-    values
-      .filter(
-        value =>
-          typeof value === 'string' ||
-          typeof value === 'number' ||
-          typeof value === 'boolean',
-      )
-      .map(String),
-  );
+  return { ...payload, scope: scope.split(' ').filter(Boolean) };
 };
 
 export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
@@ -106,28 +74,9 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
     const jwks = createRemoteJWKSet(url);
     const allAccessRestrictions = readAccessRestrictionsFromConfig(options);
 
-    // Claim names are arbitrary strings and commonly namespaced with dots or
-    // slashes (e.g. `example.com/team` or an Auth0-style
-    // `https://example.com/claim`). They therefore can't be looked up via
-    // `Config.get(key)`, which always splits `key` on `.` as a path and rejects
-    // `/`. Reading the whole `claims` block once as a raw value (a no-argument
-    // `.get()` skips path splitting) and iterating it with plain property
-    // access avoids that.
-    const claimsConfig = options.getOptionalConfig('claims');
-    const claims = claimsConfig
-      ? Object.entries(claimsConfig.get<Record<string, unknown>>()).map(
-          ([claim, value]) => {
-            const anyOf = readClaimAllowedValues(value);
-            if (!anyOf) {
-              throw new Error(
-                `Invalid value for 'claims.${claim}' in JWKS external access config, expected a non-empty string, number, boolean, or array of those`,
-              );
-            }
-
-            return { claim, anyOf };
-          },
-        )
-      : [];
+    const claims = readOptionalFilterPredicateFromConfig(options, {
+      key: 'claims',
+    });
 
     return {
       algorithms,
@@ -151,11 +100,10 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
 
       const { sub } = payload;
       if (sub) {
-        const allClaimsMatch = context.claims.every(({ claim, anyOf }) => {
-          const actual = claimValues(claim, payload[claim]);
-          return anyOf.some(required => actual.has(required));
-        });
-        if (!allClaimsMatch) {
+        if (
+          context.claims &&
+          !evaluateFilterPredicate(context.claims, toClaimsFilterValue(payload))
+        ) {
           return undefined;
         }
 
