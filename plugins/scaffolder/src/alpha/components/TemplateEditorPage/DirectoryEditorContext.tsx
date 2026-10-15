@@ -199,8 +199,6 @@ class DirectoryEditorManager implements DirectoryEditor {
       return this.#reloadPromise;
     }
 
-    const selectedPath = this.#selectedFile?.path;
-
     this.#loading = true;
     this.#loadedFileCount = 0;
     this.#totalFileCount = 0;
@@ -223,54 +221,49 @@ class DirectoryEditorManager implements DirectoryEditor {
           await new Promise<void>((resolve, reject) => {
             let nextIndex = 0;
             let activeCount = 0;
-            let firstError: Error | undefined;
+            // Once a read fails the reload is abandoned, so reads that are
+            // still in flight must not touch the results or the progress.
+            let failed = false;
 
             const launchNext = () => {
-              if (firstError) {
-                if (activeCount === 0) {
-                  reject(firstError);
-                }
-                return;
-              }
-
-              if (nextIndex >= fileAccesses.length) {
-                if (activeCount === 0) {
-                  resolve();
-                }
-                return;
-              }
-
               const runTask = (index: number) => {
-                const fileAccess = fileAccesses[index];
                 activeCount++;
 
                 const manager = new DirectoryEditorFileManager(
-                  fileAccess,
+                  fileAccesses[index],
                   this.#signalUpdate,
                 );
 
-                manager
-                  .reload({ silent: true })
-                  .then(() => {
+                manager.reload({ silent: true }).then(
+                  () => {
+                    activeCount--;
+                    if (failed) {
+                      return;
+                    }
                     results[index] = manager;
                     this.#loadedFileCount++;
                     this.#signalUpdate();
-                  })
-                  .catch(err => {
-                    if (!firstError) {
-                      firstError = toError(err);
+                    if (nextIndex >= fileAccesses.length && activeCount === 0) {
+                      resolve();
+                    } else {
+                      launchNext();
                     }
-                  })
-                  .finally(() => {
+                  },
+                  err => {
                     activeCount--;
-                    launchNext();
-                  });
+                    if (failed) {
+                      return;
+                    }
+                    failed = true;
+                    reject(toError(err));
+                  },
+                );
               };
 
               while (
+                !failed &&
                 activeCount < FILE_READ_CONCURRENCY &&
-                nextIndex < fileAccesses.length &&
-                !firstError
+                nextIndex < fileAccesses.length
               ) {
                 runTask(nextIndex++);
               }
@@ -281,7 +274,9 @@ class DirectoryEditorManager implements DirectoryEditor {
         }
 
         this.#files = results;
-        this.setSelectedFile(selectedPath);
+        // Keep whichever file is selected now, as it may have changed while
+        // the files were loading.
+        this.setSelectedFile(this.#selectedFile?.path);
       } finally {
         if (this.#reloadPromise === reloadPromise) {
           this.#reloadPromise = null;

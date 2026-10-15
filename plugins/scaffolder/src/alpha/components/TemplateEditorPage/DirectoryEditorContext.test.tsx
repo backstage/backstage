@@ -66,8 +66,11 @@ class DeferredFileAccess implements TemplateFileAccess {
     this.#rejectFile(error);
   }
 
-  reset(): void {
+  /** Starts a new pending read, returning a function that completes the previous one */
+  reset(): (content?: string) => void {
+    const resolvePrevious = this.#resolveFile;
     this.#filePromise = this.createPendingPromise();
+    return content => resolvePrevious(createMockFile(this.path, content));
   }
 
   private createPendingPromise(): Promise<File> {
@@ -436,7 +439,7 @@ describe('DirectoryEditorProvider', () => {
       expect(snapshots.every(snapshot => snapshot.loaded <= 10)).toBe(true);
     });
 
-    it('isolates reload progress and counters across failed and subsequent reloads', async () => {
+    it('fails fast on a read error, ignores stale reads and keeps the latest selection across reloads', async () => {
       const paths = ['file1.txt', 'file2.txt'];
       const directory = new DeferredDirectoryAccess(paths);
 
@@ -460,19 +463,21 @@ describe('DirectoryEditorProvider', () => {
       });
 
       const editor = result.current!;
+      act(() => {
+        editor.setSelectedFile('file1.txt');
+      });
 
       for (const deferredFile of directory.deferredFiles.values()) {
         deferredFile.reset();
       }
 
-      // First reload: file1 fails, but file2 is still in-flight
+      // First reload: file1 fails while file2 is still in flight
       let reload1Promise!: Promise<void>;
       await act(async () => {
         reload1Promise = editor.reload();
         await new Promise<void>(resolve => setTimeout(resolve, 0));
       });
 
-      // Reject file1
       await act(async () => {
         directory.deferredFiles
           .get('file1.txt')!
@@ -480,23 +485,15 @@ describe('DirectoryEditorProvider', () => {
         await new Promise<void>(resolve => setTimeout(resolve, 0));
       });
 
-      // Reload 1 is still pending because Promise.allSettled waits for file2
-      expect(editor.loading).toBe(true);
-
-      // Now complete file2 from the first reload
-      await act(async () => {
-        directory.deferredFiles.get('file2.txt')!.complete('old content');
-        await new Promise<void>(resolve => setTimeout(resolve, 0));
-      });
-
-      // Now reload 1 rejects
+      // The reload fails without waiting for the pending file2 read
       await expect(reload1Promise).rejects.toThrow('Reload 1 error');
       expect(editor.loading).toBe(false);
+      expect(editor.files).toHaveLength(2);
 
-      // Reset files for the second reload
-      for (const deferredFile of directory.deferredFiles.values()) {
-        deferredFile.reset();
-      }
+      directory.deferredFiles.get('file1.txt')!.reset();
+      const completeStaleFile2 = directory.deferredFiles
+        .get('file2.txt')!
+        .reset();
 
       let reload2Promise!: Promise<void>;
       await act(async () => {
@@ -507,6 +504,18 @@ describe('DirectoryEditorProvider', () => {
       expect(editor.loading).toBe(true);
       expect(editor.loadedFileCount).toBe(0);
       expect(editor.totalFileCount).toBe(2);
+
+      // The abandoned read from the first reload must not count as progress
+      await act(async () => {
+        completeStaleFile2('stale content');
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+      expect(editor.loadedFileCount).toBe(0);
+
+      // Selecting another file during the reload is kept once it completes
+      act(() => {
+        editor.setSelectedFile('file2.txt');
+      });
 
       await act(async () => {
         directory.deferredFiles.get('file1.txt')!.complete('new content 1');
@@ -528,6 +537,8 @@ describe('DirectoryEditorProvider', () => {
       expect(editor.loadedFileCount).toBe(2);
       expect(editor.files[0].content).toBe('new content 1');
       expect(editor.files[1].content).toBe('new content 2');
+      expect(editor.selectedFile?.path).toBe('file2.txt');
+      expect(editor.selectedFile).toBe(editor.files[1]);
     });
 
     it('resets loading to false and propagates error when listFiles rejects', async () => {
