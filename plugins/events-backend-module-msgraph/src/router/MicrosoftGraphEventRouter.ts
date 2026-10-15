@@ -101,26 +101,19 @@ export class MicrosoftGraphEventRouter {
       );
 
       // Republish payload as is - MS Graph provider will fetch the details by IDs
-      this.events
-        .publish({
-          topic: TOPIC_MICROSOFT_GRAPH_UPSERT,
-          eventPayload: [
-            ...upsertedUsers.map(({ resourceId }) => ({
-              resourceType: 'user',
-              resourceId,
-            })),
-            ...upsertedGroups.map(({ resourceId }) => ({
-              resourceType: 'group',
-              resourceId,
-            })),
-          ],
-        } as EventParams<MicrosoftGraphUpsertEventPayload>)
-        .catch(err => {
-          this.logger.error(
-            `Failed to publish user/group upsert event: ${err}`,
-            isError(err) ? err : undefined,
-          );
-        });
+      await this.events.publish({
+        topic: TOPIC_MICROSOFT_GRAPH_UPSERT,
+        eventPayload: [
+          ...upsertedUsers.map(({ resourceId }) => ({
+            resourceType: 'user',
+            resourceId,
+          })),
+          ...upsertedGroups.map(({ resourceId }) => ({
+            resourceType: 'group',
+            resourceId,
+          })),
+        ],
+      } as EventParams<MicrosoftGraphUpsertEventPayload>);
     }
 
     // For deleted entities Catalog is the only place to get the entityRefs by User/Group IDs
