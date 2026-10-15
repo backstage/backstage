@@ -91,7 +91,7 @@ describe('AzureUrl', () => {
       'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
     );
     expect(url.toCommitsUrl()).toBe(
-      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch',
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch&searchCriteria.itemVersion.versionType=branch',
     );
   });
 
@@ -117,7 +117,7 @@ describe('AzureUrl', () => {
       'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
     );
     expect(url.toCommitsUrl()).toBe(
-      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag',
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag&searchCriteria.itemVersion.versionType=tag',
     );
   });
 
@@ -169,7 +169,7 @@ describe('AzureUrl', () => {
       'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
     );
     expect(url.toCommitsUrl()).toBe(
-      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch',
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch&searchCriteria.itemVersion.versionType=branch',
     );
   });
 
@@ -195,7 +195,7 @@ describe('AzureUrl', () => {
       'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
     );
     expect(url.toCommitsUrl()).toBe(
-      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag',
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag&searchCriteria.itemVersion.versionType=tag',
     );
   });
 

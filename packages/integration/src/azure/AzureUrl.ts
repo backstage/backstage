@@ -102,11 +102,11 @@ export class AzureUrl {
     return url;
   };
 
-  #setVersionDescriptor(url: URL): void {
+  #setVersionDescriptor(url: URL, parameterPrefix = 'versionDescriptor'): void {
     if (this.#ref) {
-      url.searchParams.set('versionDescriptor.version', this.#ref);
+      url.searchParams.set(`${parameterPrefix}.version`, this.#ref);
       url.searchParams.set(
-        'versionDescriptor.versionType',
+        `${parameterPrefix}.versionType`,
         this.#prefix === 'GT' ? 'tag' : 'branch',
       );
     }
@@ -249,9 +249,7 @@ export class AzureUrl {
 
     url.searchParams.set('api-version', '6.0');
 
-    if (this.#ref) {
-      url.searchParams.set('searchCriteria.itemVersion.version', this.#ref);
-    }
+    this.#setVersionDescriptor(url, 'searchCriteria.itemVersion');
 
     return url.toString();
   }
