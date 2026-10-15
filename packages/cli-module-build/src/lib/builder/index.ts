@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export { buildPackage, buildPackages, getOutputsForRole } from './packager';
+export {
+  buildPackage,
+  buildPackages,
+  getOutputsForRole,
+  getEntryPointsForRole,
+} from './packager';
 export { Output } from './types';
 export type { BuildOptions } from './types';

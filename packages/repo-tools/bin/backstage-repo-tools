@@ -24,7 +24,7 @@ const isLocal = require('node:fs').existsSync(
 );
 
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
-  require('../dist/index.cjs.js');
+  require('..');
 } else {
   require('@backstage/cli/config/nodeTransform.cjs');
   require('../src');
