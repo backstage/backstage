@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { CliInitializer } from './CliInitializer';
 import { createCliModule } from './factory';
 
@@ -321,6 +322,55 @@ describe('CliInitializer', () => {
     initializer2.add([conflictingArrayModule, nonConflictingArrayModule]);
     await initializer2.run();
     expect(process.exit).toHaveBeenCalledTimes(2);
+  });
+
+  it('should keep array-sourced modules as the fallback for toggleable individual commands', async () => {
+    const calls: string[] = [];
+    const toggledModule = createCliModule({
+      packageJson: { name: '@backstage/toggled' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['package', 'test'],
+          description: 'toggled test',
+          isEnabled: ({ packageJson }) => packageJson.name === 'toggled-pkg',
+          execute: async () => {
+            calls.push('toggled');
+          },
+        }),
+    });
+    const fallbackArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-fallback' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['package', 'test'],
+          description: 'fallback test',
+          execute: async () => {
+            calls.push('fallback');
+          },
+        }),
+    });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const packageJson = (name: string) =>
+      JSON.stringify({ name, version: '0' });
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      toggled: { 'package.json': packageJson('toggled-pkg') },
+      other: { 'package.json': packageJson('other-pkg') },
+    });
+
+    process.argv = ['node', 'cli', 'package', 'test'];
+    for (const dir of ['toggled', 'other']) {
+      cwdSpy.mockReturnValue(mockDir.resolve(dir));
+      const initializer = new CliInitializer();
+      initializer.add(toggledModule);
+      initializer.add([fallbackArrayModule]);
+      await initializer.run();
+    }
+
+    expect(calls).toEqual(['toggled', 'fallback']);
+    expect(process.exit).toHaveBeenCalledTimes(2);
+    expect(process.exit).toHaveBeenNthCalledWith(1, 0);
+    expect(process.exit).toHaveBeenNthCalledWith(2, 0);
   });
 
   it('should error with package names when two individual modules conflict', async () => {
