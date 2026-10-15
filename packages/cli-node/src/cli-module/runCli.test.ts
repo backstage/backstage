@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { stripVTControlCharacters } from 'node:util';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
@@ -520,6 +521,107 @@ describe('runCli', () => {
       }),
     ).rejects.toThrow(
       'Command "repo test" from "@example/nested" conflicts with an existing command from "@example/parent"',
+    );
+  });
+
+  it('selects toggleable package commands based on the current package', async () => {
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      vitest: {
+        'package.json': JSON.stringify({ name: 'vitest-pkg', version: '0' }),
+        src: {},
+      },
+      plain: {
+        'package.json': JSON.stringify({ name: 'plain-pkg', version: '0' }),
+      },
+    });
+    const calls: string[] = [];
+    const usesVitest = ({ packageJson }: { packageJson: { name: string } }) =>
+      packageJson.name.startsWith('vitest');
+    const modules = [
+      createCliModule({
+        packageJson: { name: '@example/jest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Jest',
+            execute: async ({ args }) => {
+              calls.push(`jest ${args.join(' ')}`);
+            },
+          });
+        },
+      }),
+      createCliModule({
+        packageJson: { name: '@example/vitest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Vitest',
+            isEnabled: usesVitest,
+            execute: async ({ args }) => {
+              calls.push(`vitest ${args.join(' ')}`);
+            },
+          });
+        },
+      }),
+    ];
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    process.argv = ['node', 'cli', 'package', 'test', '--watch'];
+
+    cwdSpy.mockReturnValue(mockDir.resolve('vitest/src'));
+    await runCli({ modules, name: 'example-cli' });
+    cwdSpy.mockReturnValue(mockDir.resolve('plain'));
+    await runCli({ modules, name: 'example-cli' });
+
+    expect(calls).toEqual(['vitest --watch', 'jest --watch']);
+    expect(process.exit).toHaveBeenCalledTimes(2);
+    expect(process.exit).toHaveBeenNthCalledWith(1, 0);
+    expect(process.exit).toHaveBeenNthCalledWith(2, 0);
+
+    // Help shows the description of the first registered variant
+    process.argv = ['node', 'cli', 'package'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    await runCli({ modules, name: 'example-cli' });
+    const helpOutput = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    expect(helpOutput).toContain('Test with Jest');
+    expect(helpOutput).not.toContain('Test with Vitest');
+  });
+
+  it('exits with an error when no toggleable variant is enabled', async () => {
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'some-pkg', version: '0' }),
+    });
+    jest.spyOn(process, 'cwd').mockReturnValue(mockDir.path);
+    const stderrSpy = jest
+      .spyOn(process.stderr, 'write')
+      .mockImplementation(() => true);
+    const execute = jest.fn(async () => {});
+    process.argv = ['node', 'cli', 'package', 'test'];
+
+    await runCli({
+      modules: [
+        createCliModule({
+          packageJson: { name: '@example/vitest' },
+          init: async reg => {
+            reg.addCommand({
+              path: ['package', 'test'],
+              description: 'Test with Vitest',
+              isEnabled: () => false,
+              execute,
+            });
+          },
+        }),
+      ],
+      name: 'example-cli',
+    });
+
+    expect(execute).not.toHaveBeenCalled();
+    expect(process.exit).toHaveBeenCalledWith(127);
+    expect(stderrSpy.mock.calls.flat().join('')).toContain(
+      'Command "package test" is not enabled for package "some-pkg". Candidate modules: "@example/vitest"',
     );
   });
 
