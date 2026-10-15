@@ -37,7 +37,7 @@ Apart from those, MkDocs references appear throughout the codebase in both front
 
 The theme's creator is pivoting to **Zensical**, a next-generation static site generator designed as a drop-in MkDocs replacement. This BEP proposes the minimum changes to get TechDocs building and serving with Zensical: a new `TechdocsZensicalGenerator` class, CLI modularity, an engine config map that translates CLI arguments between engines, and an updated Zensical container image.
 
-This is intentionally scoped as the first step toward full engine agnosticism. It gets Zensical working in production build pipelines and local development while leaving the door open for broader decoupling. Per-entity engine selection, a pluggable generator registry, and a frontend selector map will be future work built on top of the goals achieved as part of this BEP.
+This is intentionally scoped as the first step toward full engine agnosticism. It gets Zensical working in production build pipelines and local development while leaving the door open for broader decoupling. Per-entity engine selection and a pluggable generator registry proved small enough to include in Phase 1. A frontend selector map remains future work built on top of this BEP.
 
 ## Motivation
 
@@ -61,24 +61,32 @@ This BEP covers the minimum to get Zensical builds working: a new generator clas
 - The `--engine` flag and `techdocs.generator.defaultEngine` config value let build pipelines select Zensical without code changes.
 - An updated Zensical container image, validated against real TechDocs projects, published with CI/CD.
 
+### Non-goals
+
+- **`zensical.toml` configuration.** Zensical builds read the existing `mkdocs.yml`. Native `zensical.toml` support could be a follow-up once the engine is stable.
+- **Removing MkDocs.** MkDocs stays supported and remains the default until Phase 3.
+- **Frontend decoupling from mkdocs-material.** Zensical's classic mode keeps Material's CSS classes, so the TechDocs Reader and addons are unchanged apart from reading the new `engine` metadata field.
+- **Source rendering in Backstage.** The alternative raised in review (rendering Markdown sources directly in Backstage) is out of scope. This BEP does not preclude it.
+
 ## Proposal
 
 The change touches three areas: the generator layer, the CLI, and the container image.
 
-### Generator layer (`techdocs-node`)
+### Generator layer (`techdocs-node` and a Zensical backend module)
 
-Add a `TechdocsZensicalGenerator` alongside the existing `TechdocsGenerator`. The existing class is untouched.
+Add a `TechdocsZensicalGenerator` in a new backend module, `@backstage/plugin-techdocs-backend-module-zensical`. The existing `TechdocsGenerator` is untouched, and adopters who stay on MkDocs don't install the module.
 
 - A new `TechdocsZensicalGenerator` class implements `GeneratorBase.run()`. In local mode it spawns `zensical build` (output directory is set via `site_dir` in the preprocessed config, since Zensical has no `-d` flag). In Docker mode it runs the Zensical container with the same approach. It does not inject `techdocs-core`; config preprocessing is handled entirely in TypeScript.
 - A new layer within the Generator class that gives space for Zensical-specific config preprocessing: theme defaults, markdown extension injection (~22 extensions), `mdx_configs`, security hardening (`pymdownx.snippets.restrict_base_path`), HTML post-processing (stripping `data-md-color-*` attributes and palette scripts).
-  - Having this space allows for other preprocessing steps to happen (such as the mkdocs patching that already exists across `techocs-backend`)
-- An optional `type` field is added to `GeneratorConfig` so the system knows which generator was requested.
+  - Having this space allows for other preprocessing steps to happen (such as the mkdocs patching that already exists across `techdocs-backend`)
 - The `setTechdocsGenerator` parameter type changes from `TechdocsGenerator` to `GeneratorBase` (one-line change). This unblocks custom generators that don't extend the MkDocs-specific class.
-- `Generators.fromConfig()` gets a simple conditional that registers both generators based on a `techdocs.generator.defaultEngine` config value. Not a registry pattern, just enough plumbing for two generators.
+- `Generators` holds one generator per engine key. `get(entity)` picks the generator from the `backstage.io/techdocs-engine` annotation, then `techdocs.generator.defaultEngine`, then `mkdocs`. The built-in generator moves from key `techdocs` to `mkdocs`, and `techdocs` stays as an alias.
+- The generator extension point gains `registerGenerator(key, generator)`. The Zensical module uses it to register under `zensical`.
+- techdocs-node exports the shared build helpers (`validateMkdocsYaml`, `sanitizeMkdocsYml`, `createOrUpdateMetadata`, `DockerContainerRunner` and others) so the module reuses them instead of copying them.
 
 ### CLI layer (`techdocs-cli`)
 
-Add `--engine <type>` to the `generate`, `serve`, and `serve:mkdocs` commands. Introduce `serve:raw` as the engine-agnostic replacement for `serve:mkdocs`. `serve:mkdocs` is kept as a deprecated alias that logs a deprecation notice pointing to `serve:raw --engine mkdocs`. MkDocs-branded option names (`--mkdocs-port`, `--mkdocs-parameter-*`) are similarly aliased to engine-agnostic names (`--docs-port`, etc.) with deprecation warnings.
+Add `--engine <type>` to the `generate`, `serve`, and `serve:mkdocs` commands. Introduce `serve:raw` as the engine-agnostic replacement for `serve:mkdocs`. `serve:mkdocs` is kept as a deprecated alias that logs a deprecation notice pointing to `serve:raw --engine mkdocs`. MkDocs-branded option names (`--mkdocs-port`, `--mkdocs-parameter-*`) are similarly aliased to engine-agnostic names (`--engine-port`, `--config-file-name`, `--parameter-*`) with deprecation warnings.
 
 Zensical's CLI is similar to MkDocs but not identical: flags don't map 1:1. The CLI uses an **engine config map** that translates techdocs-cli arguments into engine-specific binary invocations. This is the minimal abstraction for two engines, and the natural extension point if a third engine is added later. Engine selection must be considered as the CLI currently invokes the implemented Generator directly, with little wiggle room for swapping out the underlying doc generator.
 
@@ -158,7 +166,7 @@ techdocs:
 | `mkdocs-monorepo-plugin`    | MkDocs plugin                  | **Not mapped**                                                                          |
 | `mkdocs-github-admonitions` | MkDocs plugin                  | Supported natively via `pymdownx.quotes: callouts: true`                                |
 
-On initial scan it does seem like there can be a sizable feature gap, but Zensical declares `markdown` and `pymdown-extensions` as direct dependencies in its manifests. Zensical docs/roadmap confirms that the integration with Python Markdown Extensions is there, so its entirely possible to use the same dialect that MkDocs uses, ensuring compatibility of existing content. This means third-party Python Markdown extensions like plantuml-markdown and markdown-graphviz-inline _should_ work today since they go through the same processing pipeline.
+On initial scan it does seem like there can be a sizable feature gap, but Zensical declares `markdown` and `pymdown-extensions` as direct dependencies in its manifests. Zensical docs/roadmap confirms that the integration with Python Markdown Extensions is there, so it's entirely possible to use the same dialect that MkDocs uses, ensuring compatibility of existing content. This means third-party Python Markdown extensions like plantuml-markdown and markdown-graphviz-inline _should_ work today since they go through the same processing pipeline.
 
 **Risks to watch:**
 
@@ -166,9 +174,7 @@ On initial scan it does seem like there can be a sizable feature gap, but Zensic
 
    - Updated as of Sep 10: [Zensical's roadmap does include monorepo support](https://zensical.org/about/roadmap/#configuration).
 
-2. **Search collator compatibility.** Zensical uses its own [built-in search module](https://zensical.org/compatibility/plugins/#search) instead of MkDocs's search plugin. The TechDocs search collator reads `search/search_index.json` from the build output to index documentation for Backstage search. Initial testing confirms Zensical produces a different file (`search.json` at root, not `search/search_index.json`), uses a different array key (`items` vs `docs`), and includes HTML markup in the `text` field where MkDocs outputs plain text. A strategy for normalizing the search index across engines is TBD and will be discussed in the PR thread.
-
-3. **`mkdocs-github-admonitions`** — minor gap. Only affects teams using GitHub-flavored `> [!NOTE]` syntax. Standard admonitions (`::: note`) work natively in Zensical.
+2. **Search collator compatibility.** Zensical uses its own [built-in search module](https://zensical.org/compatibility/plugins/#search) instead of MkDocs's search plugin. The TechDocs search collator reads `search/search_index.json` from the build output to index documentation for Backstage search. Initial testing confirms Zensical produces a different file (`search.json` at root, not `search/search_index.json`), uses a different array key (`items` vs `docs`), and includes HTML markup in the `text` field where MkDocs outputs plain text. To keep the collator engine-agnostic, the Zensical generator normalizes its output at build time: it writes `search/search_index.json` with a `docs` array and strips HTML from each entry's `text`, matching the MkDocs format. The collator and already-published MkDocs sites need no changes.
 
 ### Zensical config preprocessing
 
@@ -198,17 +204,21 @@ Introduce all the abstractions needed for multi-engine support in the backend, b
 
 **Generator layer:**
 
-- Add `type` field to `GeneratorConfig` and `techdocs.generator.defaultEngine` config key (defaults to `'mkdocs'`)
-- Introduce generator selection in `Generators.fromConfig()` (a simple conditional, currently only the MkDocs path exists)
-- Change the extension point setter to accept `GeneratorBase` instead of `TechdocsGenerator`
-- Extract shared helpers (docs directory validation, SCM URL patching, metadata creation) that both generators will eventually use
+- Add the `techdocs.generator.defaultEngine` config key (defaults to `'mkdocs'`)
+- Key `Generators` by engine and pick a generator per entity from the `backstage.io/techdocs-engine` annotation, falling back to `defaultEngine`. Only MkDocs is registered. The old `techdocs` key stays as an alias
+- Change the extension point setter to accept `GeneratorBase`, and add `registerGenerator(key, generator)` so modules can add engines
 - Add an `engine` parameter to `createOrUpdateMetadata()` so generators write an `engine` field into `techdocs_metadata.json`. The existing `TechdocsGenerator` writes `engine: 'mkdocs'`. Builds without the field (pre-existing published docs) default to `'mkdocs'` on the read side. Add optional `engine?: string` to the `TechDocsMetadata` type in `techdocs-react`
 
 **CLI layer:**
 
-- Add `--engine <type>` option to `generate`, `serve`, and `serve:mkdocs` commands (default: `mkdocs`)
+- Add `--engine <name>` to `generate`, `serve`, `serve:raw` and `serve:mkdocs`. The engine resolves from the flag, then the `backstage.io/techdocs-engine` annotation in `catalog-info.yaml`, then `mkdocs`
+- Add `serve:raw` as the engine-neutral replacement for `serve:mkdocs`. `serve:mkdocs` stays as a deprecated alias and prints a deprecation warning
+- Add engine-neutral names for MkDocs-branded `serve` options. The old names stay as deprecated aliases that print a warning:
+  - `--mkdocs-port` → `--engine-port`
+  - `--mkdocs-config-file-name` → `--config-file-name`
+  - `--mkdocs-parameter-clean`, `--mkdocs-parameter-dirtyreload`, `--mkdocs-parameter-strict` → `--parameter-clean`, `--parameter-dirtyreload`, `--parameter-strict`
 - Create the engine config map with MkDocs as the only entry
-- Refactor `mkdocsServer.ts` to read from the engine config map instead of hardcoding binary/flags/image
+- Replace `mkdocsServer.ts` with an engine-neutral `runEngineServer` that reads the binary, image and serve arguments from the engine config map
 - Refactor `generate.ts` and `serve.ts` to route through the engine config map
 - Introduce a livereload adapter interface in the engine config map. Refactor the existing MkDocs long-poll proxy (`livereload.ts`, `httpServer.ts`) behind this interface
 
@@ -221,14 +231,16 @@ With the abstraction layer in place, add Zensical as a second engine. MkDocs rem
 **Generator layer:**
 
 - New `TechdocsZensicalGenerator` class implementing `GeneratorBase.run()`. Writes `engine: 'zensical'` into `techdocs_metadata.json` via the `createOrUpdateMetadata()` parameter added in Phase 1
-- New `zensicalHelpers` for config preprocessing (theme defaults, ~22 markdown extensions, security hardening, `site_dir` patching, HTML post-processing, redirect generation)
-- Register the Zensical generator alongside MkDocs in `Generators.fromConfig()`
+- New `zensicalHelpers` for config preprocessing (theme defaults, ~22 markdown extensions, security hardening, `site_dir` patching, HTML post-processing)
+- Ship the generator in `@backstage/plugin-techdocs-backend-module-zensical`, which registers it under `zensical` through `registerGenerator`. The CLI uses the same generator for `generate`
+- Export the shared build helpers from techdocs-node so the module reuses them
+- Normalize Zensical's search output (`search.json`, `items`, HTML text) into the MkDocs format (`search/search_index.json`, `docs`, plain text) so the existing search collator indexes Zensical sites unchanged
 
 **CLI layer:**
 
 - Add Zensical entry to the engine config map (binary, image, flags, startup pattern)
 - Implement the WebSocket livereload adapter for Zensical. The Backstage-wrapped `serve` command needs to proxy WebSocket reload messages through `httpServer.ts` and bridge them into the Shadow DOM
-- `--engine zensical` now works on `generate`, `serve`, and `serve:mkdocs` with full livereload
+- `--engine zensical` now works on `generate`, `serve`, and `serve:raw` with full livereload
 
 **Container image:**
 
