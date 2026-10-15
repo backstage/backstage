@@ -20,7 +20,7 @@ import type {
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
-import { isError } from '@backstage/errors';
+import { ConflictError, isError, NotFoundError } from '@backstage/errors';
 import { Duration } from 'luxon';
 import type {
   MicrosoftGraphSubscriptionsDatabaseClient,
@@ -54,6 +54,8 @@ const subscriptionRefreshSchedule: SchedulerServiceTaskScheduleDefinition = {
   },
   scope: 'global',
 };
+
+const TASK_ID = 'ms-graph-subscription-refresh';
 
 const expiresSoon = (expiresAt: Date) =>
   expiresAt.valueOf() - new Date().valueOf() <=
@@ -129,11 +131,11 @@ export class MicrosoftGraphSubscriptionManager {
       schedule ??
       scheduler!.createScheduledTaskRunner(subscriptionRefreshSchedule);
 
-    // Ensure we have active subscriptions right away
-    await this.ensureActiveSubscriptions();
+    // Ensuring active subscriptions must always happen under global scheduler lock,
+    // to avoid multiple instances of the plugin creating subscriptions for the same resource at the same time.
 
     await taskRunner.run({
-      id: 'ms-graph-subscription-refresh',
+      id: TASK_ID,
       fn: async () => {
         try {
           await this.ensureActiveSubscriptions();
@@ -145,6 +147,28 @@ export class MicrosoftGraphSubscriptionManager {
         }
       },
     });
+
+    if (scheduler) {
+      // When scheduler is available trigger the task immediately to ensure subscriptions are created on startup.
+      try {
+        await scheduler.triggerTask(TASK_ID);
+      } catch (error) {
+        if (error instanceof ConflictError) {
+          // the task is already running - do nothing
+        } else if (error instanceof NotFoundError) {
+          // the task does not exist - shouldn't happen, logging for visibility
+          this.logger.error(
+            `Task ${TASK_ID} not found when trying to trigger it, this should not happen`,
+            error,
+          );
+        } else {
+          this.logger.error(
+            `Failed to trigger task ${TASK_ID} for immediate execution.`,
+            error,
+          );
+        }
+      }
+    }
   }
 
   async ensureActiveSubscriptions() {
