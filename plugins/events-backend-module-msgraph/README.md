@@ -25,6 +25,9 @@ backend.add(import('@backstage/plugin-events-backend-module-msgraph'));
 
 ## Configuration
 
+This module supports a single Microsoft Entra tenant per Backstage backend. The `tenantId` setting identifies that
+tenant; subscribing to multiple tenants is currently not supported.
+
 Add module configuration in your `app-config.yaml`:
 
 ```yaml
@@ -75,7 +78,7 @@ sequenceDiagram
   participant WebhookRequestValidator
   participant MicrosoftGraphEventRouter
   participant CatalogService
-  participant MicrosoftGraphIncrementalEntityProvider
+  participant EventConsumer
   eventsModuleMicrosoftGraphWebhook ->> EventsPlugin: eventsExtensionPoint.addHttpPostIngress
   EventsPlugin ->> WebhookRequestValidator: createWebhookRequestValidator
   loop on schedule
@@ -91,7 +94,7 @@ sequenceDiagram
   MicrosoftGraphEventRouter ->> CatalogService: find deleted entities by MS Graph IDs
   CatalogService ->> MicrosoftGraphEventRouter: deleted entityRefs
   MicrosoftGraphEventRouter ->> EventsPlugin: delete events re-published via "msgraph/delete" topic
-  EventsPlugin ->> MicrosoftGraphIncrementalEntityProvider: "msgraph/upsert" and "msgraph/delete" topic events
+  EventsPlugin ->> EventConsumer: "msgraph/upsert" and "msgraph/delete" topic events
 ```
 
 All incoming event requests are validated on `clientState`.
@@ -119,8 +122,9 @@ sequenceDiagram
   WebhookRequestValidator ->> WebhookRequestValidator: reject request if token_hash !== hashValidationToken(clientState, token_salt)
 ```
 
-Upsert/Delete events can later be received by `MicrosoftGraphOrgEntityProvider` or
-`MicrosoftGraphIncrementalEntityProvider`. Group/User IDs from the Upsert events can be used to query MS Graph APIs for
+Upsert/Delete events can later be consumed by e.g. Catalog entity providers to refresh groups and users.
+Currently, neither `MicrosoftGraphOrgEntityProvider` nor `MicrosoftGraphIncrementalEntityProvider` subscribe to these events.
+Group/User IDs from the Upsert events can be used to query MS Graph APIs for
 all data necessary to build Group/User entities. Delete events already contain `CompoundEntityRefs` at this point.
 Catalog entities can be deleted/added/updated via `connection.applyMutation({..., type: 'delta'})`.
 
