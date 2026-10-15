@@ -544,6 +544,36 @@ describe('ConfigReader with fallback', () => {
       "Invalid type in config for key 'x' in 'fallback', got number, wanted object",
     );
   });
+
+  it('should fail when primary config has primitive and looking up a nonexistent nested key', () => {
+    const config = new ConfigReader(
+      { x: 1 },
+      'primary',
+      new ConfigReader({ x: { y: 1 } }, 'fallback'),
+    );
+
+    expect(() => config.getOptional('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+    expect(() => config.get('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+  });
+
+  it('should fail when primary config has primitive instead of falling back to existing nested key', () => {
+    const config = new ConfigReader(
+      { x: 1 },
+      'primary',
+      new ConfigReader({ x: { y: 1 } }, 'fallback'),
+    );
+
+    expect(() => config.getOptionalNumber('x.y')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+    expect(() => config.getNumber('x.y')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+  });
 });
 
 describe('ConfigReader.get()', () => {

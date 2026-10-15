@@ -194,9 +194,10 @@ export class ConfigReader implements Config {
   private readOptional<T = JsonValue>(
     key?: string,
     optional?: boolean,
+    isFallback?: boolean,
   ): T | undefined {
-    const value = cloneDeep(this.readValue(key, optional));
-    const fallbackValue = this.fallback?.readOptional(key, optional);
+    const value = cloneDeep(this.readValue(key, optional, isFallback));
+    const fallbackValue = this.fallback?.readOptional(key, optional, true);
 
     if (value === null) {
       return undefined;
@@ -243,9 +244,14 @@ export class ConfigReader implements Config {
   private readOptionalConfig(
     key: string,
     optional?: boolean,
+    isFallback?: boolean,
   ): ConfigReader | undefined {
-    const value = this.readValue(key, optional);
-    const fallbackConfig = this.fallback?.readOptionalConfig(key, optional);
+    const value = this.readValue(key, optional, isFallback);
+    const fallbackConfig = this.fallback?.readOptionalConfig(
+      key,
+      optional,
+      true,
+    );
 
     if (isObject(value)) {
       return this.copy(value, key, fallbackConfig);
@@ -490,8 +496,9 @@ export class ConfigReader implements Config {
       value: JsonValue,
     ) => { expected: string; value?: JsonValue; key?: string } | true,
     optional?: boolean,
+    isFallback?: boolean,
   ): T | undefined {
-    const value = this.readValue(key, optional);
+    const value = this.readValue(key, optional, isFallback);
 
     if (value === undefined) {
       if (process.env.NODE_ENV === 'development') {
@@ -509,7 +516,7 @@ export class ConfigReader implements Config {
         }
       }
 
-      return this.fallback?.readConfigValue(key, validate, optional);
+      return this.fallback?.readConfigValue(key, validate, optional, true);
     }
     if (value === null) {
       return undefined;
@@ -530,7 +537,11 @@ export class ConfigReader implements Config {
     return value as T;
   }
 
-  private readValue(key?: string, optional?: boolean): JsonValue | undefined {
+  private readValue(
+    key?: string,
+    optional?: boolean,
+    isFallback?: boolean,
+  ): JsonValue | undefined {
     const parts = key ? key.split('.') : [];
     for (const part of parts) {
       if (!CONFIG_KEY_PART_PATTERN.test(part)) {
@@ -547,7 +558,7 @@ export class ConfigReader implements Config {
       if (isObject(value)) {
         value = value[part];
       } else if (value !== undefined && value !== null) {
-        if (optional) {
+        if (isFallback && optional) {
           return undefined;
         }
         const badKey = this.fullKey(parts.slice(0, index).join('.'));
