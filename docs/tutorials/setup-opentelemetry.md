@@ -190,32 +190,30 @@ The following metrics are available:
 ### Histogram bucket boundaries
 
 The duration and delay metrics above are histograms that record values in
-seconds. OpenTelemetry's default bucket boundaries are calibrated for
-milliseconds, so every realistic value landed in the first few buckets and
-percentiles such as p95 and p99 were unusable. Each of these histograms
-therefore declares explicit second-scale boundaries:
+seconds. OpenTelemetry's default bucket boundaries are `0`, `5`, `10`, `25`,
+`50`, `75`, `100`, `250`, `500`, `750`, `1000`, `2500`, `5000`, `7500` and
+`10000`. Most values fall below `5`, so percentiles such as p95 and p99 were
+not accurate with these defaults.
 
-| Metric                             | Bucket boundaries (seconds)                           |
-| ---------------------------------- | ----------------------------------------------------- |
-| `catalog.processing.duration`      | 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60     |
-| `catalog.processors.duration`      | 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60     |
-| `catalog.processing.queue.delay`   | 0.1, 0.5, 1, 5, 10, 30, 60, 300, 600, 1800, 3600      |
-| `catalog.stitching.duration`       | 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60     |
-| `catalog.stitching.queue.delay`    | 0.1, 0.5, 1, 5, 10, 30, 60, 300, 600, 1800, 3600      |
-| `scaffolder.task.duration`         | 1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600           |
-| `scaffolder.step.duration`         | 0.1, 0.5, 1, 5, 10, 30, 60, 120, 300                  |
-| `backend_tasks.task.runs.duration` | 0.1, 0.5, 1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600 |
+The following histograms therefore declare explicit boundaries:
 
-The queue delay metrics use wider boundaries than the duration metrics because
-an entity can wait in the queue far longer than it takes to process it.
+- `catalog.processing.duration`
+- `catalog.processors.duration`
+- `catalog.processing.queue.delay`
+- `catalog.stitching.duration`
+- `catalog.stitching.queue.delay`
+- `scaffolder.task.duration`
+- `scaffolder.step.duration`
+- `backend_tasks.task.runs.duration`
 
-If you export these metrics to Prometheus, the boundaries appear as `le` label
-values on the generated `_bucket` series. The previous defaults were `0`, `5`,
-`10`, `25`, `50`, `75`, `100`, `250`, `500`, `750`, `1000`, `2500`, `5000`,
-`7500` and `10000`, so a dashboard or alert pinned to a boundary that these
-lists no longer contain, such as `le="25"`, stops returning data and must be
-pointed at one of the values in the table above. Queries built on
-`histogram_quantile` keep working and become more accurate.
+They all use these boundaries, in seconds: `0`, `0.01`, `0.05`, `0.1`, `0.25`,
+`0.5`, `1`, `2.5`, `5`, `10`, `25`, `50`, `75`, `100`, `250`, `500`, `750` and
+`1000`.
+
+The default boundaries up to `1000` stay the same, so dashboards and alerts
+that use an `le` label such as `le="25"` continue to work. The boundaries
+`2500`, `5000`, `7500` and `10000` are removed. Values above `1000` seconds go
+into the `+Inf` bucket.
 
 ## References
 

@@ -1039,7 +1039,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect.objectContaining({
         advice: expect.objectContaining({
           explicitBucketBoundaries: [
-            0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60,
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
           ],
         }),
       }),
@@ -1049,7 +1050,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect.objectContaining({
         advice: expect.objectContaining({
           explicitBucketBoundaries: [
-            0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60,
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
           ],
         }),
       }),
@@ -1059,7 +1061,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       expect.objectContaining({
         advice: expect.objectContaining({
           explicitBucketBoundaries: [
-            0.1, 0.5, 1, 5, 10, 30, 60, 300, 600, 1800, 3600,
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
           ],
         }),
       }),
