@@ -94,7 +94,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       },
     );
     this.shutdownInitiated = new Promise(shutdownInitiated => {
-      rootLifecycle.addShutdownHook(() => shutdownInitiated(true));
+      rootLifecycle.addBeforeShutdownHook(() => shutdownInitiated(true));
     });
   }
 
@@ -136,7 +136,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     };
 
     // Delegated abort controller that will abort either when the provided
-    // controller aborts, or when a root lifecycle shutdown happens
+    // controller aborts, or when the root lifecycle before-shutdown phase starts
     const abortController = delegateAbortController(task.signal);
     this.shutdownInitiated.then(() => abortController.abort());
 
