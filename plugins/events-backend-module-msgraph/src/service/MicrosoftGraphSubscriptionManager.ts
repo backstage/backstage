@@ -242,15 +242,15 @@ export class MicrosoftGraphSubscriptionManager {
 
     if (!subscriptionValidity.exists) {
       logger.debug(
-        `Subscription for ${existingSubscriptionId} resource '${resource}' does not exist.`,
+        `Subscription ${existingSubscriptionId} for resource '${resource}' does not exist.`,
       );
     } else if (!subscriptionValidity.isActive) {
       logger.debug(
-        `Subscription for ${existingSubscriptionId} resource '${resource}' has expired.`,
+        `Subscription ${existingSubscriptionId} for resource '${resource}' has expired.`,
       );
     } else if (!subscriptionValidity.notificationUrlMatches) {
       logger.debug(
-        `Subscription for ${existingSubscriptionId} resource '${resource}' has incorrect notification URL.`,
+        `Subscription ${existingSubscriptionId} for resource '${resource}' has incorrect notification URL.`,
       );
     } else if (expiresSoon(existingSubscriptionRecord.expires_at)) {
       logger.debug(
