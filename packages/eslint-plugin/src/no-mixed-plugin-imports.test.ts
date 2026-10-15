@@ -66,10 +66,18 @@ ruleTester.run(RULE, rule, {
     },
     {
       // A negated pattern that names the package's location must not exclude
-      // files in that package just because their relative path differs.
+      // files in that package just because their relative path differs. The
+      // pattern spells out the fixture path, so that it also matches when the
+      // checkout itself is below a directory that starts with a dot.
       code: `import '@internal/foo'`,
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
-      options: [{ excludedFiles: ['!**/packages/bar/**'] }],
+      options: [
+        {
+          excludedFiles: [
+            `!${FIXTURE.split(path.sep).join('/')}/packages/bar/**`,
+          ],
+        },
+      ],
       errors: [
         ERR(
           '@internal/bar',
