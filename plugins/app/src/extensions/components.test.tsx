@@ -93,6 +93,12 @@ describe('PageLayout', () => {
   });
 
   describe('document title', () => {
+    beforeEach(() => {
+      // Helmet leaves the title in place when unmounted, so reset it to make
+      // sure each test only sees a title set by its own render.
+      document.title = '';
+    });
+
     const pageWithTitle = (options: { noHeader?: boolean } = {}) =>
       createFrontendPlugin({
         pluginId: 'my-plugin',
