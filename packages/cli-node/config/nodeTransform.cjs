@@ -85,3 +85,10 @@ addHook(
 // .mts files, as well as dynamic import(...)s, although dynamic imports will be
 // handled be the CommonJS hooks in this file if what it points to is CommonJS.
 Module.register('./nodeTransformHooks.mjs', pathToFileURL(__filename));
+
+// Synchronous module hooks that make all named exports of CommonJS packages
+// available to ES module imports. These hooks require Node.js v22.15 or later,
+// on older versions only the named exports that Node.js can detect are available.
+if (typeof Module.registerHooks === 'function') {
+  require('./nodeCjsInteropHooks.cjs');
+}

@@ -19,6 +19,7 @@
 import * as depCommonJs from 'dep-commonjs';
 import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
+import { opaque, static as opaqueStatic } from 'dep-opaque';
 import { value as namedA } from './a-named-explicit';
 import { value as namedB } from './b-named';
 import cNamed from './c-named';
@@ -51,6 +52,7 @@ export const values = resolveAll({
   depCommonJs,
   depModule,
   depDefault,
+  depOpaque: { opaque, opaqueStatic },
   dynCommonJs: import('dep-commonjs'),
   dynModule: import('dep-module'),
   dynDefault: import('dep-default'),

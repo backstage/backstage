@@ -38,6 +38,7 @@ import {
 } from 'rollup';
 
 import { forwardFileImports, cssEntryPoints } from './plugins';
+import { cjsNamedImports } from './cjsNamedImports';
 import { BuildOptions, Output } from './types';
 import { targetPaths } from '@backstage/cli-common';
 
@@ -211,6 +212,9 @@ export async function makeRollupConfigs(
       output.push({
         ...outputOpts,
         format: 'module',
+        // Node.js doesn't provide all named exports of CommonJS packages to
+        // ES modules, so named imports are rewritten to work with both.
+        plugins: [multiOutputFormat(), cjsNamedImports()],
       });
     }
     if (options.outputs.has(Output.esm)) {
