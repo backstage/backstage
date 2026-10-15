@@ -15,7 +15,6 @@
  */
 
 import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
 import { ForwardedError, NotAllowedError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
@@ -32,20 +31,8 @@ import {
 import path, { resolve as resolvePath } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
+import { DefaultMkdocsContent } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
-
-/**
- * @deprecated Use Generators.get(entity) instead, which reads the
- * backstage.io/techdocs-engine annotation and falls back to defaultEngine.
- */
-export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
-  if (!entity) {
-    throw new Error('No entity provided');
-  }
-
-  return 'techdocs';
-}
 
 export type RunCommandOptions = {
   /** command to run */

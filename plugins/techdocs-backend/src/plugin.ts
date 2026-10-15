@@ -75,6 +75,11 @@ export const techdocsPlugin = createBackendPlugin({
         customTechdocsGenerator = generator;
       },
       registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase) {
+        if (key === 'mkdocs' || key === 'techdocs') {
+          throw new Error(
+            `Cannot register a generator for the built-in "${key}" engine; use setTechdocsGenerator to replace the default MkDocs generator`,
+          );
+        }
         if (customGenerators.has(key)) {
           throw new Error(
             `Generator for engine "${key}" is already registered`,

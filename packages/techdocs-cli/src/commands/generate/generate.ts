@@ -54,13 +54,13 @@ export default async function generate(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
   const sourceDir = resolve(opts.sourceDir);
 
-  const { engine, entity: catalogEntity } = await resolveEngine(
-    sourceDir,
-    opts.engine,
-    logger,
-  );
+  const {
+    engine,
+    source: engineSource,
+    entity: catalogEntity,
+  } = await resolveEngine(sourceDir, opts.engine, logger);
 
-  const engineConfig = getEngineConfig(engine);
+  const engineConfig = getEngineConfig(engine, engineSource);
   logger.info(`Using engine: ${engine} (binary: ${engineConfig.binary})`);
   const outputDir = resolve(opts.outputDir);
   const omitTechdocsCorePlugin = opts.omitTechdocsCoreMkdocsPlugin;

@@ -15,6 +15,8 @@
  */
 
 import http from 'node:http';
+import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '@backstage/plugin-techdocs-node';
+import type { EngineSource } from './catalogEntity';
 import {
   injectLivereloadParameters,
   proxyMkdocsLivereload,
@@ -87,12 +89,21 @@ const engineConfigs: Record<string, EngineConfig> = {
   mkdocs: mkdocsConfig,
 };
 
-export function getEngineConfig(engine: string): EngineConfig {
+export function getEngineConfig(
+  engine: string,
+  source: EngineSource = 'default',
+): EngineConfig {
   const config = engineConfigs[engine];
   if (!config) {
     const supported = Object.keys(engineConfigs).join(', ');
+    const origin = {
+      flag: 'from --engine',
+      annotation: `from the ${TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY} annotation in catalog-info.yaml`,
+      default: 'default',
+    }[source];
+    const hint = source === 'annotation' ? ' Pass --engine to override.' : '';
     throw new Error(
-      `Unknown engine: "${engine}". Supported engines: ${supported}`,
+      `Engine "${engine}" (${origin}) is not supported by techdocs-cli. Supported engines: ${supported}.${hint}`,
     );
   }
   return config;

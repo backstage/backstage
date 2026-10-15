@@ -80,7 +80,19 @@ describe('getEngineConfig', () => {
 
   it('should throw for unknown engine', () => {
     expect(() => getEngineConfig('unknown')).toThrow(
-      'Unknown engine: "unknown". Supported engines: mkdocs',
+      'Engine "unknown" (default) is not supported by techdocs-cli. Supported engines: mkdocs.',
+    );
+  });
+
+  it('names the --engine flag as the source', () => {
+    expect(() => getEngineConfig('zensical', 'flag')).toThrow(
+      'Engine "zensical" (from --engine) is not supported by techdocs-cli. Supported engines: mkdocs.',
+    );
+  });
+
+  it('names the annotation as the source and suggests --engine', () => {
+    expect(() => getEngineConfig('zensical', 'annotation')).toThrow(
+      'Engine "zensical" (from the backstage.io/techdocs-engine annotation in catalog-info.yaml) is not supported by techdocs-cli. Supported engines: mkdocs. Pass --engine to override.',
     );
   });
 });

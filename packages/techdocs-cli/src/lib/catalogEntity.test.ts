@@ -80,19 +80,22 @@ describe('catalogEntity', () => {
     );
 
     it('prefers the explicit engine over the annotation', async () => {
-      const { engine } = await resolveEngine(dir, 'mkdocs', logger);
+      const { engine, source } = await resolveEngine(dir, 'mkdocs', logger);
       expect(engine).toBe('mkdocs');
+      expect(source).toBe('flag');
     });
 
     it('uses the annotation when no engine is given', async () => {
-      const { engine } = await resolveEngine(dir, undefined, logger);
+      const { engine, source } = await resolveEngine(dir, undefined, logger);
       expect(engine).toBe('custom');
+      expect(source).toBe('annotation');
     });
 
     it('defaults to mkdocs', async () => {
       await fs.remove(join(dir, 'catalog-info.yaml'));
-      const { engine } = await resolveEngine(dir, undefined, logger);
+      const { engine, source } = await resolveEngine(dir, undefined, logger);
       expect(engine).toBe('mkdocs');
+      expect(source).toBe('default');
     });
   });
 });

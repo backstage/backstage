@@ -28,8 +28,12 @@ import { resolveEngine } from '../../lib/catalogEntity';
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
-  const { engine } = await resolveEngine(process.cwd(), opts.engine, logger);
-  const engineConfig = getEngineConfig(engine);
+  const { engine, source: engineSource } = await resolveEngine(
+    process.cwd(),
+    opts.engine,
+    logger,
+  );
+  const engineConfig = getEngineConfig(engine, engineSource);
 
   const localAddr = `http://127.0.0.1:${opts.port}`;
 

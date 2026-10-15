@@ -53,8 +53,12 @@ function getPreviewAppPath(opts: OptionValues): string {
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
-  const { engine } = await resolveEngine(process.cwd(), opts.engine, logger);
-  const engineConfig = getEngineConfig(engine);
+  const { engine, source: engineSource } = await resolveEngine(
+    process.cwd(),
+    opts.engine,
+    logger,
+  );
+  const engineConfig = getEngineConfig(engine, engineSource);
 
   // Determine if we want to run in local dev mode or not
   // This will run the backstage http server on a different port and only used

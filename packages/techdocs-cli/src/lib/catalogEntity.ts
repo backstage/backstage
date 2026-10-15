@@ -71,6 +71,9 @@ export function getEngineFromEntity(
   ];
 }
 
+/** Where the resolved engine came from. */
+export type EngineSource = 'flag' | 'annotation' | 'default';
+
 /**
  * Resolves the documentation engine to use.
  * Priority: explicit --engine flag > catalog annotation > 'mkdocs' default.
@@ -79,11 +82,21 @@ export async function resolveEngine(
   sourceDir: string,
   explicitEngine: string | undefined,
   logger: CatalogLogger,
-): Promise<{ engine: string; entity: Entity | undefined }> {
+): Promise<{
+  engine: string;
+  source: EngineSource;
+  entity: Entity | undefined;
+}> {
   const catalogEntity = await readEntityFromCatalog(sourceDir, logger);
   const catalogEngine = getEngineFromEntity(catalogEntity);
 
   const engine = explicitEngine ?? catalogEngine ?? 'mkdocs';
+  let source: EngineSource = 'default';
+  if (explicitEngine) {
+    source = 'flag';
+  } else if (catalogEngine) {
+    source = 'annotation';
+  }
 
   if (catalogEngine && !explicitEngine) {
     logger.info(
@@ -91,5 +104,5 @@ export async function resolveEngine(
     );
   }
 
-  return { engine, entity: catalogEntity };
+  return { engine, source, entity: catalogEntity };
 }
