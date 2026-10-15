@@ -31,12 +31,14 @@ for fetching the contents of the data.</p>
 <div class="tsd-tag-remarks">
 <h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Converts</p>
 <ul>
-<li>from: <code>https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&amp;version=GB{commitOrBranch}&amp;_a=contents</code></li>
-<li>to:   <code>https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&amp;version={commitOrBranch}</code></li>
+<li>from: <code>https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&amp;version=GB{branch}&amp;_a=contents</code></li>
+<li>to:   <code>https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&amp;versionDescriptor.version={branch}&amp;versionDescriptor.versionType=branch</code></li>
 </ul>
+<p>Branch (<code>GB</code>) and tag (<code>GT</code>) references retain their name and type in the
+download URL. URLs without a reference use the default branch.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/6c2b43ed8e42fa0cc2856c9af4c54af6c39292ef/packages/integration/src/azure/core.ts#L34">packages/integration/src/azure/core.ts:34</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b0ce347e6194fc98d08ee732f97d11bd93f8f00c/packages/integration/src/azure/core.ts#L37">packages/integration/src/azure/core.ts:37</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
