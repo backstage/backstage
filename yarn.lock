@@ -5745,14 +5745,15 @@ __metadata:
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
+    "@types/luxon": "npm:^3.0.0"
     "@types/react": "npm:^18.0.0"
     lodash: "npm:^4.17.21"
+    luxon: "npm:^3.0.0"
     msw: "npm:^2.0.0"
     notistack: "npm:^3.0.1"
     react: "npm:^18.0.2"
     react-aria-components: "npm:~1.22.0"
     react-dom: "npm:^18.0.2"
-    react-relative-time: "npm:^0.0.9"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
@@ -39994,15 +39995,6 @@ __metadata:
   version: 0.18.0
   resolution: "react-refresh@npm:0.18.0"
   checksum: 10/504c331c19776bf8320c23bad7f80b3a28de03301ed7523b0dd21d3f02bf2b53bbdd5aa52469b187bc90f358614b2ba303c088a0765c95f4f0a68c43a7d67b1d
-  languageName: node
-  linkType: hard
-
-"react-relative-time@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "react-relative-time@npm:0.0.9"
-  peerDependencies:
-    react: ">=0.13.0"
-  checksum: 10/226b817e306b1e6db1b14c6dc8b5151ffeb2c8394d55b7c819f15f9fe127dcfdbae97956a80170f3fc4634b7f9f1b63c7ced5fad66110d9b67c758d03d6a50d7
   languageName: node
   linkType: hard
 
