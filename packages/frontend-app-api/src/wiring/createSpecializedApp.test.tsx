@@ -1754,7 +1754,7 @@ describe('createSpecializedApp', () => {
     });
 
     it('should mark the app as finalized and resolve page routes in app root elements', async () => {
-      const pageRouteRef = createRouteRef();
+      const pageRouteRef = createRouteRef({ extensionId: 'page:test' });
       function LinkElement() {
         const link = useRouteRef(pageRouteRef);
         return <div>Link: {link?.() ?? 'none'}</div>;
