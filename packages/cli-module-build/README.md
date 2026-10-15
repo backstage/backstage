@@ -16,6 +16,13 @@ CLI module that provides build, start, and packaging commands for the Backstage 
 | `repo clean`       | Delete cache and output directories                                       |
 | `build-workspace`  | Builds a temporary dist workspace from the provided packages              |
 
+## Embedded PostgreSQL
+
+When using `backend.database.client: embedded-postgres` for local development,
+PostgreSQL stays available across backend reloads and while the backend runs its
+shutdown hooks after Ctrl-C. The CLI stops the database after the backend exits.
+The database also stops if the CLI process exits unexpectedly.
+
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
