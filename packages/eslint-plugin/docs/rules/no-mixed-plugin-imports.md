@@ -84,3 +84,5 @@ You can ignore specific target packages or files by adding them to the options i
   }
 }
 ```
+
+Only files matching `includedFiles` are checked, which defaults to `['**/src/**']`. Patterns in `includedFiles` and `excludedFiles` are matched against the file's path relative to its package directory, and also against its absolute path.
