@@ -226,7 +226,8 @@ function getRoleConfig(role, pkgJson) {
     };
   }
   return {
-    testEnvironment: require.resolve('jest-environment-node'),
+    // Resolved by Jest itself, so it matches the installed jest version
+    testEnvironment: 'node',
     moduleFileExtensions: [...SRC_EXTS, 'json', 'node'],
     // Jest doesn't let us dynamically detect type=module per transformed file,
     // so we have to assume that if the entry point is ESM, all TS files are

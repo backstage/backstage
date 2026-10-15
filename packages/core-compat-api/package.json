@@ -39,7 +39,8 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

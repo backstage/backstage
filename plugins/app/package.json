@@ -51,6 +51,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/filter-predicates": "workspace:^",
@@ -67,10 +68,14 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
     "@remixicon/react": ">=4.6.0 <4.9.0",
+    "i18next": "^22.4.15",
+    "lodash": "^4.17.21",
     "motion": "^12.0.0",
+    "prop-types": "^15.7.2",
     "react-aria": "~3.53.0",
     "react-stately": "~3.51.0",
     "react-use": "^17.2.4",
+    "use-sync-external-store": "^1.4.0",
     "zen-observable": "^0.10.0",
     "zod": "^4.0.0"
   },
