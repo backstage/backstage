@@ -65,7 +65,7 @@ jobs:
         run: yarn backstage-cli repo list-deprecations
 
       - name: tests
-        run: yarn backstage-cli repo jest
+        run: yarn backstage-cli repo test
 
       - name: build
         run: yarn build:all
