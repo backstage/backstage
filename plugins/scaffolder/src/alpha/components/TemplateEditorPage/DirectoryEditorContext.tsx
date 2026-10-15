@@ -15,6 +15,7 @@
  */
 
 import { ErrorPanel } from '@backstage/core-components';
+import { toError } from '@backstage/errors';
 import { useRerender } from '@react-hookz/web';
 import {
   createContext,
@@ -31,6 +32,7 @@ import {
 
 const MAX_SIZE = 1024 * 1024;
 const MAX_SIZE_MESSAGE = 'This file is too large to be displayed';
+// Keeps reads overlapping for slow file access without starting every read at once
 const FILE_READ_CONCURRENCY = 6;
 
 interface DirectoryEditorFile {
@@ -221,7 +223,7 @@ class DirectoryEditorManager implements DirectoryEditor {
           await new Promise<void>((resolve, reject) => {
             let nextIndex = 0;
             let activeCount = 0;
-            let firstError: unknown = null;
+            let firstError: Error | undefined;
 
             const launchNext = () => {
               if (firstError) {
@@ -256,7 +258,7 @@ class DirectoryEditorManager implements DirectoryEditor {
                   })
                   .catch(err => {
                     if (!firstError) {
-                      firstError = err;
+                      firstError = toError(err);
                     }
                   })
                   .finally(() => {

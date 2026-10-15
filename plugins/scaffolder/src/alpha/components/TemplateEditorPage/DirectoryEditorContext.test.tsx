@@ -40,7 +40,7 @@ class DeferredFileAccess implements TemplateFileAccess {
   readonly file: jest.Mock<Promise<File>, []>;
 
   #resolveFile!: (file: File) => void;
-  #rejectFile!: (error: Error) => void;
+  #rejectFile!: (error: unknown) => void;
   #filePromise: Promise<File>;
 
   constructor(
@@ -62,7 +62,7 @@ class DeferredFileAccess implements TemplateFileAccess {
     this.#resolveFile(createMockFile(this.path, content));
   }
 
-  reject(error: Error): void {
+  reject(error: unknown): void {
     this.#rejectFile(error);
   }
 
@@ -633,6 +633,61 @@ describe('DirectoryEditorProvider', () => {
       expect(editor.loading).toBe(false);
       expect(editor.files).toHaveLength(2);
       expect(editor.files[0].dirty).toBe(true);
+    });
+
+    it('treats a falsy file read rejection as a failed reload and preserves previous files', async () => {
+      const paths = ['file1.txt', 'file2.txt'];
+      const directory = new DeferredDirectoryAccess(paths);
+
+      const { result } = renderHook(() => useDirectoryEditor(), {
+        wrapper: ({ children }: PropsWithChildren) => (
+          <DirectoryEditorProvider directory={directory}>
+            {children}
+          </DirectoryEditorProvider>
+        ),
+      });
+
+      for (const path of paths) {
+        await act(async () => {
+          directory.deferredFiles.get(path)!.complete();
+          await new Promise<void>(resolve => setTimeout(resolve, 0));
+        });
+      }
+
+      await waitFor(() => {
+        expect(result.current!.files).toHaveLength(2);
+      });
+
+      const editor = result.current!;
+      for (const deferredFile of directory.deferredFiles.values()) {
+        deferredFile.reset();
+      }
+
+      let reloadPromise!: Promise<void>;
+      await act(async () => {
+        reloadPromise = editor.reload();
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+
+      await act(async () => {
+        directory.deferredFiles.get('file1.txt')!.complete('content 1');
+        directory.deferredFiles.get('file2.txt')!.reject(undefined);
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+
+      let error: unknown;
+      await act(async () => {
+        try {
+          await reloadPromise;
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      expect(error).toBeInstanceOf(Error);
+      expect(editor.loading).toBe(false);
+      expect(editor.files).toHaveLength(2);
+      expect(editor.files.every(file => file !== undefined)).toBe(true);
     });
 
     it('ignores save calls while reload is in progress', async () => {
