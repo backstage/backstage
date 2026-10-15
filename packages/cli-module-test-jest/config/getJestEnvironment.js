@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const { createRequire } = require('node:module');
+
 function getJestMajorVersion() {
   const jestVersion = require('jest/package.json').version;
   const majorVersion = parseInt(jestVersion.split('.')[0], 10);
@@ -46,4 +48,19 @@ function getJestEnvironment() {
   return require.resolve('jest-environment-jsdom');
 }
 
-module.exports = { getJestMajorVersion, getJestEnvironment };
+// Resolved through the installed jest, whose jest-config depends on the
+// jest-environment-node of the same version.
+function getJestNodeEnvironment() {
+  const jestRequire = createRequire(require.resolve('jest'));
+  const jestCoreRequire = createRequire(jestRequire.resolve('@jest/core'));
+  const jestConfigRequire = createRequire(
+    jestCoreRequire.resolve('jest-config'),
+  );
+  return jestConfigRequire.resolve('jest-environment-node');
+}
+
+module.exports = {
+  getJestMajorVersion,
+  getJestEnvironment,
+  getJestNodeEnvironment,
+};
