@@ -204,91 +204,86 @@ class DirectoryEditorManager implements DirectoryEditor {
     this.#totalFileCount = 0;
     this.#signalUpdate();
 
-    let reloadPromise: Promise<void> | null = null;
-
     const doReload = async () => {
-      try {
-        const fileAccesses = await this.#access.listFiles();
+      const fileAccesses = await this.#access.listFiles();
 
-        this.#totalFileCount = fileAccesses.length;
-        this.#signalUpdate();
+      this.#totalFileCount = fileAccesses.length;
+      this.#signalUpdate();
 
-        const results = new Array<DirectoryEditorFileManager>(
-          fileAccesses.length,
-        );
+      const results = new Array<DirectoryEditorFileManager>(
+        fileAccesses.length,
+      );
 
-        if (fileAccesses.length > 0) {
-          await new Promise<void>((resolve, reject) => {
-            let nextIndex = 0;
-            let activeCount = 0;
-            // Once a read fails the reload is abandoned, so reads that are
-            // still in flight must not touch the results or the progress.
-            let failed = false;
+      if (fileAccesses.length > 0) {
+        await new Promise<void>((resolve, reject) => {
+          let nextIndex = 0;
+          let activeCount = 0;
+          // Once a read fails the reload is abandoned, so reads that are
+          // still in flight must not touch the results or the progress.
+          let failed = false;
 
-            const launchNext = () => {
-              const runTask = (index: number) => {
-                activeCount++;
+          const launchNext = () => {
+            const runTask = (index: number) => {
+              activeCount++;
 
-                const manager = new DirectoryEditorFileManager(
-                  fileAccesses[index],
-                  this.#signalUpdate,
-                );
+              const manager = new DirectoryEditorFileManager(
+                fileAccesses[index],
+                this.#signalUpdate,
+              );
 
-                manager.reload({ silent: true }).then(
-                  () => {
-                    activeCount--;
-                    if (failed) {
-                      return;
-                    }
-                    results[index] = manager;
-                    this.#loadedFileCount++;
-                    this.#signalUpdate();
-                    if (nextIndex >= fileAccesses.length && activeCount === 0) {
-                      resolve();
-                    } else {
-                      launchNext();
-                    }
-                  },
-                  err => {
-                    activeCount--;
-                    if (failed) {
-                      return;
-                    }
-                    failed = true;
-                    reject(toError(err));
-                  },
-                );
-              };
-
-              while (
-                !failed &&
-                activeCount < FILE_READ_CONCURRENCY &&
-                nextIndex < fileAccesses.length
-              ) {
-                runTask(nextIndex++);
-              }
+              manager.reload({ silent: true }).then(
+                () => {
+                  activeCount--;
+                  if (failed) {
+                    return;
+                  }
+                  results[index] = manager;
+                  this.#loadedFileCount++;
+                  this.#signalUpdate();
+                  if (nextIndex >= fileAccesses.length && activeCount === 0) {
+                    resolve();
+                  } else {
+                    launchNext();
+                  }
+                },
+                err => {
+                  activeCount--;
+                  if (failed) {
+                    return;
+                  }
+                  failed = true;
+                  reject(toError(err));
+                },
+              );
             };
 
-            launchNext();
-          });
-        }
+            while (
+              !failed &&
+              activeCount < FILE_READ_CONCURRENCY &&
+              nextIndex < fileAccesses.length
+            ) {
+              runTask(nextIndex++);
+            }
+          };
 
-        this.#files = results;
-        // Keep whichever file is selected now, as it may have changed while
-        // the files were loading.
-        this.setSelectedFile(this.#selectedFile?.path);
-      } finally {
-        if (this.#reloadPromise === reloadPromise) {
-          this.#reloadPromise = null;
-        }
-        this.#loading = false;
-        this.#signalUpdate();
+          launchNext();
+        });
       }
+
+      this.#files = results;
+      // Keep whichever file is selected now, as it may have changed while
+      // the files were loading.
+      this.setSelectedFile(this.#selectedFile?.path);
     };
 
-    reloadPromise = doReload();
-    this.#reloadPromise = reloadPromise;
-    return reloadPromise;
+    // Clean up in a chained handler so that it always runs after the promise
+    // has been stored, even if loading fails before the first await.
+    this.#reloadPromise = doReload().finally(() => {
+      this.#reloadPromise = null;
+      this.#loading = false;
+      this.#signalUpdate();
+    });
+    return this.#reloadPromise;
   }
 
   subscribe(listener: () => void): () => void {

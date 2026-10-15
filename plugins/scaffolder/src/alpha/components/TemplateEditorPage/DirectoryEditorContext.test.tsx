@@ -541,7 +541,7 @@ describe('DirectoryEditorProvider', () => {
       expect(editor.selectedFile).toBe(editor.files[1]);
     });
 
-    it('resets loading to false and propagates error when listFiles rejects', async () => {
+    it('resets loading to false, propagates error and allows a retry when listFiles fails', async () => {
       const paths = ['file1.txt'];
       const directory = new DeferredDirectoryAccess(paths);
 
@@ -577,6 +577,33 @@ describe('DirectoryEditorProvider', () => {
       expect(error).toBeDefined();
       expect(error?.message).toBe('listFiles error');
       expect(editor.loading).toBe(false);
+
+      // A synchronous throw must not leave the failed reload behind
+      directory.listFiles.mockImplementationOnce(() => {
+        throw new Error('sync listFiles error');
+      });
+
+      await act(async () => {
+        await expect(editor.reload()).rejects.toThrow('sync listFiles error');
+      });
+      expect(editor.loading).toBe(false);
+
+      directory.deferredFiles.get('file1.txt')!.reset();
+      const listFilesCalls = directory.listFiles.mock.calls.length;
+
+      let retryPromise!: Promise<void>;
+      await act(async () => {
+        retryPromise = editor.reload();
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+      expect(directory.listFiles).toHaveBeenCalledTimes(listFilesCalls + 1);
+
+      await act(async () => {
+        directory.deferredFiles.get('file1.txt')!.complete('fresh content');
+        await retryPromise;
+      });
+      expect(editor.loading).toBe(false);
+      expect(editor.files[0].content).toBe('fresh content');
     });
 
     it('resets loading to false, preserves previous files and dirty state when a file read rejects inside a chunk', async () => {
