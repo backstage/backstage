@@ -64,5 +64,20 @@ ruleTester.run(RULE, rule, {
         ),
       ],
     },
+    {
+      // A negated pattern that names the package's location must not exclude
+      // files in that package just because their relative path differs.
+      code: `import '@internal/foo'`,
+      filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
+      options: [{ excludedFiles: ['!**/packages/bar/**'] }],
+      errors: [
+        ERR(
+          '@internal/bar',
+          'frontend-plugin',
+          '@internal/foo',
+          'frontend-plugin',
+        ),
+      ],
+    },
   ],
 });

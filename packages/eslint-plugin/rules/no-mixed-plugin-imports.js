@@ -40,6 +40,11 @@ const matchesPattern = (pattern, filePath, packageDir) => {
     .relative(packageDir, filePath)
     .split(path.sep)
     .join('/');
+  // A negated pattern matches when the path does not match its positive form,
+  // so it must hold for both paths to keep the result of a plain match.
+  if (matcher.negate) {
+    return matcher.match(relativePath) && matcher.match(filePath);
+  }
   return matcher.match(relativePath) || matcher.match(filePath);
 };
 
