@@ -34,10 +34,12 @@ describe('EntityLinksCard', () => {
     url = 'https://dashboard.dashexample.com',
     title = 'admin dashboard',
     icon = undefined,
+    type = undefined,
   }: Partial<EntityLink> = {}): EntityLink => ({
     url,
     title,
     icon,
+    type,
   });
 
   it('should render a link', async () => {
@@ -64,5 +66,44 @@ describe('EntityLinksCard', () => {
       screen.getByText(/.*No links defined for this entity.*/),
     ).toBeInTheDocument();
     expect(screen.queryByText('admin dashboard')).not.toBeInTheDocument();
+  });
+
+  it('should render type group headings when links have a type', async () => {
+    const links: EntityLink[] = [
+      createLink({ title: 'Prod Dashboard', type: 'prod' }),
+      createLink({
+        url: 'https://staging.example.com',
+        title: 'Staging Dashboard',
+        type: 'staging',
+      }),
+    ];
+
+    await renderInTestApp(
+      <EntityProvider entity={createEntity(links)}>
+        <EntityLinksCard />
+      </EntityProvider>,
+    );
+
+    expect(screen.getByText('prod')).toBeInTheDocument();
+    expect(screen.getByText('staging')).toBeInTheDocument();
+    expect(screen.getByText('Prod Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Staging Dashboard')).toBeInTheDocument();
+  });
+
+  it('should render ungrouped links before typed groups', async () => {
+    const links: EntityLink[] = [
+      createLink({ title: 'Generic Link' }),
+      createLink({ title: 'Prod Link', type: 'prod' }),
+    ];
+
+    await renderInTestApp(
+      <EntityProvider entity={createEntity(links)}>
+        <EntityLinksCard />
+      </EntityProvider>,
+    );
+
+    expect(screen.getByText('Generic Link')).toBeInTheDocument();
+    expect(screen.getByText('prod')).toBeInTheDocument();
+    expect(screen.getByText('Prod Link')).toBeInTheDocument();
   });
 });

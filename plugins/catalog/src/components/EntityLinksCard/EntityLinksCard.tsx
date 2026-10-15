@@ -16,6 +16,8 @@
 
 import { useEntity, EntityInfoCard } from '@backstage/plugin-catalog-react';
 import LanguageIcon from '@material-ui/icons/Language';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import { EntityLinksEmptyState } from './EntityLinksEmptyState';
 import { LinksGridList } from './LinksGridList';
 import { ColumnBreakpoints } from './types';
@@ -39,20 +41,54 @@ export const EntityLinksCard = (props: EntityLinksCardProps) => {
 
   const links = entity?.metadata?.links;
 
+  if (!links || links.length === 0) {
+    return (
+      <EntityInfoCard title={t('entityLinksCard.title')}>
+        <EntityLinksEmptyState />
+      </EntityInfoCard>
+    );
+  }
+
+  const ungrouped = links.filter(link => !link.type);
+  const grouped = links
+    .filter(link => link.type)
+    .reduce<Record<string, typeof links>>((acc, link) => {
+      const key = link.type!;
+      acc[key] = acc[key] ?? [];
+      acc[key].push(link);
+      return acc;
+    }, {});
+
+  const hasGroups = Object.keys(grouped).length > 0;
+
   return (
     <EntityInfoCard title={t('entityLinksCard.title')}>
-      {!links || links.length === 0 ? (
-        <EntityLinksEmptyState />
-      ) : (
+      {ungrouped.length > 0 && (
         <LinksGridList
           cols={cols}
-          items={links.map(({ url, title, icon }) => ({
+          items={ungrouped.map(({ url, title, icon }) => ({
             text: title ?? url,
             href: url,
             Icon: iconResolver(icon),
           }))}
         />
       )}
+      {hasGroups &&
+        Object.entries(grouped).map(([type, typeLinks]) => (
+          <Box key={type} mt={ungrouped.length > 0 ? 2 : 0}>
+            <Typography variant="overline" color="textSecondary">
+              {type}
+            </Typography>
+            <LinksGridList
+              cols={cols}
+              items={typeLinks.map(({ url, title, icon }) => ({
+                text: title ?? url,
+                href: url,
+                Icon: iconResolver(icon),
+              }))}
+            />
+          </Box>
+        ))}
     </EntityInfoCard>
   );
 };
