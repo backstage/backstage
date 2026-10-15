@@ -156,9 +156,9 @@ export class MicrosoftGraphSubscriptionManager {
         if (error instanceof ConflictError) {
           // the task is already running - do nothing
         } else if (error instanceof NotFoundError) {
-          // the task does not exist - shouldn't happen, logging for visibility
+          // the task does not exist
           this.logger.error(
-            `Task ${TASK_ID} not found when trying to trigger it, this should not happen`,
+            `Task ${TASK_ID} not found when trying to trigger it`,
             error,
           );
         } else {
