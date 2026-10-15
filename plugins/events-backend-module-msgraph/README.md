@@ -140,7 +140,7 @@ LocalTunnel can be used to receive webhook events in local environments.
 events:
   modules:
     msgraph:
-      notificationUrl: https://shaggy-mirrors-admire.loca.lt/api/events/http/msgraph # append the URL here
+      notificationUrl: https://shaggy-mirrors-admire.loca.lt/api/events/http/msgraph # paste the copied URL here
       subscriptionResources:
         - groups
         - users
