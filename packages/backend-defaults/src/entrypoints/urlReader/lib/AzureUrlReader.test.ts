@@ -231,6 +231,61 @@ describe('AzureUrlReader', () => {
       );
     });
 
+    it('uses the tag for both the tree etag and archive when a branch shares its name', async () => {
+      const requests: URL[] = [];
+      worker.use(
+        http.get(
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
+          ({ request }) => {
+            const url = new URL(request.url);
+            requests.push(url);
+            return HttpResponse.json({
+              value: [
+                {
+                  commitId:
+                    url.searchParams.get(
+                      'searchCriteria.itemVersion.versionType',
+                    ) === 'tag'
+                      ? 'tag-commit'
+                      : 'branch-commit',
+                },
+              ],
+            });
+          },
+        ),
+        http.get(
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/items',
+          ({ request }) => {
+            requests.push(new URL(request.url));
+            return new HttpResponse(new Uint8Array(repoBuffer), {
+              status: 200,
+              headers: { 'Content-Type': 'application/zip' },
+            });
+          },
+        ),
+      );
+
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository?version=GTrelease',
+        { etag: 'branch-commit' },
+      );
+
+      expect(response.etag).toBe('tag-commit');
+      expect(requests).toHaveLength(2);
+      expect(
+        requests[0].searchParams.get('searchCriteria.itemVersion.version'),
+      ).toBe('release');
+      expect(
+        requests[0].searchParams.get('searchCriteria.itemVersion.versionType'),
+      ).toBe('tag');
+      expect(requests[1].searchParams.get('versionDescriptor.version')).toBe(
+        'release',
+      );
+      expect(
+        requests[1].searchParams.get('versionDescriptor.versionType'),
+      ).toBe('tag');
+    });
+
     it('returns the wanted files from an archive', async () => {
       const response = await processor.readTree(
         'https://dev.azure.com/organization/project/_git/repository',

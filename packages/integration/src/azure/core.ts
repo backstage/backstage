@@ -53,7 +53,7 @@ export function getAzureDownloadUrl(url: string): string {
 }
 
 /**
- * Given a URL, return the API URL to fetch commits on the branch.
+ * Given a URL, return the API URL to fetch commits from the selected branch or tag.
  *
  * @param url - A URL pointing to a repository or a sub-path
  * @public
