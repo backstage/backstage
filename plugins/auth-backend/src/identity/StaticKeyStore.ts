@@ -164,10 +164,15 @@ export class StaticKeyStore implements KeyStore {
     path: string,
     keyId: string,
     algorithm: string,
-    importer: (content: string, algorithm: string) => Promise<CryptoKey>,
+    importer: (
+      content: string,
+      algorithm: string,
+      options?: { extractable?: boolean },
+    ) => Promise<CryptoKey>,
   ): Promise<JWK> {
     const content = await fs.readFile(path, { encoding: 'utf8', flag: 'r' });
-    const key = await importer(content, algorithm);
+    // { extractable: true } is required in jose v6 to export the key as a JWK
+    const key = await importer(content, algorithm, { extractable: true });
     const jwk = await exportJWK(key);
     jwk.kid = keyId;
     jwk.alg = algorithm;
