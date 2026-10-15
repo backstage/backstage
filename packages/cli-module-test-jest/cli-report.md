@@ -157,13 +157,13 @@ Options:
 
 Commands:
   help
-  test
+  jest
 ```
 
-### `backstage-cli-module-test-jest repo test`
+### `backstage-cli-module-test-jest repo jest`
 
 ```
-Usage: @backstage/cli-module-test-jest repo test [flags...]
+Usage: @backstage/cli-module-test-jest repo jest [flags...]
 
 Options:
   --jest-help

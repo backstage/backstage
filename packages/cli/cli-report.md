@@ -750,6 +750,7 @@ Commands:
   clean
   fix
   help
+  jest
   lint
   list-deprecations
   start
@@ -785,6 +786,19 @@ Usage: backstage-cli repo fix [flags...]
 Options:
   --check
   --publish
+  -h, --help
+```
+
+### `backstage-cli repo jest`
+
+```
+Usage: backstage-cli repo jest [flags...]
+
+Options:
+  --jest-help
+  --since <string>
+  --success-cache
+  --success-cache-dir <string>
   -h, --help
 ```
 
@@ -836,10 +850,9 @@ Options:
 Usage: backstage-cli repo test [flags...]
 
 Options:
-  --jest-help
+  --include-dependents
   --since <string>
-  --success-cache
-  --success-cache-dir <string>
+  --watch
   -h, --help
 ```
 

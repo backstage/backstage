@@ -15,7 +15,7 @@
  */
 
 import { OpaqueCliModule } from '@internal/cli';
-import { CliCommand, CliModule } from './types';
+import { CliCommand, CliModule, CliRepoCommandOptions } from './types';
 
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
@@ -53,6 +53,12 @@ export function createCliModule(options: {
   init: (registry: {
     /** Registers a new command with the CLI. */
     addCommand: (command: CliCommand) => void;
+    /**
+     * Registers a `repo` command that runs the given `package` command in
+     * every package of the workspace, with support for `--since`,
+     * `--include-dependents` and `--watch`.
+     */
+    addRepoCommand: (options: CliRepoCommandOptions) => void;
   }) => Promise<void>;
 }): CliModule {
   if (!options.packageJson.name) {
@@ -62,8 +68,51 @@ export function createCliModule(options: {
   }
 
   const commands: CliCommand[] = [];
+  const addCommand = (command: CliCommand) => {
+    if (command.isEnabled && command.path[0] !== 'package') {
+      throw new Error(
+        `Command "${command.path.join(' ')}" from "${
+          options.packageJson.name
+        }" sets isEnabled, which is only supported for commands under "package"`,
+      );
+    }
+    commands.push(command);
+  };
+  const addRepoCommand = (repoOptions: CliRepoCommandOptions) => {
+    const { path, packageCommand, ...rest } = repoOptions;
+    if (path[0] !== 'repo' || path.length < 2) {
+      throw new Error(
+        `Repo command "${path.join(' ')}" from "${
+          options.packageJson.name
+        }" must have a path that starts with "repo"`,
+      );
+    }
+    if (packageCommand[0] !== 'package' || packageCommand.length < 2) {
+      throw new Error(
+        `Repo command "${path.join(' ')}" from "${
+          options.packageJson.name
+        }" must target a package command, got "${packageCommand.join(' ')}"`,
+      );
+    }
+    addCommand({
+      path,
+      description: rest.description,
+      deprecated: rest.deprecated,
+      experimental: rest.experimental,
+      execute: async context => {
+        const mod = await import('./repoCommand/runRepoCommand');
+        // Native dynamic imports of CommonJS only expose the exports object
+        // as the default export, same as for command loaders in runCli.
+        const { runRepoCommand } =
+          typeof mod.runRepoCommand === 'function'
+            ? mod
+            : (mod as unknown as { default: typeof mod }).default;
+        await runRepoCommand({ ...repoOptions }, context);
+      },
+    });
+  };
   const commandsPromise = Promise.resolve()
-    .then(() => options.init({ addCommand: command => commands.push(command) }))
+    .then(() => options.init({ addCommand, addRepoCommand }))
     .then(() => commands);
 
   return OpaqueCliModule.createInstance('v1', {

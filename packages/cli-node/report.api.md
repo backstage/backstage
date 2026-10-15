@@ -113,6 +113,7 @@ export interface CliCommand {
         }>;
       };
   experimental?: boolean;
+  isEnabled?: (context: CliPackageContext) => boolean | Promise<boolean>;
   path: string[];
 }
 
@@ -132,6 +133,24 @@ export interface CliModule {
 }
 
 // @public
+export interface CliPackageContext {
+  dir: string;
+  packageJson: BackstagePackageJson;
+}
+
+// @public
+export interface CliRepoCommandOptions {
+  deprecated?: boolean;
+  description: string;
+  experimental?: boolean;
+  includeDependents?: boolean;
+  packageArgs?: string[];
+  packageCommand: string[];
+  path: string[];
+  scriptName?: string;
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
@@ -145,6 +164,7 @@ export function createCliModule(options: {
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
+    addRepoCommand: (options: CliRepoCommandOptions) => void;
   }) => Promise<void>;
 }): CliModule;
 
