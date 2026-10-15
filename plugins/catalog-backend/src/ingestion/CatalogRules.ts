@@ -136,6 +136,12 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
                   'A catalog rule location cannot have both exact and pattern values',
                 );
               }
+              if (location.type === 'url' && location.exact) {
+                // Match against the canonical form so that exact URL matching
+                // compares the same form as the incoming location targets
+                location.exact =
+                  canonicalUrlTarget(location.exact) ?? location.exact;
+              }
               return location;
             }),
         }));
@@ -152,7 +158,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
             return [];
           }
           const type = locConf.getString('type');
-          const exact = resolveTarget(type, locConf.getString('target'));
+          const exact = canonicalTarget(type, locConf.getString('target'));
 
           return locConf.getConfigArray('rules').map(ruleConf => ({
             allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
@@ -175,6 +181,13 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   /**
    * Checks whether a specific entity/location combination is allowed
    * according to the configured rules.
+   *
+   * URL targets are matched in a canonical form derived from the same URL
+   * resolution that URL readers use when they fetch the target, with
+   * remaining percent-encodings decoded. This ensures that a URL can't be
+   * crafted to look like it belongs to one location scope for rule matching
+   * purposes, while being resolved to a different scope when its content is
+   * fetched.
    */
   isAllowed(entity: Entity, location: LocationSpec) {
     for (const rule of this.rules) {
@@ -198,16 +211,26 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       return true;
     }
 
+    let target = location?.target;
+    if (location?.type === 'url' && typeof target === 'string') {
+      const canonical = canonicalUrlTarget(target);
+      if (canonical === undefined) {
+        // An unparseable URL never matches a URL location matcher
+        return false;
+      }
+      target = canonical;
+    }
+
     for (const matcher of matchers) {
       if (matcher.type !== location?.type) {
         continue;
       }
-      if (matcher.exact && matcher.exact !== location?.target) {
+      if (matcher.exact && matcher.exact !== target) {
         continue;
       }
       if (
         matcher.pattern &&
-        !minimatch(location?.target, matcher.pattern, {
+        !minimatch(target, matcher.pattern, {
           nocase: true,
           dot: true,
         })
@@ -254,4 +277,68 @@ function resolveTarget(type: string, target: string): string {
   }
 
   return path.resolve(target);
+}
+
+function canonicalTarget(type: string, target: string): string {
+  const resolved = resolveTarget(type, target);
+  if (type !== 'url') {
+    return resolved;
+  }
+
+  // Use the canonical form so that exact matching compares the same URL
+  // form as the incoming location targets. Malformed configured URLs are
+  // left as-is; they simply won't match.
+  return canonicalUrlTarget(resolved) ?? resolved;
+}
+
+/**
+ * Canonical form used when matching URL targets against catalog rules. The
+ * URL is first resolved, collapsing dot segments — including percent-encoded
+ * ones like %2e%2e — the same way URL readers resolve the target when
+ * fetching it. The canonical string is then rebuilt from the parsed URL
+ * parts, without any userinfo, so no component can splice a forged path
+ * into the matched string. Within the path, remaining percent-encoded
+ * characters are decoded once so matching sees the same human-readable
+ * form that configured patterns are written in, and encoded dot and
+ * path-separator characters are materialized so that any dot segment a
+ * reader or host could resolve is visible to the matcher as real path
+ * structure. These steps only add visible structure to the actual host
+ * and path, so they can never make an untrusted target look trusted.
+ */
+function canonicalUrlTarget(url: string): string | undefined {
+  try {
+    const parsed = new URL(url);
+    const canonicalPath = decodePathSegments(parsed.pathname)
+      .replace(/%2e/gi, '.')
+      .replace(/%2f/gi, '/')
+      .replace(/%5c|\\/gi, '/');
+    return `${parsed.protocol}//${parsed.host}${canonicalPath}${decodeOrKeep(
+      parsed.search,
+    )}${decodeOrKeep(parsed.hash)}`;
+  } catch {
+    return undefined;
+  }
+}
+
+// Escapes that are not valid UTF-8 are legal URL syntax but fail decodeURI;
+// keep the encoded form in that case rather than rejecting the target
+function decodeOrKeep(value: string): string {
+  try {
+    return decodeURI(value);
+  } catch {
+    return value;
+  }
+}
+
+// Decode the path one segment at a time, keeping only the segments that fail
+// encoded, so that an invalid escape in one segment does not stop the decoding
+// — and the traversal materialization that follows — of other segments. The
+// split runs on every separator form, literal and encoded, before decoding,
+// so an invalid escape cannot keep an encoded separator from splitting its
+// segment apart
+function decodePathSegments(pathname: string): string {
+  return pathname
+    .split(/\/|%2f|%5c/i)
+    .map(decodeOrKeep)
+    .join('/');
 }
