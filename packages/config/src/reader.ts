@@ -194,10 +194,11 @@ export class ConfigReader implements Config {
   private readOptional<T = JsonValue>(
     key?: string,
     optional?: boolean,
-    isFallback?: boolean,
+    hasObjectPrefix: boolean = false,
   ): T | undefined {
-    const value = cloneDeep(this.readValue(key, optional, isFallback));
-    const fallbackValue = this.fallback?.readOptional(key, optional, true);
+    const prefixObj = hasObjectPrefix || this.hasObjectAlongPath(key);
+    const value = cloneDeep(this.readValue(key, optional, hasObjectPrefix));
+    const fallbackValue = this.fallback?.readOptional(key, optional, prefixObj);
 
     if (value === null) {
       return undefined;
@@ -244,13 +245,14 @@ export class ConfigReader implements Config {
   private readOptionalConfig(
     key: string,
     optional?: boolean,
-    isFallback?: boolean,
+    hasObjectPrefix: boolean = false,
   ): ConfigReader | undefined {
-    const value = this.readValue(key, optional, isFallback);
+    const prefixObj = hasObjectPrefix || this.hasObjectAlongPath(key);
+    const value = this.readValue(key, optional, hasObjectPrefix);
     const fallbackConfig = this.fallback?.readOptionalConfig(
       key,
       optional,
-      true,
+      prefixObj,
     );
 
     if (isObject(value)) {
@@ -496,9 +498,10 @@ export class ConfigReader implements Config {
       value: JsonValue,
     ) => { expected: string; value?: JsonValue; key?: string } | true,
     optional?: boolean,
-    isFallback?: boolean,
+    hasObjectPrefix: boolean = false,
   ): T | undefined {
-    const value = this.readValue(key, optional, isFallback);
+    const prefixObj = hasObjectPrefix || this.hasObjectAlongPath(key);
+    const value = this.readValue(key, optional, hasObjectPrefix);
 
     if (value === undefined) {
       if (process.env.NODE_ENV === 'development') {
@@ -516,7 +519,7 @@ export class ConfigReader implements Config {
         }
       }
 
-      return this.fallback?.readConfigValue(key, validate, optional, true);
+      return this.fallback?.readConfigValue(key, validate, optional, prefixObj);
     }
     if (value === null) {
       return undefined;
@@ -537,10 +540,33 @@ export class ConfigReader implements Config {
     return value as T;
   }
 
+  private hasObjectAlongPath(key?: string): boolean {
+    if (!key || !this.data) {
+      return false;
+    }
+    const parts = key.split('.');
+    let current: JsonValue | undefined = this.data;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (
+        isObject(current) &&
+        parts[i] in current &&
+        isObject(current[parts[i]])
+      ) {
+        return true;
+      }
+      if (isObject(current)) {
+        current = current[parts[i]];
+      } else {
+        break;
+      }
+    }
+    return false;
+  }
+
   private readValue(
     key?: string,
     optional?: boolean,
-    isFallback?: boolean,
+    allowSkipPrimitive: boolean = false,
   ): JsonValue | undefined {
     const parts = key ? key.split('.') : [];
     for (const part of parts) {
@@ -558,7 +584,7 @@ export class ConfigReader implements Config {
       if (isObject(value)) {
         value = value[part];
       } else if (value !== undefined && value !== null) {
-        if (isFallback && optional) {
+        if (allowSkipPrimitive && optional) {
           return undefined;
         }
         const badKey = this.fullKey(parts.slice(0, index).join('.'));
