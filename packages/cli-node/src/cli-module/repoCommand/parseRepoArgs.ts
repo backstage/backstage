@@ -23,6 +23,8 @@ export interface RepoCommandFlags {
   /** Undefined unless explicitly set on the command line */
   includeDependents?: boolean;
   watch: boolean;
+  concurrency: number;
+  verbose: boolean;
   /** Arguments that are not consumed by the repo command itself */
   forwarded: string[];
 }
@@ -48,6 +50,17 @@ export function parseRepoArgs(args: string[], name: string): RepoCommandFlags {
           description:
             'Also include local dependents of changed packages, overrides the command default',
         },
+        concurrency: {
+          type: Number,
+          default: 8,
+          description: 'Maximum number of packages to run at the same time',
+        },
+        verbose: {
+          type: Boolean,
+          default: false,
+          description:
+            'Stream the output of each package instead of a progress view',
+        },
         watch: {
           type: Boolean,
           default: false,
@@ -63,10 +76,13 @@ export function parseRepoArgs(args: string[], name: string): RepoCommandFlags {
   const forwarded: string[] = [];
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg === '--since') {
+    if (arg === '--since' || arg === '--concurrency') {
       i += 1;
     } else if (
       arg.startsWith('--since=') ||
+      arg.startsWith('--concurrency=') ||
+      arg === '--verbose' ||
+      arg === '--no-verbose' ||
       arg === '--watch' ||
       arg === '--no-watch' ||
       arg === '--include-dependents' ||
@@ -82,6 +98,8 @@ export function parseRepoArgs(args: string[], name: string): RepoCommandFlags {
     since: flags.since || undefined,
     includeDependents: flags.includeDependents,
     watch: flags.watch,
+    concurrency: flags.concurrency,
+    verbose: flags.verbose,
     forwarded,
   };
 }

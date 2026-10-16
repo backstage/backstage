@@ -67,9 +67,16 @@ target of `repo run`. Only packages that have `backstage-cli package test` in
 their `test` script are included, and any further arguments in that script are
 passed on.
 
-The output of each package is printed once it has finished, followed by a
-summary of the packages that failed. The command exits with a non-zero code if
-any package failed.
+At most 8 packages run at the same time, which you can change with
+`--concurrency`. In a terminal the command shows a live view with the number of
+passed, failed, running and queued packages, and the packages that are running.
+Failed packages are listed as they finish. Without a terminal, such as in CI, it
+prints one line for each finished package. The logs of the packages are hidden
+by default. At the end, the command lists the failed packages and suggests
+re-running with `--verbose`, which turns off the live view and streams the output
+of each package with a `[package-name]` prefix. If the command is interrupted
+with Ctrl+C, running packages are stopped and shown as interrupted. The command
+exits with a non-zero code if any package failed.
 
 ```sh title="Run the tests of all packages"
 yarn backstage-cli repo run test
@@ -85,6 +92,8 @@ Options:
   --since <ref>            Only run packages that changed since the specified ref
   --include-dependents     Also run packages that depend on the selected packages (default: true, use --no-include-dependents to disable)
   --watch                  Re-run packages when their files change
+  --concurrency <n>        Maximum number of packages to run at the same time (default: 8)
+  --verbose                Stream the output of each package instead of a progress view
   -h, --help               display help for command
 ```
 
@@ -96,7 +105,8 @@ With `--watch`, the command runs all selected packages once, then watches their
 files and re-runs the affected packages and their dependents. Changes made while
 a run is in progress are queued for the next run.
 
-Run `backstage-cli repo run --help` to list all available targets.
+The `--verbose` flag is handled by `repo run` and is not forwarded to
+`package test`. Run `backstage-cli repo run --help` to list all available targets.
 
 ## package test
 
