@@ -18,6 +18,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { stripVTControlCharacters } from 'node:util';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
+import type { CliRunTargetOptions } from './types';
 
 const originalArgv = process.argv;
 const originalUnhandledRejectionListeners = new Set(
@@ -640,5 +641,64 @@ describe('runCli', () => {
     });
 
     expect(process.listenerCount('unhandledRejection')).toBe(listenerCount);
+  });
+
+  it('registers repo run only when a module provides run targets', async () => {
+    const target = {
+      description: 'Run tests',
+      packageCommand: ['package', 'test'],
+    };
+    const module = (name: string, options: CliRunTargetOptions = target) =>
+      createCliModule({
+        packageJson: { name },
+        init: async reg => reg.addRunTarget('test', options),
+      });
+    const writes = new Array<string>();
+    jest.spyOn(process.stdout, 'write').mockImplementation(((
+      chunk: unknown,
+      cb?: () => void,
+    ) => {
+      writes.push(String(chunk));
+      cb?.();
+      return true;
+    }) as never);
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    process.argv = ['node', 'cli', 'repo', 'run', '--help'];
+    await runCli({
+      modules: [module('@example/one'), module('@example/two')],
+      name: 'example-cli',
+    });
+    expect(writes.join('')).toContain('test  Run tests');
+
+    await expect(
+      runCli({
+        modules: [
+          module('@example/one'),
+          module('@example/two', { ...target, packageArgs: ['--x'] }),
+        ],
+        name: 'example-cli',
+      }),
+    ).rejects.toThrow(
+      'Conflicting run target "test" registered by "@example/one" and "@example/two"',
+    );
+
+    writes.length = 0;
+    process.argv = ['node', 'cli', 'repo'];
+    await runCli({
+      modules: [
+        createCliModule({
+          packageJson: { name: '@example/none' },
+          init: async reg =>
+            reg.addCommand({
+              path: ['repo', 'build'],
+              description: 'Build',
+              execute: async () => {},
+            }),
+        }),
+      ],
+      name: 'example-cli',
+    });
+    expect(writes.join('')).not.toContain('run');
   });
 });

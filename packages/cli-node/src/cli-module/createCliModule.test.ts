@@ -54,36 +54,41 @@ describe('createCliModule', () => {
     );
   });
 
-  it('validates the paths passed to addRepoCommand', async () => {
-    const register = (options: { path: string[]; packageCommand: string[] }) =>
+  it('validates and collects run targets', async () => {
+    const register = (
+      name: string,
+      packageCommand: string[],
+      twice: boolean = false,
+    ) =>
       OpaqueCliModule.toInternal(
         createCliModule({
           packageJson: { name: '@example/repo' },
           init: async reg => {
-            reg.addRepoCommand({ description: 'Test', ...options });
+            reg.addRunTarget(name, { description: 'Test', packageCommand });
+            if (twice) {
+              reg.addRunTarget(name, { description: 'Test', packageCommand });
+            }
           },
         }),
-      ).commands;
+      ).runTargets;
 
-    await expect(
-      register({ path: ['repo', 'test'], packageCommand: ['package', 'test'] }),
-    ).resolves.toEqual([expect.objectContaining({ path: ['repo', 'test'] })]);
-
-    await expect(
-      register({ path: ['lint'], packageCommand: ['package', 'lint'] }),
-    ).rejects.toThrow(
-      'Repo command "lint" from "@example/repo" must have a path that starts with "repo"',
+    await expect(register('test', ['package', 'test'])).resolves.toEqual([
+      {
+        name: 'test',
+        options: { description: 'Test', packageCommand: ['package', 'test'] },
+      },
+    ]);
+    await expect(register('test', ['repo', 'test'])).rejects.toThrow(
+      'Run target "test" from "@example/repo" must target a package command, got "repo test"',
     );
-    await expect(
-      register({ path: ['repo'], packageCommand: ['package', 'lint'] }),
-    ).rejects.toThrow('must have a path that starts with "repo"');
-    await expect(
-      register({ path: ['repo', 'test'], packageCommand: ['repo', 'test'] }),
-    ).rejects.toThrow(
-      'Repo command "repo test" from "@example/repo" must target a package command, got "repo test"',
+    await expect(register('test', ['package'])).rejects.toThrow(
+      'must target a package command',
     );
-    await expect(
-      register({ path: ['repo', 'test'], packageCommand: ['package'] }),
-    ).rejects.toThrow('must target a package command');
+    await expect(register('a b', ['package', 'test'])).rejects.toThrow(
+      'without whitespace',
+    );
+    await expect(register('test', ['package', 'test'], true)).rejects.toThrow(
+      'Run target "test" is registered more than once by "@example/repo"',
+    );
   });
 });

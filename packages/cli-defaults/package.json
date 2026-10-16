@@ -44,7 +44,6 @@
     "@backstage/cli-module-package-manager-yarn": "workspace:^",
     "@backstage/cli-module-scaffolder": "workspace:^",
     "@backstage/cli-module-search": "workspace:^",
-    "@backstage/cli-module-test": "workspace:^",
     "@backstage/cli-module-test-jest": "workspace:^",
     "@backstage/cli-module-translations": "workspace:^"
   },

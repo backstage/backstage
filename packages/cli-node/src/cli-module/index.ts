@@ -22,5 +22,5 @@ export type {
   CliCommandContext,
   CliModule,
   CliPackageContext,
-  CliRepoCommandOptions,
+  CliRunTargetOptions,
 } from './types';
