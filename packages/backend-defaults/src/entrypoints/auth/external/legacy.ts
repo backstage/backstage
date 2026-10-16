@@ -55,12 +55,6 @@ export const legacyTokenHandler: LegacyTokenHandlerOverloaded = {
       throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
-    // Decode with Node's standard base64 (RFC 4648 §4), not jose.base64url
-    // (RFC 4648 §5). Config and docs generate secrets via
-    // `randomBytes(...).toString('base64')`, which uses `+`/`/` (and padding).
-    // jose v5's base64url.decode accepted that alphabet leniently; jose v6 is
-    // strict base64url (`-`/`_`) and rejects those secrets. Buffer.from keeps
-    // the historical standard-base64 contract.
     return {
       key: Buffer.from(secret, 'base64'),
       subject,

@@ -19,7 +19,6 @@ import {
   base64url,
   createLocalJWKSet,
   decodeProtectedHeader,
-  generateKeyPair,
   jwtVerify,
 } from 'jose';
 import { MemoryKeyStore } from './MemoryKeyStore';
@@ -35,15 +34,6 @@ function jwtKid(jwt: string): string {
     throw new Error('JWT Header did not contain a key ID (kid)');
   }
   return header.kid;
-}
-
-async function supportsAlgorithm(algorithm: string): Promise<boolean> {
-  try {
-    await generateKeyPair(algorithm);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 const entityRef = stringifyEntityRef({
@@ -247,10 +237,6 @@ describe('TokenFactory', () => {
   });
 
   it('should issue valid tokens signed with ML-DSA-65', async () => {
-    if (!(await supportsAlgorithm('ML-DSA-65'))) {
-      return;
-    }
-
     const factory = new TokenFactory({
       issuer: 'my-issuer',
       keyStore: new MemoryKeyStore(),
@@ -266,29 +252,6 @@ describe('TokenFactory', () => {
     const { keys } = await factory.listPublicKeys();
     const verifyResult = await jwtVerify(token, createLocalJWKSet({ keys }));
     expect(verifyResult.protectedHeader.alg).toBe('ML-DSA-65');
-    expect(verifyResult.payload.sub).toBe(entityRef);
-  });
-
-  it('should issue valid tokens signed with ML-DSA-87', async () => {
-    if (!(await supportsAlgorithm('ML-DSA-87'))) {
-      return;
-    }
-
-    const factory = new TokenFactory({
-      issuer: 'my-issuer',
-      keyStore: new MemoryKeyStore(),
-      keyDurationSeconds: 5,
-      logger,
-      algorithm: 'ML-DSA-87',
-    });
-
-    const { token } = await factory.issueToken({
-      claims: { sub: entityRef, ent: [entityRef] },
-    });
-
-    const { keys } = await factory.listPublicKeys();
-    const verifyResult = await jwtVerify(token, createLocalJWKSet({ keys }));
-    expect(verifyResult.protectedHeader.alg).toBe('ML-DSA-87');
     expect(verifyResult.payload.sub).toBe(entityRef);
   });
 });

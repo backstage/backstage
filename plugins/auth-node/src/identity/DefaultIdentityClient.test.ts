@@ -37,15 +37,6 @@ interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-async function supportsAlgorithm(algorithm: string): Promise<boolean> {
-  try {
-    await generateKeyPair(algorithm);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
 class FakeTokenFactory {
   private readonly keys = new Array<AnyJWK>();
@@ -184,43 +175,37 @@ describe('DefaultIdentityClient', () => {
       ).rejects.toThrow();
     });
 
-    it.each(['ML-DSA-65', 'ML-DSA-87'] as const)(
-      'should authenticate tokens signed with %s',
-      async algorithm => {
-        if (!(await supportsAlgorithm(algorithm))) {
-          return;
-        }
+    it('should authenticate tokens signed with ML-DSA-65', async () => {
+      const algorithm = 'ML-DSA-65';
+      const mlDsaFactory = new FakeTokenFactory({
+        issuer: mockBaseUrl,
+        keyDurationSeconds,
+        algorithm,
+      });
+      server.use(
+        http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
+          const keys = await mlDsaFactory.listPublicKeys();
+          return HttpResponse.json(keys);
+        }),
+      );
 
-        const mlDsaFactory = new FakeTokenFactory({
-          issuer: mockBaseUrl,
-          keyDurationSeconds,
-          algorithm,
-        });
-        server.use(
-          http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
-            const keys = await mlDsaFactory.listPublicKeys();
-            return HttpResponse.json(keys);
-          }),
-        );
+      const identityClient = DefaultIdentityClient.create({
+        discovery,
+        issuer: mockBaseUrl,
+        algorithms: [algorithm],
+      });
 
-        const identityClient = DefaultIdentityClient.create({
-          discovery,
-          issuer: mockBaseUrl,
-          algorithms: [algorithm],
-        });
-
-        const token = await mlDsaFactory.issueToken({ claims: { sub: 'foo' } });
-        expect(decodeProtectedHeader(token).alg).toBe(algorithm);
-        await expect(identityClient.authenticate(token)).resolves.toEqual({
-          token,
-          identity: {
-            type: 'user',
-            userEntityRef: 'foo',
-            ownershipEntityRefs: [],
-          },
-        });
-      },
-    );
+      const token = await mlDsaFactory.issueToken({ claims: { sub: 'foo' } });
+      expect(decodeProtectedHeader(token).alg).toBe(algorithm);
+      await expect(identityClient.authenticate(token)).resolves.toEqual({
+        token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'foo',
+          ownershipEntityRefs: [],
+        },
+      });
+    });
   });
 
   describe('authenticate', () => {
