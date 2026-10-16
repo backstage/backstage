@@ -66,6 +66,23 @@ describe('createReporter', () => {
     expect(text).toContain('1 passed · 0 failed · 1 running · 1 queued');
     expect(text).toContain('FAIL b');
     expect(text).not.toContain('PASS a');
-    expect(text).toContain('1 passed · 1 failed · 0 running · 1 queued');
+    expect(text).toContain('1 passed · 1 failed · 1 queued');
+  });
+
+  it('shows running packages as interrupted without spinner or queue', () => {
+    for (const isTTY of [true, false]) {
+      const { reporter, strip } = setup({ verbose: false, isTTY });
+      reporter.begin(['a', 'b', 'c']);
+      reporter.onStart('a');
+      reporter.onStart('b');
+      reporter.onFinish('a', 'PASS');
+      reporter.interrupt();
+      const text = strip();
+      expect(text).toContain('INTERRUPTED b');
+      expect(text).not.toContain('INTERRUPTED a');
+      expect(text.trim().split('\n').pop()).toBe(
+        isTTY ? '1 passed · 0 failed · 1 interrupted' : 'INTERRUPTED b (2/3)',
+      );
+    }
   });
 });
