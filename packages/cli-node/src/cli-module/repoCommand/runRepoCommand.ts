@@ -37,7 +37,6 @@ const DEBOUNCE_MS = 200;
 interface RunSettings {
   concurrency: number;
   verbose: boolean;
-  forwarded: string[];
 }
 
 async function runPackages(
@@ -69,7 +68,6 @@ async function runPackages(
           packageCommand: options.packageCommand,
           selected: item,
           packageArgs: options.packageArgs,
-          forwarded: settings.forwarded,
         }),
         {
           cwd: item.pkg.dir,

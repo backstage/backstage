@@ -45,7 +45,7 @@ describe('runRepoCommand', () => {
     packageArgs: ['--no-watch'],
   };
   const context = {
-    args: ['--', '--extra'],
+    args: [],
     info: { usage: 'backstage-cli repo run test', name: 'repo run' },
   };
 
@@ -80,7 +80,6 @@ describe('runRepoCommand', () => {
       'package',
       'test',
       '--no-watch',
-      '--extra',
     ]);
     expect(process.stdout.write).toHaveBeenCalledWith(
       expect.stringContaining('1 package(s) failed:\n  b'),
@@ -236,11 +235,7 @@ describe('runRepoCommand', () => {
     };
 
     expect(await ran(['-p', 'a'])).toEqual(['/repo/a']);
-    expect(await ran(['a', 'c', '--', '-t', 'x'])).toEqual([
-      '/repo/a',
-      '/repo/c',
-    ]);
-    expect(runMock.mock.calls[0][0].slice(-2)).toEqual(['-t', 'x']);
+    expect(await ran(['a', 'c'])).toEqual(['/repo/a', '/repo/c']);
     expect(await ran(['-p', 'a', '-p', 'c'])).toEqual(['/repo/a', '/repo/c']);
     expect(await ran(['-p', 'a', '--include-dependents'])).toEqual([
       '/repo/a',
