@@ -20,13 +20,22 @@ import { detectFormatter, formatFiles, tryRunOxfmt } from './formatter';
 
 const mockDir = createMockDirectory();
 
+// Jest caches failed module lookups per directory, so each case uses a new
+// repository root
+let mockRoot = '';
+let rootCount = 0;
+function setRoot(content: Record<string, any>) {
+  mockRoot = `root-${rootCount++}`;
+  mockDir.addContent({ [mockRoot]: content });
+}
+
 jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
   targetPaths: {
     get rootDir() {
-      return mockDir.path;
+      return mockDir.resolve(mockRoot);
     },
-    resolveRoot: (...paths: string[]) => mockDir.resolve(...paths),
+    resolveRoot: (...paths: string[]) => mockDir.resolve(mockRoot, ...paths),
   },
 }));
 
@@ -40,7 +49,10 @@ jest.mock('node:child_process', () => {
 
 /** A stand-in for oxfmt that marks the files it writes with their type */
 const oxfmtStub = {
-  'package.json': JSON.stringify({ name: 'oxfmt', version: '0.0.0' }),
+  'package.json': JSON.stringify({
+    name: 'oxfmt',
+    bin: { oxfmt: 'bin/oxfmt' },
+  }),
   bin: {
     oxfmt: `
       const fs = require('node:fs');
@@ -65,59 +77,64 @@ describe('formatter', () => {
   });
 
   it('detects the formatter of the repository', () => {
-    const oxfmt = {
+    const oxfmt = () => ({
       name: 'oxfmt',
-      bin: mockDir.resolve('node_modules/oxfmt/bin/oxfmt'),
-    };
-    const prettier = {
+      bin: mockDir.resolve(mockRoot, 'node_modules/oxfmt/bin/oxfmt'),
+    });
+    const prettier = () => ({
       name: 'prettier',
-      bin: mockDir.resolve('node_modules/prettier/bin.js'),
-    };
+      bin: mockDir.resolve(mockRoot, 'node_modules/prettier/bin.js'),
+    });
 
-    mockDir.setContent({});
+    setRoot({});
     expect(detectFormatter()).toBeUndefined();
 
-    mockDir.setContent({ node_modules: { prettier: prettierStub } });
-    expect(detectFormatter()).toEqual(prettier);
+    setRoot({ node_modules: { prettier: prettierStub } });
+    expect(detectFormatter()).toEqual(prettier());
 
-    mockDir.setContent({ node_modules: { oxfmt: oxfmtStub } });
-    expect(detectFormatter()).toEqual(oxfmt);
+    setRoot({ node_modules: { oxfmt: oxfmtStub } });
+    expect(detectFormatter()).toEqual(oxfmt());
 
     // Both installed, Prettier is kept unless oxfmt is configured
-    mockDir.setContent({
+    setRoot({
       node_modules: { prettier: prettierStub, oxfmt: oxfmtStub },
     });
-    expect(detectFormatter()).toEqual(prettier);
+    expect(detectFormatter()).toEqual(prettier());
 
-    mockDir.setContent({
+    setRoot({
       'oxfmt.config.ts': 'export default {};',
       node_modules: { prettier: prettierStub, oxfmt: oxfmtStub },
     });
-    expect(detectFormatter()).toEqual(oxfmt);
+    expect(detectFormatter()).toEqual(oxfmt());
   });
 
   it('formats files with the detected formatter', async () => {
     const signal = new AbortController().signal;
     const options = { cwd: undefined, signal, maxBuffer: Number.MAX_VALUE };
 
-    mockDir.setContent({ node_modules: { prettier: prettierStub } });
+    setRoot({ node_modules: { prettier: prettierStub } });
     await formatFiles([], { signal });
     expect(execFile).not.toHaveBeenCalled();
 
     await formatFiles(['a.ts', 'b'], { signal });
     expect(execFile).toHaveBeenLastCalledWith(
       process.execPath,
-      [mockDir.resolve('node_modules/prettier/bin.js'), '--write', 'a.ts', 'b'],
+      [
+        mockDir.resolve(mockRoot, 'node_modules/prettier/bin.js'),
+        '--write',
+        'a.ts',
+        'b',
+      ],
       options,
       expect.any(Function),
     );
 
-    mockDir.setContent({ node_modules: { oxfmt: oxfmtStub } });
+    setRoot({ node_modules: { oxfmt: oxfmtStub } });
     await formatFiles(['a.ts'], { signal });
     expect(execFile).toHaveBeenLastCalledWith(
       process.execPath,
       [
-        mockDir.resolve('node_modules/oxfmt/bin/oxfmt'),
+        mockDir.resolve(mockRoot, 'node_modules/oxfmt/bin/oxfmt'),
         '--write',
         'a.ts',
         '--no-error-on-unmatched-pattern',
@@ -126,14 +143,14 @@ describe('formatter', () => {
       expect.any(Function),
     );
 
-    mockDir.setContent({});
+    setRoot({});
     await formatFiles(['a.ts']);
     expect(execFile).toHaveBeenCalledTimes(2);
   });
 
   it('formats content with oxfmt in a single run', () => {
-    mockDir.setContent({ node_modules: { oxfmt: oxfmtStub } });
-    const bin = mockDir.resolve('node_modules/oxfmt/bin/oxfmt');
+    setRoot({ node_modules: { oxfmt: oxfmtStub } });
+    const bin = mockDir.resolve(mockRoot, 'node_modules/oxfmt/bin/oxfmt');
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     expect(
