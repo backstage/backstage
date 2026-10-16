@@ -19,8 +19,10 @@ import {
   buildMysqlDatabaseConfig,
   createMysqlDatabaseClient,
   getMysqlConnectionConfig,
+  MysqlConnector,
   parseMysqlConnectionString,
 } from './mysql';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('mysql', () => {
   const createMockConnection = () => ({
@@ -188,5 +190,27 @@ describe('mysql', () => {
         ssl: 'require',
       });
     });
+  });
+
+  it('allows a plugin to opt out of global schema mode', async () => {
+    const connector = new MysqlConnector(
+      new ConfigReader({
+        client: 'mysql2',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+        ensureExists: false,
+        plugin: {
+          catalog: { pluginDivisionMode: 'database' },
+        },
+      }),
+      'backstage_plugin_',
+    );
+
+    const client = await connector.getClient('catalog', {
+      logger: mockServices.logger.mock(),
+      lifecycle: mockServices.lifecycle.mock(),
+    });
+
+    await client.destroy();
   });
 });

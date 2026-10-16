@@ -191,7 +191,7 @@ export class Sqlite3Connector implements Connector {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
-    const pluginDivisionMode = this.getPluginDivisionModeConfig();
+    const pluginDivisionMode = this.getPluginDivisionModeConfig(pluginId);
     if (pluginDivisionMode !== 'database') {
       throw new Error(
         `The SQLite driver does not support plugin division mode '${pluginDivisionMode}'`,
@@ -294,8 +294,14 @@ export class Sqlite3Connector implements Connector {
     return merge(baseConfig, pluginConfig);
   }
 
-  private getPluginDivisionModeConfig(): string {
-    return this.config.getOptionalString('pluginDivisionMode') ?? 'database';
+  private getPluginDivisionModeConfig(pluginId: string): string {
+    return (
+      this.config.getOptionalString(
+        `${pluginPath(pluginId)}.pluginDivisionMode`,
+      ) ??
+      this.config.getOptionalString('pluginDivisionMode') ??
+      'database'
+    );
   }
 
   /**
@@ -328,7 +334,7 @@ export class Sqlite3Connector implements Connector {
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
     // is set to `schema`. SQLite3's `filename` property is an exception as this is used as a
     // directory elsewhere so we preserve `filename`.
-    if (this.getPluginDivisionModeConfig() !== 'schema') {
+    if (this.getPluginDivisionModeConfig(pluginId) !== 'schema') {
       baseConnection = omit(baseConnection, 'database');
     }
 

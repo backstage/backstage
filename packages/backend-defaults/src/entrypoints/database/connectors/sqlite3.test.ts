@@ -19,6 +19,7 @@ import path from 'node:path';
 import {
   buildSqliteDatabaseConfig,
   createSqliteDatabaseClient,
+  Sqlite3Connector,
 } from './sqlite3';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -100,5 +101,22 @@ describe('better-sqlite3', () => {
         createSqliteDatabaseClient('p', createConfig(':memory:'), deps),
       ).toBeTruthy();
     });
+  });
+
+  it('allows a plugin to opt out of global schema mode', async () => {
+    const connector = new Sqlite3Connector(
+      new ConfigReader({
+        client: 'better-sqlite3',
+        connection: ':memory:',
+        pluginDivisionMode: 'schema',
+        plugin: {
+          catalog: { pluginDivisionMode: 'database' },
+        },
+      }),
+    );
+
+    const client = await connector.getClient('catalog', deps);
+
+    await client.destroy();
   });
 });
