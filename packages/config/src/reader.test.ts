@@ -520,6 +520,88 @@ describe('ConfigReader with fallback', () => {
         .getOptionalString('b'),
     ).toBeUndefined();
   });
+
+  it('should handle primitive types in fallback when performing optional lookups', () => {
+    const config = new ConfigReader(
+      { x: { y: 1 } },
+      'main',
+      new ConfigReader({ x: 1 }, 'fallback'),
+    );
+
+    expect(config.getOptional('x.z')).toBeUndefined();
+    expect(config.getOptionalNumber('x.z')).toBeUndefined();
+    expect(config.getOptionalString('x.z')).toBeUndefined();
+    expect(config.getOptionalBoolean('x.z')).toBeUndefined();
+    expect(config.getOptionalStringArray('x.z')).toBeUndefined();
+    expect(config.getOptionalConfig('x.z')).toBeUndefined();
+    expect(config.getOptionalConfigArray('x.z')).toBeUndefined();
+
+    // Required lookups should still throw type error from fallback
+    expect(() => config.get('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'fallback', got number, wanted object",
+    );
+    expect(() => config.getNumber('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'fallback', got number, wanted object",
+    );
+  });
+
+  it('should fail when primary config has primitive and looking up a nonexistent nested key', () => {
+    const config = new ConfigReader(
+      { x: 1 },
+      'primary',
+      new ConfigReader({ x: { y: 1 } }, 'fallback'),
+    );
+
+    expect(() => config.getOptional('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+    expect(() => config.get('x.z')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+  });
+
+  it('should fail when primary config has primitive instead of falling back to existing nested key', () => {
+    const config = new ConfigReader(
+      { x: 1 },
+      'primary',
+      new ConfigReader({ x: { y: 1 } }, 'fallback'),
+    );
+
+    expect(() => config.getOptionalNumber('x.y')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+    expect(() => config.getNumber('x.y')).toThrow(
+      "Invalid type in config for key 'x' in 'primary', got number, wanted object",
+    );
+  });
+
+  it('should handle deep structures more than 2 levels deep with primitive in fallback', () => {
+    const config = new ConfigReader(
+      { a: { b: { c: { exclude: ['pkg'] } } } },
+      'main',
+      new ConfigReader({ a: { b: { c: true } } }, 'fallback'),
+    );
+
+    expect(config.getOptional('a.b.c.exclude')).toEqual(['pkg']);
+    expect(config.getOptional('a.b.c.include')).toBeUndefined();
+    expect(config.getOptionalStringArray('a.b.c.include')).toBeUndefined();
+    expect(() => config.getStringArray('a.b.c.include')).toThrow(
+      "Invalid type in config for key 'a.b.c' in 'fallback', got boolean, wanted object",
+    );
+  });
+
+  it('should preserve primitive override across multiple fallback layers with unrelated top config', () => {
+    const s1 = new ConfigReader({ a: { b: { c: 'hello' } } }, 's1-default');
+    const s2 = new ConfigReader({ a: { b: 1 } }, 's2-override', s1);
+    const s3 = new ConfigReader({ unrelated: true }, 's3-main', s2);
+
+    expect(() => s3.getOptionalString('a.b.c')).toThrow(
+      "Invalid type in config for key 'a.b' in 's2-override', got number, wanted object",
+    );
+    expect(() => s3.getString('a.b.c')).toThrow(
+      "Invalid type in config for key 'a.b' in 's2-override', got number, wanted object",
+    );
+  });
 });
 
 describe('ConfigReader.get()', () => {
