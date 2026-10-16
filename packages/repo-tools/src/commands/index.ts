@@ -306,7 +306,8 @@ export function lazy<TModule extends object>(
       const actionFunc = actualModule[exportName] as ActionFunc;
       await actionFunc(...args);
 
-      process.exit(0);
+      // Keeps any exit code set by the action, defaulting to 0
+      process.exit();
     } catch (error) {
       exitWithError(toError(error));
     }
