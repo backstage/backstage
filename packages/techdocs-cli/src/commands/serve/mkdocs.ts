@@ -27,6 +27,11 @@ import { resolveEngine } from '../../lib/catalogEntity';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
+  if (opts.deprecatedCommandAlias) {
+    logger.warn(
+      `${opts.deprecatedCommandAlias} is deprecated and will be removed in a future release. Use serve:raw instead.`,
+    );
+  }
 
   const { engine, source: engineSource } = await resolveEngine(
     process.cwd(),

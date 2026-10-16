@@ -318,10 +318,8 @@ export function registerCommands(program: Command) {
       '--engine <ENGINE>',
       'Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.',
     )
-    .hook('preAction', () => {
-      process.stderr.write(
-        'serve:mkdocs is deprecated and will be removed in a future release. Use serve:raw instead.\n',
-      );
+    .hook('preAction', command => {
+      command.setOptionValue('deprecatedCommandAlias', 'serve:mkdocs');
     })
     .action(serveRawAction);
 
@@ -354,8 +352,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--engine-port <PORT>',
-      'Port for the documentation engine server (MkDocs, Zensical, etc.) to listen on. The Backstage preview app is served on --preview-app-port.',
-      '8000',
+      'Port for the documentation engine server (MkDocs, Zensical, etc.) to listen on. Defaults to 8000. The Backstage preview app is served on --preview-app-port.',
     )
     .option(
       '--mkdocs-port <PORT>',

@@ -23,7 +23,7 @@ import { runEngineServer } from '../../lib/server';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
-import { checkIfDockerIsOperational } from './utils';
+import { checkIfDockerIsOperational, resolveDeprecatedOption } from './utils';
 import { getEngineConfig } from '../../lib/engineConfig';
 import { resolveEngine } from '../../lib/catalogEntity';
 
@@ -69,12 +69,13 @@ export default async function serve(opts: OptionValues) {
 
   const backstageBackendPort = 7007;
 
-  const enginePort = opts.enginePort ?? opts.mkdocsPort ?? '8000';
-  if (opts.mkdocsPort && !opts.enginePort) {
-    logger.warn(
-      '--mkdocs-port is deprecated and will be removed in a future release. Use --engine-port instead.',
-    );
-  }
+  const enginePort =
+    resolveDeprecatedOption(logger, {
+      value: opts.enginePort,
+      flag: '--engine-port',
+      deprecatedValue: opts.mkdocsPort,
+      deprecatedFlag: '--mkdocs-port',
+    }) ?? '8000';
   for (const flag of ['Clean', 'Dirtyreload', 'Strict']) {
     if (opts[`mkdocsParameter${flag}`]) {
       logger.warn(
@@ -89,12 +90,12 @@ export default async function serve(opts: OptionValues) {
     ? engineDockerAddr
     : engineLocalAddr;
 
-  const configFileName = opts.configFileName ?? opts.mkdocsConfigFileName;
-  if (opts.mkdocsConfigFileName && !opts.configFileName) {
-    logger.warn(
-      '--mkdocs-config-file-name is deprecated and will be removed in a future release. Use --config-file-name instead.',
-    );
-  }
+  const configFileName = resolveDeprecatedOption(logger, {
+    value: opts.configFileName,
+    flag: '--config-file-name',
+    deprecatedValue: opts.mkdocsConfigFileName,
+    deprecatedFlag: '--mkdocs-config-file-name',
+  });
   const siteName = opts.siteName;
 
   const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml('./', {
