@@ -23,7 +23,7 @@ import { SearchClient } from '../lib/SearchClient';
 import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
   outputFlag,
-  printPage,
+  pageInteractively,
   parseOutputFlag,
   writeJson,
   formatSearchResults,
@@ -72,12 +72,12 @@ export default async ({ args, info }: CliCommandContext) => {
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = new SearchClient(baseUrl, accessToken);
 
-  const fetchPage = async (cursor?: string) => {
+  const fetchPage = async (cursor?: string, limit = flags.limit) => {
     const response = await client.query({
       term,
       types,
       filters,
-      pageLimit: flags.limit,
+      pageLimit: limit,
       pageCursor: cursor,
     });
     return {
@@ -93,9 +93,9 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  await printPage(
-    async cursor => {
-      const page = await fetchPage(cursor);
+  await pageInteractively(
+    async (cursor, limit) => {
+      const page = await fetchPage(cursor, limit);
       return {
         ...page,
         count: page.results.length,
@@ -103,7 +103,7 @@ export default async ({ args, info }: CliCommandContext) => {
         nextCursor: page.nextPageCursor,
       };
     },
-    page => process.stdout.write(formatSearchResults(page.results)),
-    flags.cursor,
+    page => formatSearchResults(page.results),
+    { cursor: flags.cursor, limit: flags.limit, linesPerItem: 4 },
   );
 };
