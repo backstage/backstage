@@ -147,6 +147,7 @@ export async function command(
     } else {
       console.log(chalk.red(`Client generation failed.`));
       console.log(chalk.red(err.message));
+      process.exitCode = 1;
     }
   }
 }

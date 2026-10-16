@@ -194,6 +194,7 @@ export async function command(
     } else {
       console.log(chalk.red(err.message));
       console.log(chalk.red(`OpenAPI server stub generation failed.`));
+      process.exitCode = 1;
     }
   }
 }
