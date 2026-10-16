@@ -100,6 +100,7 @@ export const authPlugin = createBackendPlugin({
               lifecycle,
               catalog,
               auth,
+              ownershipResolver,
             })
           : undefined;
 

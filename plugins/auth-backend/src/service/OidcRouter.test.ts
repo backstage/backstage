@@ -37,6 +37,8 @@ import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
 import { OfflineAccessService } from './OfflineAccessService';
 import { CimdClientInfo, validateCimdUrl } from './CimdClient';
+import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 jest.mock('./CimdClient', () => {
@@ -149,6 +151,7 @@ describe('OidcRouter', () => {
     databaseId: TestDatabaseId,
     refreshTokenConfig?: Record<string, unknown>,
     extraAuthConfig?: Record<string, unknown>,
+    ownershipResolver?: AuthOwnershipResolver,
   ) {
     const knex = await databases.init(databaseId);
 
@@ -210,6 +213,8 @@ describe('OidcRouter', () => {
       lifecycle: mockLifecycle,
       catalog: mockCatalog,
       auth: mockAuth,
+      userInfo: userInfoDatabase,
+      ownershipResolver,
     });
 
     const oidcService = OidcService.create({
@@ -1028,10 +1033,13 @@ describe('OidcRouter', () => {
     async function doAuthFlowWithOfflineAccess(
       databaseId_: TestDatabaseId,
       refreshTokenConfig?: Record<string, unknown>,
+      ownershipResolver?: AuthOwnershipResolver,
     ) {
       const result = await createRouterWithOfflineAccess(
         databaseId_,
         refreshTokenConfig,
+        undefined,
+        ownershipResolver,
       );
       const {
         mocks: { auth, service, tokenIssuer, httpAuth },
@@ -1359,6 +1367,149 @@ describe('OidcRouter', () => {
             'mock-refreshed-token',
           );
           expect(mocks.catalog.getEntityByRef).not.toHaveBeenCalled();
+        });
+
+        it('should re-resolve ownership entity refs from the catalog and update user info on refresh', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId);
+
+          // Simulate initial interactive sign-in where user belonged to team-alpha
+          await mocks.userInfo.addUserInfo({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/team-alpha'],
+            },
+          });
+
+          // User is removed from team-alpha and added to team-beta in the catalog
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+            relations: [
+              {
+                type: RELATION_MEMBER_OF,
+                targetRef: 'group:default/team-beta',
+              },
+            ],
+          });
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token-1',
+          });
+
+          const firstRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/team-beta'],
+            },
+          });
+          await expect(
+            mocks.userInfo.getUserInfo(MOCK_USER_ENTITY_REF),
+          ).resolves.toEqual({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/team-beta'],
+            },
+          });
+
+          // User is subsequently removed from all groups in the catalog
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+            relations: [],
+          });
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token-2',
+          });
+
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: firstRefresh.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF],
+            },
+          });
+          await expect(
+            mocks.userInfo.getUserInfo(MOCK_USER_ENTITY_REF),
+          ).resolves.toEqual({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF],
+            },
+          });
+        });
+
+        it('should use custom ownershipResolver when refreshing tokens', async () => {
+          const customOwnershipResolver: AuthOwnershipResolver = {
+            resolveOwnershipEntityRefs: jest.fn().mockResolvedValue({
+              ownershipEntityRefs: [
+                MOCK_USER_ENTITY_REF,
+                'group:default/custom-parent-group',
+              ],
+            }),
+          };
+
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(
+              databaseId,
+              undefined,
+              customOwnershipResolver,
+            );
+
+          const userEntity = {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+          };
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce(userEntity);
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token',
+          });
+
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(
+            customOwnershipResolver.resolveOwnershipEntityRefs,
+          ).toHaveBeenCalledWith(userEntity);
+          expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/custom-parent-group'],
+            },
+          });
+          await expect(
+            mocks.userInfo.getUserInfo(MOCK_USER_ENTITY_REF),
+          ).resolves.toEqual({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/custom-parent-group'],
+            },
+          });
         });
       });
     });
