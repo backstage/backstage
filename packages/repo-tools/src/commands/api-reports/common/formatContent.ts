@@ -22,19 +22,16 @@ import { detectFormatter, tryRunOxfmt } from '../../../lib/formatter';
 const PLACEHOLDER = 'backstage-code-block-';
 
 /**
- * Formats the content with oxfmt if that's the formatter of the target
- * repository.
+ * Formats the content with oxfmt.
  *
- * @returns The formatted content, or undefined if oxfmt isn't used
+ * @param bin - The JavaScript entry point of the oxfmt CLI
+ * @returns The formatted content, or the original content if formatting fails
  */
-function tryRunOxfmtInstead(
+function formatWithOxfmt(
+  bin: string,
   content: string,
   extraConfig: Config,
-): string | undefined {
-  const formatter = detectFormatter();
-  if (formatter?.name !== 'oxfmt') {
-    return undefined;
-  }
+): string {
   // API reports contain declarations without implementations, which oxfmt
   // only accepts in declaration files. The code blocks are therefore formatted
   // as separate declaration files, and replaced with placeholders that oxfmt
@@ -53,7 +50,7 @@ function tryRunOxfmtInstead(
   const extension = extraConfig.filepath
     ? extname(extraConfig.filepath)
     : '.md';
-  const [formatted, ...formattedCodeBlocks] = tryRunOxfmt(formatter.bin, [
+  const [formatted, ...formattedCodeBlocks] = tryRunOxfmt(bin, [
     { content: withPlaceholders, extension },
     ...codeBlocks.map(code => ({ content: code, extension: '.d.ts' })),
   ]);
@@ -67,21 +64,15 @@ function tryRunOxfmtInstead(
 }
 
 /**
- * Tries to run prettier asynchronously, with Prettier v2 or v3. Uses oxfmt
- * instead if that's the formatter of the target repository.
+ * Tries to run prettier asynchronously, with Prettier v2 or v3.
  * @param content - The content to format.
- * @param extraConfig - Additional prettier config options (defaults to markdown parser). Providing a filepath is recommended for proper config resolution.
+ * @param extraConfig - Additional prettier config options. Providing a filepath is recommended for proper config resolution.
  * @returns A promise that resolves to the formatted content or the original content if the formatting fails.
- * @internal
  */
-export async function tryRunPrettierAsync(
+async function tryRunPrettierAsync(
   content: string,
-  extraConfig: Config = { parser: 'markdown' },
+  extraConfig: Config,
 ): Promise<string> {
-  const oxfmtContent = tryRunOxfmtInstead(content, extraConfig);
-  if (oxfmtContent !== undefined) {
-    return oxfmtContent;
-  }
   try {
     const prettier = require('prettier') as typeof import('prettier');
     // Filepath for proper config resolution
@@ -156,24 +147,55 @@ function loadPrettierSync():
 }
 
 /**
- * Tries to run prettier synchronously, with Prettier v2 or v3. Uses oxfmt
- * instead if that's the formatter of the target repository.
+ * Tries to run prettier synchronously, with Prettier v2 or v3.
  * @param content - The content to format.
- * @param extraConfig - Additional prettier config options (defaults to markdown parser)
+ * @param extraConfig - Additional prettier config options
  * @returns The formatted content.
- * @internal
  */
-export function tryRunPrettier(
-  content: string,
-  extraConfig: Config = { parser: 'markdown' },
-): string {
-  const oxfmtContent = tryRunOxfmtInstead(content, extraConfig);
-  if (oxfmtContent !== undefined) {
-    return oxfmtContent;
-  }
+function tryRunPrettier(content: string, extraConfig: Config): string {
   const formatter = createPrettierSyncFormatter(
     loadPrettierSync(),
     extraConfig,
   );
   return formatter(content);
+}
+
+/**
+ * Formats the content synchronously with the formatter of the target
+ * repository. oxfmt is used if it's detected, otherwise Prettier, with
+ * Prettier v2 or v3.
+ * @param content - The content to format.
+ * @param extraConfig - Additional prettier config options (defaults to markdown parser). The extension of the filepath also picks the oxfmt parser.
+ * @returns The formatted content.
+ * @internal
+ */
+export function formatContent(
+  content: string,
+  extraConfig: Config = { parser: 'markdown' },
+): string {
+  const formatter = detectFormatter();
+  if (formatter?.name === 'oxfmt') {
+    return formatWithOxfmt(formatter.bin, content, extraConfig);
+  }
+  return tryRunPrettier(content, extraConfig);
+}
+
+/**
+ * Formats the content asynchronously with the formatter of the target
+ * repository. oxfmt is used if it's detected, otherwise Prettier, with
+ * Prettier v2 or v3.
+ * @param content - The content to format.
+ * @param extraConfig - Additional prettier config options (defaults to markdown parser). Providing a filepath is recommended for proper config resolution, and its extension also picks the oxfmt parser.
+ * @returns A promise that resolves to the formatted content or the original content if the formatting fails.
+ * @internal
+ */
+export async function formatContentAsync(
+  content: string,
+  extraConfig: Config = { parser: 'markdown' },
+): Promise<string> {
+  const formatter = detectFormatter();
+  if (formatter?.name === 'oxfmt') {
+    return formatWithOxfmt(formatter.bin, content, extraConfig);
+  }
+  return tryRunPrettierAsync(content, extraConfig);
 }
