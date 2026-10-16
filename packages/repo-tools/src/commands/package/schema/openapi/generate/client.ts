@@ -86,6 +86,15 @@ async function generate(
     },
   );
 
+  // Deduplicate imports in generated files, before
+  // they're linted and formatted
+  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  for (const file of generatedFiles) {
+    if (file.endsWith('.ts')) {
+      deduplicateImports(resolve(resolvedOutputDirectory, file));
+    }
+  }
+
   const parentDirectory = resolve(resolvedOutputDirectory, '..');
 
   await fs.writeFile(
@@ -99,14 +108,6 @@ async function generate(
   });
 
   await formatFiles([parentDirectory], { signal: abortSignal?.signal });
-
-  // Deduplicate imports in generated files
-  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
-  for (const file of generatedFiles) {
-    if (file.endsWith('.ts')) {
-      deduplicateImports(resolve(resolvedOutputDirectory, file));
-    }
-  }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
