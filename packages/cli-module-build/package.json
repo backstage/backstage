@@ -110,7 +110,8 @@
     "@types/lodash": "^4.14.151",
     "@types/npm-packlist": "^3.0.0",
     "@types/shell-quote": "^1.7.5",
-    "embedded-postgres": "18.3.0-beta.17"
+    "embedded-postgres": "18.3.0-beta.17",
+    "pg": "^8.11.3"
   },
   "peerDependencies": {
     "embedded-postgres": "^18.3.0-beta.16"
