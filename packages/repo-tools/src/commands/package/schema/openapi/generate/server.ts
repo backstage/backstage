@@ -36,7 +36,10 @@ import {
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
 
-async function generateSpecFile() {
+/**
+ * Writes the router and index files, returning the path of the index file.
+ */
+async function writeSpecFiles() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
   const yaml = loadYaml(await fs.readFile(openapiPath, 'utf8'));
 
@@ -78,8 +81,7 @@ export const createOpenApiRouter = async (
     export * from './generated';`,
   );
 
-  await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  await formatFiles([tsPath, indexFile], { cwd: targetPaths.rootDir });
+  return indexFile;
 }
 
 async function generate(
@@ -141,18 +143,6 @@ async function generate(
     }
   }
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-    [],
-    {
-      signal: abortSignal?.signal,
-    },
-  );
-
-  await formatFiles([resolvedOutputDirectory], {
-    signal: abortSignal?.signal,
-  });
-
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
@@ -165,7 +155,19 @@ async function generate(
     force: true,
   });
 
-  await generateSpecFile();
+  // The router file is written to the output directory, so all the generated
+  // files are linted and formatted in a single run each.
+  const indexFile = await writeSpecFiles();
+
+  await exec(
+    `yarn backstage-cli package lint`,
+    ['--fix', resolvedOutputDirectory, indexFile],
+    { signal: abortSignal?.signal },
+  );
+
+  await formatFiles([resolvedOutputDirectory, indexFile], {
+    signal: abortSignal?.signal,
+  });
 }
 
 export async function command(
