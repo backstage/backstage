@@ -28,7 +28,6 @@ import { durationToMilliseconds } from '@backstage/types';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { randomUUID as uuid } from 'node:crypto';
-import { AuthDatabase } from '../database/AuthDatabase';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
@@ -59,7 +58,7 @@ export class OfflineAccessService {
     lifecycle: LifecycleService;
     catalog: CatalogService;
     auth: AuthService;
-    userInfo?: UserInfoDatabase;
+    userInfo: UserInfoDatabase;
     ownershipResolver?: AuthOwnershipResolver;
   }): Promise<OfflineAccessService> {
     const { config, database, logger, lifecycle } = options;
@@ -139,15 +138,6 @@ export class OfflineAccessService {
       maxTokensPerUser,
     });
 
-    const userInfo =
-      options.userInfo ??
-      (await UserInfoDatabase.create({
-        database: AuthDatabase.create({
-          getClient: async () => knex,
-          migrations: database.migrations,
-        }),
-      }));
-
     const cleanupIntervalMs = 60 * 60 * 1000;
     const cleanupInterval = setInterval(async () => {
       try {
@@ -171,7 +161,7 @@ export class OfflineAccessService {
       dangerouslyDisableCatalogPresenceCheck,
       options.catalog,
       options.auth,
-      userInfo,
+      options.userInfo,
       options.ownershipResolver,
     );
   }
@@ -263,33 +253,39 @@ export class OfflineAccessService {
 
     let ownershipEntityRefs: string[] | undefined;
     if (!this.#dangerouslyDisableCatalogPresenceCheck) {
+      let entity: Entity | undefined;
       try {
-        const entity = await this.#catalog.getEntityByRef(
-          session.userEntityRef,
-          { credentials: await this.#auth.getOwnServiceCredentials() },
-        );
-        if (!entity) {
-          this.#logger.info(
-            `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
-          );
-          await this.#offlineSessionDb.deleteSession(sessionId);
-          throw new AuthenticationError(
-            'User entity no longer exists in the catalog',
-          );
-        }
-
-        ({ ownershipEntityRefs } = await this.#resolveOwnershipEntityRefs(
-          entity,
-        ));
+        entity = await this.#catalog.getEntityByRef(session.userEntityRef, {
+          credentials: await this.#auth.getOwnServiceCredentials(),
+        });
       } catch (error) {
-        if (error.name === 'AuthenticationError') {
-          throw error;
-        }
         this.#logger.warn(
           `Failed to validate catalog user existence for ${session.userEntityRef}, rejecting refresh`,
           error,
         );
         throw new AuthenticationError('Unable to validate user existence');
+      }
+
+      if (!entity) {
+        this.#logger.info(
+          `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
+        );
+        await this.#offlineSessionDb.deleteSession(sessionId);
+        throw new AuthenticationError(
+          'User entity no longer exists in the catalog',
+        );
+      }
+
+      try {
+        ({ ownershipEntityRefs } = await this.#resolveOwnershipEntityRefs(
+          entity,
+        ));
+      } catch (error) {
+        this.#logger.warn(
+          `Failed to resolve ownership for ${session.userEntityRef}, rejecting refresh`,
+          error,
+        );
+        throw new AuthenticationError('Unable to resolve user ownership');
       }
     }
 
@@ -319,9 +315,22 @@ export class OfflineAccessService {
     });
 
     if (ownershipEntityRefs !== undefined) {
-      await this.#userInfo.addUserInfo({
-        claims,
-      });
+      try {
+        const existingUserInfo = await this.#userInfo.getUserInfo(
+          rotatedSession.userEntityRef,
+        );
+        await this.#userInfo.addUserInfo({
+          claims: {
+            ...existingUserInfo?.claims,
+            ...claims,
+          },
+        });
+      } catch (error) {
+        this.#logger.warn(
+          `Failed to update user info for ${rotatedSession.userEntityRef} during token refresh`,
+          error,
+        );
+      }
     }
 
     this.#logger.debug(
