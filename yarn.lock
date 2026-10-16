@@ -6305,7 +6305,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     logform: "npm:^2.3.2"
     luxon: "npm:^3.0.0"
-    nunjitsu: "npm:^0.6.1"
+    nunjitsu: "npm:^0.6.2"
     p-queue: "npm:^6.6.2"
     prom-client: "npm:^15.0.0"
     strip-ansi: "npm:^7.1.0"
@@ -36437,10 +36437,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nunjitsu@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "nunjitsu@npm:0.6.1"
-  checksum: 10/29b1ed8b93c5f099493d3b7e9a706bcece6dc8c5d58cafe2642abd4fd1e93911e2a1f800f0490641f3057e885478db87405d42f7f3525abb5f577db62112fdeb
+"nunjitsu@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "nunjitsu@npm:0.6.2"
+  checksum: 10/48622790da7a5cf6861093991629ad786a030895a03142ac359269d98db6e4803b55f9221c160e4aa6015caf98dfcddcb5cfb4f2ba8a70a4c80cd202e85c9d23
   languageName: node
   linkType: hard
 
