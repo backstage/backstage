@@ -30,6 +30,10 @@ import authModuleGuestProvider from '@backstage/plugin-auth-backend-module-guest
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 
 describe('authPlugin', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should provide an OpenID configuration', async () => {
     const { server } = await startTestBackend({
       features: [
