@@ -21,17 +21,22 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
 import { readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
+import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { randomUUID as uuid } from 'node:crypto';
+import { AuthDatabase } from '../database/AuthDatabase';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
   generateRefreshToken,
   getRefreshTokenId,
   verifyRefreshToken,
 } from '../lib/refreshToken';
+import { getDefaultOwnershipEntityRefs } from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 
 /**
@@ -44,6 +49,8 @@ export class OfflineAccessService {
   readonly #dangerouslyDisableCatalogPresenceCheck: boolean;
   readonly #catalog: CatalogService;
   readonly #auth: AuthService;
+  readonly #userInfo: UserInfoDatabase;
+  readonly #ownershipResolver?: AuthOwnershipResolver;
 
   static async create(options: {
     config: RootConfigService;
@@ -52,6 +59,8 @@ export class OfflineAccessService {
     lifecycle: LifecycleService;
     catalog: CatalogService;
     auth: AuthService;
+    userInfo?: UserInfoDatabase;
+    ownershipResolver?: AuthOwnershipResolver;
   }): Promise<OfflineAccessService> {
     const { config, database, logger, lifecycle } = options;
 
@@ -130,6 +139,15 @@ export class OfflineAccessService {
       maxTokensPerUser,
     });
 
+    const userInfo =
+      options.userInfo ??
+      (await UserInfoDatabase.create({
+        database: AuthDatabase.create({
+          getClient: async () => knex,
+          migrations: database.migrations,
+        }),
+      }));
+
     const cleanupIntervalMs = 60 * 60 * 1000;
     const cleanupInterval = setInterval(async () => {
       try {
@@ -153,6 +171,8 @@ export class OfflineAccessService {
       dangerouslyDisableCatalogPresenceCheck,
       options.catalog,
       options.auth,
+      userInfo,
+      options.ownershipResolver,
     );
   }
 
@@ -162,6 +182,8 @@ export class OfflineAccessService {
     dangerouslyDisableCatalogPresenceCheck: boolean,
     catalog: CatalogService,
     auth: AuthService,
+    userInfo: UserInfoDatabase,
+    ownershipResolver?: AuthOwnershipResolver,
   ) {
     this.#offlineSessionDb = offlineSessionDb;
     this.#logger = logger;
@@ -169,6 +191,8 @@ export class OfflineAccessService {
       dangerouslyDisableCatalogPresenceCheck;
     this.#catalog = catalog;
     this.#auth = auth;
+    this.#userInfo = userInfo;
+    this.#ownershipResolver = ownershipResolver;
   }
 
   /**
@@ -237,6 +261,7 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
+    let ownershipEntityRefs: string[] | undefined;
     if (!this.#dangerouslyDisableCatalogPresenceCheck) {
       try {
         const entity = await this.#catalog.getEntityByRef(
@@ -252,6 +277,10 @@ export class OfflineAccessService {
             'User entity no longer exists in the catalog',
           );
         }
+
+        ({ ownershipEntityRefs } = await this.#resolveOwnershipEntityRefs(
+          entity,
+        ));
       } catch (error) {
         if (error.name === 'AuthenticationError') {
           throw error;
@@ -278,17 +307,37 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
+    const claims = {
+      sub: rotatedSession.userEntityRef,
+      ...(ownershipEntityRefs !== undefined
+        ? { ent: ownershipEntityRefs }
+        : {}),
+    };
+
     const { token: accessToken } = await tokenIssuer.issueToken({
-      claims: {
-        sub: rotatedSession.userEntityRef,
-      },
+      claims,
     });
+
+    if (ownershipEntityRefs !== undefined) {
+      await this.#userInfo.addUserInfo({
+        claims,
+      });
+    }
 
     this.#logger.debug(
       `Refreshed access token for user ${session.userEntityRef} with session ${sessionId}`,
     );
 
     return { accessToken, refreshToken: newRefreshToken };
+  }
+
+  async #resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }> {
+    if (this.#ownershipResolver) {
+      return this.#ownershipResolver.resolveOwnershipEntityRefs(entity);
+    }
+    return { ownershipEntityRefs: getDefaultOwnershipEntityRefs(entity) };
   }
 
   /**

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   mockCredentials,
   mockServices,
   startTestBackend,
   TestDatabases,
 } from '@backstage/backend-test-utils';
+import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import { authOwnershipResolutionExtensionPoint } from '@backstage/plugin-auth-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import request from 'supertest';
 import { authPlugin } from './authPlugin';
@@ -166,6 +169,168 @@ describe('authPlugin', () => {
         claims: {
           sub: expectedIdentity.userEntityRef,
           ent: expectedIdentity.ownershipEntityRefs,
+        },
+      });
+    });
+
+    it('should re-resolve ownership claims and update userinfo when refreshing an OAuth token', async () => {
+      const catalogMock = catalogServiceMock.mock({
+        getEntityByRef: jest
+          .fn()
+          .mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'tester', namespace: 'default' },
+            spec: {},
+            relations: [
+              {
+                type: RELATION_MEMBER_OF,
+                targetRef: 'group:default/initial-group',
+              },
+            ],
+          })
+          .mockResolvedValue({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'tester', namespace: 'default' },
+            spec: {},
+            relations: [
+              {
+                type: RELATION_MEMBER_OF,
+                targetRef: 'group:default/updated-group',
+              },
+            ],
+          }),
+      });
+
+      const customOwnershipModule = createBackendModule({
+        pluginId: 'auth',
+        moduleId: 'custom-ownership',
+        register(reg) {
+          reg.registerInit({
+            deps: { ownership: authOwnershipResolutionExtensionPoint },
+            async init({ ownership }) {
+              ownership.setAuthOwnershipResolver({
+                async resolveOwnershipEntityRefs(entity) {
+                  const groups =
+                    entity.relations
+                      ?.filter(r => r.type === RELATION_MEMBER_OF)
+                      .map(r => r.targetRef) ?? [];
+                  return {
+                    ownershipEntityRefs: [
+                      `user:default/${entity.metadata.name}`,
+                      ...groups,
+                    ],
+                  };
+                },
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          authPlugin,
+          authModuleGuestProvider,
+          customOwnershipModule,
+          authServiceFactory,
+          catalogMock.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              app: {
+                baseUrl: 'http://localhost:3000',
+              },
+              auth: {
+                ...mockProvidersConfig,
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+                experimentalRefreshToken: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      // 1. Initial interactive login populates user_info with initial ownershipEntityRefs
+      const signInRes = await request(server)
+        .post('/api/auth/guest/refresh')
+        .expect(200);
+      const interactiveToken = signInRes.body.backstageIdentity.token;
+
+      const initialUserInfoRes = await request(server)
+        .get('/api/auth/v1/userinfo')
+        .set('Authorization', `Bearer ${interactiveToken}`)
+        .expect(200);
+      expect(initialUserInfoRes.body).toMatchObject({
+        claims: {
+          sub: 'user:default/tester',
+          ent: ['user:default/tester', 'group:default/initial-group'],
+        },
+      });
+
+      // 2. Register OAuth client and complete authorization_code flow with offline_access
+      const regRes = await request(server)
+        .post('/api/auth/v1/register')
+        .send({
+          client_name: 'MCP Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+        })
+        .expect(201);
+
+      const authRes = await request(server)
+        .get('/api/auth/v1/authorize')
+        .query({
+          client_id: regRes.body.client_id,
+          redirect_uri: 'http://localhost:8080/callback',
+          response_type: 'code',
+          scope: 'openid offline_access',
+        })
+        .expect(302);
+
+      const sessionId = authRes.header.location.split('/').pop()!;
+      const approveRes = await request(server)
+        .post(`/api/auth/v1/sessions/${sessionId}/approve`)
+        .set(
+          'Authorization',
+          mockCredentials.user.header('user:default/tester'),
+        )
+        .expect(200);
+
+      const code = new URL(approveRes.body.redirectUrl).searchParams.get(
+        'code',
+      )!;
+      const tokenRes = await request(server)
+        .post('/api/auth/v1/token')
+        .send({
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: 'http://localhost:8080/callback',
+        })
+        .expect(200);
+
+      // 3. Refresh the OAuth token after catalog group membership changed
+      const refreshedTokenRes = await request(server)
+        .post('/api/auth/v1/token')
+        .send({
+          grant_type: 'refresh_token',
+          refresh_token: tokenRes.body.refresh_token,
+        })
+        .expect(200);
+
+      // 4. Verify /v1/userinfo returns the newly resolved ownership claims
+      const userInfoRes = await request(server)
+        .get('/api/auth/v1/userinfo')
+        .set('Authorization', `Bearer ${refreshedTokenRes.body.access_token}`)
+        .expect(200);
+
+      expect(userInfoRes.body).toMatchObject({
+        claims: {
+          sub: 'user:default/tester',
+          ent: ['user:default/tester', 'group:default/updated-group'],
         },
       });
     });

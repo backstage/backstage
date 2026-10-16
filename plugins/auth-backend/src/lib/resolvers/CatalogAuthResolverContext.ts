@@ -34,7 +34,7 @@ import {
 import { CatalogIdentityClient } from '../catalog/CatalogIdentityClient';
 import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
-function getDefaultOwnershipEntityRefs(entity: Entity) {
+export function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
     entity.relations
       ?.filter(
