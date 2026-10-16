@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-ai
+  title: '@backstage/cli-module-ai'
+  description: CLI module that installs the AI skills from the Backstage catalog that apply to your repository
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers
