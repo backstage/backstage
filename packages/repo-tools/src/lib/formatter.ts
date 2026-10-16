@@ -24,7 +24,9 @@ import { targetPaths } from '@backstage/cli-common';
 
 const execFileAsync = promisify(execFile);
 
-// The configuration files that oxfmt discovers on its own
+// The configuration files that oxfmt discovers on its own. oxfmt also looks
+// for a `fmt` section in Vite+ configuration files, which isn't detected here
+// since that requires evaluating the Vite configuration.
 const OXFMT_CONFIG_FILES = [
   '.oxfmtrc.json',
   '.oxfmtrc.jsonc',
@@ -107,7 +109,8 @@ export async function formatFiles(
 
   const args = ['--write', ...paths];
   if (formatter.name === 'oxfmt') {
-    // The paths may be excluded by the ignore patterns of the repository
+    // The paths may be excluded by the ignore patterns of the repository, in
+    // which case they're left unformatted, as Prettier does
     args.push('--no-error-on-unmatched-pattern');
   }
 
@@ -134,7 +137,8 @@ export function tryRunOxfmt(
 ): string[] {
   // The content is formatted as files outside of the repository, since oxfmt
   // leaves ignored files as is and reports are often ignored. oxfmt still
-  // picks up the configuration from its working directory.
+  // picks up the configuration from its working directory, but path patterns
+  // in its overrides don't match these files.
   const tmpDir = fs.mkdtempSync(join(os.tmpdir(), 'backstage-oxfmt-'));
   try {
     const files = inputs.map(({ content, extension }, index) => {
