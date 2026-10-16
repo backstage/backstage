@@ -56,6 +56,31 @@ export const Disabled = () => {
   );
 };
 
+export const Destructive = () => {
+  return (
+    <Flex align="center" gap="2">
+      <ButtonIcon
+        destructive
+        icon={<RiCloudLine />}
+        variant="primary"
+        aria-label="Cloud"
+      />
+      <ButtonIcon
+        destructive
+        icon={<RiCloudLine />}
+        variant="secondary"
+        aria-label="Cloud"
+      />
+      <ButtonIcon
+        destructive
+        icon={<RiCloudLine />}
+        variant="tertiary"
+        aria-label="Cloud"
+      />
+    </Flex>
+  );
+};
+
 export const Pending = () => {
   return (
     <ButtonIcon
