@@ -4157,6 +4157,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     msw: "npm:^2.0.0"
+    p-limit: "npm:^3.1.0"
   languageName: unknown
   linkType: soft
 
