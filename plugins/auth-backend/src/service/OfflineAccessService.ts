@@ -35,7 +35,10 @@ import {
   getRefreshTokenId,
   verifyRefreshToken,
 } from '../lib/refreshToken';
-import { getDefaultOwnershipEntityRefs } from '../lib/resolvers/CatalogAuthResolverContext';
+import {
+  canonicalizeEntityRef,
+  getDefaultOwnershipEntityRefs,
+} from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 
 /**
@@ -289,6 +292,33 @@ export class OfflineAccessService {
       }
     }
 
+    const claims = {
+      sub: session.userEntityRef,
+      ...(ownershipEntityRefs !== undefined
+        ? { ent: ownershipEntityRefs }
+        : {}),
+    };
+
+    if (ownershipEntityRefs !== undefined) {
+      try {
+        const existingUserInfo = await this.#userInfo.getUserInfo(
+          session.userEntityRef,
+        );
+        await this.#userInfo.addUserInfo({
+          claims: {
+            ...existingUserInfo?.claims,
+            ...claims,
+          },
+        });
+      } catch (error) {
+        this.#logger.warn(
+          `Failed to update user info for ${session.userEntityRef} during token refresh`,
+          error,
+        );
+        throw new AuthenticationError('Unable to update user information');
+      }
+    }
+
     const { token: newRefreshToken, hash: newHash } =
       await generateRefreshToken(sessionId);
 
@@ -303,35 +333,9 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    const claims = {
-      sub: rotatedSession.userEntityRef,
-      ...(ownershipEntityRefs !== undefined
-        ? { ent: ownershipEntityRefs }
-        : {}),
-    };
-
     const { token: accessToken } = await tokenIssuer.issueToken({
       claims,
     });
-
-    if (ownershipEntityRefs !== undefined) {
-      try {
-        const existingUserInfo = await this.#userInfo.getUserInfo(
-          rotatedSession.userEntityRef,
-        );
-        await this.#userInfo.addUserInfo({
-          claims: {
-            ...existingUserInfo?.claims,
-            ...claims,
-          },
-        });
-      } catch (error) {
-        this.#logger.warn(
-          `Failed to update user info for ${rotatedSession.userEntityRef} during token refresh`,
-          error,
-        );
-      }
-    }
 
     this.#logger.debug(
       `Refreshed access token for user ${session.userEntityRef} with session ${sessionId}`,
@@ -343,10 +347,15 @@ export class OfflineAccessService {
   async #resolveOwnershipEntityRefs(
     entity: Entity,
   ): Promise<{ ownershipEntityRefs: string[] }> {
-    if (this.#ownershipResolver) {
-      return this.#ownershipResolver.resolveOwnershipEntityRefs(entity);
-    }
-    return { ownershipEntityRefs: getDefaultOwnershipEntityRefs(entity) };
+    const { ownershipEntityRefs } = this.#ownershipResolver
+      ? await this.#ownershipResolver.resolveOwnershipEntityRefs(entity)
+      : { ownershipEntityRefs: getDefaultOwnershipEntityRefs(entity) };
+
+    return {
+      ownershipEntityRefs: Array.from(
+        new Set(ownershipEntityRefs.map(canonicalizeEntityRef)),
+      ),
+    };
   }
 
   /**

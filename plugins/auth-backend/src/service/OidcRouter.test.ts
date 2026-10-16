@@ -1459,7 +1459,7 @@ describe('OidcRouter', () => {
             },
           });
 
-          // Simulate transient user_info write error after token rotation; refresh should still return rotated tokens
+          // Simulate transient user_info write error before token rotation; refresh should be rejected without rotating token
           jest
             .spyOn(mocks.userInfo, 'addUserInfo')
             .mockRejectedValueOnce(new Error('Database write failed'));
@@ -1467,6 +1467,17 @@ describe('OidcRouter', () => {
             token: 'mock-refreshed-token-3',
           });
 
+          const failedThirdRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: secondRefresh.body.refresh_token,
+            })
+            .expect(400);
+
+          expect(failedThirdRefresh.body.error).toBe('invalid_grant');
+
+          // Retrying with the same refresh token succeeds once DB write recovers
           const thirdRefresh = await request(server)
             .post('/api/auth/v1/token')
             .send({
@@ -1486,6 +1497,7 @@ describe('OidcRouter', () => {
             .mockResolvedValue({
               ownershipEntityRefs: [
                 MOCK_USER_ENTITY_REF,
+                'Group:Default/Custom-Parent-Group',
                 'group:default/custom-parent-group',
               ],
             });

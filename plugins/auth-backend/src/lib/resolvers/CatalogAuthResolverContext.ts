@@ -48,7 +48,7 @@ export function getDefaultOwnershipEntityRefs(entity: Entity) {
 // Entity refs in claims are stored and matched exactly throughout the auth
 // backend, so make sure that they are always in their canonical form. Invalid
 // refs are passed through as-is, and rejected by the token issuer.
-function canonicalizeEntityRef(ref: string): string {
+export function canonicalizeEntityRef(ref: string): string {
   try {
     return stringifyEntityRef(parseEntityRef(ref));
   } catch {
