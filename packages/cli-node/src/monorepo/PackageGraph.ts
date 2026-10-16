@@ -33,6 +33,7 @@ export const packageFeatureType = [
   '@backstage/BackstagePlugin',
   '@backstage/FrontendPlugin',
   '@backstage/FrontendModule',
+  '@backstage/FrontendFeatureLoader',
 ] as const;
 
 /**
