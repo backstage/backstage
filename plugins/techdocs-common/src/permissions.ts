@@ -17,6 +17,33 @@
 import { createPermission } from '@backstage/plugin-permission-common';
 
 /**
+ * This permission is used to authorize actions that involve reading TechDocs
+ * documentation for one or more entities.
+ *
+ * If this permission is not authorized, the user will not be able to access
+ * the documentation for the entity, even if they can see the entity in the
+ * catalog.
+ *
+ * @public
+ */
+export const techDocsEntityReadPermission = createPermission({
+  name: 'techdocs.entity.read',
+  attributes: {
+    action: 'read',
+  },
+  // Matches the catalog's `catalog-entity` resource type so that catalog
+  // permission conditions can be reused when authorizing TechDocs access. The
+  // literal is inlined to avoid coupling this public API to an alpha export.
+  resourceType: 'catalog-entity',
+});
+
+/**
+ * List of all TechDocs permissions.
+ * @public
+ */
+export const techDocsPermissions = [techDocsEntityReadPermission];
+
+/**
  * This permission is used to authorize the TechDocs actions that are registered
  * with the Actions Registry.
  *

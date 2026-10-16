@@ -345,5 +345,22 @@ export interface Config {
      * the old, case-sensitive entity triplet behavior.
      */
     legacyUseCaseSensitiveTripletPaths?: boolean;
+
+    /**
+     * (Experimental) Opt in to authorizing documentation access with the
+     * dedicated `techdocs.entity.read` permission instead of the catalog's
+     * `catalog.entity.read` permission.
+     *
+     * When enabled, `techdocs.entity.read` becomes the only permission that
+     * gates documentation content and TechDocs search results, allowing
+     * documentation visibility to be controlled independently from catalog
+     * entity visibility. Make sure your permission policy handles
+     * `techdocs.entity.read` before enabling this, otherwise documentation
+     * access falls back to whatever your policy returns by default.
+     *
+     * Defaults to `false`. This flag will be removed once the behavior becomes
+     * the default.
+     */
+    experimentalTechdocsPermissions?: boolean;
   };
 }

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   DocsBuildStrategy,
   GeneratorBuilder,
@@ -35,13 +38,17 @@ import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
 import {
   AuthService,
+  BackstageCredentials,
   CacheService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { durationToMilliseconds } from '@backstage/types';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
 import path from 'node:path';
 
 /**
@@ -64,6 +71,7 @@ export type OutOfTheBoxDeploymentOptions = {
   catalog: CatalogService;
   httpAuth: HttpAuthService;
   auth: AuthService;
+  permissions: PermissionsService;
 };
 
 /**
@@ -79,6 +87,7 @@ export type RecommendedDeploymentOptions = {
   config: Config;
   cache: CacheService;
   docsBuildStrategy?: DocsBuildStrategy;
+  permissions: PermissionsService;
   buildLogTransport?: winston.transport;
   catalog: CatalogService;
   httpAuth: HttpAuthService;
@@ -107,6 +116,35 @@ function isOutOfTheBoxOption(
 }
 
 /**
+ * Helper function to authorize TechDocs read access for an entity.
+ * Throws NotAllowedError if access is denied.
+ *
+ * @internal
+ */
+async function authorizeTechDocsReadPermission(options: {
+  permissions: PermissionsService;
+  credentials: BackstageCredentials;
+  entityRef: string;
+}): Promise<void> {
+  const { permissions, credentials, entityRef } = options;
+  const decision = await permissions.authorize(
+    [
+      {
+        permission: techDocsEntityReadPermission,
+        resourceRef: entityRef,
+      },
+    ],
+    { credentials },
+  );
+
+  if (decision[0].result !== AuthorizeResult.ALLOW) {
+    throw new NotAllowedError(
+      `Access to TechDocs for '${entityRef}' is not permitted`,
+    );
+  }
+}
+
+/**
  * Creates a techdocs router.
  *
  * @internal
@@ -115,19 +153,102 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { publisher, config, logger, discovery, httpAuth, auth, catalog } =
-    options;
+  const {
+    publisher,
+    config,
+    logger,
+    discovery,
+    httpAuth,
+    auth,
+    catalog,
+    permissions,
+  } = options;
 
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
   const buildLogTransport = options.buildLogTransport;
 
-  // Entities are cached to optimize the /static/docs request path, which can be called many times
-  // when loading a single techdocs page.
+  // Opt-in flag for authorizing documentation access with `techdocs.entity.read`
+  // rather than the catalog's `catalog.entity.read`. Behavior is unchanged for
+  // deployments that have not enabled it.
+  const techDocsPermissionsEnabled =
+    config.getOptionalBoolean('techdocs.experimentalTechdocsPermissions') ??
+    false;
+
+  const permissionFrameworkEnabled =
+    config.getOptionalBoolean('permission.enabled') ?? false;
+
+  // Without the permission framework no decision is ever enforced. Rather than
+  // failing to start, warn and fall back to the previous behavior where
+  // catalog.entity.read gates documentation access, so the flag simply has no
+  // effect until the permission framework is turned on.
+  if (techDocsPermissionsEnabled && !permissionFrameworkEnabled) {
+    logger.warn(
+      "TechDocs permissions are enabled via 'techdocs.experimentalTechdocsPermissions' but the permission framework is disabled; the flag has no effect until 'permission.enabled' is set to true.",
+    );
+  }
+
+  // Only honor the flag once the permission framework can actually enforce a
+  // decision, keeping access fail-closed behind catalog.entity.read otherwise.
+  const techDocsPermissionsActive =
+    techDocsPermissionsEnabled && permissionFrameworkEnabled;
+
+  // A storage URL may point at the backend itself, which is checked, or straight
+  // at storage, which is not.
+  if (techDocsPermissionsActive && config.has('techdocs.storageUrl')) {
+    logger.warn(
+      "TechDocs permissions may be bypassed if 'techdocs.storageUrl' points directly at storage rather than at the TechDocs backend. Ensure that location enforces equivalent access control.",
+    );
+  }
+
+  // Entities are cached to optimize the /static/docs request path, which can be
+  // called many times when loading a single techdocs page. Permission decisions
+  // are not cached.
   const entityLoader = new CachedEntityLoader({
     catalog,
     cache: options.cache,
   });
+
+  // Authorizes read access to an entity's documentation. When TechDocs
+  // permissions are active this defers to the permission framework, which loads
+  // the entity through the catalog's resource loader only when a conditional
+  // policy needs it. With the flag off nothing is authorized here and access
+  // keeps relying on `catalog.entity.read`, enforced while loading the entity.
+  const authorizeDocsRead = async (
+    credentials: BackstageCredentials,
+    entityName: CompoundEntityRef,
+  ) => {
+    if (!techDocsPermissionsActive) {
+      return;
+    }
+
+    await authorizeTechDocsReadPermission({
+      permissions,
+      credentials,
+      entityRef: stringifyEntityRef(entityName),
+    });
+  };
+
+  // Loads an entity for routes that use its content, authorizing read access
+  // first. With the flag off the caller's credentials make the catalog enforce
+  // `catalog.entity.read`. With the flag on access is already gated by
+  // `techdocs.entity.read` above, so the entity is fetched with the plugin's own
+  // credentials rather than the caller's. Routes that return the entity itself
+  // pass `returnsCatalogData` so `catalog.entity.read` keeps applying to it.
+  const loadEntity = async (
+    credentials: BackstageCredentials,
+    entityName: CompoundEntityRef,
+    opts: { returnsCatalogData?: boolean } = {},
+  ) => {
+    await authorizeDocsRead(credentials, entityName);
+
+    const loadCredentials =
+      techDocsPermissionsActive && !opts.returnsCatalogData
+        ? await auth.getOwnServiceCredentials()
+        : credentials;
+
+    return entityLoader.load(loadCredentials, entityName);
+  };
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
@@ -159,16 +280,20 @@ export async function createRouter(
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const entityRef = stringifyEntityRef(entityName);
 
     const credentials = await httpAuth.credentials(req);
 
-    // Verify that the related entity exists and the current user has permission to view it.
-    const entity = await entityLoader.load(credentials, entityName);
-
-    if (!entity) {
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
-      );
+    if (techDocsPermissionsActive) {
+      // The entity content is not used on this route, so only the permission is
+      // checked and the catalog is not queried.
+      await authorizeDocsRead(credentials, entityName);
+    } else {
+      // Verify that the related entity exists and the caller may read it.
+      const entity = await loadEntity(credentials, entityName);
+      if (!entity) {
+        throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
+      }
     }
 
     try {
@@ -179,29 +304,27 @@ export async function createRouter(
       res.json(techdocsMetadata);
     } catch (err) {
       logger.info(
-        `Unable to get metadata for '${stringifyEntityRef(
-          entityName,
-        )}' with error ${err}`,
+        `Unable to get metadata for '${entityRef}' with error ${err}`,
       );
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
-        err,
-      );
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
     }
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const entityRef = stringifyEntityRef(entityName);
 
     const credentials = await httpAuth.credentials(req);
 
-    const entity = await entityLoader.load(credentials, entityName);
+    // This route responds with the entity itself, so it stays subject to
+    // `catalog.entity.read` even when TechDocs permissions are enabled.
+    const entity = await loadEntity(credentials, entityName, {
+      returnsCatalogData: true,
+    });
 
     if (!entity) {
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
-      );
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
     }
 
     try {
@@ -209,14 +332,9 @@ export async function createRouter(
       res.json({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
-        `Unable to get metadata for '${stringifyEntityRef(
-          entityName,
-        )}' with error ${err}`,
+        `Unable to get metadata for '${entityRef}' with error ${err}`,
       );
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
-        err,
-      );
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
     }
   });
 
@@ -226,14 +344,11 @@ export async function createRouter(
   // If a build is required, responds with a success when finished
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
+    const entityName = { kind, namespace, name };
 
     const credentials = await httpAuth.credentials(req);
 
-    const entity = await entityLoader.load(credentials, {
-      kind,
-      namespace,
-      name,
-    });
+    const entity = await loadEntity(credentials, entityName);
 
     if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
@@ -287,43 +402,58 @@ export async function createRouter(
     );
   });
 
-  // Ensures that the related entity exists and the current user has permission to view it.
-  if (config.getOptionalBoolean('permission.enabled')) {
-    router.use(
-      '/static/docs/:namespace/:kind/:name',
-      async (req, _res, next) => {
-        const { kind, namespace, name } = req.params;
-        const entityName = { kind, namespace, name };
+  // Mounted on the whole subtree rather than on an entity triplet, so that paths the
+  // publishers still resolve to an entity cannot skip the check by not matching it.
+  if (permissionFrameworkEnabled) {
+    router.use('/static/docs', async (req, _res, next) => {
+      // Publishers fully decode the path, so encoded separators have to be resolved
+      // here too rather than validating a different path than the one served.
+      let decodedPath: string;
+      try {
+        decodedPath = decodeURIComponent(req.path);
+      } catch {
+        throw new NotFoundError('Content not found');
+      }
 
-        const entityRoot = '/entity';
-        const decodedPath = decodeURI(req.path);
-        const contentPath = path.posix.resolve(entityRoot, `.${decodedPath}`);
-        const relativePath = path.posix.relative(entityRoot, contentPath);
-        if (
-          decodedPath.includes('\\') ||
-          relativePath === '..' ||
-          relativePath.startsWith('../')
-        ) {
-          throw new NotFoundError(
-            `Content not found for ${stringifyEntityRef(entityName)}`,
-          );
-        }
+      const [namespace, kind, name, ...rest] = decodedPath
+        .replace(/^\//, '')
+        .split('/');
 
-        const credentials = await httpAuth.credentials(req, {
-          allowLimitedAccess: true,
-        });
+      // Some publishers treat backslashes as separators once the path reaches storage.
+      const isValidSegment = (segment: string | undefined) =>
+        !!segment && segment !== '.' && segment !== '..';
+      if (
+        decodedPath.includes('\\') ||
+        ![namespace, kind, name].every(isValidSegment)
+      ) {
+        throw new NotFoundError('Content not found');
+      }
 
-        const entity = await entityLoader.load(credentials, entityName);
+      const entityName = { kind, namespace, name };
 
-        if (!entity) {
-          throw new NotFoundError(
-            `Entity not found for ${stringifyEntityRef(entityName)}`,
-          );
-        }
+      const entityRoot = '/entity';
+      const contentPath = path.posix.resolve(entityRoot, `./${rest.join('/')}`);
+      const relativePath = path.posix.relative(entityRoot, contentPath);
+      if (relativePath === '..' || relativePath.startsWith('../')) {
+        throw new NotFoundError(
+          `Content not found for ${stringifyEntityRef(entityName)}`,
+        );
+      }
 
-        next();
-      },
-    );
+      const credentials = await httpAuth.credentials(req, {
+        allowLimitedAccess: true,
+      });
+
+      const entity = await loadEntity(credentials, entityName);
+
+      if (!entity) {
+        throw new NotFoundError(
+          `Entity not found for ${stringifyEntityRef(entityName)}`,
+        );
+      }
+
+      next();
+    });
   }
 
   // If a cache manager was provided, attach the cache middleware.
