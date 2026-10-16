@@ -306,7 +306,7 @@ map:
 
 ## Optional Vendor Configuration
 
-In case the LDAP vendor isn't automatically detected by the module, an optional `vendor` configuration section is available which allows overriding the location for `dn` and `uuid` settings, and a case sensitivity setting.
+In case the LDAP vendor isn't automatically detected by the module, an optional `vendor` configuration section is available which allows overriding the location for `dn` and `uuid` settings.
 
 #### vendor.dnAttributeName
 
@@ -316,19 +316,12 @@ Allows explicitly defining the name of the attribute that stores each entry's DN
 
 Allows explicitly defining the name of the attribute that stores each entry's UUID.
 
-#### vendor.dnCaseSensitive
-
-Provides the ability to ignore case sensitivity issues with user/group mappings. If set to true, the ingestion will link user/members to groups whether their `dn`, `member`, or `memberOf` values have the right case or not.
-
 ```yaml
 vendor:
   # Attribute name override for the distinguished name (DN) of an entry.
   dnAttributeName: dn
   # Attribute name override for the unique identifier (UUID) of an entry.
   uuidAttributeName: uuid
-  # Attribute to force values provided from dn and members/memberOf values all to lowercase.
-  # This is to resolve potential user/group mapping issues if case differences on dn strings.
-  dnCaseSensitive: true
 ```
 
 ## Customize the Provider
