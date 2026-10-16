@@ -749,9 +749,9 @@ Commands:
   clean
   fix
   help
-  jest
   lint
   list-deprecations
+  run
   start
   test
 ```
@@ -788,19 +788,6 @@ Options:
   -h, --help
 ```
 
-### `backstage-cli repo jest`
-
-```
-Usage: backstage-cli repo jest [flags...]
-
-Options:
-  --jest-help
-  --since <string>
-  --success-cache
-  --success-cache-dir <string>
-  -h, --help
-```
-
 ### `backstage-cli repo lint`
 
 ```
@@ -827,6 +814,27 @@ Options:
   -h, --help
 ```
 
+### `backstage-cli repo run`
+
+```
+Usage: <none>
+
+Commands:
+  test
+```
+
+### `backstage-cli repo run test`
+
+```
+Usage: backstage-cli repo run test [flags...]
+
+Options:
+  --include-dependents
+  --since <string>
+  --watch
+  -h, --help
+```
+
 ### `backstage-cli repo start`
 
 ```
@@ -848,9 +856,10 @@ Options:
 Usage: backstage-cli repo test [flags...]
 
 Options:
-  --include-dependents
+  --jest-help
   --since <string>
-  --watch
+  --success-cache
+  --success-cache-dir <string>
   -h, --help
 ```
 

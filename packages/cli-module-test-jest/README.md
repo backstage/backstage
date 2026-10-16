@@ -4,10 +4,11 @@ CLI module that provides Jest-based testing commands for the Backstage CLI.
 
 ## Commands
 
-| Command        | Description                                                              |
-| :------------- | :----------------------------------------------------------------------- |
-| `package test` | Run tests, forwarding arguments to Jest, defaulting to watch mode        |
-| `repo jest`    | Run tests across the repo in a single Jest run, defaulting to watch mode |
+| Command         | Description                                                       |
+| :-------------- | :---------------------------------------------------------------- |
+| `package test`  | Run tests, forwarding arguments to Jest, defaulting to watch mode |
+| `repo test`     | Run tests, forwarding arguments to Jest, defaulting to watch mode |
+| `repo run test` | Run the tests of each package separately                          |
 
 ## Documentation
 

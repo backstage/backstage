@@ -39,14 +39,13 @@ function pkg(name: string) {
 
 describe('runRepoCommand', () => {
   const options = {
-    path: ['repo', 'test'],
     description: 'd',
     packageCommand: ['package', 'test'],
     packageArgs: ['--no-watch'],
   };
   const context = {
     args: ['--extra'],
-    info: { usage: 'backstage-cli repo test', name: 'repo test' },
+    info: { usage: 'backstage-cli repo run test', name: 'repo run' },
   };
 
   beforeEach(() => {
