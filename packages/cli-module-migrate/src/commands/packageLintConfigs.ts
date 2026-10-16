@@ -18,7 +18,7 @@ import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runOutput } from '@backstage/cli-common';
+import { runOutput, targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
@@ -77,16 +77,45 @@ export default async ({ args, info }: CliCommandContext) => {
     }),
   );
 
-  // If prettier is present, then we run that too
-  let hasPrettier = false;
-  try {
-    require.resolve('prettier');
-    hasPrettier = true;
-  } catch {
-    /* ignore */
+  // Formatters format the working directory when no paths are given
+  if (configPaths.length === 0) {
+    return;
   }
 
-  if (hasPrettier) {
-    await runOutput(['prettier', '--write', ...configPaths]);
+  // If a formatter is present in the project root, then we run that too,
+  // preferring oxfmt if it's configured or the only formatter installed.
+  const oxfmtBin = targetPaths.resolveRoot('node_modules/oxfmt/bin/oxfmt');
+  const prettierBin = await resolvePrettierBin();
+  if ((await fs.pathExists(oxfmtBin)) && (!prettierBin || hasOxfmtConfig())) {
+    await runOutput([
+      process.execPath,
+      oxfmtBin,
+      '--write',
+      '--no-error-on-unmatched-pattern',
+      ...configPaths,
+    ]);
+  } else if (prettierBin) {
+    await runOutput([process.execPath, prettierBin, '--write', ...configPaths]);
   }
 };
+
+async function resolvePrettierBin(): Promise<string | undefined> {
+  const pkgPath = targetPaths.resolveRoot('node_modules/prettier/package.json');
+  if (!(await fs.pathExists(pkgPath))) {
+    return undefined;
+  }
+  const { bin } = await fs.readJson(pkgPath);
+  const binPath = typeof bin === 'string' ? bin : bin?.prettier;
+  return binPath
+    ? targetPaths.resolveRoot('node_modules/prettier', binPath)
+    : undefined;
+}
+
+function hasOxfmtConfig(): boolean {
+  return [
+    '.oxfmtrc.json',
+    '.oxfmtrc.jsonc',
+    'oxfmt.config.ts',
+    'oxfmt.config.mts',
+  ].some(file => fs.pathExistsSync(targetPaths.resolveRoot(file)));
+}

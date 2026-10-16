@@ -14,11 +14,61 @@
  * limitations under the License.
  */
 
+import { extname } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 import type { Config } from 'prettier';
+import { detectFormatter, tryRunOxfmt } from '../../../lib/formatter';
+
+const PLACEHOLDER = 'backstage-code-block-';
 
 /**
- * Tries to run prettier asynchronously, with Prettier v2 or v3.
+ * Formats the content with oxfmt if that's the formatter of the target
+ * repository.
+ *
+ * @returns The formatted content, or undefined if oxfmt isn't used
+ */
+function tryRunOxfmtInstead(
+  content: string,
+  extraConfig: Config,
+): string | undefined {
+  const formatter = detectFormatter();
+  if (formatter?.name !== 'oxfmt') {
+    return undefined;
+  }
+  // API reports contain declarations without implementations, which oxfmt
+  // only accepts in declaration files. The code blocks are therefore formatted
+  // as separate declaration files, and replaced with placeholders that oxfmt
+  // leaves as is while formatting the rest of the content.
+  const codeBlocks = new Array<string>();
+  const withPlaceholders = content.replace(
+    /^```ts(\r?\n)([\s\S]*?)^```(?=\r?$)/gm,
+    (_block, newline: string, code: string) => {
+      codeBlocks.push(code);
+      return `\`\`\`${PLACEHOLDER}${codeBlocks.length - 1}${newline}\`\`\``;
+    },
+  );
+
+  // The parser can't be picked from the Prettier config, so the extension of
+  // the file path is used instead, defaulting to markdown.
+  const extension = extraConfig.filepath
+    ? extname(extraConfig.filepath)
+    : '.md';
+  const [formatted, ...formattedCodeBlocks] = tryRunOxfmt(formatter.bin, [
+    { content: withPlaceholders, extension },
+    ...codeBlocks.map(code => ({ content: code, extension: '.d.ts' })),
+  ]);
+
+  return formatted.replace(
+    // oxfmt may add an empty line to the empty placeholder blocks
+    new RegExp(`^\`\`\`${PLACEHOLDER}(\\d+)(\\r?\\n)\\s*^\`\`\`$`, 'gm'),
+    (_block, index: string, newline: string) =>
+      `\`\`\`ts${newline}${formattedCodeBlocks[Number(index)]}\`\`\``,
+  );
+}
+
+/**
+ * Tries to run prettier asynchronously, with Prettier v2 or v3. Uses oxfmt
+ * instead if that's the formatter of the target repository.
  * @param content - The content to format.
  * @param extraConfig - Additional prettier config options (defaults to markdown parser). Providing a filepath is recommended for proper config resolution.
  * @returns A promise that resolves to the formatted content or the original content if the formatting fails.
@@ -28,6 +78,10 @@ export async function tryRunPrettierAsync(
   content: string,
   extraConfig: Config = { parser: 'markdown' },
 ): Promise<string> {
+  const oxfmtContent = tryRunOxfmtInstead(content, extraConfig);
+  if (oxfmtContent !== undefined) {
+    return oxfmtContent;
+  }
   try {
     const prettier = require('prettier') as typeof import('prettier');
     // Filepath for proper config resolution
@@ -102,7 +156,8 @@ function loadPrettierSync():
 }
 
 /**
- * Tries to run prettier synchronously, with Prettier v2 or v3.
+ * Tries to run prettier synchronously, with Prettier v2 or v3. Uses oxfmt
+ * instead if that's the formatter of the target repository.
  * @param content - The content to format.
  * @param extraConfig - Additional prettier config options (defaults to markdown parser)
  * @returns The formatted content.
@@ -112,6 +167,10 @@ export function tryRunPrettier(
   content: string,
   extraConfig: Config = { parser: 'markdown' },
 ): string {
+  const oxfmtContent = tryRunOxfmtInstead(content, extraConfig);
+  if (oxfmtContent !== undefined) {
+    return oxfmtContent;
+  }
   const formatter = createPrettierSyncFormatter(
     loadPrettierSync(),
     extraConfig,
