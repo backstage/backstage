@@ -52,6 +52,7 @@ async function runPackages(
     write: text => process.stdout.write(text),
   });
   reporter.begin(selected.map(item => item.pkg.packageJson.name));
+  const stopListening = interrupt.onInterrupt(() => reporter.interrupt());
 
   const runOne = async (item: SelectedPackage) => {
     const name = item.pkg.packageJson.name;
@@ -69,7 +70,15 @@ async function runPackages(
           packageArgs: options.packageArgs,
           forwarded: settings.forwarded,
         }),
-        { cwd: item.pkg.dir, onStdout: push, onStderr: push },
+        {
+          cwd: item.pkg.dir,
+          onStdout: push,
+          onStderr: push,
+          // Gives each package its own process group, so that it and any
+          // workers it spawns can be killed together on interrupt
+          detached: true,
+          stdio: ['ignore', 'pipe', 'pipe'],
+        },
       );
       untrack = interrupt.track(child);
       await child.waitForExit();
@@ -111,7 +120,10 @@ async function runPackages(
   try {
     await Promise.all(workers);
   } finally {
-    reporter.end();
+    stopListening();
+    if (!interrupt.interrupted) {
+      reporter.end();
+    }
   }
 
   return failed;
