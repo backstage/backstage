@@ -256,6 +256,19 @@ export interface CreateSpecializedAppInternalOptions
   extends PrepareSpecializedAppOptions {
   __internal?: {
     apiFactoryOverrides?: AnyApiFactory[];
+
+    /**
+     * Called once during preparation with a callback that releases the browser
+     * resources owned by the app, most notably the `popstate` listener that
+     * backs app navigation.
+     *
+     * Preparing an app without ever calling it leaves that listener attached
+     * for the lifetime of the page, so every re-run of app creation — as
+     * happens on every hot reload in development — adds another one. The
+     * callback is safe to call more than once, but the app must not be used
+     * afterwards.
+     */
+    onDispose?(dispose: () => void): void;
   };
 }
 
@@ -369,6 +382,9 @@ export function prepareSpecializedApp(
     routeBindings,
     staticFactories: phaseStaticFactories,
   });
+  // The phase APIs own a window `popstate` listener, so hand teardown to the
+  // caller as soon as it exists rather than waiting for finalization.
+  internalOptions?.__internal?.onDispose?.(() => phase.dispose());
   const predicateContextLoader = createPredicateContextLoader({
     apis: phase.apis,
     predicateReferences,

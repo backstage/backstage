@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentType,
-  PropsWithChildren,
-  ReactNode,
-  useState,
-  JSX,
-} from 'react';
+import { ComponentType, ReactNode, useState, JSX } from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
@@ -31,15 +25,17 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   pluginWrapperApiRef,
+  appHistoryApiRef,
   useAnalytics,
+  useNavigation,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
-  RouterBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
 import { BUIProvider } from '@backstage/ui';
+import { LegacyBUIProvider } from './LegacyBUIProvider';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -53,21 +49,17 @@ import {
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
-import { BrowserRouter } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/routing/RootHistoryRouter';
 
 export const AppRoot = createExtension({
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
-    router: createExtensionInput([RouterBlueprint.dataRefs.component], {
-      singleton: true,
-      optional: true,
-      internal: true,
-    }),
     signInPage: createExtensionInput([SignInPageBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
@@ -129,9 +121,6 @@ export const AppRoot = createExtension({
           <AppRouter
             SignInPageComponent={inputs.signInPage?.get(
               SignInPageBlueprint.dataRefs.component,
-            )}
-            RouterComponent={inputs.router?.get(
-              RouterBlueprint.dataRefs.component,
             )}
             extraElements={inputs.elements?.map(el =>
               el.get(coreExtensionData.reactElement),
@@ -203,24 +192,7 @@ type RouteResolverProxy = {
 export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
-  RouterComponent?: (props: { children: ReactNode }) => JSX.Element | null;
   extraElements?: Array<JSX.Element>;
-}
-
-function DefaultRouter(props: PropsWithChildren<{}>) {
-  const configApi = useApi(configApiRef);
-  const basePath = getBasePath(configApi);
-  return (
-    <BrowserRouter
-      basename={basePath}
-      future={{
-        v7_relativeSplatPath: false,
-        v7_startTransition: false,
-      }}
-    >
-      {props.children}
-    </BrowserRouter>
-  );
 }
 
 /**
@@ -232,19 +204,38 @@ function DefaultRouter(props: PropsWithChildren<{}>) {
  * Until the user has successfully signed in, this component will render
  * the sign-in page. Once the user has signed-in, it will instead render
  * the app, while providing routing and route tracking for the app.
+ *
+ * History authority is the AppHistory. `BUIProvider` receives navigation,
+ * href resolution, and active pathname through one hook backed by that
+ * history, so first-party chrome does not depend on an ambient router.
+ * Outside page adapters, the hook accepts app-absolute paths; inside an
+ * adapter, it follows that library's relative-path semantics at the consuming
+ * component. Browser hrefs include the deployment basename.
+ *
+ * `RootHistoryRouter` is a residual projection for third-party new frontend
+ * system chrome that still reads React Router v6 context. It owns no browser
+ * history. New chrome should read the app history directly, or use the
+ * `useApp*` helpers in `@internal/frontend` when supporting both frontend
+ * systems.
+ *
+ * Remove this compatibility projection once all first-party new frontend
+ * system chrome runs without an ambient
+ * React Router context, routerless conformance tests cover that behavior, and
+ * dependency enforcement prevents new React Router v6 imports in that chrome.
+ *
+ * Existing pages also receive implicit React Router v6 matches for gradual
+ * migration. Development warnings identify use of that fallback. A page can
+ * select its library explicitly, for example by rendering
+ * `ReactRouterV6PageRouter` inside its lazily loaded page component.
  */
 export function AppRouter(props: AppRouterProps) {
-  const {
-    children,
-    SignInPageComponent,
-    RouterComponent = DefaultRouter,
-    extraElements = [],
-  } = props;
+  const { children, SignInPageComponent, extraElements = [] } = props;
 
   const configApi = useApi(configApiRef);
   const appIdentityProxy = toAppIdentityProxy(useApi(identityApiRef));
   const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
+  const appHistory = useApi(appHistoryApiRef);
 
   // TODO: Private access for now, probably replace with path -> node lookup method on the API
   if (!('getRouteObjects' in routeResolutionsApi)) {
@@ -255,59 +246,51 @@ export function AppRouter(props: AppRouterProps) {
   ).getRouteObjects();
 
   // If the app hasn't configured a sign-in page, we just continue as guest.
-  if (!SignInPageComponent) {
-    if (!isProtectedApp()) {
-      appIdentityProxy.setTarget(
-        {
-          getUserId: () => 'guest',
-          getIdToken: async () => undefined,
-          getProfile: () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getProfileInfo: async () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getBackstageIdentity: async () => ({
-            type: 'user',
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: ['user:default/guest'],
-          }),
-          getCredentials: async () => ({}),
-          signOut: async () => {},
-        },
-        { signOutTargetUrl: basePath || '/' },
-      );
-    }
-
-    return (
-      <RouterComponent>
-        <BUIProvider useAnalytics={useAnalytics}>
-          <BreadcrumbsRegistryProvider>
-            {...extraElements}
-            <RouteTracker routeObjects={routeObjects} />
-            {children}
-          </BreadcrumbsRegistryProvider>
-        </BUIProvider>
-      </RouterComponent>
+  if (!SignInPageComponent && !isProtectedApp()) {
+    appIdentityProxy.setTarget(
+      {
+        getUserId: () => 'guest',
+        getIdToken: async () => undefined,
+        getProfile: () => ({
+          email: 'guest@example.com',
+          displayName: 'Guest',
+        }),
+        getProfileInfo: async () => ({
+          email: 'guest@example.com',
+          displayName: 'Guest',
+        }),
+        getBackstageIdentity: async () => ({
+          type: 'user',
+          userEntityRef: 'user:default/guest',
+          ownershipEntityRefs: ['user:default/guest'],
+        }),
+        getCredentials: async () => ({}),
+        signOut: async () => {},
+      },
+      { signOutTargetUrl: basePath || '/' },
     );
   }
 
   return (
-    <RouterComponent>
-      <BUIProvider useAnalytics={useAnalytics}>
-        <BreadcrumbsRegistryProvider>
-          {...extraElements}
-          <RouteTracker routeObjects={routeObjects} />
-          <SignInPageWrapper
-            component={SignInPageComponent}
-            appIdentityProxy={appIdentityProxy}
-          >
-            {children}
-          </SignInPageWrapper>
-        </BreadcrumbsRegistryProvider>
-      </BUIProvider>
-    </RouterComponent>
+    <RootHistoryRouter history={appHistory}>
+      <LegacyBUIProvider>
+        <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
+          <BreadcrumbsRegistryProvider>
+            {...extraElements}
+            <RouteTracker routeObjects={routeObjects} />
+            {SignInPageComponent ? (
+              <SignInPageWrapper
+                component={SignInPageComponent}
+                appIdentityProxy={appIdentityProxy}
+              >
+                {children}
+              </SignInPageWrapper>
+            ) : (
+              children
+            )}
+          </BreadcrumbsRegistryProvider>
+        </BUIProvider>
+      </LegacyBUIProvider>
+    </RootHistoryRouter>
   );
 }

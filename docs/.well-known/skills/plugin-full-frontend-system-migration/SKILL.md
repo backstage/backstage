@@ -292,17 +292,54 @@ Keep internal routing within a `PageBlueprint` `loader` when:
 - Routes are detail/drill-down pages (e.g. `/my-plugin/items/:id`)
 - The routing is deeply nested or dynamic
 
-**If the plugin uses drill-down routing only**, use a `PageBlueprint` with a `loader` that handles its own `<Routes>` and skip the rest of this step:
+**If the plugin uses drill-down routing only**, keep the routing inside a
+`PageBlueprint` `loader` and skip the rest of this step. The framework does not
+create routing-library page matches, so a page with its own `<Routes>` must
+render an adapter around them. Without it, the root v6 context supplies no
+page parameters and relative routes resolve from the app root:
 
 ```tsx
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
 export const myPage = PageBlueprint.make({
   params: {
     path: '/my-plugin',
     routeRef: rootRouteRef,
-    loader: () => import('./components/Router').then(m => <m.MyPluginRouter />),
+    loader: () =>
+      import('./components/Router').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.MyPluginRouter />
+        </ReactRouterV6PageRouter>
+      )),
   },
 });
 ```
+
+Add `@backstage/plugin-app-react-router-v6` to the plugin's dependencies. Use
+`@backstage/plugin-app-react-router-v7` or
+`@backstage/plugin-app-tanstack-router` instead if the plugin routes with one of
+those libraries — the adapter you render is the one whose APIs the content uses.
+
+**Declare adapters at route mounts.** `PageBlueprint` and `SubPageBlueprint`
+are common examples. Ordinary extensions with `coreExtensionData.routePath`
+and `ExtensionBoundary` also receive a matched mount. Content without its own
+route mount normally uses the adapter above it. Do not repeat the enclosing
+page's mount around entity tabs or cards: that can discard matches created by
+the page's routing library.
+
+Wrapping is cheap where it is not needed. An adapter scopes to a page mount and
+a registered `AppHistoryApi`. With either missing it renders its children
+untouched and asks nothing of the surrounding app, so a component's own
+`render()` unit tests keep passing through the wrap with no app around them.
+
+**Before reaching for an adapter, check whether the plugin needs one at all.** A
+component that only reads route parameters and builds links does not: replace
+`useParams()` with `useRouteRefParams(subRouteRef)` and hand-built paths with
+`useRouteRef` / `useHref` from `@backstage/frontend-plugin-api`. Framework
+routing works in any page, with or without an adapter, and is the better answer
+when the plugin is not really driving a route tree of its own. See
+[Choose a router for a page](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
 
 **If the plugin uses top-level tabs**, continue with the `SubPageBlueprint` migration below.
 
@@ -378,6 +415,10 @@ How this works:
 - Each `SubPageBlueprint` gets a tab in the header with its `title`
 - Sub-page `path` values are **relative** (no leading `/`)
 - Sub-page components render **content only** — no `Page`, `Header`, or `HeaderTabs`
+- A sub-page needs its own routing-library match. One that uses React Router
+  wraps its own `loader` element in an adapter, exactly as a page does, which
+  scopes the adapter to that sub-page. Sibling tabs may each pick a different
+  library, or none.
 
 If the sub-page content needs padding, use `Container` from `@backstage/ui` as a wrapper inside the component.
 
@@ -441,8 +482,10 @@ if (docsLink) {
 3. Remove `Page`, `Header`, `PageWithHeader` wrapping from page components
 4. Remove `HeaderTabs` if replaced by `SubPageBlueprint` tabs
 5. Remove internal `<Routes>`/`<Route>` trees if replaced by sub-pages
-6. Remove `@backstage/core-plugin-api` from `package.json` `dependencies`
-7. Remove `@backstage/core-compat-api` from `package.json` `dependencies` if present
+6. For any `<Routes>` tree you keep, render a page router adapter around it in
+   the `loader` so the routing library receives the page's match
+7. Remove `@backstage/core-plugin-api` from `package.json` `dependencies`
+8. Remove `@backstage/core-compat-api` from `package.json` `dependencies` if present
 
 ## Step 8: Update Page Components for BUI
 
@@ -471,13 +514,22 @@ import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { rootRouteRef } from './routes';
 
 export const AuthPage = PageBlueprint.make({
   params: {
     path: '/oauth2',
     routeRef: rootRouteRef,
-    loader: () => import('./components/Router').then(m => <m.Router />),
+    // The page's own content is a React Router v6 `<Routes>` tree, and the
+    // consent page reads its params with React Router's `useParams`, so the
+    // page declares the routing library it uses.
+    loader: () =>
+      import('./components/Router').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.Router />
+        </ReactRouterV6PageRouter>
+      )),
   },
 });
 
@@ -535,15 +587,16 @@ export const tasksSubPage = SubPageBlueprint.make({
 8. [ ] Replace `HeaderTabs` with `SubPageBlueprint` tabs
 9. [ ] Update all `@backstage/core-plugin-api` imports to `@backstage/frontend-plugin-api`
 10. [ ] Handle `useRouteRef` possibly returning `undefined`
-11. [ ] Remove `src/plugin.ts` (old system entry point)
-12. [ ] Remove `src/alpha.tsx` if it existed (merge into main entry)
-13. [ ] Remove `@backstage/core-plugin-api` from `package.json` dependencies
-14. [ ] Remove `@backstage/core-compat-api` from `package.json` dependencies
-15. [ ] Update `package.json` exports (remove `./alpha` if merged into main)
-16. [ ] Run `yarn tsc` to check for type errors
-17. [ ] Run `yarn lint` to check for missing dependencies
-18. [ ] Run `yarn build:api-reports` to update API reports (if the project uses API reports)
-19. [ ] Test in a new-system app (`packages/app`)
+11. [ ] For every page or sub-page whose content still uses React Router, render the matching adapter inside its `loader` — never inside an entity content or card extension — and switch the content to `useRouteRef` / `useRouteRefParams` / `useHref` wherever it only needed params and hrefs
+12. [ ] Remove `src/plugin.ts` (old system entry point)
+13. [ ] Remove `src/alpha.tsx` if it existed (merge into main entry)
+14. [ ] Remove `@backstage/core-plugin-api` from `package.json` dependencies
+15. [ ] Remove `@backstage/core-compat-api` from `package.json` dependencies
+16. [ ] Update `package.json` exports (remove `./alpha` if merged into main)
+17. [ ] Run `yarn tsc` to check for type errors
+18. [ ] Run `yarn lint` to check for missing dependencies
+19. [ ] Run `yarn build:api-reports` to update API reports (if the project uses API reports)
+20. [ ] Test in a new-system app (`packages/app`)
 
 ## Reference
 

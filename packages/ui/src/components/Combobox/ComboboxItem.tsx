@@ -17,10 +17,7 @@
 import { ListBoxItem, Text } from 'react-aria-components';
 import { RiCheckLine } from '@remixicon/react';
 import { Avatar } from '../Avatar';
-import {
-  useDefinition,
-  type UseDefinitionResult,
-} from '../../hooks/useDefinition';
+import { useDefinition } from '../../hooks/useDefinition';
 import {
   ComboboxItemDefinition,
   ComboboxItemProfileDefinition,
@@ -31,33 +28,24 @@ import type {
   ComboboxItemProps,
   ComboboxItemTextProps,
 } from './types';
-import {
-  getReactAriaAnchorProps,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
 
-type ComboboxItemViewProps = {
-  definitionResult: UseDefinitionResult<
-    typeof ComboboxItemDefinition,
-    ComboboxItemProps
-  >;
-  navigation: AnchorNavigation;
-};
-
-function ComboboxItemView({
-  definitionResult,
-  navigation,
-}: ComboboxItemViewProps) {
+/**
+ * A combobox item wrapper for custom content.
+ *
+ * @public
+ */
+export function ComboboxItem<T extends object = object>(
+  props: ComboboxItemProps<T>,
+) {
+  const definitionResult = useDefinition(ComboboxItemDefinition, props);
   const { ownProps, restProps } = definitionResult;
   const { classes, children, textValue, showSelectionIndicator } = ownProps;
-  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
     <ListBoxItem
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof ListBoxItem>)}
       className={classes.root}
       textValue={textValue}
-      {...navigationProps}
     >
       {values => {
         const content =
@@ -77,26 +65,6 @@ function ComboboxItemView({
         );
       }}
     </ListBoxItem>
-  );
-}
-
-/**
- * A combobox item wrapper for custom content.
- *
- * @public
- */
-export function ComboboxItem<T extends object = object>(
-  props: ComboboxItemProps<T>,
-) {
-  const definitionResult = useDefinition(ComboboxItemDefinition, props);
-  const Navigation = definitionResult.navigation;
-
-  return (
-    <Navigation
-      props={definitionResult.restProps}
-      view={ComboboxItemView}
-      viewProps={{ definitionResult }}
-    />
   );
 }
 
