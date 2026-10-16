@@ -27,7 +27,6 @@ export function buildInvocation(options: {
   packageCommand: string[];
   selected: SelectedPackage;
   packageArgs?: string[];
-  forwarded: string[];
 }): string[] {
   return [
     options.execPath,
@@ -35,6 +34,5 @@ export function buildInvocation(options: {
     ...options.packageCommand,
     ...options.selected.scriptArgs,
     ...(options.packageArgs ?? []),
-    ...options.forwarded,
   ];
 }

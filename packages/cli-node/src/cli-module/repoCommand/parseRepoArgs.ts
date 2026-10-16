@@ -39,14 +39,11 @@ export interface RepoCommandFlags {
   watch: boolean;
   concurrency: number;
   verbose: boolean;
-  /** Arguments after `--`, which are passed on to each package */
-  forwarded: string[];
 }
 
 /**
  * Parses the flags and package selectors of the repo command. Positional
- * arguments before `--` select packages, and only the arguments after `--` are
- * forwarded to each package.
+ * arguments select packages, and nothing is passed on to the package command.
  *
  * @internal
  */
@@ -54,9 +51,12 @@ export function parseRepoArgs(
   allArgs: string[],
   name: string,
 ): RepoCommandFlags {
-  const separator = allArgs.indexOf('--');
-  const args = separator === -1 ? allArgs : allArgs.slice(0, separator);
-  const forwarded = separator === -1 ? [] : allArgs.slice(separator + 1);
+  if (allArgs.includes('--')) {
+    throw new InputError(
+      `Arguments can't be passed to the package command from "${name}", remove "--" and everything after it`,
+    );
+  }
+  const args = allArgs;
 
   const { flags } = cli(
     {
@@ -119,9 +119,7 @@ export function parseRepoArgs(
     ) {
       // consumed
     } else if (arg.startsWith('-')) {
-      throw new InputError(
-        `Unknown option "${arg}", options for the package command must come after "--", for example "${name} -- ${arg}"`,
-      );
+      throw new InputError(`Unknown option "${arg}" for "${name}"`);
     } else {
       selectors.push(arg);
     }
@@ -134,7 +132,6 @@ export function parseRepoArgs(
     watch: flags.watch,
     concurrency: flags.concurrency,
     verbose: flags.verbose,
-    forwarded,
   };
 }
 

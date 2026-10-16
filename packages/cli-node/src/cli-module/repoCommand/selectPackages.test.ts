@@ -124,7 +124,7 @@ describe('repo command helpers', () => {
     expect(names(true, ['e'])).toEqual([]);
   });
 
-  it('parses repo flags and selectors, and forwards arguments after --', () => {
+  it('parses repo flags and selectors and rejects everything else', () => {
     expect(
       parseRepoArgs(
         [
@@ -136,9 +136,6 @@ describe('repo command helpers', () => {
           '--concurrency',
           '3',
           '--verbose',
-          '--',
-          '--foo',
-          'bar',
         ],
         'repo test',
       ),
@@ -149,33 +146,27 @@ describe('repo command helpers', () => {
       concurrency: 3,
       verbose: true,
       packages: ['cli-node'],
-      forwarded: ['--foo', 'bar'],
     });
-    expect(
-      parseRepoArgs(['--since=x', '--', 'src/'], 'repo test'),
-    ).toMatchObject({
+    expect(parseRepoArgs(['--since=x', 'src/'], 'repo test')).toMatchObject({
       since: 'x',
       includeDependents: undefined,
       watch: false,
       concurrency: 8,
       verbose: false,
-      packages: [],
-      forwarded: ['src/'],
+      packages: ['src/'],
     });
     expect(
       parseRepoArgs(['-p', 'a', '--package', 'b*', '--package=c', 'x'], 'x'),
-    ).toMatchObject({ packages: ['a', 'b*', 'c', 'x'], forwarded: [] });
+    ).toMatchObject({ packages: ['a', 'b*', 'c', 'x'] });
     expect(() =>
       parseRepoArgs(['cli-node', '-t', 'x'], 'repo run test'),
-    ).toThrow(
-      'Unknown option "-t", options for the package command must come after "--", for example "repo run test -- -t"',
-    );
-    expect(
-      parseRepoArgs(['--concurrency=2', 'a', '--', 'a'], 'x'),
-    ).toMatchObject({
+    ).toThrow('Unknown option "-t" for "repo run test"');
+    expect(() =>
+      parseRepoArgs(['a', '--', '-t', 'x'], 'repo run test'),
+    ).toThrow("Arguments can't be passed to the package command");
+    expect(parseRepoArgs(['--concurrency=2', 'a'], 'x')).toMatchObject({
       concurrency: 2,
       packages: ['a'],
-      forwarded: ['a'],
     });
     expect(parseRepoArgs(['--include-dependents'], 'x').includeDependents).toBe(
       true,
@@ -190,17 +181,8 @@ describe('repo command helpers', () => {
         packageCommand: ['package', 'test'],
         selected: { pkg: packages[0], scriptArgs: ['--s'] },
         packageArgs: ['--no-watch'],
-        forwarded: ['--f'],
       }),
-    ).toEqual([
-      'node',
-      'cli.js',
-      'package',
-      'test',
-      '--s',
-      '--no-watch',
-      '--f',
-    ]);
+    ).toEqual(['node', 'cli.js', 'package', 'test', '--s', '--no-watch']);
   });
 
   it('maps files to the owning package by longest dir', () => {
