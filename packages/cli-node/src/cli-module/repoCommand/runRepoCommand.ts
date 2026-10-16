@@ -17,8 +17,11 @@
 import chokidar from 'chokidar';
 import { ExitCodeError, run } from '@backstage/cli-common';
 import { PackageGraph } from '../../monorepo';
-import { runConcurrentTasks } from '../../concurrency';
+import { InputError } from '@backstage/errors';
 import type { CliCommandContext, CliRunTargetOptions } from '../types';
+import { RunInterrupt } from './interrupt';
+import { createReporter } from './reporter';
+import type { PackageStatus } from './reporter';
 import { parseRepoArgs } from './parseRepoArgs';
 import { buildInvocation } from './buildInvocation';
 import {
@@ -30,49 +33,91 @@ import {
 
 const DEBOUNCE_MS = 200;
 
+interface RunSettings {
+  concurrency: number;
+  verbose: boolean;
+  forwarded: string[];
+}
+
 async function runPackages(
   selected: SelectedPackage[],
   options: CliRunTargetOptions,
-  forwarded: string[],
+  settings: RunSettings,
+  interrupt: RunInterrupt,
 ): Promise<string[]> {
   const failed = new Array<string>();
+  const reporter = createReporter({
+    verbose: settings.verbose,
+    isTTY: Boolean(process.stdout.isTTY),
+    write: text => process.stdout.write(text),
+  });
+  reporter.begin(selected.map(item => item.pkg.packageJson.name));
 
-  await runConcurrentTasks({
-    items: selected,
-    worker: async item => {
-      const name = item.pkg.packageJson.name;
-      const chunks = new Array<Buffer>();
-      const push = (data: Buffer) => chunks.push(data);
-      let error: Error | undefined;
-      try {
-        await run(
-          buildInvocation({
-            execPath: process.execPath,
-            cliPath: process.argv[1],
-            packageCommand: options.packageCommand,
-            selected: item,
-            packageArgs: options.packageArgs,
-            forwarded,
-          }),
-          { cwd: item.pkg.dir, onStdout: push, onStderr: push },
-        ).waitForExit();
-      } catch (e) {
-        error = e;
+  const runOne = async (item: SelectedPackage) => {
+    const name = item.pkg.packageJson.name;
+    const push = (data: Buffer) => reporter.onOutput(name, data);
+    let error: Error | undefined;
+    let untrack = () => {};
+    reporter.onStart(name);
+    try {
+      const child = run(
+        buildInvocation({
+          execPath: process.execPath,
+          cliPath: process.argv[1],
+          packageCommand: options.packageCommand,
+          selected: item,
+          packageArgs: options.packageArgs,
+          forwarded: settings.forwarded,
+        }),
+        { cwd: item.pkg.dir, onStdout: push, onStderr: push },
+      );
+      untrack = interrupt.track(child);
+      await child.waitForExit();
+    } catch (e) {
+      error = e;
+      if (!interrupt.interrupted) {
         failed.push(name);
       }
-      process.stdout.write(
-        `${error ? 'FAIL' : 'PASS'} ${name}\n${Buffer.concat(chunks)}`,
-      );
-      if (error && !(error instanceof ExitCodeError)) {
-        process.stdout.write(`${error.stack ?? error}\n`);
+    }
+    // A child that was killed by a signal resolves as a success, so the
+    // result is not trustworthy once an interrupt has been received.
+    let status: PackageStatus = 'PASS';
+    if (interrupt.interrupted) {
+      status = 'INTERRUPTED';
+    } else if (error) {
+      status = 'FAIL';
+    }
+    if (error && !interrupt.interrupted && !(error instanceof ExitCodeError)) {
+      reporter.message(`${name}: ${error.stack ?? error}`);
+    }
+    reporter.onFinish(name, status);
+    untrack();
+  };
+
+  // A simple pool where each worker takes the next package until none are left
+  const queue = [...selected];
+  const workers = Array.from(
+    { length: Math.max(1, Math.min(settings.concurrency, queue.length)) },
+    async () => {
+      while (!interrupt.interrupted) {
+        const item = queue.shift();
+        if (!item) {
+          return;
+        }
+        await runOne(item);
       }
     },
-  });
+  );
+  try {
+    await Promise.all(workers);
+  } finally {
+    reporter.end();
+  }
 
   return failed;
 }
 
-function reportFailures(failed: string[]) {
+function reportFailures(failed: string[], verbose: boolean) {
   if (failed.length > 0) {
     process.stdout.write(
       `\n${failed.length} package(s) failed:\n${failed
@@ -80,6 +125,11 @@ function reportFailures(failed: string[]) {
         .map(name => `  ${name}\n`)
         .join('')}`,
     );
+    if (!verbose) {
+      process.stdout.write(
+        '\nRe-run with --verbose to see the output of each package.\n',
+      );
+    }
   }
 }
 
@@ -87,8 +137,27 @@ function reportFailures(failed: string[]) {
 export async function runRepoCommand(
   options: CliRunTargetOptions,
   context: CliCommandContext,
+  interrupt: RunInterrupt = new RunInterrupt(),
+): Promise<void> {
+  const dispose = interrupt.install();
+  try {
+    await runRepoCommandInternal(options, context, interrupt);
+  } finally {
+    dispose();
+  }
+}
+
+async function runRepoCommandInternal(
+  options: CliRunTargetOptions,
+  context: CliCommandContext,
+  interrupt: RunInterrupt,
 ): Promise<void> {
   const flags = parseRepoArgs(context.args, context.info.usage);
+  if (!Number.isInteger(flags.concurrency) || flags.concurrency < 1) {
+    throw new InputError(
+      `Invalid --concurrency value, expected a positive integer but got ${flags.concurrency}`,
+    );
+  }
   const includeDependents =
     flags.includeDependents ?? options.includeDependents ?? true;
   const scriptName =
@@ -129,8 +198,8 @@ export async function runRepoCommand(
     return;
   }
 
-  const failed = await runPackages(selected, options, flags.forwarded);
-  reportFailures(failed);
+  const failed = await runPackages(selected, options, flags, interrupt);
+  reportFailures(failed, flags.verbose);
 
   if (!flags.watch) {
     if (failed.length > 0) {
@@ -139,7 +208,14 @@ export async function runRepoCommand(
     return;
   }
 
-  await watchPackages(selected, graph, options, flags, includeDependents);
+  await watchPackages(
+    selected,
+    graph,
+    options,
+    flags,
+    includeDependents,
+    interrupt,
+  );
 }
 
 async function watchPackages(
@@ -148,6 +224,7 @@ async function watchPackages(
   options: CliRunTargetOptions,
   flags: ReturnType<typeof parseRepoArgs>,
   includeDependents: boolean,
+  interrupt: RunInterrupt,
 ): Promise<never> {
   const pending = new Set<string>();
   let timer: NodeJS.Timeout | undefined;
@@ -169,7 +246,10 @@ async function watchPackages(
           changedNames,
           includeDependents,
         });
-        reportFailures(await runPackages(toRun, options, flags.forwarded));
+        reportFailures(
+          await runPackages(toRun, options, flags, interrupt),
+          flags.verbose,
+        );
       }
     } finally {
       running = false;
@@ -193,8 +273,5 @@ async function watchPackages(
     }
   });
 
-  process.once('SIGINT', () => {
-    watcher.close().finally(() => process.exit(0));
-  });
   return new Promise<never>(() => {});
 }

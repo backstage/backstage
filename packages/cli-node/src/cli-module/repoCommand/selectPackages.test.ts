@@ -90,6 +90,9 @@ describe('repo command helpers', () => {
           '--foo',
           'bar',
           '--watch',
+          '--concurrency',
+          '3',
+          '--verbose',
         ],
         'repo test',
       ),
@@ -97,13 +100,21 @@ describe('repo command helpers', () => {
       since: 'main',
       includeDependents: false,
       watch: true,
+      concurrency: 3,
+      verbose: true,
       forwarded: ['--foo', 'bar'],
     });
     expect(parseRepoArgs(['--since=x', 'src/'], 'repo test')).toMatchObject({
       since: 'x',
       includeDependents: undefined,
       watch: false,
+      concurrency: 8,
+      verbose: false,
       forwarded: ['src/'],
+    });
+    expect(parseRepoArgs(['--concurrency=2', 'a'], 'x')).toMatchObject({
+      concurrency: 2,
+      forwarded: ['a'],
     });
     expect(parseRepoArgs(['--include-dependents'], 'x').includeDependents).toBe(
       true,

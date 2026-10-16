@@ -17,6 +17,7 @@
 import { ExitCodeError, run } from '@backstage/cli-common';
 import { PackageGraph } from '../../monorepo';
 import { runRepoCommand } from './runRepoCommand';
+import { RunInterrupt } from './interrupt';
 
 jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
@@ -129,5 +130,88 @@ describe('runRepoCommand', () => {
       await count({ includeDependents: false }, ['--include-dependents']),
     ).toBe(2);
     expect(await count({}, ['--no-include-dependents'])).toBe(1);
+  });
+
+  it('stops scheduling and reports interrupted packages when interrupted', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([pkg('a'), pkg('b'), pkg('c')]);
+    jest.mocked(process.stdout.write).mockClear();
+    const exit = jest.fn();
+    const interrupt = new RunInterrupt(exit);
+    // Like a real child killed by a signal, this resolves as a success
+    runMock.mockImplementation(() => {
+      let resolve: () => void;
+      const done = new Promise<void>(r => (resolve = r));
+      return {
+        kill: jest.fn(() => resolve()),
+        waitForExit: () => done,
+      };
+    });
+
+    const result = runRepoCommand(
+      options,
+      { ...context, args: ['--concurrency', '1'] },
+      interrupt,
+    );
+    await new Promise(resolve => setTimeout(resolve, 20));
+    expect(runMock).toHaveBeenCalledTimes(1);
+    process.emit('SIGINT');
+    await result;
+
+    expect(runMock).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(130);
+    const output = jest
+      .mocked(process.stdout.write)
+      .mock.calls.map(c => String(c[0]))
+      .join('');
+    expect(output).toContain('INTERRUPTED');
+    expect(output).not.toContain('PASS');
+    expect(output).not.toContain('package(s) failed');
+  });
+
+  it('limits concurrency, hides logs by default and shows them with --verbose', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue(['a', 'b', 'c', 'd'].map(pkg));
+    let active = 0;
+    let maxActive = 0;
+    runMock.mockImplementation((_args: string[], opts: any) => ({
+      kill: jest.fn(),
+      waitForExit: async () => {
+        active += 1;
+        maxActive = Math.max(maxActive, active);
+        await new Promise(resolve => setTimeout(resolve, 5));
+        opts.onStdout(Buffer.from('secret log\n'));
+        active -= 1;
+      },
+    }));
+    const output = () =>
+      jest
+        .mocked(process.stdout.write)
+        .mock.calls.map(c => String(c[0]))
+        .join('');
+
+    jest.mocked(process.stdout.write).mockClear();
+    await runRepoCommand(
+      options,
+      { ...context, args: ['--concurrency', '2'] },
+      new RunInterrupt(jest.fn()),
+    );
+    expect(maxActive).toBe(2);
+    expect(output()).toContain('PASS');
+    expect(output()).not.toContain('secret log');
+
+    jest.mocked(process.stdout.write).mockClear();
+    await runRepoCommand(
+      options,
+      { ...context, args: ['--verbose'] },
+      new RunInterrupt(jest.fn()),
+    );
+    expect(output()).toContain('[a] secret log');
+
+    await expect(
+      runRepoCommand(options, { ...context, args: ['--concurrency', '0'] }),
+    ).rejects.toThrow('Invalid --concurrency value');
   });
 });
