@@ -25,6 +25,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import {
+  AwsCredentialProvider,
   AwsCredentialsManager,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
@@ -265,16 +266,35 @@ export class AwsS3UrlReader implements UrlReaderService {
     }
 
     if (roleArn) {
-      let masterCredentials: AwsCredentialIdentityProvider;
+      let accountProvider: AwsCredentialProvider | undefined;
       try {
-        masterCredentials = (
-          await credsManager.getCredentialProvider({ arn: roleArn })
-        ).sdkCredentialProvider;
+        accountProvider = await credsManager.getCredentialProvider({
+          arn: roleArn,
+        });
       } catch {
         // No account-specific config for this ARN; fall back to default credentials
-        masterCredentials = (await credsManager.getCredentialProvider())
-          .sdkCredentialProvider;
       }
+
+      // The account config may already assume this exact role, for example
+      // through a web identity token file. Assuming the role again using its
+      // own credentials would require the role to trust itself, so use the
+      // credentials directly instead.
+      //
+      // This is skipped when an external ID is configured. An external ID is
+      // a condition that the role's trust policy can require, and it is only
+      // checked when calling AssumeRole. Reusing the account credentials
+      // would never send it, silently bypassing a check that was explicitly
+      // asked for, so the role is assumed again with the external ID instead.
+      if (
+        accountProvider?.roleArn === roleArn &&
+        !integration.config.externalId
+      ) {
+        return accountProvider.sdkCredentialProvider;
+      }
+
+      const masterCredentials =
+        accountProvider?.sdkCredentialProvider ??
+        (await credsManager.getCredentialProvider()).sdkCredentialProvider;
       return fromTemporaryCredentials({
         masterCredentials,
         params: {

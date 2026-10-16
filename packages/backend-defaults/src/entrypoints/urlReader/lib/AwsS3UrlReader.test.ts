@@ -22,7 +22,10 @@ import {
   AwsS3Integration,
   readAwsS3IntegrationConfig,
 } from '@backstage/integration';
-import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
 import { UrlReaderPredicateTuple } from './types';
 import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
@@ -901,5 +904,140 @@ describe('AwsS3UrlReader', () => {
       });
       expect(getCredProviderMock).toHaveBeenCalledWith();
     });
+  });
+
+  describe('buildCredentials with account credentials for the role ARN', () => {
+    // The reader and AWS SDK are already loaded by the test setup, so a fresh
+    // module registry is needed for the mocked credential providers to apply
+    let IsolatedAwsS3UrlReader: typeof AwsS3UrlReader;
+    let IsolatedS3Client: typeof S3Client;
+    let fromTemporaryCredentials: jest.Mock;
+    jest.isolateModules(() => {
+      jest.doMock('@aws-sdk/credential-providers', () => ({
+        ...jest.requireActual('@aws-sdk/credential-providers'),
+        fromTemporaryCredentials: jest.fn(),
+      }));
+      fromTemporaryCredentials =
+        require('@aws-sdk/credential-providers').fromTemporaryCredentials;
+      IsolatedS3Client = require('@aws-sdk/client-s3').S3Client;
+      IsolatedAwsS3UrlReader = require('./AwsS3UrlReader').AwsS3UrlReader;
+    });
+
+    const roleArn = 'arn:aws:iam::111111111111:role/PortalAccessRole';
+    const accountCreds = {
+      accessKeyId: 'account-key',
+      secretAccessKey: 'account-secret',
+      sessionToken: 'account-session',
+    };
+    const defaultCreds = {
+      accessKeyId: 'default-key',
+      secretAccessKey: 'default-secret',
+    };
+    const assumedCreds = {
+      accessKeyId: 'assumed-key',
+      secretAccessKey: 'assumed-secret',
+      sessionToken: 'assumed-session',
+    };
+
+    let usedCreds: unknown;
+
+    beforeEach(() => {
+      usedCreds = undefined;
+      fromTemporaryCredentials.mockReset();
+      fromTemporaryCredentials.mockReturnValue(async () => assumedCreds);
+      jest
+        .spyOn(IsolatedS3Client.prototype, 'send')
+        .mockImplementation(async function send(this: S3Client) {
+          usedCreds = await this.config.credentials();
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        });
+    });
+
+    // Resolves account credentials for the role ARN, reporting the given
+    // role as the one the credentials are for
+    const readWith = async (options: {
+      accountRoleArn: string | undefined;
+      integration: JsonObject;
+    }) => {
+      const credsManager: AwsCredentialsManager = {
+        async getCredentialProvider(opts) {
+          if (opts?.arn) {
+            return {
+              accountId: '111111111111',
+              roleArn: options.accountRoleArn,
+              sdkCredentialProvider: async () => accountCreds,
+            };
+          }
+          return { sdkCredentialProvider: async () => defaultCreds };
+        },
+      };
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        ...options.integration,
+      });
+      const reader = new IsolatedAwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-1.amazonaws.com/file.yaml',
+      );
+    };
+
+    it('uses the account credentials directly when they are already for the role ARN', async () => {
+      await readWith({ accountRoleArn: roleArn, integration: { roleArn } });
+
+      expect(fromTemporaryCredentials).not.toHaveBeenCalled();
+      expect(usedCreds).toEqual(expect.objectContaining(accountCreds));
+    });
+
+    it.each([
+      {
+        name: 'the account credentials are for a different role',
+        accountRoleArn: 'arn:aws:iam::111111111111:role/OtherRole',
+        integration: { roleArn },
+      },
+      {
+        name: 'the account credentials are for the same role name in another partition',
+        accountRoleArn: 'arn:aws-cn:iam::111111111111:role/PortalAccessRole',
+        integration: { roleArn },
+      },
+      {
+        name: 'the account credentials are not for a role',
+        accountRoleArn: undefined,
+        integration: { roleArn },
+      },
+      {
+        name: 'an external ID is configured',
+        accountRoleArn: roleArn,
+        integration: { roleArn, externalId: 'my-external-id' },
+      },
+    ])(
+      'assumes the role using the account credentials when $name',
+      async ({ accountRoleArn, integration }) => {
+        await readWith({ accountRoleArn, integration });
+
+        expect(fromTemporaryCredentials).toHaveBeenCalledTimes(1);
+        const [options] = (fromTemporaryCredentials as jest.Mock).mock.calls[0];
+        expect(options.params).toEqual({
+          RoleSessionName: 'backstage-aws-s3-url-reader',
+          RoleArn: roleArn,
+          ExternalId: (integration as { externalId?: string }).externalId,
+        });
+        expect(await options.masterCredentials()).toEqual(accountCreds);
+        expect(usedCreds).toEqual(expect.objectContaining(assumedCreds));
+      },
+    );
   });
 });
