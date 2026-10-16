@@ -16,7 +16,8 @@
 
 import { cli } from 'cleye';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { runOutput, targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
@@ -84,9 +85,9 @@ export default async ({ args, info }: CliCommandContext) => {
 
   // If a formatter is present in the project root, then we run that too,
   // preferring oxfmt if it's configured or the only formatter installed.
-  const oxfmtBin = targetPaths.resolveRoot('node_modules/oxfmt/bin/oxfmt');
-  const prettierBin = await resolvePrettierBin();
-  if ((await fs.pathExists(oxfmtBin)) && (!prettierBin || hasOxfmtConfig())) {
+  const oxfmtBin = await resolveBin('oxfmt');
+  const prettierBin = await resolveBin('prettier');
+  if (oxfmtBin && (!prettierBin || hasOxfmtConfig())) {
     await runOutput([
       process.execPath,
       oxfmtBin,
@@ -99,16 +100,20 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 };
 
-async function resolvePrettierBin(): Promise<string | undefined> {
-  const pkgPath = targetPaths.resolveRoot('node_modules/prettier/package.json');
-  if (!(await fs.pathExists(pkgPath))) {
+// Uses Node.js module resolution from the project root so that it works with
+// any package manager
+async function resolveBin(name: string): Promise<string | undefined> {
+  try {
+    const requireFromRoot = createRequire(
+      targetPaths.resolveRoot('package.json'),
+    );
+    const pkgPath = requireFromRoot.resolve(`${name}/package.json`);
+    const { bin } = await fs.readJson(pkgPath);
+    const binPath = typeof bin === 'string' ? bin : bin?.[name];
+    return binPath ? join(dirname(pkgPath), binPath) : undefined;
+  } catch {
     return undefined;
   }
-  const { bin } = await fs.readJson(pkgPath);
-  const binPath = typeof bin === 'string' ? bin : bin?.prettier;
-  return binPath
-    ? targetPaths.resolveRoot('node_modules/prettier', binPath)
-    : undefined;
 }
 
 function hasOxfmtConfig(): boolean {

@@ -15,8 +15,9 @@
  */
 
 import { execFile, execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import os from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
 import fs from 'fs-extra';
 import { targetPaths } from '@backstage/cli-common';
@@ -40,16 +41,22 @@ export type Formatter = {
   bin: string;
 };
 
-function resolvePrettierBin(): string | undefined {
-  const pkgPath = targetPaths.resolveRoot('node_modules/prettier/package.json');
-  if (!fs.pathExistsSync(pkgPath)) {
+/**
+ * Resolves the CLI entry point of a package from the repository root, using
+ * Node.js module resolution so that it works with any package manager.
+ */
+function resolveBin(name: string): string | undefined {
+  try {
+    const requireFromRoot = createRequire(
+      targetPaths.resolveRoot('package.json'),
+    );
+    const pkgPath = requireFromRoot.resolve(`${name}/package.json`);
+    const { bin } = fs.readJsonSync(pkgPath);
+    const binPath = typeof bin === 'string' ? bin : bin?.[name];
+    return binPath ? join(dirname(pkgPath), binPath) : undefined;
+  } catch {
     return undefined;
   }
-  const { bin } = fs.readJsonSync(pkgPath);
-  const binPath = typeof bin === 'string' ? bin : bin?.prettier;
-  return binPath
-    ? targetPaths.resolveRoot('node_modules/prettier', binPath)
-    : undefined;
 }
 
 /**
@@ -57,17 +64,16 @@ function resolvePrettierBin(): string | undefined {
  *
  * oxfmt is used if it's installed in the repository and either configured in
  * the repository root, or the only formatter installed. Otherwise Prettier is
- * used if it's installed.
+ * used if it's installed. Formatters are resolved from the repository root.
  *
  * @returns The formatter, or undefined if no formatter is installed
  */
 export function detectFormatter(): Formatter | undefined {
-  const oxfmtBin = targetPaths.resolveRoot('node_modules/oxfmt/bin/oxfmt');
-  const hasOxfmt = fs.pathExistsSync(oxfmtBin);
-  const prettierBin = resolvePrettierBin();
+  const oxfmtBin = resolveBin('oxfmt');
+  const prettierBin = resolveBin('prettier');
 
   if (
-    hasOxfmt &&
+    oxfmtBin &&
     (!prettierBin ||
       OXFMT_CONFIG_FILES.some(file =>
         fs.pathExistsSync(targetPaths.resolveRoot(file)),
