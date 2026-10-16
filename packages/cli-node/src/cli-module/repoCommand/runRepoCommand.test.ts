@@ -45,7 +45,7 @@ describe('runRepoCommand', () => {
     packageArgs: ['--no-watch'],
   };
   const context = {
-    args: ['--extra'],
+    args: ['--', '--extra'],
     info: { usage: 'backstage-cli repo run test', name: 'repo run' },
   };
 
@@ -213,5 +213,47 @@ describe('runRepoCommand', () => {
     await expect(
       runRepoCommand(options, { ...context, args: ['--concurrency', '0'] }),
     ).rejects.toThrow('Invalid --concurrency value');
+  });
+
+  it('runs only the named packages, with dependents only when asked for', async () => {
+    jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+      pkg('a'),
+      {
+        ...pkg('b'),
+        packageJson: { ...pkg('b').packageJson, dependencies: { a: '*' } },
+      },
+      pkg('c'),
+    ]);
+    runMock.mockImplementation(() => ({ waitForExit: async () => {} }));
+    const ran = async (args: string[]) => {
+      runMock.mockClear();
+      await runRepoCommand(
+        options,
+        { ...context, args },
+        new RunInterrupt(jest.fn()),
+      );
+      return runMock.mock.calls.map(c => c[1].cwd).sort();
+    };
+
+    expect(await ran(['-p', 'a'])).toEqual(['/repo/a']);
+    expect(await ran(['a', 'c', '--', '-t', 'x'])).toEqual([
+      '/repo/a',
+      '/repo/c',
+    ]);
+    expect(runMock.mock.calls[0][0].slice(-2)).toEqual(['-t', 'x']);
+    expect(await ran(['-p', 'a', '-p', 'c'])).toEqual(['/repo/a', '/repo/c']);
+    expect(await ran(['-p', 'a', '--include-dependents'])).toEqual([
+      '/repo/a',
+      '/repo/b',
+    ]);
+    jest
+      .spyOn(PackageGraph.prototype, 'listChangedPackages')
+      .mockResolvedValue([{ name: 'a' } as any]);
+    expect(await ran(['-p', 'a', '-p', 'c', '--since', 'main'])).toEqual([
+      '/repo/a',
+    ]);
+    await expect(ran(['-p', 'a', '-p', 'zzz', '-p', 'yyy'])).rejects.toThrow(
+      'matches "zzz", "yyy"',
+    );
   });
 });

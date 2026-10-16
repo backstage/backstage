@@ -82,13 +82,28 @@ exits with a non-zero code if any package failed.
 yarn backstage-cli repo run test
 ```
 
-Unknown options and positional arguments are forwarded to `package test` for
-each package. Tests run once by default, use `--watch` to keep running.
+```sh title="Run matching tests in two packages"
+yarn backstage-cli repo run test cli-node plugin-catalog* -- -t "parse"
+```
+
+To run only some packages, pass package selectors as positional arguments or
+with `-p, --package`, which can be repeated. A selector is a package name, a
+glob on the name with or without its scope such as `plugin-catalog*`, or a
+package directory relative to the current directory. Selected packages do not
+include their dependents unless you pass `--include-dependents`, and combined
+with `--since` only packages that match both are run. A selector that matches no
+package is an error.
+
+Selectors are never forwarded. To pass options to `package test` for each
+package, put them after `--`. An unknown option before `--` is an error, so that
+it is not mistaken for a selector. Tests run once by default, use `--watch` to
+keep running.
 
 ```text
 Usage: backstage-cli repo run test [options]
 
 Options:
+  -p, --package <selector> Only run the matching packages, can be repeated
   --since <ref>            Only run packages that changed since the specified ref
   --include-dependents     Also run packages that depend on the selected packages (default: true, use --no-include-dependents to disable)
   --watch                  Re-run packages when their files change
@@ -106,7 +121,7 @@ files and re-runs the affected packages and their dependents. Changes made while
 a run is in progress are queued for the next run.
 
 The `--verbose` flag is handled by `repo run` and is not forwarded to
-`package test`. Run `backstage-cli repo run --help` to list all available targets.
+`package test`, pass it after `--` if the package command needs it. Run `backstage-cli repo run --help` to list all available targets.
 
 ## package test
 

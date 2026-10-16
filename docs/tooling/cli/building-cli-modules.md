@@ -237,8 +237,19 @@ Arguments in `packageArgs` are always appended.
 The `includeDependents` option sets whether `--since` and `--watch` also run the
 local dependents of changed packages. It defaults to `true`, and the
 `--include-dependents` and `--no-include-dependents` flags override it. The
-command also supports `--since <ref>` and `--watch`, and forwards any other
-arguments to the package command.
+command also supports `--since <ref>`, `--watch`, `--concurrency <n>`
+(default 8), `--verbose` and `-p, --package <selector>`. By default it shows a
+progress view, or one line for each finished package when not in a terminal,
+and only shows package output with `--verbose`.
+
+Positional arguments and `--package` values select packages, and are never
+passed on. A selector is a package name, a glob on the name with or without its
+scope, or a package directory relative to the current directory. Selected
+packages do not include their dependents unless `--include-dependents` is
+passed, and with `--since` the result is the intersection. A selector that
+matches no package for the target is an error. Only arguments after `--` are
+passed to the package command, for example
+`backstage-cli repo run test cli-node -- -t parse`.
 
 Several modules can register the same target name only if their options are
 identical. Otherwise the CLI fails with an error that names both modules.
