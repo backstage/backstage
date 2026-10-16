@@ -26,6 +26,7 @@ import { parseRepoArgs } from './parseRepoArgs';
 import { buildInvocation } from './buildInvocation';
 import {
   filterByChanged,
+  matchPackages,
   mapFilesToPackages,
   selectPackages,
   SelectedPackage,
@@ -183,6 +184,31 @@ async function runRepoCommandInternal(
     packageCommand: options.packageCommand,
     scriptName,
   });
+
+  if (flags.packages.length > 0) {
+    const { matched, unmatched } = matchPackages({
+      selected,
+      values: flags.packages,
+      cwd: process.cwd(),
+    });
+    if (unmatched.length > 0) {
+      throw new InputError(
+        `No package with a "${scriptName}" script that runs "backstage-cli ${options.packageCommand.join(
+          ' ',
+        )}" matches ${unmatched.map(value => `"${value}"`).join(', ')}`,
+      );
+    }
+    // Dependents of named packages are only included when explicitly asked for
+    selected =
+      flags.includeDependents === true
+        ? filterByChanged({
+            selected,
+            graph,
+            changedNames: matched.map(({ pkg }) => pkg.packageJson.name),
+            includeDependents: true,
+          })
+        : matched;
+  }
 
   if (flags.since) {
     const changed = await graph.listChangedPackages({
