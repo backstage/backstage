@@ -25,7 +25,7 @@ import type { Knex } from 'knex';
 import {
   logApiReportInstructions,
   logReportDiff,
-  tryRunPrettierAsync,
+  formatContentAsync,
 } from '../common';
 
 interface SqlExtractionOptions {
@@ -160,7 +160,7 @@ async function runSingleSqlExtraction(
     targetDir,
     `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
   );
-  const report = await tryRunPrettierAsync(
+  const report = await formatContentAsync(
     generateSqlReport({
       reportName,
       failedDownMigration,

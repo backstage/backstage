@@ -24,6 +24,7 @@ import {
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { formatFiles } from '../../../../../lib/formatter';
 import { targetPaths } from '@backstage/cli-common';
 import {
   getOpenApiGeneratorKey,
@@ -85,6 +86,15 @@ async function generate(
     },
   );
 
+  // Deduplicate imports in generated files, before
+  // they're linted and formatted
+  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  for (const file of generatedFiles) {
+    if (file.endsWith('.ts')) {
+      deduplicateImports(resolve(resolvedOutputDirectory, file));
+    }
+  }
+
   const parentDirectory = resolve(resolvedOutputDirectory, '..');
 
   await fs.writeFile(
@@ -97,20 +107,7 @@ async function generate(
     signal: abortSignal?.signal,
   });
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (await fs.pathExists(prettier)) {
-    await exec(`${prettier} --write ${parentDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
-
-  // Deduplicate imports in generated files
-  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
-  for (const file of generatedFiles) {
-    if (file.endsWith('.ts')) {
-      deduplicateImports(resolve(resolvedOutputDirectory, file));
-    }
-  }
+  await formatFiles([parentDirectory], { signal: abortSignal?.signal });
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
@@ -151,6 +148,7 @@ export async function command(
     } else {
       console.log(chalk.red(`Client generation failed.`));
       console.log(chalk.red(err.message));
+      process.exitCode = 1;
     }
   }
 }
