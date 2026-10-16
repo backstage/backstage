@@ -26,6 +26,7 @@ import { authOwnershipResolutionExtensionPoint } from '@backstage/plugin-auth-no
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import request from 'supertest';
 import { authPlugin } from './authPlugin';
+import { AuthDatabase } from './database/AuthDatabase';
 import authModuleGuestProvider from '@backstage/plugin-auth-backend-module-guest-provider';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 
@@ -174,33 +175,19 @@ describe('authPlugin', () => {
     });
 
     it('should re-resolve ownership claims and update userinfo when refreshing an OAuth token', async () => {
+      const runMigrationsSpy = jest.spyOn(AuthDatabase, 'runMigrations');
+      let currentGroups = ['group:default/initial-group'];
       const catalogMock = catalogServiceMock.mock({
-        getEntityByRef: jest
-          .fn()
-          .mockResolvedValueOnce({
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'User',
-            metadata: { name: 'tester', namespace: 'default' },
-            spec: {},
-            relations: [
-              {
-                type: RELATION_MEMBER_OF,
-                targetRef: 'group:default/initial-group',
-              },
-            ],
-          })
-          .mockResolvedValue({
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'User',
-            metadata: { name: 'tester', namespace: 'default' },
-            spec: {},
-            relations: [
-              {
-                type: RELATION_MEMBER_OF,
-                targetRef: 'group:default/updated-group',
-              },
-            ],
-          }),
+        getEntityByRef: jest.fn().mockImplementation(async () => ({
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'tester', namespace: 'default' },
+          spec: {},
+          relations: currentGroups.map(targetRef => ({
+            type: RELATION_MEMBER_OF,
+            targetRef,
+          })),
+        })),
       });
 
       const customOwnershipModule = createBackendModule({
@@ -254,6 +241,9 @@ describe('authPlugin', () => {
           }),
         ],
       });
+
+      expect(runMigrationsSpy).toHaveBeenCalledTimes(1);
+      runMigrationsSpy.mockRestore();
 
       // 1. Initial interactive login populates user_info with initial ownershipEntityRefs
       const signInRes = await request(server)
@@ -313,6 +303,7 @@ describe('authPlugin', () => {
         .expect(200);
 
       // 3. Refresh the OAuth token after catalog group membership changed
+      currentGroups = ['group:default/updated-group'];
       const refreshedTokenRes = await request(server)
         .post('/api/auth/v1/token')
         .send({

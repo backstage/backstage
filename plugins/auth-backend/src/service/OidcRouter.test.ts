@@ -1369,15 +1369,16 @@ describe('OidcRouter', () => {
           expect(mocks.catalog.getEntityByRef).not.toHaveBeenCalled();
         });
 
-        it('should re-resolve ownership entity refs from the catalog and update user info on refresh', async () => {
+        it('should re-resolve ownership entity refs from the catalog and update user info on refresh while preserving custom claims', async () => {
           const { server, tokenResponse, mocks } =
             await doAuthFlowWithOfflineAccess(databaseId);
 
-          // Simulate initial interactive sign-in where user belonged to team-alpha
+          // Simulate initial interactive sign-in where user belonged to team-alpha and had a custom claim
           await mocks.userInfo.addUserInfo({
             claims: {
               sub: MOCK_USER_ENTITY_REF,
               ent: [MOCK_USER_ENTITY_REF, 'group:default/team-alpha'],
+              customClaim: 'preserved-value',
             },
           });
 
@@ -1418,6 +1419,7 @@ describe('OidcRouter', () => {
             claims: {
               sub: MOCK_USER_ENTITY_REF,
               ent: [MOCK_USER_ENTITY_REF, 'group:default/team-beta'],
+              customClaim: 'preserved-value',
             },
           });
 
@@ -1433,7 +1435,7 @@ describe('OidcRouter', () => {
             token: 'mock-refreshed-token-2',
           });
 
-          await request(server)
+          const secondRefresh = await request(server)
             .post('/api/auth/v1/token')
             .send({
               grant_type: 'refresh_token',
@@ -1453,18 +1455,42 @@ describe('OidcRouter', () => {
             claims: {
               sub: MOCK_USER_ENTITY_REF,
               ent: [MOCK_USER_ENTITY_REF],
+              customClaim: 'preserved-value',
             },
           });
+
+          // Simulate transient user_info write error after token rotation; refresh should still return rotated tokens
+          jest
+            .spyOn(mocks.userInfo, 'addUserInfo')
+            .mockRejectedValueOnce(new Error('Database write failed'));
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token-3',
+          });
+
+          const thirdRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: secondRefresh.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(thirdRefresh.body.access_token).toBe('mock-refreshed-token-3');
+          expect(thirdRefresh.body.refresh_token).toBeDefined();
         });
 
-        it('should use custom ownershipResolver when refreshing tokens', async () => {
-          const customOwnershipResolver: AuthOwnershipResolver = {
-            resolveOwnershipEntityRefs: jest.fn().mockResolvedValue({
+        it('should use custom ownershipResolver when refreshing tokens and preserve token on resolver failure', async () => {
+          const resolveOwnershipEntityRefs = jest
+            .fn()
+            .mockRejectedValueOnce(new Error('Transient resolver failure'))
+            .mockResolvedValue({
               ownershipEntityRefs: [
                 MOCK_USER_ENTITY_REF,
                 'group:default/custom-parent-group',
               ],
-            }),
+            });
+          const customOwnershipResolver: AuthOwnershipResolver = {
+            resolveOwnershipEntityRefs,
           };
 
           const { server, tokenResponse, mocks } =
@@ -1480,11 +1506,23 @@ describe('OidcRouter', () => {
             metadata: { name: 'test-user', namespace: 'default' },
             spec: {},
           };
-          mocks.catalog.getEntityByRef.mockResolvedValueOnce(userEntity);
+          mocks.catalog.getEntityByRef.mockResolvedValue(userEntity);
           mocks.tokenIssuer.issueToken.mockResolvedValue({
             token: 'mock-refreshed-token',
           });
 
+          // First attempt fails before rotation because customOwnershipResolver throws
+          const failedRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+
+          expect(failedRefresh.body.error).toBe('invalid_grant');
+
+          // Retrying with the exact same refresh token succeeds once the resolver recovers
           await request(server)
             .post('/api/auth/v1/token')
             .send({
