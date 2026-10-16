@@ -83,7 +83,7 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  // If a formatter is present in the project root, then we run that too,
+  // If the project root depends on a formatter, then we run that too,
   // preferring oxfmt if it's configured or the only formatter installed.
   const oxfmtBin = await resolveBin('oxfmt');
   const prettierBin = await resolveBin('prettier');
@@ -100,14 +100,17 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 };
 
-// Uses Node.js module resolution from the project root so that it works with
-// any package manager
+// Resolves the CLI entry point of a package that the project root declares as
+// a dependency, using Node.js module resolution so that it works with any
+// package manager
 async function resolveBin(name: string): Promise<string | undefined> {
   try {
-    const requireFromRoot = createRequire(
-      targetPaths.resolveRoot('package.json'),
-    );
-    const pkgPath = requireFromRoot.resolve(`${name}/package.json`);
+    const rootPkgPath = targetPaths.resolveRoot('package.json');
+    const { dependencies, devDependencies } = await fs.readJson(rootPkgPath);
+    if (!dependencies?.[name] && !devDependencies?.[name]) {
+      return undefined;
+    }
+    const pkgPath = createRequire(rootPkgPath).resolve(`${name}/package.json`);
     const { bin } = await fs.readJson(pkgPath);
     const binPath = typeof bin === 'string' ? bin : bin?.[name];
     return binPath ? join(dirname(pkgPath), binPath) : undefined;
