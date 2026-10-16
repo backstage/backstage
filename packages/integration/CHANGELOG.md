@@ -1,5 +1,19 @@
 # @backstage/integration
 
+## 2.1.3
+
+### Patch Changes
+
+- 1f603db: Azure DevOps repository files now resolve to an edit URL when used by integrations such as TechDocs.
+- 7d17e72: Fixed Azure DevOps file and archive downloads to use the requested branch or tag, including when checking whether a repository tree has changed. Branches and tags with the same name are now distinguished.
+- 4bd3c42: Bitbucket Cloud OAuth access tokens returned by `getBitbucketCloudOAuthToken` are now cached separately for each set of OAuth client credentials. Previously a single token was cached globally, which could cause the wrong token to be used when more than one Bitbucket Cloud integration was configured or when OAuth credentials were rotated.
+- 933e50e: Fixed importing this package from ECMAScript module (ESM) projects, which failed since 2.1.0 with an error saying that `lodash` does not provide an export named `trimEnd`.
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+
 ## 2.1.3-next.1
 
 ### Patch Changes

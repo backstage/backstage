@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-atlassian-provider
 
+## 0.5.0
+
+### Minor Changes
+
+- d7cd08b: **BREAKING**: Removed the `usernameMatchingUserEntityName` sign-in resolver, along with the `atlassianSignInResolvers` export that only contained it. Atlassian user profiles do not contain a username, so the resolver could never work in an Atlassian environment anyway. Use the `emailMatchingUserEntityProfileEmail` or `emailLocalPartMatchingUserEntityName` resolvers instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/plugin-auth-node@0.7.7
+
 ## 0.4.20-next.1
 
 ### Patch Changes

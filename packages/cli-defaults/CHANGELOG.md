@@ -1,5 +1,27 @@
 # @backstage/cli-defaults
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-catalog@0.2.0
+  - @backstage/cli-module-scaffolder@0.2.0
+  - @backstage/cli-module-search@0.2.0
+  - @backstage/cli-module-test-jest@0.1.7
+  - @backstage/cli-module-new@0.1.8
+  - @backstage/cli-module-build@0.1.9
+  - @backstage/cli-module-package-manager-yarn@0.1.3
+  - @backstage/cli-module-actions@0.1.4
+  - @backstage/cli-module-auth@0.1.5
+  - @backstage/cli-module-config@0.1.8
+  - @backstage/cli-module-github@0.1.5
+  - @backstage/cli-module-info@0.1.5
+  - @backstage/cli-module-lint@0.1.6
+  - @backstage/cli-module-maintenance@0.1.6
+  - @backstage/cli-module-migrate@0.2.2
+  - @backstage/cli-module-translations@0.1.5
+
 ## 0.1.7-next.0
 
 ### Patch Changes
