@@ -79,7 +79,6 @@ This provider includes several resolvers out of the box that you can use:
 
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found, it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
-- `usernameMatchingUserEntityName`: Deprecated, do not use. Atlassian user profiles do not contain a username, so this resolver always fails.
 
 :::note
 

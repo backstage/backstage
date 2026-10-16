@@ -3556,7 +3556,6 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-atlassian-oauth2: "npm:^2.1.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
