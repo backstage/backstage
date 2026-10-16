@@ -1,5 +1,15 @@
 # @backstage/plugin-mui-to-bui
 
+## 0.2.12
+
+### Patch Changes
+
+- 701eaf4: The text now points to the main documentation instead of repeating information here.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/core-plugin-api@1.12.11
+
 ## 0.2.12-next.2
 
 ### Patch Changes

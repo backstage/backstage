@@ -1,5 +1,29 @@
 # @backstage/catalog-client
 
+## 1.16.3
+
+### Patch Changes
+
+- 6c74f3f: Fixed the conversion of legacy filters that happens when a request has both a `filter` and a `query`, so that it matches the semantics of the legacy filter query parameter. Empty filters no longer turn into a predicate that matches nothing, empty records no longer match everything, and string values take precedence over `CATALOG_FILTER_EXISTS` for the same key.
+- aeb9393: The `InMemoryCatalogClient` test utility now matches entities the same way as the catalog backend. Both `filter` and `query` are evaluated against the same search rows that the backend builds for its search table, instead of `query` being evaluated against raw entity JSON. This affects `getEntities`, `getEntitiesByRefs`, `queryEntities`, `streamEntities`, and `getEntityFacets`.
+
+  This fixes several cases where the fake returned different results than a real catalog, which may change the outcome of existing tests:
+
+  - Relation shorthand such as `{ 'relations.hasMember': 'user:default/alice' }` now works in `query`, including with `$in`, `$hasPrefix`, `$exists`, `$contains`, and logical operators.
+  - Field keys are matched case-insensitively in both `filter` and `query`. For example, `{ 'spec.dependsOn': ... }` previously never matched in `filter`, and `{ 'METADATA.NAME': ... }` never matched in `query`.
+  - Entities without a `metadata.namespace` now match `{ 'metadata.namespace': 'default' }` in `query`.
+  - Values longer than 200 characters can no longer be matched by value, but still satisfy `$exists: true`, as in the backend.
+  - `metadata.name`, `metadata.namespace`, and `metadata.uid` always satisfy `$exists: true`, even when the entity has no value for them.
+  - Predicates that the backend does not support are now rejected up front with an `InputError`, even when no entities would be evaluated. For example, an object `$contains` on any field other than `relations`, or a `relations` `$contains` without a `type`.
+  - Entities that have keys differing only in casing, such as `spec.foo` and `spec.Foo`, now cause an `InputError` when matched, since the backend refuses to store such entities.
+
+- e844921: `streamEntities` no longer asks the catalog backend to compute the total number of matching items, since that count is never part of the streamed result. This also applies to the catalog service in `@backstage/plugin-catalog-node`, which delegates to the client. The `totalItems` option of `StreamEntitiesRequest` is now deprecated and ignored.
+- Updated dependencies
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/filter-predicates@0.1.6
+  - @backstage/plugin-catalog-common@1.2.1
+
 ## 1.16.3-next.1
 
 ### Patch Changes
