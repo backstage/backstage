@@ -25,7 +25,6 @@ import path, { resolve as resolvePath } from 'node:path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
   createOrUpdateMetadata,
-  getGeneratorKey,
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
   MKDOCS_SCHEMA,
@@ -199,13 +198,6 @@ describe('helpers', () => {
   const mockDir = createMockDirectory();
 
   afterEach(mockDir.clear);
-
-  describe('getGeneratorKey', () => {
-    it('should return techdocs as the only generator key', () => {
-      const key = getGeneratorKey(mockEntity);
-      expect(key).toBe('techdocs');
-    });
-  });
 
   describe('getRepoUrlFromLocationAnnotation', () => {
     it.each`

@@ -18,6 +18,7 @@ Commands:
   publish [options]
   serve [options]
   serve:mkdocs [options]
+  serve:raw [options]
 ```
 
 ### `techdocs-cli generate`
@@ -30,6 +31,7 @@ Options:
   --defaultPlugin [defaultPlugins...]
   --disableExternalFonts
   --docker-image <DOCKER_IMAGE>
+  --engine <ENGINE>
   --etag <ETAG>
   --legacyCopyReadmeMdToIndexMd
   --no-docker
@@ -104,15 +106,21 @@ Usage: techdocs-cli serve [options]
 Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
+  --engine <ENGINE>
+  --engine-port <PORT>
+  --mkdocs-config-file-name <FILENAME>
   --mkdocs-parameter-clean
   --mkdocs-parameter-dirtyreload
   --mkdocs-parameter-strict
   --mkdocs-port <PORT>
   --no-docker
+  --parameter-clean
+  --parameter-dirtyreload
+  --parameter-strict
   --preview-app-bundle-path <PATH_TO_BUNDLE>
   --preview-app-port <PORT>
   --site-name
-  -c, --mkdocs-config-file-name <FILENAME>
+  -c, --config-file-name <FILENAME>
   -h, --help
   -i, --docker-image <DOCKER_IMAGE>
   -v, --verbose
@@ -126,6 +134,24 @@ Usage: techdocs-cli serve:mkdocs [options]
 Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
+  --engine <ENGINE>
+  --no-docker
+  --site-name
+  -h, --help
+  -i, --docker-image <DOCKER_IMAGE>
+  -p, --port <PORT>
+  -v, --verbose
+```
+
+### `techdocs-cli serve:raw`
+
+```
+Usage: techdocs-cli serve:raw [options]
+
+Options:
+  --docker-entrypoint <DOCKER_ENTRYPOINT>
+  --docker-option <DOCKER_OPTION...>
+  --engine <ENGINE>
   --no-docker
   --site-name
   -h, --help

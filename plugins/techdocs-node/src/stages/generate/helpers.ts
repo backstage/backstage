@@ -15,7 +15,6 @@
  */
 
 import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
 import { ForwardedError, NotAllowedError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
@@ -32,17 +31,8 @@ import {
 import path, { resolve as resolvePath } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
+import { DefaultMkdocsContent } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
-
-// TODO: Implement proper support for more generators.
-export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
-  if (!entity) {
-    throw new Error('No entity provided');
-  }
-
-  return 'techdocs';
-}
 
 export type RunCommandOptions = {
   /** command to run */
@@ -520,6 +510,7 @@ export const patchIndexPreBuild = async ({
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
   logger: LoggerService,
+  engine?: string,
 ): Promise<void> => {
   const techdocsMetadataDir = techdocsMetadataPath
     .split(path.sep)
@@ -545,6 +536,9 @@ export const createOrUpdateMetadata = async (
   }
 
   json.build_timestamp = Date.now();
+  if (engine) {
+    json.engine = engine;
+  }
 
   // Get and write generated files to the metadata JSON. Each file string is in
   // a form appropriate for invalidating the associated object from cache.

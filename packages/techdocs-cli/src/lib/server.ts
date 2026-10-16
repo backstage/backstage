@@ -16,7 +16,7 @@
 
 import { run, RunChildProcess, RunOnOutput } from '@backstage/cli-common';
 
-export const runMkdocsServer = (options: {
+export const runEngineServer = (options: {
   port?: string;
   useDocker?: boolean;
   dockerImage?: string;
@@ -24,10 +24,8 @@ export const runMkdocsServer = (options: {
   dockerOptions?: string[];
   onStdout?: RunOnOutput;
   onStderr?: RunOnOutput;
-  mkdocsConfigFileName?: string;
-  mkdocsParameterClean?: boolean;
-  mkdocsParameterDirtyReload?: boolean;
-  mkdocsParameterStrict?: boolean;
+  engineBinary: string;
+  engineServeArgs: string[];
 }): RunChildProcess => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
@@ -51,16 +49,7 @@ export const runMkdocsServer = (options: {
           : []),
         ...(options.dockerOptions || []),
         dockerImage,
-        'serve',
-        '--dev-addr',
-        `0.0.0.0:${port}`,
-        '--livereload',
-        ...(options.mkdocsConfigFileName
-          ? ['--config-file', options.mkdocsConfigFileName]
-          : []),
-        ...(options.mkdocsParameterClean ? ['--clean'] : []),
-        ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
-        ...(options.mkdocsParameterStrict ? ['--strict'] : []),
+        ...options.engineServeArgs,
       ],
       {
         onStdout: options.onStdout,
@@ -69,23 +58,8 @@ export const runMkdocsServer = (options: {
     );
   }
 
-  return run(
-    [
-      'mkdocs',
-      'serve',
-      '--dev-addr',
-      `127.0.0.1:${port}`,
-      '--livereload',
-      ...(options.mkdocsConfigFileName
-        ? ['--config-file', options.mkdocsConfigFileName]
-        : []),
-      ...(options.mkdocsParameterClean ? ['--clean'] : []),
-      ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
-      ...(options.mkdocsParameterStrict ? ['--strict'] : []),
-    ],
-    {
-      onStdout: options.onStdout,
-      onStderr: options.onStderr,
-    },
-  );
+  return run([options.engineBinary, ...options.engineServeArgs], {
+    onStdout: options.onStdout,
+    onStderr: options.onStderr,
+  });
 };
