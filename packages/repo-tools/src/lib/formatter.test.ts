@@ -21,12 +21,21 @@ import { detectFormatter, formatFiles, tryRunOxfmt } from './formatter';
 const mockDir = createMockDirectory();
 
 // Jest caches failed module lookups per directory, so each case uses a new
-// repository root
+// repository root. The root package.json declares the installed packages,
+// unless one is given.
 let mockRoot = '';
 let rootCount = 0;
 function setRoot(content: Record<string, any>) {
   mockRoot = `root-${rootCount++}`;
-  mockDir.addContent({ [mockRoot]: content });
+  const devDependencies = Object.fromEntries(
+    Object.keys(content.node_modules ?? {}).map(name => [name, '*']),
+  );
+  mockDir.addContent({
+    [mockRoot]: {
+      'package.json': JSON.stringify({ devDependencies }),
+      ...content,
+    },
+  });
 }
 
 jest.mock('@backstage/cli-common', () => ({
@@ -106,6 +115,19 @@ describe('formatter', () => {
       node_modules: { prettier: prettierStub, oxfmt: oxfmtStub },
     });
     expect(detectFormatter()).toEqual(oxfmt());
+
+    // Formatters that the root doesn't depend on are ignored
+    setRoot({
+      'package.json': JSON.stringify({ devDependencies: { oxfmt: '*' } }),
+      node_modules: { prettier: prettierStub, oxfmt: oxfmtStub },
+    });
+    expect(detectFormatter()).toEqual(oxfmt());
+
+    setRoot({
+      'package.json': JSON.stringify({ dependencies: { other: '*' } }),
+      node_modules: { prettier: prettierStub },
+    });
+    expect(detectFormatter()).toBeUndefined();
   });
 
   it('formats files with the detected formatter', async () => {

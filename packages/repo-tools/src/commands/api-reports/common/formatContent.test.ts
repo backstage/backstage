@@ -20,12 +20,21 @@ import { formatContent, formatContentAsync } from '.';
 const mockDir = createMockDirectory();
 
 // Jest caches failed module lookups per directory, so each case uses a new
-// repository root
+// repository root. The root package.json declares the installed packages,
+// unless one is given.
 let mockRoot = '';
 let rootCount = 0;
 function setRoot(content: Record<string, any>) {
   mockRoot = `root-${rootCount++}`;
-  mockDir.addContent({ [mockRoot]: content });
+  const devDependencies = Object.fromEntries(
+    Object.keys(content.node_modules ?? {}).map(name => [name, '*']),
+  );
+  mockDir.addContent({
+    [mockRoot]: {
+      'package.json': JSON.stringify({ devDependencies }),
+      ...content,
+    },
+  });
 }
 
 jest.mock('@backstage/cli-common', () => ({
