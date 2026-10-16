@@ -44,15 +44,19 @@ export type Formatter = {
 };
 
 /**
- * Resolves the CLI entry point of a package from the repository root, using
- * Node.js module resolution so that it works with any package manager.
+ * Resolves the CLI entry point of a package that the repository root declares
+ * as a dependency. Packages that are only installed as dependencies of other
+ * packages are ignored. Node.js module resolution is used so that it works with
+ * any package manager.
  */
 function resolveBin(name: string): string | undefined {
   try {
-    const requireFromRoot = createRequire(
-      targetPaths.resolveRoot('package.json'),
-    );
-    const pkgPath = requireFromRoot.resolve(`${name}/package.json`);
+    const rootPkgPath = targetPaths.resolveRoot('package.json');
+    const { dependencies, devDependencies } = fs.readJsonSync(rootPkgPath);
+    if (!dependencies?.[name] && !devDependencies?.[name]) {
+      return undefined;
+    }
+    const pkgPath = createRequire(rootPkgPath).resolve(`${name}/package.json`);
     const { bin } = fs.readJsonSync(pkgPath);
     const binPath = typeof bin === 'string' ? bin : bin?.[name];
     return binPath ? join(dirname(pkgPath), binPath) : undefined;
@@ -64,9 +68,10 @@ function resolveBin(name: string): string | undefined {
 /**
  * Detects the formatter of the target repository.
  *
- * oxfmt is used if it's installed in the repository and either configured in
- * the repository root, or the only formatter installed. Otherwise Prettier is
- * used if it's installed. Formatters are resolved from the repository root.
+ * A formatter counts as installed if the root package.json declares it as a
+ * dependency and it can be resolved from the repository root. oxfmt is used if
+ * it's installed and either configured in the repository root, or the only
+ * formatter installed. Otherwise Prettier is used if it's installed.
  *
  * @returns The formatter, or undefined if no formatter is installed
  */
