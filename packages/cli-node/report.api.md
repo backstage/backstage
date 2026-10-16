@@ -139,14 +139,11 @@ export interface CliPackageContext {
 }
 
 // @public
-export interface CliRepoCommandOptions {
-  deprecated?: boolean;
+export interface CliRunTargetOptions {
   description: string;
-  experimental?: boolean;
   includeDependents?: boolean;
   packageArgs?: string[];
   packageCommand: string[];
-  path: string[];
   scriptName?: string;
 }
 
@@ -164,7 +161,7 @@ export function createCliModule(options: {
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
-    addRepoCommand: (options: CliRepoCommandOptions) => void;
+    addRunTarget: (name: string, options: CliRunTargetOptions) => void;
   }) => Promise<void>;
 }): CliModule;
 

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { CliCommand, CliModule } from '@backstage/cli-node';
+import {
+  CliCommand,
+  CliModule,
+  CliRunTargetOptions,
+} from '@backstage/cli-node';
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueCliModule = OpaqueType.create<{
@@ -23,6 +27,9 @@ export const OpaqueCliModule = OpaqueType.create<{
     readonly version: 'v1';
     readonly packageName: string;
     readonly commands: Promise<ReadonlyArray<CliCommand>>;
+    readonly runTargets: Promise<
+      ReadonlyArray<{ name: string; options: CliRunTargetOptions }>
+    >;
   };
 }>({
   type: '@backstage/CliModule',

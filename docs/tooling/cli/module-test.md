@@ -4,12 +4,9 @@ title: Test Module
 description: CLI commands for running tests with Jest.
 ---
 
-The test module (`@backstage/cli-module-test`) provides `repo test`, which runs
-the tests of every package in the repository. The Jest module
-(`@backstage/cli-module-test-jest`) provides `package test`, which runs the
-tests of a single package using Jest with a default configuration included in
-the CLI, and `repo jest`, which runs Jest across the whole repository in a
-single run.
+The test module (`@backstage/cli-module-test-jest`) provides commands for
+running tests in individual packages and across the entire repository. Tests are
+run using Jest with a default configuration included in the CLI.
 
 For more information about configuration overrides and editor support, see the
 [Jest Configuration section](./02-build-system.md#jest-configuration) in the
@@ -17,55 +14,13 @@ build system documentation.
 
 ## repo test
 
-Run the tests of each package in the repository. The command runs
-`package test` in a separate process for each package, so the test tool can be
-chosen per package by whichever CLI module provides `package test` for it. Only
-packages that have `backstage-cli package test` in their `test` script are
-included, and any further arguments in that script are passed on.
-
-The output of each package is printed once it has finished, followed by a
-summary of the packages that failed. The command exits with a non-zero code if
-any package failed.
-
-```sh title="Run the tests of all packages"
-yarn backstage-cli repo test
-```
-
-Unknown options and positional arguments are forwarded to `package test` for
-each package. Tests are run once by default; use `--watch` to keep running.
-
-```text
-Usage: backstage-cli repo test [options]
-
-Options:
-  --since <ref>            Only run packages that changed since the specified ref
-  --include-dependents     Also run packages that depend on the selected packages (default: true, use --no-include-dependents to disable)
-  --watch                  Re-run packages when their files change
-  -h, --help               display help for command
-```
-
-The `repo test` command includes dependents by default, which `--include-dependents`
-and `--no-include-dependents` override.
-
-With `--since`, only changed packages and, unless `--no-include-dependents` is
-set, their local dependents are run. If nothing has changed the command prints
-`No packages changed since <ref>` and exits successfully.
-
-With `--watch`, the command runs all selected packages once, then watches their
-files and re-runs the affected packages, plus their dependents when
-`--include-dependents` is enabled. Changes made while a run is in progress are
-queued for the next run.
-
-## repo jest
-
-Test packages in the project in a single Jest run. This is the command to use
-for the `test` script in the root `package.json` in your project, and it
-supports success caching and coverage reporting across all packages:
+Test packages in the project. It is recommended to have this command be used as
+the `test` script in the root `package.json` in your project:
 
 ```json title="package.json in the root of your project"
 {
   "scripts": {
-    "test": "backstage-cli repo jest"
+    "test": "backstage-cli repo test"
   }
 }
 ```
@@ -92,9 +47,9 @@ cache is stored in `node_modules/.cache/backstage-cli`, but you can choose a
 different directory with the `--success-cache-dir <path>`.
 
 ```text
-Usage: backstage-cli repo jest [options]
+Usage: backstage-cli repo test [options]
 
-Run tests across the repo in a single Jest run, defaulting to watch mode
+Run tests, forwarding args to Jest, defaulting to watch mode
 
 Options:
   --since <ref>               Only test packages that changed since the specified ref
@@ -104,11 +59,44 @@ Options:
   -h, --help                  display help for command
 ```
 
-:::note
-Previous versions of the CLI provided the Jest-based command as `repo test`.
-Update scripts that rely on watch mode, success caching or merged coverage to use
-`repo jest`.
-:::
+## repo run test
+
+Run the tests of each package in the repository, one at a time per package. The
+command runs `package test` in a separate process for each package, and is a
+target of `repo run`. Only packages that have `backstage-cli package test` in
+their `test` script are included, and any further arguments in that script are
+passed on.
+
+The output of each package is printed once it has finished, followed by a
+summary of the packages that failed. The command exits with a non-zero code if
+any package failed.
+
+```sh title="Run the tests of all packages"
+yarn backstage-cli repo run test
+```
+
+Unknown options and positional arguments are forwarded to `package test` for
+each package. Tests run once by default, use `--watch` to keep running.
+
+```text
+Usage: backstage-cli repo run test [options]
+
+Options:
+  --since <ref>            Only run packages that changed since the specified ref
+  --include-dependents     Also run packages that depend on the selected packages (default: true, use --no-include-dependents to disable)
+  --watch                  Re-run packages when their files change
+  -h, --help               display help for command
+```
+
+With `--since`, only changed packages and their local dependents are run. If
+nothing has changed, the command prints `No packages changed since <ref>` and
+exits successfully. Use `--no-include-dependents` to skip the dependents.
+
+With `--watch`, the command runs all selected packages once, then watches their
+files and re-runs the affected packages and their dependents. Changes made while
+a run is in progress are queued for the next run.
+
+Run `backstage-cli repo run --help` to list all available targets.
 
 ## package test
 

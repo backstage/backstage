@@ -15,7 +15,7 @@
  */
 
 import { OpaqueCliModule } from '@internal/cli';
-import { CliCommand, CliModule, CliRepoCommandOptions } from './types';
+import { CliCommand, CliModule, CliRunTargetOptions } from './types';
 
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
@@ -54,11 +54,11 @@ export function createCliModule(options: {
     /** Registers a new command with the CLI. */
     addCommand: (command: CliCommand) => void;
     /**
-     * Registers a `repo` command that runs the given `package` command in
-     * every package of the workspace, with support for `--since`,
-     * `--include-dependents` and `--watch`.
+     * Registers a target for `repo run <name>`, which runs the given
+     * `package` command in every package of the workspace, with support for
+     * `--since`, `--include-dependents` and `--watch`.
      */
-    addRepoCommand: (options: CliRepoCommandOptions) => void;
+    addRunTarget: (name: string, options: CliRunTargetOptions) => void;
   }) => Promise<void>;
 }): CliModule {
   if (!options.packageJson.name) {
@@ -78,45 +78,45 @@ export function createCliModule(options: {
     }
     commands.push(command);
   };
-  const addRepoCommand = (repoOptions: CliRepoCommandOptions) => {
-    const { path, packageCommand, ...rest } = repoOptions;
-    if (path[0] !== 'repo' || path.length < 2) {
+  const runTargets: Array<{ name: string; options: CliRunTargetOptions }> = [];
+  const addRunTarget = (name: string, runTarget: CliRunTargetOptions) => {
+    if (!name || /\s/.test(name)) {
       throw new Error(
-        `Repo command "${path.join(' ')}" from "${
-          options.packageJson.name
-        }" must have a path that starts with "repo"`,
+        `Run target "${name}" from "${options.packageJson.name}" must have a non-empty name without whitespace`,
       );
     }
-    if (packageCommand[0] !== 'package' || packageCommand.length < 2) {
+    if (
+      runTarget.packageCommand[0] !== 'package' ||
+      runTarget.packageCommand.length < 2
+    ) {
       throw new Error(
-        `Repo command "${path.join(' ')}" from "${
+        `Run target "${name}" from "${
           options.packageJson.name
-        }" must target a package command, got "${packageCommand.join(' ')}"`,
+        }" must target a package command, got "${runTarget.packageCommand.join(
+          ' ',
+        )}"`,
       );
     }
-    addCommand({
-      path,
-      description: rest.description,
-      deprecated: rest.deprecated,
-      experimental: rest.experimental,
-      execute: async context => {
-        const mod = await import('./repoCommand/runRepoCommand');
-        // Native dynamic imports of CommonJS only expose the exports object
-        // as the default export, same as for command loaders in runCli.
-        const { runRepoCommand } =
-          typeof mod.runRepoCommand === 'function'
-            ? mod
-            : (mod as unknown as { default: typeof mod }).default;
-        await runRepoCommand({ ...repoOptions }, context);
-      },
-    });
+    if (runTargets.some(target => target.name === name)) {
+      throw new Error(
+        `Run target "${name}" is registered more than once by "${options.packageJson.name}"`,
+      );
+    }
+    runTargets.push({ name, options: runTarget });
   };
-  const commandsPromise = Promise.resolve()
-    .then(() => options.init({ addCommand, addRepoCommand }))
-    .then(() => commands);
+  const initPromise = Promise.resolve().then(() =>
+    options.init({ addCommand, addRunTarget }),
+  );
+  const commandsPromise = initPromise.then(() => commands);
+  const runTargetsPromise = initPromise.then(() => runTargets);
+  // Failures are reported to whoever awaits each promise, this only prevents
+  // an unhandled rejection when just one of them is awaited.
+  commandsPromise.catch(() => {});
+  runTargetsPromise.catch(() => {});
 
   return OpaqueCliModule.createInstance('v1', {
     packageName: options.packageJson.name,
     commands: commandsPromise,
+    runTargets: runTargetsPromise,
   });
 }

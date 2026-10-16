@@ -96,8 +96,8 @@ The `createCliModule` function accepts an options object with two fields:
   imported `package.json`. The name is used in error messages when command
   conflicts occur.
 - **`init`** — An async callback that receives a registry object. Use the
-  registry's `addCommand` method to register commands, and `addRepoCommand` to
-  register a repo command that runs a package command for every package.
+  registry's `addCommand` method to register commands, and `addRunTarget` to
+  register a target for `repo run`.
 
 The `init` callback runs when the module is loaded, not when a command is
 executed. Keep it lightweight and use the deferred loader pattern for commands
@@ -209,32 +209,39 @@ the matching command in a default module set. The default command stays
 available as the fallback. Setting `isEnabled` on a command outside `package`
 is an error.
 
-### Automatic repo commands
+### Run targets
 
-Use `reg.addRepoCommand` to register a `repo` command that runs a `package`
-command for each package in the workspace, in a separate process for each package:
+Use `reg.addRunTarget` to register a target for `backstage-cli repo run`. A
+target runs a `package` command for each package in the workspace, in a
+separate process per package:
 
 ```ts
-reg.addRepoCommand({
-  path: ['repo', 'test'],
-  description: 'Run the tests of each package in the repository',
+reg.addRunTarget('test', {
+  description: 'Run the tests of each package',
   packageCommand: ['package', 'test'],
   packageArgs: ['--no-watch'],
   includeDependents: true,
 });
 ```
 
-The `path` must start with `repo` and `packageCommand` must start with
-`package`. A package is included if the script named by `scriptName` in its
-`package.json` starts with `backstage-cli <packageCommand>`. The script name
-defaults to the last segment of `packageCommand`, and any further arguments in
-the script are passed on. Arguments in `packageArgs` are always appended.
-Set `includeDependents` to choose whether `--since` and `--watch` also run the
-local dependents of changed packages. It defaults to `true`, and the
-`--include-dependents` and `--no-include-dependents` flags override it.
+The CLI registers `repo run` itself when at least one module provides a target.
+`backstage-cli repo run test` then runs the `test` target, and
+`backstage-cli repo run --help` lists all targets.
 
-The generated command supports `--since <ref>`, `--include-dependents` and
-`--watch`, and forwards any other arguments to the package command.
+The `packageCommand` must start with `package`. A package is included if the
+script named by `scriptName` in its `package.json` starts with
+`backstage-cli <packageCommand>`. The script name defaults to the last segment
+of `packageCommand`, and any further arguments in the script are passed on.
+Arguments in `packageArgs` are always appended.
+
+The `includeDependents` option sets whether `--since` and `--watch` also run the
+local dependents of changed packages. It defaults to `true`, and the
+`--include-dependents` and `--no-include-dependents` flags override it. The
+command also supports `--since <ref>` and `--watch`, and forwards any other
+arguments to the package command.
+
+Several modules can register the same target name only if their options are
+identical. Otherwise the CLI fails with an error that names both modules.
 
 ## Command context
 

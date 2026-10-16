@@ -325,7 +325,7 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   // This code path is enabled by the --success-cache flag, which is specific to
-  // the `repo jest` command in the Backstage CLI.
+  // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
     // Refuse to run if file filters are provided
     if (parsedArgs.length > 0) {

@@ -146,23 +146,19 @@ export interface CliCommand {
 }
 
 /**
- * Options for registering an automatic repo command with
- * `addRepoCommand`.
+ * Options for registering a run target with `addRunTarget`.
  *
- * The resulting command runs the given `package` command once per package in
- * the workspace, in a separate subprocess, and supports the `--since`,
- * `--include-dependents` and `--watch` flags.
+ * A run target is invoked as `backstage-cli repo run <name>`. It runs the
+ * given `package` command once per package in the workspace, in a separate
+ * process, and supports the `--since`, `--include-dependents` and `--watch`
+ * flags.
  *
  * @public
  */
-export interface CliRepoCommandOptions {
+export interface CliRunTargetOptions {
   /**
-   * The path of the repo command, for example `['repo', 'test']`. Must start
-   * with `repo`.
-   */
-  path: string[];
-  /**
-   * A short description of the command, displayed in help output.
+   * A short description of the target, displayed in the `repo run` help
+   * output.
    */
   description: string;
   /**
@@ -171,7 +167,7 @@ export interface CliRepoCommandOptions {
    */
   packageCommand: string[];
   /**
-   * The `package.json` script that opts a package in to the repo command. A
+   * The `package.json` script that opts a package in to the run target. A
    * package is included if this script starts with
    * `backstage-cli <packageCommand>`, and any further arguments in the script
    * are passed on to the package command.
@@ -194,14 +190,6 @@ export interface CliRepoCommandOptions {
    * miss regressions. Set to `false` for commands where that is not the case.
    */
   includeDependents?: boolean;
-  /**
-   * If `true`, the command is deprecated and hidden from help output.
-   */
-  deprecated?: boolean;
-  /**
-   * If `true`, the command is experimental and hidden from help output.
-   */
-  experimental?: boolean;
 }
 
 /**

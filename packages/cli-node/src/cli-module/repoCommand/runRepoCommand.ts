@@ -18,7 +18,7 @@ import chokidar from 'chokidar';
 import { ExitCodeError, run } from '@backstage/cli-common';
 import { PackageGraph } from '../../monorepo';
 import { runConcurrentTasks } from '../../concurrency';
-import type { CliCommandContext, CliRepoCommandOptions } from '../types';
+import type { CliCommandContext, CliRunTargetOptions } from '../types';
 import { parseRepoArgs } from './parseRepoArgs';
 import { buildInvocation } from './buildInvocation';
 import {
@@ -32,7 +32,7 @@ const DEBOUNCE_MS = 200;
 
 async function runPackages(
   selected: SelectedPackage[],
-  options: CliRepoCommandOptions,
+  options: CliRunTargetOptions,
   forwarded: string[],
 ): Promise<string[]> {
   const failed = new Array<string>();
@@ -85,7 +85,7 @@ function reportFailures(failed: string[]) {
 
 /** @internal */
 export async function runRepoCommand(
-  options: CliRepoCommandOptions,
+  options: CliRunTargetOptions,
   context: CliCommandContext,
 ): Promise<void> {
   const flags = parseRepoArgs(context.args, context.info.usage);
@@ -145,7 +145,7 @@ export async function runRepoCommand(
 async function watchPackages(
   selected: SelectedPackage[],
   graph: PackageGraph,
-  options: CliRepoCommandOptions,
+  options: CliRunTargetOptions,
   flags: ReturnType<typeof parseRepoArgs>,
   includeDependents: boolean,
 ): Promise<never> {
