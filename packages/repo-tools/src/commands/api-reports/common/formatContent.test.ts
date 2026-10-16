@@ -19,19 +19,31 @@ import { formatContent, formatContentAsync } from '.';
 
 const mockDir = createMockDirectory();
 
+// Jest caches failed module lookups per directory, so each case uses a new
+// repository root
+let mockRoot = '';
+let rootCount = 0;
+function setRoot(content: Record<string, any>) {
+  mockRoot = `root-${rootCount++}`;
+  mockDir.addContent({ [mockRoot]: content });
+}
+
 jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
   targetPaths: {
     get rootDir() {
-      return mockDir.path;
+      return mockDir.resolve(mockRoot);
     },
-    resolveRoot: (...paths: string[]) => mockDir.resolve(...paths),
+    resolveRoot: (...paths: string[]) => mockDir.resolve(mockRoot, ...paths),
   },
 }));
 
 // A stand-in for oxfmt that marks the files it writes with their type
 const oxfmtStub = {
-  'package.json': JSON.stringify({ name: 'oxfmt', version: '0.0.0' }),
+  'package.json': JSON.stringify({
+    name: 'oxfmt',
+    bin: { oxfmt: 'bin/oxfmt' },
+  }),
   bin: {
     oxfmt: `
       const fs = require('node:fs');
@@ -63,7 +75,7 @@ const report = [
 
 describe('formatContent', () => {
   it('formats reports with oxfmt, with code as declaration files', async () => {
-    mockDir.setContent({ node_modules: { oxfmt: oxfmtStub } });
+    setRoot({ node_modules: { oxfmt: oxfmtStub } });
 
     const expected = [
       '# Report M',
@@ -84,7 +96,7 @@ describe('formatContent', () => {
     expect(formatContent(report)).toBe(expected);
     await expect(
       formatContentAsync(report, {
-        filepath: mockDir.resolve('report.sql.md'),
+        filepath: mockDir.resolve(mockRoot, 'report.sql.md'),
       }),
     ).resolves.toBe(expected);
     expect(formatContent(report.replaceAll('\n', '\r\n'))).toBe(
@@ -93,7 +105,7 @@ describe('formatContent', () => {
   });
 
   it('formats reports with Prettier when oxfmt is not used', async () => {
-    mockDir.setContent({});
+    setRoot({});
 
     expect(formatContent('#   Title\n\n*   item\n')).toBe(
       '# Title\n\n- item\n',
