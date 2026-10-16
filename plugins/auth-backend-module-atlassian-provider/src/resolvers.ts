@@ -30,6 +30,10 @@ import { z } from 'zod/v3';
 export namespace atlassianSignInResolvers {
   /**
    * Looks up the user by matching their Atlassian username to the entity name.
+   *
+   * @deprecated Atlassian user profiles do not contain a username, so this
+   * resolver always fails. Use the `emailMatchingUserEntityProfileEmail` or
+   * `emailLocalPartMatchingUserEntityName` resolvers instead.
    */
   export const usernameMatchingUserEntityName = createSignInResolverFactory({
     optionsSchema: z
@@ -46,7 +50,9 @@ export namespace atlassianSignInResolvers {
 
         const id = result.fullProfile.username;
         if (!id) {
-          throw new Error(`Atlassian user profile does not contain a username`);
+          throw new Error(
+            `Atlassian user profiles do not contain a username, so the usernameMatchingUserEntityName sign-in resolver can not be used. Use the emailMatchingUserEntityProfileEmail or emailLocalPartMatchingUserEntityName resolver instead.`,
+          );
         }
 
         return ctx.signInWithCatalogUser(
