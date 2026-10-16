@@ -771,6 +771,12 @@ export interface Config {
            */
           ensureSchemaExists?: boolean;
           /**
+           * Overrides the global plugin division mode for this plugin.
+           *
+           * NOTE: Schema mode is currently only supported by the `pg` client.
+           */
+          pluginDivisionMode?: 'database' | 'schema';
+          /**
            * Arbitrary config object to pass to knex when initializing
            * (https://knexjs.org/#Installation-client). Most notable is the
            * debug and asyncStackTraces booleans.
