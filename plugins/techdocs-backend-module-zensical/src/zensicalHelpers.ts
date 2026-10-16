@@ -21,6 +21,8 @@ import { randomUUID } from 'node:crypto';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node';
 
+type NamedOptions = Record<string, unknown> | undefined;
+
 const TECHDOCS_ZENSICAL_CORE_EXTENSIONS = [
   'admonition',
   'toc',
@@ -46,7 +48,12 @@ const TECHDOCS_ZENSICAL_EXTRA_EXTENSIONS = [
   'mdx_truly_sane_lists',
 ];
 
-const TECHDOCS_ZENSICAL_MDX_CONFIGS: Record<string, unknown> = {
+/**
+ * Options for the TechDocs extensions, set inline on each markdown_extensions
+ * entry. Zensical rebuilds mdx_configs from markdown_extensions, so options
+ * set through mdx_configs are ignored.
+ */
+const TECHDOCS_ZENSICAL_EXTENSION_OPTIONS: Record<string, NamedOptions> = {
   'pymdownx.snippets': {
     restrict_base_path: true,
   },
@@ -58,17 +65,63 @@ const TECHDOCS_ZENSICAL_MDX_CONFIGS: Record<string, unknown> = {
   },
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Reads an mkdocs.yml list of named entries (markdown_extensions or plugins)
+ * into name/options pairs. Accepts every form MkDocs accepts: a list of
+ * names, a list mixing names and single-key mappings, or a mapping.
+ */
+function readNamedEntries(value: unknown): Map<string, NamedOptions> {
+  const entries = new Map<string, NamedOptions>();
+  const add = (name: string, options: unknown) => {
+    entries.set(name, isRecord(options) ? options : undefined);
+  };
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      if (typeof item === 'string') {
+        add(item, undefined);
+      } else if (isRecord(item)) {
+        for (const [name, options] of Object.entries(item)) {
+          add(name, options);
+        }
+      }
+    }
+  } else if (isRecord(value)) {
+    for (const [name, options] of Object.entries(value)) {
+      add(name, options);
+    }
+  }
+  return entries;
+}
+
+/** Writes name/options pairs back as an mkdocs.yml list. */
+function writeNamedEntries(
+  entries: Map<string, NamedOptions>,
+): Array<string | Record<string, unknown>> {
+  return [...entries].map(([name, options]) =>
+    options ? { [name]: options } : name,
+  );
+}
+
 /**
  * Patches mkdocs.yml for Zensical builds: sets classic theme, injects markdown
  * extensions, sets site_dir, and removes the techdocs-core plugin.
  *
  * Writes to a uniquely named temporary file so the original config is not modified.
  *
+ * @param mkdocsYmlPath - Path to the mkdocs.yml to patch.
+ * @param siteDir - Output directory, relative to the mkdocs.yml directory.
+ * @param logger - Logger for progress messages.
+ * @returns Path to the patched temporary config.
+ *
  * @public
  */
 export async function patchZensicalConfig(
   mkdocsYmlPath: string,
-  outputDir: string,
+  siteDir: string,
   logger: Pick<LoggerService, 'info'>,
 ): Promise<string> {
   const content = await fs.readFile(mkdocsYmlPath, 'utf8');
@@ -77,13 +130,13 @@ export async function patchZensicalConfig(
     unknown
   >;
 
+  const theme = isRecord(config.theme) ? config.theme : {};
+  const features = Array.isArray(theme.features) ? theme.features : [];
   config.theme = {
-    ...(typeof config.theme === 'object' && config.theme !== null
-      ? config.theme
-      : {}),
+    ...theme,
     name: 'material',
     custom_dir: undefined,
-    features: ['navigation.footer', 'content.action.edit'],
+    features: [...new Set([...features, 'navigation.footer'])],
     font: false,
   };
   // Remove palette entirely — the TechDocs frontend handles dark/light
@@ -92,32 +145,26 @@ export async function patchZensicalConfig(
   // which locks the output to light mode.
   delete (config.theme as Record<string, unknown>).palette;
 
-  config.site_dir = outputDir;
+  config.site_dir = siteDir;
 
-  const existingExtensions = Array.isArray(config.markdown_extensions)
-    ? (config.markdown_extensions as string[])
-    : [];
-  config.markdown_extensions = [
-    ...new Set([
-      ...existingExtensions,
-      ...TECHDOCS_ZENSICAL_CORE_EXTENSIONS,
-      ...TECHDOCS_ZENSICAL_EXTRA_EXTENSIONS,
-    ]),
-  ];
-
-  const existingMdxConfigs =
-    typeof config.mdx_configs === 'object' && config.mdx_configs !== null
-      ? (config.mdx_configs as Record<string, unknown>)
-      : {};
-  config.mdx_configs = {
-    ...TECHDOCS_ZENSICAL_MDX_CONFIGS,
-    ...existingMdxConfigs,
-  };
-
-  if (Array.isArray(config.plugins)) {
-    config.plugins = (config.plugins as unknown[]).filter(
-      p => p !== 'techdocs-core',
+  const extensions = readNamedEntries(config.markdown_extensions);
+  for (const name of [
+    ...TECHDOCS_ZENSICAL_CORE_EXTENSIONS,
+    ...TECHDOCS_ZENSICAL_EXTRA_EXTENSIONS,
+  ]) {
+    const defaults = TECHDOCS_ZENSICAL_EXTENSION_OPTIONS[name];
+    const existing = extensions.get(name);
+    extensions.set(
+      name,
+      defaults || existing ? { ...defaults, ...existing } : undefined,
     );
+  }
+  config.markdown_extensions = writeNamedEntries(extensions);
+
+  if (config.plugins !== undefined) {
+    const plugins = readNamedEntries(config.plugins);
+    plugins.delete('techdocs-core');
+    config.plugins = writeNamedEntries(plugins);
   }
 
   const zensicalConfigPath = path.join(

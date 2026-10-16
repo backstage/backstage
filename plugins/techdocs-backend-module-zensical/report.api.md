@@ -19,7 +19,7 @@ export function cleanupZensicalConfig(
 // @public
 export function patchZensicalConfig(
   mkdocsYmlPath: string,
-  outputDir: string,
+  siteDir: string,
   logger: Pick<LoggerService, 'info'>,
 ): Promise<string>;
 

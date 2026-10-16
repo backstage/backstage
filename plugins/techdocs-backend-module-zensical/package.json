@@ -52,6 +52,7 @@
     "js-yaml": "^5.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
     "@types/js-yaml": "^4.0.0"
