@@ -15,7 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { tryRunPrettier, tryRunPrettierAsync } from '.';
+import { formatContent, formatContentAsync } from '.';
 
 const mockDir = createMockDirectory();
 
@@ -61,7 +61,7 @@ const report = [
   '',
 ].join('\n');
 
-describe('tryRunPrettier', () => {
+describe('formatContent', () => {
   it('formats reports with oxfmt, with code as declaration files', async () => {
     mockDir.setContent({ node_modules: { oxfmt: oxfmtStub } });
 
@@ -81,13 +81,13 @@ describe('tryRunPrettier', () => {
       '```',
       '',
     ].join('\n');
-    expect(tryRunPrettier(report)).toBe(expected);
+    expect(formatContent(report)).toBe(expected);
     await expect(
-      tryRunPrettierAsync(report, {
+      formatContentAsync(report, {
         filepath: mockDir.resolve('report.sql.md'),
       }),
     ).resolves.toBe(expected);
-    expect(tryRunPrettier(report.replaceAll('\n', '\r\n'))).toBe(
+    expect(formatContent(report.replaceAll('\n', '\r\n'))).toBe(
       expected.replaceAll('\n', '\r\n'),
     );
   });
@@ -95,9 +95,9 @@ describe('tryRunPrettier', () => {
   it('formats reports with Prettier when oxfmt is not used', async () => {
     mockDir.setContent({});
 
-    expect(tryRunPrettier('#   Title\n\n*   item\n')).toBe(
+    expect(formatContent('#   Title\n\n*   item\n')).toBe(
       '# Title\n\n- item\n',
     );
-    await expect(tryRunPrettierAsync('#   Title\n')).resolves.toBe('# Title\n');
+    await expect(formatContentAsync('#   Title\n')).resolves.toBe('# Title\n');
   });
 });
