@@ -1033,6 +1033,251 @@ describe('scaffolder router', () => {
         }),
       );
     });
+
+    it('skips validation for parameter steps whose if condition evaluates to false', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'GCP',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+    });
+
+    it('strips hidden step values from task parameters', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router, taskBroker } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'GCP',
+            awsRegion: 'us-east-1',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spec: expect.objectContaining({
+            parameters: { provider: 'GCP' },
+          }),
+        }),
+      );
+    });
+
+    it('validates parameter steps whose if condition evaluates to true', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'AWS',
+          },
+        });
+
+      expect(response.status).toEqual(400);
+    });
+
+    it('falls back to validating when a when expression is malformed', async () => {
+      const templateWithBadCondition = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: '${{ invalid...syntax }}',
+            required: ['region'],
+            properties: {
+              region: {
+                type: 'string',
+                description: 'Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithBadCondition, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'AWS',
+          },
+        });
+
+      // Should not 500; the malformed condition defaults to true (step visible),
+      // so validation runs and catches the missing required field
+      expect(response.status).toEqual(400);
+    });
+
+    it('does not re-evaluate user values that look like template expressions', async () => {
+      const templateWithCondition = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['name'],
+            properties: {
+              name: {
+                type: 'string',
+                description: 'Name',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.name === 'test' }}",
+            required: ['extra'],
+            properties: {
+              extra: {
+                type: 'string',
+                description: 'Extra',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithCondition, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            name: '${{ 7 * 7 }}',
+          },
+        });
+
+      // The value '${{ 7 * 7 }}' must be compared as a literal string,
+      // not re-evaluated as a template expression. The condition is false
+      // so the conditional step is skipped and the request succeeds.
+      expect(response.status).toEqual(201);
+    });
   });
 
   describe('GET /v2/tasks', () => {

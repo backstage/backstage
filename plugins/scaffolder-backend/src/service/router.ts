@@ -52,6 +52,7 @@ import {
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
+import { createTemplateRenderer, TemplateContext } from 'nunjitsu';
 import {
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
@@ -82,7 +83,7 @@ import {
   scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
@@ -208,6 +209,95 @@ function formatSecretsValidationErrors(result: ValidatorResult) {
       instance: {},
     };
   });
+}
+
+const conditionRenderer = createTemplateRenderer();
+
+// The frontend wizard uses a lighter evaluator from @backstage/plugin-scaffolder-common
+// that supports the same documented subset (equality, truthiness, negation).
+// Nunjitsu can't run in the browser, so the two evaluators must stay in sync
+// for the expressions we document.
+function evaluateIfCondition(
+  condition: string | boolean | undefined,
+  formState: Record<string, JsonValue>,
+  logger?: LoggerService,
+): boolean {
+  if (condition === undefined || condition === null) return true;
+  if (typeof condition === 'boolean') return condition;
+
+  const trimmed = condition.trim();
+  if (!trimmed) return true;
+
+  const match = trimmed.match(/^\$\{\{([\s\S]*)\}\}$/);
+  const inner = match ? match[1].trim() : trimmed;
+  if (!inner) return true;
+
+  const negated = inner.startsWith('!');
+  const expr = negated ? inner.slice(1).trim() : inner;
+
+  let result: unknown;
+  try {
+    result = conditionRenderer.renderValue(`\${{ ${expr} }}`, {
+      parameters: formState,
+    } as TemplateContext);
+  } catch (error) {
+    logger?.warn(
+      `Failed to evaluate parameter step condition "${condition}": ${
+        error instanceof Error ? error.message : 'unknown error'
+      }`,
+    );
+    return true;
+  }
+
+  const truthy = Array.isArray(result) ? result.length > 0 : !!result;
+  return negated ? !truthy : truthy;
+}
+
+function collectPropertyKeys(schema: Record<string, unknown>): string[] {
+  const keys: string[] = [];
+  if (schema.properties && typeof schema.properties === 'object') {
+    keys.push(...Object.keys(schema.properties as Record<string, unknown>));
+  }
+  for (const keyword of ['allOf', 'oneOf', 'anyOf']) {
+    const entries = schema[keyword];
+    if (Array.isArray(entries)) {
+      for (const entry of entries) {
+        if (entry && typeof entry === 'object') {
+          keys.push(...collectPropertyKeys(entry as Record<string, unknown>));
+        }
+      }
+    }
+  }
+  for (const keyword of ['then', 'else']) {
+    const sub = schema[keyword];
+    if (sub && typeof sub === 'object' && !Array.isArray(sub)) {
+      keys.push(...collectPropertyKeys(sub as Record<string, unknown>));
+    }
+  }
+  if (schema.dependencies && typeof schema.dependencies === 'object') {
+    for (const dep of Object.values(
+      schema.dependencies as Record<string, unknown>,
+    )) {
+      if (dep && typeof dep === 'object' && !Array.isArray(dep)) {
+        keys.push(...collectPropertyKeys(dep as Record<string, unknown>));
+      }
+    }
+  }
+  return keys;
+}
+
+function stripHiddenStepValues(
+  values: JsonObject,
+  hiddenStepKeys: Set<string>,
+  visibleStepKeys: Set<string>,
+): JsonObject {
+  for (const key of visibleStepKeys) {
+    hiddenStepKeys.delete(key);
+  }
+  if (hiddenStepKeys.size === 0) return values;
+  return Object.fromEntries(
+    Object.entries(values).filter(([key]) => !hiddenStepKeys.has(key)),
+  );
 }
 
 async function validateSecrets(options: {
@@ -493,13 +583,20 @@ export async function createRouter(
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
-              title:
-                (schema.title as string) ??
-                'Please enter the following information',
-              description: schema.description as string,
-              schema,
-            })),
+            steps: parameters.map(param => {
+              const condition = (param as Record<string, unknown>).when;
+              const isStepCondition =
+                typeof condition === 'string' || typeof condition === 'boolean';
+              const { when: _, ...schema } = param as Record<string, unknown>;
+              return {
+                title:
+                  (param.title as string) ??
+                  'Please enter the following information',
+                description: param.description as string,
+                ...(isStepCondition ? { when: condition } : {}),
+                schema: isStepCondition ? schema : param,
+              };
+            }),
             formDecorators:
               template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
@@ -583,8 +680,33 @@ export async function createRouter(
           credentials,
         );
 
+        const hiddenStepKeys = new Set<string>();
+        const visibleStepKeys = new Set<string>();
+
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
+          const param = parameters as Record<string, unknown>;
+          const condition = param.when;
+          const isStepCondition =
+            typeof condition === 'string' || typeof condition === 'boolean';
+          if (
+            isStepCondition &&
+            !evaluateIfCondition(
+              condition as string | boolean,
+              values as Record<string, JsonValue>,
+              logger,
+            )
+          ) {
+            for (const key of collectPropertyKeys(param)) {
+              hiddenStepKeys.add(key);
+            }
+            continue;
+          }
+          for (const key of collectPropertyKeys(param)) {
+            visibleStepKeys.add(key);
+          }
+          const { when: _, ...rest } = param;
+          const schema = isStepCondition ? rest : param;
+          const result = validate(values, schema);
 
           if (!result.valid) {
             await auditorEvent?.fail({
@@ -599,6 +721,12 @@ export async function createRouter(
             return;
           }
         }
+
+        const filteredValues = stripHiddenStepValues(
+          values as JsonObject,
+          hiddenStepKeys,
+          visibleStepKeys,
+        );
 
         const secretsValid = await validateSecrets({
           template,
@@ -621,7 +749,7 @@ export async function createRouter(
           })),
           EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
           output: template.spec.output ?? {},
-          parameters: values,
+          parameters: filteredValues,
           user: {
             entity: userEntity as UserEntity,
             ref: userEntityRef,
@@ -1066,8 +1194,33 @@ export async function createRouter(
           template.metadata.namespace || 'default'
         }/${template.metadata.name}`;
 
+        const dryRunHiddenKeys = new Set<string>();
+        const dryRunVisibleKeys = new Set<string>();
+
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(body.values, parameters);
+          const param = parameters as Record<string, unknown>;
+          const condition = param.when;
+          const isStepCondition =
+            typeof condition === 'string' || typeof condition === 'boolean';
+          if (
+            isStepCondition &&
+            !evaluateIfCondition(
+              condition as string | boolean,
+              body.values as Record<string, JsonValue>,
+              logger,
+            )
+          ) {
+            for (const key of collectPropertyKeys(param)) {
+              dryRunHiddenKeys.add(key);
+            }
+            continue;
+          }
+          for (const key of collectPropertyKeys(param)) {
+            dryRunVisibleKeys.add(key);
+          }
+          const { when: _, ...rest } = param;
+          const schema = isStepCondition ? rest : param;
+          const result = validate(body.values, schema);
           if (!result.valid) {
             await auditorEvent?.fail({
               // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
@@ -1085,6 +1238,12 @@ export async function createRouter(
             return;
           }
         }
+
+        const dryRunFilteredValues = stripHiddenStepValues(
+          body.values as JsonObject,
+          dryRunHiddenKeys,
+          dryRunVisibleKeys,
+        );
 
         const secretsValid = await validateSecrets({
           template,
@@ -1122,7 +1281,7 @@ export async function createRouter(
             apiVersion: template.apiVersion,
             steps,
             output: template.spec.output ?? {},
-            parameters: body.values as JsonObject,
+            parameters: dryRunFilteredValues as JsonObject,
             user: {
               entity: userEntity as UserEntity,
               ref: userEntityRef,
