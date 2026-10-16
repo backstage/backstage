@@ -32,6 +32,8 @@ export interface RunReporter {
   onFinish(name: string, status: PackageStatus): void;
   /** Prints a message that must always be visible */
   message(text: string): void;
+  /** Called when the run is interrupted, shows running packages as interrupted */
+  interrupt(): void;
   /** Called when all packages are done, releases any terminal state */
   end(): void;
 }
@@ -56,12 +58,15 @@ function statusLabel(status: PackageStatus): string {
  */
 class VerboseReporter implements RunReporter {
   readonly #partial = new Map<string, string>();
+  readonly #running = new Set<string>();
 
   constructor(private readonly write: (text: string) => void) {}
 
   begin() {}
 
-  onStart() {}
+  onStart(name: string) {
+    this.#running.add(name);
+  }
 
   onOutput(name: string, data: Buffer) {
     const text = (this.#partial.get(name) ?? '') + data.toString();
@@ -73,6 +78,7 @@ class VerboseReporter implements RunReporter {
   }
 
   onFinish(name: string, status: PackageStatus) {
+    this.#running.delete(name);
     const rest = this.#partial.get(name);
     this.#partial.delete(name);
     if (rest) {
@@ -85,6 +91,12 @@ class VerboseReporter implements RunReporter {
     this.write(`${text}\n`);
   }
 
+  interrupt() {
+    for (const name of this.#running) {
+      this.onFinish(name, 'INTERRUPTED');
+    }
+  }
+
   end() {}
 }
 
@@ -92,6 +104,7 @@ class VerboseReporter implements RunReporter {
 class LineReporter implements RunReporter {
   #total = 0;
   #done = 0;
+  readonly #running = new Set<string>();
 
   constructor(private readonly write: (text: string) => void) {}
 
@@ -100,11 +113,14 @@ class LineReporter implements RunReporter {
     this.#done = 0;
   }
 
-  onStart() {}
+  onStart(name: string) {
+    this.#running.add(name);
+  }
 
   onOutput() {}
 
   onFinish(name: string, status: PackageStatus) {
+    this.#running.delete(name);
     this.#done += 1;
     this.write(
       `${statusLabel(status)} ${name} (${this.#done}/${this.#total})\n`,
@@ -113,6 +129,12 @@ class LineReporter implements RunReporter {
 
   message(text: string) {
     this.write(`${text}\n`);
+  }
+
+  interrupt() {
+    for (const name of this.#running) {
+      this.onFinish(name, 'INTERRUPTED');
+    }
   }
 
   end() {}
@@ -175,14 +197,28 @@ class LiveReporter implements RunReporter {
     this.#print(`${text}\n`);
   }
 
+  interrupt() {
+    this.#stop();
+    for (const name of this.#running) {
+      this.#interrupted += 1;
+      this.write(`${statusLabel('INTERRUPTED')} ${name}\n`);
+    }
+    this.#running.clear();
+    this.#queued = 0;
+    this.write(`${this.#summary()}\n`);
+  }
+
   end() {
+    this.#stop();
+    this.write(`${this.#summary()}\n`);
+  }
+
+  #stop() {
     if (this.#timer) {
       clearInterval(this.#timer);
       this.#timer = undefined;
     }
     this.#clear();
-    this.#running.clear();
-    this.write(`${this.#summary()}\n`);
   }
 
   #print(text: string) {
@@ -205,8 +241,8 @@ class LiveReporter implements RunReporter {
       ...(this.#interrupted > 0
         ? [chalk.yellow(`${this.#interrupted} interrupted`)]
         : []),
-      `${this.#running.size} running`,
-      `${this.#queued} queued`,
+      ...(this.#running.size > 0 ? [`${this.#running.size} running`] : []),
+      ...(this.#queued > 0 ? [`${this.#queued} queued`] : []),
     ].join(' · ');
   }
 

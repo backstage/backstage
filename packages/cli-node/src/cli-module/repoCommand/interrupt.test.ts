@@ -17,53 +17,70 @@
 import { RunInterrupt } from './interrupt';
 
 describe('RunInterrupt', () => {
-  it('kills children and exits once they are gone', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('kills the process groups and exits immediately', () => {
+    const killSpy = jest.spyOn(process, 'kill').mockReturnValue(true);
     const exit = jest.fn();
     const interrupt = new RunInterrupt(exit);
-    const child = { kill: jest.fn() };
-    const untrack = interrupt.track(child);
+    const order = new Array<string>();
+    killSpy.mockImplementation((() => {
+      order.push('kill');
+      return true;
+    }) as never);
+    exit.mockImplementation(() => order.push('exit'));
+    interrupt.onInterrupt(() => order.push('listener'));
+    const child = { pid: 123, kill: jest.fn() };
+    interrupt.track(child);
+    const finished = { pid: 456, kill: jest.fn() };
+    interrupt.track(finished)();
 
     expect(interrupt.interrupted).toBe(false);
     interrupt.handleSignal('SIGTERM');
+
     expect(interrupt.interrupted).toBe(true);
-    expect(child.kill).toHaveBeenCalledWith('SIGTERM');
-    expect(exit).not.toHaveBeenCalled();
+    expect(killSpy).toHaveBeenCalledTimes(1);
+    expect(killSpy).toHaveBeenCalledWith(-123, 'SIGKILL');
+    expect(order).toEqual(['kill', 'listener', 'exit']);
+    expect(exit).toHaveBeenCalledWith(143);
 
     // Children started after the interrupt are killed right away
-    const late = { kill: jest.fn() };
-    const untrackLate = interrupt.track(late);
-    expect(late.kill).toHaveBeenCalledWith('SIGTERM');
-
-    untrack();
-    expect(exit).not.toHaveBeenCalled();
-    untrackLate();
-    expect(exit).toHaveBeenCalledWith(143);
+    interrupt.track({ pid: 789, kill: jest.fn() });
+    expect(killSpy).toHaveBeenCalledWith(-789, 'SIGKILL');
   });
 
-  it('exits right away without children, and immediately on a second signal', () => {
+  it('ignores groups that are already gone and exits with 130 for SIGINT', () => {
+    jest.spyOn(process, 'kill').mockImplementation(() => {
+      throw Object.assign(new Error('gone'), { code: 'ESRCH' });
+    });
     const exit = jest.fn();
     const interrupt = new RunInterrupt(exit);
+    interrupt.track({ pid: 1, kill: jest.fn() });
     interrupt.handleSignal('SIGINT');
     expect(exit).toHaveBeenCalledWith(130);
-
-    const second = jest.fn();
-    const stuck = new RunInterrupt(second);
-    stuck.track({ kill: jest.fn() });
-    stuck.handleSignal('SIGINT');
-    expect(second).not.toHaveBeenCalled();
-    stuck.handleSignal('SIGINT');
-    expect(second).toHaveBeenCalledWith(130);
   });
 
-  it('listens for signals only while installed', () => {
+  it('listens for signals and kills groups on exit only while installed', () => {
+    const killSpy = jest.spyOn(process, 'kill').mockReturnValue(true);
     const exit = jest.fn();
     const interrupt = new RunInterrupt(exit);
-    const before = process.listenerCount('SIGINT');
+    const sigints = process.listenerCount('SIGINT');
+    const exits = process.listenerCount('exit');
     const dispose = interrupt.install();
-    expect(process.listenerCount('SIGINT')).toBe(before + 1);
+    expect(process.listenerCount('SIGINT')).toBe(sigints + 1);
+    expect(process.listenerCount('exit')).toBe(exits + 1);
+
+    interrupt.track({ pid: 5, kill: jest.fn() });
+    const exitListener = process.listeners('exit').slice(-1)[0];
+    exitListener(0 as never);
+    expect(killSpy).toHaveBeenCalledWith(-5, 'SIGKILL');
+
     process.emit('SIGINT');
     expect(exit).toHaveBeenCalledWith(130);
     dispose();
-    expect(process.listenerCount('SIGINT')).toBe(before);
+    expect(process.listenerCount('SIGINT')).toBe(sigints);
+    expect(process.listenerCount('exit')).toBe(exits);
   });
 });
