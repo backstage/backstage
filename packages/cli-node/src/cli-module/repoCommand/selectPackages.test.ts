@@ -20,6 +20,7 @@ import { parseRepoArgs, parseScriptArgs } from './parseRepoArgs';
 import {
   filterByChanged,
   mapFilesToPackages,
+  matchPackages,
   selectPackages,
 } from './selectPackages';
 
@@ -34,6 +35,49 @@ function pkg(name: string, scripts?: Record<string, string>, deps?: string[]) {
     },
   } as any;
 }
+
+describe('matchPackages', () => {
+  const selected = [
+    '@backstage/cli-node',
+    '@backstage/cli-common',
+    '@backstage/plugin-catalog',
+    '@backstage/plugin-catalog-backend',
+    'example-app',
+  ].map(name => ({
+    pkg: {
+      dir: `/repo/${name.replace('@backstage/', '')}`,
+      packageJson: { name },
+    } as any,
+    scriptArgs: [],
+  }));
+  const names = (values: string[]) => {
+    const { matched, unmatched } = matchPackages({
+      selected,
+      values,
+      cwd: '/repo/sub',
+    });
+    return [matched.map(m => m.pkg.packageJson.name), unmatched];
+  };
+
+  it('matches names, globs with or without scope, and directories', () => {
+    expect(names(['@backstage/cli-node', 'cli-common'])).toEqual([
+      ['@backstage/cli-node', '@backstage/cli-common'],
+      [],
+    ]);
+    expect(names(['plugin-catalog*'])).toEqual([
+      ['@backstage/plugin-catalog', '@backstage/plugin-catalog-backend'],
+      [],
+    ]);
+    expect(names(['@backstage/cli-*', 'example-?pp'])).toEqual([
+      ['@backstage/cli-node', '@backstage/cli-common', 'example-app'],
+      [],
+    ]);
+    expect(names(['../plugin-catalog', 'nope', 'cli.node'])).toEqual([
+      ['@backstage/plugin-catalog'],
+      ['nope', 'cli.node'],
+    ]);
+  });
+});
 
 describe('repo command helpers', () => {
   const packages = [
@@ -80,19 +124,21 @@ describe('repo command helpers', () => {
     expect(names(true, ['e'])).toEqual([]);
   });
 
-  it('parses repo flags and forwards everything else', () => {
+  it('parses repo flags and selectors, and forwards arguments after --', () => {
     expect(
       parseRepoArgs(
         [
           '--since',
           'main',
           '--no-include-dependents',
-          '--foo',
-          'bar',
+          'cli-node',
           '--watch',
           '--concurrency',
           '3',
           '--verbose',
+          '--',
+          '--foo',
+          'bar',
         ],
         'repo test',
       ),
@@ -102,18 +148,33 @@ describe('repo command helpers', () => {
       watch: true,
       concurrency: 3,
       verbose: true,
+      packages: ['cli-node'],
       forwarded: ['--foo', 'bar'],
     });
-    expect(parseRepoArgs(['--since=x', 'src/'], 'repo test')).toMatchObject({
+    expect(
+      parseRepoArgs(['--since=x', '--', 'src/'], 'repo test'),
+    ).toMatchObject({
       since: 'x',
       includeDependents: undefined,
       watch: false,
       concurrency: 8,
       verbose: false,
+      packages: [],
       forwarded: ['src/'],
     });
-    expect(parseRepoArgs(['--concurrency=2', 'a'], 'x')).toMatchObject({
+    expect(
+      parseRepoArgs(['-p', 'a', '--package', 'b*', '--package=c', 'x'], 'x'),
+    ).toMatchObject({ packages: ['a', 'b*', 'c', 'x'], forwarded: [] });
+    expect(() =>
+      parseRepoArgs(['cli-node', '-t', 'x'], 'repo run test'),
+    ).toThrow(
+      'Unknown option "-t", options for the package command must come after "--", for example "repo run test -- -t"',
+    );
+    expect(
+      parseRepoArgs(['--concurrency=2', 'a', '--', 'a'], 'x'),
+    ).toMatchObject({
       concurrency: 2,
+      packages: ['a'],
       forwarded: ['a'],
     });
     expect(parseRepoArgs(['--include-dependents'], 'x').includeDependents).toBe(

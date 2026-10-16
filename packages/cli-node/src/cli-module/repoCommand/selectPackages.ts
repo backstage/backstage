@@ -49,6 +49,58 @@ export function selectPackages(options: {
   return result;
 }
 
+function globToRegExp(pattern: string): RegExp {
+  const source = pattern
+    .split(/([*?])/)
+    .map(part => {
+      if (part === '*') {
+        return '.*';
+      }
+      if (part === '?') {
+        return '.';
+      }
+      return part.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    })
+    .join('');
+  return new RegExp(`^${source}$`);
+}
+
+/**
+ * Narrows a selection to the packages matching the given values. A value is a
+ * full package name, a glob that is matched against the package name with or
+ * without its scope, or the path of a package directory relative to `cwd`.
+ *
+ * @internal
+ */
+export function matchPackages(options: {
+  selected: SelectedPackage[];
+  values: string[];
+  cwd: string;
+}): { matched: SelectedPackage[]; unmatched: string[] } {
+  const { selected, values, cwd } = options;
+  const matched = new Set<SelectedPackage>();
+  const unmatched = new Array<string>();
+
+  for (const value of values) {
+    const regexp = globToRegExp(value);
+    const dir = path.resolve(cwd, value);
+    const hits = selected.filter(({ pkg }) => {
+      const name = pkg.packageJson.name;
+      const unscoped = name.replace(/^@[^/]+\//, '');
+      return regexp.test(name) || regexp.test(unscoped) || pkg.dir === dir;
+    });
+    if (hits.length === 0) {
+      unmatched.push(value);
+    }
+    hits.forEach(hit => matched.add(hit));
+  }
+
+  return {
+    matched: selected.filter(item => matched.has(item)),
+    unmatched,
+  };
+}
+
 /**
  * Narrows a selection to the given changed package names, optionally
  * including their local dependents. Only selected packages are returned.
