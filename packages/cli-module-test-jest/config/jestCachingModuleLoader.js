@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-const { createRequire } = require('node:module');
+const { resolveJest } = require('./getJestEnvironment');
 
 // 'jest-runtime' is included with jest and must match the installed jest version,
 // so it is loaded through jest's own @jest/core rather than resolved from here.
-const jestRequire = createRequire(require.resolve('jest'));
-const jestCoreRequire = createRequire(jestRequire.resolve('@jest/core'));
-const { default: JestRuntime } = jestCoreRequire('jest-runtime');
+const jestCorePath = require.resolve('@jest/core', { paths: [resolveJest()] });
+const jestRuntimePath = require.resolve('jest-runtime', {
+  paths: [jestCorePath],
+});
+const { default: JestRuntime } = require(jestRuntimePath);
 
 module.exports = class CachingJestRuntime extends JestRuntime {
   constructor(config, ...restArgs) {

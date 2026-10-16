@@ -14,7 +14,29 @@
  * limitations under the License.
  */
 
-const { createRequire } = require('node:module');
+// jest-cli, jest-runtime and jest-environment-node are loaded through the installed
+// jest, which relies on the package layout of the supported Jest versions.
+const SUPPORTED_JEST_MAJOR_VERSIONS = [29, 30];
+
+function resolveJest() {
+  let jestVersion;
+  try {
+    jestVersion = require('jest/package.json').version;
+  } catch {
+    throw new Error(
+      'Jest is not installed. Please install jest@^30 or jest@^29 as a dev dependency.',
+    );
+  }
+
+  const majorVersion = parseInt(jestVersion.split('.')[0], 10);
+  if (!SUPPORTED_JEST_MAJOR_VERSIONS.includes(majorVersion)) {
+    throw new Error(
+      `Jest ${jestVersion} is not supported. Please install Jest 30 or 29.`,
+    );
+  }
+
+  return require.resolve('jest');
+}
 
 function getJestMajorVersion() {
   const jestVersion = require('jest/package.json').version;
@@ -51,15 +73,17 @@ function getJestEnvironment() {
 // Resolved through the installed jest, whose jest-config depends on the
 // jest-environment-node of the same version.
 function getJestNodeEnvironment() {
-  const jestRequire = createRequire(require.resolve('jest'));
-  const jestCoreRequire = createRequire(jestRequire.resolve('@jest/core'));
-  const jestConfigRequire = createRequire(
-    jestCoreRequire.resolve('jest-config'),
-  );
-  return jestConfigRequire.resolve('jest-environment-node');
+  const jestCorePath = require.resolve('@jest/core', {
+    paths: [resolveJest()],
+  });
+  const jestConfigPath = require.resolve('jest-config', {
+    paths: [jestCorePath],
+  });
+  return require.resolve('jest-environment-node', { paths: [jestConfigPath] });
 }
 
 module.exports = {
+  resolveJest,
   getJestMajorVersion,
   getJestEnvironment,
   getJestNodeEnvironment,
