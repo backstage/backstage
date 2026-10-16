@@ -178,6 +178,9 @@ The following metrics are available:
 - `catalog.stitching.duration`: Time spent executing the full stitching flow
 - `catalog.stitching.queue.length`: Number of entities currently in the stitching queue
 - `catalog.stitching.queue.delay`: The amount of delay between being scheduled for stitching, and the start of actually being stitched
+- `catalog.events.scm.actions`: Number of actions taken as a result of SCM event messages. Labels: `action`.
+- `catalog_incremental.ingestions.started`: Gauge recording the Unix epoch time (seconds) when ingestion last started. Labels: `providerName`.
+- `catalog_incremental.ingestions.completed`: Gauge recording the Unix epoch time (seconds) when ingestion last completed. Labels: `providerName`, `status`.
 - `scaffolder.task.count`: Count of task runs
 - `scaffolder.task.duration`: Duration of a task run
 - `scaffolder.step.count`: Count of step runs
@@ -186,6 +189,25 @@ The following metrics are available:
 - `backend_tasks.task.runs.duration`: Histogram of task run durations
 - `backend_tasks.task.runs.started`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last started
 - `backend_tasks.task.runs.completed`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last completed
+- `events.google.pubsub.publisher.messages.total`: Number of Pub/Sub messages sent by `EventConsumingGooglePubSubPublisher`. Labels: `subscription`, `status`.
+- `events.google.pubsub.consumer.messages.total`: Number of Pub/Sub messages received by `GooglePubSubConsumingEventPublisher`. Labels: `subscription`, `status`.
+- `notifications.processors.slack.sent.count`: Number of messages sent to Slack successfully. Labels: none.
+- `notifications.processors.slack.error.count`: Number of messages that failed to send to Slack. Labels: none.
+- `notifications.processors.slack.update.count`: Number of existing Slack messages updated via scope matching. Labels: none.
+- `mcp.server.operation.duration`: MCP request duration as observed on the receiver. Labels: `mcp.method.name`, and optionally `error.type`, `gen_ai.tool.name`, `gen_ai.prompt.name`, `mcp.resource.uri`, `rpc.response.status_code`, `gen_ai.operation.name`, `mcp.protocol.version`, `mcp.session.id`, `network.transport`, `network.protocol.name`, `network.protocol.version`.
+- `mcp.server.session.duration`: The duration of the MCP session as observed on the MCP server. Labels: optionally `error.type`, `mcp.protocol.version`, `network.transport`, `network.protocol.name`, `network.protocol.version`.
+
+### Backstage emitted spans
+
+- Catalog backend, tracer `backstage-plugin-catalog-backend`:
+  - `TaskPipelineLoop`: Wraps a single catalog processing pipeline poll-and-dispatch loop.
+  - `ProcessingRun`: Wraps processing of a single catalog entity from queue pickup through orchestration.
+  - `ProcessingStage`: Wraps a processing stage such as `preProcess`, `enforcePolicy`, `validate`, `readLocation`, or `postProcessEntity`.
+  - `ProcessingStep`: Wraps an individual processor invocation within a processing stage.
+- Scheduler service, tracer `backstage-service-scheduler`:
+  - `task ${task.id}`: Wraps execution of a scheduled task.
+- MCP actions backend, plugin-scoped tracer from the Tracing Service:
+  - `tools/call ${params.name}`: Wraps execution of an MCP tool call.
 
 ## References
 
