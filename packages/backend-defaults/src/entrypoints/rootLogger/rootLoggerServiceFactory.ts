@@ -54,14 +54,18 @@ export const rootLoggerServiceFactory = createServiceFactory({
     });
 
     const secretEnumerator = await createConfigSecretEnumerator({ logger });
-    const allowlist = new Set(rootLoggerConfig.redactAllowlist);
+    const allowlist = new Set(
+      rootLoggerConfig.redactAllowlist?.map(a => a.trim()),
+    );
     logger.addRedactions(
-      [...secretEnumerator(config)].filter(s => !allowlist.has(s)),
+      [...secretEnumerator(config)].filter(s => !allowlist.has(s.trim())),
     );
     config.subscribe?.(() => {
-      const newAllowlist = new Set(getRootLoggerConfig(config).redactAllowlist);
+      const newAllowlist = new Set(
+        getRootLoggerConfig(config).redactAllowlist?.map(a => a.trim()),
+      );
       logger.addRedactions(
-        [...secretEnumerator(config)].filter(s => !newAllowlist.has(s)),
+        [...secretEnumerator(config)].filter(s => !newAllowlist.has(s.trim())),
       );
     });
 

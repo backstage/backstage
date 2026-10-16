@@ -1320,7 +1320,7 @@ export interface Config {
       /**
        * List of values to allow through redaction.
        *
-       * This allows to avoid redacting certain values that are known to be safe to log.
+       * This makes it possible to avoid redacting certain values that are known to be safe to log.
        *
        * @visibility backend
        */
