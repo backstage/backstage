@@ -27,6 +27,7 @@ import {
   TS_SCHEMA_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { formatFiles } from '../../../../../lib/formatter';
 import { targetPaths } from '@backstage/cli-common';
 import {
   getOpenApiGeneratorKey,
@@ -78,13 +79,7 @@ export const createOpenApiRouter = async (
   );
 
   await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (
-    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
-  ) {
-    await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: targetPaths.rootDir,
-    });
-  }
+  await formatFiles([tsPath, indexFile], { cwd: targetPaths.rootDir });
 }
 
 async function generate(
@@ -154,12 +149,9 @@ async function generate(
     },
   );
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
+  await formatFiles([resolvedOutputDirectory], {
+    signal: abortSignal?.signal,
+  });
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
