@@ -242,14 +242,14 @@ command also supports `--since <ref>`, `--watch`, `--concurrency <n>`
 progress view, or one line for each finished package when not in a terminal,
 and only shows package output with `--verbose`.
 
-Positional arguments and `--package` values select packages, and are never
-passed on. A selector is a package name, a glob on the name with or without its
-scope, or a package directory relative to the current directory. Selected
-packages do not include their dependents unless `--include-dependents` is
-passed, and with `--since` the result is the intersection. A selector that
-matches no package for the target is an error. Only arguments after `--` are
-passed to the package command, for example
-`backstage-cli repo run test cli-node -- -t parse`.
+Positional arguments and `--package` values select packages. A selector is a
+package name, a glob on the name with or without its scope, or a package
+directory relative to the current directory. Selected packages do not include
+their dependents unless `--include-dependents` is passed, and with `--since` the
+result is the intersection. A selector that matches no package for the target is
+an error. Arguments can't be passed to the package command, which runs with the
+`packageArgs` of the target and the extra arguments from the package script
+only. Unknown options and `--` are errors.
 
 Several modules can register the same target name only if their options are
 identical. Otherwise the CLI fails with an error that names both modules.
