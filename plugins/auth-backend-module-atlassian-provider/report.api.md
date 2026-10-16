@@ -18,13 +18,14 @@ export const atlassianAuthenticator: OAuthAuthenticator<
 
 // @public
 export namespace atlassianSignInResolvers {
-  const usernameMatchingUserEntityName: SignInResolverFactory<
-    OAuthAuthenticatorResult<PassportProfile>,
-    | {
-        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
-      }
-    | undefined
-  >;
+  const // @deprecated
+    usernameMatchingUserEntityName: SignInResolverFactory<
+      OAuthAuthenticatorResult<PassportProfile>,
+      | {
+          dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+        }
+      | undefined
+    >;
 }
 
 // @public (undocumented)
