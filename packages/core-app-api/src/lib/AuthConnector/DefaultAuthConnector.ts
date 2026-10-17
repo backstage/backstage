@@ -21,6 +21,7 @@ import {
   OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { openLoginPopup } from '../loginPopup';
+import { AuthConnectionError } from './errors';
 import {
   AuthConnector,
   AuthConnectorCreateSessionOptions,
@@ -143,6 +144,10 @@ export class DefaultAuthConnector<AuthSession>
   async refreshSession(
     options?: AuthConnectorRefreshSessionOptions,
   ): Promise<any> {
+    // A rejected `fetch` means the request never reached the backend (network
+    // down, CORS, aborted), which is transient and distinct from the backend
+    // rejecting the session. Flag it as an AuthConnectionError so session
+    // managers can retry instead of prompting for an interactive login.
     const res = await fetch(
       await this.buildUrl('/refresh', {
         optional: true,
@@ -155,7 +160,10 @@ export class DefaultAuthConnector<AuthSession>
         credentials: 'include',
       },
     ).catch(error => {
-      throw new Error(`Auth refresh request failed, ${error}`);
+      throw new AuthConnectionError(
+        `Auth refresh request failed, ${error}`,
+        error,
+      );
     });
 
     if (!res.ok) {
