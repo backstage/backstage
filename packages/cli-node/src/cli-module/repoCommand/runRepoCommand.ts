@@ -83,7 +83,7 @@ async function runPackages(
     let untrack = () => {};
     const hash = await hashPackage?.(item, options.packageArgs ?? []);
     if (hash && cacheEntries?.has(hash)) {
-      reporter.onCached(name);
+      reporter.onSkipped(name);
       return;
     }
     reporter.onStart(name);

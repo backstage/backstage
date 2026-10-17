@@ -95,7 +95,7 @@ with `--since` only packages that match both are run. A selector that matches no
 package is an error.
 
 With `--success-cache`, a package that passed before and has not changed since
-is skipped and shown as cached. A package counts as changed if its files, the
+is skipped and reported as `SKIPPED`, with a count in the summary. A package counts as changed if its files, the
 files of any of its local dependencies, its dependencies in `yarn.lock`, the
 arguments, or the Node.js version changed. The files include uncommitted
 changes and files that are not ignored by Git. Only packages that passed are

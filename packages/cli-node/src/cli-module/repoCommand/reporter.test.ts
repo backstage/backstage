@@ -85,4 +85,23 @@ describe('createReporter', () => {
       );
     }
   });
+
+  it('reports skipped packages in every mode', () => {
+    const line = setup({ verbose: false, isTTY: false });
+    line.reporter.begin(['a', 'b']);
+    line.reporter.onSkipped('a');
+    expect(line.strip()).toBe('SKIPPED a (unchanged) (1/2)\n');
+
+    const verbose = setup({ verbose: true, isTTY: false });
+    verbose.reporter.onSkipped('a');
+    expect(verbose.strip()).toBe('[a] SKIPPED (unchanged)\n');
+
+    const live = setup({ verbose: false, isTTY: true });
+    live.reporter.begin(['a', 'b']);
+    live.reporter.onSkipped('a');
+    live.reporter.end();
+    expect(live.strip()).toContain(
+      '0 passed · 1 skipped · 0 failed · 1 queued',
+    );
+  });
 });

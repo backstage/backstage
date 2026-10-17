@@ -292,7 +292,7 @@ describe('runRepoCommand', () => {
       };
 
       expect(await ran()).toEqual(['/repo/a', '/repo/b']);
-      // a passed and is cached, b failed and is not
+      // a passed and is skipped, b failed and is not
       expect(await ran()).toEqual(['/repo/b']);
       const ansi = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
       expect(
@@ -301,7 +301,7 @@ describe('runRepoCommand', () => {
           .mock.calls.map(c => String(c[0]))
           .join('')
           .replace(ansi, ''),
-      ).toContain('CACHED a');
+      ).toContain('SKIPPED a (unchanged)');
 
       // A changed hash invalidates the entry
       versions.a = '2';
