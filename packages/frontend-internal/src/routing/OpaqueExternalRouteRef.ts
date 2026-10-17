@@ -22,6 +22,7 @@ export const OpaqueExternalRouteRef = OpaqueType.create<{
   versions: {
     readonly version: 'v1';
 
+    getId?(): string | undefined;
     getParams(): string[];
     getDescription(): string;
     getDefaultTarget(): string | undefined;

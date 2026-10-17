@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  createExternalRouteRef,
-  createRouteRef,
-} from '@backstage/core-plugin-api';
+import { createRouteRef } from '@backstage/frontend-plugin-api';
+import { createExternalRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRoute = createRouteRef({
-  id: 'api-docs',
+  extensionId: 'page:api-docs',
 });
 
 export const registerComponentRouteRef = createExternalRouteRef({

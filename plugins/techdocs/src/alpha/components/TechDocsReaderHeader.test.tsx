@@ -32,7 +32,7 @@ import {
 } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 
 import { TechDocsReaderHeader } from './TechDocsReaderHeader';
 

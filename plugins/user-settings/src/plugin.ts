@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+import { settingsRouteRef as settingsRouteRefNew } from './routes';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createPlugin,
   createRoutableExtension,
-  createRouteRef,
 } from '@backstage/core-plugin-api';
 
-export const settingsRouteRef = createRouteRef({
-  id: 'user-settings',
-});
+export const settingsRouteRef = convertLegacyRouteRef(settingsRouteRefNew);
 
 /** @public */
 export const userSettingsPlugin = createPlugin({

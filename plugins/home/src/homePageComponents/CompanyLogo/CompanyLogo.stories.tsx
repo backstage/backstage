@@ -17,6 +17,7 @@
 import { TemplateBackstageLogo } from '../../assets';
 import { HomePageCompanyLogo } from '../../plugin';
 import { rootRouteRef } from '../../routes';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
@@ -37,7 +38,9 @@ export default {
           <Story />
         </TestApiProvider>,
         {
-          mountedRoutes: { '/hello-company-logo': rootRouteRef },
+          mountedRoutes: {
+            '/hello-company-logo': convertLegacyRouteRef(rootRouteRef),
+          },
         },
       ),
   ],

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { rootRouteRef as rootRouteRefNew } from './routes';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { SearchClient } from './apis';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import {
   createApiFactory,
   createPlugin,
-  createRouteRef,
   createRoutableExtension,
   discoveryApiRef,
   createComponentExtension,
@@ -27,9 +28,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { SidebarSearchModalProps } from './components/SidebarSearchModal';
 
-export const rootRouteRef = createRouteRef({
-  id: 'search',
-});
+export const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
 
 /**
  * @public

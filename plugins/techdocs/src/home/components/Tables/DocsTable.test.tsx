@@ -18,7 +18,7 @@ import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsTable } from './DocsTable';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 // Hacky way to mock a specific boolean config value.

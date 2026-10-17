@@ -44,7 +44,7 @@ import {
 import { mockApis } from '@backstage/frontend-test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EntityLayout } from './EntityLayout';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../../legacyRoutes';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ReactNode, useEffect } from 'react';
 

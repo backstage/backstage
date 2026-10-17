@@ -28,7 +28,7 @@ import {
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('<ListTasksPage />', () => {

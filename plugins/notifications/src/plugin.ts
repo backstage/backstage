@@ -21,7 +21,7 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
+import { rootRouteRef } from './legacyRoutes';
 import { notificationsApiRef } from './api/NotificationsApi';
 import { NotificationsClient } from './api';
 

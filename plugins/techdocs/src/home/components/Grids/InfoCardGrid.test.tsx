@@ -21,7 +21,7 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { InfoCardGrid } from './InfoCardGrid';
 
 describe('Entity Info Card Grid', () => {

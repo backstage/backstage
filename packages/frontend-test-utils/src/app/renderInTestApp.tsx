@@ -180,7 +180,10 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
 
       if (OpaqueExternalRouteRef.isType(optionRef)) {
         // Create an actual route ref for the external route, then bind the external ref to it
-        routeRef = createRouteRef();
+        routeRef = createRouteRef({
+          extensionId: `test-route:test/${encodeURIComponent(path)}`,
+          params: OpaqueExternalRouteRef.toInternal(optionRef).getParams(),
+        });
         externalBindings.set(optionRef, routeRef);
       } else {
         routeRef = optionRef;

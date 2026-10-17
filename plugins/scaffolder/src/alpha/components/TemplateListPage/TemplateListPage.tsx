@@ -52,7 +52,7 @@ import {
   selectedTemplateRouteRef,
   templatingExtensionsRouteRef,
   viewTechDocRouteRef,
-} from '../../../routes';
+} from '../../../legacyRoutes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

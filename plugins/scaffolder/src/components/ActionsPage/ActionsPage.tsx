@@ -34,7 +34,7 @@ import {
   rootRouteRef,
   scaffolderListTaskRouteRef,
   templatingExtensionsRouteRef,
-} from '../../routes';
+} from '../../legacyRoutes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';

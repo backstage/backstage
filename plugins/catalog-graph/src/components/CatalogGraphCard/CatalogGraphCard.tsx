@@ -32,7 +32,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
 import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { catalogGraphRouteRef } from '../../routes';
+import { catalogGraphRouteRef } from '../../legacyRoutes';
 import {
   EntityRelationsGraph,
   EntityRelationsGraphProps,

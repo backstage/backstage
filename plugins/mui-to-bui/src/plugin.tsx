@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createPlugin,
   createRoutableExtension,
@@ -22,7 +23,9 @@ import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { rootRouteRef } from './routes';
+import { rootRouteRef as rootRouteRefNew } from './routes';
+
+const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
 
 // Old system
 /** @public */
@@ -53,11 +56,11 @@ export default createFrontendPlugin({
         path: '/mui-to-bui',
         loader: () =>
           import('./components/BuiThemerPage').then(m => <m.BuiThemerPage />),
-        routeRef: rootRouteRef,
+        routeRef: rootRouteRefNew,
       },
     }),
   ],
   routes: {
-    root: rootRouteRef,
+    root: rootRouteRefNew,
   },
 });

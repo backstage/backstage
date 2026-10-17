@@ -28,7 +28,7 @@ import {
   unregisterRedirectRouteRef,
   viewTechDocRouteRef,
   rootRouteRef,
-} from './routes';
+} from './legacyRoutes';
 import {
   createApiFactory,
   createComponentExtension,

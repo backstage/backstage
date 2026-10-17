@@ -32,7 +32,7 @@ import { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { useNavigate } from 'react-router-dom';
-import { rootRouteRef, selectedTemplateRouteRef } from '../../../routes';
+import { rootRouteRef, selectedTemplateRouteRef } from '../../../legacyRoutes';
 import { scaffolderTranslationRef } from '../../../translation';
 import styles from './HomePageFeaturedTemplates.module.css';
 import { ScrollControls } from './ScrollControls';

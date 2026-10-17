@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createApiFactory,
   createComponentExtension,
@@ -29,9 +30,11 @@ import {
   FeaturedDocsCardProps,
   QuickStartCardProps,
 } from './homePageComponents';
-import { rootRouteRef } from './routes';
+import { rootRouteRef as rootRouteRefNew } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
 import { StarredEntitiesProps } from './homePageComponents/StarredEntities/Content';
+
+const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
 
 /** @public */
 export const homePlugin = createPlugin({

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { rootRouteRef as rootRouteRefNew } from './routes';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
-  createRouteRef,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
@@ -30,9 +31,7 @@ import {
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogImportApiRef, CatalogImportClient } from './api';
 
-export const rootRouteRef = createRouteRef({
-  id: 'catalog-import',
-});
+export const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
 
 /**
  * A plugin that helps the user in importing projects and YAML files into the

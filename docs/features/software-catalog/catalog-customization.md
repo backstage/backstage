@@ -227,13 +227,11 @@ you can override the page extension using a frontend module:
 import {
   PageBlueprint,
   createFrontendModule,
-  createRouteRef,
 } from '@backstage/frontend-plugin-api';
 
 const customCatalogPage = PageBlueprint.make({
   params: {
     path: '/catalog',
-    routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
     loader: async () => {
       const { CustomCatalogPage } = await import('./CustomCatalogPage');
       return <CustomCatalogPage />;

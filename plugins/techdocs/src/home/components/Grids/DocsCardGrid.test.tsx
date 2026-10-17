@@ -17,7 +17,7 @@
 import { configApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { DocsCardGrid } from './DocsCardGrid';
 
 // Hacky way to mock a specific boolean config value.

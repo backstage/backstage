@@ -33,6 +33,7 @@ import {
 import { useAppNode } from '@backstage/frontend-plugin-api';
 
 const wrapInBoundaryExtension = (element?: JSX.Element) => {
+  // @ts-expect-error Historical refs intentionally omit extensionId
   const routeRef = createRouteRef();
   return createExtension({
     name: 'test',

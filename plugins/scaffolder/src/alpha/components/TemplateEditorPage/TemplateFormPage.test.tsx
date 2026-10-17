@@ -17,7 +17,7 @@
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { TemplateFormPage } from './TemplateFormPage';
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef } from '../../../legacyRoutes';
 import {
   catalogApiRef,
   defaultEntityPresentation,

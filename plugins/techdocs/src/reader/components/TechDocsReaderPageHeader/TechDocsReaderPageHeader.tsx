@@ -37,7 +37,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import capitalize from 'lodash/capitalize';
 
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef } from '../../../legacyRoutes';
 import { techdocsTranslationRef } from '../../../translation';
 import { useTechDocsReaderHeaderData } from '../../../hooks/useTechDocsReaderHeaderData';
 

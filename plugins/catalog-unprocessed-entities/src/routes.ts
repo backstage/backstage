@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core-plugin-api';
+
+import { createRouteRef } from '@backstage/frontend-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  id: 'catalog-unprocessed-entities',
+  extensionId: 'page:catalog-unprocessed-entities',
 });

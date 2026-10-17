@@ -30,7 +30,6 @@ import {
   createExtensionInput,
   PageBlueprint,
   createFrontendPlugin,
-  createRouteRef,
   AppRootElementBlueprint,
   identityApiRef,
   storageApiRef,
@@ -50,8 +49,7 @@ import {
   HomePageWidgetBlueprint,
   type HomePageLayoutProps,
 } from '@backstage/plugin-home-react/alpha';
-
-const rootRouteRef = createRouteRef();
+import { rootRouteRef } from './routes';
 
 const VisitListener = reactLazy(() =>
   import('./components/VisitListener').then(m => ({
@@ -85,8 +83,9 @@ const homePage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { node, inputs, config }) {
     return originalFactory({
       path: '/home',
-      noHeader: true,
       routeRef: rootRouteRef,
+      noHeader: true,
+
       title: 'Home',
       icon: <HomeIcon fontSize="inherit" />,
       loader: async () => {

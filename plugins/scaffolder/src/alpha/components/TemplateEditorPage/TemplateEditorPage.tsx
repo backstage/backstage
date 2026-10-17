@@ -23,7 +23,7 @@ import {
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { scaffolderTranslationRef } from '../../../translation';
-import { editRouteRef } from '../../../routes';
+import { editRouteRef } from '../../../legacyRoutes';
 import { TemplateEditor } from './TemplateEditor';
 
 const useStyles = makeStyles(

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createApiFactory,
   createPlugin,
@@ -21,9 +22,11 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
+import { rootRouteRef as rootRouteRefNew } from './routes';
 import { catalogUnprocessedEntitiesApiRef } from './api';
 import { CatalogUnprocessedEntitiesClient } from '@backstage/plugin-catalog-unprocessed-entities-common';
+
+const rootRouteRef = convertLegacyRouteRef(rootRouteRefNew);
 
 /**
  * Plugin entry point

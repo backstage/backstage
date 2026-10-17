@@ -17,7 +17,7 @@
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 import { EntityOrphanWarning } from './EntityOrphanWarning';
 
 describe('<EntityOrphanWarning />', () => {

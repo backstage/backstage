@@ -26,7 +26,7 @@ import {
   PermissionApi,
   permissionApiRef,
 } from '@backstage/plugin-permission-react';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '../../legacyRoutes';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';

@@ -24,7 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Entity } from '@backstage/catalog-model';
-import { rootDocsRouteRef } from '../../../routes';
+import { rootDocsRouteRef } from '../../../legacyRoutes';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import {
   EmptyState,
