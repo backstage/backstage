@@ -43,25 +43,54 @@ describe('ReviewPage', () => {
     const getCredentials = jest
       .fn()
       .mockResolvedValue({ token: 'user-token', headers: {} });
-    const generateObject = jest.fn().mockResolvedValue({
-      object: {
-        summary: 'Changes a to b',
-        findings: [
-          { file: 'a.ts', line: 1, severity: 'warning', comment: 'Rename it' },
-          { nonsense: true },
-        ],
-      },
-      finishReason: 'stop',
-      usage: { inputTokens: 1, outputTokens: 1 },
-    });
-    async function* textStream() {
-      yield 'It ';
-      yield 'changes a.';
-    }
-    const streamText = jest.fn().mockReturnValue({
-      textStream: textStream(),
-      response: Promise.resolve({}),
-    });
+    const walkthrough = {
+      chapters: [
+        {
+          title: 'Rename',
+          summary: 'Renames a to b',
+          steps: [
+            {
+              title: 'Change a',
+              explanation: 'a becomes b',
+              hunks: [{ file: 'a.ts', hunkIndex: 0 }],
+            },
+            {
+              title: 'Second step',
+              explanation: 'Nothing else',
+              hunks: [{ file: 'a.ts', hunkIndex: 9 }],
+            },
+          ],
+        },
+        {
+          title: 'Wrap up',
+          summary: 'Done',
+          steps: [{ title: 'Finish', explanation: 'All done', hunks: [] }],
+        },
+      ],
+    };
+    const generateObject = jest
+      .fn()
+      .mockResolvedValueOnce({
+        object: {
+          summary: 'Changes a to b',
+          findings: [
+            {
+              file: 'a.ts',
+              line: 1,
+              severity: 'warning',
+              comment: 'Rename it',
+            },
+            { nonsense: true },
+          ],
+        },
+        finishReason: 'stop',
+        usage: { inputTokens: 1, outputTokens: 1 },
+      })
+      .mockResolvedValueOnce({
+        object: walkthrough,
+        finishReason: 'stop',
+        usage: { inputTokens: 1, outputTokens: 1 },
+      });
 
     await renderInTestApp(<ReviewPage />, {
       apis: [
@@ -76,7 +105,7 @@ describe('ReviewPage', () => {
         ],
         [
           aiGatewayApiRef,
-          { generateObject, streamText, generateText: jest.fn() },
+          { generateObject, streamText: jest.fn(), generateText: jest.fn() },
         ],
       ],
     });
@@ -111,7 +140,21 @@ describe('ReviewPage', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Explain this PR' }),
     );
-    expect(await screen.findByText('It changes a.')).toBeInTheDocument();
+    expect(await screen.findByText('a becomes b')).toBeInTheDocument();
+    expect(screen.getByText(/Chapter 1 of 2, step 1 of 2/)).toBeInTheDocument();
+    expect(screen.getByText('+b')).toBeInTheDocument();
+    const walkthroughRequest = generateObject.mock.calls[1][0];
+    expect(walkthroughRequest.prompt).toContain(
+      '=== hunk file="a.ts" hunkIndex=0 ===',
+    );
+    expect(walkthroughRequest.schema.additionalProperties).toBe(false);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(await screen.findByText('Nothing else')).toBeInTheDocument();
+    expect(screen.getByText(/step 2 of 2/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Wrap up' }));
+    expect(await screen.findByText('All done')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });
 
   it('pre-fills the pull request from the route and updates the route on submit', async () => {

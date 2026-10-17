@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react';
-import { useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import {
+  useMatch,
+  useNavigate,
+  useResolvedPath,
+  useSearchParams,
+} from 'react-router-dom';
 import { Content, Header, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/frontend-plugin-api';
 import {
@@ -27,19 +32,38 @@ import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { fetchPullRequestDiff, parsePullRequestUrl } from '../githubPr';
+import {
+  fetchPullRequestDiff,
+  MAX_DIFF_CHARACTERS,
+  parsePullRequestUrl,
+} from '../githubPr';
 import { parseReviewResult, reviewSchema, ReviewResult } from '../review';
+import {
+  Hunk,
+  numberHunks,
+  parseWalkthrough,
+  splitHunks,
+  Walkthrough,
+  walkthroughSchema,
+} from '../walkthrough';
+import { WalkthroughView } from './WalkthroughView';
+
+const WALKTHROUGH_PROMPT =
+  'You explain a pull request as a linear walkthrough for a reader who has not seen it. ' +
+  'Split it into chapters, each with a few ordered steps. Every step must reference the diff hunks ' +
+  'it is about by their file and hunkIndex, and must never repeat the diff text itself. ' +
+  'Order the steps so that each builds on the previous one.';
 
 const SYSTEM_PROMPT =
   'You are a careful code reviewer. You are given the unified diff of a pull request. ' +
   'Report concrete problems only, referencing the file and, when known, the line in the new version.';
 
-type Phase = 'fetching' | 'reviewing' | 'explaining';
+type Phase = 'fetching' | 'reviewing' | 'walkthrough';
 
 const PHASE_LABELS: Record<Phase, string> = {
   fetching: 'Fetching the pull request diff...',
   reviewing: 'Reviewing the changes, this can take a minute...',
-  explaining: 'Explaining the pull request...',
+  walkthrough: 'Preparing the walkthrough, this can take a minute...',
 };
 
 export function ReviewPage() {
@@ -61,8 +85,20 @@ export function ReviewPage() {
   const [error, setError] = useState<string>();
   const [notice, setNotice] = useState<string>();
   const [review, setReview] = useState<ReviewResult>();
-  const [explanation, setExplanation] = useState('');
-  const abort = useRef<AbortController>();
+  const [walkthrough, setWalkthrough] = useState<{
+    value: Walkthrough;
+    hunks: Hunk[];
+  }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const step = Number(searchParams.get('step')) || 0;
+  const setStep = (next: number) =>
+    setSearchParams(
+      params => {
+        params.set('step', String(next));
+        return params;
+      },
+      { replace: false },
+    );
 
   useEffect(() => {
     if (routePrUrl) {
@@ -92,21 +128,20 @@ export function ReviewPage() {
         ? `The diff of ${result.fileCount} files was truncated before being sent for review.`
         : undefined,
     );
-    return result.diff;
+    return result;
   };
 
   const run = async (
     nextPhase: Phase,
-    action: (diff: string) => Promise<void>,
+    action: (loaded: Awaited<ReturnType<typeof loadDiff>>) => Promise<void>,
   ) => {
-    abort.current?.abort();
     rememberPr();
     setPhase('fetching');
     setError(undefined);
     try {
-      const diff = await loadDiff();
+      const loaded = await loadDiff();
       setPhase(nextPhase);
-      await action(diff);
+      await action(loaded);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -115,7 +150,7 @@ export function ReviewPage() {
   };
 
   const onReview = () =>
-    run('reviewing', async diff => {
+    run('reviewing', async ({ diff }) => {
       setReview(undefined);
       const response = await aiGateway.generateObject({
         system: SYSTEM_PROMPT,
@@ -128,20 +163,22 @@ export function ReviewPage() {
     });
 
   const onExplain = () =>
-    run('explaining', async diff => {
-      setExplanation('');
-      const controller = new AbortController();
-      abort.current = controller;
-      const stream = aiGateway.streamText(
-        {
-          system: 'Explain what this pull request does, in a short paragraph.',
-          prompt: diff,
-        },
-        { signal: controller.signal },
+    run('walkthrough', async ({ files }) => {
+      setWalkthrough(undefined);
+      const { text, included } = numberHunks(
+        splitHunks(files),
+        MAX_DIFF_CHARACTERS,
       );
-      for await (const delta of stream.textStream) {
-        setExplanation(text => text + delta);
-      }
+      const response = await aiGateway.generateObject({
+        system: WALKTHROUGH_PROMPT,
+        prompt: text,
+        schema: walkthroughSchema,
+      });
+      setWalkthrough({
+        value: parseWalkthrough(response.object, included),
+        hunks: included,
+      });
+      setStep(0);
     });
 
   return (
@@ -189,10 +226,13 @@ export function ReviewPage() {
           </Typography>
         )}
         {notice && <Typography>{notice}</Typography>}
-        {explanation && (
-          <Typography component="p" style={{ whiteSpace: 'pre-wrap' }}>
-            {explanation}
-          </Typography>
+        {walkthrough && (
+          <WalkthroughView
+            walkthrough={walkthrough.value}
+            hunks={walkthrough.hunks}
+            step={step}
+            onStepChange={setStep}
+          />
         )}
         {review && (
           <div>

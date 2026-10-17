@@ -47,7 +47,7 @@ export function parsePullRequestUrl(input: string): GithubPrRef {
   };
 }
 
-type GithubFile = {
+export type PullRequestFile = {
   filename: string;
   status: string;
   patch?: string;
@@ -64,7 +64,12 @@ export async function fetchPullRequestDiff(options: {
   integrations: ScmIntegrationRegistry;
   getToken: (url: string) => Promise<string>;
   maxCharacters?: number;
-}): Promise<{ diff: string; truncated: boolean; fileCount: number }> {
+}): Promise<{
+  diff: string;
+  truncated: boolean;
+  fileCount: number;
+  files: PullRequestFile[];
+}> {
   const ref = parsePullRequestUrl(options.prUrl);
   const integration = options.integrations.github.byHost(ref.host);
   if (!integration) {
@@ -75,7 +80,7 @@ export async function fetchPullRequestDiff(options: {
     `https://${ref.host}/${ref.owner}/${ref.repo}`,
   );
 
-  const files: GithubFile[] = [];
+  const files: PullRequestFile[] = [];
   for (let page = 1; page <= 10; page++) {
     const response = await fetch(
       `${apiBaseUrl}/repos/${ref.owner}/${ref.repo}/pulls/${ref.number}/files?per_page=100&page=${page}`,
@@ -91,7 +96,7 @@ export async function fetchPullRequestDiff(options: {
         `GitHub request failed with ${response.status} ${response.statusText}`,
       );
     }
-    const batch: GithubFile[] = await response.json();
+    const batch: PullRequestFile[] = await response.json();
     files.push(...batch);
     if (batch.length < 100) {
       break;
@@ -112,5 +117,5 @@ export async function fetchPullRequestDiff(options: {
     }
     diff += section;
   }
-  return { diff, truncated, fileCount: files.length };
+  return { diff, truncated, fileCount: files.length, files };
 }
