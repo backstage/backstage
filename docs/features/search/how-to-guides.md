@@ -84,6 +84,7 @@ const techDocsEntityTransformer: TechDocsCollatorEntityTransformer = (
 
 const techDocsDocumentTransformer: TechDocsCollatorDocumentTransformer = (
   doc: MkSearchIndexDoc,
+  entity?: Entity,
 ) => {
   return {
     // add more fields to the index

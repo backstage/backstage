@@ -197,7 +197,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               ...defaultTechDocsCollatorEntityTransformer(entity),
               ...defaultTechDocsCollatorDocumentTransformer(doc),
               ...this.entityTransformer(entity),
-              ...this.documentTransformer(doc),
+              ...this.documentTransformer(doc, entity),
               location: this.applyArgsToFormat(
                 this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
                 {
