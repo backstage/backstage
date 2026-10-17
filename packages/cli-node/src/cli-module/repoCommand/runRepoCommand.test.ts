@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
 import { ExitCodeError, run } from '@backstage/cli-common';
-import { PackageGraph } from '../../monorepo';
+import { Lockfile, PackageGraph } from '../../monorepo';
+import { createPackageHasher } from './packageHash';
 import { runRepoCommand } from './runRepoCommand';
 import { RunInterrupt } from './interrupt';
 
@@ -23,6 +27,7 @@ jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
   run: jest.fn(),
 }));
+jest.mock('./packageHash', () => ({ createPackageHasher: jest.fn() }));
 jest.mock('chokidar', () => ({ watch: jest.fn() }));
 
 const runMock = run as jest.Mock;
@@ -40,6 +45,7 @@ function pkg(name: string) {
 
 describe('runRepoCommand', () => {
   const options = {
+    name: 'test',
     description: 'd',
     packageCommand: ['package', 'test'],
     packageArgs: ['--no-watch'],
@@ -250,5 +256,58 @@ describe('runRepoCommand', () => {
     await expect(ran(['-p', 'a', '-p', 'zzz', '-p', 'yyy'])).rejects.toThrow(
       'matches "zzz", "yyy"',
     );
+  });
+
+  it('skips packages that passed before, and only caches passes', async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'run-cache-'));
+    try {
+      jest.spyOn(Lockfile, 'load').mockResolvedValue({} as any);
+      // A hash that changes when the content version of a package changes
+      const versions: Record<string, string> = { a: '1', b: '1' };
+      jest
+        .mocked(createPackageHasher)
+        .mockImplementation(
+          () => async (item: any) =>
+            `${item.pkg.packageJson.name}-${
+              versions[item.pkg.packageJson.name]
+            }`,
+        );
+      runMock.mockImplementation((_args: string[], opts: any) => ({
+        waitForExit: async () => {
+          if (opts.cwd === '/repo/b') {
+            throw new ExitCodeError(1, 'b');
+          }
+        },
+      }));
+      const args = ['--success-cache', '--success-cache-dir', dir];
+      const ran = async () => {
+        runMock.mockClear();
+        jest.mocked(process.stdout.write).mockClear();
+        await runRepoCommand(
+          options,
+          { ...context, args },
+          new RunInterrupt(jest.fn()),
+        ).catch(() => {});
+        return runMock.mock.calls.map(c => c[1].cwd).sort();
+      };
+
+      expect(await ran()).toEqual(['/repo/a', '/repo/b']);
+      // a passed and is cached, b failed and is not
+      expect(await ran()).toEqual(['/repo/b']);
+      const ansi = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
+      expect(
+        jest
+          .mocked(process.stdout.write)
+          .mock.calls.map(c => String(c[0]))
+          .join('')
+          .replace(ansi, ''),
+      ).toContain('CACHED a');
+
+      // A changed hash invalidates the entry
+      versions.a = '2';
+      expect(await ran()).toEqual(['/repo/a', '/repo/b']);
+    } finally {
+      await fs.remove(dir);
+    }
   });
 });

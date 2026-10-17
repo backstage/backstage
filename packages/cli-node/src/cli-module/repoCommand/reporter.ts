@@ -17,7 +17,7 @@
 import chalk from 'chalk';
 
 /** @internal */
-export type PackageStatus = 'PASS' | 'FAIL' | 'INTERRUPTED';
+export type PackageStatus = 'PASS' | 'FAIL' | 'INTERRUPTED' | 'CACHED';
 
 /**
  * Presents the progress of a repo run.
@@ -30,6 +30,8 @@ export interface RunReporter {
   onStart(name: string): void;
   onOutput(name: string, data: Buffer): void;
   onFinish(name: string, status: PackageStatus): void;
+  /** Called instead of onStart and onFinish for a package that is skipped due to a cache hit */
+  onCached(name: string): void;
   /** Prints a message that must always be visible */
   message(text: string): void;
   /** Called when the run is interrupted, shows running packages as interrupted */
@@ -45,6 +47,8 @@ function statusLabel(status: PackageStatus): string {
   switch (status) {
     case 'PASS':
       return chalk.green('PASS');
+    case 'CACHED':
+      return chalk.cyan('CACHED');
     case 'FAIL':
       return chalk.red('FAIL');
     default:
@@ -87,6 +91,10 @@ class VerboseReporter implements RunReporter {
     this.write(`[${name}] ${statusLabel(status)}\n`);
   }
 
+  onCached(name: string) {
+    this.onFinish(name, 'CACHED');
+  }
+
   message(text: string) {
     this.write(`${text}\n`);
   }
@@ -127,6 +135,10 @@ class LineReporter implements RunReporter {
     );
   }
 
+  onCached(name: string) {
+    this.onFinish(name, 'CACHED');
+  }
+
   message(text: string) {
     this.write(`${text}\n`);
   }
@@ -149,6 +161,7 @@ class LiveReporter implements RunReporter {
   readonly #running = new Set<string>();
   #queued = 0;
   #passed = 0;
+  #cached = 0;
   #failed = 0;
   #interrupted = 0;
   #frame = 0;
@@ -160,6 +173,7 @@ class LiveReporter implements RunReporter {
   begin(names: string[]) {
     this.#queued = names.length;
     this.#passed = 0;
+    this.#cached = 0;
     this.#failed = 0;
     this.#interrupted = 0;
     this.#timer = setInterval(() => {
@@ -177,6 +191,12 @@ class LiveReporter implements RunReporter {
   }
 
   onOutput() {}
+
+  onCached() {
+    this.#queued -= 1;
+    this.#cached += 1;
+    this.#draw();
+  }
 
   onFinish(name: string, status: PackageStatus) {
     this.#running.delete(name);
@@ -237,6 +257,7 @@ class LiveReporter implements RunReporter {
   #summary(): string {
     return [
       chalk.green(`${this.#passed} passed`),
+      ...(this.#cached > 0 ? [chalk.cyan(`${this.#cached} cached`)] : []),
       this.#failed > 0 ? chalk.red(`${this.#failed} failed`) : '0 failed',
       ...(this.#interrupted > 0
         ? [chalk.yellow(`${this.#interrupted} interrupted`)]
