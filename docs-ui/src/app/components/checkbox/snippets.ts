@@ -10,3 +10,39 @@ export const allVariantsSnippet = `<Flex direction="column" gap="2">
   <Checkbox isDisabled>Disabled</Checkbox>
   <Checkbox isSelected isDisabled>Checked & Disabled</Checkbox>
 </Flex>`;
+
+export const indeterminateSnippet = `import { useState } from 'react';
+import { Checkbox, Flex } from '@backstage/ui';
+
+const options = ['Read', 'Write', 'Delete'];
+const [selected, setSelected] = useState<string[]>(['Read']);
+
+const allSelected = selected.length === options.length;
+const someSelected = selected.length > 0 && !allSelected;
+
+<Flex direction="column" gap="2">
+  <Checkbox
+    isSelected={allSelected}
+    isIndeterminate={someSelected}
+    onChange={isSelected => setSelected(isSelected ? options : [])}
+  >
+    Select all
+  </Checkbox>
+  <Flex direction="column" gap="2" pl="6">
+    {options.map(option => (
+      <Checkbox
+        key={option}
+        isSelected={selected.includes(option)}
+        onChange={isSelected =>
+          setSelected(current =>
+            isSelected
+              ? [...current, option]
+              : current.filter(o => o !== option),
+          )
+        }
+      >
+        {option}
+      </Checkbox>
+    ))}
+  </Flex>
+</Flex>`;
