@@ -483,6 +483,14 @@ export default {
     ),
     sidebarElementWithIndex(
       {
+        label: 'Database',
+        description:
+          'Choose, set up, and maintain the database that backs a Backstage instance.',
+      },
+      ['database/index', 'database/maintenance'],
+    ),
+    sidebarElementWithIndex(
+      {
         label: 'Framework',
         description: 'Core framework concepts and architecture.',
       },
