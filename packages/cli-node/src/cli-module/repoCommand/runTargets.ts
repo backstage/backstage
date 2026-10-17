@@ -80,7 +80,7 @@ export function createRunCommand(
   targets: Map<string, RegisteredRunTarget>,
   /** Overrides the lazily loaded implementation, for testing */
   runner?: (
-    options: CliRunTargetOptions,
+    options: CliRunTargetOptions & { name: string },
     context: CliCommandContext,
   ) => Promise<void>,
 ): CliCommand {
@@ -117,13 +117,16 @@ export function createRunCommand(
         );
       }
       const run = runner ?? (await loadRunner());
-      await run(target.options, {
-        args,
-        info: {
-          usage: `${context.info.usage} ${name}`,
-          name: `${context.info.name} ${name}`,
+      await run(
+        { ...target.options, name },
+        {
+          args,
+          info: {
+            usage: `${context.info.usage} ${name}`,
+            name: `${context.info.name} ${name}`,
+          },
         },
-      });
+      );
     },
   };
 }

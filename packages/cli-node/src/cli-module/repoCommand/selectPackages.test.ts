@@ -145,6 +145,7 @@ describe('repo command helpers', () => {
       watch: true,
       concurrency: 3,
       verbose: true,
+      successCache: false,
       packages: ['cli-node'],
     });
     expect(parseRepoArgs(['--since=x', 'src/'], 'repo test')).toMatchObject({

@@ -15,8 +15,10 @@
  */
 
 import chokidar from 'chokidar';
-import { ExitCodeError, run } from '@backstage/cli-common';
-import { PackageGraph } from '../../monorepo';
+import { ExitCodeError, run, targetPaths } from '@backstage/cli-common';
+import { Lockfile, PackageGraph } from '../../monorepo';
+import { SuccessCache } from '../../cache';
+import { createPackageHasher } from './packageHash';
 import { InputError } from '@backstage/errors';
 import type { CliCommandContext, CliRunTargetOptions } from '../types';
 import { RunInterrupt } from './interrupt';
@@ -37,6 +39,12 @@ const DEBOUNCE_MS = 200;
 interface RunSettings {
   concurrency: number;
   verbose: boolean;
+  successCache?: {
+    cache: SuccessCache;
+    lockfile: Lockfile;
+    graph: PackageGraph;
+    targetName: string;
+  };
 }
 
 async function runPackages(
@@ -51,6 +59,20 @@ async function runPackages(
     isTTY: Boolean(process.stdout.isTTY),
     write: text => process.stdout.write(text),
   });
+  const cacheSettings = settings.successCache;
+  const cacheEntries = cacheSettings
+    ? await cacheSettings.cache.read()
+    : undefined;
+  const hashPackage = cacheSettings
+    ? createPackageHasher({
+        graph: cacheSettings.graph,
+        lockfile: cacheSettings.lockfile,
+        target: {
+          name: cacheSettings.targetName,
+          packageCommand: options.packageCommand,
+        },
+      })
+    : undefined;
   reporter.begin(selected.map(item => item.pkg.packageJson.name));
   const stopListening = interrupt.onInterrupt(() => reporter.interrupt());
 
@@ -59,6 +81,11 @@ async function runPackages(
     const push = (data: Buffer) => reporter.onOutput(name, data);
     let error: Error | undefined;
     let untrack = () => {};
+    const hash = await hashPackage?.(item, options.packageArgs ?? []);
+    if (hash && cacheEntries?.has(hash)) {
+      reporter.onCached(name);
+      return;
+    }
     reporter.onStart(name);
     try {
       const child = run(
@@ -100,6 +127,10 @@ async function runPackages(
     }
     reporter.onFinish(name, status);
     untrack();
+    // Written right away so that progress is kept if the run is interrupted
+    if (hash && status === 'PASS') {
+      await cacheSettings?.cache.write([hash]);
+    }
   };
 
   // A simple pool where each worker takes the next package until none are left
@@ -145,8 +176,14 @@ function reportFailures(failed: string[], verbose: boolean) {
 }
 
 /** @internal */
+export interface RunRepoOptions extends CliRunTargetOptions {
+  /** The name of the run target, used in cache keys */
+  name: string;
+}
+
+/** @internal */
 export async function runRepoCommand(
-  options: CliRunTargetOptions,
+  options: RunRepoOptions,
   context: CliCommandContext,
   interrupt: RunInterrupt = new RunInterrupt(),
 ): Promise<void> {
@@ -159,7 +196,7 @@ export async function runRepoCommand(
 }
 
 async function runRepoCommandInternal(
-  options: CliRunTargetOptions,
+  options: RunRepoOptions,
   context: CliCommandContext,
   interrupt: RunInterrupt,
 ): Promise<void> {
@@ -234,7 +271,22 @@ async function runRepoCommandInternal(
     return;
   }
 
-  const failed = await runPackages(selected, options, flags, interrupt);
+  const settings: RunSettings = {
+    concurrency: flags.concurrency,
+    verbose: flags.verbose,
+    successCache: flags.successCache
+      ? {
+          cache: SuccessCache.create({
+            name: `run-${options.name}`,
+            basePath: flags.successCacheDir,
+          }),
+          lockfile: await Lockfile.load(targetPaths.resolveRoot('yarn.lock')),
+          graph,
+          targetName: options.name,
+        }
+      : undefined,
+  };
+  const failed = await runPackages(selected, options, settings, interrupt);
   reportFailures(failed, flags.verbose);
 
   if (!flags.watch) {
@@ -249,6 +301,7 @@ async function runRepoCommandInternal(
     graph,
     options,
     flags,
+    settings,
     includeDependents,
     interrupt,
   );
@@ -257,8 +310,9 @@ async function runRepoCommandInternal(
 async function watchPackages(
   selected: SelectedPackage[],
   graph: PackageGraph,
-  options: CliRunTargetOptions,
+  options: RunRepoOptions,
   flags: ReturnType<typeof parseRepoArgs>,
+  settings: RunSettings,
   includeDependents: boolean,
   interrupt: RunInterrupt,
 ): Promise<never> {
@@ -283,7 +337,7 @@ async function watchPackages(
           includeDependents,
         });
         reportFailures(
-          await runPackages(toRun, options, flags, interrupt),
+          await runPackages(toRun, options, settings, interrupt),
           flags.verbose,
         );
       }

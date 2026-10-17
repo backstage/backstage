@@ -71,10 +71,13 @@ describe('createRunCommand', () => {
     expect(runRepoCommand).not.toHaveBeenCalled();
 
     await execute({ args: ['test', '--since', 'main'], info });
-    expect(runRepoCommand).toHaveBeenCalledWith(options, {
-      args: ['--since', 'main'],
-      info: { usage: 'cli repo run test', name: 'repo run test' },
-    });
+    expect(runRepoCommand).toHaveBeenCalledWith(
+      { ...options, name: 'test' },
+      {
+        args: ['--since', 'main'],
+        info: { usage: 'cli repo run test', name: 'repo run test' },
+      },
+    );
 
     await expect(execute({ args: ['nope'], info })).rejects.toThrow(
       'Unknown run target "nope", available targets are: test',

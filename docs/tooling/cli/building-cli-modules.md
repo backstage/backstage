@@ -238,7 +238,9 @@ The `includeDependents` option sets whether `--since` and `--watch` also run the
 local dependents of changed packages. It defaults to `true`, and the
 `--include-dependents` and `--no-include-dependents` flags override it. The
 command also supports `--since <ref>`, `--watch`, `--concurrency <n>`
-(default 8), `--verbose` and `-p, --package <selector>`. By default it shows a
+(default 8), `--verbose`, `-p, --package <selector>`, and `--success-cache`
+with `--success-cache-dir`, which skips packages that passed before and have
+not changed since. By default it shows a
 progress view, or one line for each finished package when not in a terminal,
 and only shows package output with `--verbose`.
 
