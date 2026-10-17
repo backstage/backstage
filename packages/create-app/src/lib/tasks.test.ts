@@ -16,8 +16,9 @@
 
 import fs from 'fs-extra';
 import child_process from 'node:child_process';
-import { resolve as resolvePath } from 'node:path';
+import { resolve as resolvePath, relative as relativePath } from 'node:path';
 import os from 'node:os';
+import recursive from 'recursive-readdir';
 import {
   Task,
   buildAppTask,
@@ -296,6 +297,7 @@ describe('tasks', () => {
       await templatingTask(templateDir, destinationDir, context);
       expect(fs.existsSync('templatedApp/package.json')).toBe(true);
       expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
+      expect(fs.existsSync('templatedApp/.github/workflows/ci.yml')).toBe(true);
       await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual(
         {
           version: '1.2.3',
@@ -309,6 +311,32 @@ describe('tasks', () => {
       await expect(
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
       ).resolves.toContain('sqlite3"');
+    });
+
+    it('should create a .github directory from a template dot-github directory', async () => {
+      mockDir.addContent({
+        'template/dot-github/workflows/ci.yml': 'name: CI',
+        'template/README.md': '',
+      });
+
+      await templatingTask(mockDir.resolve('template'), 'dotGithubApp', {});
+
+      await expect(
+        fs.readFile('dotGithubApp/.github/workflows/ci.yml', 'utf-8'),
+      ).resolves.toBe('name: CI');
+      expect(fs.existsSync('dotGithubApp/dot-github')).toBe(false);
+      expect(fs.existsSync('dotGithubApp/README.md')).toBe(true);
+    });
+
+    it('should not store .github directories in templates, as Yarn leaves them out of the published package', async () => {
+      const templatesDir = resolvePath(__dirname, '../../templates');
+      const files = await recursive(templatesDir);
+
+      const githubPaths = files
+        .map(file => relativePath(templatesDir, file))
+        .filter(file => file.split(/[\\/]/).includes('.github'));
+
+      expect(githubPaths).toEqual([]);
     });
 
     it.each(['default-app', 'legacy-app'])(
