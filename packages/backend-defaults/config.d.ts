@@ -1444,6 +1444,73 @@ export interface Config {
   };
 
   /**
+   * Configuration for the AI models service.
+   *
+   * @remarks
+   *
+   * This service is in alpha and the configuration shape may change.
+   */
+  ai?: {
+    /**
+     * The key of the provider instance under `ai.providers` that serves
+     * requests that don't name a provider.
+     */
+    defaultProvider?: string;
+    /**
+     * Provider instances, keyed by an operator-chosen ID.
+     */
+    providers?: {
+      [providerId: string]: {
+        /**
+         * The provider family. Built-in families are `openai`, `anthropic`,
+         * `google`, `bedrock`, and `openai-compatible`. Additional families
+         * can be contributed by backend service factories.
+         */
+        type: string;
+        /**
+         * The API key for the provider. When omitted, the built-in families
+         * fall back to the provider's standard environment variable, or to the
+         * default AWS credential chain for `bedrock`.
+         *
+         * @visibility secret
+         */
+        apiKey?: string;
+        /**
+         * A custom base URL, for example for a proxy. Required for
+         * `openai-compatible`.
+         */
+        baseURL?: string;
+        /**
+         * The AWS region, used by the `bedrock` family.
+         */
+        region?: string;
+        /**
+         * Additional HTTP headers sent with every request to the provider.
+         *
+         * @deepVisibility secret
+         */
+        headers?: { [name: string]: string };
+        /**
+         * The default model for each capability. A capability is only enabled
+         * on this provider instance when it has a default model.
+         */
+        defaultModels?: {
+          'text-generation'?: string;
+          embeddings?: string;
+        };
+        /**
+         * Operator-defined model aliases for each capability, mapping an alias
+         * to a concrete model ID.
+         */
+        modelAliases?: {
+          'text-generation'?: { [alias: string]: string };
+          embeddings?: { [alias: string]: string };
+        };
+      };
+    };
+  };
+
+  /**
    * Options used by the default discovery service.
    */
   discovery?: {
