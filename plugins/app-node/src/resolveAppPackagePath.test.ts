@@ -15,9 +15,10 @@
  */
 
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import fs from 'fs-extra';
-import { tmpdir } from 'node:os';
-import { join as joinPath, resolve as resolvePath } from 'node:path';
+import { resolve as resolvePath } from 'node:path';
 import { resolveAppPackagePath } from './resolveAppPackagePath';
 
 // Package names that are not installed anywhere in this repository
@@ -25,30 +26,32 @@ const appPackageName = 'resolve-app-package-path-test-app';
 const missingAppPackageName = 'resolve-app-package-path-missing-app';
 
 describe('resolveAppPackagePath', () => {
-  let rootDir: string;
-  let backendDir: string;
-
-  beforeAll(async () => {
-    // A backend package that has the app package in its own node_modules
-    rootDir = await fs.realpath(
-      await fs.mkdtemp(joinPath(tmpdir(), 'resolve-app-package-path-')),
-    );
-    backendDir = joinPath(rootDir, 'packages', 'backend');
-    await fs.outputJson(
-      joinPath(backendDir, 'node_modules', appPackageName, 'package.json'),
-      { name: appPackageName },
-    );
+  const mockDir = createMockDirectory({
+    content: {
+      // A backend package that has the app package in its own node_modules
+      [`project/packages/backend/node_modules/${appPackageName}/package.json`]:
+        JSON.stringify({ name: appPackageName }),
+      // A copy outside of the project, which must not be used
+      [`outside/node_modules/${missingAppPackageName}/package.json`]:
+        JSON.stringify({ name: missingAppPackageName }),
+    },
   });
+  const rootDir = mockDir.resolve('project');
+  const backendDir = mockDir.resolve('project/packages/backend');
+  const expectedAppDir = fs.realpathSync(
+    resolvePath(backendDir, 'node_modules', appPackageName),
+  );
 
-  afterAll(async () => {
-    await fs.remove(rootDir);
-  });
+  let argv: string[];
 
   beforeEach(() => {
+    argv = process.argv;
+    overrideTargetPaths({ dir: backendDir, rootDir });
     jest.spyOn(process, 'cwd').mockReturnValue(backendDir);
   });
 
   afterEach(() => {
+    process.argv = argv;
     jest.restoreAllMocks();
   });
 
@@ -85,12 +88,22 @@ describe('resolveAppPackagePath', () => {
   });
 
   it('resolves the app package from the backend package when the regular resolution cannot find it', () => {
+    // From the working directory
     expect(resolveAppPackagePath(appPackageName, 'dist')).toBe(
-      joinPath(backendDir, 'node_modules', appPackageName, 'dist'),
+      resolvePath(expectedAppDir, 'dist'),
     );
 
-    // When the backend package does not have it either, the original error is
-    // thrown and says where else it looked
+    // From the script path, which is the only way to find the backend
+    // package when the entry point is an ES module
+    jest.spyOn(process, 'cwd').mockReturnValue(rootDir);
+    process.argv = [argv[0], resolvePath(backendDir, 'index.mjs')];
+    expect(resolveAppPackagePath(appPackageName, 'dist')).toBe(
+      resolvePath(expectedAppDir, 'dist'),
+    );
+
+    // Copies outside of the project root are not used, and the original error
+    // is thrown and says where else it looked
+    jest.spyOn(process, 'cwd').mockReturnValue(mockDir.resolve('outside'));
     expect(() => resolveAppPackagePath(missingAppPackageName, 'dist')).toThrow(
       expect.objectContaining({
         code: 'MODULE_NOT_FOUND',
@@ -100,7 +113,7 @@ describe('resolveAppPackagePath', () => {
       }),
     );
     expect(() => resolveAppPackagePath(missingAppPackageName, 'dist')).toThrow(
-      backendDir,
+      `within ${rootDir}`,
     );
   });
 });
