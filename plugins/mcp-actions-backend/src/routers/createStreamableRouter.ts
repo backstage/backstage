@@ -19,7 +19,11 @@ import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
-import { toError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  NotAllowedError,
+  toError,
+} from '@backstage/errors';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import {
   AuditorService,
@@ -121,12 +125,10 @@ export const createStreamableRouter = ({
       logger.error(err.message);
 
       if (!res.headersSent) {
-        res.status(500).json({
+        const { status, code, message } = getErrorResponse(err);
+        res.status(status).json({
           jsonrpc: '2.0',
-          error: {
-            code: -32603,
-            message: 'Internal server error',
-          },
+          error: { code, message },
           id: null,
         });
       }
@@ -172,3 +174,20 @@ export const createStreamableRouter = ({
 
   return router;
 };
+
+function getErrorResponse(error: Error): {
+  status: number;
+  code: number;
+  message: string;
+} {
+  // Match on error names rather than using instanceof, so that errors from
+  // other copies of @backstage/errors are handled too.
+  switch (error.name) {
+    case AuthenticationError.name:
+      return { status: 401, code: -32000, message: 'Unauthorized' };
+    case NotAllowedError.name:
+      return { status: 403, code: -32000, message: 'Forbidden' };
+    default:
+      return { status: 500, code: -32603, message: 'Internal server error' };
+  }
+}
