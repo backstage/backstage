@@ -42,6 +42,9 @@ export function evaluateFilterPredicate(
         'Operator $all must be the only key in the predicate, wrap in $all to combine with other conditions',
       );
     }
+    if (!Array.isArray(predicate.$all)) {
+      throw new InputError('Operator $all expects an array operand');
+    }
     return predicate.$all.every(f => evaluateFilterPredicate(f, value));
   }
   if ('$any' in predicate) {
@@ -49,6 +52,9 @@ export function evaluateFilterPredicate(
       throw new InputError(
         'Operator $any must be the only key in the predicate, wrap in $all to combine with other conditions',
       );
+    }
+    if (!Array.isArray(predicate.$any)) {
+      throw new InputError('Operator $any expects an array operand');
     }
     return predicate.$any.some(f => evaluateFilterPredicate(f, value));
   }
@@ -112,6 +118,9 @@ function evaluateFilterPredicateValue(
     return value.some(v => evaluateFilterPredicate(filter.$contains, v));
   }
   if ('$in' in filter) {
+    if (!Array.isArray(filter.$in)) {
+      throw new InputError('Operator $in expects an array operand');
+    }
     return filter.$in.some(search => valuesAreEqual(value, search));
   }
   if ('$exists' in filter) {
@@ -121,6 +130,9 @@ function evaluateFilterPredicateValue(
     return value === undefined;
   }
   if ('$hasPrefix' in filter) {
+    if (typeof filter.$hasPrefix !== 'string') {
+      throw new InputError('Operator $hasPrefix expects a string operand');
+    }
     if (typeof value !== 'string') {
       return false;
     }
