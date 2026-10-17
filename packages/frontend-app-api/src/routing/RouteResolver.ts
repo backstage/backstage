@@ -360,18 +360,31 @@ export class RouteResolver implements RouteResolutionApi {
         this.externalRouteIds,
       );
     }
+    const callersById = new Map<string, Set<ExternalRouteRef>>();
+    for (const [ref, id] of this.externalRouteIds) {
+      let callers = callersById.get(id);
+      if (!callers) {
+        callers = new Set();
+        callersById.set(id, callers);
+      }
+      callers.add(ref);
+    }
     for (const [externalRef, target] of this.routeBindings) {
       if (!target) {
         continue;
       }
-      const params = OpaqueExternalRouteRef.toInternal(externalRef).getParams();
+      const id = this.externalRouteIds.get(externalRef);
+      const callers = (id && callersById.get(id)) || [externalRef];
       const targetParams = OpaqueSubRouteRef.isType(target)
         ? OpaqueSubRouteRef.toInternal(target).getParams()
         : OpaqueRouteRef.toInternal(target).getParams();
-      if (targetParams.some(param => !params.includes(param))) {
-        throw new Error(
-          `External route ${externalRef} does not provide the parameters required by ${target}`,
-        );
+      for (const caller of callers) {
+        const params = OpaqueExternalRouteRef.toInternal(caller).getParams();
+        if (targetParams.some(param => !params.includes(param))) {
+          throw new Error(
+            `External route ${caller} does not provide the parameters required by ${target}`,
+          );
+        }
       }
     }
   }

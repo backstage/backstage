@@ -19,6 +19,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   useAnalytics,
+  PageBlueprint,
   createRouteRef,
   createExternalRouteRef,
   useRouteRef,
@@ -27,6 +28,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
+import { renderTestApp } from './renderTestApp';
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
@@ -203,3 +205,34 @@ describe('renderInTestApp', () => {
     });
   });
 });
+
+it.each(['renderInTestApp', 'renderTestApp'])(
+  '%s mounts targeted refs from different namespaces',
+  helper => {
+    const catalog = createRouteRef({ extensionId: 'page:catalog' });
+    const scaffolder = createRouteRef({ extensionId: 'page:scaffolder' });
+    const Links = () => {
+      const catalogLink = useRouteRef({ ...catalog });
+      const scaffolderLink = useRouteRef({ ...scaffolder });
+      return (
+        <div>
+          {catalogLink?.()} and {scaffolderLink?.()}
+        </div>
+      );
+    };
+    const mountedRoutes = { '/catalog': catalog, '/create': scaffolder };
+    if (helper === 'renderInTestApp') {
+      renderInTestApp(<Links />, { mountedRoutes });
+    } else {
+      renderTestApp({
+        mountedRoutes,
+        extensions: [
+          PageBlueprint.make({
+            params: { path: '/', loader: async () => <Links /> },
+          }),
+        ],
+      });
+    }
+    return screen.findByText('/catalog and /create');
+  },
+);

@@ -523,6 +523,8 @@ export default createFrontendModule({
 ```
 
 App bindings for `example.viewItem` take precedence over its default target.
+The selected target must only require parameters provided by every registered
+reference for that external route, including the original plugin reference.
 
 For existing plugins, see the [route reference migration guide](./60-migrations.md#route-references-target-extension-ids)
 or the [old frontend system plugin migration guide](../building-plugins/05-migrating.md).
