@@ -53,6 +53,7 @@ export type AzureIntegrationConfig = {
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
+  | 'ClientCertificate'
   | 'ManagedIdentity'
   | 'ManagedIdentityClientAssertion';
 
@@ -90,6 +91,33 @@ export type AzureClientSecretCredential = AzureCredentialBase & {
    * The client secret
    */
   clientSecret: string;
+};
+
+/**
+ * A client certificate credential for an App Registration. Exactly one of
+ * `clientCertificate` or `clientCertificatePath` must be set.
+ * @public
+ */
+export type AzureClientCertificateCredential = AzureCredentialBase & {
+  kind: 'ClientCertificate';
+  /**
+   * The Entra ID tenant
+   */
+  tenantId: string;
+  /**
+   * The client id
+   */
+  clientId: string;
+
+  /**
+   * The PEM-encoded certificate including its private key.
+   */
+  clientCertificate?: string;
+
+  /**
+   * The path to a PEM-encoded certificate file including its private key.
+   */
+  clientCertificatePath?: string;
 };
 
 /**
@@ -144,6 +172,7 @@ export type PersonalAccessTokenCredential = AzureCredentialBase & {
  */
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureClientCertificateCredential> &
     Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,
@@ -156,6 +185,7 @@ export type AzureDevOpsCredentialLike = Omit<
  */
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureClientCertificateCredential
   | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
@@ -163,29 +193,32 @@ export type AzureDevOpsCredential =
 const AzureDevOpsCredentialFields = [
   'clientId',
   'clientSecret',
+  'clientCertificate',
+  'clientCertificatePath',
   'managedIdentityClientId',
   'tenantId',
   'personalAccessToken',
 ] as const;
 type AzureDevOpsCredentialField = (typeof AzureDevOpsCredentialFields)[number];
 
-const AzureDevopsCredentialFieldMap = new Map<
-  AzureDevOpsCredentialKind,
-  AzureDevOpsCredentialField[]
->([
+const AzureDevopsCredentialFieldMap: Array<
+  [AzureDevOpsCredentialKind, AzureDevOpsCredentialField[]]
+> = [
   ['ClientSecret', ['clientId', 'clientSecret', 'tenantId']],
+  ['ClientCertificate', ['clientId', 'clientCertificate', 'tenantId']],
+  ['ClientCertificate', ['clientId', 'clientCertificatePath', 'tenantId']],
   ['ManagedIdentity', ['clientId']],
   [
     'ManagedIdentityClientAssertion',
     ['clientId', 'managedIdentityClientId', 'tenantId'],
   ],
   ['PersonalAccessToken', ['personalAccessToken']],
-]);
+];
 
 function asAzureDevOpsCredential(
   credential: AzureDevOpsCredentialLike,
 ): AzureDevOpsCredential {
-  for (const entry of AzureDevopsCredentialFieldMap.entries()) {
+  for (const entry of AzureDevopsCredentialFieldMap) {
     const [kind, requiredFields] = entry;
 
     const forbiddenFields = AzureDevOpsCredentialFields.filter(
@@ -239,6 +272,12 @@ export function readAzureIntegrationConfig(
         tenantId: credential.getOptionalString('tenantId')?.trim(),
         clientId: credential.getOptionalString('clientId')?.trim(),
         clientSecret: credential.getOptionalString('clientSecret')?.trim(),
+        clientCertificate: credential
+          .getOptionalString('clientCertificate')
+          ?.trim(),
+        clientCertificatePath: credential
+          .getOptionalString('clientCertificatePath')
+          ?.trim(),
         managedIdentityClientId: credential
           .getOptionalString('managedIdentityClientId')
           ?.trim(),
