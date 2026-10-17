@@ -21,6 +21,8 @@ import { InputError } from '@backstage/errors';
 const KNOWN_BOOLEAN_FLAGS = new Set([
   '--verbose',
   '--no-verbose',
+  '--success-cache',
+  '--no-success-cache',
   '--watch',
   '--no-watch',
   '--include-dependents',
@@ -39,6 +41,8 @@ export interface RepoCommandFlags {
   watch: boolean;
   concurrency: number;
   verbose: boolean;
+  successCache: boolean;
+  successCacheDir?: string;
 }
 
 /**
@@ -89,6 +93,17 @@ export function parseRepoArgs(
           description:
             'Stream the output of each package instead of a progress view',
         },
+        successCache: {
+          type: Boolean,
+          default: false,
+          description:
+            'Skip packages that passed before and have not changed since',
+        },
+        successCacheDir: {
+          type: String,
+          description:
+            'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+        },
         watch: {
           type: Boolean,
           default: false,
@@ -98,7 +113,8 @@ export function parseRepoArgs(
       ignoreArgv: type => type === 'unknown-flag' || type === 'argument',
     },
     undefined,
-    args,
+    // cleye consumes the array that it is given
+    [...args],
   );
 
   const selectors = new Array<string>();
@@ -108,13 +124,15 @@ export function parseRepoArgs(
       arg === '--since' ||
       arg === '--concurrency' ||
       arg === '--package' ||
-      arg === '-p'
+      arg === '-p' ||
+      arg === '--success-cache-dir'
     ) {
       i += 1;
     } else if (
       arg.startsWith('--since=') ||
       arg.startsWith('--concurrency=') ||
       arg.startsWith('--package=') ||
+      arg.startsWith('--success-cache-dir=') ||
       KNOWN_BOOLEAN_FLAGS.has(arg)
     ) {
       // consumed
@@ -132,6 +150,8 @@ export function parseRepoArgs(
     watch: flags.watch,
     concurrency: flags.concurrency,
     verbose: flags.verbose,
+    successCache: flags.successCache,
+    successCacheDir: flags.successCacheDir || undefined,
   };
 }
 

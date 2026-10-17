@@ -94,6 +94,16 @@ include their dependents unless you pass `--include-dependents`, and combined
 with `--since` only packages that match both are run. A selector that matches no
 package is an error.
 
+With `--success-cache`, a package that passed before and has not changed since
+is skipped and shown as cached. A package counts as changed if its files, the
+files of any of its local dependencies, its dependencies in `yarn.lock`, the
+arguments, or the Node.js version changed. The files include uncommitted
+changes and files that are not ignored by Git. Only packages that passed are
+recorded, and each pass is recorded as soon as the package finishes, so an
+interrupted run keeps its progress. By default the cache is stored in
+`node_modules/.cache/backstage-cli`, and `--success-cache-dir <path>` changes
+that location. The cache also applies to the re-runs in `--watch` mode.
+
 Arguments are not passed on to the package command. Each package runs with the
 extra arguments from its own `test` script and the arguments that the target
 defines. An unknown option, or a `--` argument, is an error. Tests run once by
@@ -107,6 +117,8 @@ Options:
   --since <ref>            Only run packages that changed since the specified ref
   --include-dependents     Also run packages that depend on the selected packages (default: true, use --no-include-dependents to disable)
   --watch                  Re-run packages when their files change
+  --success-cache          Skip packages that passed before and have not changed since
+  --success-cache-dir <path>  Set the success cache location (default: node_modules/.cache/backstage-cli)
   --concurrency <n>        Maximum number of packages to run at the same time (default: 8)
   --verbose                Stream the output of each package instead of a progress view
   -h, --help               display help for command
