@@ -103,6 +103,60 @@ describe('aiModelsServiceFactory', () => {
     expect(embeddingModel.modelId).toBe('embed-test');
   });
 
+  it('sends the response schema to openai-compatible providers unless disabled', async () => {
+    const originalFetch = global.fetch;
+    const bodies: any[] = [];
+    global.fetch = jest.fn(async (_url: any, init: any) => {
+      bodies.push(JSON.parse(init.body));
+      return new Response(
+        JSON.stringify({
+          id: 'x',
+          created: 1,
+          model: 'm',
+          choices: [
+            {
+              index: 0,
+              message: { content: '{"a":1}' },
+              finish_reason: 'stop',
+            },
+          ],
+          usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+        }),
+        { headers: { 'content-type': 'application/json' } },
+      );
+    }) as typeof fetch;
+    try {
+      const provider = (extra: JsonObject) => ({
+        type: 'openai-compatible',
+        baseURL: 'https://compat.example.com/v1',
+        apiKey: 'test-key',
+        defaultModels: { 'text-generation': 'm' },
+        ...extra,
+      });
+      const service = await tester({
+        ai: {
+          defaultProvider: 'on',
+          providers: {
+            on: provider({}),
+            off: provider({ supportsStructuredOutputs: false }),
+          },
+        },
+      }).getSubject('test');
+      const schema = { type: 'object', properties: { a: { type: 'number' } } };
+
+      await service.generateObject({ prompt: 'hi', schema, provider: 'on' });
+      await service.generateObject({ prompt: 'hi', schema, provider: 'off' });
+
+      expect(bodies[0].response_format.type).toBe('json_schema');
+      expect(bodies[0].response_format.json_schema.schema).toMatchObject(
+        schema,
+      );
+      expect(bodies[1].response_format?.json_schema).toBeUndefined();
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
   it('fails when a built-in family is given an unsupported capability or missing settings', async () => {
     await expect(
       tester({

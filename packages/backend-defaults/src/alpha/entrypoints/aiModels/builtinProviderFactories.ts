@@ -145,6 +145,11 @@ const openaiCompatibleFactory: AIProviderFactory = {
         baseURL: config.getString('baseURL'),
         apiKey: config.getOptionalString('apiKey'),
         headers: readHeaders(config),
+        // Without this the response schema is dropped for structured output
+        // requests and models answer in free text. Servers that reject
+        // `response_format: json_schema` can opt out in the provider config.
+        supportsStructuredOutputs:
+          config.getOptionalBoolean('supportsStructuredOutputs') ?? true,
       }),
     });
   },

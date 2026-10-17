@@ -157,4 +157,54 @@ describe('ReviewPage', () => {
       '/repos/acme/other/pulls/9/files',
     );
   });
+
+  it('shows the progress of each phase and surfaces failures', async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => [] });
+    let rejectReview: (error: Error) => void = () => {};
+    const generateObject = jest.fn().mockReturnValue(
+      new Promise((_, reject) => {
+        rejectReview = reject;
+      }),
+    );
+    await renderInTestApp(<ReviewPage />, {
+      apis: [
+        [
+          scmAuthApiRef,
+          { getCredentials: jest.fn().mockResolvedValue({ token: 't' }) },
+        ],
+        [
+          scmIntegrationsApiRef,
+          ScmIntegrationsApi.fromConfig(
+            new ConfigReader({
+              integrations: { github: [{ host: 'github.com' }] },
+            }),
+          ),
+        ],
+        [
+          aiGatewayApiRef,
+          { generateObject, streamText: jest.fn(), generateText: jest.fn() },
+        ],
+      ],
+    });
+
+    await userEvent.type(
+      screen.getByLabelText('Pull request URL'),
+      'https://github.com/acme/widgets/pull/7',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Review' }));
+
+    expect(
+      await screen.findByText(/Reviewing the changes/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Review' })).toBeDisabled();
+
+    rejectReview(new Error('The AI provider request failed'));
+    expect(
+      await screen.findByText('The AI provider request failed'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Reviewing the changes/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Review' })).toBeEnabled();
+  });
 });

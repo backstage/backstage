@@ -49,14 +49,39 @@ const SAFE_ERROR_NAMES = new Set(['InputError', 'ServiceUnavailableError']);
 
 const GENERIC_PROVIDER_ERROR = 'The AI provider request failed';
 
+function describeFailure(error: unknown): Record<string, string | number> {
+  if (!isError(error)) {
+    return { errorName: typeof error };
+  }
+  const { statusCode, finishReason, cause } = error as {
+    statusCode?: unknown;
+    finishReason?: unknown;
+    cause?: unknown;
+  };
+  const details: Record<string, string | number> = { errorName: error.name };
+  if (typeof statusCode === 'number') {
+    details.upstreamStatus = statusCode;
+  }
+  if (typeof finishReason === 'string') {
+    details.finishReason = finishReason;
+  }
+  if (isError(cause)) {
+    details.causeName = cause.name;
+  }
+  if (error.name === 'AI_NoObjectGeneratedError') {
+    details.hint =
+      'The model did not return JSON matching the schema. Check that the provider supports structured outputs.';
+  }
+  return details;
+}
+
 function toClientError(error: unknown, logger: LoggerService): Error {
   if (isError(error) && SAFE_ERROR_NAMES.has(error.name)) {
     return error;
   }
-  // Only log the error name, upstream errors can embed the request body.
-  logger.warn('AI gateway request failed', {
-    errorName: isError(error) ? error.name : typeof error,
-  });
+  // Upstream error messages can embed the request body, so only a fixed set of
+  // diagnostic fields is logged, never the message or the response text.
+  logger.warn('AI gateway request failed', describeFailure(error));
   return new ServiceUnavailableError(GENERIC_PROVIDER_ERROR);
 }
 

@@ -24,6 +24,7 @@ import {
 } from '@backstage/integration-react';
 import { aiGatewayApiRef } from '@backstage/plugin-ai-gateway-react';
 import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { fetchPullRequestDiff, parsePullRequestUrl } from '../githubPr';
@@ -32,6 +33,14 @@ import { parseReviewResult, reviewSchema, ReviewResult } from '../review';
 const SYSTEM_PROMPT =
   'You are a careful code reviewer. You are given the unified diff of a pull request. ' +
   'Report concrete problems only, referencing the file and, when known, the line in the new version.';
+
+type Phase = 'fetching' | 'reviewing' | 'explaining';
+
+const PHASE_LABELS: Record<Phase, string> = {
+  fetching: 'Fetching the pull request diff...',
+  reviewing: 'Reviewing the changes, this can take a minute...',
+  explaining: 'Explaining the pull request...',
+};
 
 export function ReviewPage() {
   const scmAuth = useApi(scmAuthApiRef);
@@ -47,7 +56,8 @@ export function ReviewPage() {
 
   const [prUrl, setPrUrl] = useState(routePrUrl);
   const [instructions, setInstructions] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [phase, setPhase] = useState<Phase>();
+  const busy = phase !== undefined;
   const [error, setError] = useState<string>();
   const [notice, setNotice] = useState<string>();
   const [review, setReview] = useState<ReviewResult>();
@@ -85,22 +95,27 @@ export function ReviewPage() {
     return result.diff;
   };
 
-  const run = async (action: (diff: string) => Promise<void>) => {
+  const run = async (
+    nextPhase: Phase,
+    action: (diff: string) => Promise<void>,
+  ) => {
     abort.current?.abort();
     rememberPr();
-    setBusy(true);
+    setPhase('fetching');
     setError(undefined);
     try {
-      await action(await loadDiff());
+      const diff = await loadDiff();
+      setPhase(nextPhase);
+      await action(diff);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
-      setBusy(false);
+      setPhase(undefined);
     }
   };
 
   const onReview = () =>
-    run(async diff => {
+    run('reviewing', async diff => {
       setReview(undefined);
       const response = await aiGateway.generateObject({
         system: SYSTEM_PROMPT,
@@ -113,7 +128,7 @@ export function ReviewPage() {
     });
 
   const onExplain = () =>
-    run(async diff => {
+    run('explaining', async diff => {
       setExplanation('');
       const controller = new AbortController();
       abort.current = controller;
@@ -162,7 +177,17 @@ export function ReviewPage() {
         <Button disabled={busy || !prUrl} onClick={onExplain}>
           Explain this PR
         </Button>
-        {error && <Typography color="error">{error}</Typography>}
+        {phase && (
+          <div role="status" style={{ marginTop: 16 }}>
+            <Typography>{PHASE_LABELS[phase]}</Typography>
+            <LinearProgress />
+          </div>
+        )}
+        {error && (
+          <Typography color="error" role="alert" style={{ marginTop: 16 }}>
+            {error}
+          </Typography>
+        )}
         {notice && <Typography>{notice}</Typography>}
         {explanation && (
           <Typography component="p" style={{ whiteSpace: 'pre-wrap' }}>

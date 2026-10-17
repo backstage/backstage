@@ -1485,6 +1485,11 @@ export interface Config {
          */
         region?: string;
         /**
+         * Whether an `openai-compatible` provider accepts JSON schema response
+         * formats, which structured output requests rely on. Defaults to true.
+         */
+        supportsStructuredOutputs?: boolean;
+        /**
          * Additional HTTP headers sent with every request to the provider.
          *
          * @deepVisibility secret
