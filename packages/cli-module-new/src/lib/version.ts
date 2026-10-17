@@ -131,6 +131,8 @@ export function createPackageVersionProvider(
      * version that is installed rather than pin it.
      */
     widenExactRanges?: boolean;
+    /** The entries of the default pnpm catalog, which `catalog:` refers to */
+    defaultCatalog?: Record<string, string>;
   },
 ) {
   // A prerelease version hint stays pinned, like it does without a lockfile
@@ -158,7 +160,16 @@ export function createPackageVersionProvider(
       return 'backstage:^';
     }
 
-    // 3) fallback to current npm resolution
+    // 3) catalog: when the default catalog has the package, which workspaces
+    // that enforce catalogs require
+    if (
+      options?.defaultCatalog &&
+      Object.hasOwn(options.defaultCatalog, name)
+    ) {
+      return 'catalog:';
+    }
+
+    // 4) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
       return undefined;
