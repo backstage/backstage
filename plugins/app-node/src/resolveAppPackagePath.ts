@@ -63,19 +63,22 @@ export function resolveAppPackagePath(
     // when the entry point is an ES module, so the script path is also used.
     // The working directory is the backend package when started through the
     // CLI.
-    const startPaths = new Set<string>();
-    if (req.main?.filename) {
-      startPaths.add(req.main.filename);
+    const startDirs = new Set<string>();
+    for (const startPath of [
+      req.main?.filename,
+      process.argv[1],
+      process.cwd(),
+    ]) {
+      const startDir = startPath && getDirectory(resolvePath(startPath));
+      if (startDir) {
+        startDirs.add(startDir);
+      }
     }
-    if (process.argv[1]) {
-      startPaths.add(resolvePath(process.argv[1]));
-    }
-    startPaths.add(process.cwd());
 
     const rootDir = targetPaths.rootDir;
-    for (const startPath of startPaths) {
-      for (const nodeModulesPath of getNodeModulesPaths(startPath)) {
-        if (!isChildPath(rootDir, nodeModulesPath)) {
+    for (const startDir of startDirs) {
+      for (const nodeModulesPath of getNodeModulesPaths(startDir)) {
+        if (!isWithin(rootDir, nodeModulesPath)) {
           continue;
         }
         const packageJsonPath = resolvePath(
@@ -91,25 +94,47 @@ export function resolveAppPackagePath(
 
     error.message = `${
       error.message
-    }\nThe app package was also not found from ${Array.from(startPaths).join(
+    }\nThe app package was also not found from ${Array.from(startDirs).join(
       ', ',
     )} within ${rootDir}`;
     throw error;
   }
 }
 
-// The node_modules directories that Node.js searches from the given file or
+// The given directory, or the directory of the given file. Paths that do not
+// exist or cannot be read are skipped, since they are only a fallback.
+function getDirectory(path: string): string | undefined {
+  try {
+    const stats = fs.statSync(path, { throwIfNoEntry: false });
+    if (!stats) {
+      return undefined;
+    }
+    return stats.isDirectory() ? path : dirname(path);
+  } catch {
+    return undefined;
+  }
+}
+
+// The node_modules directories that Node.js searches from the given
 // directory, without NODE_PATH and the global folders
 function getNodeModulesPaths(from: string): string[] {
   const result = new Array<string>();
-  const isDir = fs.statSync(from, { throwIfNoEntry: false })?.isDirectory();
-  for (let dir = isDir ? from : dirname(from); ; dir = dirname(dir)) {
+  for (let dir = from; ; dir = dirname(dir)) {
     if (basename(dir) !== 'node_modules') {
       result.push(resolvePath(dir, 'node_modules'));
     }
     if (dirname(dir) === dir) {
       return result;
     }
+  }
+}
+
+// Real paths cannot be resolved for directories that cannot be read
+function isWithin(rootDir: string, path: string): boolean {
+  try {
+    return isChildPath(rootDir, path);
+  } catch {
+    return false;
   }
 }
 

@@ -58,13 +58,12 @@ export class CommonJSModuleLoader implements ModuleLoader {
       ...dynamicPluginsPaths.map(p => path.resolve(p, 'node_modules')),
     ];
     const oldNodeModulePaths = this.module._nodeModulePaths;
-    // Node.js searches NODE_PATH after the node_modules lookup chain. Dynamic
-    // plugins outside of the Backstage root reach the root node_modules
-    // through it.
-    const nodePaths = (process.env.NODE_PATH ?? '')
-      .split(path.delimiter)
-      .filter(Boolean)
-      .map(p => path.resolve(p));
+    // After the node_modules lookup chain, Node.js searches its global
+    // folders, which start with the NODE_PATH entries. Dynamic plugins outside
+    // of the Backstage root reach the root node_modules through NODE_PATH.
+    const globalPaths: string[] = (this.module.globalPaths ?? []).map(
+      (p: string) => path.resolve(p),
+    );
     // Some package managers, for example pnpm with the isolated linker, do not
     // link every package into the root node_modules. The modules that a
     // dynamic plugin shares with the host are then only visible from the
@@ -84,12 +83,12 @@ export class CommonJSModuleLoader implements ModuleLoader {
           dynamicNodeModulesPaths.some(p => nodeModulePath.startsWith(p))
         );
       });
-      // The host comes after the root node_modules and NODE_PATH, so that a
+      // The host comes after everything that was searched before, so that a
       // module that was found before is still found in the same place.
       const searchPaths = Array.from(
         new Set([
           ...filtered,
-          ...nodePaths,
+          ...globalPaths,
           backstageRootNodeModulesPath,
           ...hostNodeModulesPaths,
         ]),
@@ -204,22 +203,43 @@ function getHostNodeModulesPaths(
   nodeModulePaths: (from: string) => string[],
 ): string[] {
   const dirs = new Array<string>();
-  if (require.main?.filename) {
-    dirs.push(path.dirname(require.main.filename));
+  // The main module is not set when the entry point is an ES module, so the
+  // script path is also used
+  for (const startPath of [
+    require.main?.filename,
+    process.argv[1],
+    process.cwd(),
+  ]) {
+    const dir = startPath && getDirectory(path.resolve(startPath));
+    if (dir) {
+      dirs.push(dir);
+    }
   }
-  // The main module is not set when the entry point is an ES module
-  if (process.argv[1]) {
-    const scriptPath = path.resolve(process.argv[1]);
-    const isDir = fs
-      .statSync(scriptPath, { throwIfNoEntry: false })
-      ?.isDirectory();
-    dirs.push(isDir ? scriptPath : path.dirname(scriptPath));
-  }
-  dirs.push(process.cwd());
   const paths = new Set([
     ...dirs.flatMap(dir => nodeModulePaths(dir)),
     // The lookup chain of this module
     ...(module.paths ?? []),
   ]);
-  return Array.from(paths).filter(p => isChildPath(backstageRoot, p));
+  return Array.from(paths).filter(p => {
+    // Real paths cannot be resolved for directories that cannot be read
+    try {
+      return isChildPath(backstageRoot, p);
+    } catch {
+      return false;
+    }
+  });
+}
+
+// The given directory, or the directory of the given file. Paths that do not
+// exist or cannot be read are skipped, since the host is only a fallback.
+function getDirectory(p: string): string | undefined {
+  try {
+    const stats = fs.statSync(p, { throwIfNoEntry: false });
+    if (!stats) {
+      return undefined;
+    }
+    return stats.isDirectory() ? p : path.dirname(p);
+  } catch {
+    return undefined;
+  }
 }

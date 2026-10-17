@@ -37,7 +37,7 @@ The service consists of several key components:
 
 ### Module Resolution
 
-A backend dynamic plugin resolves modules from its own `node_modules` first, then from the `node_modules` of the Backstage root, and then from the directories in `NODE_PATH`. Modules that are not found there are resolved from the host backend, through the `node_modules` directories of the backend package and of this package within the Backstage root. This lets a plugin load the packages it shares with the host when the package manager does not link them into the root `node_modules`, as with the pnpm `isolated` node linker. With the default pnpm hoisting, every package of the host is found this way. With `hoist: false`, only the packages that the backend package or this package depend on directly are found.
+A backend dynamic plugin resolves modules from its own `node_modules` first, then from the `node_modules` of the Backstage root, and then from the global folders of Node.js, which start with the directories in `NODE_PATH`. Plugins outside of the Backstage root reach the root `node_modules` through `NODE_PATH`, so for them the order of `NODE_PATH` applies. Modules that are not found in these places are resolved from the host backend, through the `node_modules` directories of the backend package and of this package within the Backstage root. This lets a plugin load the packages it shares with the host when the package manager does not link them into the root `node_modules`, as with the pnpm `isolated` node linker. With the default pnpm hoisting, this includes the packages that pnpm hoists into `node_modules/.pnpm/node_modules`. With `hoist: false`, only the direct dependencies of the backend package and of this package are found.
 
 ## Usage
 
