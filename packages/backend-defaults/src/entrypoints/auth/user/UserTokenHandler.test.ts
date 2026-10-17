@@ -24,6 +24,8 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthenticationError } from '@backstage/errors';
 import { SignJWT, GeneralSign, importJWK, base64url } from 'jose';
+import { BackstageUserIdentityContext } from '@backstage/backend-plugin-api';
+import { tokenTypes } from '@backstage/plugin-auth-node';
 
 const mockPublicKey = {
   kty: 'EC',
@@ -59,6 +61,56 @@ async function createToken(options: {
   return await new SignJWT(options.payload)
     .setProtectedHeader({ ...options.header, alg: 'ES256' })
     .sign(await importJWK(mockPrivateKey));
+}
+
+async function createIdentityContextUserToken(options: {
+  identityContext?: BackstageUserIdentityContext;
+  proofIdentityContext: BackstageUserIdentityContext;
+  iat?: number;
+  exp?: number;
+}) {
+  const iat = options.iat ?? 1712071714;
+  const exp = options.exp ?? 1712075314;
+  const sub = 'user:development/guest';
+  const proofPayload = {
+    sub,
+    iat,
+    exp,
+    [tokenTypes.user.identityContextClaim]: options.proofIdentityContext,
+  };
+  const {
+    signatures: [{ signature }],
+  } = await new GeneralSign(
+    new TextEncoder().encode(JSON.stringify(proofPayload)),
+  )
+    .addSignature(await importJWK(mockPrivateKey))
+    .setProtectedHeader({
+      typ: tokenTypes.limitedUser.typParam,
+      alg: 'ES256',
+      kid: mockPublicKey.kid,
+    })
+    .done()
+    .sign();
+
+  return createToken({
+    header: {
+      typ: tokenTypes.user.typParam,
+      alg: 'ES256',
+      kid: mockPublicKey.kid,
+    },
+    payload: {
+      iss: 'http://localhost:7007/api/auth',
+      sub,
+      ent: [sub],
+      aud: tokenTypes.user.audClaim,
+      iat,
+      exp,
+      ...(options.identityContext && {
+        [tokenTypes.user.identityContextClaim]: options.identityContext,
+      }),
+      uip: signature,
+    },
+  });
 }
 
 describe('UserTokenHandler', () => {
@@ -255,6 +307,125 @@ describe('UserTokenHandler', () => {
       });
     });
 
+    it('should verify identity context that is bound to the user proof', async () => {
+      jest.useFakeTimers({ now: 1712072314 * 1000 });
+      const organizationIdentityContext: BackstageUserIdentityContext = {
+        issuer: 'https://portal.example.com/',
+        attributes: {
+          profile: 'organization',
+          profileId: 'org_a',
+          region: 'eu',
+        },
+      };
+      const token = await createIdentityContextUserToken({
+        identityContext: organizationIdentityContext,
+        proofIdentityContext: organizationIdentityContext,
+      });
+
+      await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
+        userEntityRef: 'user:development/guest',
+        identityContext: organizationIdentityContext,
+      });
+    });
+
+    it('should reject changed identity context', async () => {
+      jest.useFakeTimers({ now: 1712072314 * 1000 });
+      const proofIdentityContext: BackstageUserIdentityContext = {
+        issuer: 'https://portal.example.com/',
+        attributes: { profile: 'organization', profileId: 'org_a' },
+      };
+
+      const changedToken = await createIdentityContextUserToken({
+        identityContext: {
+          ...proofIdentityContext,
+          attributes: {
+            ...proofIdentityContext.attributes,
+            profileId: 'org_b',
+          },
+        },
+        proofIdentityContext,
+      });
+      await expect(userTokenHandler.verifyToken(changedToken)).rejects.toThrow(
+        'Failed user identity proof verification',
+      );
+    });
+
+    it('should reject identity context that is only an outer claim', async () => {
+      jest.useFakeTimers({ now: 1712072314 * 1000 });
+      const token = await createToken({
+        header: {
+          typ: tokenTypes.user.typParam,
+          kid: mockPublicKey.kid,
+        },
+        payload: {
+          sub: 'user:development/guest',
+          aud: tokenTypes.user.audClaim,
+          iat: 1712071714,
+          exp: 1712075314,
+          uip: 'legacy-proof',
+          [tokenTypes.user.identityContextClaim]: {
+            issuer: 'https://portal.example.com/',
+            attributes: { profileId: 'org_a' },
+          },
+        },
+      });
+
+      await expect(userTokenHandler.verifyToken(token)).rejects.toThrow(
+        'Failed user identity proof verification',
+      );
+    });
+
+    it('should reject malformed and oversized identity context', async () => {
+      jest.useFakeTimers({ now: 1712072314 * 1000 });
+      const basePayload = {
+        sub: 'user:development/guest',
+        iat: 1712071714,
+        exp: 1712075314,
+      };
+
+      for (const identityContext of [
+        { issuer: '', attributes: { profileId: 'user_a' } },
+        {
+          issuer: 'https://portal.example.com/',
+          attributes: { profileId: 1 },
+        },
+        {
+          issuer: 'https://portal.example.com/',
+          attributes: { profileId: 'a'.repeat(2048) },
+        },
+      ]) {
+        const token = await createToken({
+          header: {
+            typ: tokenTypes.limitedUser.typParam,
+            kid: mockPublicKey.kid,
+          },
+          payload: {
+            ...basePayload,
+            [tokenTypes.user.identityContextClaim]: identityContext,
+          },
+        });
+        await expect(userTokenHandler.verifyToken(token)).rejects.toThrow(
+          /identity context/i,
+        );
+      }
+    });
+
+    it('should reject expired identity context credentials', async () => {
+      jest.useFakeTimers({ now: 1712075315 * 1000 });
+      const identityContext: BackstageUserIdentityContext = {
+        issuer: 'https://portal.example.com/',
+        attributes: { profile: 'personal', profileId: 'auth0|user-a' },
+      };
+      const token = await createIdentityContextUserToken({
+        identityContext,
+        proofIdentityContext: identityContext,
+      });
+
+      await expect(userTokenHandler.verifyToken(token)).rejects.toThrow(
+        'Failed user token verification',
+      );
+    });
+
     it('should verify a valid limited user token', async () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
@@ -430,6 +601,84 @@ describe('UserTokenHandler', () => {
         {
           userEntityRef: 'user:development/guest',
         },
+      );
+    });
+
+    it('should create a verifiable context-bound limited token', async () => {
+      jest.useFakeTimers({ now: 1712072314 * 1000 });
+      const identityContext: BackstageUserIdentityContext = {
+        issuer: 'https://portal.example.com/',
+        attributes: { profile: 'personal', profileId: 'auth0|user-a' },
+      };
+      const userToken = await createIdentityContextUserToken({
+        identityContext,
+        proofIdentityContext: identityContext,
+      });
+
+      const result = userTokenHandler.createLimitedUserToken(userToken);
+      await expect(userTokenHandler.verifyToken(result.token)).resolves.toEqual(
+        {
+          userEntityRef: 'user:development/guest',
+          identityContext,
+        },
+      );
+      expect(result.expiresAt).toEqual(new Date(1712075314 * 1000));
+    });
+
+    it('should reject a context proof reconstructed by a legacy delegator', async () => {
+      jest.useFakeTimers({ now: 1712072314 * 1000 });
+      const identityContext: BackstageUserIdentityContext = {
+        issuer: 'https://portal.example.com/',
+        attributes: { profile: 'organization', profileId: 'org_a' },
+      };
+      const userToken = await createIdentityContextUserToken({
+        identityContext,
+        proofIdentityContext: identityContext,
+      });
+      const [headerRaw, payloadRaw] = userToken.split('.');
+      const header = JSON.parse(
+        new TextDecoder().decode(base64url.decode(headerRaw)),
+      );
+      const payload = JSON.parse(
+        new TextDecoder().decode(base64url.decode(payloadRaw)),
+      );
+
+      const legacyLimitedToken = [
+        base64url.encode(
+          JSON.stringify({
+            typ: tokenTypes.limitedUser.typParam,
+            alg: header.alg,
+            kid: header.kid,
+          }),
+        ),
+        base64url.encode(
+          JSON.stringify({
+            sub: payload.sub,
+            iat: payload.iat,
+            exp: payload.exp,
+          }),
+        ),
+        String(payload.uip),
+      ].join('.');
+
+      await expect(
+        userTokenHandler.verifyToken(legacyLimitedToken),
+      ).rejects.toThrow('Failed user token verification');
+    });
+
+    it('should reject a non-string user identity proof', async () => {
+      const token = await createToken({
+        header: { typ: tokenTypes.user.typParam },
+        payload: {
+          sub: 'user:development/guest',
+          iat: 1,
+          exp: 2,
+          uip: { signature: 'proof' },
+        },
+        signature: 'outer-signature',
+      });
+      expect(() => userTokenHandler.createLimitedUserToken(token)).toThrow(
+        'invalid user identity proof',
       );
     });
   });

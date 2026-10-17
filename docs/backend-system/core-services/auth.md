@@ -114,6 +114,76 @@ if (auth.isPrincipal(credentials, 'user')) {
 }
 ```
 
+### Identity context
+
+An auth provider can bind verified, issuer-defined attributes to a user token:
+
+```ts
+return ctx.issueToken({
+  claims: {
+    sub: userEntityRef,
+    ent: ownershipEntityRefs,
+  },
+  identityContext: {
+    issuer: 'https://identity.example.com/',
+    attributes: {
+      profile: 'organization',
+      profileId: 'organization-a',
+    },
+  },
+});
+```
+
+The provider must authenticate the issuer and every attribute before it issues
+the token. The auth framework does not define the attribute names or verify
+provider-specific policies.
+
+After token verification, plugins can read the context from user credentials:
+
+```ts
+if (auth.isPrincipal(credentials, 'user')) {
+  const identityContext = credentials.principal.identityContext;
+  if (!identityContext) {
+    throw new AuthenticationError('Identity context is required');
+  }
+  // Verify the issuer and all attributes used for authorization.
+}
+```
+
+Identity context is optional. A route that requires it must reject credentials
+without it. It must not infer default attributes.
+
+The framework accepts an `issuer` and a map of string attributes. The full
+serialized context can contain up to 2048 bytes. The framework sorts attribute
+keys before it signs the context. It uses the reserved
+`https://backstage.io/claims/identity-context` JWT claim instead of forwarding
+arbitrary provider claims. The context is part of the auth-backend-signed
+limited-user proof. An intermediary plugin preserves that proof unchanged in
+its on-behalf-of token and cannot replace the context with an outer claim.
+
+#### Upgrade order
+
+Context-free tokens remain supported. Context-bearing tokens require every
+verifier and delegation service in the request path to support identity context.
+Follow this order for a deployment that has separately deployed backend plugins:
+
+1. Upgrade `@backstage/backend-defaults` and
+   `@backstage/backend-plugin-api` in every backend plugin that verifies or
+   delegates user credentials.
+1. Upgrade `@backstage/plugin-auth-node` and
+   `@backstage/plugin-auth-backend`, then enable identity context issuance in
+   the auth provider.
+
+Do not enable identity context issuance while an old delegation service remains
+in a request path. It cannot reconstruct the context-bound proof. The next
+updated receiver rejects the result instead of accepting credentials without
+identity context. An old verifier also does not expose identity context in
+credentials.
+
+This feature does not change auth-backend user-info persistence, which remains
+keyed by the Backstage user subject. It also does not provide token revocation
+or an identity registry.
+
 ## Configuring the service
 
 :::note

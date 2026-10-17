@@ -18,11 +18,15 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
 import {
   BackstageSignInResult,
+  parseUserIdentityContext,
   TokenParams,
   tokenTypes,
 } from '@backstage/plugin-auth-node';
 import { omit } from 'lodash';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserIdentityContext,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { GeneralSign, importJWK, JWK, KeyLike, SignJWT } from 'jose';
 import { BackstageTokenPayload } from './TokenFactory';
 
@@ -44,10 +48,19 @@ export async function issueUserToken({
   omitClaimsFromToken?: string[];
   params: TokenParams & { claims: { ent: string[] } };
 }): Promise<BackstageSignInResult> {
-  const { sub, ent, ...additionalClaims } = params.claims;
+  const {
+    sub,
+    ent,
+    uip: _ignoredUserIdentityProof,
+    [tokenTypes.user.identityContextClaim]: _ignoredIdentityContext,
+    ...additionalClaims
+  } = params.claims;
   const aud = tokenTypes.user.audClaim;
   const iat = Math.floor(Date.now() / MS_IN_S);
   const exp = iat + keyDurationSeconds;
+  const identityContext = params.identityContext
+    ? parseUserIdentityContext(params.identityContext)
+    : undefined;
 
   try {
     // The subject must be a valid entity ref
@@ -72,7 +85,7 @@ export async function issueUserToken({
       alg: key.alg,
       kid: key.kid,
     },
-    payload: { sub, iat, exp },
+    payload: { sub, iat, exp, identityContext },
     key: signingKey,
   });
 
@@ -84,8 +97,22 @@ export async function issueUserToken({
     aud,
     iat,
     exp,
+    ...(identityContext && {
+      [tokenTypes.user.identityContextClaim]: identityContext,
+    }),
     uip,
   };
+
+  if (
+    identityContext &&
+    omitClaimsFromToken?.some(claim =>
+      [tokenTypes.user.identityContextClaim, 'uip'].includes(claim),
+    )
+  ) {
+    throw new Error(
+      'Identity context and its proof cannot be omitted from the user token',
+    );
+  }
 
   const tokenClaims = omitClaimsFromToken
     ? omit(claims, omitClaimsFromToken)
@@ -136,6 +163,9 @@ interface BackstageUserIdentityProofPayload {
    * Standard issue time in epoch seconds
    */
   iat: number;
+
+  /** Verified identity attributes that apply to the user request. */
+  identityContext?: BackstageUserIdentityContext;
 }
 
 /**
@@ -168,6 +198,9 @@ async function createUserIdentityClaim(options: {
     sub: options.payload.sub,
     iat: options.payload.iat,
     exp: options.payload.exp,
+    ...(options.payload.identityContext && {
+      [tokenTypes.user.identityContextClaim]: options.payload.identityContext,
+    }),
   };
 
   const jws = await new GeneralSign(

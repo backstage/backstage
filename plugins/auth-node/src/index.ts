@@ -23,6 +23,7 @@
 export * from './extensions';
 export * from './flow';
 export * from './identity';
+export * from './identityContext';
 export * from './oauth';
 export * from './passport';
 export * from './proxy';

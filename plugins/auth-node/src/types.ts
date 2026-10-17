@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserIdentityContext,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -127,8 +130,9 @@ export type TokenParams = {
    * the subject claim, `sub`. It is common to also list entity ownership relations in the
    * `ent` list. Additional claims may also be added at the developer's discretion except
    * for the following list, which will be overwritten by the TokenIssuer: `iss`, `aud`,
-   * `iat`, and `exp`. The Backstage team also maintains the right add new claims in the future
-   * without listing the change as a "breaking change".
+   * `iat`, `exp`, `uip`, and `https://backstage.io/claims/identity-context`.
+   * The Backstage team also maintains the right to add new claims in the
+   * future without listing the change as a "breaking change".
    */
   claims: {
     /** The token subject, i.e. User ID */
@@ -136,6 +140,18 @@ export type TokenParams = {
     /** A list of entity references that the user claims ownership through */
     ent?: string[];
   } & Record<string, JsonValue>;
+
+  /**
+   * Verified identity attributes that apply to the user request.
+   *
+   * @remarks
+   *
+   * The auth backend binds this value to the user's limited identity proof so
+   * that it survives on-behalf-of plugin calls. Providers are responsible for
+   * authenticating this context before issuing the token. The serialized
+   * context must not exceed 2048 bytes.
+   */
+  identityContext?: BackstageUserIdentityContext;
 };
 
 /**
@@ -426,6 +442,7 @@ export const tokenTypes = Object.freeze({
   user: Object.freeze({
     typParam: 'vnd.backstage.user',
     audClaim: 'backstage',
+    identityContextClaim: 'https://backstage.io/claims/identity-context',
   }),
   limitedUser: Object.freeze({
     typParam: 'vnd.backstage.limited-user',
