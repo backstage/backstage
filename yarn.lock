@@ -3443,6 +3443,41 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-ai-gateway-backend@workspace:plugins/ai-gateway-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-ai-gateway-backend@workspace:plugins/ai-gateway-backend"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": "npm:^4.17.6"
+    "@types/supertest": "npm:^2.0.8"
+    express: "npm:^4.22.0"
+    supertest: "npm:^7.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-ai-gateway-react@workspace:plugins/ai-gateway-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-ai-gateway-react@workspace:plugins/ai-gateway-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/types": "workspace:^"
+    cross-fetch: "npm:^4.0.0"
+    msw: "npm:^2.0.0"
+    uri-template: "npm:^2.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-api-docs-module-protoc-gen-doc@workspace:plugins/api-docs-module-protoc-gen-doc":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs-module-protoc-gen-doc@workspace:plugins/api-docs-module-protoc-gen-doc"

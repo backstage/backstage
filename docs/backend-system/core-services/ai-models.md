@@ -190,3 +190,7 @@ backend.add(
 ```
 
 Provider instances can then use `type: mistral` in configuration. A contributed factory can't reuse the `type` of a built-in family.
+
+## Using AI models from the frontend
+
+To let frontend code use the models you have configured, without exposing provider API keys, install the [AI gateway backend plugin](https://github.com/backstage/backstage/tree/master/plugins/ai-gateway-backend). It exposes the service over HTTP for signed-in users. The [AI gateway React library](https://github.com/backstage/backstage/tree/master/plugins/ai-gateway-react) provides the matching frontend client.
