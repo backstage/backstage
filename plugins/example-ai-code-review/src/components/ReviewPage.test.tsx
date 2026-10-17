@@ -113,4 +113,48 @@ describe('ReviewPage', () => {
     );
     expect(await screen.findByText('It changes a.')).toBeInTheDocument();
   });
+
+  it('pre-fills the pull request from the route and updates the route on submit', async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => [] });
+    const generateObject = jest.fn().mockResolvedValue({
+      object: { summary: 'Nothing here', findings: [] },
+      finishReason: 'stop',
+      usage: { inputTokens: 1, outputTokens: 1 },
+    });
+    await renderInTestApp(<ReviewPage />, {
+      initialRouteEntries: ['/github/acme/widgets/7'],
+      apis: [
+        [
+          scmAuthApiRef,
+          { getCredentials: jest.fn().mockResolvedValue({ token: 't' }) },
+        ],
+        [
+          scmIntegrationsApiRef,
+          ScmIntegrationsApi.fromConfig(
+            new ConfigReader({
+              integrations: { github: [{ host: 'github.com' }] },
+            }),
+          ),
+        ],
+        [
+          aiGatewayApiRef,
+          { generateObject, streamText: jest.fn(), generateText: jest.fn() },
+        ],
+      ],
+    });
+
+    const input = screen.getByLabelText('Pull request URL');
+    expect(input).toHaveValue('https://github.com/acme/widgets/pull/7');
+
+    await userEvent.clear(input);
+    await userEvent.type(input, 'https://github.com/acme/other/pull/9');
+    await userEvent.click(screen.getByRole('button', { name: 'Review' }));
+    expect(await screen.findByText('Nothing here')).toBeInTheDocument();
+    expect(input).toHaveValue('https://github.com/acme/other/pull/9');
+    expect((global.fetch as jest.Mock).mock.calls[0][0]).toContain(
+      '/repos/acme/other/pulls/9/files',
+    );
+  });
 });

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
 import { Content, Header, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/frontend-plugin-api';
 import {
@@ -25,7 +26,7 @@ import { aiGatewayApiRef } from '@backstage/plugin-ai-gateway-react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { fetchPullRequestDiff } from '../githubPr';
+import { fetchPullRequestDiff, parsePullRequestUrl } from '../githubPr';
 import { parseReviewResult, reviewSchema, ReviewResult } from '../review';
 
 const SYSTEM_PROMPT =
@@ -37,7 +38,14 @@ export function ReviewPage() {
   const integrations = useApi(scmIntegrationsApiRef);
   const aiGateway = useApi(aiGatewayApiRef);
 
-  const [prUrl, setPrUrl] = useState('');
+  const navigate = useNavigate();
+  const basePath = useResolvedPath('.').pathname.replace(/\/$/, '');
+  const match = useMatch(`${basePath}/github/:org/:repo/:number`);
+  const routePrUrl = match?.params.number
+    ? `https://github.com/${match.params.org}/${match.params.repo}/pull/${match.params.number}`
+    : '';
+
+  const [prUrl, setPrUrl] = useState(routePrUrl);
   const [instructions, setInstructions] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -45,6 +53,23 @@ export function ReviewPage() {
   const [review, setReview] = useState<ReviewResult>();
   const [explanation, setExplanation] = useState('');
   const abort = useRef<AbortController>();
+
+  useEffect(() => {
+    if (routePrUrl) {
+      setPrUrl(routePrUrl);
+    }
+  }, [routePrUrl]);
+
+  const rememberPr = () => {
+    try {
+      const ref = parsePullRequestUrl(prUrl);
+      if (ref.host === 'github.com') {
+        navigate(`${basePath}/github/${ref.owner}/${ref.repo}/${ref.number}`);
+      }
+    } catch {
+      // Invalid URLs are reported by the review run itself.
+    }
+  };
 
   const loadDiff = async () => {
     const result = await fetchPullRequestDiff({
@@ -62,6 +87,7 @@ export function ReviewPage() {
 
   const run = async (action: (diff: string) => Promise<void>) => {
     abort.current?.abort();
+    rememberPr();
     setBusy(true);
     setError(undefined);
     try {
