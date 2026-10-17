@@ -1,0 +1,167 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useRef, useState } from 'react';
+import { Content, Header, Page } from '@backstage/core-components';
+import { useApi } from '@backstage/frontend-plugin-api';
+import {
+  scmAuthApiRef,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import { aiGatewayApiRef } from '@backstage/plugin-ai-gateway-react';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { fetchPullRequestDiff } from '../githubPr';
+import { parseReviewResult, reviewSchema, ReviewResult } from '../review';
+
+const SYSTEM_PROMPT =
+  'You are a careful code reviewer. You are given the unified diff of a pull request. ' +
+  'Report concrete problems only, referencing the file and, when known, the line in the new version.';
+
+export function ReviewPage() {
+  const scmAuth = useApi(scmAuthApiRef);
+  const integrations = useApi(scmIntegrationsApiRef);
+  const aiGateway = useApi(aiGatewayApiRef);
+
+  const [prUrl, setPrUrl] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  const [notice, setNotice] = useState<string>();
+  const [review, setReview] = useState<ReviewResult>();
+  const [explanation, setExplanation] = useState('');
+  const abort = useRef<AbortController>();
+
+  const loadDiff = async () => {
+    const result = await fetchPullRequestDiff({
+      prUrl,
+      integrations,
+      getToken: async url => (await scmAuth.getCredentials({ url })).token,
+    });
+    setNotice(
+      result.truncated
+        ? `The diff of ${result.fileCount} files was truncated before being sent for review.`
+        : undefined,
+    );
+    return result.diff;
+  };
+
+  const run = async (action: (diff: string) => Promise<void>) => {
+    abort.current?.abort();
+    setBusy(true);
+    setError(undefined);
+    try {
+      await action(await loadDiff());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onReview = () =>
+    run(async diff => {
+      setReview(undefined);
+      const response = await aiGateway.generateObject({
+        system: SYSTEM_PROMPT,
+        prompt: `Review instructions: ${
+          instructions || 'None'
+        }\n\nPull request diff:\n${diff}`,
+        schema: reviewSchema,
+      });
+      setReview(parseReviewResult(response.object));
+    });
+
+  const onExplain = () =>
+    run(async diff => {
+      setExplanation('');
+      const controller = new AbortController();
+      abort.current = controller;
+      const stream = aiGateway.streamText(
+        {
+          system: 'Explain what this pull request does, in a short paragraph.',
+          prompt: diff,
+        },
+        { signal: controller.signal },
+      );
+      for await (const delta of stream.textStream) {
+        setExplanation(text => text + delta);
+      }
+    });
+
+  return (
+    <Page themeId="tool">
+      <Header title="AI Code Review" subtitle="Nothing is posted to GitHub" />
+      <Content>
+        <TextField
+          id="pr-url"
+          label="Pull request URL"
+          placeholder="https://github.com/owner/repo/pull/123"
+          fullWidth
+          margin="normal"
+          value={prUrl}
+          onChange={e => setPrUrl(e.target.value)}
+        />
+        <TextField
+          id="review-instructions"
+          label="Review instructions"
+          fullWidth
+          multiline
+          margin="normal"
+          value={instructions}
+          onChange={e => setInstructions(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={busy || !prUrl}
+          onClick={onReview}
+        >
+          Review
+        </Button>{' '}
+        <Button disabled={busy || !prUrl} onClick={onExplain}>
+          Explain this PR
+        </Button>
+        {error && <Typography color="error">{error}</Typography>}
+        {notice && <Typography>{notice}</Typography>}
+        {explanation && (
+          <Typography component="p" style={{ whiteSpace: 'pre-wrap' }}>
+            {explanation}
+          </Typography>
+        )}
+        {review && (
+          <div>
+            <Typography variant="h6">Summary</Typography>
+            <Typography>{review.summary}</Typography>
+            <Typography variant="h6">Findings</Typography>
+            {review.findings.length === 0 && (
+              <Typography>No findings.</Typography>
+            )}
+            <ul>
+              {review.findings.map((f, i) => (
+                <li key={i}>
+                  <strong>{f.severity}</strong> {f.file}
+                  {f.line ? `:${f.line}` : ''} - {f.comment}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Content>
+    </Page>
+  );
+}

@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-plugin-example-ai-code-review
+  title: '@internal/plugin-example-ai-code-review'
+  description: >-
+    Example plugin that reviews a GitHub pull request using the AI gateway,
+    entirely from the browser
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers
