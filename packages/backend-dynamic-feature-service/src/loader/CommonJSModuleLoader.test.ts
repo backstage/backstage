@@ -29,20 +29,35 @@ const nodeModule = require('node:module');
 describe('CommonJSModuleLoader', () => {
   const originalNodeModulePaths = nodeModule._nodeModulePaths;
   const originalResolveFilename = nodeModule._resolveFilename;
-  const originalNodePath = process.env.NODE_PATH;
+  const originalGlobalPaths = nodeModule.globalPaths;
+  const main = require.main!;
+  const mainFilename = main.filename;
+  const argv = process.argv;
 
   afterEach(() => {
     nodeModule._nodeModulePaths = originalNodeModulePaths;
     nodeModule._resolveFilename = originalResolveFilename;
-    process.env.NODE_PATH = originalNodePath;
+    nodeModule.globalPaths = originalGlobalPaths;
+    main.filename = mainFilename;
+    process.argv = argv;
     jest.restoreAllMocks();
   });
 
-  it('searches the root node_modules and NODE_PATH before the host for dynamic plugins', async () => {
-    // The main module of the test process and the loader itself live in this
-    // package, which plays the role of the backend package here.
+  it('searches the root node_modules and the global folders before the host for dynamic plugins', async () => {
     const backstageRoot = path.resolve(__dirname, '../../../..');
-    const hostNodeModules = path.resolve(__dirname, '../../node_modules');
+    // The host is found through the main module, the script path, the
+    // working directory, and the location of the loader itself
+    main.filename = path.join(backstageRoot, 'packages/backend/src/index.ts');
+    process.argv = [argv[0], path.join(backstageRoot, 'packages/app')];
+    jest
+      .spyOn(process, 'cwd')
+      .mockReturnValue(path.join(backstageRoot, 'plugins/app-node/src'));
+    const hostNodeModules = [
+      path.join(backstageRoot, 'packages/backend/src/node_modules'),
+      path.join(backstageRoot, 'packages/app/node_modules'),
+      path.join(backstageRoot, 'plugins/app-node/src/node_modules'),
+      path.join(__dirname, 'node_modules'),
+    ];
     const rootNodeModules = path.join(backstageRoot, 'node_modules');
     const customNodeModules = path.resolve(
       backstageRoot,
@@ -58,9 +73,8 @@ describe('CommonJSModuleLoader', () => {
       '../outside-dynamic-plugins/my-plugin',
     );
     const hostDir = path.resolve(backstageRoot, 'packages/other/src');
-    process.env.NODE_PATH = [customNodeModules, rootNodeModules].join(
-      path.delimiter,
-    );
+    // The global folders start with the NODE_PATH entries
+    nodeModule.globalPaths = [customNodeModules, rootNodeModules];
 
     const loader = new CommonJSModuleLoader({
       logger: mockServices.logger.mock(),
@@ -88,7 +102,7 @@ describe('CommonJSModuleLoader', () => {
       rootNodeModules,
     ]);
     for (const paths of [pluginPaths, outsidePluginPaths]) {
-      expect(paths).toContain(hostNodeModules);
+      expect(paths).toEqual(expect.arrayContaining(hostNodeModules));
       expect(paths.filter(p => p === rootNodeModules)).toHaveLength(1);
       expect(paths.slice(3).every(p => p.startsWith(backstageRoot))).toBe(true);
     }
@@ -124,9 +138,6 @@ describe('CommonJSModuleLoader', () => {
     const pluginDir = path.join(backstageRoot, 'dynamic-plugins-root/plugin');
     const outsidePluginDir = path.join(baseDir, 'outside/plugin');
 
-    process.env.NODE_PATH = [customNodeModules, rootNodeModules].join(
-      path.delimiter,
-    );
     jest
       .spyOn(process, 'cwd')
       .mockReturnValue(path.join(backstageRoot, 'packages/backend'));
@@ -138,8 +149,10 @@ describe('CommonJSModuleLoader', () => {
     const realNodeModule = await loader.load('node:module');
     const realNodeModulePaths = realNodeModule._nodeModulePaths;
     const realResolveFilename = realNodeModule._resolveFilename;
+    const realGlobalPaths = realNodeModule.globalPaths;
     (loader as any).module = realNodeModule;
     try {
+      realNodeModule.globalPaths = [customNodeModules, rootNodeModules];
       await loader.bootstrap(
         backstageRoot,
         [pluginDir, outsidePluginDir],
@@ -148,7 +161,8 @@ describe('CommonJSModuleLoader', () => {
       const plugin = await loader.load(pluginDir);
       const outsidePlugin = await loader.load(outsidePluginDir);
 
-      // The root comes first, then NODE_PATH, and the backend package last
+      // The root comes first, then the global folders, and the backend
+      // package last
       expect(plugin.resolve('test-shared')).toBe(
         path.join(rootNodeModules, 'test-shared/index.js'),
       );
@@ -169,6 +183,7 @@ describe('CommonJSModuleLoader', () => {
     } finally {
       realNodeModule._nodeModulePaths = realNodeModulePaths;
       realNodeModule._resolveFilename = realResolveFilename;
+      realNodeModule.globalPaths = realGlobalPaths;
     }
   });
 });

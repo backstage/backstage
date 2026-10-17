@@ -31,6 +31,8 @@ describe('resolveAppPackagePath', () => {
       // A backend package that has the app package in its own node_modules
       [`project/packages/backend/node_modules/${appPackageName}/package.json`]:
         JSON.stringify({ name: appPackageName }),
+      'project/packages/backend/src/index.js': '',
+      'project/packages/backend/index.mjs': '',
       // A copy outside of the project, which must not be used
       [`outside/node_modules/${missingAppPackageName}/package.json`]:
         JSON.stringify({ name: missingAppPackageName }),
@@ -42,6 +44,8 @@ describe('resolveAppPackagePath', () => {
     resolvePath(backendDir, 'node_modules', appPackageName),
   );
 
+  const main = require.main!;
+  const mainFilename = main.filename;
   let argv: string[];
 
   beforeEach(() => {
@@ -51,6 +55,7 @@ describe('resolveAppPackagePath', () => {
   });
 
   afterEach(() => {
+    main.filename = mainFilename;
     process.argv = argv;
     jest.restoreAllMocks();
   });
@@ -93,12 +98,31 @@ describe('resolveAppPackagePath', () => {
       resolvePath(expectedAppDir, 'dist'),
     );
 
-    // From the script path, which is the only way to find the backend
-    // package when the entry point is an ES module
+    // From the main module
     jest.spyOn(process, 'cwd').mockReturnValue(rootDir);
-    process.argv = [argv[0], resolvePath(backendDir, 'index.mjs')];
+    main.filename = resolvePath(backendDir, 'src/index.js');
     expect(resolveAppPackagePath(appPackageName, 'dist')).toBe(
       resolvePath(expectedAppDir, 'dist'),
+    );
+    main.filename = mainFilename;
+
+    // From the script path, which is the only way to find the backend
+    // package when the entry point is an ES module. It can also point to
+    // the package directory.
+    for (const scriptPath of [
+      resolvePath(backendDir, 'index.mjs'),
+      backendDir,
+    ]) {
+      process.argv = [argv[0], scriptPath];
+      expect(resolveAppPackagePath(appPackageName, 'dist')).toBe(
+        resolvePath(expectedAppDir, 'dist'),
+      );
+    }
+
+    // Script paths that cannot be used are skipped
+    process.argv = [argv[0], resolvePath(backendDir, 'index.mjs/missing')];
+    expect(() => resolveAppPackagePath(appPackageName, 'dist')).toThrow(
+      expect.objectContaining({ code: 'MODULE_NOT_FOUND' }),
     );
 
     // Copies outside of the project root are not used, and the original error
