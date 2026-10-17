@@ -20,12 +20,22 @@ import { dirname, resolve as resolvePath } from 'node:path';
 /**
  * Resolves a path within the app package that the backend serves.
  *
- * `resolvePackagePath` resolves from the location of
- * `@backstage/backend-plugin-api`, so it only finds the app package when that
- * package is visible from the root `node_modules`. pnpm only links a workspace
- * package into the packages that depend on it, never into the root. When the
- * first lookup does not find the app package, it is resolved from the backend
- * package instead, which depends on it.
+ * @remarks
+ *
+ * The app package is first resolved with `resolvePackagePath` from
+ * `@backstage/backend-plugin-api`, which also keeps test overrides of the
+ * package path working. That lookup starts from the location of
+ * `@backstage/backend-plugin-api`, so it only finds the app package when the
+ * app package is hoisted to where that package can see it. When it is not,
+ * for example when the app package is only installed in the `node_modules` of
+ * the backend package, the app package is resolved from the backend package
+ * instead, which depends on it. The backend package is found through the main
+ * module of the process and the current working directory.
+ *
+ * @param appPackageName - The name of the app package, usually `app`.
+ * @param paths - Path segments to resolve within the app package.
+ * @returns The absolute path.
+ * @public
  */
 export function resolveAppPackagePath(
   appPackageName: string,
@@ -58,12 +68,18 @@ export function resolveAppPackagePath(
       });
       return resolvePath(packageJsonPath, '..', ...paths);
     } catch {
+      error.message = `${
+        error.message
+      }\nThe app package was also not found from ${Array.from(searchPaths).join(
+        ', ',
+      )}`;
       throw error;
     }
   }
 }
 
-function isModuleNotFoundError(error: unknown): boolean {
+// Checked by shape, since errors can come from another realm in tests
+function isModuleNotFoundError(error: unknown): error is Error {
   return (
     typeof error === 'object' &&
     error !== null &&

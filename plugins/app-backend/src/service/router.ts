@@ -35,7 +35,7 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
-import { resolveAppPackagePath } from '../lib/resolveAppPackagePath';
+import { resolveAppPackagePath } from '@backstage/plugin-app-node';
 import type { ConfigSchema } from '@backstage/config-loader';
 import {
   AuthService,
