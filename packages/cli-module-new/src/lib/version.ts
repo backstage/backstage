@@ -127,6 +127,8 @@ export function createPackageVersionProvider(
   lockfile?: PackageManagerLockfile,
   options?: {
     preferBackstageProtocol?: boolean;
+    /** The entries of the default pnpm catalog, which `catalog:` refers to */
+    defaultCatalog?: Record<string, string>;
   },
 ) {
   // pnpm lists a package that only other packages depend on under the
@@ -158,7 +160,16 @@ export function createPackageVersionProvider(
       return 'backstage:^';
     }
 
-    // 3) fallback to current npm resolution
+    // 3) catalog: when the default catalog has the package, which workspaces
+    // that enforce catalogs require
+    if (
+      options?.defaultCatalog &&
+      Object.hasOwn(options.defaultCatalog, name)
+    ) {
+      return 'catalog:';
+    }
+
+    // 4) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
       return undefined;
