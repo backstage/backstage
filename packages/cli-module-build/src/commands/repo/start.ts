@@ -19,6 +19,7 @@ import {
   PackageGraph,
   PackageRole,
 } from '@backstage/cli-node';
+import { detectPackageManager } from '@backstage/cli-node/alpha';
 import { relative as relativePath } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 import { cli } from 'cleye';
@@ -123,6 +124,11 @@ export default async ({ args, info }: CliCommandContext) => {
   await Promise.all(packageOptions.map(entry => startPackage(entry.options)));
 };
 
+async function getCommandHint(args: string[]) {
+  const packageManager = await detectPackageManager();
+  return packageManager.getCommandHint(args);
+}
+
 export async function findTargetPackages(
   namesOrPaths: string[],
   pluginIds: string[],
@@ -142,7 +148,9 @@ export async function findTargetPackages(
     });
     if (matchingPackages.length === 0) {
       throw new Error(
-        `Unable to find any plugin packages with plugin ID '${pluginId}'. Make sure backstage.pluginId is set in your package.json files by running 'yarn fix --publish'.`,
+        `Unable to find any plugin packages with plugin ID '${pluginId}'. Make sure backstage.pluginId is set in your package.json files by running '${await getCommandHint(
+          ['fix', '--publish'],
+        )}'.`,
       );
     }
     targetPackages.push(...matchingPackages);
@@ -193,7 +201,13 @@ export async function findTargetPackages(
       throw new Error(
         `Found multiple packages with role '${role}' but none of the use the default path '${expectedPath}',` +
           `choose which packages you want to run by passing the package names explicitly ` +
-          `as arguments, for example 'yarn backstage-cli repo start my-app my-backend'.`,
+          `as arguments, for example '${await getCommandHint([
+            'backstage-cli',
+            'repo',
+            'start',
+            'my-app',
+            'my-backend',
+          ])}'.`,
       );
     }
 
@@ -212,7 +226,13 @@ export async function findTargetPackages(
       throw new Error(
         `Found multiple packages with role '${role}', please choose which packages you want ` +
           `to run by passing the package names explicitly as arguments, for example ` +
-          `'yarn backstage-cli repo start my-plugin my-plugin-backend'.`,
+          `'${await getCommandHint([
+            'backstage-cli',
+            'repo',
+            'start',
+            'my-plugin',
+            'my-plugin-backend',
+          ])}'.`,
       );
     }
     targetPackages.push(...matchingPackages);
