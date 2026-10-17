@@ -188,6 +188,8 @@ FETCH FIRST :n ROWS WITH TIES;
 
 `WITH TIES` makes `:n` a soft limit. A page never ends partway through a generation, so refs that share one cannot be split across pages and skipped.
 
+MySQL and SQLite don't support `WITH TIES`. There, the feed reads `:n + 1` rows. If the last two have the same generation, the page would split it, so the feed drops the extra row and fetches the rest of that generation with `WHERE generation = :g`. This is safe without a surrounding transaction: rows that share a generation commit together, so once one is visible, all of them are.
+
 A consumer reads the bodies back through the existing `POST /entities/by-refs`. A tombstoned ref comes back as `null`, exactly like a ref that never existed, so deletions use the same code path as any other change. Reading back gives the **current** state, so a consumer converges on the latest state instead of replaying intermediate states it doesn't need. This works the same for a cache, a search indexer, or a component that emits change events.
 
 Consumers must follow this contract:
