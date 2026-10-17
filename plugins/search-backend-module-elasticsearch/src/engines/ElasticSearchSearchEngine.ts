@@ -506,7 +506,12 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         numberOfResults: result.body.hits.total.value,
       };
     } catch (error) {
-      if (error.meta?.body?.error?.type === 'index_not_found_exception') {
+      const errorBody = error.meta?.body?.error;
+      // The index can also go missing mid-query, nested under a search_phase_execution_exception
+      if (
+        errorBody?.type === 'index_not_found_exception' ||
+        errorBody?.caused_by?.type === 'index_not_found_exception'
+      ) {
         throw new MissingIndexError(
           `Missing index for ${queryIndices}. This means there are no documents to search through.`,
           error,
@@ -516,7 +521,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         `Failed to query documents for indices ${queryIndices}`,
         error,
       );
-      return Promise.reject({ results: [] });
+      throw new Error(
+        `Failed to query documents for indices ${queryIndices}: ${error?.message}`,
+        { cause: error },
+      );
     }
   }
 
