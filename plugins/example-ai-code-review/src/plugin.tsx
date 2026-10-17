@@ -19,6 +19,7 @@ import {
   createRouteRef,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { RiRobot2Line } from '@remixicon/react';
 
 const rootRouteRef = createRouteRef();
 
@@ -27,6 +28,7 @@ const reviewPage = PageBlueprint.make({
     path: '/ai-code-review',
     routeRef: rootRouteRef,
     title: 'AI Code Review',
+    icon: <RiRobot2Line />,
     loader: () => import('./components/ReviewPage').then(m => <m.ReviewPage />),
   },
 });
