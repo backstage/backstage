@@ -49,16 +49,19 @@ export class CommonJSModuleLoader implements ModuleLoader {
     dynamicPluginsPaths: string[],
     scannedPluginManifests: Map<string, ScannedPluginManifest>,
   ): Promise<void> {
-    const backstageRootNodeModulesPath = `${backstageRoot}/node_modules`;
+    const backstageRootNodeModulesPath = path.join(
+      backstageRoot,
+      'node_modules',
+    );
     const dynamicNodeModulesPaths = [
       ...dynamicPluginsPaths.map(p => path.resolve(p, 'node_modules')),
     ];
     const oldNodeModulePaths = this.module._nodeModulePaths;
     // Some package managers, for example pnpm with the isolated linker, do not
-    // link every package into the root node_modules. The packages that a
-    // dynamic plugin shares with the backend are then only visible from the
-    // backend package itself. These are searched after the root, so a module
-    // that the root provides still resolves from there.
+    // link every package into the root node_modules. The modules that a
+    // dynamic plugin shares with the host are then only visible from the
+    // backend package, or from this package. These are searched after the
+    // root, so a module that the root provides still resolves from there.
     const hostNodeModulesPaths = getHostNodeModulesPaths(
       backstageRoot,
       oldNodeModulePaths,
@@ -76,6 +79,12 @@ export class CommonJSModuleLoader implements ModuleLoader {
       });
       const searchPaths = [
         ...filtered,
+        // Dynamic plugins outside of the Backstage root reach the root
+        // node_modules through NODE_PATH, which is searched last. It is added
+        // here so that it still comes before the host.
+        ...(filtered.includes(backstageRootNodeModulesPath)
+          ? []
+          : [backstageRootNodeModulesPath]),
         ...hostNodeModulesPaths.filter(p => !filtered.includes(p)),
       ];
       this.options.logger.debug(
@@ -177,18 +186,25 @@ export class CommonJSModuleLoader implements ModuleLoader {
 }
 
 /**
- * Returns the node_modules directories of the backend package that is running,
- * limited to those within the Backstage root.
+ * Returns the node_modules directories that the host backend resolves modules
+ * from, limited to those within the Backstage root. These are the lookup
+ * chains of the backend package, found through the main module and the working
+ * directory, and of this package, which reaches the packages that a package
+ * manager keeps out of the root node_modules.
  */
 function getHostNodeModulesPaths(
   backstageRoot: string,
   nodeModulePaths: (from: string) => string[],
 ): string[] {
+  const dirs = [process.cwd()];
   const mainFilename = require.main?.filename;
-  if (!mainFilename) {
-    return [];
+  if (mainFilename) {
+    dirs.unshift(path.dirname(mainFilename));
   }
-  return nodeModulePaths(path.dirname(mainFilename)).filter(p =>
-    isChildPath(backstageRoot, p),
-  );
+  const paths = new Set([
+    ...dirs.flatMap(dir => nodeModulePaths(dir)),
+    // The lookup chain of this module
+    ...(module.paths ?? []),
+  ]);
+  return Array.from(paths).filter(p => isChildPath(backstageRoot, p));
 }

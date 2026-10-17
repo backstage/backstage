@@ -28,3 +28,4 @@ export {
 } from './extensions';
 
 export { loadCompiledConfigSchema } from './schema';
+export { resolveAppPackagePath } from './resolveAppPackagePath';
