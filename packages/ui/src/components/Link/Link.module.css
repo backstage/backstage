@@ -122,6 +122,15 @@
     white-space: nowrap;
   }
 
+  .bui-LinkIcon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-inline-start: 0.25em;
+    vertical-align: -0.125em;
+    flex-shrink: 0;
+  }
+
   .bui-Link[data-standalone] {
     text-decoration-line: none;
 

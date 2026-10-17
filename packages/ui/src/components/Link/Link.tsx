@@ -16,6 +16,7 @@
 
 import { forwardRef, useRef } from 'react';
 import { mergeProps, useFocusRing, useLink } from 'react-aria';
+import { RiExternalLinkLine } from '@remixicon/react';
 import type { LinkProps } from './types';
 import {
   useDefinition,
@@ -41,7 +42,7 @@ function LinkView({
   forwardedRef,
 }: LinkViewProps) {
   const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
-  const { classes, title, children } = ownProps;
+  const { classes, title, children, external } = ownProps;
 
   const internalRef = useRef<HTMLAnchorElement>(null);
   const linkRef = (forwardedRef ||
@@ -98,7 +99,14 @@ function LinkView({
     className: classes.root,
     'data-focus-visible': isFocusVisible || undefined,
     onClick: handleClick,
-    children,
+    children: external ? (
+      <>
+        {children}
+        <RiExternalLinkLine className={classes.icon} aria-hidden="true" />
+      </>
+    ) : (
+      children
+    ),
   };
 
   if (navigation.type === 'router') {
@@ -115,12 +123,44 @@ function LinkView({
 }
 
 /**
+ * Builds the `rel` attribute for a link that opens in a new tab, keeping any
+ * tokens provided by the caller while always including `noopener noreferrer`.
+ */
+function withNoOpenerRel(rel?: string): string {
+  return [
+    ...new Set([
+      'noopener',
+      'noreferrer',
+      ...(rel?.split(/\s+/).filter(Boolean) ?? []),
+    ]),
+  ].join(' ');
+}
+
+/**
  * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @remarks
+ * Use the `external` prop for links that lead outside of the application.
+ * Such links show an external link icon and always open in a new tab.
+ *
+ * @example
+ * ```tsx
+ * <Link href="https://backstage.io" external>
+ *   Backstage website
+ * </Link>
+ * ```
  *
  * @public
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const definitionResult = useDefinition(LinkDefinition, props);
+  const definitionResult = useDefinition(
+    LinkDefinition,
+    // External links always open in a new tab, so the browser owns the
+    // navigation and the anchor carries the matching `target` and `rel`.
+    props.external
+      ? { ...props, target: '_blank', rel: withNoOpenerRel(props.rel) }
+      : props,
+  );
   const Navigation = definitionResult.navigation;
 
   return (

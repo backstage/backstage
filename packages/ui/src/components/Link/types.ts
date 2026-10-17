@@ -35,6 +35,12 @@ export type LinkOwnProps = {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   standalone?: boolean;
+  /**
+   * Marks the link as leading outside of the application. An external link
+   * icon is shown after the link text, and the link always opens in a new
+   * tab with `rel="noopener noreferrer"`, regardless of any `target` passed.
+   */
+  external?: boolean;
   title?: string;
   children?: ReactNode;
   className?: string;

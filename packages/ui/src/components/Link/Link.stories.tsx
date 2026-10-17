@@ -50,7 +50,7 @@ export const ExternalLink = meta.story({
   args: {
     href: 'https://backstage.io',
     children: 'Sign up for Backstage',
-    target: '_blank',
+    external: true,
   },
 });
 

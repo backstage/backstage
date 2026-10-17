@@ -2524,6 +2524,7 @@ export const LinkDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Link';
+    readonly icon: 'bui-LinkIcon';
   };
   readonly analytics: true;
   readonly navigation: {
@@ -2549,6 +2550,9 @@ export const LinkDefinition: {
     readonly standalone: {
       readonly dataAttribute: true;
     };
+    readonly external: {
+      readonly dataAttribute: true;
+    };
     readonly title: {};
     readonly children: {};
     readonly className: {};
@@ -2566,6 +2570,7 @@ export type LinkOwnProps = {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   standalone?: boolean;
+  external?: boolean;
   title?: string;
   children?: ReactNode;
   className?: string;

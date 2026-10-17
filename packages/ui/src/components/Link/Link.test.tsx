@@ -253,6 +253,48 @@ describe('Link', () => {
   });
 
   it.each([
+    ['https://backstage.io/docs', 'https://backstage.io/docs'],
+    ['/catalog/overview', '/app/catalog/overview'],
+  ])(
+    'opens external link %s in a new tab with an icon',
+    (href, expectedHref) => {
+      const { container } = render(
+        <Link href={href} external target="_self" rel="me noreferrer">
+          Docs
+        </Link>,
+        { wrapper: createRouterWrapper() },
+      );
+
+      const link = screen.getByRole('link', { name: 'Docs' });
+      expect(link).toHaveAttribute('href', expectedHref);
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer me');
+      expect(link).toHaveAttribute('data-external', 'true');
+      expect(link).not.toHaveAttribute('external');
+      expect(link.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+      expect(container.querySelectorAll('svg')).toHaveLength(1);
+
+      fireEvent.click(link);
+      expect(screen.getByRole('status')).toHaveTextContent(
+        '/catalog/entity/docs',
+      );
+    },
+  );
+
+  it('renders no icon and keeps client-side navigation without external', () => {
+    const { container } = render(
+      <Link href="/catalog/overview">Overview</Link>,
+      { wrapper: createRouterWrapper() },
+    );
+
+    const link = screen.getByRole('link', { name: 'Overview' });
+    expect(link).not.toHaveAttribute('target');
+    expect(link).not.toHaveAttribute('rel');
+    expect(link).not.toHaveAttribute('data-external');
+    expect(container.querySelector('svg')).toBeNull();
+  });
+
+  it.each([
     ['https://example.test/docs', undefined],
     ['mailto:owner@example.test', undefined],
     ['tel:+123456789', undefined],
