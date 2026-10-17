@@ -169,12 +169,13 @@ export class Yarn implements PackageManager {
    * Runs `yarn pack` in the package directory, using `--filename` with Yarn
    * classic and `--out` with modern Yarn.
    */
-  async pack(output: string, packageDir: string) {
+  async pack(output: string, packageDir: string, options?: RunOptions) {
     const outArg =
       (await this.yarnVersion()).codename === 'classic'
         ? '--filename'
         : '--out';
     await this.run(['pack', outArg, output], {
+      ...options,
       cwd: packageDir,
     });
   }
