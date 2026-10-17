@@ -96,7 +96,12 @@ export async function templatingTask(
   });
 
   for (const file of files) {
-    const filePath = relativePath(templateDir, file);
+    // Yarn always leaves `.github` out of the published package, so templates
+    // store it as `dot-github` and it is renamed back here.
+    const filePath = relativePath(templateDir, file).replace(
+      /^dot-github(?=[\\/])/,
+      '.github',
+    );
 
     const destinationFile = resolvePath(destinationDir, filePath);
     await fs.ensureDir(dirname(destinationFile));
