@@ -30,14 +30,18 @@ export type ReviewResult = {
   findings: ReviewFinding[];
 };
 
+// Anthropic via OpenAI-compatible gateways requires every object schema to
+// set `additionalProperties: false`.
 export const reviewSchema: JsonObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     summary: { type: 'string' },
     findings: {
       type: 'array',
       items: {
         type: 'object',
+        additionalProperties: false,
         properties: {
           file: { type: 'string' },
           line: { type: 'integer' },

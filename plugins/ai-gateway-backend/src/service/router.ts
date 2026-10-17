@@ -53,7 +53,8 @@ function describeFailure(error: unknown): Record<string, string | number> {
   if (!isError(error)) {
     return { errorName: typeof error };
   }
-  const { statusCode, finishReason, cause } = error as {
+  const { statusCode, finishReason, cause, data } = error as {
+    data?: { error?: { type?: unknown; code?: unknown } };
     statusCode?: unknown;
     finishReason?: unknown;
     cause?: unknown;
@@ -61,6 +62,14 @@ function describeFailure(error: unknown): Record<string, string | number> {
   const details: Record<string, string | number> = { errorName: error.name };
   if (typeof statusCode === 'number') {
     details.upstreamStatus = statusCode;
+  }
+  // Provider error type and code are short identifiers, unlike the message.
+  const { type, code } = data?.error ?? {};
+  if (typeof type === 'string') {
+    details.upstreamErrorType = type;
+  }
+  if (typeof code === 'string' || typeof code === 'number') {
+    details.upstreamErrorCode = code;
   }
   if (typeof finishReason === 'string') {
     details.finishReason = finishReason;
