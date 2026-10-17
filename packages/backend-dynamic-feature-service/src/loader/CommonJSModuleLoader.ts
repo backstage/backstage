@@ -16,6 +16,7 @@
 import { ModuleLoader } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
+import fs from 'node:fs';
 import path from 'node:path';
 import { ScannedPluginManifest } from '../scanner';
 
@@ -57,15 +58,21 @@ export class CommonJSModuleLoader implements ModuleLoader {
       ...dynamicPluginsPaths.map(p => path.resolve(p, 'node_modules')),
     ];
     const oldNodeModulePaths = this.module._nodeModulePaths;
+    // Node.js searches NODE_PATH after the node_modules lookup chain. Dynamic
+    // plugins outside of the Backstage root reach the root node_modules
+    // through it.
+    const nodePaths = (process.env.NODE_PATH ?? '')
+      .split(path.delimiter)
+      .filter(Boolean)
+      .map(p => path.resolve(p));
     // Some package managers, for example pnpm with the isolated linker, do not
     // link every package into the root node_modules. The modules that a
     // dynamic plugin shares with the host are then only visible from the
-    // backend package, or from this package. These are searched after the
-    // root, so a module that the root provides still resolves from there.
+    // backend package, or from this package.
     const hostNodeModulesPaths = getHostNodeModulesPaths(
       backstageRoot,
       oldNodeModulePaths,
-    ).filter(p => p !== backstageRootNodeModulesPath);
+    );
     this.module._nodeModulePaths = (from: string): string[] => {
       const result: string[] = oldNodeModulePaths(from);
       if (!dynamicPluginsPaths.some(p => from.startsWith(p))) {
@@ -77,16 +84,16 @@ export class CommonJSModuleLoader implements ModuleLoader {
           dynamicNodeModulesPaths.some(p => nodeModulePath.startsWith(p))
         );
       });
-      const searchPaths = [
-        ...filtered,
-        // Dynamic plugins outside of the Backstage root reach the root
-        // node_modules through NODE_PATH, which is searched last. It is added
-        // here so that it still comes before the host.
-        ...(filtered.includes(backstageRootNodeModulesPath)
-          ? []
-          : [backstageRootNodeModulesPath]),
-        ...hostNodeModulesPaths.filter(p => !filtered.includes(p)),
-      ];
+      // The host comes after the root node_modules and NODE_PATH, so that a
+      // module that was found before is still found in the same place.
+      const searchPaths = Array.from(
+        new Set([
+          ...filtered,
+          ...nodePaths,
+          backstageRootNodeModulesPath,
+          ...hostNodeModulesPaths,
+        ]),
+      );
       this.options.logger.debug(
         `Overriding node_modules search path for dynamic plugin ${from} to: ${searchPaths}`,
       );
@@ -188,19 +195,27 @@ export class CommonJSModuleLoader implements ModuleLoader {
 /**
  * Returns the node_modules directories that the host backend resolves modules
  * from, limited to those within the Backstage root. These are the lookup
- * chains of the backend package, found through the main module and the working
- * directory, and of this package, which reaches the packages that a package
- * manager keeps out of the root node_modules.
+ * chains of the backend package, found through the entry point of the process
+ * and the working directory, and of this package, which reaches the packages
+ * that a package manager keeps out of the root node_modules.
  */
 function getHostNodeModulesPaths(
   backstageRoot: string,
   nodeModulePaths: (from: string) => string[],
 ): string[] {
-  const dirs = [process.cwd()];
-  const mainFilename = require.main?.filename;
-  if (mainFilename) {
-    dirs.unshift(path.dirname(mainFilename));
+  const dirs = new Array<string>();
+  if (require.main?.filename) {
+    dirs.push(path.dirname(require.main.filename));
   }
+  // The main module is not set when the entry point is an ES module
+  if (process.argv[1]) {
+    const scriptPath = path.resolve(process.argv[1]);
+    const isDir = fs
+      .statSync(scriptPath, { throwIfNoEntry: false })
+      ?.isDirectory();
+    dirs.push(isDir ? scriptPath : path.dirname(scriptPath));
+  }
+  dirs.push(process.cwd());
   const paths = new Set([
     ...dirs.flatMap(dir => nodeModulePaths(dir)),
     // The lookup chain of this module
