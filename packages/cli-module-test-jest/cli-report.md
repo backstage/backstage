@@ -157,7 +157,29 @@ Options:
 
 Commands:
   help
+  run
   test
+```
+
+### `backstage-cli-module-test-jest repo run`
+
+```
+Usage: <none>
+
+Commands:
+  test
+```
+
+### `backstage-cli-module-test-jest repo run test`
+
+```
+Usage: @backstage/cli-module-test-jest repo run test [flags...]
+
+Options:
+  --include-dependents
+  --since <string>
+  --watch
+  -h, --help
 ```
 
 ### `backstage-cli-module-test-jest repo test`
