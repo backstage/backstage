@@ -56,7 +56,29 @@ export type {
   TracingServiceSpanStatus,
 } from './TracingService';
 
+export type {
+  AIEmbedRequest,
+  AIEmbedResponse,
+  AIGenerateObjectRequest,
+  AIGenerateObjectResponse,
+  AIGenerateTextRequest,
+  AIGenerateTextResponse,
+  AIMessage,
+  AIModelCapability,
+  AIModelSelection,
+  AIModelsService,
+  AIObjectSchema,
+  AIResolvedModel,
+  AIResolvedModelInfo,
+  AIResolveModelRequest,
+  AIStreamTextRequest,
+  AIStreamTextResponse,
+  AITextRequestOptions,
+  AITokenUsage,
+} from './AIModelsService';
+
 export {
+  aiModelsServiceRef,
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
