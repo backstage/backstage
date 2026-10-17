@@ -19,6 +19,7 @@ import { fromZodError } from 'zod-validation-error/v3';
 import * as zodV3 from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
 import {
+  AnyFilterPredicate,
   FilterPredicate,
   FilterPredicateExpression,
   FilterPredicatePrimitive,
@@ -52,18 +53,27 @@ export function createZodV3FilterPredicateSchema(
   const predicateSchema = z.lazy(() =>
     z.union([
       expressionSchema,
-      primitiveSchema,
       z.object({ $all: z.array(predicateSchema) }).strict(),
       z.object({ $any: z.array(predicateSchema) }).strict(),
       z.object({ $not: predicateSchema }).strict(),
     ]),
   ) as zodV3.ZodType<FilterPredicate>;
 
+  const anyPredicateSchema = z.lazy(() =>
+    z.union([
+      predicateSchema,
+      primitiveSchema,
+      z.object({ $all: z.array(anyPredicateSchema) }).strict(),
+      z.object({ $any: z.array(anyPredicateSchema) }).strict(),
+      z.object({ $not: anyPredicateSchema }).strict(),
+    ]),
+  ) as zodV3.ZodType<AnyFilterPredicate>;
+
   valuePredicateSchema = z.union([
     primitiveSchema,
     z.object({ $exists: z.boolean() }),
     z.object({ $in: z.array(primitiveSchema) }),
-    z.object({ $contains: predicateSchema }),
+    z.object({ $contains: anyPredicateSchema }),
     z.object({ $hasPrefix: z.string() }),
   ]) as zodV3.ZodType<FilterPredicateValue>;
 
@@ -104,18 +114,27 @@ export function createZodV4FilterPredicateSchema(): zodV4.ZodType<
   const predicateSchema = zodV4.lazy(() =>
     zodV4.union([
       expressionSchema,
-      primitiveSchema,
       zodV4.object({ $all: zodV4.array(predicateSchema) }).strict(),
       zodV4.object({ $any: zodV4.array(predicateSchema) }).strict(),
       zodV4.object({ $not: predicateSchema }).strict(),
     ]),
   ) as zodV4.ZodType<FilterPredicate, FilterPredicate>;
 
+  const anyPredicateSchema = zodV4.lazy(() =>
+    zodV4.union([
+      predicateSchema,
+      primitiveSchema,
+      zodV4.object({ $all: zodV4.array(anyPredicateSchema) }).strict(),
+      zodV4.object({ $any: zodV4.array(anyPredicateSchema) }).strict(),
+      zodV4.object({ $not: anyPredicateSchema }).strict(),
+    ]),
+  ) as zodV4.ZodType<AnyFilterPredicate, AnyFilterPredicate>;
+
   valuePredicateSchema = zodV4.union([
     primitiveSchema,
     zodV4.object({ $exists: zodV4.boolean() }),
     zodV4.object({ $in: zodV4.array(primitiveSchema) }),
-    zodV4.object({ $contains: predicateSchema }),
+    zodV4.object({ $contains: anyPredicateSchema }),
     zodV4.object({ $hasPrefix: zodV4.string() }),
   ]) as zodV4.ZodType<FilterPredicateValue, FilterPredicateValue>;
 
