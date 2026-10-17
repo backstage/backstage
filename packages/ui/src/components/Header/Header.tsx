@@ -18,6 +18,7 @@ import type { HeaderProps } from './types';
 import { Text } from '../Text';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { HeaderNav } from './HeaderNav';
+import { useTabsOverflow } from './useTabsOverflow';
 import { useDefinition } from '../../hooks/useDefinition';
 import { HeaderDefinition } from './definition';
 import { sanitizeUrl } from '@braintree/sanitize-url';
@@ -104,6 +105,8 @@ export const Header = (props: HeaderProps) => {
   // The sentinel sits directly before the sticky content and leaves the
   // viewport when the content becomes stuck, letting us toggle stuck styling.
   const stickySentinelRef = useRef<HTMLDivElement>(null);
+  const tabsWrapperRef = useRef<HTMLDivElement>(null);
+  const hasMoreTabsRight = useTabsOverflow(tabsWrapperRef, Boolean(tabs));
   const [isStuck, setIsStuck] = useState(false);
 
   useEffect(() => {
@@ -281,7 +284,11 @@ export const Header = (props: HeaderProps) => {
           </dl>
         )}
         {tabs && (
-          <div className={classes.tabsWrapper}>
+          <div
+            ref={tabsWrapperRef}
+            className={classes.tabsWrapper}
+            data-overflow-right={hasMoreTabsRight || undefined}
+          >
             <HeaderNav tabs={tabs} activeTabId={activeTabId} />
           </div>
         )}
