@@ -42,7 +42,7 @@ import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
-import { OpaqueExternalRouteRef, OpaqueRouteRef } from '@internal/frontend';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -189,21 +189,10 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         routeRef = optionRef;
       }
 
-      const extensionId =
-        OpaqueRouteRef.toInternal(routeRef).getExtensionId?.();
-      const kind = extensionId?.match(/^([^/:]+):/)?.[1];
-      const scopedName = extensionId?.replace(/^[^/:]+:/, '');
-      const [namespace, ...name] = scopedName?.split('/') ?? [];
-
       extensions.push(
         createExtension({
           kind: 'test-route',
           name: path,
-          ...(extensionId && {
-            kind,
-            namespace,
-            name: name.join('/') || undefined,
-          }),
           attachTo: { id: 'app/root', input: 'elements' },
           output: [
             coreExtensionData.reactElement,

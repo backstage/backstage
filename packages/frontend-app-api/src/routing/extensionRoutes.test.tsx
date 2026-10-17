@@ -655,3 +655,33 @@ it('uses registered identities for historical and legacy-compatible external ove
     }
   }
 });
+
+it('validates external override bindings against all registered callers', () => {
+  const target = createRouteRef({
+    extensionId: 'page:test/item',
+    params: ['id'],
+  });
+  for (const params of [[], ['name']] as const) {
+    const original = createExternalRouteRef({ params: [...params] });
+    const replacement = createExternalRouteRef({
+      params: ['id'],
+      defaultTarget: 'test.item',
+    });
+    const features = [
+      app,
+      createFrontendPlugin({
+        pluginId: 'test',
+        routes: { item: target },
+        externalRoutes: { item: original },
+        extensions: [page('item', '/items/:id')],
+      }),
+      createFrontendModule({
+        pluginId: 'test',
+        externalRoutes: { item: replacement },
+      }),
+    ];
+    expect(() => createSpecializedApp({ features })).toThrow(
+      /does not provide the parameters required/,
+    );
+  }
+});
