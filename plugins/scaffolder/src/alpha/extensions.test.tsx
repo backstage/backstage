@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { ScaffolderTemplateFilterBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 
 describe('scaffolder extensions', () => {
   describe('sub-page:scaffolder/templates', () => {
@@ -208,6 +209,77 @@ describe('scaffolder extensions', () => {
           expect(screen.queryByText('template-foo')).not.toBeInTheDocument();
         },
       );
+    });
+
+    it('combines configured and viewer-aware template filters', async () => {
+      const catalogMock = catalogApiMock({
+        entities: [
+          {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'template-visible' },
+            spec: { type: 'service', steps: [] },
+          },
+          {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'template-hidden' },
+            spec: { type: 'service', steps: [] },
+          },
+          {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'template-wip', tags: ['wip'] },
+            spec: { type: 'service', steps: [] },
+          },
+        ],
+      });
+      const viewerFilter = ScaffolderTemplateFilterBlueprint.make({
+        name: 'test',
+        params: {
+          useTemplateFilter: () => template =>
+            template.metadata.name !== 'template-hidden',
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'scaffolder' }, scaffolderTemplatesSubPage),
+        {
+          config: {
+            templateFilter: {
+              $not: {
+                'metadata.tags': { $contains: 'wip' },
+              },
+            },
+          },
+        },
+      ).add(viewerFilter);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogMock],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+            [permissionApiRef, mockApis.permission()],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/templates/': rootRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+
+      expect(await screen.findByText('template-visible')).toBeInTheDocument();
+      expect(screen.queryByText('template-hidden')).not.toBeInTheDocument();
+      expect(screen.queryByText('template-wip')).not.toBeInTheDocument();
     });
   });
 });
