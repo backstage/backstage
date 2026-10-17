@@ -5591,6 +5591,7 @@ __metadata:
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
+    hono: "npm:^4.13.11"
     minimatch: "npm:^10.2.1"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
@@ -27829,6 +27830,7 @@ __metadata:
     "@opentelemetry/exporter-prometheus": "npm:^0.222.0"
     "@opentelemetry/sdk-node": "npm:^0.222.0"
     example-app: "link:../app"
+    hono: "npm:^4.13.11"
   languageName: unknown
   linkType: soft
 
@@ -30309,10 +30311,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.11.4":
-  version: 4.13.7
-  resolution: "hono@npm:4.13.7"
-  checksum: 10/0f7b6bede2101e0fade436dd5054aa205f9271d905a2f638dd52fb6307354a7ae81d07ac5ec4e1a80603c618a0d50685650bb8a7e2f77b3d96a2423e1473c474
+"hono@npm:^4.11.4, hono@npm:^4.13.11":
+  version: 4.13.13
+  resolution: "hono@npm:4.13.13"
+  checksum: 10/1ff038d6ca80c42afc976a3d27857f905cf81c7460535b9916975e144f1f9b9eb5e7c81b320c799f4a419189d7bb7035c4105375be02353861cf8082832f1edc
   languageName: node
   linkType: hard
 
