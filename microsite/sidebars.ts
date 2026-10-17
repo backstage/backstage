@@ -705,6 +705,7 @@ export default {
                 'tooling/local-dev/profiling',
               ],
             ),
+            'tooling/package-managers',
             'tooling/package-metadata',
           ],
         ),
