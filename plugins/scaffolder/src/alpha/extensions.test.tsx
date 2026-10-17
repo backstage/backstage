@@ -21,7 +21,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { rootRouteRef } from '../routes';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
@@ -151,23 +151,9 @@ describe('scaffolder extensions', () => {
         expect(screen.queryByText('template-wip')).not.toBeInTheDocument();
       });
 
-      it.each([
-        ['0', 0],
-        ['false', false],
-        ['empty string', ''],
-      ])(
-        'should filter out everything with falsy value (%s)',
-        async (_name, value) => {
-          const catalogMock = catalogApiMock({
-            entities: [
-              {
-                apiVersion: 'scaffolder.backstage.io/v1beta3',
-                kind: 'Template',
-                metadata: { name: 'template-foo' },
-                spec: { type: 'service', steps: [] },
-              },
-            ],
-          });
+      it.each([0, false, ''])(
+        'should reject a primitive value as filter (%j)',
+        value => {
           const tester = createExtensionTester(
             Object.assign(
               { namespace: 'scaffolder' },
@@ -175,37 +161,11 @@ describe('scaffolder extensions', () => {
             ),
             {
               config: {
-                templateFilter: value,
+                templateFilter: value as any,
               },
             },
           );
-          await renderInTestApp(
-            <TestApiProvider
-              apis={[
-                [catalogApiRef, catalogMock],
-                [
-                  starredEntitiesApiRef,
-                  new DefaultStarredEntitiesApi({
-                    storageApi: mockApis.storage(),
-                  }),
-                ],
-                [permissionApiRef, mockApis.permission()],
-              ]}
-            >
-              {tester.reactElement()}
-            </TestApiProvider>,
-            {
-              mountedRoutes: {
-                '/templates/': rootRouteRef,
-                '/catalog/:namespace/:kind/:name': entityRouteRef,
-              },
-            },
-          );
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('progress')).not.toBeInTheDocument(),
-          );
-          expect(screen.queryByText('template-foo')).not.toBeInTheDocument();
+          expect(() => tester.reactElement()).toThrow(/templateFilter/);
         },
       );
     });
