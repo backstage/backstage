@@ -36,5 +36,13 @@ export interface Config {
      * 4096.
      */
     maxOutputTokens?: number;
+
+    /**
+     * The provider and model combinations that callers may request. The
+     * model can be a concrete model ID or a model alias configured on the
+     * provider. When unset, callers can only use the default provider and
+     * model, and requests that set `provider` or `model` are rejected.
+     */
+    allowedModels?: Array<{ provider: string; model: string }>;
   };
 }

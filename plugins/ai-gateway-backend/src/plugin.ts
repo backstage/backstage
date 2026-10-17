@@ -66,6 +66,12 @@ export const aiGatewayPlugin = createBackendPlugin({
                 20_000,
               maxOutputTokens:
                 config.getOptionalNumber('aiGateway.maxOutputTokens') ?? 4096,
+              allowedModels: config
+                .getOptionalConfigArray('aiGateway.allowedModels')
+                ?.map(c => ({
+                  provider: c.getString('provider'),
+                  model: c.getString('model'),
+                })),
             },
           }),
         );

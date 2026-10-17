@@ -31,6 +31,7 @@ const usage = { inputTokens: 3, outputTokens: 4 };
 
 async function setup(options?: {
   decision?: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+  allowedModels?: Array<{ provider: string; model: string }>;
 }) {
   const aiModels = {
     generateText: jest.fn(),
@@ -51,7 +52,7 @@ async function setup(options?: {
     httpAuth: mockServices.httpAuth(),
     permissions,
     logger,
-    limits,
+    limits: { ...limits, allowedModels: options?.allowedModels },
   });
   const app = express().use(router);
   app.use(
@@ -67,7 +68,9 @@ const userAuth = mockCredentials.user.header();
 
 describe('createRouter', () => {
   it('generates text and logs usage without prompt contents', async () => {
-    const { aiModels, logger, app } = await setup();
+    const { aiModels, logger, app } = await setup({
+      allowedModels: [{ provider: 'p', model: 'm' }],
+    });
     aiModels.generateText.mockResolvedValue({
       provider: 'p',
       model: 'm',
@@ -79,7 +82,7 @@ describe('createRouter', () => {
     const response = await request(await wrapServer(app))
       .post('/v1/generate/text')
       .set('Authorization', userAuth)
-      .send({ prompt: 'secret prompt', provider: 'p' });
+      .send({ prompt: 'secret prompt', provider: 'p', model: 'm' });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -90,6 +93,7 @@ describe('createRouter', () => {
     expect(aiModels.generateText).toHaveBeenCalledWith(
       expect.objectContaining({
         provider: 'p',
+        model: 'm',
         prompt: 'secret prompt',
         maxOutputTokens: 50,
       }),
@@ -178,6 +182,49 @@ describe('createRouter', () => {
       messages: [{ role: 'user', content: 'a' }],
     }).expect(400);
     expect(aiModels.generateText).not.toHaveBeenCalled();
+  });
+
+  it('only allows configured provider and model selections', async () => {
+    const post = (app: express.Express, body: object) =>
+      wrapServer(app).then(server =>
+        request(server)
+          .post('/v1/generate/text')
+          .set('Authorization', userAuth)
+          .send({ prompt: 'hi', ...body }),
+      );
+    const result = {
+      provider: 'p',
+      model: 'm',
+      text: 't',
+      finishReason: 'stop',
+      usage,
+    };
+
+    // Without a list only the defaults are allowed
+    const defaults = await setup();
+    defaults.aiModels.generateText.mockResolvedValue(result);
+    expect((await post(defaults.app, {})).status).toBe(200);
+    expect((await post(defaults.app, { provider: 'p' })).status).toBe(400);
+    expect((await post(defaults.app, { model: 'm' })).status).toBe(400);
+    expect(defaults.aiModels.generateText).toHaveBeenCalledTimes(1);
+
+    const listed = await setup({
+      allowedModels: [{ provider: 'p', model: 'alias' }],
+    });
+    listed.aiModels.generateText.mockResolvedValue(result);
+    expect((await post(listed.app, {})).status).toBe(200);
+    expect(
+      (await post(listed.app, { provider: 'p', model: 'alias' })).status,
+    ).toBe(200);
+    for (const body of [
+      { provider: 'p', model: 'other' },
+      { provider: 'q', model: 'alias' },
+      { provider: 'p' },
+      { model: 'alias' },
+    ]) {
+      expect((await post(listed.app, body)).status).toBe(400);
+    }
+    expect(listed.aiModels.generateText).toHaveBeenCalledTimes(2);
   });
 
   it('forwards service errors but hides raw upstream errors', async () => {

@@ -38,6 +38,8 @@ export interface AiGatewayLimits {
   maxInputCharacters: number;
   maxSchemaCharacters: number;
   maxOutputTokens: number;
+  /** Allowed provider and model pairs. When undefined only the defaults are allowed. */
+  allowedModels?: Array<{ provider: string; model: string }>;
 }
 
 // Errors with these names are raised by the AI models service for problems the
@@ -58,11 +60,37 @@ function toClientError(error: unknown, logger: LoggerService): Error {
   return new ServiceUnavailableError(GENERIC_PROVIDER_ERROR);
 }
 
+function validateModelSelection(
+  body: GenerateTextRequest,
+  allowedModels: AiGatewayLimits['allowedModels'],
+) {
+  const { provider, model } = body;
+  if (provider === undefined && model === undefined) {
+    return;
+  }
+  if (!allowedModels) {
+    throw new InputError(
+      'Selecting a provider or model is not allowed, configure aiGateway.allowedModels to enable it',
+    );
+  }
+  if (provider === undefined || model === undefined) {
+    throw new InputError(
+      'Both `provider` and `model` must be set when selecting a model',
+    );
+  }
+  if (!allowedModels.some(a => a.provider === provider && a.model === model)) {
+    throw new InputError(
+      `The model '${model}' of provider '${provider}' is not allowed`,
+    );
+  }
+}
+
 function validateRequest(
   body: GenerateTextRequest,
   limits: AiGatewayLimits,
   schema?: JsonObject,
 ) {
+  validateModelSelection(body, limits.allowedModels);
   const hasPrompt = body.prompt !== undefined;
   const hasMessages = body.messages !== undefined;
   if (hasPrompt === hasMessages) {
