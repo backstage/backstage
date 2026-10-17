@@ -140,6 +140,18 @@ or by [building your own](../../plugins/index.md).
 
 Sometimes entities fail to process correctly. The **Unprocessed Entities** feature helps Backstage admins find and diagnose these entities to understand the state of the catalog.
 
+The **Failed** tab lists entities that are in a failed state:
+
+![Example of failed entities tab](../../assets/software-catalog/catalog-unprocessed-entities-failed.png)
+
+The **Pending** tab lists entities that are still waiting to be processed:
+
+![Example of pending entities tab](../../assets/software-catalog/catalog-unprocessed-entities-pending.png)
+
+From either tab you can open the raw entity as JSON:
+
+![Example of raw entity](../../assets/software-catalog/catalog-unprocessed-entities-raw.png)
+
 To use this feature, check out the documentation for the [catalog-unprocessed-entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) and its [backend module](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-unprocessed).
 
 ## Links
