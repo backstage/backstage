@@ -330,6 +330,7 @@ navbar
 neuro
 newrelic
 nginx
+node_modules
 nodegit
 nodemailer
 nodejs
@@ -387,6 +388,7 @@ Platformize
 pluggable
 Pluggable
 pnpm
+pnpmfile
 Podman
 polyfills
 posix
