@@ -18,6 +18,15 @@ export type DetectPackageManagerOptions = {
 };
 
 // @alpha
+export interface Lockfile {
+  createSimplifiedDependencyGraph(): Map<string, Set<string>>;
+  diff(otherLockfile: Lockfile): LockfileDiff;
+  get(name: string): LockfileEntry[] | undefined;
+  getDependencyTreeHash(startName: string): string;
+  keys(): IterableIterator<string>;
+}
+
+// @alpha
 export type LockfileEntry = {
   range: string;
   version: string;
@@ -38,11 +47,14 @@ export interface PackageManager {
   fetchPackageInfo(name: string): Promise<PackageInfo>;
   getCommandHint(args: string[]): string;
   install(options?: PackageManagerInstallOptions): Promise<void>;
-  loadLockfile(): Promise<PackageManagerLockfile>;
+  loadLockfile(): Promise<Lockfile>;
   lockfileName(): string;
   name(): string;
   pack(output: string, packageDir: string, options?: RunOptions): Promise<void>;
-  parseLockfile(contents: string): Promise<PackageManagerLockfile>;
+  parseLockfile(
+    contents: string,
+    options?: ParseLockfileOptions,
+  ): Promise<Lockfile>;
   run(args: string[], options?: RunOptions): Promise<void>;
   runScript(
     script: string,
@@ -70,13 +82,51 @@ export type PackageManagerInstallOptions = {
 };
 
 // @alpha
-export interface PackageManagerLockfile {
-  createSimplifiedDependencyGraph(): Map<string, Set<string>>;
-  diff(otherLockfile: PackageManagerLockfile): LockfileDiff;
-  get(name: string): LockfileEntry[] | undefined;
-  getDependencyTreeHash(startName: string): string;
-  keys(): IterableIterator<string>;
+export type ParseLockfileOptions = {
+  readWorkspacePackageJson?: (dir: string) => Promise<
+    | {
+        name?: string;
+        version?: string;
+      }
+    | undefined
+  >;
+};
+
+// @alpha
+export class Pnpm implements PackageManager {
+  static create(options?: PnpmCreateOptions): Promise<Pnpm>;
+  fetchPackageInfo(name: string): Promise<PackageInfo>;
+  getCommandHint(args: string[]): string;
+  install(options?: PackageManagerInstallOptions): Promise<void>;
+  loadLockfile(): Promise<Lockfile>;
+  lockfileName(): string;
+  name(): string;
+  pack(output: string, packageDir: string, options?: RunOptions): Promise<void>;
+  parseLockfile(
+    contents: string,
+    options?: ParseLockfileOptions,
+  ): Promise<Lockfile>;
+  run(args: string[], options?: RunOptions): Promise<void>;
+  runScript(
+    script: string,
+    args?: string[],
+    options?: RunOptions,
+  ): Promise<void>;
+  runWorkspaceScript(
+    workspace: string,
+    script: string,
+    args?: string[],
+    options?: RunOptions,
+  ): Promise<void>;
+  supportsBackstageVersionProtocol(): Promise<boolean>;
+  toString(): string;
+  version(): Promise<string>;
 }
+
+// @alpha
+export type PnpmCreateOptions = {
+  workspaceRootDir?: string;
+};
 
 // @alpha
 export class Yarn implements PackageManager {
@@ -84,11 +134,11 @@ export class Yarn implements PackageManager {
   fetchPackageInfo(name: string): Promise<PackageInfo>;
   getCommandHint(args: string[]): string;
   install(options?: PackageManagerInstallOptions): Promise<void>;
-  loadLockfile(): Promise<PackageManagerLockfile>;
+  loadLockfile(): Promise<Lockfile>;
   lockfileName(): string;
   name(): string;
   pack(output: string, packageDir: string, options?: RunOptions): Promise<void>;
-  parseLockfile(contents: string): Promise<PackageManagerLockfile>;
+  parseLockfile(contents: string): Promise<Lockfile>;
   run(args: string[], options?: RunOptions): Promise<void>;
   runScript(
     script: string,
