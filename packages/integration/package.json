@@ -55,7 +55,7 @@
     "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@octokit/auth-app": "^4.0.0",
-    "@octokit/rest": "^19.0.3",
+    "@octokit/rest": "^20.1.2",
     "cross-fetch": "^4.0.0",
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
