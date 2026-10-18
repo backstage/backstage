@@ -36,6 +36,8 @@ import {
 import { RouteAliasResolver } from './RouteAliasResolver';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { routeRefType } from '../../../core-plugin-api/src/routing/types';
 import { RouteRedirects } from './RouteRedirects';
 import { joinPaths } from './joinPaths';
 
@@ -333,6 +335,11 @@ export class RouteResolver implements RouteResolutionApi {
       }
       const node = tree.nodes.get(extensionId);
       if (!node && !this.fallbackRoutes.has(extensionId)) {
+        // Hybrid apps can register all of a legacy plugin's routes while only
+        // mounting some of its pages. Unmounted legacy routes remain unresolved.
+        if (routeRefType in internal) {
+          continue;
+        }
         throw new Error(
           `Route reference targets unknown extension '${extensionId}'`,
         );

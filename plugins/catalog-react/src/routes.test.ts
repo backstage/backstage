@@ -20,6 +20,7 @@ import {
   getCompoundEntityRef,
 } from '@backstage/catalog-model';
 import { entityRouteParams } from './routes';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 const entity: Entity = {
   apiVersion: '1',
@@ -99,5 +100,69 @@ describe('entityRouteParams', () => {
       name: 'Test%20Component',
       namespace: 'test%20namespace',
     });
+  });
+});
+
+describe('entityRouteRef', () => {
+  it('should upgrade an existing singleton without replacing legacy references', () => {
+    const key = '__@backstage/catalog:entity-route-ref__';
+    const globals = globalThis as typeof globalThis & Record<string, unknown>;
+    const previous = globals[key];
+
+    try {
+      for (const legacyOnly of [false, true]) {
+        const original = createRouteRef({
+          id: 'catalog:entity',
+          params: ['namespace', 'kind', 'name'],
+        });
+        if (legacyOnly) {
+          Reflect.deleteProperty(original, '$$type');
+          Reflect.deleteProperty(original, 'version');
+          Reflect.deleteProperty(original, 'T');
+        }
+        globals[key] = original;
+        expect(original).not.toHaveProperty('getExtensionId');
+
+        for (let copy = 0; copy < 2; copy++) {
+          jest.isolateModules(() => {
+            const { entityRouteRef } = require('./routes');
+            expect(entityRouteRef).toBe(original);
+            expect(entityRouteRef.getExtensionId()).toBe('page:catalog/entity');
+            expect(entityRouteRef.params).toEqual([
+              'namespace',
+              'kind',
+              'name',
+            ]);
+          });
+        }
+      }
+
+      const getExtensionId = () => 'page:catalog/future-entity';
+      const futureRef = Object.assign(
+        createRouteRef({
+          id: 'catalog:entity',
+          params: ['namespace', 'kind', 'name'],
+        }),
+        { getExtensionId },
+      );
+      globals[key] = futureRef;
+      jest.isolateModules(() => {
+        const { entityRouteRef } = require('./routes');
+        expect(entityRouteRef).toBe(futureRef);
+        expect(entityRouteRef.getExtensionId).toBe(getExtensionId);
+        expect(entityRouteRef.getExtensionId()).toBe(
+          'page:catalog/future-entity',
+        );
+      });
+
+      delete globals[key];
+      jest.isolateModules(() => {
+        const { entityRouteRef } = require('./routes');
+        expect(entityRouteRef.getExtensionId()).toBe('page:catalog/entity');
+        expect(globals[key]).toBe(entityRouteRef);
+      });
+    } finally {
+      globals[key] = previous;
+    }
   });
 });

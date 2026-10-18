@@ -29,8 +29,9 @@ import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
  * This `RouteRef` can be imported and used directly, and does not need to be referenced
  * via an `ExternalRouteRef`.
  *
- * If you want to replace the `EntityPage` from `@backstage/catalog-plugin` in your app,
- * you need to use the `entityRouteRef` as the mount point instead of your own.
+ * In the new frontend system, this reference targets `page:catalog/entity`.
+ * Keep it as the mount point when replacing the entity page to support older
+ * frontend system versions.
  * @public
  */
 export const entityRouteRef = getOrCreateGlobalSingleton(
@@ -41,6 +42,14 @@ export const entityRouteRef = getOrCreateGlobalSingleton(
       params: ['namespace', 'kind', 'name'],
     }),
 );
+
+// An older package copy may have created the singleton first. Add the target
+// after retrieving it so all copies share both its identity and extension target.
+if (!('getExtensionId' in entityRouteRef)) {
+  Object.assign(entityRouteRef, {
+    getExtensionId: () => 'page:catalog/entity',
+  });
+}
 
 /**
  * Configurable options for `entityRouteParams`
