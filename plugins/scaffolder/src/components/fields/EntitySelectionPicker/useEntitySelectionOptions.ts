@@ -21,7 +21,7 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   matchesFilterIdentity,
   parseEntityRefCandidates,
@@ -72,10 +72,8 @@ export function useEntitySelectionOptions(props: {
   }, []);
   // Callers often pass inline filter objects, so depend on the filter's value.
   const filterKey = filterKeyOf(props.catalogFilter);
-  const filterRef = useRef(props.catalogFilter);
-  if (filterKeyOf(filterRef.current) !== filterKey)
-    filterRef.current = props.catalogFilter;
-  const catalogFilter = filterRef.current;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const catalogFilter = useMemo(() => props.catalogFilter, [filterKey]);
   const [state, setState] = useState<{
     /** The filter that produced the snapshot; rows are discarded when it changes. */
     filterKey: string;

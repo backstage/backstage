@@ -37,7 +37,10 @@ import {
   VisuallyHidden,
 } from 'react-aria-components';
 import { useEntitySelectionOptions } from './useEntitySelectionOptions';
-import { entityRefCandidates } from './entityRefCandidates';
+import {
+  entityRefCandidates,
+  matchesFilterIdentity,
+} from './entityRefCandidates';
 import { LoadingSentinel } from './LoadingSentinel';
 import { useStableSelectionRows } from './useStableSelectionRows';
 import {
@@ -123,6 +126,10 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
         ref,
         label: referenceLabel(ref),
         missing: true,
+        // Until resolved, apply the same rule as for confirmed missing refs.
+        unavailable: !(
+          allowMissingEntities && fitsFilter(ref, props.catalogFilter)
+        ),
       },
   );
   const stableRows = useStableSelectionRows({
@@ -411,7 +418,16 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   );
 }
 
+function fitsFilter(ref: string, catalogFilter?: EntityFilterQuery) {
+  try {
+    return matchesFilterIdentity(ref, catalogFilter);
+  } catch {
+    return false;
+  }
+}
+
 function rowNote(row: EntitySelectionOption) {
+  if (row.missing && row.unavailable) return ' · Not found in catalog';
   if (row.missing) return ' · Not found in catalog — reference only';
   if (row.unavailable) return " · Exists, but doesn't match this field";
   return '';
