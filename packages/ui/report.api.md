@@ -2570,7 +2570,7 @@ export type LinkOwnProps = {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   standalone?: boolean;
-  external?: boolean;
+  external?: boolean | 'auto' | 'always' | 'no';
   title?: string;
   children?: ReactNode;
   className?: string;

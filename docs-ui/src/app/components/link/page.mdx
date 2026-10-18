@@ -50,9 +50,14 @@ export const reactAriaUrls = {
 
 ### External link
 
-Use `external` for links that lead outside of the application. An external
-link icon is shown after the link text, and the link always opens in a new tab
-with `rel="noopener noreferrer"`, regardless of any `target` passed.
+Links whose `href` starts with `http://` or `https://` are treated as external
+by default. An external link icon is shown after the link text, and the link
+always opens in a new tab with `rel="noopener noreferrer"`, regardless of any
+`target` passed. Other schemes such as `mailto:` are not treated as external,
+since they usually open in another application.
+
+Use `external="always"` to force this behavior for any `href`, or
+`external="no"` to opt out of it.
 
 <Snippet
   align="center"

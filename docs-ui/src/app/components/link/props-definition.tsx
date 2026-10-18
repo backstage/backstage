@@ -23,15 +23,19 @@ export const linkPropDefs: Record<string, PropDef> = {
     ),
   },
   external: {
-    type: 'boolean',
+    type: 'enum',
+    values: ['auto', 'always', 'no', 'true', 'false'],
+    default: 'auto',
     description: (
       <>
-        Marks the link as leading outside of the application. Shows an external
-        link icon after the link text and always opens the link in a new tab
-        with <Chip>rel="noopener noreferrer"</Chip>.
+        Whether the link leads outside of the application. External links show
+        an external link icon after the link text and always open in a new tab
+        with <Chip>rel="noopener noreferrer"</Chip>. <Chip>auto</Chip> treats{' '}
+        <Chip>http://</Chip> and <Chip>https://</Chip> destinations as external.{' '}
+        <Chip>always</Chip> (or <Chip>true</Chip>) forces it and <Chip>no</Chip>{' '}
+        (or <Chip>false</Chip>) disables it.
       </>
     ),
-    default: 'false',
   },
   title: {
     type: 'string',

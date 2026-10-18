@@ -17,9 +17,17 @@ export const Default = () => {
 export const ExternalLink = () => {
   return (
     <MemoryRouter>
-      <Link href="https://backstage.io" external variant="body-large">
-        Sign up for Backstage
-      </Link>
+      <Flex gap="4" direction="column">
+        <Link href="https://backstage.io" variant="body-large">
+          Detected external link
+        </Link>
+        <Link href="/" external="always" variant="body-large">
+          Internal link opened externally
+        </Link>
+        <Link href="https://backstage.io" external="no" variant="body-large">
+          Plain https link
+        </Link>
+      </Flex>
     </MemoryRouter>
   );
 };
