@@ -649,9 +649,9 @@ describe('EntitySelectionPicker', () => {
     await setup();
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     const search = screen.getByRole('searchbox');
-    await userEvent.type(search, 'fre');
+    await userEvent.type(search, 'free');
     fireEvent.keyDown(search, { key: 'Escape', isComposing: true });
-    expect(screen.getByRole('searchbox')).toHaveValue('fre');
+    expect(screen.getByRole('searchbox')).toHaveValue('free');
     fireEvent.keyDown(search, { key: 'Escape' });
     await waitFor(() =>
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument(),
