@@ -266,7 +266,7 @@ export function EntitySelectionPickerPlayground() {
                 defaultKind="Group"
                 multiple={multiple}
                 maxItems={multiple ? 3 : undefined}
-                allowMissingEntities={allowMissing && mode !== 'groups'}
+                allowMissingEntities={allowMissing}
                 disabled={disabled}
               />
             </Box>

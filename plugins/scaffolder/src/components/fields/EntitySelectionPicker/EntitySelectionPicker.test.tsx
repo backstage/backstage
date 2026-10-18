@@ -24,6 +24,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Entity } from '@backstage/catalog-model';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import {
   catalogApiRef,
   entityPresentationApiRef,
@@ -538,6 +539,36 @@ describe('EntitySelectionPicker', () => {
     expect(screen.getByRole('row', { name: /User freben/ })).toBe(retained);
     expect(retained).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByRole('searchbox')).toHaveFocus();
+  });
+
+  it('shows typed references that exist but fail the filter as unavailable', async () => {
+    const { onChange } = await setup(
+      {
+        allowMissingEntities: true,
+        catalogFilter: {
+          kind: 'User',
+          'spec.profile.email': CATALOG_FILTER_EXISTS,
+        },
+      },
+      [entity],
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'freben');
+    const row = await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    expect(
+      within(row).getByText(/doesn't match this field/),
+    ).toBeInTheDocument();
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(row);
+    expect(onChange).not.toHaveBeenCalled();
+
+    await userEvent.clear(screen.getByRole('searchbox'));
+    await userEvent.type(screen.getByRole('searchbox'), 'nobody');
+    const missing = await screen.findByRole('row', { name: /User nobody/ });
+    expect(
+      within(missing).getByText(/Not found in catalog/),
+    ).toBeInTheDocument();
+    expect(missing).not.toHaveAttribute('aria-disabled', 'true');
   });
 
   it('waits for the first reference lookup before showing choices or an empty result', async () => {

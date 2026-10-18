@@ -116,23 +116,15 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     selectedEntityRefs,
   });
   const candidateRefs = entityRefCandidates(options.searchText, props);
-  const selectionSnapshots = useRef(new Map<string, EntitySelectionOption>());
   const selections = value.map(
     ref =>
       options.selectedOptions.find(row => row.ref === ref) ??
-      options.snapshot.rows.find(row => row.ref === ref) ??
-      selectionSnapshots.current.get(ref) ?? {
+      options.snapshot.rows.find(row => row.ref === ref) ?? {
         ref,
         label: referenceLabel(ref),
         missing: true,
       },
   );
-  useEffect(() => {
-    // Keep snapshots only for the selected set, not an unbounded search cache.
-    selectionSnapshots.current = new Map(
-      selections.map(item => [item.ref, item]),
-    );
-  });
   const stableRows = useStableSelectionRows({
     snapshot: options.snapshot,
     selections,
@@ -142,7 +134,6 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     if (next && !open && !disabled) stableRows.beginSession();
     setOpen(next && !disabled);
     if (!next) options.setSearchText('');
-    if (next && options.loadingState === 'error') options.retry();
   };
   const { setSearchText } = options;
   useEffect(() => {
@@ -154,7 +145,10 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   const atMax =
     multiple && props.maxItems !== undefined && value.length >= props.maxItems;
   const disabledKeys = stableRows.items
-    .filter(row => disabled || (atMax && !value.includes(row.ref)))
+    .filter(
+      row =>
+        disabled || (!value.includes(row.ref) && (row.unavailable || atMax)),
+    )
     .map(row => row.ref);
   const refreshing = options.loadingState === 'loading';
 
@@ -291,11 +285,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     <ListRow
                       id={row.ref}
                       textValue={`${row.label} ${row.ref}`}
-                      description={`${row.ref}${
-                        row.missing
-                          ? ' · Not found in catalog — reference only'
-                          : ''
-                      }`}
+                      description={`${row.ref}${rowNote(row)}`}
                       customActions={
                         value.includes(row.ref) && (
                           <ButtonIcon
@@ -405,6 +395,12 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
       )}
     </div>
   );
+}
+
+function rowNote(row: EntitySelectionOption) {
+  if (row.missing) return ' · Not found in catalog — reference only';
+  if (row.unavailable) return " · Exists, but doesn't match this field";
+  return '';
 }
 
 /** Keep app-provided presentation, without depending on the MUI display component. */

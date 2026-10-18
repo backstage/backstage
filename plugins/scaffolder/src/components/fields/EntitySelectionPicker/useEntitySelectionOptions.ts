@@ -51,8 +51,13 @@ export function useEntitySelectionOptions(props: {
   const searchText = input.text;
   const inputRef = useRef('');
   const [retryCount, setRetryCount] = useState(0);
+  // Every request captures this counter; bumping it discards all in-flight work.
   const generation = useRef(0);
   const paging = useRef(false);
+  const invalidate = useCallback(() => {
+    paging.current = false;
+    return ++generation.current;
+  }, []);
   const [state, setState] = useState<{
     requestKey?: string;
     generation?: number;
@@ -64,17 +69,16 @@ export function useEntitySelectionOptions(props: {
     status: 'loading',
     loadMoreError: false,
   });
+  const snapshotRef = useRef(state.snapshot);
+  snapshotRef.current = state.snapshot;
   const [selectedOptions, setSelectedOptions] = useState<
     EntitySelectionOption[]
   >([]);
   const refs = props.allowMissingEntities
     ? entityRefCandidates(searchText, props)
     : [];
-  const requestKey = JSON.stringify({
-    search: searchText,
-    revision: input.revision,
-    refs,
-  });
+  const refsKey = refs.join('\n');
+  const requestKey = `${input.revision}\n${refsKey}`;
 
   const present = useCallback(
     async (entity: Entity): Promise<EntitySelectionOption> => {
@@ -89,29 +93,26 @@ export function useEntitySelectionOptions(props: {
     [presentationApi],
   );
 
-  const setSearchText = useCallback((text: string) => {
-    if (inputRef.current === text) return;
-    inputRef.current = text;
-    // Invalidate even before the next effect/debounce, including in-flight pages.
-    ++generation.current;
-    paging.current = false;
-    setInput(previous => ({ text, revision: previous.revision + 1 }));
-  }, []);
+  const setSearchText = useCallback(
+    (text: string) => {
+      if (inputRef.current === text) return;
+      inputRef.current = text;
+      // Invalidate even before the next effect/debounce, including in-flight pages.
+      invalidate();
+      setInput(previous => ({ text, revision: previous.revision + 1 }));
+    },
+    [invalidate],
+  );
   const retry = useCallback(() => {
-    ++generation.current;
-    paging.current = false;
+    invalidate();
     setRetryCount(count => count + 1);
-  }, []);
+  }, [invalidate]);
 
   useEffect(() => {
-    const requestGeneration = generation;
-    const current = ++generation.current;
-    paging.current = false;
+    const current = invalidate();
     if (!enabled) return undefined;
-    const request = JSON.parse(requestKey) as {
-      search: string;
-      refs: string[];
-    };
+    const search = searchText;
+    const exactRefs = refsKey ? refsKey.split('\n') : [];
     setState(previous => ({
       ...previous,
       requestKey,
@@ -119,15 +120,42 @@ export function useEntitySelectionOptions(props: {
       status: 'loading',
       loadMoreError: false,
     }));
+    /**
+     * Resolve typed references. A reference that exists but fails the field's
+     * filter is shown as unavailable, rather than offered or reported missing.
+     */
+    async function lookupExactRefs(
+      entityRefs: string[],
+    ): Promise<EntitySelectionOption[]> {
+      if (!entityRefs.length) return [];
+      const [matching, existing] = await Promise.all([
+        catalogApi.getEntitiesByRefs({
+          entityRefs,
+          ...(catalogFilter ? { filter: catalogFilter } : {}),
+        }),
+        catalogFilter
+          ? catalogApi.getEntitiesByRefs({ entityRefs })
+          : undefined,
+      ]);
+      return Promise.all(
+        entityRefs.map(async (ref, index) => {
+          const match = matching.items[index];
+          if (match) return present(match);
+          const other = existing?.items[index];
+          if (other) return { ...(await present(other)), unavailable: true };
+          return { ref, label: referenceLabel(ref), missing: true };
+        }),
+      );
+    }
     const load = async () => {
       try {
-        const [result, exact] = await Promise.all([
+        const [result, exactRows] = await Promise.all([
           catalogApi.queryEntities({
             ...(catalogFilter ? { filter: catalogFilter } : {}),
-            ...(request.search
+            ...(search
               ? {
                   fullTextFilter: {
-                    term: request.search,
+                    term: search,
                     fields: [
                       'metadata.name',
                       'kind',
@@ -141,20 +169,9 @@ export function useEntitySelectionOptions(props: {
             orderFields: [{ field: 'metadata.name', order: 'asc' }],
             totalItems: 'exclude',
           }),
-          request.refs.length
-            ? catalogApi.getEntitiesByRefs({ entityRefs: request.refs })
-            : { items: [] },
+          lookupExactRefs(exactRefs),
         ]);
-        const [catalogRows, exactRows] = await Promise.all([
-          Promise.all(result.items.map(present)),
-          Promise.all(
-            request.refs.map(async (ref, index) =>
-              exact.items[index]
-                ? present(exact.items[index]!)
-                : { ref, label: referenceLabel(ref), missing: true },
-            ),
-          ),
-        ]);
+        const catalogRows = await Promise.all(result.items.map(present));
         // Both sources belong to this request. Prefer the catalog's presentation
         // for duplicates, keeping its ordering and avoiding duplicate choices.
         const rows = new Map(catalogRows.map(row => [row.ref, row]));
@@ -165,7 +182,7 @@ export function useEntitySelectionOptions(props: {
             requestKey,
             generation: current,
             snapshot: {
-              search: request.search,
+              search,
               rows: [...rows.values()],
               cursor: result.pageInfo.nextCursor,
             },
@@ -178,13 +195,23 @@ export function useEntitySelectionOptions(props: {
       }
     };
     // Debounce typing, but load the initial/unfiltered list immediately.
-    const timer = request.search ? setTimeout(load, 250) : undefined;
-    if (!request.search) void load();
+    const timer = search ? setTimeout(load, 250) : undefined;
+    if (!search) void load();
     return () => {
       clearTimeout(timer);
-      ++requestGeneration.current;
+      invalidate();
     };
-  }, [catalogApi, catalogFilter, enabled, present, requestKey, retryCount]);
+  }, [
+    catalogApi,
+    catalogFilter,
+    enabled,
+    invalidate,
+    present,
+    refsKey,
+    requestKey,
+    retryCount,
+    searchText,
+  ]);
 
   const loadMore = useCallback(async () => {
     const { snapshot } = state;
@@ -237,14 +264,23 @@ export function useEntitySelectionOptions(props: {
 
   // Hydrate the closed control independently. These results never mutate the
   // displayed search snapshot, and changing selection never restarts a search.
-  const selectionKey = JSON.stringify(props.selectedEntityRefs);
+  const selectionKey = props.selectedEntityRefs.join('\n');
   useEffect(() => {
     let cancelled = false;
-    const entityRefs = JSON.parse(selectionKey) as string[];
+    const entityRefs = selectionKey ? selectionKey.split('\n') : [];
     if (!entityRefs.length) {
       setSelectedOptions([]);
       return undefined;
     }
+    // Until the lookup finishes, keep what is already known about each ref.
+    setSelectedOptions(previous =>
+      entityRefs.flatMap(ref => {
+        const known =
+          previous.find(item => item.ref === ref) ??
+          snapshotRef.current.rows.find(item => item.ref === ref);
+        return known ? [known] : [];
+      }),
+    );
     const load = async () => {
       try {
         const response = await catalogApi.getEntitiesByRefs({ entityRefs });

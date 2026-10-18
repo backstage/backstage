@@ -21,6 +21,8 @@ export type EntitySelectionOption = {
   ref: string;
   label: string;
   missing?: boolean;
+  /** Exists in the catalog, but does not match the field's filter. */
+  unavailable?: boolean;
   entity?: Entity;
   presentation?: EntityRefPresentationSnapshot;
 };

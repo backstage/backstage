@@ -44,6 +44,7 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - When missing references are allowed, a valid name such as `freben` offers
   explicit User and Group choices. Exact lookups distinguish missing entities
   from entities outside the current page, and errors do not create missing choices.
+  An existing entity that fails the field's filter is shown but cannot be chosen.
 - Picked references are remembered for the rest of the popup session, including
   after deselection, even when absent from the catalog or the current page.
   Clearing the search or reopening makes these references available again.
@@ -84,11 +85,12 @@ content, `itemLayout` for inline/list layout, and `getItemHref` for caller-owned
 destinations. It owns the links, trigger, and removal controls itself. None of
 these props are exported as public APIs.
 
-Normal results use catalog-side search and filtering. Exact reference choices
-honor kind/name/namespace constraints, but intentionally bypass other filters
-when missing references are allowed: a missing entity has no relations or spec
-to inspect. The membership-filtered scenario therefore disables this feature.
-Catalog permissions still determine which entities can be retrieved. Neither a
+Normal results use catalog-side search and filtering. Exact reference lookups
+apply the same filter. A typed reference to an entity that exists but does not
+match the filter appears as a disabled row explaining why, rather than being
+offered or reported as missing. A reference absent from the catalog can only be
+checked against the kind, namespace, and name constraints of the filter, since
+there is no spec or relation to inspect. Catalog permissions still determine which entities can be retrieved. Neither a
 picker filter nor the missing-reference option is an authorization boundary.
 
 This does not add entity references to the catalog search index: a partial full
