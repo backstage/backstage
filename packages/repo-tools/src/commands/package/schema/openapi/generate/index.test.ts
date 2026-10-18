@@ -108,4 +108,40 @@ describe('generateOpenApiSchema', () => {
       command({ watch: true, clientPackage: 'test123' }),
     ]);
   });
+
+  it('should exit with an error after all generators finish if one fails', async () => {
+    let clientFinished = false;
+    const generateClientMock = jest.fn(async () => {
+      await new Promise(r => setTimeout(r, 100));
+      clientFinished = true;
+    });
+    const generateServerMock = jest.fn(async () => {
+      throw new Error('lint failed');
+    });
+    const exitMock = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as () => never);
+    const errorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    jest.resetModules();
+    jest.doMock('./client', () => ({ command: generateClientMock }));
+    jest.doMock('./server', () => ({ command: generateServerMock }));
+    const {
+      default: { command },
+    } = (await import('./index')) as unknown as {
+      default: typeof import('./index');
+    };
+    await command({ clientPackage: 'test123', server: true });
+
+    expect(generateClientMock).toHaveBeenCalledTimes(1);
+    expect(generateServerMock).toHaveBeenCalledTimes(1);
+    expect(clientFinished).toBe(true);
+    expect(exitMock).toHaveBeenCalledWith(1);
+    expect(errorMock).toHaveBeenCalledWith(
+      expect.stringContaining('lint failed'),
+    );
+
+    exitMock.mockRestore();
+    errorMock.mockRestore();
+  });
 });

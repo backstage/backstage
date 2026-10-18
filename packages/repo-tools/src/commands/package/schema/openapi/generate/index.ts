@@ -53,7 +53,15 @@ export async function command(opts: OptionValues) {
     if (opts.server) {
       promises.push(generateServer(options, opts.serverAdditionalProperties));
     }
-    await Promise.all(promises);
+    // Let all generators finish before reporting a failure, so that one
+    // failing generator doesn't exit the process while another is running.
+    const results = await Promise.allSettled(promises);
+    const failure = results.find(
+      (r): r is PromiseRejectedResult => r.status === 'rejected',
+    );
+    if (failure) {
+      throw failure.reason;
+    }
   };
 
   if (opts.watch) {

@@ -15,6 +15,7 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { loadYaml } from '../../../../../lib/yaml';
@@ -26,7 +27,7 @@ import {
   OUTPUT_PATH,
   TS_SCHEMA_PATH,
 } from '../../../../../lib/openapi/constants';
-import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { deduplicateImportsInDirectory } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
 import {
   getOpenApiGeneratorKey,
@@ -139,12 +140,7 @@ async function generate(
   );
 
   // Deduplicate imports in generated files
-  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
-  for (const file of generatedFiles) {
-    if (file.endsWith('.ts')) {
-      deduplicateImports(resolve(resolvedOutputDirectory, file));
-    }
-  }
+  deduplicateImportsInDirectory(resolvedOutputDirectory);
 
   await exec(
     `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
@@ -200,8 +196,7 @@ export async function command(
       console.log(chalk.red(err.message));
       console.groupEnd();
     } else {
-      console.log(chalk.red(err.message));
-      console.log(chalk.red(`OpenAPI server stub generation failed.`));
+      throw new ForwardedError('OpenAPI server stub generation failed', err);
     }
   }
 }

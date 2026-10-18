@@ -15,6 +15,7 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve } from 'node:path';
@@ -23,7 +24,7 @@ import {
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
-import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { deduplicateImportsInDirectory } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
 import {
   getOpenApiGeneratorKey,
@@ -85,6 +86,9 @@ async function generate(
     },
   );
 
+  // Deduplicate imports in generated files
+  deduplicateImportsInDirectory(resolvedOutputDirectory);
+
   const parentDirectory = resolve(resolvedOutputDirectory, '..');
 
   await fs.writeFile(
@@ -102,14 +106,6 @@ async function generate(
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
-  }
-
-  // Deduplicate imports in generated files
-  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
-  for (const file of generatedFiles) {
-    if (file.endsWith('.ts')) {
-      deduplicateImports(resolve(resolvedOutputDirectory, file));
-    }
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
@@ -149,8 +145,7 @@ export async function command(
       console.log(chalk.red(err.message));
       console.groupEnd();
     } else {
-      console.log(chalk.red(`Client generation failed.`));
-      console.log(chalk.red(err.message));
+      throw new ForwardedError('OpenAPI client generation failed', err);
     }
   }
 }

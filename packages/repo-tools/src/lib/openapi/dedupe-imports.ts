@@ -15,6 +15,7 @@
  */
 
 import fs from 'node:fs';
+import { join } from 'node:path';
 
 /**
  * Removes duplicate import and export statements from TypeScript/JavaScript files.
@@ -71,4 +72,21 @@ export function deduplicateImports(filePath: string): void {
   }
 
   fs.writeFileSync(filePath, result.join('\n'));
+}
+
+/**
+ * Removes duplicate import and export statements from all TypeScript files in
+ * a directory, including files in nested directories.
+ *
+ * @param dirPath - Absolute path to the directory to process
+ */
+export function deduplicateImportsInDirectory(dirPath: string): void {
+  for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    const entryPath = join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      deduplicateImportsInDirectory(entryPath);
+    } else if (entry.isFile() && entry.name.endsWith('.ts')) {
+      deduplicateImports(entryPath);
+    }
+  }
 }
