@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { entityRefCandidates } from './entityRefCandidates';
 
 describe('entityRefCandidates', () => {
@@ -61,6 +62,22 @@ describe('entityRefCandidates', () => {
     expect(
       entityRefCandidates('user:default/freben', {
         catalogFilter: [{ kind: 'Group' }, { 'spec.type': 'team' }],
+      }),
+    ).toEqual(['user:default/freben']);
+  });
+
+  it('treats existence sentinels in filter lists like the catalog does', () => {
+    expect(
+      entityRefCandidates('freben', {
+        catalogFilter: { kind: [CATALOG_FILTER_EXISTS] },
+        defaultKind: 'User',
+      }),
+    ).toEqual(['user:default/freben']);
+    expect(
+      entityRefCandidates('user:default/freben', {
+        catalogFilter: {
+          'metadata.namespace': ['other', CATALOG_FILTER_EXISTS],
+        },
       }),
     ).toEqual(['user:default/freben']);
   });

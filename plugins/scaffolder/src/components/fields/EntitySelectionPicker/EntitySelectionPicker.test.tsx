@@ -571,6 +571,68 @@ describe('EntitySelectionPicker', () => {
     expect(missing).not.toHaveAttribute('aria-disabled', 'true');
   });
 
+  it('resolves typed references without missing choices and outside the filter identity', async () => {
+    const team: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: { name: 'team' },
+    };
+    const { onChange } = await setup({ catalogFilter: { kind: 'User' } }, [
+      entity,
+      team,
+    ]);
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'user:default/freben');
+    await userEvent.click(
+      await screen.findByRole('row', { name: /Fredrik Adelöw/ }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'group:default/team');
+    const row = await screen.findByRole('row', { name: /team/ });
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.type(screen.getByRole('searchbox'), 'x');
+    expect(await screen.findByText('No matching entities')).toBeInTheDocument();
+  });
+
+  it('keeps saved selections outside the filter removable but not reselectable', async () => {
+    const { onChange } = await setup(
+      {
+        multiple: true,
+        value: ['user:default/freben'],
+        catalogFilter: {
+          kind: 'User',
+          'spec.profile.email': CATALOG_FILTER_EXISTS,
+        },
+      },
+      [entity],
+    );
+    await screen.findByRole('link', { name: 'Fredrik Adelöw' });
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const row = await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove Fredrik Adelöw' }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith([]);
+    expect(row).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(row);
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('lets an input method cancel composition with Escape without closing', async () => {
+    await setup();
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const search = screen.getByRole('searchbox');
+    await userEvent.type(search, 'fre');
+    fireEvent.keyDown(search, { key: 'Escape', isComposing: true });
+    expect(screen.getByRole('searchbox')).toHaveValue('fre');
+    fireEvent.keyDown(search, { key: 'Escape' });
+    await waitFor(() =>
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument(),
+    );
+  });
+
   it('waits for the first reference lookup before showing choices or an empty result', async () => {
     const { getEntitiesByRefs } = await setup(
       { allowMissingEntities: true },

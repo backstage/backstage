@@ -23,25 +23,35 @@ import {
 
 const validators = makeValidator();
 
-export function entityRefCandidates(
+type CandidateOptions = {
+  catalogFilter?: EntityFilterQuery;
+  defaultKind?: string;
+  defaultNamespace?: string;
+};
+
+function filterList(catalogFilter?: EntityFilterQuery) {
+  return catalogFilter ? [catalogFilter].flat() : [{}];
+}
+
+/**
+ * Valid entity references that the input could mean, using the filter only to
+ * infer which kinds a bare name may have.
+ */
+export function parseEntityRefCandidates(
   input: string,
-  options: {
-    catalogFilter?: EntityFilterQuery;
-    defaultKind?: string;
-    defaultNamespace?: string;
-  },
+  options: CandidateOptions,
 ): string[] {
   const text = input.trim();
   if (!text) return [];
-  const filters = options.catalogFilter ? [options.catalogFilter].flat() : [{}];
-  const kindSets = filters.map(filter => {
+  const kindSets = filterList(options.catalogFilter).map(filter => {
     const value = Object.entries(filter).find(
       ([key]) => key.toLocaleLowerCase('en-US') === 'kind',
     )?.[1];
-    return typeof value === 'string' || Array.isArray(value)
-      ? [value]
-          .flat()
-          .filter((kind): kind is string => typeof kind === 'string')
+    const values = [value ?? []].flat();
+    // Only a list of plain strings is a finite set; an existence sentinel is not.
+    return value !== undefined &&
+      values.every((kind): kind is string => typeof kind === 'string')
+      ? values
       : undefined;
   });
   const knownKinds = kindSets.every(kinds => kinds !== undefined)
@@ -65,35 +75,52 @@ export function entityRefCandidates(
             !validators.isValidEntityName(ref.name)
           )
             return [];
-          // Honor identity constraints, without pretending that a missing entity
-          // has spec fields or relations with which to evaluate other filters.
-          const identity: Record<string, string> = {
-            kind: ref.kind,
-            'metadata.namespace': ref.namespace,
-            'metadata.name': ref.name,
-          };
-          if (
-            !filters.some(filter =>
-              Object.entries(filter).every(([key, value]) => {
-                const actual = identity[key.toLocaleLowerCase('en-US')];
-                if (!actual || typeof value === 'symbol') return true;
-                return [value]
-                  .flat()
-                  .some(
-                    expected =>
-                      typeof expected === 'string' &&
-                      expected.toLocaleLowerCase('en-US') ===
-                        actual.toLocaleLowerCase('en-US'),
-                  );
-              }),
-            )
-          )
-            return [];
           return [stringifyEntityRef(ref)];
         } catch {
           return [];
         }
       }),
     ),
+  );
+}
+
+/**
+ * Whether a reference satisfies the kind, namespace, and name constraints of a
+ * filter. Other fields cannot be evaluated without the entity itself.
+ */
+export function matchesFilterIdentity(
+  ref: string,
+  catalogFilter?: EntityFilterQuery,
+): boolean {
+  const { kind, namespace, name } = parseEntityRef(ref);
+  const identity: Record<string, string> = {
+    kind,
+    'metadata.namespace': namespace,
+    'metadata.name': name,
+  };
+  return filterList(catalogFilter).some(filter =>
+    Object.entries(filter).every(([key, value]) => {
+      const actual = identity[key.toLocaleLowerCase('en-US')];
+      if (!actual) return true;
+      const values = [value].flat();
+      // Like the catalog, an existence sentinel anywhere in the list matches.
+      if (values.some(expected => typeof expected === 'symbol')) return true;
+      return values.some(
+        expected =>
+          typeof expected === 'string' &&
+          expected.toLocaleLowerCase('en-US') ===
+            actual.toLocaleLowerCase('en-US'),
+      );
+    }),
+  );
+}
+
+/** References that the input could mean and that the filter could accept. */
+export function entityRefCandidates(
+  input: string,
+  options: CandidateOptions,
+): string[] {
+  return parseEntityRefCandidates(input, options).filter(ref =>
+    matchesFilterIdentity(ref, options.catalogFilter),
   );
 }

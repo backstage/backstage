@@ -22,7 +22,10 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { entityRefCandidates } from './entityRefCandidates';
+import {
+  matchesFilterIdentity,
+  parseEntityRefCandidates,
+} from './entityRefCandidates';
 import {
   EntitySelectionOption,
   referenceLabel,
@@ -46,7 +49,7 @@ export function useEntitySelectionOptions(props: {
 }) {
   const catalogApi = useApi(catalogApiRef);
   const presentationApi = useApi(entityPresentationApiRef);
-  const { catalogFilter, enabled } = props;
+  const { allowMissingEntities, catalogFilter, enabled } = props;
   const [input, setInput] = useState({ text: '', revision: 0 });
   const searchText = input.text;
   const inputRef = useRef('');
@@ -74,9 +77,8 @@ export function useEntitySelectionOptions(props: {
   const [selectedOptions, setSelectedOptions] = useState<
     EntitySelectionOption[]
   >([]);
-  const refs = props.allowMissingEntities
-    ? entityRefCandidates(searchText, props)
-    : [];
+  // Typed references are always resolved, even when missing ones are not offered.
+  const refs = parseEntityRefCandidates(searchText, props);
   const refsKey = refs.join('\n');
   const requestKey = `${input.revision}\n${refsKey}`;
 
@@ -91,6 +93,42 @@ export function useEntitySelectionOptions(props: {
       };
     },
     [presentationApi],
+  );
+
+  /**
+   * Resolve references against the catalog. One that exists but fails the
+   * field's filter is marked unavailable, rather than offered or called missing.
+   * Absent references are kept only when `keepMissing` allows them.
+   */
+  const lookup = useCallback(
+    async (
+      entityRefs: string[],
+      keepMissing: (ref: string) => boolean,
+    ): Promise<EntitySelectionOption[]> => {
+      if (!entityRefs.length) return [];
+      const [matching, existing] = await Promise.all([
+        catalogApi.getEntitiesByRefs({
+          entityRefs,
+          ...(catalogFilter ? { filter: catalogFilter } : {}),
+        }),
+        catalogFilter
+          ? catalogApi.getEntitiesByRefs({ entityRefs })
+          : undefined,
+      ]);
+      const rows = await Promise.all(
+        entityRefs.map(async (ref, index) => {
+          const match = matching.items[index];
+          if (match) return present(match);
+          const other = existing?.items[index];
+          if (other) return { ...(await present(other)), unavailable: true };
+          return keepMissing(ref)
+            ? { ref, label: referenceLabel(ref), missing: true }
+            : undefined;
+        }),
+      );
+      return rows.filter((row): row is EntitySelectionOption => !!row);
+    },
+    [catalogApi, catalogFilter, present],
   );
 
   const setSearchText = useCallback(
@@ -120,33 +158,6 @@ export function useEntitySelectionOptions(props: {
       status: 'loading',
       loadMoreError: false,
     }));
-    /**
-     * Resolve typed references. A reference that exists but fails the field's
-     * filter is shown as unavailable, rather than offered or reported missing.
-     */
-    async function lookupExactRefs(
-      entityRefs: string[],
-    ): Promise<EntitySelectionOption[]> {
-      if (!entityRefs.length) return [];
-      const [matching, existing] = await Promise.all([
-        catalogApi.getEntitiesByRefs({
-          entityRefs,
-          ...(catalogFilter ? { filter: catalogFilter } : {}),
-        }),
-        catalogFilter
-          ? catalogApi.getEntitiesByRefs({ entityRefs })
-          : undefined,
-      ]);
-      return Promise.all(
-        entityRefs.map(async (ref, index) => {
-          const match = matching.items[index];
-          if (match) return present(match);
-          const other = existing?.items[index];
-          if (other) return { ...(await present(other)), unavailable: true };
-          return { ref, label: referenceLabel(ref), missing: true };
-        }),
-      );
-    }
     const load = async () => {
       try {
         const [result, exactRows] = await Promise.all([
@@ -169,7 +180,11 @@ export function useEntitySelectionOptions(props: {
             orderFields: [{ field: 'metadata.name', order: 'asc' }],
             totalItems: 'exclude',
           }),
-          lookupExactRefs(exactRefs),
+          lookup(
+            exactRefs,
+            ref =>
+              allowMissingEntities && matchesFilterIdentity(ref, catalogFilter),
+          ),
         ]);
         const catalogRows = await Promise.all(result.items.map(present));
         // Both sources belong to this request. Prefer the catalog's presentation
@@ -202,10 +217,12 @@ export function useEntitySelectionOptions(props: {
       invalidate();
     };
   }, [
+    allowMissingEntities,
     catalogApi,
     catalogFilter,
     enabled,
     invalidate,
+    lookup,
     present,
     refsKey,
     requestKey,
@@ -283,19 +300,16 @@ export function useEntitySelectionOptions(props: {
     );
     const load = async () => {
       try {
-        const response = await catalogApi.getEntitiesByRefs({ entityRefs });
-        const rows = await Promise.all(
-          entityRefs.map(async (ref, index) =>
-            response.items[index]
-              ? present(response.items[index]!)
-              : { ref, label: referenceLabel(ref), missing: true },
-          ),
-        );
+        // Saved values stay displayable and removable, but are marked
+        // unavailable when they no longer match the filter.
+        const rows = await lookup(entityRefs, () => true);
         if (!cancelled)
           setSelectedOptions(previous =>
             rows.map(row => {
               const known = previous.find(item => item.ref === row.ref);
-              return row.missing && known ? { ...known, missing: true } : row;
+              return row.missing && known
+                ? { ...known, unavailable: undefined, missing: true }
+                : row;
             }),
           );
       } catch {
@@ -306,7 +320,7 @@ export function useEntitySelectionOptions(props: {
     return () => {
       cancelled = true;
     };
-  }, [catalogApi, present, selectionKey]);
+  }, [lookup, selectionKey]);
 
   let loadingState = state.status;
   if (!enabled) {

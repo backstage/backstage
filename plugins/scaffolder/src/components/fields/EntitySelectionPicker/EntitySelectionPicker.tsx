@@ -170,6 +170,12 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
             <div
               onKeyDownCapture={event => {
                 if (event.key === 'Escape') {
+                  // Let an input method cancel its composition, but keep the
+                  // overlay from treating that Escape as a dismissal.
+                  if (event.nativeEvent.isComposing) {
+                    event.stopPropagation();
+                    return;
+                  }
                   event.preventDefault();
                   event.stopPropagation();
                   setIsOpen(false);
