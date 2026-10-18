@@ -136,10 +136,13 @@ describe('EntityLayout', () => {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
           '/catalog': rootRouteRef,
         },
+        components: {
+          NotFoundErrorPage: () => <div>Entity not found page</div>,
+        },
       },
     );
 
-    expect(screen.getByText('Warning: Entity not found')).toBeInTheDocument();
+    expect(screen.getByText('Entity not found page')).toBeInTheDocument();
     expect(screen.queryByText('my-entity')).not.toBeInTheDocument();
     expect(screen.queryByText('tabbed-test-title')).not.toBeInTheDocument();
     expect(screen.queryByText('tabbed-test-content')).not.toBeInTheDocument();
