@@ -112,25 +112,39 @@ describe('AppNav', () => {
     });
   });
 
-  it('should merge legacy nav item metadata when page has no explicit title', async () => {
-    const pageWithoutTitle = PageBlueprint.make({
-      name: 'legacy-plugin',
-      params: {
-        path: '/legacy-plugin',
-        routeRef: mockRouteRef,
-        icon: <span>page icon</span>,
-      },
-    });
+  it.each([true, false])(
+    'merges legacy metadata with page route registration: %s',
+    async registered => {
+      const ref = createRouteRef({ extensionId: 'page:test/legacy-plugin' });
+      const pageWithoutTitle = PageBlueprint.make({
+        name: 'legacy-plugin',
+        params: {
+          path: '/legacy-plugin',
+          ...(registered ? { routeRef: ref } : {}),
+        },
+      });
 
-    renderTestApp({
-      extensions: [pageWithoutTitle, mockLegacyNavItem],
-      config: DEFAULT_CONFIG,
-    });
+      renderTestApp({
+        extensions: [
+          pageWithoutTitle,
+          mockLegacyNavItem.override({
+            factory: () => [
+              legacyNavItemTargetDataRef({
+                title: 'Legacy Nav Title',
+                icon: () => <span>legacy icon</span>,
+                routeRef: { ...ref },
+              }),
+            ],
+          }),
+        ],
+        config: DEFAULT_CONFIG,
+      });
 
-    await waitFor(() => {
-      expect(
-        within(screen.getByRole('navigation')).getByText('Legacy Nav Title'),
-      ).toBeInTheDocument();
-    });
-  });
+      await waitFor(() => {
+        expect(
+          within(screen.getByRole('navigation')).getByText('Legacy Nav Title'),
+        ).toBeInTheDocument();
+      });
+    },
+  );
 });

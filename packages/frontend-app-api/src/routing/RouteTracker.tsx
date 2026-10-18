@@ -50,7 +50,11 @@ const getExtensionContext = (
 
     // If the matched route is the root route (no path), and the pathname is
     // not the path of the homepage, then inherit from the default context.
-    if (routeObject.path === '' && pathname !== '/') {
+    if (
+      routeObject.path === '' &&
+      routeMatch?.pathname === '/' &&
+      pathname !== '/'
+    ) {
       return undefined;
     }
 

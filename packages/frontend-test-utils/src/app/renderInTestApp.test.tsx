@@ -209,18 +209,29 @@ describe('renderInTestApp', () => {
 it.each(['renderInTestApp', 'renderTestApp'])(
   '%s mounts targeted refs from different namespaces',
   helper => {
+    const unused = createExternalRouteRef({ params: ['id'] });
+    const partial = createExternalRouteRef({ params: ['id', 'tab'] });
     const catalog = createRouteRef({ extensionId: 'page:catalog' });
     const scaffolder = createRouteRef({ extensionId: 'page:scaffolder' });
     const Links = () => {
+      const unusedLink = useRouteRef(unused);
+      const partialLink = useRouteRef(partial);
       const catalogLink = useRouteRef({ ...catalog });
       const scaffolderLink = useRouteRef({ ...scaffolder });
       return (
         <div>
-          {catalogLink?.()} and {scaffolderLink?.()}
+          {catalogLink?.()} and {scaffolderLink?.()} and{' '}
+          {unusedLink?.({ id: 'ignored' })} and{' '}
+          {partialLink?.({ id: 'one', tab: 'ignored' })}
         </div>
       );
     };
-    const mountedRoutes = { '/catalog': catalog, '/create': scaffolder };
+    const mountedRoutes = {
+      '/catalog': catalog,
+      '/create': scaffolder,
+      '/unused': unused,
+      '/partial/:id': partial,
+    };
     if (helper === 'renderInTestApp') {
       renderInTestApp(<Links />, { mountedRoutes });
     } else {
@@ -233,6 +244,8 @@ it.each(['renderInTestApp', 'renderTestApp'])(
         ],
       });
     }
-    return screen.findByText('/catalog and /create');
+    return screen.findByText(
+      '/catalog and /create and /unused and /partial/one',
+    );
   },
 );

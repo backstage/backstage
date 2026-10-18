@@ -81,9 +81,13 @@ extensions resolve to `undefined`. Legacy-compatible references also resolve to
 `undefined` when their target is absent, since hybrid apps may mount only some
 of a legacy plugin's pages.
 
+Legacy fallback mounts retain support for unused caller parameters.
+
 ### Defining References with Path Parameters
 
 Route references optionally accept a `params` option, which will require the listed parameter names to be present in the route path. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` parameters, like in this path `/entities/:kind/:namespace/:name`:
+
+A reference can also declare parameters from ancestor routes to build links from outside that route hierarchy. Ancestor parameters that are not declared must instead be available from the current routing context.
 
 ```tsx title="plugins/catalog/src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';

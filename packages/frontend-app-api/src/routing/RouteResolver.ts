@@ -52,6 +52,7 @@ const MAX_CACHED_SOURCE_LOCATIONS = 32;
 function resolveTargetRef(
   targetRouteRef: AnyRouteRef,
   routePaths: Map<RouteRef, string>,
+  routeParents: Map<RouteRef, RouteRef | undefined>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
   routeRefsById: Map<string, RouteRef | SubRouteRef>,
   extensionRoutes: Map<string, RouteRef | undefined>,
@@ -114,26 +115,40 @@ function resolveTargetRef(
     ) {
       throw new Error(`Ambiguous deprecated route mounts for '${extensionId}'`);
     }
-    const mountedRef = hasTarget
+    let mountedRef = hasTarget
       ? extensionRoutes.get(extensionId)
       : fallbackRoutes.get(extensionId);
     if (!mountedRef) {
       return [undefined, ''];
     }
-    const expected = [
-      ...joinPaths(routePaths.get(mountedRef) ?? '', path).matchAll(
-        /:([\w-]+)/g,
-      ),
-    ]
-      .map(match => match[1])
-      .sort();
+    let mountedPath = joinPaths(routePaths.get(mountedRef) ?? '', path);
     const actual = [...params].sort();
-    if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-      throw new Error(
-        `Route reference for '${extensionId}' has parameters [${actual}], but its mounted path requires [${expected}]`,
-      );
+    let expected: string[];
+    for (;;) {
+      expected = [...mountedPath.matchAll(/:([\w-]+)/g)]
+        .map(match => match[1])
+        .sort();
+      if (
+        JSON.stringify(actual) === JSON.stringify(expected) ||
+        // Legacy mounts historically allow callers to supply unused parameters.
+        (!hasTarget &&
+          routeRefType in mountedRef &&
+          expected.every(param => actual.includes(param)))
+      ) {
+        return [mountedRef, mountedPath];
+      }
+      const parent = routeParents.get(mountedRef);
+      if (!parent || expected.some(param => !actual.includes(param))) {
+        break;
+      }
+      // Explicit ancestor parameters belong to the caller's path, rather than
+      // the source location used for scoped navigation.
+      mountedRef = parent;
+      mountedPath = joinPaths(routePaths.get(parent) ?? '', mountedPath);
     }
-    ref = mountedRef;
+    throw new Error(
+      `Route reference for '${extensionId}' has parameters [${actual}], but its mounted path requires [${expected}]`,
+    );
   }
 
   // Find the path that our target route is bound to
@@ -359,6 +374,7 @@ export class RouteResolver implements RouteResolutionApi {
       resolveTargetRef(
         ref,
         this.routePaths,
+        this.routeParents,
         this.routeBindings,
         this.routeRefsById,
         this.extensionRoutes,
@@ -409,6 +425,7 @@ export class RouteResolver implements RouteResolutionApi {
         ? this.routeAliasResolver(anyRouteRef)
         : anyRouteRef,
       this.routePaths,
+      this.routeParents,
       this.routeBindings,
       this.routeRefsById,
       this.extensionRoutes,

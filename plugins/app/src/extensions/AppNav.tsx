@@ -183,6 +183,13 @@ function NavContentRenderer(props: {
       { title: string; icon: IconComponent }
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
+    const navItemsByPath = new Map(
+      props.legacyNavItems.flatMap(item => {
+        const path = tryResolveLink(routeResolutionApi, item.routeRef);
+        return path ? [[path, item] as const] : [];
+      }),
+    );
+
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
     const items = pageNodes.flatMap((node): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
@@ -193,7 +200,12 @@ function NavContentRenderer(props: {
         node.instance.getData(coreExtensionData.routeRef) ??
         createRouteRef({ extensionId: node.spec.id });
 
-      const matchingNavItem = navItemsByRouteRef.get(routeRef);
+      const to = tryResolveLink(routeResolutionApi, routeRef);
+      if (!to) {
+        return [];
+      }
+      const matchingNavItem =
+        navItemsByRouteRef.get(routeRef) ?? navItemsByPath.get(to);
 
       // PageBlueprint resolves title as: config.title ?? params.title ?? plugin.title ?? pluginId
       // We want the priority: page (config/params) -> nav item -> plugin -> pluginId
@@ -227,11 +239,6 @@ function NavContentRenderer(props: {
       }
 
       if (!title || !icon) {
-        return [];
-      }
-
-      const to = tryResolveLink(routeResolutionApi, routeRef);
-      if (!to) {
         return [];
       }
 

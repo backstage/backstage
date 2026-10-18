@@ -87,6 +87,44 @@ describe('RouteTracker', () => {
     jest.clearAllMocks();
   });
 
+  it('keeps context for a nested empty-path extension without a route ref', () => {
+    const routes: BackstageRouteObject[] = [
+      {
+        ...routeObjects[1],
+        children: [
+          {
+            path: '',
+            caseSensitive: false,
+            element: <div />,
+            routeRefs: new Set(),
+            appNode: {
+              spec: {
+                plugin: { id: 'catalog' },
+                extension: { id: 'entity-content:catalog/overview' },
+              },
+            } as AppNode,
+          },
+        ],
+      },
+    ];
+    render(
+      <MemoryRouter initialEntries={['/path/foo/bar']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routes} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attributes: { p1: 'foo', p2: 'bar' },
+        context: {
+          pluginId: 'catalog',
+          extensionId: 'entity-content:catalog/overview',
+        },
+      }),
+    );
+  });
+
   it('should capture the navigate event on load', async () => {
     render(
       <MemoryRouter initialEntries={['/path/foo/bar']}>

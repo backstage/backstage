@@ -20,7 +20,10 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { useEntityStore } from './useEntityStore';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-jest.mock('@backstage/core-plugin-api');
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: jest.fn(),
+}));
 
 const useApi = useApiMocked as jest.Mocked<any>;
 

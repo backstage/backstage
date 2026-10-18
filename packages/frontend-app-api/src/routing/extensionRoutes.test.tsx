@@ -685,3 +685,40 @@ it('validates external override bindings against all registered callers', () => 
     );
   }
 });
+
+it('resolves explicitly inherited parameters without losing scoped routing', () => {
+  const ref = createRouteRef({
+    extensionId: 'page:test/details',
+    params: ['org'],
+  });
+  const scoped = createRouteRef({ extensionId: 'page:test/scoped' });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { details: ref, scoped },
+    extensions: [
+      page('org', '/orgs/:org'),
+      page('details', 'details', { parent: 'page:test/org' }),
+      page('scoped', 'scoped', { parent: 'page:test/org' }),
+    ],
+  });
+  const routes = createSpecializedApp({ features: [app, plugin] }).apis.get(
+    routeResolutionApiRef,
+  )!;
+  expect(routes.resolve(ref)?.({ org: 'one' })).toBe('/orgs/one/details');
+  expect(
+    routes.resolve(
+      { ...ref },
+      { sourcePath: '/orgs/old/details' },
+    )?.({ org: 'new' }),
+  ).toBe('/orgs/new/details');
+  expect(
+    routes.resolve(createSubRouteRef({ parent: ref, path: '/:tab' }))?.({
+      org: 'one',
+      tab: 'edit',
+    }),
+  ).toBe('/orgs/one/details/edit');
+  expect(routes.resolve(scoped, { sourcePath: '/orgs/one/details' })?.()).toBe(
+    '/orgs/one/scoped',
+  );
+  expect(() => routes.resolve(scoped)).toThrow('has parameters');
+});

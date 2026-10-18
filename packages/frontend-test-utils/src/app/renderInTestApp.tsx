@@ -182,7 +182,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         // Create an actual route ref for the external route, then bind the external ref to it
         routeRef = createRouteRef({
           extensionId: `test-route:test/${encodeURIComponent(path)}`,
-          params: OpaqueExternalRouteRef.toInternal(optionRef).getParams(),
+          params: [...path.matchAll(/:([\w-]+)/g)].map(match => match[1]),
         });
         externalBindings.set(optionRef, routeRef);
       } else {
