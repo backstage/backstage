@@ -50,7 +50,9 @@ export const reactAriaUrls = {
 
 ### External link
 
-Use `target="_blank"` to open links in a new tab.
+Use `external` for links that lead outside of the application. An external
+link icon is shown after the link text, and the link always opens in a new tab
+with `rel="noopener noreferrer"`, regardless of any `target` passed.
 
 <Snippet
   align="center"

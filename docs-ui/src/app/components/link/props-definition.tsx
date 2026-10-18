@@ -17,10 +17,21 @@ export const linkPropDefs: Record<string, PropDef> = {
     values: ['_self', '_blank', '_parent', '_top'],
     description: (
       <>
-        Where to open the link. Use <Chip>_blank</Chip> for external links that
-        open in new tabs.
+        Where to open the link. Ignored when <Chip>external</Chip> is set, as
+        external links always open in a new tab.
       </>
     ),
+  },
+  external: {
+    type: 'boolean',
+    description: (
+      <>
+        Marks the link as leading outside of the application. Shows an external
+        link icon after the link text and always opens the link in a new tab
+        with <Chip>rel="noopener noreferrer"</Chip>.
+      </>
+    ),
+    default: 'false',
   },
   title: {
     type: 'string',

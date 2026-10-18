@@ -4,7 +4,7 @@ export const linkUsageSnippet = `import { Link } from '@backstage/ui';
 
 export const defaultSnippet = `<Link href="/">Sign up for Backstage</Link>`;
 
-export const externalLinkSnippet = `<Link href="#" target="_blank">
+export const externalLinkSnippet = `<Link href="https://backstage.io" external>
   Sign up for Backstage
 </Link>`;
 

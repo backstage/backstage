@@ -17,7 +17,7 @@ export const Default = () => {
 export const ExternalLink = () => {
   return (
     <MemoryRouter>
-      <Link href="https://backstage.io" target="_blank" variant="body-large">
+      <Link href="https://backstage.io" external variant="body-large">
         Sign up for Backstage
       </Link>
     </MemoryRouter>

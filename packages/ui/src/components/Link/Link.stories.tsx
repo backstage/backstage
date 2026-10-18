@@ -54,6 +54,27 @@ export const ExternalLink = meta.story({
   },
 });
 
+export const ExternalLinkComparison = meta.story({
+  render: () => (
+    <Flex gap="4" direction="column">
+      <Link href="/" children="Internal link" />
+      <Link href="https://backstage.io" external children="External link" />
+      <Link
+        href="https://backstage.io"
+        external
+        standalone
+        children="Standalone external link"
+      />
+      <Link
+        href="https://backstage.io"
+        external
+        variant="title-medium"
+        children="Title external link"
+      />
+    </Flex>
+  ),
+});
+
 export const AllVariants = meta.story({
   args: {
     ...Default.input.args,
