@@ -1,0 +1,5 @@
+app:
+  title: Entity selection playground
+  baseUrl: http://localhost:3011
+backend:
+  baseUrl: http://localhost:7007

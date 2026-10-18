@@ -1,0 +1,154 @@
+.root,
+.popover {
+  font-family: var(--bui-font-regular);
+  font-size: var(--bui-font-size-3);
+  color: var(--bui-fg-primary);
+}
+
+.root {
+  display: grid;
+  gap: var(--bui-space-2);
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bui-space-2);
+}
+
+.items[data-layout='list'] {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  max-width: 100%;
+  height: auto;
+  min-height: 26px;
+}
+
+.presentation {
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bui-space-1);
+}
+
+.presentation > svg {
+  flex-shrink: 0;
+}
+
+.heading {
+  font-size: var(--bui-font-size-3);
+  font-weight: var(--bui-font-weight-bold);
+  margin: var(--bui-space-3);
+}
+
+.trigger {
+  width: 100%;
+  padding-inline: 0;
+  font-weight: var(--bui-font-weight-bold);
+}
+
+.trigger > :global(.bui-ButtonContent) {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.popover {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+}
+
+/* The grid owns scrolling, including React Aria's page navigation. */
+.popover > :global(.bui-PopoverContent) {
+  overflow: hidden;
+  display: flex;
+  padding: 0;
+}
+
+.dialog,
+.dialog > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  outline: none;
+}
+
+.search {
+  width: auto;
+  margin: 0 var(--bui-space-3) var(--bui-space-2);
+  flex-shrink: 0;
+}
+
+.list {
+  max-height: 320px;
+  overflow-y: auto;
+  min-height: 0;
+  outline: none;
+}
+
+.list :global(.bui-ListRow[data-focus-visible]) {
+  /* Keep BUI's focus ring inside the edge-to-edge scroll viewport. */
+  outline-offset: -2px;
+}
+
+.list :global(.bui-ListRow[data-selection-mode]:not([data-selected])) {
+  /* Reserve BUI's 1rem checkmark and row gap when no checkmark is rendered. */
+  padding-inline-start: calc(var(--bui-space-2) + 1rem + var(--bui-space-3));
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+.empty {
+  padding: 10px calc(var(--bui-space-3) + var(--bui-space-2));
+}
+
+.detail,
+.status {
+  font-size: var(--bui-font-size-1);
+  color: var(--bui-fg-secondary);
+}
+
+.status {
+  margin: var(--bui-space-2) var(--bui-space-3);
+}
+
+.retry {
+  padding-inline: var(--bui-space-3);
+}
+
+.sentinel {
+  flex-shrink: 0;
+  padding-inline: calc(var(--bui-space-3) + var(--bui-space-2));
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin: var(--bui-space-2) var(--bui-space-3) var(--bui-space-3);
+  flex-shrink: 0;
+}
