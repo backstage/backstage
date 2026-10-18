@@ -32,8 +32,11 @@ import { basename, dirname, resolve as resolvePath } from 'node:path';
  * When it is not, for example when the app package is only installed in the
  * `node_modules` of the backend package, the app package is resolved from the
  * backend package instead, which depends on it. The backend package is found
- * through the entry point of the process and the current working directory,
- * and only `node_modules` directories within the project root are searched.
+ * through the entry point of the process and the current working directory.
+ * From each of these, only `node_modules` directories within its project are
+ * searched. The project is the closest directory with a `pnpm-workspace.yaml`
+ * file or a `package.json` file with workspaces, or otherwise the root that
+ * is found from the working directory.
  *
  * @param appPackageName - The name of the app package, usually `app`.
  * @param paths - Path segments to resolve within the app package.
@@ -75,8 +78,10 @@ export function resolveAppPackagePath(
       }
     }
 
-    const rootDir = targetPaths.rootDir;
+    const searched = new Array<string>();
     for (const startDir of startDirs) {
+      const rootDir = getProjectDir(startDir);
+      searched.push(`${startDir} within ${rootDir}`);
       for (const nodeModulesPath of getNodeModulesPaths(startDir)) {
         if (!isWithin(rootDir, nodeModulesPath)) {
           continue;
@@ -94,9 +99,7 @@ export function resolveAppPackagePath(
 
     error.message = `${
       error.message
-    }\nThe app package was also not found from ${Array.from(startDirs).join(
-      ', ',
-    )} within ${rootDir}`;
+    }\nThe app package was also not found from ${searched.join(', ')}`;
     throw error;
   }
 }
@@ -112,6 +115,33 @@ function getDirectory(path: string): string | undefined {
     return stats.isDirectory() ? path : dirname(path);
   } catch {
     return undefined;
+  }
+}
+
+// The closest directory with a pnpm-workspace.yaml file or a package.json
+// file with workspaces, so that the search does not depend on the working
+// directory when the entry point is known
+function getProjectDir(startDir: string): string {
+  for (let dir = startDir; ; dir = dirname(dir)) {
+    if (isProjectDir(dir)) {
+      return dir;
+    }
+    if (dirname(dir) === dir) {
+      return targetPaths.rootDir;
+    }
+  }
+}
+
+function isProjectDir(dir: string): boolean {
+  if (fs.existsSync(resolvePath(dir, 'pnpm-workspace.yaml'))) {
+    return true;
+  }
+  try {
+    return Boolean(
+      fs.readJsonSync(resolvePath(dir, 'package.json')).workspaces,
+    );
+  } catch {
+    return false;
   }
 }
 
