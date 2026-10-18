@@ -28,6 +28,7 @@ import {
 import { UrlReaderPredicateTuple } from './types';
 import { Readable } from 'node:stream';
 import { ContainerClient } from '@azure/storage-blob';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -117,6 +118,24 @@ describe('parseUrl', () => {
       parseUrl('https://test-account.blob.core.windows.net/'),
     ).toThrow('Invalid Azure Blob Storage URL format');
   });
+
+  it('skips the account name segment of path-style URLs', () => {
+    expect(
+      parseUrl(
+        'http://127.0.0.1:10000/devstoreaccount1/mycontainer/path/to/file.yaml',
+        { pathStyle: true },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      container: 'mycontainer',
+    });
+
+    expect(() =>
+      parseUrl('http://127.0.0.1:10000/devstoreaccount1/', {
+        pathStyle: true,
+      }),
+    ).toThrow('Invalid Azure Blob Storage URL format');
+  });
 });
 
 describe('AzureBlobStorageUrlReader', () => {
@@ -169,6 +188,70 @@ describe('AzureBlobStorageUrlReader', () => {
       expect(
         predicate(new URL('https://wrongaccount.blob.core.windows.net')),
       ).toBe(false);
+    });
+  });
+
+  describe('path-style endpoints', () => {
+    const config = new ConfigReader({
+      integrations: {
+        azureBlobStorage: [
+          {
+            accountName: 'devstoreaccount1',
+            accountKey: 'test-key',
+            endpoint: 'http://127.0.0.1:10000/devstoreaccount1',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('matches URLs under the account path of the endpoint', () => {
+      const [{ predicate }] = AzureBlobStorageUrlReader.factory({
+        config,
+        logger: mockServices.logger.mock(),
+        treeResponseFactory,
+      });
+
+      expect(
+        predicate(
+          new URL('http://127.0.0.1:10000/devstoreaccount1/c/catalog.yaml'),
+        ),
+      ).toBe(true);
+      expect(
+        predicate(new URL('http://127.0.0.1:10000/otheraccount/c/f.yaml')),
+      ).toBe(false);
+      expect(
+        predicate(new URL('http://127.0.0.1:10001/devstoreaccount1/c/f.yaml')),
+      ).toBe(false);
+      expect(
+        predicate(new URL('https://devstoreaccount1.blob.core.windows.net/c')),
+      ).toBe(false);
+    });
+
+    it('reads blobs from the container named after the account segment', async () => {
+      const integrations = ScmIntegrations.fromConfig(config);
+      const createContainerClient = jest.fn(async () =>
+        createMockContainerClient(),
+      );
+      const reader = new AzureBlobStorageUrlReader(
+        DefaultAzureCredentialsManager.fromIntegrations(integrations),
+        integrations.azureBlobStorage.list()[0],
+        { treeResponseFactory, createContainerClient },
+      );
+      mockBlobDownload.mockResolvedValue({
+        readableStreamBody: Readable.from(Buffer.from('kind: Component')),
+      });
+
+      const response = await reader.readUrl(
+        'http://127.0.0.1:10000/devstoreaccount1/mycontainer/dir/catalog-info.yaml',
+      );
+
+      expect(createContainerClient).toHaveBeenCalledWith('mycontainer');
+      expect(mockGetBlobClient).toHaveBeenCalledWith('dir/catalog-info.yaml');
+      expect((await response.buffer()).toString()).toBe('kind: Component');
     });
   });
 

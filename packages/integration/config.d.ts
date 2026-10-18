@@ -86,6 +86,9 @@ export interface Config {
 
       /**
        * Optional endpoint URL for custom domain. Uses default if not provided.
+       * The URL may not contain a path, except for path-style endpoints where
+       * the path is the account name, e.g. "http://127.0.0.1:10000/devstoreaccount1"
+       * for the Azurite emulator.
        * @visibility frontend
        */
       endpoint?: string;

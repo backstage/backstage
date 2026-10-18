@@ -130,8 +130,53 @@ describe('readAzureBlobStorageIntegrationConfig', () => {
     });
 
     expect(() => readAzureBlobStorageIntegrationConfig(config)).toThrow(
-      `invalid azureBlobStorage integration config, endpoints cannot contain path, got 'https://blob.core.windows.net/path'`,
+      `invalid azureBlobStorage integration config, endpoints cannot contain path other than the account name, got 'https://blob.core.windows.net/path'`,
     );
+  });
+
+  it('reads a path-style endpoint whose path is the account name', () => {
+    expect(
+      readAzureBlobStorageIntegrationConfig(
+        buildConfig({
+          endpoint: 'http://127.0.0.1:10000/devstoreaccount1',
+          accountName: 'devstoreaccount1',
+          accountKey: 'someAccountKey',
+        }),
+      ),
+    ).toEqual(
+      expect.objectContaining({
+        host: '127.0.0.1:10000',
+        endpoint: 'http://127.0.0.1:10000/devstoreaccount1',
+        accountName: 'devstoreaccount1',
+      }),
+    );
+
+    expect(() =>
+      readAzureBlobStorageIntegrationConfig(
+        buildConfig({
+          endpoint: 'http://127.0.0.1:10000/devstoreaccount1/',
+          accountName: 'devstoreaccount1',
+        }),
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      readAzureBlobStorageIntegrationConfig(
+        buildConfig({
+          endpoint: 'http://127.0.0.1:10000/devstoreaccount1/container',
+          accountName: 'devstoreaccount1',
+        }),
+      ),
+    ).toThrow('endpoints cannot contain path other than the account name');
+
+    expect(() =>
+      readAzureBlobStorageIntegrationConfig(
+        buildConfig({
+          endpoint: 'http://127.0.0.1:10000/otheraccount',
+          accountName: 'devstoreaccount1',
+        }),
+      ),
+    ).toThrow('endpoints cannot contain path other than the account name');
   });
 
   it('throws error if both accountKey and sasToken are provided', () => {

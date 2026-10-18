@@ -107,9 +107,13 @@ export function readAzureBlobStorageIntegrationConfig(
         `invalid azureBlobStorage integration config, endpoint '${endpoint}' is not a valid URL`,
       );
     }
-    if (pathname !== '/') {
+    // Path-style endpoints, such as the Azurite emulator
+    // (http://127.0.0.1:10000/devstoreaccount1), may only contain the account name.
+    const isAccountPath =
+      pathname === `/${accountName}` || pathname === `/${accountName}/`;
+    if (pathname !== '/' && !isAccountPath) {
       throw new Error(
-        `invalid azureBlobStorage integration config, endpoints cannot contain path, got '${endpoint}'`,
+        `invalid azureBlobStorage integration config, endpoints cannot contain path other than the account name, got '${endpoint}'`,
       );
     }
   } else {

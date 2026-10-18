@@ -42,7 +42,10 @@ import {
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 
-export function parseUrl(url: string): { path: string; container: string } {
+export function parseUrl(
+  url: string,
+  options?: { pathStyle?: boolean },
+): { path: string; container: string } {
   if (!isUrlPathWithoutDotSegments(url)) {
     throw new Error(`Invalid Azure Blob Storage URL format: ${url}`);
   }
@@ -53,6 +56,11 @@ export function parseUrl(url: string): { path: string; container: string } {
     .filter(Boolean)
     .map(decodeURIComponent);
 
+  // Path-style URLs, e.g. from the Azurite emulator, start with the account name
+  if (options?.pathStyle) {
+    pathSegments.shift();
+  }
+
   if (pathSegments.length < 1) {
     throw new Error(`Invalid Azure Blob Storage URL format: ${url}`);
   }
@@ -62,6 +70,21 @@ export function parseUrl(url: string): { path: string; container: string } {
   const path = pathSegments.slice(1).join('/');
 
   return { path, container };
+}
+
+/**
+ * Returns the endpoint if the integration uses a path-style endpoint, where the
+ * account name is the first path segment rather than part of the host, as with
+ * the Azurite emulator (`http://127.0.0.1:10000/devstoreaccount1`).
+ */
+function getPathStyleEndpoint(
+  integration: AzureBlobStorageIntegration,
+): string | undefined {
+  const { endpoint } = integration.config;
+  if (endpoint && new URL(endpoint).pathname !== '/') {
+    return endpoint;
+  }
+  return undefined;
 }
 
 /**
@@ -85,10 +108,11 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
         },
       );
 
-      const predicate = (url: URL) =>
-        url.host.endsWith(
-          `${integrationConfig.config.accountName}.${integrationConfig.config.host}`,
-        );
+      const { accountName, host } = integrationConfig.config;
+      const predicate = getPathStyleEndpoint(integrationConfig)
+        ? (url: URL) =>
+            url.host === host && url.pathname.startsWith(`/${accountName}/`)
+        : (url: URL) => url.host.endsWith(`${accountName}.${host}`);
       return { reader, predicate };
     });
   };
@@ -128,7 +152,8 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     if (accountKey && accountName) {
       const creds = new StorageSharedKeyCredential(accountName, accountKey);
       const blobServiceClient = new BlobServiceClient(
-        `https://${accountName}.${this.integration.config.host}`,
+        getPathStyleEndpoint(this.integration) ??
+          `https://${accountName}.${this.integration.config.host}`,
         creds,
       );
       return blobServiceClient.getContainerClient(containerName);
@@ -155,6 +180,12 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     return blobServiceClient.getContainerClient(containerName);
   }
 
+  #parseUrl(url: string) {
+    return parseUrl(url, {
+      pathStyle: Boolean(getPathStyleEndpoint(this.integration)),
+    });
+  }
+
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
     return response.buffer();
@@ -167,7 +198,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     const { etag, lastModifiedAfter } = options ?? {};
 
     try {
-      const { path, container } = parseUrl(url);
+      const { path, container } = this.#parseUrl(url);
 
       const containerClient = await this.deps.createContainerClient(container);
       const blobClient = containerClient.getBlobClient(path);
@@ -210,7 +241,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
     try {
-      const { path, container } = parseUrl(url);
+      const { path, container } = this.#parseUrl(url);
 
       const containerClient = await this.deps.createContainerClient(container);
       const blobs = containerClient.listBlobsFlat({ prefix: path });
@@ -251,7 +282,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
-    const { path } = parseUrl(url);
+    const { path } = this.#parseUrl(url);
 
     if (path.match(/[*?]/)) {
       throw new Error(
