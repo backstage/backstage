@@ -18,7 +18,11 @@ import {
   metricsServiceMock,
   tracingServiceMock,
 } from '@backstage/backend-test-utils/alpha';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  NotAllowedError,
+  ResponseError,
+} from '@backstage/errors';
 import express from 'express';
 import request from 'supertest';
 import { McpService } from '../services/McpService';
@@ -65,6 +69,43 @@ describe('createStreamableRouter', () => {
     expect(forbidden.body).toEqual({
       jsonrpc: '2.0',
       error: { code: -32000, message: 'Forbidden' },
+      id: null,
+    });
+
+    const responseError = await ResponseError.fromResponse({
+      ok: false,
+      status: 404,
+      statusText: 'Not Found',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      redirected: false,
+      type: 'default',
+      url: 'http://localhost/api/catalog/.backstage/actions/v1/actions',
+      text: async () =>
+        JSON.stringify({
+          error: { name: 'NotFoundError', message: 'No such action' },
+          request: { method: 'GET', url: '/.backstage/actions/v1/actions' },
+          response: { statusCode: 404 },
+        }),
+    });
+    mcpService.getServer.mockImplementationOnce(() => {
+      throw responseError;
+    });
+    const notFound = await request(app).post('/').send({});
+    expect(notFound.status).toBe(404);
+    expect(notFound.body).toEqual({
+      jsonrpc: '2.0',
+      error: { code: -32000, message: 'Not Found' },
+      id: null,
+    });
+
+    mcpService.getServer.mockImplementationOnce(() => {
+      throw Object.assign(new Error('unavailable'), { statusCode: 503 });
+    });
+    const unavailable = await request(app).post('/').send({});
+    expect(unavailable.status).toBe(503);
+    expect(unavailable.body).toEqual({
+      jsonrpc: '2.0',
+      error: { code: -32603, message: 'Service Unavailable' },
       id: null,
     });
 

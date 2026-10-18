@@ -15,6 +15,7 @@
  */
 import PromiseRouter from 'express-promise-router';
 import { Router } from 'express';
+import { STATUS_CODES } from 'node:http';
 import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
@@ -180,6 +181,29 @@ function getErrorResponse(error: Error): {
   code: number;
   message: string;
 } {
+  // Prefer an explicit status code on the error, for example from a
+  // ResponseError when a call to another backend fails.
+  const { statusCode, statusText } = error as {
+    statusCode?: unknown;
+    statusText?: unknown;
+  };
+  if (
+    typeof statusCode === 'number' &&
+    Number.isInteger(statusCode) &&
+    statusCode >= 400 &&
+    statusCode <= 599
+  ) {
+    const message =
+      (typeof statusText === 'string' && statusText) ||
+      STATUS_CODES[statusCode] ||
+      'Request failed';
+    return {
+      status: statusCode,
+      code: statusCode >= 500 ? -32603 : -32000,
+      message,
+    };
+  }
+
   // Match on error names rather than using instanceof, so that errors from
   // other copies of @backstage/errors are handled too.
   switch (error.name) {
