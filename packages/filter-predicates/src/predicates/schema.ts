@@ -59,9 +59,11 @@ export function createZodV3FilterPredicateSchema(
     ]),
   ) as zodV3.ZodType<FilterPredicate>;
 
+  // The logical operators are deliberately not shared with predicateSchema,
+  // since overlapping recursive branches make validation exponential
   const anyPredicateSchema = z.lazy(() =>
     z.union([
-      predicateSchema,
+      expressionSchema,
       primitiveSchema,
       z.object({ $all: z.array(anyPredicateSchema) }).strict(),
       z.object({ $any: z.array(anyPredicateSchema) }).strict(),
@@ -120,9 +122,11 @@ export function createZodV4FilterPredicateSchema(): zodV4.ZodType<
     ]),
   ) as zodV4.ZodType<FilterPredicate, FilterPredicate>;
 
+  // The logical operators are deliberately not shared with predicateSchema,
+  // since overlapping recursive branches make validation exponential
   const anyPredicateSchema = zodV4.lazy(() =>
     zodV4.union([
-      predicateSchema,
+      expressionSchema,
       primitiveSchema,
       zodV4.object({ $all: zodV4.array(anyPredicateSchema) }).strict(),
       zodV4.object({ $any: zodV4.array(anyPredicateSchema) }).strict(),

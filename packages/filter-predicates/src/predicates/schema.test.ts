@@ -272,5 +272,17 @@ describe('parseFilterPredicate', () => {
         );
       },
     );
+
+    it('should reject deeply nested invalid predicates in linear time', () => {
+      // Overlapping recursive branches in the schema would make this take
+      // exponential time in the nesting depth
+      let predicate: unknown = null;
+      for (let i = 0; i < 30; i++) {
+        predicate = { $not: { a: { $contains: predicate } } };
+      }
+      expect(() => parseFilterPredicate(predicate)).toThrow(
+        /Invalid filter predicate/,
+      );
+    });
   });
 });
