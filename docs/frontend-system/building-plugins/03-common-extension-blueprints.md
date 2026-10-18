@@ -19,6 +19,8 @@ An API extension is used to add or override [Utility API factories](../utility-a
 
 Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes. Pages automatically inherit the plugin's `title` and `icon` as defaults, which can be overridden per-page via `PageBlueprint` params.
 
+The default sidebar discovers pages that have a title, an icon, and a route that can be opened without parameters.
+
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)

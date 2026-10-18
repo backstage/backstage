@@ -19,6 +19,7 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   createExtension,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
@@ -56,6 +57,48 @@ const mockLegacyNavItem = createExtension({
 });
 
 describe('AppNav', () => {
+  it('discovers pages without route refs while excluding pages without icons', async () => {
+    renderTestApp({
+      features: [
+        createFrontendPlugin({
+          pluginId: 'auth',
+          title: 'Authentication',
+          extensions: [
+            PageBlueprint.make({
+              params: {
+                path: '/oauth2',
+                loader: async () => <div>OAuth page content</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+      extensions: [
+        PageBlueprint.make({
+          params: {
+            path: '/visible',
+            title: 'Visible Page',
+            icon: <span>visible icon</span>,
+          },
+        }),
+      ],
+      initialRouteEntries: ['/oauth2'],
+      config: DEFAULT_CONFIG,
+    });
+
+    expect(await screen.findByText('OAuth page content')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('link', { name: 'Visible Page' }),
+    ).toHaveAttribute('href', '/visible');
+    expect(
+      within(
+        screen.getByRole('link', { name: 'Visible Page' }).closest('nav')!,
+      ).queryByRole('link', {
+        name: 'Authentication',
+      }),
+    ).not.toBeInTheDocument();
+  });
+
   it('should show a nav item for a page with title and icon', async () => {
     renderTestApp({
       extensions: [mockPage],

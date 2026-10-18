@@ -16,6 +16,7 @@
 
 import {
   createExtension,
+  createRouteRef,
   coreExtensionData,
   createExtensionInput,
   routeResolutionApiRef,
@@ -188,10 +189,9 @@ function NavContentRenderer(props: {
         return [];
       }
 
-      const routeRef = node.instance.getData(coreExtensionData.routeRef);
-      if (!routeRef) {
-        return [];
-      }
+      const routeRef =
+        node.instance.getData(coreExtensionData.routeRef) ??
+        createRouteRef({ extensionId: node.spec.id });
 
       const matchingNavItem = navItemsByRouteRef.get(routeRef);
 
