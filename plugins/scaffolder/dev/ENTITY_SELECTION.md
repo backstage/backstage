@@ -45,6 +45,9 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
   explicit User and Group choices. Exact lookups distinguish missing entities
   from entities outside the current page, and errors do not create missing choices.
   An existing entity that fails the field's filter is shown but cannot be chosen.
+  Saved values that fail the filter, or are missing where missing references
+  are not allowed, stay removable but cannot be chosen again. Changing the
+  filter discards rows loaded under the previous one.
 - Picked references are remembered for the rest of the popup session, including
   after deselection, even when absent from the catalog or the current page.
   Clearing the search or reopening makes these references available again.

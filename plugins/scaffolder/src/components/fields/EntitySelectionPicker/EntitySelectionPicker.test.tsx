@@ -620,6 +620,31 @@ describe('EntitySelectionPicker', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
+  it.each([
+    ['missing references are not allowed', {}],
+    [
+      'the reference does not fit the filter',
+      { allowMissingEntities: true, catalogFilter: { kind: 'Group' } },
+    ],
+  ])(
+    'keeps a saved missing reference removable but not reselectable when %s',
+    async (_, props: Partial<EntitySelectionPickerProps>) => {
+      const { onChange } = await setup(
+        { multiple: true, value: ['user:default/ghost'], ...props },
+        [entity],
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+      const row = await screen.findByRole('row', { name: /User ghost/ });
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Remove User ghost' }),
+      );
+      expect(onChange).toHaveBeenLastCalledWith([]);
+      expect(row).toHaveAttribute('aria-disabled', 'true');
+      await userEvent.click(row);
+      expect(onChange).toHaveBeenCalledTimes(1);
+    },
+  );
+
   it('lets an input method cancel composition with Escape without closing', async () => {
     await setup();
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
@@ -899,7 +924,7 @@ describe('EntitySelectionPicker', () => {
         entityRefs: ['user:default/freben'],
       }),
     );
-    expect(screen.getAllByRole('row')).toHaveLength(1);
+    await waitFor(() => expect(screen.getAllByRole('row')).toHaveLength(1));
     expect(screen.queryByText(/Not found in catalog/)).not.toBeInTheDocument();
     getEntitiesByRefs.mockRejectedValueOnce(new Error('Unavailable'));
     fireEvent.change(screen.getByRole('searchbox'), {

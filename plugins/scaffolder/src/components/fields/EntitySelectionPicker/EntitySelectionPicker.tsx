@@ -130,6 +130,14 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     selections,
     open,
   });
+  // Rows remembered under a previous filter must not stay selectable.
+  const { filterKey } = options;
+  const filterKeyRef = useRef(filterKey);
+  useEffect(() => {
+    if (filterKeyRef.current === filterKey) return;
+    filterKeyRef.current = filterKey;
+    if (open) stableRows.beginSession();
+  });
   const setIsOpen = (next: boolean) => {
     if (next && !open && !disabled) stableRows.beginSession();
     setOpen(next && !disabled);

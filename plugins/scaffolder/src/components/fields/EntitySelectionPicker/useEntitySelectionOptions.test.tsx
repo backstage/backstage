@@ -247,3 +247,51 @@ it('waits for presentation work and retains the snapshot when presentation fails
   expect(result.current.snapshot).toBe(committed);
   expect(result.current.loadingState).toBe('error');
 });
+
+it('discards rows from a previous filter, even when the refresh fails', async () => {
+  const user: Entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: { name: 'freben' },
+  };
+  const catalogApi = catalogApiMock({ entities: [user] });
+  const presentationApi = DefaultEntityPresentationApi.create({ catalogApi });
+  const wrapper = ({ children }: PropsWithChildren<{}>) => (
+    <TestApiProvider
+      apis={[
+        [catalogApiRef, catalogApi],
+        [entityPresentationApiRef, presentationApi],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
+  );
+  const { result, rerender } = renderHook(
+    ({ kind }) =>
+      useEntitySelectionOptions({
+        enabled: true,
+        allowMissingEntities: false,
+        catalogFilter: { kind },
+        selectedEntityRefs: [],
+      }),
+    { wrapper, initialProps: { kind: 'User' } },
+  );
+  await waitFor(() =>
+    expect(result.current.snapshot.rows.map(row => row.ref)).toEqual([
+      'user:default/freben',
+    ]),
+  );
+  const userRows = result.current.snapshot;
+
+  // Same filter by value: keep the committed rows while refreshing.
+  rerender({ kind: 'User' });
+  expect(result.current.snapshot).toBe(userRows);
+
+  jest
+    .spyOn(catalogApi, 'queryEntities')
+    .mockRejectedValueOnce(new Error('Unavailable'));
+  rerender({ kind: 'Group' });
+  expect(result.current.snapshot.rows).toEqual([]);
+  await waitFor(() => expect(result.current.loadingState).toBe('error'));
+  expect(result.current.snapshot.rows).toEqual([]);
+});

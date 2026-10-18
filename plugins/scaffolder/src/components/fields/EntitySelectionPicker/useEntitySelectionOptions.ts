@@ -37,6 +37,15 @@ type Snapshot = {
   cursor?: string;
 };
 
+const EMPTY_SNAPSHOT: Snapshot = { search: '', rows: [] };
+
+/** Identifies a filter by value, including its existence sentinels. */
+function filterKeyOf(catalogFilter?: EntityFilterQuery) {
+  return JSON.stringify(catalogFilter ?? null, (_key, value) =>
+    typeof value === 'symbol' ? `@@${value.description}` : value,
+  );
+}
+
 /** Publish a complete search result, never a mixture of independent lookups. */
 export function useEntitySelectionOptions(props: {
   /** Load search results only while the popup is open. */
@@ -49,7 +58,7 @@ export function useEntitySelectionOptions(props: {
 }) {
   const catalogApi = useApi(catalogApiRef);
   const presentationApi = useApi(entityPresentationApiRef);
-  const { allowMissingEntities, catalogFilter, enabled } = props;
+  const { allowMissingEntities, enabled } = props;
   const [input, setInput] = useState({ text: '', revision: 0 });
   const searchText = input.text;
   const inputRef = useRef('');
@@ -61,19 +70,30 @@ export function useEntitySelectionOptions(props: {
     paging.current = false;
     return ++generation.current;
   }, []);
+  // Callers often pass inline filter objects, so depend on the filter's value.
+  const filterKey = filterKeyOf(props.catalogFilter);
+  const filterRef = useRef(props.catalogFilter);
+  if (filterKeyOf(filterRef.current) !== filterKey)
+    filterRef.current = props.catalogFilter;
+  const catalogFilter = filterRef.current;
   const [state, setState] = useState<{
+    /** The filter that produced the snapshot; rows are discarded when it changes. */
+    filterKey: string;
     requestKey?: string;
     generation?: number;
     snapshot: Snapshot;
     status: 'loading' | 'idle' | 'error' | 'loadingMore';
     loadMoreError: boolean;
   }>({
-    snapshot: { search: '', rows: [] },
+    filterKey,
+    snapshot: EMPTY_SNAPSHOT,
     status: 'loading',
     loadMoreError: false,
   });
-  const snapshotRef = useRef(state.snapshot);
-  snapshotRef.current = state.snapshot;
+  const snapshot =
+    state.filterKey === filterKey ? state.snapshot : EMPTY_SNAPSHOT;
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
   const [selectedOptions, setSelectedOptions] = useState<
     EntitySelectionOption[]
   >([]);
@@ -98,12 +118,14 @@ export function useEntitySelectionOptions(props: {
   /**
    * Resolve references against the catalog. One that exists but fails the
    * field's filter is marked unavailable, rather than offered or called missing.
-   * Absent references are kept only when `keepMissing` allows them.
+   * An absent reference is unavailable unless missing references are allowed
+   * and it fits the filter's identity constraints. Unavailable absent rows are
+   * dropped unless `keepUnavailable` is set, as for saved values.
    */
   const lookup = useCallback(
     async (
       entityRefs: string[],
-      keepMissing: (ref: string) => boolean,
+      keepUnavailable: boolean,
     ): Promise<EntitySelectionOption[]> => {
       if (!entityRefs.length) return [];
       const [matching, existing] = await Promise.all([
@@ -116,19 +138,23 @@ export function useEntitySelectionOptions(props: {
           : undefined,
       ]);
       const rows = await Promise.all(
-        entityRefs.map(async (ref, index) => {
+        entityRefs.map(async (ref, index): Promise<EntitySelectionOption> => {
           const match = matching.items[index];
           if (match) return present(match);
           const other = existing?.items[index];
           if (other) return { ...(await present(other)), unavailable: true };
-          return keepMissing(ref)
-            ? { ref, label: referenceLabel(ref), missing: true }
-            : undefined;
+          const row = { ref, label: referenceLabel(ref), missing: true };
+          return allowMissingEntities &&
+            matchesFilterIdentity(ref, catalogFilter)
+            ? row
+            : { ...row, unavailable: true };
         }),
       );
-      return rows.filter((row): row is EntitySelectionOption => !!row);
+      return keepUnavailable
+        ? rows
+        : rows.filter(row => !(row.missing && row.unavailable));
     },
-    [catalogApi, catalogFilter, present],
+    [allowMissingEntities, catalogApi, catalogFilter, present],
   );
 
   const setSearchText = useCallback(
@@ -180,11 +206,7 @@ export function useEntitySelectionOptions(props: {
             orderFields: [{ field: 'metadata.name', order: 'asc' }],
             totalItems: 'exclude',
           }),
-          lookup(
-            exactRefs,
-            ref =>
-              allowMissingEntities && matchesFilterIdentity(ref, catalogFilter),
-          ),
+          lookup(exactRefs, false),
         ]);
         const catalogRows = await Promise.all(result.items.map(present));
         // Both sources belong to this request. Prefer the catalog's presentation
@@ -194,6 +216,7 @@ export function useEntitySelectionOptions(props: {
           if (!rows.has(row.ref)) rows.set(row.ref, row);
         if (current === generation.current)
           setState({
+            filterKey,
             requestKey,
             generation: current,
             snapshot: {
@@ -217,10 +240,10 @@ export function useEntitySelectionOptions(props: {
       invalidate();
     };
   }, [
-    allowMissingEntities,
     catalogApi,
     catalogFilter,
     enabled,
+    filterKey,
     invalidate,
     lookup,
     present,
@@ -231,14 +254,14 @@ export function useEntitySelectionOptions(props: {
   ]);
 
   const loadMore = useCallback(async () => {
-    const { snapshot } = state;
+    const { snapshot: loaded } = state;
     if (
       !enabled ||
       paging.current ||
       state.generation !== generation.current ||
       state.status !== 'idle' ||
       state.requestKey !== requestKey ||
-      !snapshot.cursor
+      !loaded.cursor
     )
       return;
     const current = generation.current;
@@ -250,18 +273,18 @@ export function useEntitySelectionOptions(props: {
     }));
     try {
       const response = await catalogApi.queryEntities({
-        cursor: snapshot.cursor,
+        cursor: loaded.cursor,
         limit: 20,
       });
       const rows = await Promise.all(response.items.map(present));
       if (current !== generation.current) return;
-      const merged = new Map(snapshot.rows.map(row => [row.ref, row]));
+      const merged = new Map(loaded.rows.map(row => [row.ref, row]));
       for (const row of rows)
         if (!merged.has(row.ref)) merged.set(row.ref, row);
       setState(previous => ({
         ...previous,
         snapshot: {
-          ...snapshot,
+          ...loaded,
           rows: [...merged.values()],
           cursor: response.pageInfo.nextCursor,
         },
@@ -302,13 +325,13 @@ export function useEntitySelectionOptions(props: {
       try {
         // Saved values stay displayable and removable, but are marked
         // unavailable when they no longer match the filter.
-        const rows = await lookup(entityRefs, () => true);
+        const rows = await lookup(entityRefs, true);
         if (!cancelled)
           setSelectedOptions(previous =>
             rows.map(row => {
               const known = previous.find(item => item.ref === row.ref);
               return row.missing && known
-                ? { ...known, unavailable: undefined, missing: true }
+                ? { ...known, missing: true, unavailable: row.unavailable }
                 : row;
             }),
           );
@@ -332,7 +355,8 @@ export function useEntitySelectionOptions(props: {
     loadingState = 'loading';
   }
   return {
-    snapshot: state.snapshot,
+    filterKey,
+    snapshot,
     selectedOptions,
     searchText,
     setSearchText,
@@ -340,7 +364,7 @@ export function useEntitySelectionOptions(props: {
     loadMore,
     loadingState,
     loading: loadingState === 'loading' || loadingState === 'loadingMore',
-    hasMore: enabled && Boolean(state.snapshot.cursor),
+    hasMore: enabled && Boolean(snapshot.cursor),
     loadMoreError: state.loadMoreError,
   };
 }
