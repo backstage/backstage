@@ -33,6 +33,7 @@ describe('resolveAppPackagePath', () => {
         JSON.stringify({ name: appPackageName }),
       'project/packages/backend/src/index.js': '',
       'project/packages/backend/index.mjs': '',
+      'project/pnpm-workspace.yaml': '',
       // A copy outside of the project, which must not be used
       [`outside/node_modules/${missingAppPackageName}/package.json`]:
         JSON.stringify({ name: missingAppPackageName }),
@@ -138,6 +139,14 @@ describe('resolveAppPackagePath', () => {
     );
     expect(() => resolveAppPackagePath(missingAppPackageName, 'dist')).toThrow(
       `within ${rootDir}`,
+    );
+
+    // The project of the entry point is searched even when the working
+    // directory, and the root found from it, are outside of that project
+    overrideTargetPaths(mockDir.resolve('outside'));
+    process.argv = [argv[0], resolvePath(backendDir, 'index.mjs')];
+    expect(resolveAppPackagePath(appPackageName, 'dist')).toBe(
+      resolvePath(expectedAppDir, 'dist'),
     );
   });
 });
