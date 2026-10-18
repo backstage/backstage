@@ -113,7 +113,7 @@ A `PackageManager` instance is bound to one workspace root, because that is what
 
 `detectPackageManager()` in `@backstage/cli-node` picks the package manager for a given workspace root. The order is:
 
-1. The `packageManager` field in the root `package.json`, when it names `yarn` or `pnpm`.
+1. The `packageManager` field in the root `package.json`, when it names `yarn` or `pnpm`. Without that field, the `devEngines.packageManager` field, which pnpm also reads. When it lists several package managers, the first supported one counts.
 2. `pnpm-lock.yaml` in the workspace root: pnpm.
 3. `yarn.lock` in the workspace root: Yarn.
 4. `pnpm-workspace.yaml` in the workspace root: pnpm.
@@ -124,7 +124,9 @@ A project that names its package manager is taken at its word. A lockfile is evi
 
 A project with both a `pnpm-lock.yaml` and a `yarn.lock` file gets a warning about the extra lockfile. When the root `package.json` names a supported package manager, step 1 has already decided and the warning is the only effect. Otherwise step 2 applies and the project is treated as pnpm.
 
-A `packageManager` value other than `yarn` or `pnpm` does not select anything. Detection continues with the files in the workspace root and warns that the field was ignored. When there is nothing else to go on, detection fails with an error that names the field, rather than falling back to Yarn and writing a `yarn.lock` into a project that picked npm or Bun. A project that declares an unsupported package manager but has a `yarn.lock` keeps working as it does today.
+When `packageManager` and `devEngines.packageManager` name different supported package managers, `packageManager` decides and a warning names both.
+
+A `packageManager` or `devEngines.packageManager` value other than `yarn` or `pnpm` does not select anything. Detection continues with the files in the workspace root and warns that the field was ignored. When there is nothing else to go on, detection fails with an error that names the field, rather than falling back to Yarn and writing a `yarn.lock` into a project that picked npm or Bun. A project that declares an unsupported package manager but has a `yarn.lock` keeps working as it does today.
 
 The result is cached per workspace root. Warnings from detection go to stderr, so the JSON output of commands such as `info --format json` stays clean.
 
@@ -154,9 +156,9 @@ The `PackageManager` interface in `@backstage/cli-node` grows to cover what the 
 
 `install()` acts on the whole workspace, and the API says so rather than leaving it to the caller's working directory. Neither package manager scopes an install to the directory it runs in: `pnpm install` inside a workspace project installs every project in that workspace, and Yarn behaves the same way. So `install()` takes no `cwd`. It runs at the workspace root the instance is bound to, and a caller that changes directory cannot accidentally install a whole monorepo.
 
-Its options are `immutable`, `offline`, `filter`, plus `env` and output callbacks. `immutable: true` gives `--immutable` or `--frozen-lockfile`. `immutable: false` forces a mutable install where the package manager would default to an immutable one, such as in CI. Yarn gets `YARN_ENABLE_IMMUTABLE_INSTALLS=false` and pnpm gets `--no-frozen-lockfile`. `offline: true` gives `--offline` for pnpm and Yarn classic, and `YARN_ENABLE_NETWORK=0` for modern Yarn. `package bundle` uses it.
+Its options are `immutable` and `offline`, plus `env` and output callbacks. `immutable: true` gives `--immutable` or `--frozen-lockfile`. `immutable: false` forces a mutable install where the package manager would default to an immutable one, such as in CI. Yarn gets `YARN_ENABLE_IMMUTABLE_INSTALLS=false` and pnpm gets `--no-frozen-lockfile`. `offline: true` gives `--offline` for pnpm and Yarn classic, and `YARN_ENABLE_NETWORK=0` for modern Yarn. `package bundle` uses it.
 
-`filter` narrows the install to named workspace projects. pnpm gets `--filter <pkg>...`. Yarn has no equivalent that works without the workspace-tools plugin, so its implementation rejects a `filter` it cannot honor instead of quietly installing everything. No command in this BEP passes it; the option exists so that scoping is a request the package manager either honors or refuses.
+There is no option to limit an install to some workspace packages. No command needs one, and pnpm's `--filter <pkg>...` follows `link:` dependencies into bundled packages such as the app, so it would not give a production install of the backend alone.
 
 The methods are used by the CLI modules. `runWorkspaceScript()` has no caller in the CLI yet. The end-to-end test does not use the API. It runs commands in a generated app and keeps its own short list of them per package manager, so it does not depend on `@backstage/cli-node`.
 
@@ -168,7 +170,11 @@ Every command that calls Yarn today moves to the API.
 
 - `repo test`, `repo lint`, `info`, `new`, and `versions:bump` read the lockfile through `loadLockfile()`. `repo build`, `repo test`, and `repo lint` with `--since` diff the lockfile at a git ref. They use `lockfileName()` to know which file changed. When the changed lockfile belongs to another package manager, when it cannot be read or parsed, or when its workspace entries cannot be named against that same ref, all packages count as changed. See [Importer Names and Historical Lockfiles](#importer-names-and-historical-lockfiles).
 - `versions:bump` and `new` run installs through `install()`. `new` runs `lint --fix` through `runScript()`. Under pnpm, `versions:bump` skips the Yarn plugin update step and updates catalog entries where dependencies use them. See [Version Bumps](#version-bumps).
-- `package build` for backends and `build-workspace` copy the lockfile named by `lockfileName()` into the dist workspace. Under pnpm they also copy `pnpm-workspace.yaml`. Packages are packed with `pack()`. Custom build scripts run through `runScript()`.
+- `package build` for backends and `build-workspace` copy the lockfile named by `lockfileName()` into the dist workspace when there is one, and warn when there is not. Packages are packed with `pack()`. Custom build scripts run through `runScript()`. Under pnpm, the dist workspace must install with `--frozen-lockfile`, so they also:
+  - copy `pnpm-workspace.yaml`, the patch files that its `patchedDependencies` names, and the hooks file that its `pnpmfile` setting names, `.pnpmfile.cjs` by default. A patch file outside the workspace root is copied into the dist workspace and the setting is rewritten to point at the copy.
+  - empty the lockfile entries of bundled packages, such as the app, since the dist workspace drops their dependencies from `package.json`. Yarn does the same through the lockfile update that `yarn workspaces focus` makes.
+  - put back the `workspace:` and `catalog:` ranges that `pnpm pack` replaces with versions. Those ranges match the lockfile, and pnpm would otherwise look workspace packages up in the registry instead of linking them.
+  - add these files to the backend `skeleton.tar.gz`, next to the `package.json` files, so that the image installs from the files of the dist workspace.
 - `repo test` discovers workspace packages through `@manypkg/get-packages`, which reads the globs from `pnpm-workspace.yaml` or from the `workspaces` field as appropriate. Without this, it only tests the root package of a pnpm workspace. `@backstage/cli-node` already depends on that package, so this replaces hand-written glob handling rather than adding any.
 - `repo clean` runs the `clean` script through `runScript()`.
 - `package bundle` supports pnpm. See [Dynamic Plugin Bundles](#dynamic-plugin-bundles).
@@ -181,7 +187,8 @@ pnpm workspaces are often driven by a build system, such as Bazel with `rules_js
 
 - No command installs implicitly. `versions:bump` and `new` keep their `--skip-install` flag, and nothing this BEP adds runs an install outside those commands and `package bundle`.
 - Caches can be turned off. The success caches of `repo test` and `repo lint` stay opt-in.
-- A readable lockfile is not a hard requirement. Commands that read the lockfile treat a missing or unreadable one as missing information: `--since` counts every package as changed, and `versions:bump` skips its report of breaking updates.
+- A readable lockfile is not a hard requirement. Commands that read the lockfile treat a missing or unreadable one as missing information: `--since` counts every package as changed, and `versions:bump` skips its report of breaking updates. `package build` and `build-workspace` create the dist workspace without one.
+- Detecting the package manager does not write files. When `package.json` pins a pnpm version, every pnpm command, `pnpm --version` included, records that version in `pnpm-lock.yaml` and creates the file if it is missing. The version check therefore runs with the `lockfile` setting turned off.
 
 ### Version Bumps
 
@@ -216,10 +223,10 @@ The option is independent of the existing `--legacy` option. Both built-in templ
 
 The pnpm variant of the template differs in these files:
 
-- `package.json`: `packageManager` is set to pnpm. There is no `workspaces` field and no `resolutions` field. Scripts use `pnpm --filter backend` instead of `yarn workspace backend`.
+- `package.json`: `packageManager` is set to pnpm. There is no `workspaces` field and no `resolutions` field. Scripts use `pnpm --filter backend` instead of `yarn workspace backend`. The root also depends on `@types/node`, `@types/react`, and `@types/webpack-env`. TypeScript looks for the types that the CLI's `tsconfig.json` names in the `node_modules` of the root `tsconfig.json`, where the `isolated` linker does not put them.
 - `pnpm-workspace.yaml`: package globs, `nodeLinker: hoisted`, `minimumReleaseAge` with an exclusion for `@backstage/*`, `overrides` for the React type packages, and `allowBuilds`. See [pnpm Settings in the Template](#pnpm-settings-in-the-template).
 - `.yarnrc.yml`, `.yarn/`, and `yarn.lock` are not written. `pnpm-workspace.yaml` is not written for Yarn apps.
-- `packages/backend/Dockerfile` installs pnpm with `npm install -g pnpm@<version>`, where the version is the one in the `packageManager` field. It copies `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `package.json`, `backstage.json`, and the skeleton archive. It installs with `pnpm install --frozen-lockfile --prod`, with the cache mount pointed at the pnpm store.
+- `packages/backend/Dockerfile` installs pnpm with `npm install -g pnpm@<version>`, where the version is the one in the `packageManager` field. It copies `package.json`, `backstage.json`, and the skeleton archive, which holds `pnpm-lock.yaml`, `pnpm-workspace.yaml`, and the patch files that the install needs. It installs with `pnpm install --frozen-lockfile --prod`, with the cache mount pointed at the pnpm store.
 - `.github/workflows/ci.yml` sets up pnpm with `pnpm/action-setup` and runs `pnpm install --frozen-lockfile`.
 - `.prettierignore` ignores `pnpm-lock.yaml`. pnpm writes the file in its own format, and `prettier:check` would fail on it.
 - `playwright.config.ts` starts the app and the backend with the selected package manager, `pnpm start app` instead of `yarn start app`. Without this the `test:e2e` script of a pnpm app would still call Yarn.
@@ -305,8 +312,10 @@ Generated apps still set `nodeLinker: hoisted`. It produces a flat `node_modules
 
 The backend finds packages from the location of `@backstage/backend-plugin-api` or from the workspace root. Yarn links every workspace package into the root `node_modules`, and so does pnpm 12.7 and later under `hoisted`. Under `isolated` with the default `hoist: true`, every package is also linked into the hidden `node_modules/.pnpm/node_modules`, which Node.js finds when it resolves from inside the virtual store. Two places need a fix anyway, and both are correct under Yarn as well:
 
-- The app package is found through `resolvePackagePath()`, which resolves from the location of `@backstage/backend-plugin-api`. That only works when the app package is hoisted to where that package can see it, which is not the case when it is only installed in the backend package, as with `hoistWorkspacePackages: false`. A new `resolveAppPackagePath()` in `@backstage/plugin-app-node` keeps that lookup first, so test overrides of the package path keep working, and otherwise resolves the app package from the backend package, which depends on it. The backend package is found through the entry point of the process and the working directory, and only `node_modules` directories within the project root are searched. `@backstage/plugin-app-backend` and the frontend config schemas of `@backstage/backend-dynamic-feature-service` both look up the app package and both use it. `resolvePackagePath()` itself does not change.
+- The app package is found through `resolvePackagePath()`, which resolves from the location of `@backstage/backend-plugin-api`. That only works when the app package is hoisted to where that package can see it, which is not the case when it is only installed in the backend package, as with `hoistWorkspacePackages: false`. A new `resolveAppPackagePath()` in `@backstage/plugin-app-node` keeps that lookup first, so test overrides of the package path keep working, and otherwise resolves the app package from the backend package, which depends on it. The backend package is found through the entry point of the process and the working directory. From each of these, only `node_modules` directories within its project are searched, which is the closest directory with a `pnpm-workspace.yaml` file or a `workspaces` field, so the lookup does not depend on the working directory when the entry point is known. `@backstage/plugin-app-backend` and the frontend config schemas of `@backstage/backend-dynamic-feature-service` both look up the app package and both use it. `resolvePackagePath()` itself does not change.
 - The dynamic plugin loader in `@backstage/backend-dynamic-feature-service` limits the module search of a dynamic plugin to the plugin's own `node_modules` and the root `node_modules`. Under `isolated`, the packages a dynamic plugin shares with the host backend are not in the root `node_modules`. The loader therefore also searches the lookup chains of the backend package and of the loader itself, which reach the packages that pnpm keeps out of the root, including `node_modules/.pnpm/node_modules`. They come after the root `node_modules` and the global folders of Node.js, which include `NODE_PATH`, through which dynamic plugins outside the Backstage root reach the root. A module that was found before is found in the same place. With `hoist: false`, only the direct dependencies of the backend package and of the loader are found.
+
+Frontend builds share a default set of dependencies, such as React and Material UI, with module federation remotes, and read their versions from the app. pnpm bin shims put the hidden `node_modules/.pnpm/node_modules` on `NODE_PATH`, so `require.resolve()` finds packages there that the bundler cannot import from the app. A shared dependency is therefore only used when it is installed in the `node_modules` lookup chain of the app. Under `isolated`, a shared dependency that the app does not declare is not shared.
 
 Other failures under `isolated` are expected to come from undeclared imports, which the `no-undeclared-imports` lint rule already reports. The `isolated` end-to-end run is there to catch the rest.
 
@@ -317,7 +326,7 @@ Layouts where a package can only see its own dependencies are not supported yet:
 Some pnpm defaults conflict with how Backstage apps are used. The template handles them.
 
 - The template sets `minimumReleaseAge: 4320`, three days in minutes. This matches `npmMinimalAgeGate: 3d` in the Yarn template. A `versions:bump` right after a Backstage release would then fail, so `minimumReleaseAgeExclude` lists `@backstage/*`. This mirrors `npmPreapprovedPackages` in the Yarn template.
-- Build scripts of dependencies are blocked by default since pnpm 10. When a dependency with a build script is not listed in `allowBuilds`, `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS`, whether or not `package.json` pins pnpm. The template lists what a default app needs. `@swc/core`, `@tree-sitter-grammars/tree-sitter-yaml`, `better-sqlite3`, `cpu-features`, `esbuild`, `keytar`, `ssh2`, `tree-sitter`, `tree-sitter-json`, and `unrs-resolver` are set to `true`. `@scarf/scarf`, `core-js`, `core-js-pure`, `msw`, and `protobufjs` are set to `false`, since their scripts only print messages or collect telemetry. `msw` is on the list because the frontend plugin template adds it.
+- Build scripts of dependencies are blocked by default since pnpm 10. When a dependency with a build script is not listed in `allowBuilds`, `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS`, whether or not `package.json` pins pnpm. The template lists what a default app needs. `@parcel/watcher`, which Jest uses, `@swc/core`, `@tree-sitter-grammars/tree-sitter-yaml`, `better-sqlite3`, `cpu-features`, `esbuild`, `keytar`, `ssh2`, `tree-sitter`, `tree-sitter-json`, and `unrs-resolver` are set to `true`. `@scarf/scarf`, `core-js`, `core-js-pure`, `msw`, and `protobufjs` are set to `false`, since their scripts only print messages or collect telemetry. `msw` is on the list because the frontend plugin template adds it.
 - pnpm 12 fails on unknown keys in `pnpm-workspace.yaml` when `package.json` pins a pnpm version. The template pins one, so the template may only use keys that exist in the minimum supported version.
 - pnpm turns on `--frozen-lockfile` when the `CI` environment variable is set and a lockfile exists. The API passes `--no-frozen-lockfile` when a mutable install is requested.
 
@@ -350,11 +359,11 @@ Settings that describe the workspace layout of the source project are not copied
 
 ### Lint Rule Fixer
 
-The `no-undeclared-imports` rule in `@backstage/eslint-plugin` is plain JavaScript with a synchronous fixer. It cannot call the async `detectPackageManager()`. The fixer follows the same order synchronously, as far as it needs to: the `packageManager` field in the workspace root `package.json` when it names a supported package manager, then `pnpm-lock.yaml`, then Yarn. All it decides is whether the fix names `pnpm add` or `yarn add`.
+The `no-undeclared-imports` rule in `@backstage/eslint-plugin` is plain JavaScript with a synchronous fixer. It cannot call the async `detectPackageManager()`. The fixer follows the same order synchronously, as far as it needs to: the `packageManager` or `devEngines.packageManager` field in the workspace root `package.json` when it names a supported package manager, then `pnpm-lock.yaml`, then Yarn. All it decides is whether the fix names `pnpm add` or `yarn add`.
 
 ### DevTools Backend
 
-`@backstage/plugin-devtools-backend` has its own copy of the `yarn.lock` parser for the Info tab. It does not depend on `@backstage/cli-node`, and adding that dependency would pull CLI-only packages into a backend runtime. The plugin keeps a local parser. It picks the parser the same way the fixer does, by the `packageManager` field first and lockfile presence second, and gains a pnpm parser that only reads package names and versions.
+`@backstage/plugin-devtools-backend` has its own copy of the `yarn.lock` parser for the Info tab. It does not depend on `@backstage/cli-node`, and adding that dependency would pull CLI-only packages into a backend runtime. The plugin keeps a local parser. It picks the parser the same way the fixer does, by the `packageManager` or `devEngines.packageManager` field first and lockfile presence second, and gains a pnpm parser that only reads package names and versions.
 
 ### Backward Compatibility
 
