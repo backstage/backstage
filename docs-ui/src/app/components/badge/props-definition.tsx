@@ -22,6 +22,18 @@ export const badgePropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  status: {
+    type: 'enum',
+    values: ['info', 'success', 'warning', 'danger'],
+    description:
+      'Visual status of the badge, which changes its colors. Without a status the badge uses neutral colors.',
+  },
+  isPending: {
+    type: 'boolean',
+    default: 'false',
+    description:
+      'Shows a spinning loading indicator before the badge text to indicate a pending operation. The indicator replaces the icon while pending.',
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
 };

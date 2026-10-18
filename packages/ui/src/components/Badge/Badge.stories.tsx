@@ -23,6 +23,19 @@ import { RiBugLine } from '@remixicon/react';
 const meta = preview.meta({
   title: 'Backstage UI/Badge',
   component: Badge,
+  argTypes: {
+    size: {
+      control: 'select',
+      options: ['small', 'medium'],
+    },
+    status: {
+      control: 'select',
+      options: ['info', 'success', 'warning', 'danger'],
+    },
+    isPending: {
+      control: 'boolean',
+    },
+  },
   decorators: [
     Story => (
       <BUIProvider>
@@ -55,6 +68,52 @@ export const WithIcon = meta.story({
       </Badge>
       <Badge size="medium" icon={<RiBugLine />}>
         Banana
+      </Badge>
+    </Flex>
+  ),
+});
+
+export const StatusVariants = meta.story({
+  render: () => (
+    <Flex direction="row" gap="2">
+      <Badge>Neutral</Badge>
+      <Badge status="info">Info</Badge>
+      <Badge status="success">Success</Badge>
+      <Badge status="warning">Warning</Badge>
+      <Badge status="danger">Danger</Badge>
+    </Flex>
+  ),
+});
+
+export const StatusVariantsWithIcon = meta.story({
+  render: () => (
+    <Flex direction="row" gap="2">
+      <Badge icon={<RiBugLine />}>Neutral</Badge>
+      <Badge status="info" icon={<RiBugLine />}>
+        Info
+      </Badge>
+      <Badge status="success" icon={<RiBugLine />}>
+        Success
+      </Badge>
+      <Badge status="warning" icon={<RiBugLine />}>
+        Warning
+      </Badge>
+      <Badge status="danger" icon={<RiBugLine />}>
+        Danger
+      </Badge>
+    </Flex>
+  ),
+});
+
+export const Pending = meta.story({
+  render: () => (
+    <Flex direction="row" gap="2">
+      <Badge isPending>Pending</Badge>
+      <Badge status="info" isPending>
+        Deploying
+      </Badge>
+      <Badge status="warning" isPending size="medium">
+        Waiting for approval
       </Badge>
     </Flex>
   ),

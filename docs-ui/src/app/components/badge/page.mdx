@@ -1,9 +1,22 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, WithIcon, Sizes } from './components';
+import {
+  Default,
+  WithIcon,
+  Sizes,
+  StatusVariants,
+  Pending,
+} from './components';
 import { badgePropDefs } from './props-definition';
-import { usage, preview, withIcons, sizes } from './snippets';
+import {
+  usage,
+  preview,
+  withIcons,
+  sizes,
+  statusVariants,
+  pending,
+} from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { BadgeDefinition } from '../../../utils/definitions';
@@ -35,6 +48,26 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 ### Sizes
 
 <Snippet align="center" py={4} open preview={<Sizes />} code={sizes} />
+
+### Status variants
+
+Use the `status` prop to change the colors of the badge. Without a status the
+badge uses neutral colors.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<StatusVariants />}
+  code={statusVariants}
+/>
+
+### Pending state
+
+Set `isPending` to show a spinning loading indicator before the badge text.
+While pending, the indicator replaces the `icon`.
+
+<Snippet align="center" py={4} open preview={<Pending />} code={pending} />
 
 <Theming definition={BadgeDefinition} />
 

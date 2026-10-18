@@ -16,11 +16,38 @@
 
 import type { BadgeProps } from './types';
 import { forwardRef } from 'react';
+import { ProgressBar } from 'react-aria-components';
+import { RiLoader4Line } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { BadgeDefinition } from './definition';
 
 /**
  * A non-interactive badge for labeling or categorizing content.
+ *
+ * @remarks
+ * The Badge component supports an optional status (info, success, warning,
+ * danger) that changes its colors, and a pending state that shows a spinning
+ * loading indicator before the text.
+ *
+ * @example
+ * Basic usage:
+ * ```tsx
+ * <Badge>Banana</Badge>
+ * ```
+ *
+ * @example
+ * With a status:
+ * ```tsx
+ * <Badge status="success">Deployed</Badge>
+ * ```
+ *
+ * @example
+ * With a pending state:
+ * ```tsx
+ * <Badge status="info" isPending={isDeploying}>
+ *   Deploying
+ * </Badge>
+ * ```
  *
  * @public
  */
@@ -29,11 +56,23 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>((props, ref) => {
     BadgeDefinition,
     props,
   );
-  const { classes, children, icon } = ownProps;
+  const { classes, children, icon, isPending } = ownProps;
 
   return (
     <span ref={ref} className={classes.root} {...dataAttributes} {...restProps}>
-      {icon && <span className={classes.icon}>{icon}</span>}
+      {isPending ? (
+        <span className={classes.icon}>
+          <ProgressBar
+            aria-label="Loading"
+            isIndeterminate
+            className={classes.spinner}
+          >
+            <RiLoader4Line aria-hidden="true" />
+          </ProgressBar>
+        </span>
+      ) : (
+        icon && <span className={classes.icon}>{icon}</span>
+      )}
       {children}
     </span>
   );

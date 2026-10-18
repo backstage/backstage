@@ -14,3 +14,25 @@ export const Sizes = () => (
     <Badge size="medium">Banana</Badge>
   </Flex>
 );
+
+export const StatusVariants = () => (
+  <Flex direction="row" gap="2">
+    <Badge>Neutral</Badge>
+    <Badge status="info">Info</Badge>
+    <Badge status="success">Success</Badge>
+    <Badge status="warning">Warning</Badge>
+    <Badge status="danger">Danger</Badge>
+  </Flex>
+);
+
+export const Pending = () => (
+  <Flex direction="row" gap="2">
+    <Badge isPending>Pending</Badge>
+    <Badge status="info" isPending>
+      Deploying
+    </Badge>
+    <Badge status="warning" isPending>
+      Waiting for approval
+    </Badge>
+  </Flex>
+);

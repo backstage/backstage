@@ -28,6 +28,16 @@ export type BadgeOwnProps = {
    * The size of the badge.
    */
   size?: 'small' | 'medium';
+  /**
+   * The status of the badge, which changes its colors. Without a status the
+   * badge uses neutral colors.
+   */
+  status?: 'info' | 'success' | 'warning' | 'danger';
+  /**
+   * Shows a spinning loading indicator before the badge text to indicate a
+   * pending operation. The indicator replaces the `icon` while pending.
+   */
+  isPending?: boolean;
   children?: React.ReactNode;
   className?: string;
 };
