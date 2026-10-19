@@ -107,7 +107,9 @@ describe('getEngineConfig', () => {
 
     it('uses the zensical binary and image', () => {
       expect(config.binary).toBe('zensical');
-      expect(config.defaultImage).toBe('ghcr.io/backstage/techdocs-zensical');
+      expect(config.defaultImage).toBe(
+        TechdocsZensicalGenerator.defaultDockerImage,
+      );
     });
 
     it('matches only the startup line', () => {

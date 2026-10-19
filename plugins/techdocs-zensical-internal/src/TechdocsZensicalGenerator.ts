@@ -60,7 +60,7 @@ import {
  */
 export class TechdocsZensicalGenerator implements GeneratorBase {
   public static readonly defaultDockerImage =
-    'ghcr.io/backstage/techdocs-zensical:latest';
+    'ghcr.io/backstage/techdocs-zensical:v0.1.0';
   private readonly logger: LoggerService;
   private readonly containerRunner?: TechDocsContainerRunner;
   private readonly options: ZensicalGeneratorConfig;

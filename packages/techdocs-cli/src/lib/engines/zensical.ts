@@ -101,7 +101,7 @@ const ZENSICAL_WS_SCRIPT_RE =
 
 export const zensicalConfig: EngineConfig = {
   binary: 'zensical',
-  defaultImage: 'ghcr.io/backstage/techdocs-zensical',
+  defaultImage: TechdocsZensicalGenerator.defaultDockerImage,
   serveCommand: 'serve',
   // e.g. "Serving /path/to/site on http://127.0.0.1:8000"
   startupLogPattern: /Serving .+ on https?:\/\//,
