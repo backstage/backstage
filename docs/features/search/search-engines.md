@@ -276,6 +276,21 @@ search:
 
 After applying this setting, an index name would look like this: `custom-prefix-software-catalog-index__20250219`
 
+### Elasticsearch index retention
+
+Each indexing run writes documents to a fresh index and then moves the search
+alias for that document type to it. To make sure searches that are already
+running can finish, the indexer keeps the previous index around for one more
+run:
+
+- The current and previous index are retained per document type, so in-flight
+  searches against the previous index can complete.
+- The previous index is deleted after the next successful indexing run for that
+  document type.
+- Your cluster's storage and shard capacity should allow for two indices per
+  document type between runs, and temporarily three while an indexing run is in
+  progress.
+
 ### Elasticsearch query config
 
 By default the default settings for the Elasticsearch queries is used. If you need to tweak the fuzziness of the query results you can do this with 2 parameters, `fuzziness` and `prefixLength`.
