@@ -6964,13 +6964,10 @@ __metadata:
   resolution: "@backstage/plugin-techdocs-backend-module-zensical@workspace:plugins/techdocs-backend-module-zensical"
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
-    "@types/fs-extra": "npm:^11.0.0"
-    "@types/js-yaml": "npm:^4.0.0"
     fs-extra: "npm:^11.0.0"
     js-yaml: "npm:^5.0.0"
   languageName: unknown
@@ -10019,6 +10016,23 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     zod: "npm:^3.25.76 || ^4.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@internal/techdocs-zensical@workspace:plugins/techdocs-zensical-internal":
+  version: 0.0.0-use.local
+  resolution: "@internal/techdocs-zensical@workspace:plugins/techdocs-zensical-internal"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-techdocs-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    "@types/js-yaml": "npm:^4.0.0"
+    fs-extra: "npm:^11.0.0"
+    js-yaml: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -18225,11 +18239,12 @@ __metadata:
   resolution: "@techdocs/cli@workspace:packages/techdocs-cli"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/plugin-techdocs-backend-module-zensical": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
     "@types/http-proxy": "npm:^1.17.4"

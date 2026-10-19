@@ -19,7 +19,7 @@ import yaml from 'js-yaml';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node';
+import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node/alpha';
 
 type NamedOptions = Record<string, unknown> | undefined;
 

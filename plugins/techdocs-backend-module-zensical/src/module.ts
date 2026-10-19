@@ -19,7 +19,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { techdocsGeneratorExtensionPoint } from '@backstage/plugin-techdocs-node';
-import { TechdocsZensicalGenerator } from './TechdocsZensicalGenerator';
+import { TechdocsZensicalGenerator } from '@internal/techdocs-zensical';
 
 /**
  * Registers the Zensical documentation engine with the TechDocs backend.

@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-node': minor
 ---
 
-Export the generator building blocks needed to implement additional documentation engines in separate modules: `DockerContainerRunner`, `createOrUpdateMetadata`, `storeEtagMetadata`, `runCommand`, `validateInputDirectory`, `patchIndexPreBuild`, the `mkdocs.yml` format helpers `MKDOCS_SCHEMA`, `validateMkdocsYaml` and `sanitizeMkdocsYml`, and the `GeneratorConfig`, `GeneratorRunInType` and `RunCommandOptions` types. `DockerContainerRunner` was previously internal.
+Added a new `@backstage/plugin-techdocs-node/alpha` entry point with building blocks for implementing additional documentation engines in separate modules: `createDockerContainerRunner`, `createOrUpdateMetadata`, `storeEtagMetadata`, `runCommand`, `validateInputDirectory`, `patchIndexPreBuild`, and the `mkdocs.yml` helpers `MKDOCS_SCHEMA`, `validateMkdocsYaml` and `sanitizeMkdocsYml`. These are alpha and may change in minor releases.

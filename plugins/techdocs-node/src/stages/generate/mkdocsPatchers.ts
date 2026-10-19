@@ -413,7 +413,7 @@ export const patchMkdocsYmlWithFontDisabled = async (
  * @param logger - A logger instance
  * @param additionalAllowedKeys - Optional array of additional keys to allow beyond the default allowlist
  * @param additionalAllowedPlugins - Optional array of additional plugins to allow beyond the default set
- * @public
+ * @alpha
  */
 export const sanitizeMkdocsYml = async (
   mkdocsYmlPath: string,

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-techdocs-zensical
+  title: '@internal/techdocs-zensical'
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: techdocs-maintainers

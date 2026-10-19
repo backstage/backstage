@@ -22,7 +22,7 @@ import WebSocket from 'ws';
 import {
   TechdocsZensicalGenerator,
   patchZensicalConfig,
-} from '@backstage/plugin-techdocs-backend-module-zensical';
+} from '@internal/techdocs-zensical';
 import { injectLiveReloadElement, setCorsHeaders } from '../livereload';
 import { EngineConfig } from './types';
 

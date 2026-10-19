@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
-import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node';
+import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node/alpha';
 import {
   cleanupZensicalConfig,
   normalizeSearchIndex,

@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { TechdocsZensicalGenerator } from '@backstage/plugin-techdocs-backend-module-zensical';
+import { TechdocsZensicalGenerator } from '@internal/techdocs-zensical';
 import { getEngineConfig } from './registry';
 
 describe('getEngineConfig', () => {

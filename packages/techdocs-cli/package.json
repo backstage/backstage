@@ -45,10 +45,11 @@
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/plugin-techdocs-backend-module-zensical": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
     "commander": "^14.0.3",
     "fs-extra": "^11.0.0",

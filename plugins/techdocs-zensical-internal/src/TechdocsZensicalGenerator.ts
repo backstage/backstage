@@ -18,25 +18,34 @@ import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
+import type {
+  GeneratorBase,
+  GeneratorOptions,
+  GeneratorRunOptions,
+  TechDocsContainerRunner,
+} from '@backstage/plugin-techdocs-node';
 import {
+  createDockerContainerRunner,
   createOrUpdateMetadata,
-  DockerContainerRunner,
-  getMkdocsYml,
   patchIndexPreBuild,
   runCommand,
   sanitizeMkdocsYml,
   storeEtagMetadata,
   validateInputDirectory,
   validateMkdocsYaml,
-} from '@backstage/plugin-techdocs-node';
-import type {
-  GeneratorBase,
-  GeneratorConfig,
-  GeneratorOptions,
-  GeneratorRunInType,
-  GeneratorRunOptions,
-  TechDocsContainerRunner,
-} from '@backstage/plugin-techdocs-node';
+} from '@backstage/plugin-techdocs-node/alpha';
+import type { ContainerRunnerPullOptions } from '@backstage/plugin-techdocs-node';
+
+type ZensicalGeneratorConfig = {
+  runIn: 'docker' | 'local';
+  dockerImage?: string;
+  pullImage?: boolean;
+  pullOptions?: ContainerRunnerPullOptions;
+  legacyCopyReadmeMdToIndexMd?: boolean;
+  dangerouslyAllowAdditionalKeys?: string[];
+  dangerouslyAllowAdditionalPlugins?: string[];
+};
 import { ForwardedError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
@@ -54,7 +63,7 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
     'ghcr.io/backstage/techdocs-zensical:latest';
   private readonly logger: LoggerService;
   private readonly containerRunner?: TechDocsContainerRunner;
-  private readonly options: GeneratorConfig;
+  private readonly options: ZensicalGeneratorConfig;
 
   static fromConfig(config: Config, options: GeneratorOptions) {
     const { containerRunner, logger } = options;
@@ -139,7 +148,7 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
           break;
         case 'docker': {
           const containerRunner =
-            this.containerRunner || new DockerContainerRunner();
+            this.containerRunner || createDockerContainerRunner();
           await containerRunner.runContainer({
             imageName:
               this.options.dockerImage ??
@@ -201,12 +210,12 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
   }
 }
 
-function readZensicalGeneratorConfig(config: Config): GeneratorConfig {
+function readZensicalGeneratorConfig(config: Config): ZensicalGeneratorConfig {
   return {
     runIn:
       (config.getOptionalString(
         'techdocs.generator.runIn',
-      ) as GeneratorRunInType) ?? 'docker',
+      ) as ZensicalGeneratorConfig['runIn']) ?? 'docker',
     // Deliberately not falling back to techdocs.generator.dockerImage: that
     // is an MkDocs image and would build the site with MkDocs instead.
     dockerImage: config.getOptionalString(

@@ -13,12 +13,10 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { SpawnOptionsWithoutStdio } from 'node:child_process';
 import { StorageOptions } from '@google-cloud/storage';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
 import { Writable } from 'node:stream';
-import * as yaml from 'js-yaml';
 
 // @public
 export type ContainerRunnerPullOptions = {
@@ -34,35 +32,10 @@ export type ContainerRunnerPullOptions = {
 };
 
 // @public
-export const createOrUpdateMetadata: (
-  techdocsMetadataPath: string,
-  logger: LoggerService,
-  engine?: string,
-) => Promise<void>;
-
-// @public
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
   shouldCleanPreparedDirectory(): boolean;
-}
-
-// @public
-export class DockerContainerRunner implements TechDocsContainerRunner {
-  constructor();
-  // (undocumented)
-  runContainer(options: {
-    imageName: string;
-    command?: string | string[];
-    args: string[];
-    logStream?: Writable;
-    mountDirs?: Record<string, string>;
-    workingDir?: string;
-    envVars?: Record<string, string>;
-    pullImage?: boolean;
-    pullOptions?: ContainerRunnerPullOptions;
-    defaultUser?: boolean;
-  }): Promise<void>;
 }
 
 // @public
@@ -86,27 +59,10 @@ export type GeneratorBuilder = {
 };
 
 // @public
-export type GeneratorConfig = {
-  runIn: GeneratorRunInType;
-  dockerImage?: string;
-  pullImage?: boolean;
-  pullOptions?: ContainerRunnerPullOptions;
-  omitTechdocsCoreMkdocsPlugin?: boolean;
-  legacyCopyReadmeMdToIndexMd?: boolean;
-  defaultPlugins?: string[];
-  dangerouslyAllowAdditionalKeys?: string[];
-  dangerouslyAllowAdditionalPlugins?: string[];
-  disableExternalFonts?: boolean;
-};
-
-// @public
 export type GeneratorOptions = {
   logger: LoggerService;
   containerRunner?: TechDocsContainerRunner;
 };
-
-// @public
-export type GeneratorRunInType = 'docker' | 'local';
 
 // @public
 export type GeneratorRunOptions = {
@@ -185,9 +141,6 @@ export type MigrateRequest = {
 };
 
 // @public
-export const MKDOCS_SCHEMA: yaml.Schema;
-
-// @public
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
   target: string;
@@ -198,13 +151,6 @@ export const parseReferenceAnnotation: (
   annotationName: string,
   entity: Entity,
 ) => ParsedLocationAnnotation;
-
-// @public
-export const patchIndexPreBuild: (input: {
-  inputDir: string;
-  logger: LoggerService;
-  docsDir?: string;
-}) => Promise<void>;
 
 // @public
 export type PreparerBase = {
@@ -317,31 +263,6 @@ export type ReadinessResponse = {
 
 // @public
 export type RemoteProtocol = 'url' | 'dir';
-
-// @public
-export const runCommand: (input: RunCommandOptions) => Promise<void>;
-
-// @public (undocumented)
-export type RunCommandOptions = {
-  command: string;
-  args: string[];
-  options: SpawnOptionsWithoutStdio;
-  logStream?: Writable;
-};
-
-// @public
-export const sanitizeMkdocsYml: (
-  mkdocsYmlPath: string,
-  logger: LoggerService,
-  additionalAllowedKeys?: string[],
-  additionalAllowedPlugins?: string[],
-) => Promise<void>;
-
-// @public
-export const storeEtagMetadata: (
-  techdocsMetadataPath: string,
-  etag: string,
-) => Promise<void>;
 
 // @public
 export type SupportedGeneratorKey = 'techdocs' | string;
@@ -462,13 +383,4 @@ export class UrlPreparer implements PreparerBase {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
   shouldCleanPreparedDirectory(): boolean;
 }
-
-// @public
-export const validateInputDirectory: (inputDir: string) => Promise<void>;
-
-// @public
-export const validateMkdocsYaml: (
-  inputDir: string,
-  mkdocsYmlFileString: string,
-) => Promise<string | undefined>;
 ```

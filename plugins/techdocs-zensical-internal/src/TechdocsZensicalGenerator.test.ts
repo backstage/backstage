@@ -22,12 +22,12 @@ import { ConfigReader } from '@backstage/config';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import path from 'node:path';
-import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node';
+import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node/alpha';
 import { TechdocsZensicalGenerator } from './TechdocsZensicalGenerator';
 
 const mockRunCommand = jest.fn();
-jest.mock('@backstage/plugin-techdocs-node', () => ({
-  ...jest.requireActual('@backstage/plugin-techdocs-node'),
+jest.mock('@backstage/plugin-techdocs-node/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-techdocs-node/alpha'),
   runCommand: (...args: unknown[]) => mockRunCommand(...args),
 }));
 

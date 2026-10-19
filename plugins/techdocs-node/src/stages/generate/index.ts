@@ -15,25 +15,11 @@
  */
 export { TechdocsGenerator } from './techdocs';
 export { Generators } from './generators';
-export { DockerContainerRunner } from './DockerContainerRunner';
-export { sanitizeMkdocsYml } from './mkdocsPatchers';
-export {
-  getMkdocsYml,
-  createOrUpdateMetadata,
-  storeEtagMetadata,
-  runCommand,
-  validateInputDirectory,
-  patchIndexPreBuild,
-  validateMkdocsYaml,
-  MKDOCS_SCHEMA,
-} from './helpers';
-export type { RunCommandOptions } from './helpers';
+export { getMkdocsYml } from './helpers';
 export type {
   GeneratorBase,
-  GeneratorConfig,
   GeneratorOptions,
   GeneratorBuilder,
-  GeneratorRunInType,
   GeneratorRunOptions,
   SupportedGeneratorKey,
   ContainerRunnerPullOptions,
