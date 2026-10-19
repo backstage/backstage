@@ -307,7 +307,7 @@ export class MicrosoftGraphSubscriptionManager {
       );
     }
 
-    const isValid = isActive && !expiresSoon && notificationUrlMatches;
+    const isValid = isActive && notificationUrlMatches;
 
     console.log({
       resource,

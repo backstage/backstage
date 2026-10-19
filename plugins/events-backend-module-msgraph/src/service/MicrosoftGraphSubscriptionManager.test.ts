@@ -41,6 +41,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       getById: jest.fn(),
       findByResource: jest.fn(),
       deleteById: jest.fn(),
+      update: jest.fn(),
       transaction: jest.fn(
         async (
           transactionScope: (
@@ -54,6 +55,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       getSubscription: jest.fn(),
       createSubscription: jest.fn(),
       deleteSubscription: jest.fn(),
+      renewSubscription: jest.fn(),
     } as unknown as jest.Mocked<MicrosoftGraphClient>;
 
     config = mockServices.rootConfig({
@@ -61,6 +63,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         events: {
           modules: {
             msgraph: {
+              notificationUrl: 'https://example.com/notifications',
               subscriptionResources: ['users', 'groups'],
             },
           },
@@ -85,6 +88,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         events: {
           modules: {
             msgraph: {
+              notificationUrl: 'https://example.com/notifications',
               subscriptionResources: ['users', 'unsupported'],
             },
           },
@@ -129,11 +133,11 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       });
       const { fn } = schedule.run.mock.calls[0][0];
 
-      await fn();
+      await expect(fn()).resolves.toBeUndefined();
       expect(target.ensureActiveSubscriptions).toHaveBeenCalledTimes(1);
       expect(logger.error).not.toHaveBeenCalled();
 
-      await fn();
+      await expect(fn()).rejects.toThrow('boom');
       expect(logger.error).toHaveBeenCalledWith(
         'MS Graph subscription refresh failed, Error: boom',
         expect.any(Error),
@@ -219,22 +223,20 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         expires_at: DateTime.now().plus({ minutes: 20 }).toJSDate(),
       });
 
-      msGraphClient.validateActiveSubscription = jest.fn().mockResolvedValue({
-        exists: true,
-        isActive: true,
-        notificationUrlMatches: true,
-        isValid: true,
+      msGraphClient.getSubscription = jest.fn().mockResolvedValue({
+        expirationDateTime: DateTime.now().plus({ minutes: 20 }).toISO(),
+        notificationUrl: 'https://example.com/notifications',
       });
 
       await target.ensureActiveResourceSubscription('users');
       expect(databaseClient.findByResource).toHaveBeenCalledWith('users');
-      expect(msGraphClient.validateActiveSubscription).toHaveBeenCalledWith(
-        'subid',
-      );
+      expect(msGraphClient.getSubscription).toHaveBeenCalledWith('subid');
       expect(databaseClient.deleteById).not.toHaveBeenCalled();
       expect(databaseClient.insert).not.toHaveBeenCalled();
+      expect(databaseClient.update).not.toHaveBeenCalled();
       expect(msGraphClient.createSubscription).not.toHaveBeenCalled();
       expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
+      expect(msGraphClient.renewSubscription).not.toHaveBeenCalled();
     });
 
     it('creates and persists new subscription if existing not found in DB', async () => {
@@ -252,6 +254,8 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       expect(msGraphClient.createSubscription).toHaveBeenCalledWith({
         resource: 'users',
         validationToken: expect.any(String),
+        expirationDateTime: expect.any(Date),
+        notificationUrl: 'https://example.com/notifications',
       });
 
       expect(databaseClient.insert).toHaveBeenCalledWith({
@@ -266,7 +270,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         "No subscription record for resource 'users' exists.",
       );
       expect(logger.debug).toHaveBeenCalledWith(
-        "Creating a new subscription for resource 'users'.",
+        "No valid subscription for resource 'users' exists, creating a new one.",
       );
 
       expect(databaseClient.deleteById).not.toHaveBeenCalled();
@@ -281,11 +285,9 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         id: 'old_id',
         expires_at: DateTime.now().minus({ minutes: 20 }).toJSDate(),
       });
-      msGraphClient.validateActiveSubscription = jest.fn().mockResolvedValue({
-        isValid: false,
-        exists: true,
-        isActive: false,
-        notificationUrlMatches: true,
+      msGraphClient.getSubscription = jest.fn().mockResolvedValue({
+        expirationDateTime: DateTime.now().minus({ minutes: 20 }).toISO(),
+        notificationUrl: 'https://example.com/notifications',
       });
 
       msGraphClient.createSubscription = jest.fn().mockResolvedValue({
@@ -301,11 +303,13 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         "Subscription old_id for resource 'users' has expired.",
       );
       expect(logger.debug).toHaveBeenCalledWith(
-        "Creating a new subscription for resource 'users'.",
+        "No valid subscription for resource 'users' exists, creating a new one.",
       );
       expect(msGraphClient.createSubscription).toHaveBeenCalledWith({
         resource: 'users',
         validationToken: expect.any(String),
+        expirationDateTime: expect.any(Date),
+        notificationUrl: 'https://example.com/notifications',
       });
       expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
       expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('old_id');
@@ -318,84 +322,94 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       });
     });
 
-    it('recreates subscription that is about to expire', async () => {
+    it('renews a subscription that is about to expire', async () => {
       databaseClient.findByResource = jest.fn().mockResolvedValue({
         id: 'old_id',
         expires_at: DateTime.now().plus({ minutes: 5 }).toJSDate(),
       });
-      msGraphClient.validateActiveSubscription = jest.fn().mockResolvedValue({
-        exists: true,
-        isActive: true,
-        notificationUrlMatches: true,
-        isValid: true,
+      msGraphClient.getSubscription = jest.fn().mockResolvedValue({
+        expirationDateTime: DateTime.now().plus({ minutes: 5 }).toISO(),
+        notificationUrl: 'https://example.com/notifications',
       });
-      msGraphClient.createSubscription.mockResolvedValue({
-        id: 'new_id',
+      msGraphClient.renewSubscription = jest.fn().mockResolvedValue({
+        id: 'old_id',
         expirationDateTime: DateTime.now().plus({ hours: 1 }).toISO(),
       });
-      msGraphClient.deleteSubscription.mockResolvedValue(undefined);
 
       await target.ensureActiveResourceSubscription('users');
 
       expect(logger.debug).toHaveBeenCalledWith(
-        "Subscription old_id for resource 'users' is about to expire.",
+        "Renewing expiring subscription for resource 'users'.",
       );
-      expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
-      expect(databaseClient.insert).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'new_id', resource: 'users' }),
+      expect(msGraphClient.renewSubscription).toHaveBeenCalledWith({
+        subscriptionId: 'old_id',
+        expirationDateTime: expect.any(Date),
+      });
+      expect(databaseClient.update).toHaveBeenCalledWith({
+        id: 'old_id',
+        expires_at: expect.any(Date),
+      });
+      expect(databaseClient.deleteById).not.toHaveBeenCalled();
+      expect(databaseClient.insert).not.toHaveBeenCalled();
+      expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
+      expect(msGraphClient.createSubscription).not.toHaveBeenCalled();
+      expect(logger.info).toHaveBeenCalledWith(
+        "Subscription old_id for resource 'users' renewed.",
       );
-      expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('old_id');
     });
 
     it.each([
       [
-        { exists: false, isActive: false, notificationUrlMatches: false },
-        "Subscription old_id for resource 'users' does not exist.",
+        undefined,
+        "Subscription for resource 'users' does not exist in MSGraph.",
       ],
       [
-        { exists: true, isActive: true, notificationUrlMatches: false },
+        {
+          expirationDateTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+          notificationUrl: 'https://wrong.example.com/notifications',
+        },
         "Subscription old_id for resource 'users' has incorrect notification URL.",
       ],
-    ])('recreates subscription when %j', async (validity, message) => {
+    ])(
+      'recreates subscription when Graph returns %j',
+      async (subscription, message) => {
+        databaseClient.findByResource = jest.fn().mockResolvedValue({
+          id: 'old_id',
+          expires_at: DateTime.now().plus({ minutes: 30 }).toJSDate(),
+        });
+        msGraphClient.getSubscription = jest
+          .fn()
+          .mockResolvedValue(subscription);
+        msGraphClient.createSubscription.mockResolvedValue({
+          id: 'new_id',
+          expirationDateTime: DateTime.now().plus({ hours: 1 }).toISO(),
+        });
+        msGraphClient.deleteSubscription.mockResolvedValue(undefined);
+
+        await target.ensureActiveResourceSubscription('users');
+
+        expect(logger.debug).toHaveBeenCalledWith(message);
+        expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
+        expect(databaseClient.insert).toHaveBeenCalled();
+        expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('old_id');
+      },
+    );
+
+    it('propagates errors reading the existing subscription', async () => {
       databaseClient.findByResource = jest.fn().mockResolvedValue({
         id: 'old_id',
         expires_at: DateTime.now().plus({ minutes: 30 }).toJSDate(),
       });
-      msGraphClient.validateActiveSubscription = jest
-        .fn()
-        .mockResolvedValue({ ...validity, isValid: false });
-      msGraphClient.createSubscription.mockResolvedValue({
-        id: 'new_id',
-        expirationDateTime: DateTime.now().plus({ hours: 1 }).toISO(),
-      });
-      msGraphClient.deleteSubscription.mockResolvedValue(undefined);
+      const error = new Error('Graph unavailable');
+      msGraphClient.getSubscription = jest.fn().mockRejectedValue(error);
 
-      await target.ensureActiveResourceSubscription('users');
+      await expect(
+        target.ensureActiveResourceSubscription('users'),
+      ).rejects.toBe(error);
 
-      expect(logger.debug).toHaveBeenCalledWith(message);
-      expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
-      expect(databaseClient.insert).toHaveBeenCalled();
-    });
-
-    it('deletes the record and creates a new subscription when validation throws', async () => {
-      databaseClient.findByResource = jest.fn().mockResolvedValue({
-        id: 'old_id',
-        expires_at: DateTime.now().plus({ minutes: 30 }).toJSDate(),
-      });
-      msGraphClient.validateActiveSubscription = jest
-        .fn()
-        .mockRejectedValue(new Error('not found'));
-      msGraphClient.createSubscription.mockResolvedValue({
-        id: 'new_id',
-        expirationDateTime: DateTime.now().plus({ hours: 1 }).toISO(),
-      });
-
-      await target.ensureActiveResourceSubscription('users');
-
-      expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
-      expect(databaseClient.insert).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'new_id' }),
-      );
+      expect(databaseClient.deleteById).not.toHaveBeenCalled();
+      expect(databaseClient.insert).not.toHaveBeenCalled();
+      expect(msGraphClient.createSubscription).not.toHaveBeenCalled();
       expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
     });
 
@@ -404,11 +418,9 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         id: 'old_id',
         expires_at: DateTime.now().minus({ minutes: 20 }).toJSDate(),
       });
-      msGraphClient.validateActiveSubscription = jest.fn().mockResolvedValue({
-        exists: true,
-        isActive: false,
-        notificationUrlMatches: true,
-        isValid: false,
+      msGraphClient.getSubscription = jest.fn().mockResolvedValue({
+        expirationDateTime: DateTime.now().minus({ minutes: 20 }).toISO(),
+        notificationUrl: 'https://example.com/notifications',
       });
       msGraphClient.createSubscription.mockResolvedValue({
         id: 'new_id',
@@ -423,6 +435,10 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       expect(logger.warn).toHaveBeenCalledWith(
         'Error cleaning up old subscription old_id: Error: delete failed',
         error,
+      );
+      expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
+      expect(databaseClient.insert).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'new_id', resource: 'users' }),
       );
     });
   });
