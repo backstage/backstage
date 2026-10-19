@@ -59,6 +59,7 @@ export default class HTTPServer {
   }
 
   public async serve(): Promise<http.Server> {
+    const logger = createLogger({ verbose: false });
     return new Promise<http.Server>((resolve, reject) => {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
@@ -113,7 +114,10 @@ export default class HTTPServer {
               request,
               response,
               this.docsTargetAddress,
-              (error: Error) => reject(error),
+              // The server is already listening, so rejecting would be a
+              // no-op; log instead so engine connection problems are visible.
+              (error: Error) =>
+                logger.warn(`Live reload unavailable: ${error.message}`),
             );
             return;
           }
@@ -126,7 +130,6 @@ export default class HTTPServer {
         },
       );
 
-      const logger = createLogger({ verbose: false });
       server.listen(this.backstagePort, () => {
         if (this.verbose) {
           logger.info(

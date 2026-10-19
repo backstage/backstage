@@ -67,11 +67,24 @@ function getWs(targetAddress: string): WebSocket {
   return socket;
 }
 
-function waitForReload(targetAddress: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    pending.push({ resolve, reject });
+/**
+ * Resolves on Zensical's next reload message. Call the returned cancel
+ * function to stop waiting, e.g. when the browser tab goes away.
+ */
+function waitForReload(targetAddress: string): {
+  reload: Promise<string>;
+  cancel: () => void;
+} {
+  let waiter: Waiter | undefined;
+  const reload = new Promise<string>((resolve, reject) => {
+    waiter = { resolve, reject };
+    pending.push(waiter);
     getWs(targetAddress);
   });
+  const cancel = () => {
+    pending = pending.filter(w => w !== waiter);
+  };
+  return { reload, cancel };
 }
 
 const LIVERELOAD_EPOCH = '1';
@@ -129,16 +142,26 @@ export const zensicalConfig: EngineConfig = {
     _req: http.IncomingMessage,
     res: http.ServerResponse,
     targetAddress: string,
-    _onError: (error: Error) => void,
+    onError: (error: Error) => void,
   ): void {
     setCorsHeaders(res);
 
-    waitForReload(targetAddress)
+    const { reload, cancel } = waitForReload(targetAddress);
+    // The response closes without ending when the tab navigates away or is
+    // closed; stop waiting so the long-poll doesn't linger until next reload.
+    res.on('close', () => {
+      if (!res.writableEnded) {
+        cancel();
+      }
+    });
+
+    reload
       .then(() => {
         res.statusCode = 200;
         res.end(RELOAD_EPOCH);
       })
-      .catch(() => {
+      .catch((error: Error) => {
+        onError(error);
         // Non-200 makes the preview app's LiveReloadAddon retry after 3s.
         res.statusCode = 503;
         res.end('0');
