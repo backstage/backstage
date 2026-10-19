@@ -95,20 +95,6 @@ async function generate(
     }
   }
 
-  const parentDirectory = resolve(resolvedOutputDirectory, '..');
-
-  await fs.writeFile(
-    resolve(parentDirectory, 'index.ts'),
-    `//
-    export * from './generated';`,
-  );
-
-  await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
-    signal: abortSignal?.signal,
-  });
-
-  await formatFiles([parentDirectory], { signal: abortSignal?.signal });
-
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
@@ -120,6 +106,24 @@ async function generate(
     recursive: true,
     force: true,
   });
+
+  const parentDirectory = resolve(resolvedOutputDirectory, '..');
+
+  await fs.writeFile(
+    resolve(parentDirectory, 'index.ts'),
+    `//
+    export * from './generated';`,
+  );
+
+  try {
+    await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
+      signal: abortSignal?.signal,
+    });
+  } finally {
+    // Format even if linting fails, so that the files are still formatted
+    // while the lint error fails the command
+    await formatFiles([parentDirectory], { signal: abortSignal?.signal });
+  }
 }
 
 export async function command(

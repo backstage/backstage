@@ -159,15 +159,19 @@ async function generate(
   // files are linted and formatted in a single run each.
   const indexFile = await writeSpecFiles();
 
-  await exec(
-    `yarn backstage-cli package lint`,
-    ['--fix', resolvedOutputDirectory, indexFile],
-    { signal: abortSignal?.signal },
-  );
-
-  await formatFiles([resolvedOutputDirectory, indexFile], {
-    signal: abortSignal?.signal,
-  });
+  try {
+    await exec(
+      `yarn backstage-cli package lint`,
+      ['--fix', resolvedOutputDirectory, indexFile],
+      { signal: abortSignal?.signal },
+    );
+  } finally {
+    // Format even if linting fails, so that the files are still formatted
+    // while the lint error fails the command
+    await formatFiles([resolvedOutputDirectory, indexFile], {
+      signal: abortSignal?.signal,
+    });
+  }
 }
 
 export async function command(
