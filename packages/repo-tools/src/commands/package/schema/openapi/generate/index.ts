@@ -94,6 +94,10 @@ export async function command(opts: OptionValues) {
   } else {
     try {
       await sharedCommand();
+      // Client and server generation set the exit code when they fail
+      if (process.exitCode) {
+        process.exit();
+      }
     } catch (err) {
       console.error(chalk.red('Error: ', err));
       process.exit(1);
