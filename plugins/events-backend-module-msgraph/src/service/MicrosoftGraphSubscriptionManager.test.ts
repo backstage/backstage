@@ -358,6 +358,30 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       );
     });
 
+    it('recreates an expiring subscription with an incorrect notification URL', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue({
+        id: 'old_id',
+        expires_at: DateTime.now().plus({ minutes: 5 }).toJSDate(),
+      });
+      msGraphClient.getSubscription = jest.fn().mockResolvedValue({
+        expirationDateTime: DateTime.now().plus({ minutes: 5 }).toISO(),
+        notificationUrl: 'https://wrong.example.com/notifications',
+      });
+      msGraphClient.createSubscription.mockResolvedValue({
+        id: 'new_id',
+        expirationDateTime: DateTime.now().plus({ hours: 1 }).toISO(),
+      });
+
+      await target.ensureActiveResourceSubscription('users');
+
+      expect(msGraphClient.renewSubscription).not.toHaveBeenCalled();
+      expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('old_id');
+      expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
+      expect(databaseClient.insert).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'new_id', resource: 'users' }),
+      );
+    });
+
     it.each([
       [
         undefined,
