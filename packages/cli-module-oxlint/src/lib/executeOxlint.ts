@@ -257,6 +257,17 @@ export async function executeOxlint(
   options: OxlintExecutionOptions,
 ): Promise<void> {
   const groups = groupTargets(options.targets);
+  // Without a config Oxlint falls back to its built-in defaults, which skips
+  // every Backstage rule, so a package that hasn't migrated would pass.
+  const unconfigured = groups
+    .filter(group => !group.configPath)
+    .flatMap(group => group.directories);
+  if (unconfigured.length) {
+    throw new Error(
+      `No Oxlint config file found for ${unconfigured.join(', ')}; ` +
+        'add a .oxlintrc.js beside the package.json, as described in the @backstage/cli-module-oxlint README',
+    );
+  }
   if (groups.length > 1 && XML_FORMATS.has(options.format)) {
     throw new Error(
       `The ${options.command} command requires exactly one config group for ${options.format} output, but found ${groups.length}; use JSON, SARIF, or a text format instead.`,
@@ -299,13 +310,6 @@ export async function executeOxlint(
       groups.map((group, index) => ({ group, index })),
       MAX_CONCURRENT_OXLINT,
       async ({ group, index }) => {
-        if (!group.configPath) {
-          warnings.push(
-            `No Oxlint config file found for ${group.directories.join(
-              ', ',
-            )}; falling back to Oxlint built-in defaults`,
-          );
-        }
         results[index] = await runOxlintGroup(
           group,
           index,

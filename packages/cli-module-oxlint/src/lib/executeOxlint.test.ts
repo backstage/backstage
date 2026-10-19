@@ -166,6 +166,7 @@ function createWorkspace() {
   const launcher = join(dir, 'oxlint-fixture.cjs');
   writeFileSync(runner, runnerSource);
   writeFileSync(launcher, fixtureLauncher);
+  writeFileSync(join(dir, 'oxlint.config.mts'), 'export default {};');
   return { dir, runner, launcher };
 }
 
@@ -258,6 +259,25 @@ describe('Oxlint through runCli subprocess', () => {
       }
     },
   );
+
+  it('fails without running Oxlint when a target has no config file', () => {
+    const workspace = createWorkspace();
+    const unconfigured = mkdtempSync(join(tmpdir(), 'oxlint-unconfigured-'));
+    try {
+      const result = runDispatcher(workspace, {
+        targets: [{ configDir: unconfigured, directories: [unconfigured] }],
+      });
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(
+        `No Oxlint config file found for ${unconfigured}`,
+      );
+      expect(result.stdout).toBe('');
+    } finally {
+      rmSync(workspace.dir, { recursive: true, force: true });
+      rmSync(unconfigured, { recursive: true, force: true });
+    }
+  });
 
   it('enforces the warning threshold across all groups, not per group', () => {
     const workspace = createWorkspace();
@@ -714,17 +734,18 @@ describe('Oxlint through runCli subprocess', () => {
     60000,
   );
 
-  it('preserves nested-config JSON with null rule counts and exits nonzero for findings', () => {
+  it('runs the real Oxlint binary with the package config and exits nonzero for findings', () => {
     const workspace = createWorkspace();
     const nested = join(workspace.dir, 'child');
     try {
+      rmSync(join(workspace.dir, 'oxlint.config.mts'));
+      writeFileSync(
+        join(workspace.dir, '.oxlintrc.json'),
+        JSON.stringify({ rules: { 'no-debugger': 'error' } }),
+      );
       writeFileSync(join(workspace.dir, 'root.js'), 'debugger;\n');
       mkdirSync(nested);
       writeFileSync(join(nested, 'child.js'), 'debugger;\n');
-      writeFileSync(
-        join(nested, '.oxlintrc.json'),
-        JSON.stringify({ rules: { 'no-debugger': 'error' } }),
-      );
 
       const result = runDispatcher(workspace, {
         launcher: null,
@@ -755,7 +776,7 @@ describe('Oxlint through runCli subprocess', () => {
           .sort(),
       ).toEqual(['child.js', 'root.js']);
       expect(report.number_of_files).toBe(2);
-      expect(report.number_of_rules).toBeNull();
+      expect(report.number_of_rules).toEqual(expect.any(Number));
     } finally {
       rmSync(workspace.dir, { recursive: true, force: true });
     }

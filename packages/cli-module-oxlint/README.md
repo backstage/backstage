@@ -40,7 +40,10 @@ manifest and returns native Oxlint configuration. It exports the same callable a
 `createPackageConfig`, plus named `createConfig` and `createConfigForRole`
 methods. Use `createConfig` for a workspace root without a package role and
 `createConfigForRole` when the role is supplied directly. The root config uses
-common-library policy; packages without local configs inherit it. The factory
+common-library policy; packages without local configs inherit it. If neither
+the package nor any parent directory up to the repository root has an Oxlint
+config, the lint commands fail instead of running Oxlint's built-in defaults,
+which would skip every Backstage rule. The factory
 does not enumerate the workspace or aggregate package roles. The package
 directory anchors the config's role and file scopes, so put each config in the
 directory passed to the factory.
@@ -119,7 +122,7 @@ read or write a success cache. Config groups lint concurrently, the complete
 report is written, and a nonzero exit status is returned if any group or
 suppression audit fails.
 
-Oxlint applies `--fix` in one pass. Autofixes that generate dependency
+Oxlint applies `--fix` in one pass. Automatic fixes that generate dependency
 directives for ordinary imports are disabled; diagnostics retain manual Yarn
 guidance. Other safe fixes, including unrelated import additions, remain
 enabled. Existing explicit dependency directives can still run their suggested
