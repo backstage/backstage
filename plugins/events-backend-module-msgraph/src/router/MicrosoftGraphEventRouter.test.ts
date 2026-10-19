@@ -174,7 +174,7 @@ describe('MicrosoftGraphEventRouter', () => {
     );
   });
 
-  it('logs error if publish for upsert fails', async () => {
+  it('propagates error if publish for upsert fails', async () => {
     (parseEvents as jest.Mock).mockReturnValue({
       upsertedUsers: [{ resourceId: 'u1' }],
       upsertedGroups: [],
@@ -182,12 +182,8 @@ describe('MicrosoftGraphEventRouter', () => {
       deletedGroups: [],
     });
     events.publish.mockRejectedValueOnce(new Error('fail-upsert'));
-    await router.onEvent({ topic, eventPayload: {} });
-    // Wait for the catch block to execute
-    await new Promise(r => setTimeout(r, 0));
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to publish user/group upsert event'),
-      expect.any(Error),
+    await expect(router.onEvent({ topic, eventPayload: {} })).rejects.toThrow(
+      'fail-upsert',
     );
   });
 
