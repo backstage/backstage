@@ -19,12 +19,6 @@ import { Client } from '@microsoft/microsoft-graph-client';
 import type { Subscription } from '@microsoft/microsoft-graph-types';
 
 /**
- * 29 days is the maximum subscription duration according to
- * https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0
- */
-const SUBSCRIPTION_DURATION_MS = 41_760 * 60 * 1000; // 29 days
-
-/**
  * Abstracts the Microsoft Graph client calls.
  * Simplifies mocking for tests.
  *
@@ -33,9 +27,6 @@ const SUBSCRIPTION_DURATION_MS = 41_760 * 60 * 1000; // 29 days
 export interface ClientWrapper {
   clientCall: <T>(call: (client: Client) => Promise<T>) => Promise<T>;
 }
-
-const newExpirationDateTime = () =>
-  new Date(Date.now() + SUBSCRIPTION_DURATION_MS).toISOString();
 
 class ClientWrapperImpl implements ClientWrapper {
   static fromConfig(config: Config): ClientWrapper {
@@ -136,16 +127,21 @@ export class MicrosoftGraphClient {
     );
   }
 
-  async renewSubscription(subscriptionId: string) {
-    const expirationDateTime = newExpirationDateTime();
+  async renewSubscription({
+    subscriptionId,
+    expirationDateTime,
+  }: {
+    subscriptionId: string;
+    expirationDateTime: Date;
+  }) {
     const subscription: Subscription = await this.clientCall(ms =>
       ms.api(`/subscriptions/${subscriptionId}`).patch({
-        expirationDateTime,
+        expirationDateTime: expirationDateTime.toISOString(),
       }),
     );
 
     if (!subscription.expirationDateTime) {
-      subscription.expirationDateTime = expirationDateTime;
+      subscription.expirationDateTime = expirationDateTime.toISOString();
     }
 
     if (!subscription.id) {

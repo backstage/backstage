@@ -26,13 +26,16 @@ import type {
   MicrosoftGraphSubscriptionsDatabaseClient,
   MicrosoftGraphSubscriptionsDatabaseOperations,
 } from '../database/databaseClient';
-import type {
-  MicrosoftGraphClient,
-  SubscriptionValidationResult,
-} from './MicrosoftGraphClient';
+import type { MicrosoftGraphClient } from './MicrosoftGraphClient';
 import { newValidationToken } from './validationToken';
 
 const SUPPORTED_RESOURCES = ['users', 'groups'];
+
+/**
+ * 29 days is the maximum subscription duration according to
+ * https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0
+ */
+const SUBSCRIPTION_DURATION_MS = 41_760 * 60 * 1000; // 29 days
 
 /**
  * Buffer time before subscription expiration to consider it expired and renew.
@@ -57,10 +60,6 @@ const subscriptionRefreshSchedule: SchedulerServiceTaskScheduleDefinition = {
 
 const TASK_ID = 'ms-graph-subscription-refresh';
 
-const expiresSoon = (expiresAt: Date) =>
-  expiresAt.valueOf() - new Date().valueOf() <=
-  subscriptionExpirationBuffer.valueOf();
-
 const validateResources = (resources: string[]) => {
   resources.forEach(resource => {
     if (!SUPPORTED_RESOURCES.includes(resource.trim())) {
@@ -71,6 +70,9 @@ const validateResources = (resources: string[]) => {
     }
   });
 };
+
+const newExpirationDateTime = () =>
+  new Date(Date.now() + SUBSCRIPTION_DURATION_MS);
 
 export interface MicrosoftGraphSubscriptionManagerOptions {
   logger: LoggerService;
@@ -100,6 +102,9 @@ export class MicrosoftGraphSubscriptionManager {
       msGraphClient,
     }: MicrosoftGraphSubscriptionManagerOptions,
   ): Promise<MicrosoftGraphSubscriptionManager> {
+    // Fail fast if the configuration is missing or incomplete
+    config.getString('events.modules.msgraph.notificationUrl');
+
     const resources = config.getStringArray(
       'events.modules.msgraph.subscriptionResources',
     );
@@ -109,6 +114,7 @@ export class MicrosoftGraphSubscriptionManager {
       logger.child({
         class: MicrosoftGraphSubscriptionManager.prototype.constructor.name,
       }),
+      config,
       databaseClient,
       msGraphClient,
       Array.from(new Set(resources.map(r => r.trim().toLowerCase()))),
@@ -117,6 +123,7 @@ export class MicrosoftGraphSubscriptionManager {
 
   constructor(
     private readonly logger: LoggerService,
+    private readonly config: Config,
     private readonly database: MicrosoftGraphSubscriptionsDatabaseClient,
     private readonly msGraphClient: MicrosoftGraphClient,
     private readonly resources: string[],
@@ -144,6 +151,7 @@ export class MicrosoftGraphSubscriptionManager {
             `MS Graph subscription refresh failed, ${error}`,
             isError(error) ? error : undefined,
           );
+          throw error;
         }
       },
     });
@@ -184,40 +192,70 @@ export class MicrosoftGraphSubscriptionManager {
 
     // Use a transaction to ensure synchronized between MS Graph and our DB
     await this.database.transaction(async trx => {
-      const { existingSubscriptionId, isValid } =
+      const { existingSubscriptionId, isValid, expiresSoon } =
         await this.checkExistingSubscription(trx, resource);
 
-      if (isValid) {
+      if (existingSubscriptionId && isValid && !expiresSoon) {
+        logger.debug(
+          `Subscription '${existingSubscriptionId}' for resource '${resource}' is valid.`,
+        );
+
         return;
-      }
+      } else if (!existingSubscriptionId || !isValid) {
+        logger.debug(
+          `No valid subscription for resource '${resource}' exists, creating a new one.`,
+        );
 
-      logger.debug(`Creating a new subscription for resource '${resource}'.`);
-      const { validationToken, hash, salt } = newValidationToken();
-      const { id, expirationDateTime } =
-        await this.msGraphClient.createSubscription({
-          resource,
-          validationToken,
-        });
-
-      await trx.insert({
-        id,
-        resource,
-        expires_at: new Date(expirationDateTime),
-        token_hash: hash,
-        token_salt: salt,
-      });
-      logger.info(`Created new subscription ${id} for resource '${resource}'.`);
-
-      if (existingSubscriptionId) {
-        // Clean up old subscription in MS Graph asynchronously
-        this.msGraphClient
-          .deleteSubscription(existingSubscriptionId)
-          .catch(err =>
+        if (existingSubscriptionId) {
+          // Clean up old subscription in MS Graph asynchronously if available
+          try {
+            await this.msGraphClient.deleteSubscription(existingSubscriptionId);
+          } catch (err) {
             logger.warn(
               `Error cleaning up old subscription ${existingSubscriptionId}: ${err}`,
               isError(err) ? err : undefined,
-            ),
-          );
+            );
+          }
+
+          await trx.deleteById(existingSubscriptionId);
+        }
+
+        const { validationToken, hash, salt } = newValidationToken();
+        const { id, expirationDateTime } =
+          await this.msGraphClient.createSubscription({
+            resource,
+            validationToken,
+            expirationDateTime: newExpirationDateTime(),
+            notificationUrl: this.getNotificationUrl(),
+          });
+
+        await trx.insert({
+          id,
+          resource,
+          expires_at: new Date(expirationDateTime),
+          token_hash: hash,
+          token_salt: salt,
+        });
+        logger.info(
+          `Created new subscription ${id} for resource '${resource}'.`,
+        );
+      } else if (expiresSoon) {
+        logger.debug(
+          `Renewing expiring subscription for resource '${resource}'.`,
+        );
+
+        const { id, expirationDateTime } =
+          await this.msGraphClient.renewSubscription({
+            subscriptionId: existingSubscriptionId,
+            expirationDateTime: newExpirationDateTime(),
+          });
+
+        await trx.update({
+          id,
+          expires_at: new Date(expirationDateTime),
+        });
+
+        logger.info(`Subscription ${id} for resource '${resource}' renewed.`);
       }
     });
   }
@@ -225,7 +263,11 @@ export class MicrosoftGraphSubscriptionManager {
   private async checkExistingSubscription(
     trx: MicrosoftGraphSubscriptionsDatabaseOperations,
     resource: string,
-  ): Promise<{ existingSubscriptionId?: string; isValid?: boolean }> {
+  ): Promise<{
+    existingSubscriptionId?: string;
+    isValid?: boolean;
+    expiresSoon?: boolean;
+  }> {
     let logger = this.logger.child({ resource });
 
     logger.debug(`Checking active subscription for resource '${resource}'.`);
@@ -236,67 +278,69 @@ export class MicrosoftGraphSubscriptionManager {
       return {};
     }
 
-    logger = logger.child({ subscriptionId: existingSubscriptionId });
-
-    logger.debug(
-      `Found existing subscription record ${existingSubscriptionId} for resource '${resource}', checking if still valid.`,
+    const msgraphSubscription = await this.msGraphClient.getSubscription(
+      existingSubscriptionId,
     );
 
-    let subscriptionValidity: SubscriptionValidationResult;
-    try {
-      subscriptionValidity =
-        await this.msGraphClient.validateActiveSubscription(
-          existingSubscriptionId,
-        );
-    } catch (e) {
-      logger.debug(
-        `Subscription ${existingSubscriptionId} for resource '${resource}' not found.`,
+    const exists = Boolean(msgraphSubscription);
+    const expirationDateTime =
+      msgraphSubscription &&
+      new Date(
+        msgraphSubscription.expirationDateTime ??
+          existingSubscriptionRecord.expires_at,
       );
+    const remainingTime = !expirationDateTime
+      ? 0
+      : expirationDateTime.valueOf() - new Date().valueOf();
+    const isActive = remainingTime > 0;
+    const expiresSoon = remainingTime <= subscriptionExpirationBuffer.valueOf();
+    const notificationUrlMatches = Boolean(
+      msgraphSubscription &&
+        msgraphSubscription.notificationUrl === this.getNotificationUrl(),
+    );
 
+    logger = logger.child({ subscriptionId: existingSubscriptionId });
+
+    if (!exists) {
       logger.debug(
-        `Deleting subscription record ${existingSubscriptionId} for resource '${resource}'`,
+        `Subscription for resource '${resource}' does not exist in MSGraph.`,
       );
-
-      await trx.deleteById(existingSubscriptionId);
-
-      return {
-        isValid: false,
-      };
     }
 
-    if (!subscriptionValidity.exists) {
-      logger.debug(
-        `Subscription ${existingSubscriptionId} for resource '${resource}' does not exist.`,
-      );
-    } else if (!subscriptionValidity.isActive) {
+    const isValid = isActive && !expiresSoon && notificationUrlMatches;
+
+    console.log({
+      resource,
+      isValid,
+      isActive,
+      expiresSoon,
+      notificationUrlMatches,
+      existingSubscriptionId,
+      expirationDateTime,
+    });
+
+    if (!isActive) {
       logger.debug(
         `Subscription ${existingSubscriptionId} for resource '${resource}' has expired.`,
       );
-    } else if (!subscriptionValidity.notificationUrlMatches) {
+    } else if (!notificationUrlMatches) {
       logger.debug(
         `Subscription ${existingSubscriptionId} for resource '${resource}' has incorrect notification URL.`,
       );
-    } else if (expiresSoon(existingSubscriptionRecord.expires_at)) {
+    } else if (expiresSoon) {
       logger.debug(
-        `Subscription ${existingSubscriptionId} for resource '${resource}' is about to expire.`,
+        `Subscription ${existingSubscriptionId} for resource '${resource}' will soon expire.`,
       );
-      subscriptionValidity.isValid = false;
-    }
-
-    if (subscriptionValidity.isValid) {
-      logger.debug(
-        `Subscription '${existingSubscriptionId}' for resource '${resource}' is valid.`,
-      );
-    } else {
-      logger.debug(
-        `Deleting subscription record ${existingSubscriptionId} for resource '${resource}'`,
-      );
-      await trx.deleteById(existingSubscriptionId);
     }
 
     return {
       existingSubscriptionId,
-      isValid: subscriptionValidity.isValid,
+      isValid,
+      expiresSoon,
     };
+  }
+
+  private getNotificationUrl() {
+    return this.config.getString('events.modules.msgraph.notificationUrl');
   }
 }
