@@ -27,6 +27,10 @@ export type DbSubscriptionsRow = {
   token_salt: string;
 };
 
+type UpdateData = Partial<DbSubscriptionsRow> & {
+  id: string;
+};
+
 /**
  * @internal
  */
@@ -35,6 +39,7 @@ export interface MicrosoftGraphSubscriptionsDatabaseOperations {
   findByResource: (resource: string) => Promise<DbSubscriptionsRow | undefined>;
   deleteById: (id: string) => Promise<void>;
   insert: (row: DbSubscriptionsRow) => Promise<void>;
+  update: (row: UpdateData) => Promise<void>;
 }
 
 /**
@@ -66,6 +71,11 @@ abstract class MicrosoftGraphSubscriptionsDatabaseClientBase
 
   async insert(row: DbSubscriptionsRow): Promise<void> {
     await this.getQuery().insert(row);
+  }
+
+  async update(data: UpdateData): Promise<void> {
+    const { id, ...updateData } = data;
+    await this.getQuery().update(updateData).where({ id });
   }
 }
 
