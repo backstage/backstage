@@ -85,42 +85,12 @@ export class MicrosoftGraphClient {
     config: Config,
     clientWrapper?: ClientWrapper,
   ): MicrosoftGraphClient {
-    // Fail fast if the configuration is missing or incomplete
-    config.getString('events.modules.msgraph.notificationUrl');
-
     return new MicrosoftGraphClient(
-      config,
       clientWrapper ?? ClientWrapperImpl.fromConfig(config),
     );
   }
 
-  private constructor(
-    private readonly config: Config,
-    private readonly clientWrapper: ClientWrapper,
-  ) {}
-
-  async validateActiveSubscription(
-    subscriptionId: string,
-  ): Promise<SubscriptionValidationResult> {
-    const subscription = await this.getSubscription(subscriptionId);
-    const exists = Boolean(subscription);
-    const isActive = Boolean(
-      subscription &&
-        subscription.expirationDateTime &&
-        new Date(subscription.expirationDateTime) >= new Date(),
-    );
-    const notificationUrlMatches = Boolean(
-      subscription &&
-        subscription.notificationUrl === this.getNotificationUrl(),
-    );
-
-    return {
-      exists,
-      isActive,
-      notificationUrlMatches,
-      isValid: exists && isActive && notificationUrlMatches,
-    };
-  }
+  private constructor(private readonly clientWrapper: ClientWrapper) {}
 
   async getSubscription(subscriptionId: string) {
     const subscription: Subscription | undefined = await this.clientCall(ms =>
@@ -132,26 +102,26 @@ export class MicrosoftGraphClient {
   async createSubscription({
     resource,
     validationToken,
+    notificationUrl,
+    expirationDateTime,
   }: {
     resource: string;
     validationToken: string;
+    notificationUrl: string;
+    expirationDateTime: Date;
   }) {
-    const expirationDateTime = new Date(
-      Date.now() + SUBSCRIPTION_DURATION_MS,
-    ).toISOString();
-
     const subscription: Subscription = await this.clientCall(ms =>
       ms.api('/subscriptions').post({
         changeType: 'updated,deleted',
-        notificationUrl: this.getNotificationUrl(),
+        notificationUrl,
         resource,
-        expirationDateTime,
+        expirationDateTime: expirationDateTime.toISOString(),
         clientState: validationToken,
       }),
     );
 
     if (!subscription.expirationDateTime) {
-      subscription.expirationDateTime = expirationDateTime;
+      subscription.expirationDateTime = expirationDateTime.toISOString();
     }
 
     return subscription as Subscription & {
@@ -192,9 +162,5 @@ export class MicrosoftGraphClient {
     call: (client: Client) => Promise<T>,
   ): Promise<T> {
     return this.clientWrapper.clientCall(call);
-  }
-
-  private getNotificationUrl() {
-    return this.config.getString('events.modules.msgraph.notificationUrl');
   }
 }
