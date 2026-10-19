@@ -31,9 +31,11 @@ export async function prepareServeConfig(
 
   const prepared = await engineConfig.prepareServeConfig(configPath, logger);
   process.on('exit', () => prepared.cleanup());
-  // Signals skip the 'exit' event unless we exit explicitly.
-  for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-    process.once(signal, () => process.exit(130));
+  // Signals skip the 'exit' event unless we exit explicitly. Exit with the
+  // conventional 128 + signal number.
+  const exitCodes = { SIGINT: 130, SIGTERM: 143 } as const;
+  for (const [signal, code] of Object.entries(exitCodes)) {
+    process.once(signal, () => process.exit(code));
   }
   return prepared.configPath;
 }
