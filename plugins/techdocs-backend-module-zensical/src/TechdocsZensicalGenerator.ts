@@ -144,6 +144,8 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
             imageName:
               this.options.dockerImage ??
               TechdocsZensicalGenerator.defaultDockerImage,
+            // Set the entrypoint explicitly rather than relying on the image's.
+            command: 'zensical',
             args: [
               'build',
               '-f',
@@ -218,9 +220,11 @@ function readZensicalGeneratorConfig(
       legacyGeneratorType ??
       config.getOptionalString('techdocs.generator.runIn') ??
       'docker',
-    dockerImage:
-      config.getOptionalString('techdocs.generator.zensical.dockerImage') ??
-      config.getOptionalString('techdocs.generator.dockerImage'),
+    // Deliberately not falling back to techdocs.generator.dockerImage: that
+    // is an MkDocs image and would build the site with MkDocs instead.
+    dockerImage: config.getOptionalString(
+      'techdocs.generator.zensical.dockerImage',
+    ),
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
     pullOptions: config.getOptional('techdocs.generator.pullOptions'),
     dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
