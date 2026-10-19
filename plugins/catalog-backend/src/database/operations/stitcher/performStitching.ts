@@ -160,6 +160,29 @@ export async function performStitching(options: {
     // attempt in that case, since another stitch will be triggered when
     // that processing has finished.
     if (!processedEntity) {
+      // A live slot can still hold the body of a deleted predecessor, if the
+      // entity was re-created before its tombstone was written. That body
+      // must not stay published while the new candidate waits for processing.
+      if (
+        slot &&
+        Number(slot.live) &&
+        slot.slotId !== candidateId &&
+        (await getPublishedUid(knex, slot.slotId)) !== candidateId
+      ) {
+        const outcome = await publish(knex, () =>
+          knex.transaction(tx =>
+            writeTombstone({
+              tx,
+              entityRef,
+              slotId: slot.slotId,
+              stitchTicket,
+              stitchLeaseExpiresAt,
+            }),
+          ),
+        );
+        stitchResult = outcome === 'abandoned' ? 'abandoned' : 'succeeded';
+        return outcome;
+      }
       logger.debug(
         `Unable to stitch ${entityRef}, the entity has not yet been processed`,
       );
@@ -304,6 +327,24 @@ export async function performStitching(options: {
 }
 
 /**
+ * Reads the UID of the currently published body. Only used in the rare case
+ * where a slot and its current candidate have different IDs.
+ */
+async function getPublishedUid(
+  knex: Knex,
+  slotId: string,
+): Promise<string | undefined> {
+  const row = await knex<DbFinalEntitiesRow>('final_entities')
+    .where('entity_id', slotId)
+    .select('final_entity')
+    .first();
+  if (!row?.final_entity) {
+    return undefined;
+  }
+  return (JSON.parse(row.final_entity) as Entity).metadata.uid;
+}
+
+/**
  * Runs one publication transaction, retrying on deadlock. A superseded
  * publication has already been rolled back and counts as abandoned.
  */
@@ -329,8 +370,8 @@ async function publish(
 // MySQL does not support ON CONFLICT ... DO UPDATE ... WHERE, so its
 // separate check retains a best-effort TOCTOU window. Do not turn it into a
 // queue lock here: that would introduce a new lock-order dependency during
-// publication. Deleting a candidate replaces its ticket (by trigger on
-// PostgreSQL), which also fences out a publication racing that deletion.
+// publication. Deleting a candidate replaces its ticket (by trigger), which
+// also fences out a publication racing that deletion.
 
 async function hasValidTicket(
   tx: Knex.Transaction,

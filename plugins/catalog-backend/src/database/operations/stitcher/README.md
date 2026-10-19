@@ -2,8 +2,7 @@
 
 This is internal publication bookkeeping, not a change-feed API. Existing rows
 remain null until a changed publication, and old-instance writes are untracked.
-On PostgreSQL, deletions are tracked as tombstones (see below); on MySQL and
-SQLite they are not yet. See [upgrade guidance](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
+Deletions are tracked as tombstones (see below). See [upgrade guidance](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
 
 The existing hash check skips unchanged output in ordinary operation. Overlapping
 attempts may still publish identical content with distinct generations. Consumers
@@ -21,16 +20,14 @@ comes from the current candidate. Never join `final_entities.entity_id` or
 An entity exists if and only if its final row exists and `final_entity` is not
 null. `deleted_at` is informational.
 
-On PostgreSQL, a statement-level trigger on `refresh_state` deletions requests a
-stitch for every deleted ref, using the same ticket contract as application
-code. When the stitcher then finds no candidate for a live slot, it clears the
+A trigger on `refresh_state` deletions requests a stitch for every deleted ref,
+using the same ticket contract as application code. PostgreSQL uses one
+statement-level trigger per deletion; MySQL and SQLite only have row-level
+triggers, which cost more for wide deletions but behave the same. When the stitcher then finds no candidate for a live slot, it clears the
 body, deletes the search rows and assigns a generation in one publication.
 Re-creation revives the same slot. The hash is the plain content hash while the
 slot and candidate IDs match; otherwise the candidate ID is folded in, so that
 identical content from a new candidate still publishes its new UID.
-
-MySQL and SQLite keep the cascade from `refresh_state`, so their final rows are
-deleted together with the candidate and never become tombstones.
 
 ## Transaction and lock order
 
@@ -39,7 +36,7 @@ counter uses a transaction, not a sequence: the next allocator waits for commit
 or rollback, and rollback restores both publication and counter. Decimal strings
 preserve bigint precision in JavaScript.
 
-On PostgreSQL, final rows no longer reference `refresh_state`, so publication
+Final rows no longer reference `refresh_state`, so publication
 takes no lock on the candidate and candidate deletion takes no lock on the final
 row. A deletion that races a publication replaces the stitch ticket instead:
 either the publication's ownership check sees it and abandons, or the
