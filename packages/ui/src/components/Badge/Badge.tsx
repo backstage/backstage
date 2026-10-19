@@ -17,7 +17,13 @@
 import type { BadgeProps } from './types';
 import { forwardRef } from 'react';
 import { ProgressBar } from 'react-aria-components';
-import { RiLoader4Line } from '@remixicon/react';
+import {
+  RiLoader4Line,
+  RiInformationLine,
+  RiCheckLine,
+  RiErrorWarningLine,
+  RiAlertLine,
+} from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { BadgeDefinition } from './definition';
 
@@ -26,8 +32,9 @@ import { BadgeDefinition } from './definition';
  *
  * @remarks
  * The Badge component supports an optional status (info, success, warning,
- * danger) that changes its colors, and a pending state that shows a spinning
- * loading indicator before the text.
+ * danger) that changes its colors and shows the matching status icon when no
+ * `icon` is provided, and a pending state that shows a spinning loading
+ * indicator before the text.
  *
  * @example
  * Basic usage:
@@ -36,9 +43,17 @@ import { BadgeDefinition } from './definition';
  * ```
  *
  * @example
- * With a status:
+ * With a status and its default icon:
  * ```tsx
  * <Badge status="success">Deployed</Badge>
+ * ```
+ *
+ * @example
+ * With a status and no icon:
+ * ```tsx
+ * <Badge status="success" icon={false}>
+ *   Deployed
+ * </Badge>
  * ```
  *
  * @example
@@ -56,7 +71,27 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>((props, ref) => {
     BadgeDefinition,
     props,
   );
-  const { classes, children, icon, isPending } = ownProps;
+  const { classes, children, icon, isPending, status } = ownProps;
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'info':
+        return <RiInformationLine aria-hidden="true" />;
+      case 'success':
+        return <RiCheckLine aria-hidden="true" />;
+      case 'warning':
+        return <RiErrorWarningLine aria-hidden="true" />;
+      case 'danger':
+        return <RiAlertLine aria-hidden="true" />;
+      default:
+        return null;
+    }
+  };
+
+  // Fall back to the status icon when no icon is provided. Passing `false`
+  // (or `null`) hides the icon entirely.
+  const resolvedIcon =
+    icon === undefined || icon === true ? getStatusIcon() : icon;
 
   return (
     <span ref={ref} className={classes.root} {...dataAttributes} {...restProps}>
@@ -71,7 +106,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>((props, ref) => {
           </ProgressBar>
         </span>
       ) : (
-        icon && <span className={classes.icon}>{icon}</span>
+        resolvedIcon && <span className={classes.icon}>{resolvedIcon}</span>
       )}
       {children}
     </span>

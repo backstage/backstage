@@ -44,6 +44,43 @@ describe('Badge', () => {
     );
   });
 
+  it('shows the status icon unless a custom icon is given or icons are disabled', () => {
+    const { rerender } = render(
+      <BUIProvider>
+        <Badge status="success">Banana</Badge>
+      </BUIProvider>,
+    );
+
+    const badge = screen.getByText('Banana');
+    expect(badge.querySelector('.bui-BadgeIcon svg')).toBeInTheDocument();
+
+    rerender(
+      <BUIProvider>
+        <Badge status="success" icon={<svg data-icon="custom" />}>
+          Banana
+        </Badge>
+      </BUIProvider>,
+    );
+    expect(badge.querySelectorAll('.bui-BadgeIcon svg')).toHaveLength(1);
+    expect(badge.querySelector('[data-icon="custom"]')).toBeInTheDocument();
+
+    rerender(
+      <BUIProvider>
+        <Badge status="success" icon={false}>
+          Banana
+        </Badge>
+      </BUIProvider>,
+    );
+    expect(badge.querySelector('.bui-BadgeIcon')).not.toBeInTheDocument();
+
+    rerender(
+      <BUIProvider>
+        <Badge>Banana</Badge>
+      </BUIProvider>,
+    );
+    expect(badge.querySelector('.bui-BadgeIcon')).not.toBeInTheDocument();
+  });
+
   it('shows a loading indicator instead of the icon while pending', () => {
     render(
       <BUIProvider>

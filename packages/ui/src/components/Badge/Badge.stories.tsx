@@ -85,7 +85,27 @@ export const StatusVariants = meta.story({
   ),
 });
 
-export const StatusVariantsWithIcon = meta.story({
+export const StatusVariantsWithoutIcon = meta.story({
+  render: () => (
+    <Flex direction="row" gap="2">
+      <Badge icon={false}>Neutral</Badge>
+      <Badge status="info" icon={false}>
+        Info
+      </Badge>
+      <Badge status="success" icon={false}>
+        Success
+      </Badge>
+      <Badge status="warning" icon={false}>
+        Warning
+      </Badge>
+      <Badge status="danger" icon={false}>
+        Danger
+      </Badge>
+    </Flex>
+  ),
+});
+
+export const StatusVariantsWithCustomIcon = meta.story({
   render: () => (
     <Flex direction="row" gap="2">
       <Badge icon={<RiBugLine />}>Neutral</Badge>

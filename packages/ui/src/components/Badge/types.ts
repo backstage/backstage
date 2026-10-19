@@ -21,7 +21,8 @@
  */
 export type BadgeOwnProps = {
   /**
-   * The icon to display before the badge text.
+   * The icon to display before the badge text. When omitted and a `status` is
+   * set, the badge shows the icon of that status. Pass `false` to show no icon.
    */
   icon?: React.ReactNode;
   /**
@@ -29,8 +30,8 @@ export type BadgeOwnProps = {
    */
   size?: 'small' | 'medium';
   /**
-   * The status of the badge, which changes its colors. Without a status the
-   * badge uses neutral colors.
+   * The status of the badge, which changes its colors and selects the default
+   * icon. Without a status the badge uses neutral colors and has no icon.
    */
   status?: 'info' | 'success' | 'warning' | 'danger';
   /**

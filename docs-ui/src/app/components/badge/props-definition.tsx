@@ -9,7 +9,13 @@ export const badgePropDefs: Record<string, PropDef> = {
   icon: {
     type: 'enum',
     values: ['ReactNode'],
-    description: 'Icon displayed before the badge text.',
+    description: (
+      <>
+        Icon displayed before the badge text. When omitted and a{' '}
+        <Chip>status</Chip> is set, the badge shows the icon of that status.
+        Pass <Chip>false</Chip> to show no icon.
+      </>
+    ),
   },
   size: {
     type: 'enum',
@@ -26,7 +32,7 @@ export const badgePropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['info', 'success', 'warning', 'danger'],
     description:
-      'Visual status of the badge, which changes its colors. Without a status the badge uses neutral colors.',
+      'Visual status of the badge, which changes its colors and selects the default icon. Without a status the badge uses neutral colors and has no icon.',
   },
   isPending: {
     type: 'boolean',
