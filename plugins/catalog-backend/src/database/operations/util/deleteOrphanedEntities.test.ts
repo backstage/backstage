@@ -401,10 +401,14 @@ describe.each(databases.eachSupportedId())(
           { entity_ref: 'E8', result_hash: 'original' },
           { entity_ref: 'E9', result_hash: 'original' },
         ]);
-        await expect(stitchQueue(knex)).resolves.toEqual([
-          { entity_ref: 'E2' },
-          { entity_ref: 'E7' },
-        ]);
+        // On PostgreSQL, a trigger also queues every deleted orphan, so that
+        // the stitcher can turn its final row into a tombstone.
+        await expect(stitchQueue(knex)).resolves.toEqual(
+          (databaseId.startsWith('POSTGRES')
+            ? ['E10', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7']
+            : ['E2', 'E7']
+          ).map(entity_ref => ({ entity_ref })),
+        );
         await expect(finalEntities(knex)).resolves.toEqual([
           { entity_ref: 'E1', hash: 'original', next_stitch_at: null },
           {

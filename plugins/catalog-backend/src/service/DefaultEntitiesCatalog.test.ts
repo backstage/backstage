@@ -2293,7 +2293,10 @@ describe.each(databases.eachSupportedId())(
         const stitchQueue = await knex('stitch_queue')
           .select('entity_ref')
           .orderBy('entity_ref');
+        // On PostgreSQL, the deleted entity is queued too, so that the
+        // stitcher can turn its final row into a tombstone.
         expect(stitchQueue.map(r => r.entity_ref)).toEqual([
+          ...(databaseId.startsWith('POSTGRES') ? ['k:default/root'] : []),
           'k:default/unrelated1',
           'k:default/unrelated2',
         ]);

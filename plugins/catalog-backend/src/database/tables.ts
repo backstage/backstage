@@ -141,10 +141,18 @@ export type DbRelationsRow = {
 export type DbFinalEntitiesRow = {
   /** Internal publication bookkeeping; null for legacy/untracked rows. */
   generation?: string | number | null;
+  /**
+   * A stable internal slot ID for the entity ref. It starts out equal to the
+   * first candidate's `refresh_state.entity_id`, but is kept when the entity
+   * is deleted and created again, so it must not be used as the entity UID.
+   */
   entity_id: string;
   hash: string;
-  final_entity?: string;
+  /** Null for a tombstone; this is the only test of whether the entity exists. */
+  final_entity?: string | null;
   last_updated_at?: string | Date;
+  /** When the row was last tombstoned; informational only. */
+  deleted_at?: string | Date | null;
   entity_ref: string;
 };
 
