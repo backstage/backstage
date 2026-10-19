@@ -508,8 +508,11 @@ Module routes use the same resolved feature order as module extensions: modules
 override the base plugin, and the last module wins for each named route. The app
 validates redirects after selecting those final overrides.
 
-Overriding a named subroute redirects that subroute's path. Other paths under its
-parent retain their own targets.
+Named route overrides must replace an absolute route reference with another
+absolute route reference. Modules can introduce new named subroutes or repeat
+an existing subroute with the same target and path, but cannot change a named
+subroute's target or replace an absolute reference with a subroute. Subroutes
+follow overrides of their absolute parent, keeping their paths unchanged.
 Modules for plugins that are not installed are ignored.
 
 Modules can also add or override `externalRoutes` in the owning plugin's

@@ -32,7 +32,11 @@ export interface CreateFrontendModuleOptions<
 > {
   pluginId: TPluginId;
   extensions?: TExtensions;
-  /** Named routes to add or override in the owning plugin. Later modules take precedence. */
+  /**
+   * Named routes to add or override in the owning plugin. Later modules take precedence.
+   * Overrides must replace absolute references with absolute references. Subroutes
+   * may be added or repeated with the same target and path, but not overridden.
+   */
   routes?: Record<string, RouteRef | SubRouteRef>;
   /** External routes to add or override in the owning plugin. Later modules take precedence. */
   externalRoutes?: Record<string, ExternalRouteRef>;

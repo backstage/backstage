@@ -16,24 +16,15 @@
 
 import { RouteRef, SubRouteRef } from '@backstage/frontend-plugin-api';
 import { OpaqueRouteRef, OpaqueSubRouteRef } from '@internal/frontend';
-import { joinPaths } from './joinPaths';
 
-function getRouteRefKey(
-  ref: RouteRef | SubRouteRef,
-): string | RouteRef | SubRouteRef {
-  const root = OpaqueSubRouteRef.isType(ref)
-    ? OpaqueSubRouteRef.toInternal(ref).getParent()
-    : ref;
-  const id = OpaqueRouteRef.toInternal(root).getExtensionId?.();
-  return id === undefined
-    ? ref
-    : JSON.stringify([id, OpaqueSubRouteRef.isType(ref) ? ref.path : '']);
+function getRouteRefKey(ref: RouteRef): string | RouteRef {
+  return OpaqueRouteRef.toInternal(ref).getExtensionId?.() ?? ref;
 }
 
 export class RouteRedirects {
   private readonly targets = new Map<
-    string | RouteRef | SubRouteRef,
-    { name: string; ref: RouteRef | SubRouteRef }
+    string | RouteRef,
+    { name: string; ref: RouteRef }
   >();
 
   add(
@@ -41,26 +32,44 @@ export class RouteRedirects {
     source: RouteRef | SubRouteRef,
     target: RouteRef | SubRouteRef,
   ) {
-    const key = getRouteRefKey(source);
-    if (key === getRouteRefKey(target)) {
+    if (source === target) {
+      return;
+    }
+    if (OpaqueSubRouteRef.isType(source) || OpaqueSubRouteRef.isType(target)) {
+      if (
+        OpaqueSubRouteRef.isType(source) &&
+        OpaqueSubRouteRef.isType(target) &&
+        source.path === target.path &&
+        getRouteRefKey(OpaqueSubRouteRef.toInternal(source).getParent()) ===
+          getRouteRefKey(OpaqueSubRouteRef.toInternal(target).getParent())
+      ) {
+        return;
+      }
+      throw new Error(
+        `Route override '${name}' must replace an absolute route reference with another absolute route reference; subroutes cannot be overridden`,
+      );
+    }
+    const sourceRef = OpaqueRouteRef.toInternal(source);
+    const targetRef = OpaqueRouteRef.toInternal(target);
+    const key = getRouteRefKey(sourceRef);
+    if (key === getRouteRefKey(targetRef)) {
       return;
     }
     const previous = this.targets.get(key);
-    if (previous && getRouteRefKey(previous.ref) !== getRouteRefKey(target)) {
+    if (
+      previous &&
+      getRouteRefKey(previous.ref) !== getRouteRefKey(targetRef)
+    ) {
       throw new Error(
         `Conflicting route overrides '${
           previous.name
         }' and '${name}' redirect ${key} to different targets ${getRouteRefKey(
           previous.ref,
-        )} and ${getRouteRefKey(target)}`,
+        )} and ${getRouteRefKey(targetRef)}`,
       );
     }
-    const sourceParams = OpaqueSubRouteRef.isType(source)
-      ? OpaqueSubRouteRef.toInternal(source).getParams()
-      : OpaqueRouteRef.toInternal(source).getParams();
-    const targetParams = OpaqueSubRouteRef.isType(target)
-      ? OpaqueSubRouteRef.toInternal(target).getParams()
-      : OpaqueRouteRef.toInternal(target).getParams();
+    const sourceParams = sourceRef.getParams();
+    const targetParams = targetRef.getParams();
     if (
       JSON.stringify([...sourceParams].sort()) !==
       JSON.stringify([...targetParams].sort())
@@ -69,13 +78,16 @@ export class RouteRedirects {
         `Route override '${name}' has incompatible parameters, expected [${sourceParams}] but received [${targetParams}]`,
       );
     }
-    this.targets.set(key, { name, ref: target });
+    this.targets.set(key, { name, ref: targetRef });
   }
 
   resolve(source: RouteRef | SubRouteRef): { ref: RouteRef; path: string } {
-    let ref = source;
-    let path = '';
-    const visited = new Set<string | RouteRef | SubRouteRef>();
+    const subRoute = OpaqueSubRouteRef.isType(source)
+      ? OpaqueSubRouteRef.toInternal(source)
+      : undefined;
+    let ref = subRoute?.getParent() ?? OpaqueRouteRef.toInternal(source);
+    const path = subRoute?.path ?? '';
+    const visited = new Set<string | RouteRef>();
     for (;;) {
       const key = getRouteRefKey(ref);
       if (visited.has(key)) {
@@ -83,14 +95,10 @@ export class RouteRedirects {
       }
       visited.add(key);
       const target = this.targets.get(key);
-      if (target) {
-        ref = target.ref;
-      } else if (OpaqueSubRouteRef.isType(ref)) {
-        path = path ? joinPaths(ref.path, path) : ref.path;
-        ref = OpaqueSubRouteRef.toInternal(ref).getParent();
-      } else {
+      if (!target) {
         return { ref, path };
       }
+      ref = target.ref;
     }
   }
 }

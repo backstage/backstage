@@ -419,6 +419,8 @@ it('redirects renamed routes, copies, sub routes, and chained targets', () => {
   const middle = createRouteRef({ extensionId: 'page:test/middle' });
   const final = createRouteRef({ extensionId: 'page:test/final' });
   const detail = createSubRouteRef({ parent: copy, path: '/:id' });
+  const edit = createSubRouteRef({ parent: detail, path: '/edit' });
+  const flatEdit = createSubRouteRef({ parent: copy, path: '/:id/edit' });
   const oldExternal = createExternalRouteRef({ defaultTarget: 'test.oldName' });
   const newExternal = createExternalRouteRef({ defaultTarget: 'test.newName' });
   const plugin = createFrontendPlugin({
@@ -438,6 +440,8 @@ it('redirects renamed routes, copies, sub routes, and chained targets', () => {
     expect(routes.resolve(ref)?.()).toBe('/final');
   }
   expect(routes.resolve(detail)?.({ id: 'one' })).toBe('/final/one');
+  expect(routes.resolve(edit)?.({ id: 'one' })).toBe('/final/one/edit');
+  expect(routes.resolve(flatEdit)?.({ id: 'two' })).toBe('/final/two/edit');
   expect(OpaqueRouteRef.toInternal(original).getExtensionId?.()).toBe(
     'page:test/original',
   );
@@ -520,34 +524,65 @@ it('validates the winning overrides without falling back to earlier modules', ()
   ).toThrow(/incompatible parameters/);
 });
 
-it('redirects individual sub routes without redirecting their parent or siblings', () => {
+it('only permits absolute route overrides after selecting the winning modules', () => {
   const root = createRouteRef({ extensionId: 'page:test/root' });
   const detail = createSubRouteRef({ parent: root, path: '/:id' });
-  const sibling = createSubRouteRef({ parent: root, path: '/sibling' });
+  const copy = createSubRouteRef({
+    parent: createRouteRef({ extensionId: 'page:test/root' }),
+    path: '/:id',
+  });
+  const sibling = createSubRouteRef({ parent: root, path: '/other/:id' });
   const target = createRouteRef({
     extensionId: 'page:test/detail',
     params: ['id'],
   });
   const plugin = createFrontendPlugin({
     pluginId: 'test',
-    routes: { root, detail, sibling },
+    routes: { root, detail, target },
     extensions: [page('root', '/root'), page('detail', '/detail/:id')],
   });
-  const module = createFrontendModule({
+  const valid = createFrontendModule({
+    pluginId: 'test',
+    routes: { detail: copy, added: sibling },
+  });
+  for (const [name, ref] of [
+    ['detail', target],
+    ['detail', sibling],
+    ['target', detail],
+  ] as const) {
+    const invalid = createFrontendModule({
+      pluginId: 'test',
+      routes: { [name]: ref },
+    });
+    expect(() =>
+      createSpecializedApp({ features: [app, plugin, valid, invalid] }),
+    ).toThrow(/must replace an absolute route reference/);
+  }
+  const discarded = createFrontendModule({
     pluginId: 'test',
     routes: { detail: target },
   });
-  const routes = createSpecializedApp({
-    features: [app, plugin, module],
+  const resolution = createSpecializedApp({
+    features: [app, plugin, discarded, valid],
   }).apis.get(routeResolutionApiRef)!;
-  expect(routes.resolve(root)?.()).toBe('/root');
-  expect(routes.resolve(sibling)?.()).toBe('/root/sibling');
-  expect(routes.resolve(detail)?.({ id: 'one' })).toBe('/detail/one');
-  const copy = createSubRouteRef({
-    parent: createRouteRef({ extensionId: 'page:test/root' }),
-    path: '/:id',
+  expect(resolution.resolve(detail)?.({ id: 'one' })).toBe('/root/one');
+  expect(resolution.resolve(copy)?.({ id: 'two' })).toBe('/root/two');
+  expect(resolution.resolve(sibling)?.({ id: 'three' })).toBe(
+    '/root/other/three',
+  );
+  const emptyPlugin = createFrontendPlugin({
+    pluginId: 'test',
+    extensions: [page('root', '/root'), page('detail', '/detail/:id')],
   });
-  expect(routes.resolve(copy)?.({ id: 'two' })).toBe('/detail/two');
+  const introduced = createFrontendModule({
+    pluginId: 'test',
+    routes: { detail },
+  });
+  expect(() =>
+    createSpecializedApp({
+      features: [app, emptyPlugin, introduced, discarded],
+    }),
+  ).toThrow(/must replace an absolute route reference/);
 });
 
 it('redirects routes first introduced by a module after selecting the final overrides', () => {
