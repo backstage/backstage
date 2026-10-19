@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 import { TechdocsZensicalGenerator } from '@internal/techdocs-zensical';
 import { getEngineConfig } from './registry';
 
@@ -22,7 +23,7 @@ describe('getEngineConfig', () => {
   it('should return mkdocs config by default', () => {
     const config = getEngineConfig('mkdocs');
     expect(config.binary).toBe('mkdocs');
-    expect(config.defaultImage).toBe('spotify/techdocs');
+    expect(config.defaultImage).toBe(TechdocsGenerator.defaultDockerImage);
     expect(config.serveCommand).toBe('serve');
     expect(
       config.startupLogPattern.test(

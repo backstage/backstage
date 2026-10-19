@@ -19,11 +19,12 @@ import {
   injectLivereloadParameters,
   proxyMkdocsLivereload,
 } from '../livereload';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 import { EngineConfig } from './types';
 
 export const mkdocsConfig: EngineConfig = {
   binary: 'mkdocs',
-  defaultImage: 'spotify/techdocs',
+  defaultImage: TechdocsGenerator.defaultDockerImage,
   serveCommand: 'serve',
   startupLogPattern: /Serving on /,
   buildArgs(outputDir: string, configFile: string): string[] {

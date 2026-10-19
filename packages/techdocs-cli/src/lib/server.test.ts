@@ -17,6 +17,7 @@
 import { runEngineServer } from './server';
 import { mkdocsConfig } from './engines/mkdocs';
 import { run } from '@backstage/cli-common';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 jest.mock('@backstage/cli-common', () => {
   return {
@@ -51,7 +52,7 @@ describe('runEngineServer', () => {
           '--dev-addr',
           '0.0.0.0:8000',
           '--livereload',
-          'spotify/techdocs',
+          TechdocsGenerator.defaultDockerImage,
         ]),
         expect.objectContaining({}),
       );
@@ -104,7 +105,7 @@ describe('runEngineServer', () => {
           '--add-host=internal.host:192.168.11.12',
           '--name',
           'my-techdocs-container',
-          'spotify/techdocs',
+          TechdocsGenerator.defaultDockerImage,
           'serve',
           '--dev-addr',
           '0.0.0.0:8000',
