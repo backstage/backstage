@@ -21,7 +21,9 @@ const defaultPreviewAppPort = '3000';
 export function registerCommands(program: Command) {
   program
     .command('generate')
-    .description('Generate TechDocs documentation site using MkDocs.')
+    .description(
+      'Generate a TechDocs documentation site with the selected engine (MkDocs by default).',
+    )
     .option(
       '--source-dir <PATH>',
       'Source directory containing mkdocs.yml and docs/ directory.',
@@ -34,12 +36,12 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
+      "Docker image to use. Defaults to the selected engine's image.",
     )
     .option('--no-pull', 'Do not pull the latest docker image')
     .option(
       '--no-docker',
-      'Do not use Docker, use MkDocs executable and plugins in current user environment.',
+      'Do not use Docker, run the engine and its plugins in the current user environment.',
     )
     .option(
       '--techdocs-ref <HOST_TYPE:URL>',
@@ -54,7 +56,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
     .option('-v, --verbose', 'Enable verbose output.', false)
@@ -252,7 +254,10 @@ export function registerCommands(program: Command) {
     .description(
       'Serve a documentation project locally using the configured engine.',
     )
-    .option('-i, --docker-image <DOCKER_IMAGE>', 'The docker container to use')
+    .option(
+      '-i, --docker-image <DOCKER_IMAGE>',
+      "Docker image to use. Defaults to the selected engine's image.",
+    )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
       'Override the image entrypoint',
@@ -263,11 +268,11 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--no-docker',
-      'Do not use Docker, run the engine serve command in current user environment.',
+      'Do not use Docker, run the engine serve command in the current user environment.',
     )
     .option(
       '--site-name',
-      'Name for site when using default config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
@@ -285,7 +290,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
+      "Docker image to use. Defaults to the selected engine's image.",
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -301,7 +306,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
@@ -322,7 +327,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
+      "Docker image to use. Defaults to the selected engine's image.",
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -334,11 +339,11 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--no-docker',
-      'Do not use Docker, use MkDocs executable in current user environment.',
+      'Do not use Docker, run the engine in the current user environment.',
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
     .option(
