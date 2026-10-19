@@ -71,7 +71,7 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
     config: Config;
   }) {
     this.logger = options.logger;
-    this.options = readZensicalGeneratorConfig(options.config, options.logger);
+    this.options = readZensicalGeneratorConfig(options.config);
     this.containerRunner = options.containerRunner;
   }
 
@@ -201,25 +201,12 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
   }
 }
 
-function readZensicalGeneratorConfig(
-  config: Config,
-  logger: LoggerService,
-): GeneratorConfig {
-  const legacyGeneratorType = config.getOptionalString(
-    'techdocs.generators.techdocs',
-  ) as GeneratorRunInType;
-
-  if (legacyGeneratorType) {
-    logger.warn(
-      `The 'techdocs.generators.techdocs' configuration key is deprecated and will be removed in the future. Please use 'techdocs.generator' instead.`,
-    );
-  }
-
+function readZensicalGeneratorConfig(config: Config): GeneratorConfig {
   return {
     runIn:
-      legacyGeneratorType ??
-      config.getOptionalString('techdocs.generator.runIn') ??
-      'docker',
+      (config.getOptionalString(
+        'techdocs.generator.runIn',
+      ) as GeneratorRunInType) ?? 'docker',
     // Deliberately not falling back to techdocs.generator.dockerImage: that
     // is an MkDocs image and would build the site with MkDocs instead.
     dockerImage: config.getOptionalString(
