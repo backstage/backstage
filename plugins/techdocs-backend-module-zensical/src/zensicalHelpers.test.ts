@@ -21,7 +21,11 @@ import {
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node';
-import { cleanupZensicalConfig, patchZensicalConfig } from './zensicalHelpers';
+import {
+  cleanupZensicalConfig,
+  normalizeSearchIndex,
+  patchZensicalConfig,
+} from './zensicalHelpers';
 
 describe('patchZensicalConfig', () => {
   const mockDir = createMockDirectory();
@@ -150,5 +154,79 @@ describe('patchZensicalConfig', () => {
     expect(config.plugins).toHaveLength(1);
     expect(JSON.stringify(config.plugins)).toContain('search');
     expect(JSON.stringify(config.plugins)).not.toContain('techdocs-core');
+  });
+});
+
+describe('normalizeSearchIndex', () => {
+  const mockDir = createMockDirectory();
+  const logger = mockServices.logger.mock();
+
+  afterEach(() => {
+    mockDir.clear();
+    jest.clearAllMocks();
+  });
+
+  const searchIndex = () =>
+    fs.readJson(mockDir.resolve('search', 'search_index.json'));
+
+  it('converts Zensical items to MkDocs docs with plain text', async () => {
+    mockDir.setContent({
+      'search.json': JSON.stringify({
+        config: { lang: ['en'] },
+        items: [
+          {
+            title: 'Getting started',
+            text: '<p>Install the <code>cli</code>\n  first.</p>',
+            location: 'getting-started/',
+          },
+        ],
+      }),
+    });
+
+    await normalizeSearchIndex(mockDir.path, logger);
+
+    await expect(searchIndex()).resolves.toEqual({
+      config: { lang: ['en'] },
+      docs: [
+        {
+          title: 'Getting started',
+          text: 'Install the cli first.',
+          location: 'getting-started/',
+        },
+      ],
+    });
+  });
+
+  it('fills in missing fields', async () => {
+    mockDir.setContent({ 'search.json': JSON.stringify({ items: [{}] }) });
+
+    await normalizeSearchIndex(mockDir.path, logger);
+
+    await expect(searchIndex()).resolves.toEqual({
+      config: {},
+      docs: [{ title: '', text: '', location: '' }],
+    });
+  });
+
+  it('warns and writes nothing when search.json is missing', async () => {
+    await normalizeSearchIndex(mockDir.path, logger);
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('search.json not found'),
+    );
+    await expect(
+      fs.pathExists(mockDir.resolve('search', 'search_index.json')),
+    ).resolves.toBe(false);
+  });
+
+  it('warns instead of throwing on invalid JSON', async () => {
+    mockDir.setContent({ 'search.json': '{not json' });
+
+    await expect(
+      normalizeSearchIndex(mockDir.path, logger),
+    ).resolves.toBeUndefined();
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to normalize search index'),
+    );
   });
 });

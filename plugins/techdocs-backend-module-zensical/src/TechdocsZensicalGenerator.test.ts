@@ -25,6 +25,12 @@ import path from 'node:path';
 import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node';
 import { TechdocsZensicalGenerator } from './TechdocsZensicalGenerator';
 
+const mockRunCommand = jest.fn();
+jest.mock('@backstage/plugin-techdocs-node', () => ({
+  ...jest.requireActual('@backstage/plugin-techdocs-node'),
+  runCommand: (...args: unknown[]) => mockRunCommand(...args),
+}));
+
 describe('TechdocsZensicalGenerator', () => {
   const mockDir = createMockDirectory();
   const logger = mockServices.logger.mock();
@@ -112,5 +118,81 @@ describe('TechdocsZensicalGenerator', () => {
     await expect(
       fs.readFile(mockDir.resolve('input', 'mkdocs.yml'), 'utf8'),
     ).resolves.toBe('site_name: Test\n');
+  });
+});
+
+describe('TechdocsZensicalGenerator (local)', () => {
+  const mockDir = createMockDirectory();
+  const logger = mockServices.logger.mock();
+
+  afterEach(() => {
+    mockDir.clear();
+    mockRunCommand.mockReset();
+  });
+
+  // Stands in for the local zensical binary, like the container runner above.
+  async function fakeZensicalBuild({
+    args,
+    options,
+  }: {
+    args: string[];
+    options: { cwd: string };
+  }) {
+    const configFile = args[args.indexOf('-f') + 1];
+    const config = yaml.load(await fs.readFile(configFile, 'utf8'), {
+      schema: MKDOCS_SCHEMA,
+    }) as { site_dir: string };
+    await fs.outputFile(
+      path.join(options.cwd, config.site_dir, 'index.html'),
+      '<html></html>',
+    );
+  }
+
+  function createGenerator() {
+    mockDir.setContent({
+      input: {
+        'mkdocs.yml': 'site_name: Test\n',
+        docs: { 'index.md': '# Hello\n' },
+      },
+    });
+    return TechdocsZensicalGenerator.fromConfig(
+      new ConfigReader({ techdocs: { generator: { runIn: 'local' } } }),
+      { logger },
+    );
+  }
+
+  const runOptions = () => ({
+    inputDir: mockDir.resolve('input'),
+    outputDir: mockDir.resolve('output'),
+    // GeneratorRunOptions takes a winston Logger; the mock covers what's used.
+    logger: logger as any,
+  });
+
+  it('runs the local zensical binary in the input directory', async () => {
+    mockRunCommand.mockImplementation(fakeZensicalBuild);
+
+    await createGenerator().run(runOptions());
+
+    expect(mockRunCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'zensical',
+        args: ['build', '-f', expect.stringContaining('.mkdocs.zensical-')],
+        options: { cwd: mockDir.resolve('input') },
+      }),
+    );
+    await expect(
+      fs.pathExists(mockDir.resolve('output', 'index.html')),
+    ).resolves.toBe(true);
+  });
+
+  it('cleans up the temporary config and site on failure', async () => {
+    mockRunCommand.mockRejectedValue(new Error('zensical exploded'));
+
+    await expect(createGenerator().run(runOptions())).rejects.toThrow(
+      /Failed to generate docs .*zensical exploded/,
+    );
+
+    const leftovers = await fs.readdir(mockDir.resolve('input'));
+    expect(leftovers.sort()).toEqual(['docs', 'mkdocs.yml']);
   });
 });
