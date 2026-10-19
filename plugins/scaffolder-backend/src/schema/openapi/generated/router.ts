@@ -26,13 +26,39 @@ export const spec = {
     title: 'scaffolder',
     version: '1',
     description:
-      'The Backstage backend plugin that helps you create new things',
+      'The Software Templates API lets you inspect templates and installed actions,\nrun templates, and monitor tasks. Endpoints are grouped by functionality below.\n\nAll paths are relative to the Scaffolder backend base URL, which is typically\nyour `backend.baseUrl` plus `/api/scaffolder`. For example, the actions endpoint\nis `http://localhost:7007/api/scaffolder/v2/actions` during local development.\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
     },
     contact: {},
   },
+  tags: [
+    {
+      name: 'Templates',
+      description:
+        'Inspect template parameters and test templates with a dry run.',
+    },
+    {
+      name: 'Tasks',
+      description:
+        'Create, list, inspect, cancel, and retry tasks, and retrieve task events.',
+    },
+    {
+      name: 'Actions',
+      description: 'List installed template actions.',
+    },
+    {
+      name: 'Autocomplete providers',
+      description:
+        'Retrieve autocomplete suggestions from registered providers.',
+    },
+    {
+      name: 'Templating extensions',
+      description:
+        'List available template filters and global functions and values.',
+    },
+  ],
   servers: [
     {
       url: '/',
@@ -747,6 +773,7 @@ export const spec = {
     '/v2/templates/{namespace}/{kind}/{name}/parameter-schema': {
       get: {
         operationId: 'GetTemplateParameterSchema',
+        tags: ['Templates'],
         description: 'Get template parameter schema.',
         responses: {
           '200': {
@@ -788,6 +815,7 @@ export const spec = {
     '/v2/actions': {
       get: {
         operationId: 'ListActions',
+        tags: ['Actions'],
         description: 'Returns a list of all installed actions.',
         responses: {
           '200': {
@@ -813,6 +841,7 @@ export const spec = {
     '/v2/tasks': {
       get: {
         operationId: 'ListTasks',
+        tags: ['Tasks'],
         description:
           'Returns a list of tasks, filtering by ownership and/or status if given.',
         responses: {
@@ -856,6 +885,7 @@ export const spec = {
       },
       post: {
         operationId: 'Scaffold',
+        tags: ['Tasks'],
         description:
           'Executes the scaffolding of a component, given a template and its\nparameter values.',
         requestBody: {
@@ -917,6 +947,7 @@ export const spec = {
     '/v2/tasks/{taskId}': {
       get: {
         operationId: 'GetTask',
+        tags: ['Tasks'],
         description: 'Get a task by ID.',
         responses: {
           '200': {
@@ -949,6 +980,7 @@ export const spec = {
     '/v2/tasks/{taskId}/cancel': {
       post: {
         operationId: 'CancelTask',
+        tags: ['Tasks'],
         description:
           'Sends a signal to a task broker to cancel the running task by taskId.',
         responses: {
@@ -984,6 +1016,7 @@ export const spec = {
     '/v2/tasks/{taskId}/retry': {
       post: {
         operationId: 'Retry',
+        tags: ['Tasks'],
         description: 'Starts the task again from the point where it failed.',
         requestBody: {
           required: false,
@@ -1059,6 +1092,7 @@ export const spec = {
     '/v2/tasks/{taskId}/events': {
       get: {
         operationId: 'StreamLogsPolling',
+        tags: ['Tasks'],
         description: 'Get events for a task by ID.',
         responses: {
           '200': {
@@ -1091,6 +1125,7 @@ export const spec = {
     '/v2/dry-run': {
       post: {
         operationId: 'DryRun',
+        tags: ['Templates'],
         description: 'Perform a dry-run of a template',
         requestBody: {
           required: true,
@@ -1215,6 +1250,7 @@ export const spec = {
     '/v2/autocomplete/{provider}/{resource}': {
       post: {
         operationId: 'Autocomplete',
+        tags: ['Autocomplete providers'],
         description:
           'Perform an autocomplete for the given provider and resource.',
         requestBody: {
@@ -1310,6 +1346,7 @@ export const spec = {
     '/v2/templating-extensions': {
       get: {
         operationId: 'ListTemplatingExtensions',
+        tags: ['Templating extensions'],
         description:
           'Returns a structure describing the available templating extensions.',
         responses: {
