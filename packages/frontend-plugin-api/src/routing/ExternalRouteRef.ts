@@ -74,6 +74,7 @@ export function createExternalRouteRef<
 >(config?: {
   /**
    * The parameters that will be provided to the external route reference.
+   * Wildcard ('*') parameters are not supported.
    */
   readonly params?: string extends TParamKeys
     ? (keyof TParams)[]
@@ -94,6 +95,9 @@ export function createExternalRouteRef<
     : { [param in TParamKeys]: string }
 > {
   const params = (config?.params ?? []) as string[];
+  if (params.includes('*')) {
+    throw new Error('Route references do not support wildcard parameters');
+  }
   const creationSite = describeParentCallSite();
 
   let id: string | undefined = undefined;

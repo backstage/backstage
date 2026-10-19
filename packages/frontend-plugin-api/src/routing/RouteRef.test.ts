@@ -80,6 +80,12 @@ describe('RouteRef', () => {
     }
   });
 
+  it('rejects wildcard parameters', () => {
+    expect(() =>
+      createRouteRef({ extensionId: 'page:test', params: ['id', '*'] }),
+    ).toThrow('Route references do not support wildcard parameters');
+  });
+
   it('should be created with params', () => {
     const routeRef: RouteRef<{
       x: string;

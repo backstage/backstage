@@ -45,7 +45,10 @@ export function createRouteRef<
   // Defaulting to never means we get undefined params when the array is empty or omitted.
   TParamKey extends string = never,
 >(config: {
-  /** A list of parameter names that the path that this route ref is bound to must contain */
+  /**
+   * A list of parameter names that the path that this route ref is bound to must contain.
+   * Wildcard ('*') parameters are not supported.
+   */
   readonly params?: TParamKey[];
 
   /** The ID of the target extension, such as a page or entity content extension. */
@@ -54,6 +57,9 @@ export function createRouteRef<
   [TParamKey] extends [never] ? undefined : { [param in TParamKey]: string }
 > {
   const params = (config?.params ?? []) as string[];
+  if (params.includes('*')) {
+    throw new Error('Route references do not support wildcard parameters');
+  }
   const extensionId: string | undefined = config?.extensionId;
   if (
     extensionId !== undefined &&

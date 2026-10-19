@@ -33,6 +33,12 @@ describe('ExternalRouteRef', () => {
     );
   });
 
+  it('rejects wildcard parameters', () => {
+    expect(() => createExternalRouteRef({ params: ['id', '*'] })).toThrow(
+      'Route references do not support wildcard parameters',
+    );
+  });
+
   it('should be created with params', () => {
     const routeRef: ExternalRouteRef<{
       x: string;

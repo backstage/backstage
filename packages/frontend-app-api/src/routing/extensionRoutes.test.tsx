@@ -757,3 +757,16 @@ it('resolves explicitly inherited parameters without losing scoped routing', () 
   );
   expect(() => routes.resolve(scoped)).toThrow('has parameters');
 });
+
+it('links to wildcard-mounted pages without a wildcard parameter', () => {
+  const root = createRouteRef({ extensionId: 'page:test/files' });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { root },
+    extensions: [page('files', '/files/*')],
+  });
+  const resolution = createSpecializedApp({
+    features: [app, plugin],
+  }).apis.get(routeResolutionApiRef)!;
+  expect(resolution.resolve(root)?.()).toBe('/files');
+});

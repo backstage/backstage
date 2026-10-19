@@ -25,9 +25,13 @@ extension.
 
 `createRouteRef` from `@backstage/frontend-plugin-api` now requires an
 `extensionId` identifying the target extension, often a page or entity content
-extension. Add this ID to your existing route reference. Parameters are
-unaffected: keep any existing `params`. Replace `aliasFor` with `extensionId`
+extension. Add this ID to your existing route reference and keep any existing
+named `params`. Replace `aliasFor` with `extensionId`
 pointing to the same target extension.
+
+Wildcard (`*`) parameters are now rejected by `createRouteRef` and
+`createExternalRouteRef`. References can still link to wildcard-mounted pages
+without declaring a wildcard parameter.
 
 #### Supporting older frontend system versions
 

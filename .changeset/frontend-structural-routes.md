@@ -8,4 +8,6 @@
 const rootRouteRef = createRouteRef({ extensionId: 'page:example' });
 ```
 
+Declaring wildcard (`*`) parameters in `createRouteRef` or `createExternalRouteRef` is now rejected. Route references can still link to wildcard-mounted pages without declaring a wildcard parameter.
+
 Frontend modules can now add or override named `routes` and `externalRoutes` in their plugin namespace. Named route overrides must replace absolute references with absolute references; modules can add subroutes but cannot override them. Module route overrides also redirect existing references to the original target, allowing deprecated route names to remain aliases. The runtime remains compatible with previously compiled route refs and features.
