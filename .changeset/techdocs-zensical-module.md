@@ -2,6 +2,4 @@
 '@backstage/plugin-techdocs-backend-module-zensical': minor
 ---
 
-New module that adds [Zensical](https://zensical.org) as a TechDocs documentation engine. Install it in your backend and opt entities in with the `backstage.io/techdocs-engine: zensical` annotation, or make it the default with `techdocs.generator.defaultEngine: zensical`. Builds reuse the same `mkdocs.yml` sanitization as the MkDocs engine, produce a search index in the format the TechDocs collator expects, and run in the `ghcr.io/backstage/techdocs-zensical` image by default (override with `techdocs.generator.zensical.dockerImage`).
-
-The `TechdocsZensicalGenerator` class is also exported, so tools such as `@techdocs/cli` can build Zensical sites without a backend.
+New module that adds [Zensical](https://zensical.org) as an experimental TechDocs documentation engine. Opt entities in with the `backstage.io/techdocs-engine: zensical` annotation, or set `techdocs.generator.defaultEngine: zensical`. See [Zensical Engine](https://backstage.io/docs/features/techdocs/engines-zensical) for setup and configuration.
