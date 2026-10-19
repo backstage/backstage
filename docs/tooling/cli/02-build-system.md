@@ -137,7 +137,13 @@ configured in the project root, or the only formatter listed.
 If the root `package.json` lists neither, the generated OpenAPI code and lint
 configuration files aren't formatted. oxfmt reads its configuration from an
 `.oxfmtrc.json`, `.oxfmtrc.jsonc`, `oxfmt.config.ts`, or `oxfmt.config.mts`
-file.
+file. To switch to oxfmt, add `oxfmt` to the root dev dependencies and run
+`oxfmt --migrate=prettier`, which converts your Prettier configuration and
+`.prettierignore`, as described in the
+[oxfmt migration guide](https://oxc.rs/docs/guide/usage/formatter/migrate-from-prettier.html).
+Then remove Prettier from the root dependencies. You can keep the
+`eslint-config-prettier` setup in the Backstage ESLint configuration, since it
+only turns off rules that conflict with a formatter.
 
 ## Linting
 
