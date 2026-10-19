@@ -18,16 +18,13 @@ export interface Config {
   techdocs?: {
     generator?: {
       /**
-       * Defines the default document generation engine behind TechDocs
-       */
-      defaultEngine?: 'mkdocs' | 'zensical';
-
-      /**
        * Override behavior specific to Zensical.
        */
       zensical?: {
         /**
-         * Override the default Zensical docker image
+         * Docker image to use for Zensical builds. Defaults to the Zensical
+         * image published by Backstage; techdocs.generator.dockerImage is not
+         * used, since it configures the MkDocs image.
          */
         dockerImage?: string;
       };
