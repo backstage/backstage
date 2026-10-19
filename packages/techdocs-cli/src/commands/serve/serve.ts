@@ -129,10 +129,7 @@ export default async function serve(opts: OptionValues) {
 
       logger.verbose(`${logPrefix} ${line}`);
 
-      if (
-        !docsServerHasStarted &&
-        line.includes(`${engineConfig.startupLogPattern}`)
-      ) {
+      if (!docsServerHasStarted && engineConfig.startupLogPattern.test(line)) {
         docsServerHasStarted = true;
       }
     });

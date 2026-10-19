@@ -33,7 +33,8 @@ export type EngineConfig = {
   binary: string;
   defaultImage: string;
   serveCommand: string;
-  startupLogPattern: string;
+  /** Matches the log line the engine prints once its dev server is up. */
+  startupLogPattern: RegExp;
   buildArgs(outputDir: string, configFile: string): string[];
   serveArgs(port: string, options: ServeOptions): string[];
   /**

@@ -25,7 +25,7 @@ export const mkdocsConfig: EngineConfig = {
   binary: 'mkdocs',
   defaultImage: 'spotify/techdocs',
   serveCommand: 'serve',
-  startupLogPattern: 'Serving on',
+  startupLogPattern: /Serving on /,
   buildArgs(outputDir: string, configFile: string): string[] {
     return ['build', '-f', configFile, '-d', outputDir, '-v'];
   },

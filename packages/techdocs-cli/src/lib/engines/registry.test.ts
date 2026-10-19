@@ -24,7 +24,11 @@ describe('getEngineConfig', () => {
     expect(config.binary).toBe('mkdocs');
     expect(config.defaultImage).toBe('spotify/techdocs');
     expect(config.serveCommand).toBe('serve');
-    expect(config.startupLogPattern).toBe('Serving on');
+    expect(
+      config.startupLogPattern.test(
+        'INFO    -  [12:00:00] Serving on http://127.0.0.1:8000/',
+      ),
+    ).toBe(true);
   });
 
   it('should return mkdocs build args with -d flag', () => {
@@ -104,6 +108,20 @@ describe('getEngineConfig', () => {
     it('uses the zensical binary and image', () => {
       expect(config.binary).toBe('zensical');
       expect(config.defaultImage).toBe('ghcr.io/backstage/techdocs-zensical');
+    });
+
+    it('matches only the startup line', () => {
+      expect(
+        config.startupLogPattern.test(
+          'Serving /docs/.techdocs-zensical-serve-1234 on http://127.0.0.1:8000',
+        ),
+      ).toBe(true);
+      expect(
+        config.startupLogPattern.test('Building page serving-suggestions.md'),
+      ).toBe(false);
+      expect(
+        config.startupLogPattern.test('Serving suggestions are now enabled'),
+      ).toBe(false);
     });
 
     it('omits -d from build args since output comes from site_dir', () => {

@@ -103,7 +103,8 @@ export const zensicalConfig: EngineConfig = {
   binary: 'zensical',
   defaultImage: 'ghcr.io/backstage/techdocs-zensical',
   serveCommand: 'serve',
-  startupLogPattern: 'Serving',
+  // e.g. "Serving /path/to/site on http://127.0.0.1:8000"
+  startupLogPattern: /Serving .+ on https?:\/\//,
   buildArgs(_outputDir: string, configFile: string): string[] {
     return ['build', '-f', configFile];
   },

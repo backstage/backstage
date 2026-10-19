@@ -79,7 +79,7 @@ export default async function serveMkdocs(opts: OptionValues) {
       // When the server has started, open a new browser tab for the user.
       if (
         !boolOpenBrowserTriggered &&
-        line.includes(`${engineConfig.startupLogPattern}`)
+        engineConfig.startupLogPattern.test(line)
       ) {
         // Always open the local address, since 0.0.0.0 belongs to docker
         logger.info(`\nStarting ${engine} server on ${localAddr}\n`);
