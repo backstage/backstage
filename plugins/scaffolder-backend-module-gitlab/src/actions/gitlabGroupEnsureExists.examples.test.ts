@@ -22,6 +22,9 @@ import { examples } from './gitlabGroupEnsureExists.examples';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
+  Namespaces: {
+    show: jest.fn(),
+  },
   Groups: {
     show: jest.fn(),
     create: jest.fn(),
@@ -41,6 +44,9 @@ describe('gitlab:group:ensureExists', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGitlabClient.Namespaces.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
   });
 
   it(`Should ${examples[0].description}`, async () => {
