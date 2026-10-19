@@ -41,8 +41,14 @@ export function createScriptOptionsParser(
     if (!scriptStr || !scriptStr.startsWith(expectedScript)) {
       return undefined;
     }
+    // Require a word boundary, so that `package lint` does not match a
+    // `package lint-something` script
+    const rest = scriptStr.slice(expectedScript.length);
+    if (rest && !/^\s/.test(rest)) {
+      return undefined;
+    }
 
-    const argsStr = scriptStr.slice(expectedScript.length).trim();
+    const argsStr = rest.trim();
     const args = argsStr
       ? parseShellArgs(argsStr).filter(
           (e): e is string => typeof e === 'string',

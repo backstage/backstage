@@ -28,6 +28,7 @@ describe('createScriptOptionsParser', () => {
     });
     expect(parse('backstage-cli package lint')).toEqual({});
     expect(parse('backstage-cli package build')).toBeUndefined();
+    expect(parse('backstage-cli package lint-something')).toBeUndefined();
     expect(parse(undefined)).toBeUndefined();
   });
 

@@ -216,7 +216,7 @@ describe('oxlint command execution', () => {
       ),
       mockPackage('custom', 'eslint .'),
       mockPackage('missing', ''),
-      mockPackage('eslint-module', 'backstage-cli package lint'),
+      mockPackage('cli', 'backstage-cli package lint'),
       mockPackage('unrelated', 'backstage-cli package lint-something'),
     ];
     packageGraph.listTargetPackages.mockResolvedValue(
@@ -231,6 +231,7 @@ describe('oxlint command execution', () => {
 
     setSpawnResult(0, jsonReport('first', { severity: 'warning' }));
     setSpawnResult(0, jsonReport('second', { severity: 'warning' }));
+    setSpawnResult(0, jsonReport('third'));
 
     await expect(
       runRepo(['--since', 'origin/master', '--format', 'json']),
@@ -240,9 +241,13 @@ describe('oxlint command execution', () => {
       ref: 'origin/master',
       analyzeLockfile: true,
     });
-    expect(spawn).toHaveBeenCalledTimes(2);
+    expect(spawn).toHaveBeenCalledTimes(3);
     expect(spawn.mock.calls.map(([, args]) => args?.[args.length - 1])).toEqual(
-      [normalize('packages/one'), normalize('packages/two')],
+      [
+        normalize('packages/one'),
+        normalize('packages/two'),
+        normalize('packages/cli'),
+      ],
     );
     expect(spawn.mock.calls[0][1]).not.toContain('--max-warnings');
     // The second package declares --max-warnings 0 in its own lint script
