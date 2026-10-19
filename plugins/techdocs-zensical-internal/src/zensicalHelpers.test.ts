@@ -197,6 +197,19 @@ describe('normalizeSearchIndex', () => {
     });
   });
 
+  it('leaves no angle brackets behind from nested tags', async () => {
+    mockDir.setContent({
+      'search.json': JSON.stringify({
+        items: [{ text: '<scr<script>ipt>alert(1)</script>' }],
+      }),
+    });
+
+    await normalizeSearchIndex(mockDir.path, logger);
+
+    const { docs } = await searchIndex();
+    expect(docs[0].text).not.toMatch(/[<>]/);
+  });
+
   it('fills in missing fields', async () => {
     mockDir.setContent({ 'search.json': JSON.stringify({ items: [{}] }) });
 
