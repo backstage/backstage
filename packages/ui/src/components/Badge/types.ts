@@ -35,8 +35,8 @@ export type BadgeOwnProps = {
    */
   status?: 'info' | 'success' | 'warning' | 'danger';
   /**
-   * Shows a spinning loading indicator before the badge text to indicate a
-   * pending operation. The indicator replaces the `icon` while pending.
+   * Shows a spinning loading indicator after the badge text to indicate a
+   * pending operation.
    */
   isPending?: boolean;
   children?: React.ReactNode;

@@ -38,7 +38,7 @@ export const badgePropDefs: Record<string, PropDef> = {
     type: 'boolean',
     default: 'false',
     description:
-      'Shows a spinning loading indicator before the badge text to indicate a pending operation. The indicator replaces the icon while pending.',
+      'Shows a spinning loading indicator after the badge text to indicate a pending operation.',
   },
   ...childrenPropDefs,
   ...classNamePropDefs,

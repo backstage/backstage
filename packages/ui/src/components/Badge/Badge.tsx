@@ -34,7 +34,7 @@ import { BadgeDefinition } from './definition';
  * The Badge component supports an optional status (info, success, warning,
  * danger) that changes its colors and shows the matching status icon when no
  * `icon` is provided, and a pending state that shows a spinning loading
- * indicator before the text.
+ * indicator after the text.
  *
  * @example
  * Basic usage:
@@ -95,7 +95,9 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>((props, ref) => {
 
   return (
     <span ref={ref} className={classes.root} {...dataAttributes} {...restProps}>
-      {isPending ? (
+      {resolvedIcon && <span className={classes.icon}>{resolvedIcon}</span>}
+      {children}
+      {isPending && (
         <span className={classes.icon}>
           <ProgressBar
             aria-label="Loading"
@@ -105,10 +107,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>((props, ref) => {
             <RiLoader4Line aria-hidden="true" />
           </ProgressBar>
         </span>
-      ) : (
-        resolvedIcon && <span className={classes.icon}>{resolvedIcon}</span>
       )}
-      {children}
     </span>
   );
 });

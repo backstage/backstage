@@ -81,7 +81,7 @@ describe('Badge', () => {
     expect(badge.querySelector('.bui-BadgeIcon')).not.toBeInTheDocument();
   });
 
-  it('shows a loading indicator instead of the icon while pending', () => {
+  it('shows a loading indicator after the text while pending', () => {
     render(
       <BUIProvider>
         <Badge status="info" isPending icon={<svg data-icon="custom" />}>
@@ -93,9 +93,9 @@ describe('Badge', () => {
     const badge = screen.getByText('Deploying');
     expect(badge).toHaveAttribute('data-ispending', 'true');
     expect(badge).toHaveAttribute('data-status', 'info');
-    expect(badge.querySelector('[data-icon="custom"]')).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('progressbar', { name: 'Loading' }),
-    ).toBeInTheDocument();
+    expect(badge.querySelector('[data-icon="custom"]')).toBeInTheDocument();
+    const spinner = screen.getByRole('progressbar', { name: 'Loading' });
+    expect(spinner).toBeInTheDocument();
+    expect(badge.lastElementChild).toContainElement(spinner);
   });
 });
