@@ -25,7 +25,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
-import BuildIcon from '@material-ui/icons/Build';
+import { RiWrenchLine } from '@remixicon/react';
 import { rootRouteRef } from '../routes';
 import {
   devToolsConfigReadPermission,
@@ -69,7 +69,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
         path: '/devtools',
         routeRef: rootRouteRef,
         title: 'DevTools',
-        icon: <BuildIcon fontSize="inherit" />,
+        icon: <RiWrenchLine size="1em" />,
       },
       {
         inputs: {
@@ -153,7 +153,7 @@ export const devToolsScheduledTasksPage = SubPageBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'devtools',
   title: 'DevTools',
-  icon: <BuildIcon fontSize="inherit" />,
+  icon: <RiWrenchLine size="1em" />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,
