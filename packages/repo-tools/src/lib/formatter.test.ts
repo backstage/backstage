@@ -67,7 +67,10 @@ const oxfmtStub = {
       const fs = require('node:fs');
       for (const file of process.argv.slice(3)) {
         const content = fs.readFileSync(file, 'utf8');
-        if (content.includes('fail')) process.exit(1);
+        if (content.includes('fail')) {
+          process.exitCode = 2;
+          continue;
+        }
         const mark = file.endsWith('.d.ts') ? 'D' : 'M';
         fs.writeFileSync(file, content.replaceAll('x', mark));
       }
@@ -132,7 +135,11 @@ describe('formatter', () => {
 
   it('formats files with the detected formatter', async () => {
     const signal = new AbortController().signal;
-    const options = { cwd: undefined, signal, maxBuffer: Number.MAX_VALUE };
+    const options = () => ({
+      cwd: mockDir.resolve(mockRoot),
+      signal,
+      maxBuffer: Number.MAX_VALUE,
+    });
 
     setRoot({ node_modules: { prettier: prettierStub } });
     await formatFiles([], { signal });
@@ -147,7 +154,7 @@ describe('formatter', () => {
         'a.ts',
         'b',
       ],
-      options,
+      options(),
       expect.any(Function),
     );
 
@@ -161,16 +168,21 @@ describe('formatter', () => {
         'a.ts',
         '--no-error-on-unmatched-pattern',
       ],
-      options,
+      options(),
       expect.any(Function),
     );
 
     setRoot({});
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
     await formatFiles(['a.ts']);
     expect(execFile).toHaveBeenCalledTimes(2);
+    expect(log).toHaveBeenCalledWith(
+      'Skipping formatting, the root package.json lists neither oxfmt nor prettier',
+    );
+    log.mockRestore();
   });
 
-  it('formats content with oxfmt in a single run', () => {
+  it('formats content with oxfmt in a single run, keeping what it formatted on failure', () => {
     setRoot({ node_modules: { oxfmt: oxfmtStub } });
     const bin = mockDir.resolve(mockRoot, 'node_modules/oxfmt/bin/oxfmt');
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -188,7 +200,7 @@ describe('formatter', () => {
         { content: '# x', extension: '.md' },
         { content: 'fail', extension: '.d.ts' },
       ]),
-    ).toEqual(['# x', 'fail']);
+    ).toEqual(['# M', 'fail']);
     expect(warn).toHaveBeenCalledTimes(1);
     warn.mockRestore();
   });

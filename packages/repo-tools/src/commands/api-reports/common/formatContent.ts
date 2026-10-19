@@ -55,12 +55,18 @@ function formatWithOxfmt(
     ...codeBlocks.map(code => ({ content: code, extension: '.d.ts' })),
   ]);
 
-  return formatted.replace(
+  const restored = formatted.replace(
     // oxfmt may add an empty line to the empty placeholder blocks
     new RegExp(`^\`\`\`${PLACEHOLDER}(\\d+)(\\r?\\n)\\s*^\`\`\`$`, 'gm'),
     (_block, index: string, newline: string) =>
       `\`\`\`ts${newline}${formattedCodeBlocks[Number(index)]}\`\`\``,
   );
+  // Never write placeholders to the report, in case oxfmt changed their blocks
+  if (restored.includes(PLACEHOLDER)) {
+    console.warn('Failed to format content with oxfmt, code blocks were lost');
+    return content;
+  }
+  return restored;
 }
 
 /**

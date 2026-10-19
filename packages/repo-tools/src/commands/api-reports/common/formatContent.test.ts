@@ -121,4 +121,28 @@ describe('formatContent', () => {
     );
     await expect(formatContentAsync('#   Title\n')).resolves.toBe('# Title\n');
   });
+
+  it('keeps the content as is if oxfmt changes the code block placeholders', () => {
+    setRoot({
+      node_modules: {
+        oxfmt: {
+          ...oxfmtStub,
+          bin: {
+            oxfmt: `
+              const fs = require('node:fs');
+              for (const file of process.argv.slice(3)) {
+                const content = fs.readFileSync(file, 'utf8');
+                fs.writeFileSync(file, content.replaceAll('\`\`\`', '~~~'));
+              }
+            `,
+          },
+        },
+      },
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    expect(formatContent(report)).toBe(report);
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
+  });
 });
