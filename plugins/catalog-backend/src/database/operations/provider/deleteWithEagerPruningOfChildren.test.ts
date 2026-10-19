@@ -88,12 +88,10 @@ describe.each(databases.eachSupportedId())(
       return rows.map(r => r.entity_ref);
     }
 
-    // On PostgreSQL, a trigger also queues every deleted ref, so that the
-    // stitcher can turn its final row into a tombstone.
+    // A trigger also queues every deleted ref, so that the stitcher can turn
+    // its final row into a tombstone.
     function withDeletions(expected: string[], deleted: string[]) {
-      return databaseId.startsWith('POSTGRES')
-        ? [...new Set([...expected, ...deleted])].sort()
-        : expected;
+      return [...new Set([...expected, ...deleted])].sort();
     }
 
     async function entitiesMarkedForStitching(knex: Knex) {
@@ -119,8 +117,8 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E1'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual([]);
-      // The deletion replaces the tickets on PostgreSQL but keeps each row's
-      // schedule, so the stitcher still settles them.
+      // The deletion replaces the tickets but keeps each row's schedule, so
+      // the stitcher still settles them.
       const withoutTicket = ({ stitch_ticket: _, ...row }: DbStitchQueueRow) =>
         row;
       await expect(

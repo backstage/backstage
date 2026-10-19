@@ -893,118 +893,139 @@ describe.each(databases.eachSupportedId())(
           );
         },
       );
-
-      it('tombstones deleted entities and keeps the slot across re-creation', async () => {
-        const knex = await databases.init(databaseId);
-        await applyDatabaseMigrations(knex);
-        const logger = mockServices.logger.mock();
-        const entity = {
-          apiVersion: 'a',
-          kind: 'k',
-          metadata: { name: 'n', namespace: 'ns' },
-          spec: { same: 'value' },
-        };
-        const insertCandidate = (id: string) =>
-          knex<DbRefreshStateRow>('refresh_state').insert({
-            entity_id: id,
-            entity_ref: 'k:ns/n',
-            unprocessed_entity: '{}',
-            processed_entity: JSON.stringify(entity),
-            errors: '[]',
-            next_update_at: knex.fn.now(),
-            last_discovery_at: knex.fn.now(),
-          });
-        const stitch = async () =>
-          performStitching({
-            knex,
-            logger,
-            ...(await getStitchClaim(knex, 'k:ns/n')),
-          });
-        const readFinal = async () => {
-          const [row] = await knex<DbFinalEntitiesRow>('final_entities');
-          return {
-            slotId: row.entity_id,
-            uid: row.final_entity
-              ? JSON.parse(row.final_entity).metadata.uid
-              : undefined,
-            live: row.final_entity !== null,
-            deleted: row.deleted_at !== null,
-            generation: Number(row.generation),
-          };
-        };
-        const readUidSearch = () =>
-          knex<DbSearchRow>('search')
-            .where('key', 'metadata.uid')
-            .select('entity_id', 'value');
-
-        await insertCandidate('first');
-        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-        await expect(stitch()).resolves.toBe('changed');
-        const published = await readFinal();
-        expect(published).toEqual({
-          slotId: 'first',
-          uid: 'first',
-          live: true,
-          deleted: false,
-          generation: expect.any(Number),
-        });
-
-        // The trigger requests reconciliation; the stitcher writes the
-        // tombstone and gives it its own generation.
-        await knex('refresh_state').where('entity_id', 'first').delete();
-        expect(await knex('stitch_queue').pluck('entity_ref')).toEqual([
-          'k:ns/n',
-        ]);
-        await expect(stitch()).resolves.toBe('changed');
-        const tombstone = await readFinal();
-        expect(tombstone).toEqual({
-          slotId: 'first',
-          uid: undefined,
-          live: false,
-          deleted: true,
-          generation: expect.any(Number),
-        });
-        expect(tombstone.generation).toBeGreaterThan(published.generation);
-        expect(await knex('search')).toEqual([]);
-
-        // Reconciling a tombstone again is quiet.
-        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-        await expect(stitch()).resolves.toBe('abandoned');
-        expect(await readFinal()).toEqual(tombstone);
-
-        // Re-creation revives the same slot with the new candidate's UID,
-        // even though the content is identical.
-        await insertCandidate('second');
-        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-        await expect(stitch()).resolves.toBe('changed');
-        const revived = await readFinal();
-        expect(revived).toEqual({
-          slotId: 'first',
-          uid: 'second',
-          live: true,
-          deleted: false,
-          generation: expect.any(Number),
-        });
-        expect(revived.generation).toBeGreaterThan(tombstone.generation);
-        expect(await readUidSearch()).toEqual([
-          { entity_id: 'first', value: 'second' },
-        ]);
-
-        // Deleting and re-creating before any stitch runs still publishes the
-        // newest UID, and the result is stable afterwards.
-        await knex('refresh_state').where('entity_id', 'second').delete();
-        await insertCandidate('third');
-        await expect(stitch()).resolves.toBe('changed');
-        expect(await readFinal()).toEqual(
-          expect.objectContaining({ slotId: 'first', uid: 'third' }),
-        );
-        expect(await readUidSearch()).toEqual([
-          { entity_id: 'first', value: 'third' },
-        ]);
-        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-        await expect(stitch()).resolves.toBe('unchanged');
-      });
     }
+
+    it('tombstones deleted entities and keeps the slot across re-creation', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const logger = mockServices.logger.mock();
+      const entity = {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n', namespace: 'ns' },
+        spec: { same: 'value' },
+      };
+      const insertCandidate = (id: string, processed = true) =>
+        knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: id,
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          processed_entity: processed ? JSON.stringify(entity) : undefined,
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        });
+      const stitch = async () =>
+        performStitching({
+          knex,
+          logger,
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        });
+      const readFinal = async () => {
+        const [row] = await knex<DbFinalEntitiesRow>('final_entities');
+        return {
+          slotId: row.entity_id,
+          uid: row.final_entity
+            ? JSON.parse(row.final_entity).metadata.uid
+            : undefined,
+          live: row.final_entity !== null,
+          deleted: row.deleted_at !== null,
+          generation: Number(row.generation),
+        };
+      };
+      const readUidSearch = () =>
+        knex<DbSearchRow>('search')
+          .where('key', 'metadata.uid')
+          .select('entity_id', 'value');
+
+      await insertCandidate('first');
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('changed');
+      const published = await readFinal();
+      expect(published).toEqual({
+        slotId: 'first',
+        uid: 'first',
+        live: true,
+        deleted: false,
+        generation: expect.any(Number),
+      });
+
+      // The trigger requests reconciliation; the stitcher writes the
+      // tombstone and gives it its own generation.
+      await knex('refresh_state').where('entity_id', 'first').delete();
+      expect(await knex('stitch_queue').pluck('entity_ref')).toEqual([
+        'k:ns/n',
+      ]);
+      await expect(stitch()).resolves.toBe('changed');
+      const tombstone = await readFinal();
+      expect(tombstone).toEqual({
+        slotId: 'first',
+        uid: undefined,
+        live: false,
+        deleted: true,
+        generation: expect.any(Number),
+      });
+      expect(tombstone.generation).toBeGreaterThan(published.generation);
+      expect(await knex('search')).toEqual([]);
+
+      // Reconciling a tombstone again is quiet.
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('abandoned');
+      expect(await readFinal()).toEqual(tombstone);
+
+      // Re-creation revives the same slot with the new candidate's UID,
+      // even though the content is identical.
+      await insertCandidate('second');
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('changed');
+      const revived = await readFinal();
+      expect(revived).toEqual({
+        slotId: 'first',
+        uid: 'second',
+        live: true,
+        deleted: false,
+        generation: expect.any(Number),
+      });
+      expect(revived.generation).toBeGreaterThan(tombstone.generation);
+      expect(await readUidSearch()).toEqual([
+        { entity_id: 'first', value: 'second' },
+      ]);
+
+      // Deleting and re-creating before any stitch runs still publishes the
+      // newest UID, and the result is stable afterwards.
+      await knex('refresh_state').where('entity_id', 'second').delete();
+      await insertCandidate('third');
+      await expect(stitch()).resolves.toBe('changed');
+      expect(await readFinal()).toEqual(
+        expect.objectContaining({ slotId: 'first', uid: 'third' }),
+      );
+      expect(await readUidSearch()).toEqual([
+        { entity_id: 'first', value: 'third' },
+      ]);
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('unchanged');
+
+      // A re-created candidate that is not yet processed must not leave its
+      // predecessor's body published in the meantime.
+      await knex('refresh_state').where('entity_id', 'third').delete();
+      await insertCandidate('fourth', false);
+      await expect(stitch()).resolves.toBe('changed');
+      expect(await readFinal()).toEqual(
+        expect.objectContaining({ slotId: 'first', live: false }),
+      );
+      await knex('refresh_state')
+        .where('entity_id', 'fourth')
+        .update({ processed_entity: JSON.stringify(entity) });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('changed');
+      expect(await readFinal()).toEqual(
+        expect.objectContaining({
+          slotId: 'first',
+          uid: 'fourth',
+          live: true,
+        }),
+      );
+    });
 
     it('retains failed work for a fenced retry and settles unprocessed work', async () => {
       const knex = await databases.init(databaseId);
