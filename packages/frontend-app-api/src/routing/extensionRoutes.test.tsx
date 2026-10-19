@@ -770,3 +770,22 @@ it('links to wildcard-mounted pages without a wildcard parameter', () => {
   }).apis.get(routeResolutionApiRef)!;
   expect(resolution.resolve(root)?.()).toBe('/files');
 });
+
+it('validates and resolves repeated parameter names', () => {
+  const ref = createRouteRef({
+    extensionId: 'page:test/compare',
+    params: ['id'],
+  });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { compare: ref },
+    extensions: [page('compare', '/items/:id/compare/:id')],
+  });
+  const routes = createSpecializedApp({ features: [app, plugin] }).apis.get(
+    routeResolutionApiRef,
+  )!;
+  expect(routes.resolve(ref)?.({ id: 'one' })).toBe('/items/one/compare/one');
+  expect(routes.resolve({ ...ref })?.({ id: 'two' })).toBe(
+    '/items/two/compare/two',
+  );
+});

@@ -125,9 +125,11 @@ function resolveTargetRef(
     const actual = [...params].sort();
     let expected: string[];
     for (;;) {
-      expected = [...mountedPath.matchAll(/:([\w-]+)/g)]
-        .map(match => match[1])
-        .sort();
+      expected = [
+        ...new Set(
+          [...mountedPath.matchAll(/:([\w-]+)/g)].map(match => match[1]),
+        ),
+      ].sort();
       if (
         JSON.stringify(actual) === JSON.stringify(expected) ||
         // Legacy mounts historically allow callers to supply unused parameters.
