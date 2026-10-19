@@ -41,7 +41,7 @@ function main(files) {
   packages.sort((a, b) => b.dir.length - a.dir.length);
   // Files in packages that lint through the Backstage CLI are fixed with a
   // single ESLint run from the root; other packages use their own lint script
-  const eslintFiles = [];
+  const eslintFiles = new Set();
   const scriptGroups = new Map();
   for (const file of files) {
     const absolutePath = resolve(file);
@@ -53,7 +53,7 @@ function main(files) {
     );
     const lintScript = pkg?.packageJson.scripts?.lint;
     if (!pkg || !lintScript || lintScript.startsWith('backstage-cli ')) {
-      eslintFiles.push(absolutePath);
+      eslintFiles.add(absolutePath);
       continue;
     }
     if (!scriptGroups.has(pkg)) {
@@ -66,7 +66,7 @@ function main(files) {
   }
 
   const runs = [];
-  if (eslintFiles.length > 0) {
+  if (eslintFiles.size > 0) {
     runs.push({
       cwd: root.dir,
       args: ['eslint', '--fix', '--', ...eslintFiles],

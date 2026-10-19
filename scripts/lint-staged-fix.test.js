@@ -99,7 +99,7 @@ function calls(root) {
     : [];
 }
 
-test('groups files by package and follows scripts without an engine map or config inference', () => {
+test('fixes Backstage CLI packages with one ESLint run and other packages with their own lint script', () => {
   const root = createWorkspace();
   const eslint = addPackage(root, 'eslint', {
     scripts: { lint: 'backstage-cli package lint' },
@@ -127,9 +127,17 @@ test('groups files by package and follows scripts without an engine map or confi
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(calls(root), [
     {
-      cwd: eslint,
-      args: ['run', 'lint', '--fix', './src/first.ts', './-flag.ts'],
-      script: 'backstage-cli package lint',
+      cwd: root,
+      args: [
+        'eslint',
+        '--fix',
+        '--',
+        path.join(eslint, 'src/first.ts'),
+        path.join(eslint, '-flag.ts'),
+        path.join(fallback, 'src/fallback.ts'),
+        path.join(root, 'scripts/root.ts'),
+      ],
+      script: null,
     },
     {
       cwd: oxlint,
@@ -141,30 +149,6 @@ test('groups files by package and follows scripts without an engine map or confi
       args: ['run', 'lint', '--fix', './src/nested.ts'],
       script: 'custom-linter',
     },
-    {
-      cwd: fallback,
-      args: [
-        'exec',
-        'backstage-cli',
-        'package',
-        'lint',
-        '--fix',
-        './src/fallback.ts',
-      ],
-      script: null,
-    },
-    {
-      cwd: root,
-      args: [
-        'exec',
-        'backstage-cli',
-        'package',
-        'lint',
-        '--fix',
-        './scripts/root.ts',
-      ],
-      script: null,
-    },
   ]);
 
   writePackage(eslint, {
@@ -175,7 +159,7 @@ test('groups files by package and follows scripts without an engine map or confi
   assert.equal(calls(root).at(-1).script, 'a-new-native-linter');
 });
 
-test('fails closed for invalid paths and propagates lint failures without running later packages', () => {
+test('fails closed for invalid paths and propagates lint failures after running every package', () => {
   const root = createWorkspace();
   const first = addPackage(root, 'first', {
     scripts: { lint: 'first-linter' },
@@ -200,13 +184,13 @@ test('fails closed for invalid paths and propagates lint failures without runnin
     path.join(second, 'src/file.ts'),
   ]);
   assert.equal(failed.status, 7);
-  assert.equal(calls(root).length, 1);
+  assert.equal(calls(root).length, 2);
 
   fs.writeFileSync(path.join(root, '.yarnrc.yml'), '{}');
   const missingYarn = run(root, [path.join(first, 'src/file.ts')]);
   assert.equal(missingYarn.status, 1);
   assert.match(missingYarn.stderr, /requires yarnPath/);
-  assert.equal(calls(root).length, 1);
+  assert.equal(calls(root).length, 2);
 });
 
 function git(root, ...args) {
