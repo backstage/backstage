@@ -116,10 +116,20 @@ export class UnprocessedEntitiesModule {
         .select('refresh_state.*')
         .leftJoin(
           'final_entities',
-          'final_entities.entity_id',
-          'refresh_state.entity_id',
+          'final_entities.entity_ref',
+          'refresh_state.entity_ref',
         )
-        .whereNull('final_entities.entity_id')
+        // A tombstone left by an earlier deletion of the same ref does not
+        // make a re-created candidate any less pending.
+        .where(q =>
+          q
+            .whereNull('final_entities.entity_id')
+            .orWhere(t =>
+              t
+                .whereNull('final_entities.final_entity')
+                .whereNotNull('final_entities.deleted_at'),
+            ),
+        )
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
@@ -133,12 +143,13 @@ export class UnprocessedEntitiesModule {
       await this.database('refresh_state')
         // Only candidate columns; final_entities shares some column names.
         .select('refresh_state.*')
-        .rightJoin(
+        .innerJoin(
           'final_entities',
-          'final_entities.entity_id',
-          'refresh_state.entity_id',
+          'final_entities.entity_ref',
+          'refresh_state.entity_ref',
         )
         .whereNull('final_entities.final_entity')
+        .whereNull('final_entities.deleted_at')
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);

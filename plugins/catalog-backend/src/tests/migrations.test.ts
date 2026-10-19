@@ -238,10 +238,22 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await knex.delete().from('refresh_state').where({ entity_id: 'i1' });
 
-    await expect(knex('search')).resolves.toEqual([]);
     await expect(knex('refresh_state_references')).resolves.toEqual([]);
     await expect(knex('relations')).resolves.toEqual([]);
-    await expect(knex('final_entities')).resolves.toEqual([]);
+    // On PostgreSQL, the final row and its search rows stay until the
+    // stitcher turns them into a tombstone, which the trigger asks it to do.
+    const isPostgres = databaseId.startsWith('POSTGRES');
+    await expect(knex('final_entities').pluck('entity_id')).resolves.toEqual(
+      isPostgres ? ['i1'] : [],
+    );
+    await expect(knex('search').pluck('entity_id')).resolves.toEqual(
+      isPostgres ? ['i1'] : [],
+    );
+    await expect(
+      knex('stitch_queue').select('entity_ref', 'failure_count'),
+    ).resolves.toEqual(
+      isPostgres ? [{ entity_ref: 'k:ns/n1', failure_count: 0 }] : [],
+    );
   });
 
   it('20221109192547_search_add_original_value_column.js', async () => {
@@ -1775,6 +1787,82 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await migrateDownOnce(knex);
     expect(await hasAutovacuumOptions()).toBe(false);
+  });
+
+  it('20261020000000_final_entity_tombstones.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20261020000000_final_entity_tombstones.js');
+    const isPostgres = databaseId.startsWith('POSTGRES');
+    const insertCandidate = (id: string, ref: string) =>
+      knex('refresh_state').insert({
+        entity_id: id,
+        entity_ref: ref,
+        unprocessed_entity: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+    await insertCandidate('kept', 'k:ns/kept');
+    await knex('final_entities').insert({
+      entity_id: 'kept',
+      entity_ref: 'k:ns/kept',
+      hash: 'h',
+      final_entity: '{}',
+    });
+    const original = await knex('final_entities');
+
+    await migrateUpOnce(knex);
+    expect(await knex('final_entities')).toEqual(
+      original.map(row => ({ ...row, deleted_at: null })),
+    );
+
+    // A queued request keeps its lease when the trigger replaces its ticket.
+    await insertCandidate('gone', 'k:ns/gone');
+    await knex('stitch_queue').insert({
+      entity_ref: 'k:ns/gone',
+      stitch_ticket: 'old-ticket',
+      failure_count: 2,
+      next_stitch_at: '2099-01-01 00:00:00',
+    });
+    const [before] = await knex('stitch_queue');
+    await knex('refresh_state').where('entity_id', 'gone').delete();
+    const [after] = await knex('stitch_queue');
+    const { stitch_ticket: ticketAfter, ...restAfter } = after;
+    const { stitch_ticket: _ticketBefore, ...restBefore } = before;
+    expect(restAfter).toEqual(
+      isPostgres ? { ...restBefore, failure_count: 0 } : restBefore,
+    );
+    expect(ticketAfter === 'old-ticket').toBe(!isPostgres);
+
+    await knex('stitch_queue').delete();
+    if (isPostgres) {
+      // A slot whose candidate was re-created no longer matches by ID. Going
+      // down removes it and asks for the live candidate to be stitched again.
+      await knex('final_entities').insert({
+        entity_id: 'old-slot',
+        entity_ref: 'k:ns/recreated',
+        hash: 'h',
+        final_entity: '{}',
+      });
+      await insertCandidate('new-candidate', 'k:ns/recreated');
+    }
+
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
+      false,
+    );
+    expect(await knex('final_entities')).toEqual(original);
+    expect(await knex('stitch_queue').pluck('entity_ref')).toEqual(
+      isPostgres ? ['k:ns/recreated'] : [],
+    );
+    // The cascade is back.
+    await knex('refresh_state').where('entity_id', 'kept').delete();
+    expect(await knex('final_entities')).toEqual([]);
+
+    await migrateUpOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
+      true,
+    );
   });
 
   it('20261007000000_stitch_failure_count.js', async () => {

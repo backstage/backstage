@@ -19,6 +19,7 @@ import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import {
+  DbFinalEntitiesRow,
   DbLocationsRow,
   DbRefreshStateRow,
   DbSearchRow,
@@ -310,8 +311,11 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   async getLocationByEntity(entityRef: CompoundEntityRef): Promise<Location> {
     const entityRefString = stringifyEntityRef(entityRef);
 
-    const [entityRow] = await this.db<DbRefreshStateRow>('refresh_state')
+    // Search rows are keyed by the final entity's slot ID, which can differ
+    // from the candidate's ID after the entity was deleted and re-created.
+    const [entityRow] = await this.db<DbFinalEntitiesRow>('final_entities')
       .where({ entity_ref: entityRefString })
+      .whereNotNull('final_entity')
       .select('entity_id')
       .limit(1);
     if (!entityRow) {

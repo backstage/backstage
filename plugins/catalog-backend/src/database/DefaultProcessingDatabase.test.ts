@@ -534,11 +534,17 @@ describe.each(databases.eachSupportedId())(
           const queued = await knex<DbStitchQueueRow>('stitch_queue').orderBy(
             'entity_ref',
           );
+          // The removed entity is queued too, so that the stitcher can turn
+          // its final row into a tombstone.
           expect(queued.map(row => row.entity_ref)).toEqual([
+            'component:default/a',
             'component:default/b',
             'component:default/c',
           ]);
-          expect(queued[0].stitch_ticket).not.toBe('old-ticket');
+          expect(
+            queued.find(row => row.entity_ref === 'component:default/b')!
+              .stitch_ticket,
+          ).not.toBe('old-ticket');
         });
       }
 
