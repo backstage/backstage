@@ -96,12 +96,50 @@ ruleTester.run(RULE, rule, {
       filename: path.join(FIXTURE, 'packages/bar/src/index.ts'),
       options: [{ includedFiles: [INCLUDE_FIXTURE_SRC] }],
       errors: [
-        ERR(
-          '@internal/bar',
-          'frontend-plugin',
-          '@internal/foo',
-          'frontend-plugin',
-        ),
+        {
+          ...ERR(
+            '@internal/bar',
+            'frontend-plugin',
+            '@internal/foo',
+            'frontend-plugin',
+          ),
+          suggestions: [
+            {
+              messageId: 'useReactPlugin',
+              output: `import '@internal/foo-react'`,
+            },
+            {
+              messageId: 'useCommonPlugin',
+              output: `import '@internal/foo-common'`,
+            },
+          ],
+        },
+      ],
+    },
+    // backend-plugin importing from another backend-plugin, keeping the subpath
+    {
+      code: `import { thing } from "@internal/thing-backend/alpha"`,
+      filename: path.join(FIXTURE, 'packages/backend-plugin-pkg/src/index.ts'),
+      options: [{ includedFiles: [INCLUDE_FIXTURE_SRC] }],
+      errors: [
+        {
+          ...ERR(
+            '@internal/backend-plugin-pkg',
+            'backend-plugin',
+            '@internal/thing-backend',
+            'backend-plugin',
+          ),
+          suggestions: [
+            {
+              messageId: 'useNodePlugin',
+              output: `import { thing } from "@internal/thing-node/alpha"`,
+            },
+            {
+              messageId: 'useCommonPlugin',
+              output: `import { thing } from "@internal/thing-common/alpha"`,
+            },
+          ],
+        },
       ],
     },
     // frontend-plugin importing from backend-plugin

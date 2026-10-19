@@ -62,10 +62,7 @@ This is a native Oxlint policy, not an ESLint configuration translator or a
 promise of complete ESLint parity. Backstage rules use Oxlint's `createOnce`
 lifecycle and per-file context; the module does not load ESLint or change the
 ESLint plugin. Only deliberately selected native plugins
-and Backstage rules are enabled. Rules ported from the ESLint plugin do not
-carry over their editor quick-fix suggestions, such as the plugin switch
-suggestions of `no-mixed-plugin-imports`; their diagnostics and `--fix`
-behavior remain. Repository-specific rules and exceptions
+and Backstage rules are enabled. Repository-specific rules and exceptions
 belong in the repository's `.oxlintrc.js`; arbitrary `.eslintrc` extensions are
 not loaded or executed.
 

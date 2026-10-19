@@ -32,11 +32,16 @@ module.exports = {
     messages: {
       forbidden:
         '{{sourcePackage}} ({{sourceRole}}) uses forbidden import from {{targetPackage}} ({{targetRole}}).',
+      useReactPlugin:
+        'Use web library {{targetPackage}}-react or common library instead.',
+      useNodePlugin: 'Use node library {{replacement}} instead.',
+      useCommonPlugin: 'Use common library {{replacement}} instead.',
     },
     docs: {
       description: 'Disallow mixed plugin imports.',
       url: 'https://github.com/backstage/backstage/blob/master/packages/cli-module-oxlint/docs/rules/no-mixed-plugin-imports.md',
     },
+    hasSuggestions: true,
     schema: [
       {
         type: 'object',
@@ -117,6 +122,52 @@ module.exports = {
         }
         const sourceRole = pkg.packageJson.backstage?.role;
         const targetRole = targetPackage.packageJson.backstage?.role;
+        const targetName = targetPackage.packageJson.name;
+
+        /**
+         * Suggests importing a sibling package instead, keeping any subpath.
+         * @param {'useReactPlugin' | 'useNodePlugin' | 'useCommonPlugin'} messageId
+         * @param {string} replacement
+         */
+        const suggestPackage = (messageId, replacement) => ({
+          messageId,
+          data: { targetPackage: targetName, replacement },
+          /** @param {import('oxlint/plugins-dev').Fixer} fixer */
+          fix(fixer) {
+            const [start] = imp.node.range;
+            // Keep the quotes and replace only the package name
+            return fixer.replaceTextRange(
+              [start + 1, start + 1 + targetName.length],
+              replacement,
+            );
+          },
+        });
+
+        /** @type {ReturnType<typeof suggestPackage>[]} */
+        const suggest = [];
+        if (targetName && imp.node.value.startsWith(targetName)) {
+          if (
+            (sourceRole === 'frontend-plugin' ||
+              sourceRole === 'web-library') &&
+            targetRole === 'frontend-plugin'
+          ) {
+            suggest.push(
+              suggestPackage('useReactPlugin', `${targetName}-react`),
+              suggestPackage('useCommonPlugin', `${targetName}-common`),
+            );
+          } else if (
+            (sourceRole === 'backend-plugin' ||
+              sourceRole === 'backend-plugin-module') &&
+            targetRole === 'backend-plugin' &&
+            targetName.endsWith('-backend')
+          ) {
+            const baseName = targetName.slice(0, -'-backend'.length);
+            suggest.push(
+              suggestPackage('useNodePlugin', `${baseName}-node`),
+              suggestPackage('useCommonPlugin', `${baseName}-common`),
+            );
+          }
+        }
 
         context.report({
           node,
@@ -127,6 +178,7 @@ module.exports = {
             targetPackage: targetPackage.packageJson.name || imp.package.dir,
             targetRole,
           },
+          suggest,
         });
       }),
     };
