@@ -87,16 +87,30 @@ export default async ({ args, info }: CliCommandContext) => {
   // preferring oxfmt if it's configured or the only formatter installed.
   const oxfmtBin = await resolveBin('oxfmt');
   const prettierBin = await resolveBin('prettier');
+  // The formatter runs in the project root, since Prettier only reads the
+  // ignore file of its working directory.
   if (oxfmtBin && (!prettierBin || hasOxfmtConfig())) {
-    await runOutput([
-      process.execPath,
-      oxfmtBin,
-      '--write',
-      '--no-error-on-unmatched-pattern',
-      ...configPaths,
-    ]);
+    await runOutput(
+      [
+        process.execPath,
+        oxfmtBin,
+        '--write',
+        '--no-error-on-unmatched-pattern',
+        ...configPaths,
+      ],
+      { cwd: targetPaths.rootDir },
+    );
   } else if (prettierBin) {
-    await runOutput([process.execPath, prettierBin, '--write', ...configPaths]);
+    await runOutput(
+      [process.execPath, prettierBin, '--write', ...configPaths],
+      {
+        cwd: targetPaths.rootDir,
+      },
+    );
+  } else {
+    console.log(
+      'Skipping formatting, the root package.json lists neither oxfmt nor prettier',
+    );
   }
 };
 

@@ -100,7 +100,7 @@ export function detectFormatter(): Formatter | undefined {
  */
 export async function formatFiles(
   paths: string[],
-  options?: { cwd?: string; signal?: AbortSignal },
+  options?: { signal?: AbortSignal },
 ) {
   // Both formatters format the working directory when no paths are given
   if (paths.length === 0) {
@@ -109,6 +109,9 @@ export async function formatFiles(
 
   const formatter = detectFormatter();
   if (!formatter) {
+    console.log(
+      'Skipping formatting, the root package.json lists neither oxfmt nor prettier',
+    );
     return;
   }
 
@@ -120,9 +123,11 @@ export async function formatFiles(
   }
 
   // Run the formatter with the current Node.js binary rather than through a
-  // shell, so that paths with spaces and Windows work the same way.
+  // shell, so that paths with spaces and Windows work the same way. It runs in
+  // the project root, since Prettier only reads the ignore file of its working
+  // directory.
   await execFileAsync(process.execPath, [formatter.bin, ...args], {
-    cwd: options?.cwd,
+    cwd: targetPaths.rootDir,
     signal: options?.signal,
     maxBuffer: Number.MAX_VALUE,
   });
@@ -151,10 +156,16 @@ export function tryRunOxfmt(
       fs.writeFileSync(file, content);
       return file;
     });
-    execFileSync(process.execPath, [bin, '--write', ...files], {
-      cwd: targetPaths.rootDir,
-      stdio: 'ignore',
-    });
+    try {
+      execFileSync(process.execPath, [bin, '--write', ...files], {
+        cwd: targetPaths.rootDir,
+        stdio: 'ignore',
+      });
+    } catch (error) {
+      // oxfmt still writes the files it could format, so only the failed ones
+      // are left as is
+      console.warn(`Failed to format some content with oxfmt, ${error}`);
+    }
     return files.map(file => fs.readFileSync(file, 'utf8'));
   } catch (error) {
     console.warn(`Failed to format content with oxfmt, ${error}`);
