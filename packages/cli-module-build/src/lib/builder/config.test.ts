@@ -83,8 +83,15 @@ describe('makeRollupConfigs', () => {
       await bundle.close();
     }
 
+    const mockDir = createMockDirectory();
     const child = spawn(process.execPath, ['-e', code], {
       cwd: targetPaths.rootDir,
+      env: {
+        ...process.env,
+        TMPDIR: mockDir.path,
+        TEMP: mockDir.path,
+        TMP: mockDir.path,
+      },
       stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
       detached: true,
     });
@@ -112,7 +119,9 @@ describe('makeRollupConfigs', () => {
       if (child.connected) {
         child.disconnect();
       }
-      expect(await exit).toEqual([0, null]);
+      const result = await exit;
+      mockDir.clear();
+      expect(result).toEqual([0, null]);
     }
   }, 30_000);
 
