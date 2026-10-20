@@ -23,6 +23,7 @@ import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import path from 'node:path';
 import { MKDOCS_SCHEMA } from '@backstage/plugin-techdocs-node/alpha';
+import type { GeneratorRunOptions } from '@backstage/plugin-techdocs-node';
 import { TechdocsZensicalGenerator } from './TechdocsZensicalGenerator';
 
 const mockRunCommand = jest.fn();
@@ -37,33 +38,33 @@ describe('TechdocsZensicalGenerator', () => {
 
   afterEach(mockDir.clear);
 
-  // Stands in for the Zensical container: reads the patched config it was
-  // given and writes a minimal site into its site_dir.
+  // Stands in for the Zensical container: reads the patched config at the
+  // path it was given (with /input mounted from the input dir) and writes a
+  // minimal site into site_dir, resolved against the config's directory.
   const containerRunner = {
     runContainer: jest.fn(async ({ args }: { args: string[] }) => {
-      const configFile = path.basename(args[args.indexOf('-f') + 1]);
-      const config = yaml.load(
-        await fs.readFile(mockDir.resolve('input', configFile), 'utf8'),
-        { schema: MKDOCS_SCHEMA },
-      ) as { site_dir: string };
-      await fs.outputFile(
-        mockDir.resolve('input', config.site_dir, 'index.html'),
-        '<html></html>',
+      const configFile = mockDir.resolve(
+        'input',
+        path.posix.relative('/input', args[args.indexOf('-f') + 1]),
       );
-      await fs.outputJson(
-        mockDir.resolve('input', config.site_dir, 'search.json'),
-        { items: [] },
-      );
+      const config = yaml.load(await fs.readFile(configFile, 'utf8'), {
+        schema: MKDOCS_SCHEMA,
+      }) as { site_dir: string };
+      const siteDir = path.join(path.dirname(configFile), config.site_dir);
+      await fs.outputFile(path.join(siteDir, 'index.html'), '<html></html>');
+      await fs.outputJson(path.join(siteDir, 'search.json'), { items: [] });
     }),
   };
 
-  async function generate(generatorConfig: object) {
-    mockDir.setContent({
-      input: {
-        'mkdocs.yml': 'site_name: Test\n',
-        docs: { 'index.md': '# Hello\n' },
-      },
-    });
+  async function generate(
+    generatorConfig: object,
+    input: Record<string, unknown> = {
+      'mkdocs.yml': 'site_name: Test\n',
+      docs: { 'index.md': '# Hello\n' },
+    },
+    siteOptions?: { mkdocsConfigFileName?: string },
+  ) {
+    mockDir.setContent({ input } as any);
     const generator = TechdocsZensicalGenerator.fromConfig(
       new ConfigReader({ techdocs: { generator: generatorConfig } }),
       { logger, containerRunner },
@@ -71,6 +72,9 @@ describe('TechdocsZensicalGenerator', () => {
     await generator.run({
       inputDir: mockDir.resolve('input'),
       outputDir: mockDir.resolve('output'),
+      // GeneratorRunOptions.siteOptions only declares `name` today, but
+      // getMkdocsYml also honors mkdocsConfigFileName.
+      siteOptions: siteOptions as GeneratorRunOptions['siteOptions'],
       // GeneratorRunOptions takes a winston Logger; the mock covers what's used.
       logger: logger as any,
     });
@@ -105,6 +109,30 @@ describe('TechdocsZensicalGenerator', () => {
     });
     expect(options.imageName).toBe('acme/custom-zensical:1.0');
     expect(options.command).toEqual(['zensical']);
+  });
+
+  it('builds a config in a subdirectory of the input dir', async () => {
+    const options = await generate(
+      {},
+      {
+        sub: {
+          'mkdocs.yml': 'site_name: Test\n',
+          docs: { 'index.md': '# Hello\n' },
+        },
+      },
+      { mkdocsConfigFileName: 'sub/mkdocs.yml' },
+    );
+    expect(options.args).toEqual([
+      'build',
+      '-f',
+      expect.stringMatching(/^\/input\/sub\/\.mkdocs\.zensical-.*\.yml$/),
+    ]);
+    await expect(
+      fs.pathExists(mockDir.resolve('output', 'index.html')),
+    ).resolves.toBe(true);
+    await expect(fs.readdir(mockDir.resolve('input', 'sub'))).resolves.toEqual(
+      expect.not.arrayContaining([expect.stringMatching(/^\.techdocs-/)]),
+    );
   });
 
   it('writes the site and tags it with the zensical engine', async () => {
@@ -177,12 +205,33 @@ describe('TechdocsZensicalGenerator (local)', () => {
       expect.objectContaining({
         command: 'zensical',
         args: ['build', '-f', expect.stringContaining('.mkdocs.zensical-')],
-        options: { cwd: mockDir.resolve('input') },
+        options: {
+          cwd: mockDir.resolve('input'),
+          env: {
+            NODE_ENV: process.env.NODE_ENV,
+            PATH: process.env.PATH,
+            HOME: process.env.HOME,
+          },
+        },
       }),
     );
     await expect(
       fs.pathExists(mockDir.resolve('output', 'index.html')),
     ).resolves.toBe(true);
+  });
+
+  it('does not pass the backend environment to zensical', async () => {
+    mockRunCommand.mockImplementation(fakeZensicalBuild);
+    process.env.TECHDOCS_TEST_SECRET = 'hunter2';
+
+    try {
+      await createGenerator().run(runOptions());
+    } finally {
+      delete process.env.TECHDOCS_TEST_SECRET;
+    }
+
+    const { env } = mockRunCommand.mock.calls[0][0].options;
+    expect(env).not.toHaveProperty('TECHDOCS_TEST_SECRET');
   });
 
   it('cleans up the temporary config and site on failure', async () => {

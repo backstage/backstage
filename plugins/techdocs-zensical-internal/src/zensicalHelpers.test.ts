@@ -142,6 +142,42 @@ describe('patchZensicalConfig', () => {
     expect(extension(config, 'admonition')).toBe('admonition');
   });
 
+  it('ignores user options for pymdownx.snippets', async () => {
+    const config = await patch(
+      [
+        'site_name: Test',
+        'markdown_extensions:',
+        '  - pymdownx.snippets:',
+        '      restrict_base_path: false',
+        '      base_path: ["/"]',
+        '',
+      ].join('\n'),
+    );
+    expect(extension(config, 'pymdownx.snippets')).toEqual({
+      'pymdownx.snippets': { restrict_base_path: true },
+    });
+  });
+
+  it('treats the SnippetExtension alias as pymdownx.snippets', async () => {
+    const config = await patch(
+      [
+        'site_name: Test',
+        'markdown_extensions:',
+        '  - pymdownx.snippets:SnippetExtension:',
+        '      restrict_base_path: false',
+        '',
+      ].join('\n'),
+    );
+    const names = (config.markdown_extensions as unknown[]).map(entry =>
+      typeof entry === 'string' ? entry : Object.keys(entry as object)[0],
+    );
+    expect(names).not.toContain('pymdownx.snippets:SnippetExtension');
+    expect(names.filter(name => name === 'pymdownx.snippets')).toHaveLength(1);
+    expect(extension(config, 'pymdownx.snippets')).toEqual({
+      'pymdownx.snippets': { restrict_base_path: true },
+    });
+  });
+
   it.each([
     ['a list of names', 'plugins:\n  - search\n  - techdocs-core\n'],
     [
@@ -195,6 +231,23 @@ describe('normalizeSearchIndex', () => {
         },
       ],
     });
+  });
+
+  it('decodes HTML entities into plain text', async () => {
+    mockDir.setContent({
+      'search.json': JSON.stringify({
+        items: [
+          {
+            text: '<p>Tom &amp; Jerry use &lt;code&gt; &quot;tags&quot;&nbsp;&#169;</p>',
+          },
+        ],
+      }),
+    });
+
+    await normalizeSearchIndex(mockDir.path, logger);
+
+    const { docs } = await searchIndex();
+    expect(docs[0].text).toBe('Tom & Jerry use <code> "tags" ©');
   });
 
   it('leaves no angle brackets behind from nested tags', async () => {

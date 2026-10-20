@@ -6968,6 +6968,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
+    entities: "npm:^4.5.0"
     fs-extra: "npm:^11.0.0"
     js-yaml: "npm:^5.0.0"
   languageName: unknown
@@ -10030,7 +10031,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
-    "@types/js-yaml": "npm:^4.0.0"
+    entities: "npm:^4.5.0"
     fs-extra: "npm:^11.0.0"
     js-yaml: "npm:^5.0.0"
   languageName: unknown
@@ -18253,6 +18254,7 @@ __metadata:
     "@types/webpack-env": "npm:^1.15.3"
     "@types/ws": "npm:^8.0.0"
     commander: "npm:^14.0.3"
+    entities: "npm:^4.5.0"
     find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
     http-proxy: "npm:^1.18.1"

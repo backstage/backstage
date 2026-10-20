@@ -114,8 +114,13 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
 
     // Zensical requires site_dir to be within the project root.
     // Unique name so we never clobber a site/ directory committed to the repo.
+    // Zensical resolves site_dir against the config file's directory, which
+    // can be a subdirectory of inputDir (mkdocsConfigFileName).
     const relativeSiteDir = `.techdocs-zensical-site-${randomUUID()}`;
-    const builtSiteDir = path.join(inputDir, relativeSiteDir);
+    const builtSiteDir = path.join(
+      path.dirname(mkdocsYmlPath),
+      relativeSiteDir,
+    );
     // Same allowlist as the MkDocs path: Zensical consumes the same
     // mkdocs.yml format and honors options like plantuml_cmd.
     await sanitizeMkdocsYml(
@@ -139,6 +144,13 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
             args: ['build', '-f', zensicalConfigPath],
             options: {
               cwd: inputDir,
+              // Don't expose the backend's environment (and its secrets) to
+              // the docs build; the Docker path is scoped the same way.
+              env: {
+                NODE_ENV: process.env.NODE_ENV,
+                PATH: process.env.PATH,
+                HOME: process.env.HOME,
+              },
             },
             logStream,
           });
@@ -158,7 +170,10 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
             args: [
               'build',
               '-f',
-              `/input/${path.basename(zensicalConfigPath)}`,
+              path.posix.join(
+                '/input',
+                ...path.relative(inputDir, zensicalConfigPath).split(path.sep),
+              ),
             ],
             logStream,
             mountDirs,

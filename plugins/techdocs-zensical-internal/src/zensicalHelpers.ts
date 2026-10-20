@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { decodeHTML } from 'entities';
 import yaml from 'js-yaml';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -63,6 +64,22 @@ const TECHDOCS_ZENSICAL_EXTENSION_OPTIONS: Record<string, NamedOptions> = {
   toc: {
     permalink: true,
   },
+};
+
+/**
+ * Extensions whose user options are ignored. Snippets options such as
+ * `restrict_base_path: false` or `base_path` let docs include files from
+ * outside the docs directory, and `techdocs-cli serve` doesn't sanitize
+ * mkdocs.yml before building.
+ */
+const TECHDOCS_ZENSICAL_LOCKED_EXTENSIONS = new Set(['pymdownx.snippets']);
+
+/**
+ * Alternate names the sanitizer accepts for TechDocs extensions, so they are
+ * merged with (and locked like) the canonical entry instead of listed twice.
+ */
+const TECHDOCS_ZENSICAL_EXTENSION_ALIASES: Record<string, string> = {
+  'pymdownx.snippets:SnippetExtension': 'pymdownx.snippets',
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -148,12 +165,23 @@ export async function patchZensicalConfig(
   config.site_dir = siteDir;
 
   const extensions = readNamedEntries(config.markdown_extensions);
+  for (const [alias, name] of Object.entries(
+    TECHDOCS_ZENSICAL_EXTENSION_ALIASES,
+  )) {
+    if (extensions.has(alias)) {
+      const options = extensions.get(alias);
+      extensions.delete(alias);
+      extensions.set(name, { ...options, ...extensions.get(name) });
+    }
+  }
   for (const name of [
     ...TECHDOCS_ZENSICAL_CORE_EXTENSIONS,
     ...TECHDOCS_ZENSICAL_EXTRA_EXTENSIONS,
   ]) {
     const defaults = TECHDOCS_ZENSICAL_EXTENSION_OPTIONS[name];
-    const existing = extensions.get(name);
+    const existing = TECHDOCS_ZENSICAL_LOCKED_EXTENSIONS.has(name)
+      ? undefined
+      : extensions.get(name);
     extensions.set(
       name,
       defaults || existing ? { ...defaults, ...existing } : undefined,
@@ -249,5 +277,6 @@ function stripHtmlTags(html: string): string {
     previous = text;
     text = text.replace(/<[^>]*>/g, '');
   } while (text !== previous);
-  return text.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+  // Decode last, so entities like &lt; become text rather than tags.
+  return decodeHTML(text.replace(/[<>]/g, '')).replace(/\s+/g, ' ').trim();
 }
