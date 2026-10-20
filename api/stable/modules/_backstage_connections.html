@@ -12,8 +12,20 @@
 <h1>Module @backstage/connections</h1></div>
 <section class="tsd-panel tsd-typography"><h2 id="connections" class="tsd-anchor-link">Connections<a href="#connections" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Shared connection types and schemas for Backstage, providing a common foundation
-for integrations and plugins that connect to external services.
-More details can be found in <a href="https://github.com/backstage/backstage/pull/33921">BEP-14</a>.</p>
+for integrations and plugins that connect to external services.</p>
+<p>Connections is experimental. Its configuration and APIs can change during
+experimental development. Backend plugins import <code>declareConnection</code> and
+<code>connectionsServiceRef</code> from <code>@backstage/backend-plugin-api/alpha</code>; they should
+not depend on the private <code>@backstage/connections-node</code> implementation.</p>
+<ul>
+<li><a href="https://backstage.io/docs/next/backend-system/core-services/connections/configuring-connections">Configure connections</a></li>
+<li><a href="https://backstage.io/docs/next/backend-system/core-services/connections/consuming-connections">Consume connections in a backend plugin</a></li>
+<li><a href="https://backstage.io/docs/next/backend-system/core-services/connections/concepts">Connection concepts and limitations</a></li>
+</ul>
+<p>Connections provides static configuration and authentication material, not
+credential exchange or refresh. Existing plugins must explicitly adopt the
+connections service; adding connection configuration does not migrate them.</p>
+<p>For the design proposal, see <a href="https://github.com/backstage/backstage/pull/33921">BEP-14</a>.</p>
 </section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Modules"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="modules">Modules<a href="#modules" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="index"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Module"><use href="../assets/icons.svg#icon-2"></use></svg><a href="_backstage_connections.index.html">index</a><a href="#index" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd><dt class="tsd-member-summary" id="packagesconnectionssrcconfig"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Module"><use href="../assets/icons.svg#icon-2"></use></svg><a href="_backstage_connections.packages_connections_src_config.html">packages/connections/src/config</a><a href="#packagesconnectionssrcconfig" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details></div>

@@ -14,8 +14,8 @@
 <div class="tsd-comment tsd-typography"><p>CLI module for Yarn package manager commands in the Backstage CLI.</p>
 </div></section>
 <section class="tsd-panel tsd-typography"><h1 id="backstagecli-module-package-manager-yarn" class="tsd-anchor-link">@backstage/cli-module-package-manager-yarn<a href="#backstagecli-module-package-manager-yarn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
-<p>Adds <code>backstage-cli pm verify-patches</code>, a read-only check for Yarn patch
-references, root resolutions, and patched Backstage package versions.</p>
+<p>Adds <code>backstage-cli pm verify-patches</code>, a check for Yarn patch references,
+root resolutions, and patched Backstage package versions.</p>
 <p>The command verifies Yarn's native <code>patch:</code> protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as <code>patch-package</code> in
 Yarn Classic repositories.</p>
@@ -37,11 +37,32 @@ patched package version matches the selected release manifest. All findings
 are printed together and the command exits unsuccessfully if any are found.
 Repositories without <code>backstage.json</code> still receive generic patch validation;
 the Backstage release check is reported as skipped.</p>
-<p>The command does not run Yarn, install dependencies, or write project files.
-Use it alongside <code>yarn install --immutable</code>: immutable installs protect the
-resolved dependency state, while this command verifies that patch declarations,
-patch files, resolutions, the lockfile, and the selected Backstage release
-remain aligned.</p>
+<p>By default, the command does not run Yarn, install dependencies, or write
+project files. Use it alongside <code>yarn install --immutable</code>: immutable installs
+protect the resolved dependency state, while this command verifies that patch
+declarations, patch files, resolutions, the lockfile, and the selected
+Backstage release remain aligned.</p>
+<h3 id="repairing-an-outdated-backstage-patch" class="tsd-anchor-link">Repairing an outdated Backstage patch<a href="#repairing-an-outdated-backstage-patch" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>When a Backstage release upgrade leaves a patched package pinned to its old
+version, the command can attempt a conservative repair:</p>
+<pre><code class="shell"><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">backstage-cli</span><span class="hl-2"> </span><span class="hl-4">pm</span><span class="hl-2"> </span><span class="hl-4">verify-patches</span><span class="hl-2"> </span><span class="hl-3">--fix</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The fixer handles exact-version <code>@backstage/*</code> patches declared in the root
+<code>resolutions</code>. It updates all eligible outdated patches to the versions in the
+selected Backstage release, runs one lockfile-only Yarn install, and then runs
+the full verification again. It never updates a patch to an older version and
+restores <code>package.json</code> and <code>yarn.lock</code> if the install or verification fails.
+Unsupported or ambiguous cases remain verification failures for manual repair.
+The <code>--fix</code> mode requires Yarn 3 or later.</p>
+<p>The repair runs in the working checkout using the repository's configured Yarn
+binary, plugins, and registry settings, with dependency build scripts disabled.
+Run it in a clean, exclusive checkout. An abrupt interruption can leave a
+partial change behind.</p>
+<p>For an automated Backstage version bump, run the commands in this order:</p>
+<pre><code class="shell"><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">backstage-cli</span><span class="hl-2"> </span><span class="hl-4">versions:bump</span><br/><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">backstage-cli</span><span class="hl-2"> </span><span class="hl-4">pm</span><span class="hl-2"> </span><span class="hl-4">verify-patches</span><span class="hl-2"> </span><span class="hl-3">--fix</span>
+</code><button type="button">Copy</button></pre>
+
 <h2 id="release-manifest-environment" class="tsd-anchor-link">Release manifest environment<a href="#release-manifest-environment" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>For patched Backstage packages, the command loads the manifest for the release
 selected in <code>backstage.json</code>. It supports the same manifest environment
@@ -74,6 +95,9 @@ or does not match the selected release, verification fails.</p>
 <div class="tsd-accordion-details"><a href="#backstagecli-module-package-manager-yarn"><span>@backstage/cli-<wbr/>module-<wbr/>package-<wbr/>manager-<wbr/>yarn</span></a>
 <ul>
 <li><a href="#usage"><span>Usage</span></a></li>
+<li>
+<ul>
+<li><a href="#repairing-an-outdated-backstage-patch"><span>Repairing an outdated <wbr/>Backstage patch</span></a></li></ul></li>
 <li><a href="#release-manifest-environment"><span>Release manifest environment</span></a></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Variables</summary>
 <div><a href="#index"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Variable"><use href="../assets/icons.svg#icon-32"></use></svg><span>index</span></a></div></details></div></details></div>
