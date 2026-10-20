@@ -48,6 +48,7 @@ import {
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
+import { KubernetesJobRunner } from './KubernetesJobRunner';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from './types';
 
@@ -92,7 +93,16 @@ export class TechdocsGenerator implements GeneratorBase {
   }) {
     this.logger = options.logger;
     this.options = readGeneratorConfig(options.config, options.logger);
-    this.containerRunner = options.containerRunner;
+    if (!options.containerRunner && this.options.runIn === 'kubernetes') {
+      if (!this.options.kubernetes) {
+        throw new Error(
+          `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
+        );
+      }
+      this.containerRunner = new KubernetesJobRunner(this.options.kubernetes);
+    } else {
+      this.containerRunner = options.containerRunner;
+    }
     this.scmIntegrations = options.scmIntegrations;
   }
 
@@ -204,8 +214,6 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'kubernetes':
-          // TODO: construct KubernetesJobRunner from techdocs.generator.kubernetes config (namespace, volumeClaimName, workRoot)
-          throw new Error('not yet implemented');
         case 'docker': {
           const containerRunner =
             this.containerRunner || new DockerContainerRunner();
