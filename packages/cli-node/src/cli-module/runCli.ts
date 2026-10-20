@@ -269,7 +269,7 @@ async function runCommandLevel(options: {
               programName,
             );
             await flushStdio();
-            process.exit(0);
+            process.exit(process.exitCode ?? 0);
           }
         } catch (error: unknown) {
           exitWithError(error);

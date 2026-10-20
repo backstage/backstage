@@ -79,6 +79,33 @@ describe('runCli', () => {
     expect(process.exit).toHaveBeenCalledTimes(1);
   });
 
+  it('preserves the exit code set by a command', async () => {
+    process.argv = ['node', 'cli', 'validate'];
+    const originalExitCode = process.exitCode;
+
+    const validateModule = createCliModule({
+      packageJson: { name: '@example/validate' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['validate'],
+          description: 'Validate something',
+          execute: async () => {
+            process.exitCode = 1;
+          },
+        });
+      },
+    });
+
+    try {
+      await runCli({ modules: [validateModule], name: 'example-cli' });
+    } finally {
+      process.exitCode = originalExitCode;
+    }
+
+    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledTimes(1);
+  });
+
   it('waits for stdout and stderr to flush before exiting', async () => {
     process.argv = ['node', 'cli', 'print'];
 
