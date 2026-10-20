@@ -50,8 +50,10 @@ type MinimalPermissionApi = {
 // wait and retry instead, for up to about 15 seconds in total.
 const AUTHORIZE_RETRY_DELAYS_MS = [500, 1000, 2000, 4000, 8000];
 
-// Network failures and server errors are worth retrying. Client errors,
-// such as a 401 or 403 response, will not change on a retry.
+// Only failures that may clear up on their own are retried: transport
+// failures, which fetch reports as a TypeError, and 5xx responses. Client
+// errors such as a 401 or 403 response, and errors parsing or validating a
+// response, fail right away.
 function isRetryableAuthorizeError(error: unknown): boolean {
   if (
     isError(error) &&
@@ -64,7 +66,7 @@ function isRetryableAuthorizeError(error: unknown): boolean {
   ) {
     return error.response.status >= 500;
   }
-  return true;
+  return isError(error) && error.name === 'TypeError';
 }
 
 async function authorizeWithRetry(
