@@ -184,7 +184,9 @@ export function resolveRouteBindings(
   }
 
   for (const ref of disabledExternalRefs) {
-    result.set(ref, undefined);
+    if (!result.has(ref)) {
+      result.set(ref, undefined);
+    }
   }
   return result;
 }

@@ -29,7 +29,6 @@ const appVisualizerPage = PageBlueprint.make({
   params: {
     path: '/visualizer',
     routeRef: rootRouteRef,
-
     title: 'Visualizer',
     icon: <RiEyeLine />,
   },

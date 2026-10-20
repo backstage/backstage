@@ -85,7 +85,6 @@ const homePage = PageBlueprint.makeWithOverrides({
       path: '/home',
       routeRef: rootRouteRef,
       noHeader: true,
-
       title: 'Home',
       icon: <HomeIcon fontSize="inherit" />,
       loader: async () => {

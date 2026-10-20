@@ -185,6 +185,7 @@ function convertNewToOld(
     const newRef = OpaqueRouteRef.toInternal(ref);
     return Object.assign(ref, {
       [routeRefType]: 'absolute',
+      id: newRef.getDescription(),
       params: newRef.getParams(),
       title: newRef.getDescription(),
     } as Omit<LegacyRouteRef, '$$routeRefType' | keyof RouteRef>) as unknown as LegacyRouteRef;

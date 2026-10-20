@@ -59,6 +59,7 @@ function resolveTargetRef(
   fallbackRoutes: Map<string, RouteRef | undefined>,
   redirects: RouteRedirects,
   externalRouteIds: Map<ExternalRouteRef, string>,
+  externalBindingsById: Map<string, ExternalRouteRef>,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
@@ -69,14 +70,7 @@ function resolveTargetRef(
     const id =
       externalRouteIds.get(ref) ??
       OpaqueExternalRouteRef.toInternal(ref).getId?.();
-    const bindingRef = id
-      ? [...routeBindings.keys()].find(
-          candidate =>
-            OpaqueExternalRouteRef.isType(candidate) &&
-            (externalRouteIds.get(candidate) ??
-              OpaqueExternalRouteRef.toInternal(candidate).getId?.()) === id,
-        ) ?? ref
-      : ref;
+    const bindingRef = (id && externalBindingsById.get(id)) || ref;
     let resolvedRoute = routeBindings.get(bindingRef);
     if (!routeBindings.has(bindingRef)) {
       const internal = OpaqueExternalRouteRef.toInternal(ref);
@@ -107,7 +101,7 @@ function resolveTargetRef(
   const internal = OpaqueRouteRef.toInternal(ref);
   const extensionId = internal.getExtensionId?.();
   if (extensionId !== undefined) {
-    const hasTarget = extensionRoutes.has(extensionId);
+    const hasTarget = extensionRoutes.get(extensionId) !== undefined;
     if (
       !hasTarget &&
       fallbackRoutes.has(extensionId) &&
@@ -252,6 +246,7 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
+  private readonly externalBindingsById = new Map<string, ExternalRouteRef>();
   private readonly extensionRoutes = new Map<string, RouteRef | undefined>();
   private readonly fallbackRoutes = new Map<string, RouteRef | undefined>();
   private readonly routePaths: Map<RouteRef, string>;
@@ -281,7 +276,7 @@ export class RouteResolver implements RouteResolutionApi {
     private readonly redirects = new RouteRedirects(),
     private readonly externalRouteIds = new Map<ExternalRouteRef, string>(),
   ) {
-    // An installed but unmounted target must not resolve through a fallback.
+    // Track installed targets separately from their mounted instances.
     for (const id of installedExtensionIds) {
       this.extensionRoutes.set(id, undefined);
     }
@@ -332,6 +327,14 @@ export class RouteResolver implements RouteResolutionApi {
       });
     this.routeObjects = indexRoutes(routeObjects);
     this.routeBindings = routeBindings;
+    for (const ref of routeBindings.keys()) {
+      const id =
+        externalRouteIds.get(ref) ??
+        OpaqueExternalRouteRef.toInternal(ref).getId?.();
+      if (id && !this.externalBindingsById.has(id)) {
+        this.externalBindingsById.set(id, ref);
+      }
+    }
     this.appBasePath = appBasePath;
     this.routeAliasResolver = routeAliasResolver;
     this.routeRefsById = routeRefsById;
@@ -406,6 +409,7 @@ export class RouteResolver implements RouteResolutionApi {
         this.fallbackRoutes,
         this.redirects,
         this.externalRouteIds,
+        this.externalBindingsById,
       );
     }
     const callersById = new Map<string, Set<ExternalRouteRef>>();
@@ -457,6 +461,7 @@ export class RouteResolver implements RouteResolutionApi {
       this.fallbackRoutes,
       this.redirects,
       this.externalRouteIds,
+      this.externalBindingsById,
     );
     if (!targetRef) {
       return undefined;

@@ -48,6 +48,7 @@ describe('convertLegacyRouteRef', () => {
     const sub = createNewSubRouteRef({ parent: ref, path: '/edit' });
     const legacy = convertLegacyRouteRef(ref);
     const legacySub = convertLegacyRouteRef(sub);
+    expect(legacy).toHaveProperty('id', 'page:test/item');
     const resolver = new LegacyRouteResolver(
       new Map([[legacy, '/legacy/:id']]),
       new Map(),

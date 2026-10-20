@@ -199,7 +199,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
       extensions.push(
         createExtension({
           kind: 'test-route',
-          name: path,
+          name: encodeURIComponent(path),
           attachTo: { id: 'app/root', input: 'elements' },
           output: [
             coreExtensionData.reactElement,

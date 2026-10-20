@@ -354,7 +354,7 @@ it('validates ownership and complete installed targets without rejecting disable
   );
 });
 
-it('uses deprecated mounts only when the structural target is absent', () => {
+it('uses deprecated mounts when the structural target is not mounted', () => {
   const ref = createRouteRef({
     extensionId: 'page:test/target',
     params: ['id'],
@@ -389,11 +389,15 @@ it('uses deprecated mounts only when the structural target is absent', () => {
     withTarget(page('target', '/native/:id')).resolve(copy)?.({ id: 'one' }),
   ).toBe('/native/one');
   expect(
-    withTarget(page('target', '/native/:id', { disabled: true })).resolve(copy),
-  ).toBeUndefined();
+    withTarget(page('target', '/native/:id', { disabled: true })).resolve(
+      copy,
+    )?.({ id: 'one' }),
+  ).toBe('/legacy/one');
   expect(
-    withTarget(page('target', '/native/:id', { if: false })).resolve(copy),
-  ).toBeUndefined();
+    withTarget(page('target', '/native/:id', { if: false })).resolve(copy)?.({
+      id: 'two',
+    }),
+  ).toBe('/legacy/two');
 
   const duplicates = plugin.withOverrides({
     extensions: [page('second', '/other/:id', { ref: copy })],

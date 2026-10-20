@@ -60,7 +60,6 @@ const IndexPage = PageBlueprint.make({
   name: 'index',
   params: {
     path: '/',
-
     loader: async () => {
       const Component = () => {
         const page1Link = useRouteRef(page1RouteRef);
@@ -153,7 +152,6 @@ const Page1 = PageBlueprint.make({
   name: 'page1',
   params: {
     path: '/page1',
-
     loader: async () => {
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);
@@ -204,7 +202,6 @@ const ExternalPage = PageBlueprint.make({
   name: 'pageX',
   params: {
     path: '/pageX',
-
     loader: async () => {
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);

@@ -184,13 +184,13 @@ Keep the new page's `routeRef` registration to support older versions of the
 new frontend system, as described in the [release migration guide](../architecture/60-migrations.md#supporting-older-frontend-system-versions).
 It is also needed when supporting hybrid conversion utilities such as
 `convertLegacyPageExtension`. Converted pages can have
-generated or overridden extension IDs. If the reference's target ID is absent
-from the app, its explicit registration provides the fallback mount. Multiple
+generated or overridden extension IDs. If the reference's target extension is not mounted, its explicit registration provides the fallback mount. Multiple
 different fallback mounts for the same target are ambiguous and throw when
 that fallback is needed.
 
-An installed target takes precedence over fallback mounts, including when it is
-disabled or conditionally unavailable. For plugins that use only the new frontend
+A mounted target takes precedence over fallback mounts. A disabled or
+conditionally unavailable target can instead resolve through a unique mounted
+replacement registering the same reference. For plugins that use only the new frontend
 system, follow the [route reference migration](../architecture/60-migrations.md#route-references-target-extension-ids).
 
 ## Migrating Components

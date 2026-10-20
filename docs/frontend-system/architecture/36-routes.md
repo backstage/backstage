@@ -77,7 +77,9 @@ provided by a module.
 Separate references with the same extension ID and parameters resolve to the
 same route. Conflicting parameter contracts, unknown targets, and targets that
 do not expose a route path are errors. Disabled or conditionally unavailable
-extensions resolve to `undefined`. Legacy-compatible references also resolve to
+extensions resolve to `undefined` unless a unique mounted replacement registers
+their route reference through the deprecated `routeRef` output. Mounted target
+extensions take precedence over these fallback registrations. Legacy-compatible references also resolve to
 `undefined` when their target is absent, since hybrid apps may mount only some
 of a legacy plugin's pages.
 

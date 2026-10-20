@@ -130,6 +130,30 @@ describe('resolveRouteBindings', () => {
     ).toBe(myTarget);
   });
 
+  it('preserves explicit bindings when also disabled in code', () => {
+    const source = createExternalRouteRef();
+    const target = createRouteRef({ extensionId: 'page:test' });
+    for (const bindings of [
+      [false, target],
+      [target, false],
+    ] as const) {
+      const result = resolveRouteBindings(
+        ({ bind }) => {
+          for (const value of bindings) {
+            bind({ source }, { source: value });
+          }
+        },
+        new ConfigReader({}),
+        {
+          routes: new Map([['test.root', target]]),
+          externalRoutes: new Map([['test.external', source]]),
+        },
+        collector,
+      );
+      expect(result.get(source)).toBe(target);
+    }
+  });
+
   it('reports errors on invalid config', () => {
     expect(() =>
       resolveRouteBindings(
