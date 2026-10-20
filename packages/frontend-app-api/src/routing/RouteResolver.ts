@@ -139,6 +139,27 @@ function resolveTargetRef(
           routeRefType in mountedRef &&
           expected.every(param => actual.includes(param)))
       ) {
+        // Include ancestor occurrences of declared parameters even when the
+        // local path already accounts for every parameter in the reference.
+        let ancestor = routeParents.get(mountedRef);
+        let ancestorPath = mountedPath;
+        while (ancestor) {
+          const segment = routePaths.get(ancestor) ?? '';
+          const ancestorParams = [...segment.matchAll(/:([\w-]+)(\?)?/g)];
+          if (
+            ancestorParams.some(
+              match => !match[2] && !actual.includes(match[1]),
+            )
+          ) {
+            break;
+          }
+          ancestorPath = joinPaths(segment, ancestorPath);
+          if (ancestorParams.some(match => actual.includes(match[1]))) {
+            mountedRef = ancestor;
+            mountedPath = ancestorPath;
+          }
+          ancestor = routeParents.get(ancestor);
+        }
         return [mountedRef, mountedPath];
       }
       const parent = routeParents.get(mountedRef);
@@ -219,12 +240,12 @@ function resolveBasePath(
     if (path === undefined) {
       throw new Error(`No path for ${ref}`);
     }
-    if (path.includes(':')) {
+    if ([...path.matchAll(/:([\w-]+)(\?)?/g)].some(param => !param[2])) {
       throw new Error(
         `Cannot route to ${targetRef} with parent ${ref} as it has parameters`,
       );
     }
-    return path;
+    return generatePath(path);
   });
 
   return `${joinPaths(parentPath, ...diffPaths)}/`;

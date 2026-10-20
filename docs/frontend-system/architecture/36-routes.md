@@ -87,7 +87,9 @@ Legacy fallback mounts retain support for unused caller parameters.
 
 Route references optionally accept a `params` option, which will require the listed parameter names to be present in the route path. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` parameters, like in this path `/entities/:kind/:namespace/:name`:
 
-A reference can also declare parameters from ancestor routes to build links from outside that route hierarchy. Ancestor parameters that are not declared must instead be available from the current routing context.
+A reference can also declare parameters from ancestor routes to build links from outside that route hierarchy. Required ancestor parameters that are not declared must instead be available from the current routing context.
+
+Optional ancestor parameters can be omitted when there is no current routing context; when present in that context, their values are preserved. Declared parameters also replace occurrences in ancestor paths, including when the same name occurs in the target's own path.
 
 Optional parameters in a mounted path, such as `:id?`, may be omitted from the reference's `params` to link without that parameter. If the reference declares `id`, callers must supply it even though the path allows it to be omitted. References targeting the same extension must still declare identical parameter contracts.
 

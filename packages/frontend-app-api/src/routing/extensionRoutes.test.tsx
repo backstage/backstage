@@ -837,3 +837,39 @@ it('allows optional mounted parameters without relaxing reference contracts', ()
     }),
   ).toThrow(/Conflicting route parameter contracts/);
 });
+
+it('resolves optional ancestors and repeated ancestor parameters', () => {
+  const optional = createRouteRef({
+    extensionId: 'page:test/optional-details',
+  });
+  const repeated = createRouteRef({
+    extensionId: 'page:test/repeated-details',
+    params: ['id'],
+  });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { optional, repeated },
+    extensions: [
+      page('optional', '/orgs/:org?'),
+      page('optional-details', 'details', { parent: 'page:test/optional' }),
+      page('repeated', '/items/:id'),
+      page('middle', 'middle', { parent: 'page:test/repeated' }),
+      page('repeated-details', 'details/:id', { parent: 'page:test/middle' }),
+    ],
+  });
+  const routes = createSpecializedApp({ features: [app, plugin] }).apis.get(
+    routeResolutionApiRef,
+  )!;
+  expect(routes.resolve(optional)?.()).toBe('/orgs/details');
+  expect(
+    routes.resolve(optional, { sourcePath: '/orgs/one/details' })?.(),
+  ).toBe('/orgs/one/details');
+  expect(routes.resolve(repeated)?.({ id: 'one' })).toBe(
+    '/items/one/middle/details/one',
+  );
+  expect(
+    routes.resolve(repeated, {
+      sourcePath: '/items/old/middle/details/old',
+    })?.({ id: 'new' }),
+  ).toBe('/items/new/middle/details/new');
+});
