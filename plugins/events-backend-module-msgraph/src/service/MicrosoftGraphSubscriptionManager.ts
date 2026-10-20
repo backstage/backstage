@@ -221,7 +221,7 @@ export class MicrosoftGraphSubscriptionManager {
           await trx.deleteById(existingSubscriptionId);
         }
 
-        const { validationToken, hash, salt } = await newValidationToken();
+        const { validationToken, hash, salt } = newValidationToken();
         const { id, expirationDateTime } =
           await this.msGraphClient.createSubscription({
             resource,

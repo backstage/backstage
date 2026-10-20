@@ -19,17 +19,17 @@ describe('hashValidationToken', () => {
   it('produces a deterministic hash for the same token and salt', async () => {
     const token = 'test-token';
     const salt = 'test-salt';
-    const hash1 = await hashValidationToken(token, salt);
-    const hash2 = await hashValidationToken(token, salt);
+    const hash1 = hashValidationToken(token, salt);
+    const hash2 = hashValidationToken(token, salt);
     expect(hash1).toBe(hash2);
     expect(typeof hash1).toBe('string');
     expect(hash1.length).toBe(64); // 32 bytes in hex
   });
 
   it('produces different hashes for different tokens or salts', async () => {
-    const hashA = await hashValidationToken('tokenA', 'saltA');
-    const hashB = await hashValidationToken('tokenB', 'saltA');
-    const hashC = await hashValidationToken('tokenA', 'saltB');
+    const hashA = hashValidationToken('tokenA', 'saltA');
+    const hashB = hashValidationToken('tokenB', 'saltA');
+    const hashC = hashValidationToken('tokenA', 'saltB');
     expect(hashA).not.toBe(hashB);
     expect(hashA).not.toBe(hashC);
   });
@@ -37,7 +37,7 @@ describe('hashValidationToken', () => {
 
 describe('newValidationToken', () => {
   it('generates a new token, hash, and salt', async () => {
-    const { validationToken, hash, salt } = await newValidationToken();
+    const { validationToken, hash, salt } = newValidationToken();
     expect(typeof validationToken).toBe('string');
     expect(typeof hash).toBe('string');
     expect(typeof salt).toBe('string');
@@ -47,14 +47,14 @@ describe('newValidationToken', () => {
   });
 
   it('hash matches hashValidationToken output', async () => {
-    const { validationToken, hash, salt } = await newValidationToken();
-    const expectedHash = await hashValidationToken(validationToken, salt);
+    const { validationToken, hash, salt } = newValidationToken();
+    const expectedHash = hashValidationToken(validationToken, salt);
     expect(hash).toBe(expectedHash);
   });
 
   it('generates unique tokens and salts each time', async () => {
-    const first = await newValidationToken();
-    const second = await newValidationToken();
+    const first = newValidationToken();
+    const second = newValidationToken();
     expect(first.validationToken).not.toBe(second.validationToken);
     expect(first.salt).not.toBe(second.salt);
     expect(first.hash).not.toBe(second.hash);
