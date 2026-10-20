@@ -33,7 +33,7 @@ global.__non_webpack_require__ = {
 };
 
 const extensions = [
-  'sign-in-page',
+  'sign-in-page:app',
   { 'api:auth': { config: { provider: 'github' } } },
   'sign-in-page:other',
   { 'page:catalog': { disabled: true, config: { title: 'Internal catalog' } } },
@@ -160,7 +160,7 @@ describe('public entry point config', () => {
   it('selects visible keys and exact extension IDs without changing authenticated config', async () => {
     const app = await createApp({
       allowedConfig: ['app.title', 'backend', 'app.secret', 'app.privateValue'],
-      allowedExtensions: ['sign-in-page', 'api:auth'],
+      allowedExtensions: ['sign-in-page:app', 'api:auth'],
     });
     const publicResponse = await request(app).get('/backstage/');
     expect(publicResponse.status).toBe(200);

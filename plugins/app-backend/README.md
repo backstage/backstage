@@ -59,7 +59,7 @@ app:
       - auth.environment
       - auth.providers
     allowedExtensions:
-      - sign-in-page
+      - sign-in-page:app
 ```
 
 The presence of `app.publicConfig` enables filtering. Missing or empty lists allow
@@ -68,9 +68,10 @@ list when no extension IDs are allowed.
 Allowed key paths include their descendants, except that `app.extensions` is
 always controlled exclusively by `allowedExtensions`, including when `app` or
 `app.extensions` is listed in `allowedConfig`. Extension IDs are matched exactly
-for both string entries and object entries. Normal frontend visibility rules
-still apply. Authenticated users continue to receive the full frontend-visible
-configuration.
+for both string entries and object entries. These IDs select extension configuration
+to expose; they do not control which extensions the public app loads. Normal
+frontend visibility rules still apply. Authenticated users continue to receive the
+full frontend-visible configuration.
 
 The public HTML template also receives the restricted config. Include any keys
 that your template reads, such as `app.title`, in `allowedConfig`. Asset URLs
