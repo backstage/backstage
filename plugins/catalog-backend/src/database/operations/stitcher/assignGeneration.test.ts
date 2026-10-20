@@ -86,60 +86,65 @@ it.each(databases.eachSupportedId())(
   },
 );
 
-it.each(
-  databases.eachSupportedId().filter(([id]) => id.startsWith('POSTGRES')),
-)(
-  'prevents a later generation committing past an uncommitted allocation for %p',
-  async databaseId => {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    await addFinalRows(knex);
-    const { rows: functions } = await knex.raw(
-      "SELECT to_regprocedure('catalog_next_generation()') AS function",
-    );
-    expect(functions[0].function).toBeNull();
+// Jest rejects an empty table, which this would be when no PostgreSQL
+// database is configured for the run.
+const postgresIds = databases
+  .eachSupportedId()
+  .filter(([id]) => id.startsWith('POSTGRES'));
+if (postgresIds.length > 0) {
+  it.each(postgresIds)(
+    'prevents a later generation committing past an uncommitted allocation for %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await addFinalRows(knex);
+      const { rows: functions } = await knex.raw(
+        "SELECT to_regprocedure('catalog_next_generation()') AS function",
+      );
+      expect(functions[0].function).toBeNull();
 
-    const first = await knex.transaction();
-    const second = await knex.transaction();
-    let later: Promise<string> | undefined;
-    try {
-      await first('final_entities')
-        .where('entity_id', 'one')
-        .update({ hash: 'changed' });
-      await second('final_entities')
-        .where('entity_id', 'two')
-        .update({ hash: 'changed' });
-      expect(await assignGeneration(first, 'one')).toBe('1');
-      const { rows } = await second.raw('SELECT pg_backend_pid() AS pid');
-      later = assignGeneration(second, 'two');
-      // Observe a real lock wait, not a timing-dependent unsettled promise.
-      const deadline = Date.now() + 5_000;
-      let blocked = false;
-      while (!blocked && Date.now() < deadline) {
-        const result = await knex.raw(
-          'SELECT cardinality(pg_blocking_pids(?)) > 0 AS blocked',
-          [rows[0].pid],
-        );
-        blocked = result.rows[0].blocked;
-        if (!blocked) await new Promise(resolve => setTimeout(resolve, 10));
+      const first = await knex.transaction();
+      const second = await knex.transaction();
+      let later: Promise<string> | undefined;
+      try {
+        await first('final_entities')
+          .where('entity_id', 'one')
+          .update({ hash: 'changed' });
+        await second('final_entities')
+          .where('entity_id', 'two')
+          .update({ hash: 'changed' });
+        expect(await assignGeneration(first, 'one')).toBe('1');
+        const { rows } = await second.raw('SELECT pg_backend_pid() AS pid');
+        later = assignGeneration(second, 'two');
+        // Observe a real lock wait, not a timing-dependent unsettled promise.
+        const deadline = Date.now() + 5_000;
+        let blocked = false;
+        while (!blocked && Date.now() < deadline) {
+          const result = await knex.raw(
+            'SELECT cardinality(pg_blocking_pids(?)) > 0 AS blocked',
+            [rows[0].pid],
+          );
+          blocked = result.rows[0].blocked;
+          if (!blocked) await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        expect(blocked).toBe(true);
+        expect(
+          String((await knex('catalog_generation_counter').first()).generation),
+        ).toBe('0');
+        await first.commit();
+        expect(await later).toBe('2');
+        expect(
+          String((await knex('catalog_generation_counter').first()).generation),
+        ).toBe('1');
+        await second.commit();
+        expect(
+          String((await knex('catalog_generation_counter').first()).generation),
+        ).toBe('2');
+      } finally {
+        await first.rollback();
+        await second.rollback();
+        await later?.catch(() => {});
       }
-      expect(blocked).toBe(true);
-      expect(
-        String((await knex('catalog_generation_counter').first()).generation),
-      ).toBe('0');
-      await first.commit();
-      expect(await later).toBe('2');
-      expect(
-        String((await knex('catalog_generation_counter').first()).generation),
-      ).toBe('1');
-      await second.commit();
-      expect(
-        String((await knex('catalog_generation_counter').first()).generation),
-      ).toBe('2');
-    } finally {
-      await first.rollback();
-      await second.rollback();
-      await later?.catch(() => {});
-    }
-  },
-);
+    },
+  );
+}
