@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 import crypto from 'node:crypto';
+import { promisify } from 'node:util';
 
 const ITERATIONS = 100_000;
 const KEY_LEN = 32; // 256-bit
 const DIGEST = 'sha256';
+
+const pbkdf2 = promisify(crypto.pbkdf2);
 
 /**
  * Hashes a validation token with the given salt using PBKDF2.
  * @param token
  * @param salt
  */
-export const hashValidationToken = (token: string, salt: string) =>
-  crypto.pbkdf2Sync(token, salt, ITERATIONS, KEY_LEN, DIGEST).toString('hex');
+export const hashValidationToken = async (token: string, salt: string) =>
+  (await pbkdf2(token, salt, ITERATIONS, KEY_LEN, DIGEST)).toString('hex');
 
 /**
  * Generates a new validation token, its salt, and the corresponding hash.
  */
-export function newValidationToken() {
+export async function newValidationToken() {
   const validationToken = crypto.randomBytes(32).toString('hex');
   const salt = crypto.randomBytes(16).toString('hex');
-  const hash = hashValidationToken(validationToken, salt);
+  const hash = await hashValidationToken(validationToken, salt);
   return { validationToken, hash, salt };
 }
