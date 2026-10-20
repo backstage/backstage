@@ -52,7 +52,9 @@ describe('UnprocessedEntitiesModule', () => {
 
     await db.schema.createTable('final_entities', table => {
       table.string('entity_id').primary();
+      table.string('entity_ref').unique();
       table.text('final_entity').nullable();
+      table.string('deleted_at').nullable();
     });
 
     const now = new Date().toISOString();
@@ -84,10 +86,41 @@ describe('UnprocessedEntitiesModule', () => {
       last_discovery_at: now,
     });
 
-    await db('final_entities').insert({
-      entity_id: 'failed-entity',
-      final_entity: null,
+    // Re-created after a deletion: its final row is the old tombstone, with
+    // a different ID. It is pending, not failed.
+    await db('refresh_state').insert({
+      entity_id: 'recreated-entity',
+      entity_ref: 'component:default/recreated',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'recreated' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
     });
+
+    await db('final_entities').insert([
+      {
+        entity_id: 'failed-entity',
+        entity_ref: 'component:default/failed',
+        final_entity: null,
+      },
+      {
+        entity_id: 'old-slot',
+        entity_ref: 'component:default/recreated',
+        final_entity: null,
+        deleted_at: now,
+      },
+      // A tombstone with no candidate is neither pending nor failed.
+      {
+        entity_id: 'deleted-slot',
+        entity_ref: 'component:default/deleted',
+        final_entity: null,
+        deleted_at: now,
+      },
+    ]);
 
     mockPermissions = {
       authorize: jest.fn(),
@@ -136,10 +169,16 @@ describe('UnprocessedEntitiesModule', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.type).toBe('pending');
-      expect(response.body.entities).toHaveLength(1);
-      expect(response.body.entities[0].entity_ref).toBe(
-        'component:default/pending',
-      );
+      expect(
+        response.body.entities
+          .map((e: { entity_ref: string }) => e.entity_ref)
+          .sort(),
+      ).toEqual(['component:default/pending', 'component:default/recreated']);
+      expect(
+        response.body.entities
+          .map((e: { entity_id: string }) => e.entity_id)
+          .sort(),
+      ).toEqual(['pending-entity', 'recreated-entity']);
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
 

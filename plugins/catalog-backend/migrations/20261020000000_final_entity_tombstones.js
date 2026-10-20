@@ -224,7 +224,7 @@ async function findPostgresForeignKeys(knex) {
        AND rel.relname = 'final_entities'
        AND ref.relname = 'refresh_state'`,
   );
-  return rows.map(row => row.conname);
+  return rows.map((/** @type {{ conname: string }} */ row) => row.conname);
 }
 
 /**
@@ -239,13 +239,15 @@ async function findMysqlForeignKeys(knex) {
        AND TABLE_NAME = 'final_entities'
        AND REFERENCED_TABLE_NAME = 'refresh_state'`,
   );
-  return rows.map(row => row.name);
+  return rows.map((/** @type {{ name: string }} */ row) => row.name);
 }
 
 /** @param {import('knex').Knex} knex */
 async function hasSqliteForeignKey(knex) {
   const rows = await knex.raw("PRAGMA foreign_key_list('final_entities')");
-  return rows.some(row => row.table === 'refresh_state');
+  return rows.some(
+    (/** @type {{ table: string }} */ row) => row.table === 'refresh_state',
+  );
 }
 
 /**

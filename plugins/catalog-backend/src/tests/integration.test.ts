@@ -366,15 +366,7 @@ class TestHarness {
     await this.#engine.stop();
     await tracker.waitForFinish();
 
-    // Wait for the stitch queue to drain while the stitcher is still running
-    const start = Date.now();
-    while (Date.now() - start < 10_000) {
-      const queue = await this.#db('stitch_queue').select('*');
-      if (queue.length === 0) {
-        break;
-      }
-      await new Promise(resolve => setTimeout(resolve, 50));
-    }
+    await this.#drainStitchQueue();
 
     await this.#stitcher.stop();
     this.#proxyProgressTracker.setTracker(new NoopProgressTracker());
@@ -410,6 +402,23 @@ class TestHarness {
     await deleteOrphanedEntities({
       knex: this.#db,
     });
+    // Deleted entities leave the catalog once the stitcher has turned their
+    // final rows into tombstones.
+    await this.#stitcher.start();
+    await this.#drainStitchQueue();
+    await this.#stitcher.stop();
+  }
+
+  // Waits for the stitch queue to drain while the stitcher is running
+  async #drainStitchQueue() {
+    const start = Date.now();
+    while (Date.now() - start < 10_000) {
+      const queue = await this.#db('stitch_queue').select('*');
+      if (queue.length === 0) {
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
   }
 
   async getRefreshState(): Promise<
