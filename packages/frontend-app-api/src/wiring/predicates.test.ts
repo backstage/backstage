@@ -57,6 +57,13 @@ function makeAllowPermissionApi(allowedNames: string[]): MinimalPermissionApi {
   }));
 }
 
+function responseError(status: number) {
+  return Object.assign(new Error(`Request failed with status ${status}`), {
+    name: 'ResponseError',
+    response: { status },
+  });
+}
+
 function makeApiHolder(
   featureFlagsApi?: FeatureFlagsApi,
   permissionApi?: MinimalPermissionApi,
@@ -340,7 +347,7 @@ describe('createPredicateContextLoader', () => {
 
     it('throws a ForwardedError when the permission API rejects', async () => {
       const permissionApi = makePermissionApi(async () => {
-        throw new Error('connection refused');
+        throw responseError(403);
       });
 
       const loader = createPredicateContextLoader({
@@ -354,6 +361,86 @@ describe('createPredicateContextLoader', () => {
       await expect(loader.load()).rejects.toThrow(
         'Failed to authorize extension permissions',
       );
+    });
+
+    describe('retries', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      function loaderWith(permissionApi: MinimalPermissionApi) {
+        return createPredicateContextLoader({
+          apis: makeApiHolder(makeFeatureFlagsApi(), permissionApi),
+          predicateReferences: {
+            featureFlags: [],
+            permissions: ['any.permission'],
+          },
+        });
+      }
+
+      it('retries network failures', async () => {
+        const authorize = jest
+          .fn()
+          .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+          .mockResolvedValueOnce({ result: 'ALLOW' });
+
+        const result = loaderWith({ authorize }).load();
+        await jest.advanceTimersByTimeAsync(500);
+
+        await expect(result).resolves.toEqual({
+          featureFlags: [],
+          permissions: ['any.permission'],
+        });
+        expect(authorize).toHaveBeenCalledTimes(2);
+      });
+
+      it('retries server errors', async () => {
+        const authorize = jest
+          .fn()
+          .mockRejectedValueOnce(responseError(503))
+          .mockRejectedValueOnce(responseError(500))
+          .mockResolvedValueOnce({ result: 'DENY' });
+
+        const result = loaderWith({ authorize }).load();
+        await jest.advanceTimersByTimeAsync(1500);
+
+        await expect(result).resolves.toEqual({
+          featureFlags: [],
+          permissions: [],
+        });
+        expect(authorize).toHaveBeenCalledTimes(3);
+      });
+
+      it('gives up after the last retry', async () => {
+        const authorize = jest.fn().mockRejectedValue(responseError(503));
+
+        const result = loaderWith({ authorize })
+          .load()
+          .catch(error => error);
+        await jest.advanceTimersByTimeAsync(15_500);
+
+        expect(await result).toEqual(
+          expect.objectContaining({
+            message: expect.stringContaining(
+              'Failed to authorize extension permissions',
+            ),
+          }),
+        );
+        expect(authorize).toHaveBeenCalledTimes(6);
+      });
+
+      it('does not retry client errors', async () => {
+        const authorize = jest.fn().mockRejectedValue(responseError(401));
+
+        await expect(loaderWith({ authorize }).load()).rejects.toThrow(
+          'Failed to authorize extension permissions',
+        );
+        expect(authorize).toHaveBeenCalledTimes(1);
+      });
     });
 
     it('throws on invalid permission names with more than one # separator', async () => {
