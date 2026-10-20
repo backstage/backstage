@@ -45,7 +45,7 @@ export async function injectConfigIntoHtml(
     interpolate: /<%=([\s\S]+?)%>/g,
   });
 
-  const publicPath = resolvePublicPath(config);
+  const publicPath = resolvePublicPath(config, options.appBaseUrl);
   const indexHtmlContent = templateSource({
     config,
     publicPath,
@@ -70,9 +70,9 @@ ${JSON.stringify(appConfigs, null, 2)
   return Buffer.from(indexHtmlContentWithConfig, 'utf8');
 }
 
-function resolvePublicPath(config: Config) {
+function resolvePublicPath(config: Config, appBaseUrl?: string) {
   const baseUrl = new URL(
-    config.getOptionalString('app.baseUrl') ?? '/',
+    appBaseUrl ?? config.getOptionalString('app.baseUrl') ?? '/',
     'http://localhost:7007',
   );
   return baseUrl.pathname.replace(/\/+$/, '');

@@ -17,9 +17,10 @@
 import {
   DatabaseService,
   resolvePackagePath,
+  resolveSafeChildPath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import type { AppConfig } from '@backstage/config';
+import { AppConfig, ConfigReader } from '@backstage/config';
 import helmet from 'helmet';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
@@ -43,6 +44,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import { injectConfig, readFrontendConfig } from '../lib/config';
+import { filterPublicConfig } from '../lib/config/filterPublicConfig';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -247,7 +249,13 @@ export async function createRouter(
         logger: logger.child({ entry: 'public' }),
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
-        appConfigs, // TODO(Rugvip): We should not be including the full config here
+        appConfigs: appConfigs && filterPublicConfig(appConfigs, config),
+        disableStaticIndex: Boolean(
+          appConfigs && config.has('app.publicConfig'),
+        ),
+        appBaseUrl:
+          appConfigs &&
+          ConfigReader.fromConfigs(appConfigs).getOptionalString('app.baseUrl'),
       }),
     );
 
@@ -273,18 +281,28 @@ async function createEntryPointRouter({
   assetStore,
   staticFallbackHandler,
   appConfigs,
+  appBaseUrl,
+  disableStaticIndex,
 }: {
   logger: LoggerService;
   rootDir: string;
   assetStore?: StaticAssetsStore;
   staticFallbackHandler?: express.Handler;
   appConfigs?: AppConfig[];
+  appBaseUrl?: string;
+  disableStaticIndex?: boolean;
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
   const injectResult =
     appConfigs &&
-    (await injectConfig({ appConfigs, logger, rootDir, staticDir }));
+    (await injectConfig({
+      appConfigs,
+      logger,
+      rootDir,
+      staticDir,
+      appBaseUrl,
+    }));
 
   const router = Router();
 
@@ -321,9 +339,26 @@ async function createEntryPointRouter({
   router.use('/static', staticRouter);
 
   const rootRouter = Router();
-  rootRouter.use((req, _res, next) => {
-    // Make sure / and /index.html are handled by the HTML5 route below
-    if (req.path === '/' || req.path === '/index.html') {
+  rootRouter.use(async (req, _res, next) => {
+    // Make sure / and /index.html are handled by the HTML5 route below.
+    let isIndex = req.path === '/' || req.path === '/index.html';
+    if (disableStaticIndex && !isIndex) {
+      try {
+        const path = resolveSafeChildPath(
+          rootDir,
+          `.${decodeURIComponent(req.path).replaceAll('\\', '/')}`,
+        );
+        const [file, index] = await Promise.all([
+          fs.stat(path),
+          fs.stat(resolvePath(rootDir, 'index.html')),
+        ]);
+        // Compare filesystem identity to cover encoded paths and platform-specific aliases.
+        isIndex = file.dev === index.dev && file.ino === index.ino;
+      } catch {
+        // Let express.static handle missing files, invalid paths, and malformed URL encoding.
+      }
+    }
+    if (isIndex) {
       next('router');
     } else {
       next();
@@ -331,6 +366,7 @@ async function createEntryPointRouter({
   });
   rootRouter.use(
     express.static(rootDir, {
+      ...(disableStaticIndex ? { index: false } : {}),
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
         // link to static assets from recently deployed versions.
