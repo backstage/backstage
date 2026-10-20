@@ -377,4 +377,62 @@ describe('TechdocsGenerator.run', () => {
       `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
     );
   });
+
+  it('validates the kubernetes config when the generator is created', () => {
+    const generatorWith = (generator: object) =>
+      TechdocsGenerator.fromConfig(
+        new ConfigReader({ techdocs: { generator } }),
+        { logger: mockLogger as any },
+      );
+    const valid = { volumeClaimName: 'techdocs-work', workRoot: '/work' };
+
+    expect(() =>
+      generatorWith({
+        runIn: 'kubernetes',
+        kubernetes: { volumeClaimName: 'techdocs-work' },
+      }),
+    ).toThrow(
+      "Missing required config value at 'techdocs.generator.kubernetes.workRoot'",
+    );
+    expect(() =>
+      generatorWith({
+        runIn: 'kubernetes',
+        kubernetes: { ...valid, nodeAffinity: 'Required' },
+      }),
+    ).toThrow(
+      `Invalid config value "Required" provided in 'techdocs.generator.kubernetes.nodeAffinity', expected one of preferred, required, none`,
+    );
+    expect(() =>
+      generatorWith({
+        runIn: 'kubernetes',
+        kubernetes: { ...valid, activeDeadlineSeconds: 'soon' },
+      }),
+    ).toThrow(/activeDeadlineSeconds/);
+
+    expect(
+      readGeneratorConfig(
+        new ConfigReader({
+          techdocs: {
+            generator: {
+              runIn: 'kubernetes',
+              kubernetes: {
+                ...valid,
+                activeDeadlineSeconds: '1200',
+                resources: { requests: { cpu: '250m' } },
+              },
+            },
+          },
+        }),
+        mockLogger as any,
+      ).kubernetes,
+    ).toEqual({
+      ...valid,
+      activeDeadlineSeconds: 1200,
+      resources: { requests: { cpu: '250m' } },
+    });
+
+    expect(() =>
+      generatorWith({ runIn: 'docker', kubernetes: { nodeAffinity: 'bad' } }),
+    ).not.toThrow();
+  });
 });

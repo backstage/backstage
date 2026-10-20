@@ -46,6 +46,7 @@ export type KubernetesClient = {
 
 const CONTAINER_NAME = 'techdocs';
 const POLL_INTERVAL_MS = 1000;
+const LOG_FLUSH_TIMEOUT_MS = 5000;
 const FATAL_WAITING_REASONS = [
   'ErrImagePull',
   'ImagePullBackOff',
@@ -101,10 +102,13 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     const jobName = created.metadata!.name!; // generateName → server assigns the suffix
     try {
       const podName = await this.waitForPodStart(client, jobName);
-      if (opts.logStream) {
-        await this.streamLogs(client, podName, opts.logStream);
+      const logs =
+        opts.logStream && this.followLogs(client, podName, opts.logStream);
+      try {
+        await this.waitForJobCompletion(client, jobName);
+      } finally {
+        await logs?.stop();
       }
-      await this.waitForJobCompletion(client, jobName);
     } catch (error) {
       // A failed Job has already stopped, so keep it until its TTL for debugging
       if (!(error instanceof JobFailedError)) {
@@ -125,40 +129,86 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     jobName: string,
   ): Promise<string> {
     const { core, namespace } = client;
+    let pendingReason =
+      'no pod was created, check the Job events for admission or quota errors';
     for (;;) {
-      await this.assertJobNotFailed(client, jobName);
+      // Check the pod before the Job, so a build that fails within one poll still gets its logs streamed
       const { items } = await core.listNamespacedPod({
         namespace,
         labelSelector: `job-name=${jobName}`,
       });
       const pod = items[0];
       if (pod) {
-        const waitingReason =
-          pod.status?.containerStatuses?.[0]?.state?.waiting?.reason;
-        if (waitingReason && FATAL_WAITING_REASONS.includes(waitingReason)) {
+        const waiting = pod.status?.containerStatuses?.[0]?.state?.waiting;
+        if (waiting?.reason && FATAL_WAITING_REASONS.includes(waiting.reason)) {
           throw new Error(
-            `Kubernetes job ${jobName} could not start: ${waitingReason}`,
+            `Kubernetes job ${jobName} could not start: ${waiting.reason}`,
           );
         }
         if (pod.status?.phase && pod.status.phase !== 'Pending') {
           return pod.metadata!.name!;
         }
+        const unscheduled = pod.status?.conditions?.find(
+          c => c.type === 'PodScheduled' && c.status === 'False',
+        );
+        pendingReason = unscheduled
+          ? `${unscheduled.reason}: ${unscheduled.message}`
+          : waiting?.reason ?? 'the pod stayed pending';
+      }
+      try {
+        await this.assertJobNotFailed(client, jobName);
+      } catch (error) {
+        if (error instanceof JobFailedError) {
+          throw new JobFailedError(
+            `${error.message}. The pod never started: ${pendingReason}`,
+          );
+        }
+        throw error;
       }
       await sleep(POLL_INTERVAL_MS);
     }
   }
 
-  private async streamLogs(
+  // Logs are best effort: the build result comes from the Job status, and a stalled log stream must not block it
+  private followLogs(
     client: KubernetesClient,
     podName: string,
     logStream: Writable,
-  ): Promise<void> {
+  ): { stop(): Promise<void> } {
     const output = new PassThrough();
     output.pipe(logStream, { end: false });
-    await client.log.log(client.namespace, podName, CONTAINER_NAME, output, {
-      follow: true,
-    });
-    await finished(output);
+    const request = client.log.log(
+      client.namespace,
+      podName,
+      CONTAINER_NAME,
+      output,
+      { follow: true },
+    );
+    const done = request
+      .then(() => finished(output))
+      .catch(error =>
+        this.logger?.warn(
+          `Failed to stream logs from TechDocs build pod ${podName}`,
+          error,
+        ),
+      );
+    return {
+      stop: async () => {
+        let timer: NodeJS.Timeout | undefined;
+        const timedOut = await Promise.race([
+          done.then(() => false),
+          new Promise<boolean>(resolve => {
+            timer = setTimeout(() => resolve(true), LOG_FLUSH_TIMEOUT_MS);
+          }),
+        ]);
+        clearTimeout(timer);
+        if (timedOut) {
+          (await request.catch(() => undefined))?.abort();
+          output.end();
+        }
+        output.unpipe(logStream);
+      },
+    };
   }
 
   private async waitForJobCompletion(

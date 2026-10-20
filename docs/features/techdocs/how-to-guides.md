@@ -712,6 +712,8 @@ To run TechDocs builds as Kubernetes Jobs:
    - `ReadWriteOnce` with node-local storage, such as local-path: Kubernetes schedules Backstage and the build Jobs on the volume's node.
    - `ReadWriteOnce` with network block storage, such as Amazon EBS: set `nodeAffinity` to `'required'` in step 4, and run a single Backstage replica.
 
+   The Backstage process must be able to create directories on the volume. Block storage volumes start out owned by `root`, so set the Backstage pod's `securityContext.fsGroup` to the group of the Backstage user. NFS servers ignore `fsGroup`, so the export itself must be writable by that user, which `root_squash` exports often aren't.
+
 2. Mount the PersistentVolumeClaim in the Backstage container, and set `backend.workingDirectory` to the mount path. Expose the node name to Backstage so build Jobs can be scheduled next to it:
 
    ```yaml
@@ -752,6 +754,8 @@ To run TechDocs builds as Kubernetes Jobs:
 
    Bind the Role to the service account with a RoleBinding. Before its first build, Backstage checks these permissions and lists any that are missing.
 
+   Kubernetes RBAC can't limit these permissions to TechDocs Jobs, so Backstage can create and delete any Job in the namespace. Backstage only deletes Jobs it created.
+
 4. Configure TechDocs in your `app-config.yaml` file:
 
    ```yaml
@@ -770,18 +774,19 @@ To run TechDocs builds as Kubernetes Jobs:
 
    For the other options, such as build timeouts, resources and image pull Secrets, see the [Kubernetes configuration reference](./configuration.md#kubernetes).
 
-Build pods don't receive a service account token, use the `RuntimeDefault` seccomp profile, can't escalate privileges, and drop all Linux capabilities. They run as the same user and group as the Backstage process, so Backstage can read and clean up the generated files.
+Build pods don't receive a service account token, use the `RuntimeDefault` seccomp profile, can't escalate privileges, and drop all Linux capabilities. They run as the same user and group as the Backstage process, so Backstage can read and clean up the generated files. These settings meet the `restricted` [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/), unless Backstage runs as `root` or the build runs as the image's default user. In those cases, a namespace that enforces the `restricted` standard rejects the build pod.
 
 Kubernetes deletes finished build Jobs after `ttlSecondsAfterFinished`. Failed Jobs are kept until then too, so you can inspect them with `kubectl describe`. Jobs that Backstage stops itself, for example after an image pull error, are deleted right away. If Backstage stops during a build, for example because its node failed, the build directory stays on the shared volume. Backstage removes such directories once they are older than twice `activeDeadlineSeconds`, or one hour, whichever is longer.
 
 If a build fails, the error shown in TechDocs usually points to the cause:
 
-| Error                                                  | Cause                                                                                                                                          |
-| :----------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Missing Kubernetes permissions in namespace ...`      | The Role from step 3 is missing, or isn't bound to the Backstage service account in that namespace.                                            |
-| `... is not on the shared volume mounted at ...`       | `backend.workingDirectory` isn't under `workRoot`.                                                                                             |
-| `Kubernetes job ... could not start: ImagePullBackOff` | The build image can't be pulled. Check `techdocs.generator.dockerImage` and `imagePullSecrets`.                                                |
-| `Kubernetes job ... failed: DeadlineExceeded`          | The build took longer than `activeDeadlineSeconds`. If the pod never started, check its events, for example for a `Multi-Attach` volume error. |
+| Error                                                                 | Cause                                                                                                                                                                                                                                                                                                              |
+| :-------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Missing Kubernetes permissions in namespace ...`                     | The Role from step 3 is missing, or isn't bound to the Backstage service account in that namespace.                                                                                                                                                                                                                |
+| `... is not on the shared volume mounted at ...`                      | `backend.workingDirectory` isn't under `workRoot`.                                                                                                                                                                                                                                                                 |
+| `Kubernetes job ... could not start: ImagePullBackOff`                | The build image can't be pulled. Check `techdocs.generator.dockerImage` and `imagePullSecrets`.                                                                                                                                                                                                                    |
+| `Kubernetes job ... failed: DeadlineExceeded`                         | The build took longer than `activeDeadlineSeconds`. If the error says the pod never started, it includes the scheduling reason. For other causes, such as a `Multi-Attach` volume error, check the pod's events. If no pod was created, check the Job's events for Pod Security Admission or ResourceQuota errors. |
+| `Missing required config value at 'techdocs.generator.kubernetes...'` | A required option is missing. Backstage checks the `techdocs.generator.kubernetes` options at startup.                                                                                                                                                                                                             |
 
 ## How to use other mkdocs plugins?
 

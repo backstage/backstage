@@ -271,7 +271,15 @@ describe('KubernetesJobRunner', () => {
 
   it('reports why the build failed and deletes only Jobs that are still running', async () => {
     const runner = createRunner();
+    const logStream = new PassThrough();
+    const logs: string[] = [];
+    logStream.on('data', chunk => logs.push(chunk.toString()));
 
+    mockCore.listNamespacedPod.mockResolvedValue({
+      items: [
+        { metadata: { name: 'techdocs-abc-pod' }, status: { phase: 'Failed' } },
+      ],
+    });
     mockBatch.readNamespacedJob.mockResolvedValue({
       status: {
         conditions: [
@@ -284,9 +292,12 @@ describe('KubernetesJobRunner', () => {
         ],
       },
     });
-    await expect(runner.runContainer(runOptions())).rejects.toThrow(
+    await expect(
+      runner.runContainer({ ...runOptions(), logStream }),
+    ).rejects.toThrow(
       'Kubernetes job techdocs-abc failed: BackoffLimitExceeded (Job has reached the specified backoff limit)',
     );
+    expect(logs.join('')).toBe('mkdocs output\n');
     expect(mockBatch.deleteNamespacedJob).not.toHaveBeenCalled();
 
     mockBatch.readNamespacedJob.mockResolvedValue({ status: {} });
@@ -313,6 +324,68 @@ describe('KubernetesJobRunner', () => {
       propagationPolicy: 'Background',
     });
   });
+
+  it('explains why a pod never started when the deadline passes', async () => {
+    const deadlineExceeded = {
+      status: {
+        conditions: [
+          {
+            type: 'Failed',
+            status: 'True',
+            reason: 'DeadlineExceeded',
+            message: 'Job was active longer than specified deadline',
+          },
+        ],
+      },
+    };
+    mockCore.listNamespacedPod.mockResolvedValue({
+      items: [
+        {
+          metadata: { name: 'techdocs-abc-pod' },
+          status: {
+            phase: 'Pending',
+            conditions: [
+              {
+                type: 'PodScheduled',
+                status: 'False',
+                reason: 'Unschedulable',
+                message: '0/3 nodes are available: 3 Insufficient memory.',
+              },
+            ],
+          },
+        },
+      ],
+    });
+    mockBatch.readNamespacedJob
+      .mockResolvedValueOnce({ status: {} })
+      .mockResolvedValue(deadlineExceeded);
+    await expect(createRunner().runContainer(runOptions())).rejects.toThrow(
+      'Kubernetes job techdocs-abc failed: DeadlineExceeded (Job was active longer than specified deadline). The pod never started: Unschedulable: 0/3 nodes are available: 3 Insufficient memory.',
+    );
+
+    mockCore.listNamespacedPod.mockResolvedValue({ items: [] });
+    await expect(createRunner().runContainer(runOptions())).rejects.toThrow(
+      'The pod never started: no pod was created, check the Job events for admission or quota errors',
+    );
+  });
+
+  it('treats build logs as best effort', async () => {
+    mockLog.mockRejectedValueOnce(new Error('logs unavailable'));
+    await expect(
+      createRunner().runContainer({
+        ...runOptions(),
+        logStream: new PassThrough(),
+      }),
+    ).resolves.toBeUndefined();
+    expect(mockBatch.deleteNamespacedJob).not.toHaveBeenCalled();
+
+    const abort = jest.fn();
+    mockLog.mockImplementationOnce(async () => ({ abort }));
+    const logStream = new PassThrough();
+    await createRunner().runContainer({ ...runOptions(), logStream });
+    expect(abort).toHaveBeenCalled();
+    expect(logStream.writableEnded).toBe(false);
+  }, 15_000);
 
   it('removes stale build directories left on the shared volume', async () => {
     workDir.addContent({
