@@ -37,7 +37,7 @@ export interface Config {
       /**
        * Where to run the techdocs (mkdocs) generator
        */
-      runIn: 'local' | 'docker';
+      runIn: 'local' | 'docker' | 'kubernetes';
 
       /**
        * Override the default techdocs docker image
