@@ -64,7 +64,11 @@ export function createWebhookRequestValidator(
       return;
     }
 
-    if (!('value' in (request.body as object))) {
+    if (
+      typeof request.body !== 'object' ||
+      request.body === null ||
+      !('value' in request.body)
+    ) {
       logger.warn(
         `Received invalid webhook request: ${JSON.stringify(request.body)}`,
       );
