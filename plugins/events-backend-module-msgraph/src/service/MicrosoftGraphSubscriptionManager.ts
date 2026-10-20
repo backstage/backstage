@@ -28,6 +28,7 @@ import type {
 } from '../database/databaseClient';
 import type { MicrosoftGraphClient } from './MicrosoftGraphClient';
 import { newValidationToken } from './validationToken';
+import { Subscription } from '@microsoft/microsoft-graph-types';
 
 const SUPPORTED_RESOURCES = ['users', 'groups'];
 
@@ -212,7 +213,7 @@ export class MicrosoftGraphSubscriptionManager {
             await this.msGraphClient.deleteSubscription(existingSubscriptionId);
           } catch (err) {
             logger.warn(
-              `Error cleaning up old subscription ${existingSubscriptionId}: ${err}`,
+              `Error deleting old subscription ${existingSubscriptionId}.`,
               isError(err) ? err : undefined,
             );
           }
@@ -278,9 +279,20 @@ export class MicrosoftGraphSubscriptionManager {
       return {};
     }
 
-    const msgraphSubscription = await this.msGraphClient.getSubscription(
-      existingSubscriptionId,
-    );
+    let msgraphSubscription: Subscription | undefined;
+
+    try {
+      msgraphSubscription = await this.msGraphClient.getSubscription(
+        existingSubscriptionId,
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Error fetching subscription ${existingSubscriptionId} from MS Graph.`,
+        isError(err) ? err : undefined,
+      );
+      // if the subscription does not exist in MS Graph, we consider it invalid and will create a new one
+      return { existingSubscriptionId, isValid: false };
+    }
 
     const exists = Boolean(msgraphSubscription);
     const expirationDateTime =
