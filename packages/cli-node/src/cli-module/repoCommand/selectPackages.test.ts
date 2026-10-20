@@ -159,6 +159,10 @@ describe('repo command helpers', () => {
     expect(
       parseRepoArgs(['-p', 'a', '--package', 'b*', '--package=c', 'x'], 'x'),
     ).toMatchObject({ packages: ['a', 'b*', 'c', 'x'] });
+    expect(parseRepoArgs(['-pfoo', '-p', 'bar'], 'x').packages).toEqual([
+      'foo',
+      'bar',
+    ]);
     expect(() =>
       parseRepoArgs(['cli-node', '-t', 'x'], 'repo run test'),
     ).toThrow('Unknown option "-t" for "repo run test"');

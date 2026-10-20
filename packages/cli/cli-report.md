@@ -830,10 +830,15 @@ Commands:
 Usage: backstage-cli repo run test [flags...]
 
 Options:
+  --concurrency <number>
   --include-dependents
   --since <string>
+  --success-cache
+  --success-cache-dir <string>
+  --verbose
   --watch
   -h, --help
+  -p, --package <string>
 ```
 
 ### `backstage-cli repo start`

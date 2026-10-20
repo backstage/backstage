@@ -24,7 +24,8 @@ const SIGNAL_EXIT_CODES = { SIGINT: 130, SIGTERM: 143 } as const;
 /** Kills the whole process group of a child that was spawned detached */
 function killProcessGroup(child: TrackedChild) {
   try {
-    if (child.pid) {
+    // Process groups are not supported on Windows
+    if (child.pid && process.platform !== 'win32') {
       process.kill(-child.pid, 'SIGKILL');
     } else {
       child.kill('SIGKILL');
@@ -45,8 +46,9 @@ function killProcessGroup(child: TrackedChild) {
  * by a signal as a success. This takes over: on the first SIGINT or SIGTERM it
  * stops new work from being scheduled, immediately kills the process group of
  * every running child, and exits with the conventional signal exit code
- * without waiting. The children must be spawned detached so that each one is
- * the leader of its own group, which also takes down their worker processes.
+ * without waiting. On platforms with process groups the children must be
+ * spawned detached, so that each one is the leader of its own group, which
+ * also takes down their worker processes.
  *
  * @internal
  */

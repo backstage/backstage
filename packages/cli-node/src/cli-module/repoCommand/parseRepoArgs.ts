@@ -60,7 +60,10 @@ export function parseRepoArgs(
       `Arguments can't be passed to the package command from "${name}", remove "--" and everything after it`,
     );
   }
-  const args = allArgs;
+  // The short form with the value attached, like -pfoo, is split up
+  const args = allArgs.flatMap(arg =>
+    /^-p./.test(arg) ? ['-p', arg.slice(2)] : [arg],
+  );
 
   const { flags } = cli(
     {
