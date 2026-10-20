@@ -29,6 +29,7 @@ import {
 import { createExternalRouteRef as createLegacyExternalRouteRef } from '@backstage/core-plugin-api';
 import { OpaqueExternalRouteRef, OpaqueRouteRef } from '@internal/frontend';
 import { ConfigReader } from '@backstage/config';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { createSpecializedApp } from '../wiring/createSpecializedApp';
 
 const app = createFrontendPlugin({
@@ -61,7 +62,7 @@ function page(
     parent?: string;
     ref?: RouteRef;
     disabled?: boolean;
-    if?: false;
+    if?: FilterPredicate;
   },
 ) {
   return createExtension({
@@ -317,7 +318,7 @@ it('validates ownership and complete installed targets without rejecting disable
   ).toBeUndefined();
   const conditional = createFrontendModule({
     pluginId: 'test',
-    extensions: [page('root', '/test', { if: false })],
+    extensions: [page('root', '/test', { if: { $not: {} } })],
   });
   expect(
     createSpecializedApp({ features: [app, plugin, conditional] })
@@ -415,7 +416,9 @@ it('uses deprecated mounts when the structural target is not mounted', () => {
     )?.({ id: 'one' }),
   ).toBe('/legacy/one');
   expect(
-    withTarget(page('target', '/native/:id', { if: false })).resolve(copy)?.({
+    withTarget(page('target', '/native/:id', { if: { $not: {} } })).resolve(
+      copy,
+    )?.({
       id: 'two',
     }),
   ).toBe('/legacy/two');
