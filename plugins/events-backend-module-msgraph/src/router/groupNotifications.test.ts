@@ -15,9 +15,9 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { parseEvents } from './parseEvents';
+import { groupNotifications } from './groupNotifications';
 
-describe('parseEvents', () => {
+describe('groupNotifications', () => {
   const topic = 'topic';
 
   const logger = mockServices.logger.mock();
@@ -26,7 +26,7 @@ describe('parseEvents', () => {
   });
 
   it('returns undefined and logs warning for invalid payload', () => {
-    const result = parseEvents({
+    const result = groupNotifications({
       event: { topic, eventPayload: {} },
       logger,
     });
@@ -37,7 +37,7 @@ describe('parseEvents', () => {
   });
 
   it('returns undefined and logs info for no valid notifications', () => {
-    const result = parseEvents({
+    const result = groupNotifications({
       event: {
         topic,
         eventPayload: { value: [{ changeType: 'foo', resource: 'bar' }] },
@@ -53,87 +53,86 @@ describe('parseEvents', () => {
     );
   });
 
-  it('partitions valid notifications correctly', () => {
+  it('partitions valid notifications into upserts and deletes', () => {
     const eventPayload = {
       value: [
-        { changeType: 'created', resource: 'users/u1' },
+        { changeType: 'updated', resource: 'users/u1' },
         { changeType: 'updated', resource: 'users/u2' },
         { changeType: 'deleted', resource: 'users/u3' },
-        { changeType: 'created', resource: 'groups/g1' },
+        { changeType: 'updated', resource: 'groups/g1' },
         { changeType: 'updated', resource: 'groups/g2' },
         { changeType: 'deleted', resource: 'groups/g3' },
       ],
     };
-    const result = parseEvents({
+    const result = groupNotifications({
       event: { topic, eventPayload },
       logger,
     });
     expect(result).toEqual({
-      deletedUsers: [
-        { changeType: 'deleted', resourceType: 'users', resourceId: 'u3' },
-      ],
-      deletedGroups: [
-        { changeType: 'deleted', resourceType: 'groups', resourceId: 'g3' },
-      ],
-      upsertedUsers: [
-        { changeType: 'created', resourceType: 'users', resourceId: 'u1' },
-        { changeType: 'updated', resourceType: 'users', resourceId: 'u2' },
-      ],
-      upsertedGroups: [
-        { changeType: 'created', resourceType: 'groups', resourceId: 'g1' },
-        { changeType: 'updated', resourceType: 'groups', resourceId: 'g2' },
-      ],
+      upsertNotifications: eventPayload.value
+        .slice(0, 2)
+        .concat(eventPayload.value.slice(3, 5)),
+      deleteNotifications: [eventPayload.value[2], eventPayload.value[5]],
     });
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it('handles mixed valid and invalid notifications', () => {
     const eventPayload = {
       value: [
-        { changeType: 'created', resource: 'users/u1' },
-        { changeType: 'foo', resource: 'users/u2' }, // invalid changeType
-        { changeType: 'updated', resource: 'invalidformat' }, // invalid resource
+        { changeType: 'updated', resource: 'users/u1' },
+        { changeType: 'foo', resource: 'users/u2' },
       ],
     };
-    const result = parseEvents({
+    const result = groupNotifications({
       event: { topic, eventPayload },
       logger,
     });
     expect(result).toEqual({
-      deletedUsers: [],
-      deletedGroups: [],
-      upsertedUsers: [
-        { changeType: 'created', resourceType: 'users', resourceId: 'u1' },
-      ],
-      upsertedGroups: [],
+      upsertNotifications: [eventPayload.value[0]],
+      deleteNotifications: [],
     });
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Received 2 invalid change notifications'),
+      expect.stringContaining('Received 1 invalid change notifications'),
     );
   });
 
   it('handles case-insensitive changeType and resourceType', () => {
     const eventPayload = {
       value: [
-        { changeType: 'Created', resource: 'Users/U1' },
+        { changeType: 'Updated', resource: 'Users/U1' },
         { changeType: 'UPDATED', resource: 'Groups/G2' },
         { changeType: 'deleted', resource: 'users/u3' },
       ],
     };
-    const result = parseEvents({
+    const result = groupNotifications({
       event: { topic, eventPayload },
       logger,
     });
+
     expect(result).toEqual({
-      deletedUsers: [
-        { changeType: 'deleted', resourceType: 'users', resourceId: 'u3' },
-      ],
-      deletedGroups: [],
-      upsertedUsers: [
-        { changeType: 'created', resourceType: 'users', resourceId: 'u1' },
-      ],
-      upsertedGroups: [
-        { changeType: 'updated', resourceType: 'groups', resourceId: 'g2' },
-      ],
+      upsertNotifications: [eventPayload.value[0], eventPayload.value[1]],
+      deleteNotifications: [eventPayload.value[2]],
+    });
+  });
+
+  it('routes valid notifications for resource types other than users and groups', () => {
+    const result = groupNotifications({
+      event: {
+        topic,
+        eventPayload: {
+          value: [
+            { changeType: 'updated', resource: 'teams/t1' },
+            { changeType: 'deleted', resource: 'teams/t2' },
+          ],
+        },
+      },
+      logger,
+    });
+
+    expect(result).toEqual({
+      upsertNotifications: [{ changeType: 'updated', resource: 'teams/t1' }],
+      deleteNotifications: [{ changeType: 'deleted', resource: 'teams/t2' }],
     });
   });
 });
