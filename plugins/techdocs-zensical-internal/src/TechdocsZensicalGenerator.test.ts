@@ -87,7 +87,7 @@ describe('TechdocsZensicalGenerator', () => {
     expect(options.imageName).toBe(
       TechdocsZensicalGenerator.defaultDockerImage,
     );
-    expect(options.command).toBe('zensical');
+    expect(options.command).toEqual(['zensical']);
     expect(options.args).toEqual(expect.arrayContaining(['build', '-f']));
   });
 
@@ -104,7 +104,7 @@ describe('TechdocsZensicalGenerator', () => {
       zensical: { dockerImage: 'acme/custom-zensical:1.0' },
     });
     expect(options.imageName).toBe('acme/custom-zensical:1.0');
-    expect(options.command).toBe('zensical');
+    expect(options.command).toEqual(['zensical']);
   });
 
   it('writes the site and tags it with the zensical engine', async () => {

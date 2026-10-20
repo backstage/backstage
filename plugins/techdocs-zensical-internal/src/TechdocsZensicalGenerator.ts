@@ -154,7 +154,7 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
               this.options.dockerImage ??
               TechdocsZensicalGenerator.defaultDockerImage,
             // Set the entrypoint explicitly rather than relying on the image's.
-            command: 'zensical',
+            command: ['zensical'],
             args: [
               'build',
               '-f',
