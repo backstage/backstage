@@ -15,6 +15,7 @@
  */
 import { ClientSecretCredential } from '@azure/identity';
 import type { Config } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
 import { Client } from '@microsoft/microsoft-graph-client';
 import type { Subscription } from '@microsoft/microsoft-graph-types';
 
@@ -157,6 +158,19 @@ export class MicrosoftGraphClient {
   private async clientCall<T>(
     call: (client: Client) => Promise<T>,
   ): Promise<T> {
-    return this.clientWrapper.clientCall(call);
+    try {
+      return await this.clientWrapper.clientCall(call);
+    } catch (err) {
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'statusCode' in err &&
+        err.statusCode === 404
+      ) {
+        throw new NotFoundError('Microsoft Graph subscription not found', err);
+      }
+
+      throw err;
+    }
   }
 }

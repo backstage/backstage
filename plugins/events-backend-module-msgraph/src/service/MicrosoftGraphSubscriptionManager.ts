@@ -290,8 +290,13 @@ export class MicrosoftGraphSubscriptionManager {
         `Error fetching subscription ${existingSubscriptionId} from MS Graph.`,
         isError(err) ? err : undefined,
       );
-      // if the subscription does not exist in MS Graph, we consider it invalid and will create a new one
-      return { existingSubscriptionId, isValid: false };
+
+      if (err instanceof NotFoundError) {
+        // if the subscription does not exist in MS Graph, we consider it invalid and will create a new one
+        return { existingSubscriptionId, isValid: false };
+      }
+
+      throw err;
     }
 
     const exists = Boolean(msgraphSubscription);
