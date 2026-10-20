@@ -365,6 +365,11 @@ function hasVersionFlag(args: string[]): boolean {
  * (80 columns when unavailable), expanding nested groups breadth-first when space
  * permits. Unexpanded groups have a trailing slash; truncated previews end in an ellipsis.
  *
+ * When a command completes without throwing, the process exits with
+ * `process.exitCode`, or `0` if it is not set. Commands can set
+ * `process.exitCode` to report a failure, such as invalid input, without
+ * throwing an error.
+ *
  * @example
  * ```ts
  * import { runCli } from '@backstage/cli-node';
