@@ -89,14 +89,30 @@ export function createWebhookRequestValidator(
     let validValues = 0;
 
     for (const notification of value) {
+      if (typeof notification !== 'object' || notification === null) {
+        logger.warn(
+          `Notification value item is not an object: ${JSON.stringify(
+            notification,
+          )}`,
+        );
+        context.reject();
+        return;
+      }
+
       const { clientState, subscriptionId } = notification;
 
       // Delete the clientState secret from the notification object to avoid sending it further or being logged
       delete notification.clientState;
-      if (!clientState || !subscriptionId) {
+      if (
+        !clientState ||
+        typeof clientState !== 'string' ||
+        !subscriptionId ||
+        typeof subscriptionId !== 'string'
+      ) {
         logger.warn(
-          `Notification value item is missing required properties (clientState, subscriptionId).`,
+          `Notification value item is missing or contains invalid required properties (clientState, subscriptionId).`,
         );
+        context.reject();
         continue;
       }
 
