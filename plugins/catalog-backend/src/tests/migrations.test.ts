@@ -52,6 +52,15 @@ it('runs the search entity ID statistics migration without a transaction wrapper
   expect(migration.config).toEqual({ transaction: false });
 });
 
+it('runs the tombstone migration without a transaction wrapper', () => {
+  // SQLite can only rebuild final_entities safely outside a transaction.
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20261020000000_final_entity_tombstones');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
 it('runs the refresh state maintenance migration without a transaction wrapper', () => {
   const migration = jest.requireActual<{
     config?: { transaction?: boolean };
@@ -238,10 +247,17 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await knex.delete().from('refresh_state').where({ entity_id: 'i1' });
 
-    await expect(knex('search')).resolves.toEqual([]);
     await expect(knex('refresh_state_references')).resolves.toEqual([]);
     await expect(knex('relations')).resolves.toEqual([]);
-    await expect(knex('final_entities')).resolves.toEqual([]);
+    // The final row and its search rows stay until the stitcher turns them
+    // into a tombstone, which the trigger asks it to do.
+    await expect(knex('final_entities').pluck('entity_id')).resolves.toEqual([
+      'i1',
+    ]);
+    await expect(knex('search').pluck('entity_id')).resolves.toEqual(['i1']);
+    await expect(
+      knex('stitch_queue').select('entity_ref', 'failure_count'),
+    ).resolves.toEqual([{ entity_ref: 'k:ns/n1', failure_count: 0 }]);
   });
 
   it('20221109192547_search_add_original_value_column.js', async () => {
@@ -1775,6 +1791,207 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await migrateDownOnce(knex);
     expect(await hasAutovacuumOptions()).toBe(false);
+  });
+
+  it('20261020000000_final_entity_tombstones.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20261020000000_final_entity_tombstones.js');
+    const insertCandidate = (id: string, ref: string) =>
+      knex('refresh_state').insert({
+        entity_id: id,
+        entity_ref: ref,
+        unprocessed_entity: '{}',
+        processed_entity: '{"processed":true}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+
+    // A small but complete catalog. On SQLite the migration rebuilds
+    // final_entities, which must not disturb anything referencing it.
+    await insertCandidate('a', 'k:ns/a');
+    await insertCandidate('b', 'k:ns/b');
+    await knex('final_entities').insert([
+      {
+        entity_id: 'a',
+        entity_ref: 'k:ns/a',
+        hash: 'ha',
+        final_entity: '{"a":1}',
+        generation: 7,
+        last_updated_at: knex.fn.now(),
+      },
+      {
+        entity_id: 'b',
+        entity_ref: 'k:ns/b',
+        hash: 'hb',
+        final_entity: '{"b":1}',
+      },
+    ]);
+    await knex('search').insert([
+      { entity_id: 'a', key: 'kind', value: 'k', original_value: 'K' },
+      { entity_id: 'a', key: 'metadata.name', value: 'a', original_value: 'a' },
+      { entity_id: 'b', key: 'kind', value: 'k', original_value: 'K' },
+    ]);
+    await knex('refresh_state_references').insert([
+      { source_key: 'provider', target_entity_ref: 'k:ns/a' },
+      { source_entity_ref: 'k:ns/a', target_entity_ref: 'k:ns/b' },
+    ]);
+    await knex('relations').insert({
+      originating_entity_id: 'a',
+      source_entity_ref: 'k:ns/a',
+      target_entity_ref: 'k:ns/b',
+      type: 'dependsOn',
+    });
+    await knex('refresh_keys').insert({ entity_id: 'a', key: 'url:a' });
+    await knex('stitch_queue').insert({
+      entity_ref: 'k:ns/b',
+      stitch_ticket: 'queued-ticket',
+      failure_count: 1,
+      next_stitch_at: '2099-01-01 00:00:00',
+    });
+
+    const tables = [
+      'refresh_state',
+      'final_entities',
+      'search',
+      'refresh_state_references',
+      'relations',
+      'refresh_keys',
+      'stitch_queue',
+      'catalog_generation_counter',
+    ];
+    const snapshot = async () => {
+      const result: Record<string, unknown[]> = {};
+      for (const table of tables) {
+        const rows = await knex(table);
+        result[table] = rows
+          .map(row => ({ ...row }))
+          .sort((x, y) => JSON.stringify(x).localeCompare(JSON.stringify(y)));
+      }
+      return result;
+    };
+    const finalEntitiesIndexes = async () => {
+      if (databaseId.startsWith('POSTGRES')) {
+        const { rows } = await knex.raw(
+          `SELECT indexdef FROM pg_indexes
+           WHERE schemaname = current_schema() AND tablename = 'final_entities'`,
+        );
+        return rows.map((row: { indexdef: string }) => row.indexdef).sort();
+      }
+      if (databaseId.startsWith('MYSQL')) {
+        const [rows] = await knex.raw(
+          `SELECT INDEX_NAME AS name, COLUMN_NAME AS col, NON_UNIQUE AS nu
+           FROM information_schema.STATISTICS
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'final_entities'
+           ORDER BY INDEX_NAME, SEQ_IN_INDEX`,
+        );
+        return rows.map(
+          (row: { name: string; col: string; nu: number }) =>
+            `${row.name}:${row.col}:${row.nu}`,
+        );
+      }
+      const rows = await knex.raw("PRAGMA index_list('final_entities')");
+      const result = [];
+      for (const row of rows) {
+        const columns = await knex.raw(`PRAGMA index_info('${row.name}')`);
+        result.push(
+          `${row.unique}:${row.partial}:${columns
+            .map((c: { name: string }) => c.name)
+            .join(',')}`,
+        );
+      }
+      return result.sort();
+    };
+
+    const original = await snapshot();
+    const originalIndexes = await finalEntitiesIndexes();
+
+    // Up: everything intact, only the new column added.
+    await migrateUpOnce(knex);
+    expect(await snapshot()).toEqual({
+      ...original,
+      final_entities: original.final_entities.map(row => ({
+        ...(row as object),
+        deleted_at: null,
+      })),
+    });
+    expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
+
+    // Down: back to exactly where we started.
+    await migrateDownOnce(knex);
+    expect(await snapshot()).toEqual(original);
+    expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
+
+    await migrateUpOnce(knex);
+    expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
+
+    // Search still cascades from final_entities after any table rebuild.
+    await knex('final_entities').where('entity_id', 'b').delete();
+    expect(await knex('search').pluck('entity_id')).toEqual(['a', 'a']);
+    await knex('search').where('entity_id', 'a').delete();
+    await knex('final_entities').delete();
+    await knex('refresh_state').delete();
+    await knex('stitch_queue').delete();
+
+    // A queued request keeps its lease when the trigger replaces its ticket.
+    await insertCandidate('gone', 'k:ns/gone');
+    await knex('stitch_queue').insert({
+      entity_ref: 'k:ns/gone',
+      stitch_ticket: 'old-ticket',
+      failure_count: 2,
+      next_stitch_at: '2099-01-01 00:00:00',
+    });
+    const [before] = await knex('stitch_queue');
+    await knex('refresh_state').where('entity_id', 'gone').delete();
+    const [after] = await knex('stitch_queue');
+    const { stitch_ticket: ticketAfter, ...restAfter } = after;
+    const { stitch_ticket: _ticketBefore, ...restBefore } = before;
+    expect(restAfter).toEqual({ ...restBefore, failure_count: 0 });
+    expect(ticketAfter).not.toBe('old-ticket');
+    await knex('stitch_queue').delete();
+
+    // Going down removes final rows whose ID matches no candidate, and asks
+    // for the ones whose ref still has a candidate to be stitched again.
+    await insertCandidate('kept', 'k:ns/kept');
+    await knex('final_entities').insert([
+      {
+        entity_id: 'kept',
+        entity_ref: 'k:ns/kept',
+        hash: 'h',
+        final_entity: '{}',
+      },
+      {
+        entity_id: 'old-slot',
+        entity_ref: 'k:ns/recreated',
+        hash: 'h',
+        final_entity: '{}',
+      },
+      {
+        entity_id: 'tombstone',
+        entity_ref: 'k:ns/tombstone',
+        hash: '',
+        final_entity: null,
+        deleted_at: knex.fn.now(),
+      },
+    ]);
+    await insertCandidate('new-candidate', 'k:ns/recreated');
+
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
+      false,
+    );
+    expect(await knex('final_entities').pluck('entity_id')).toEqual(['kept']);
+    expect(await knex('stitch_queue').pluck('entity_ref')).toEqual([
+      'k:ns/recreated',
+    ]);
+    // The cascade is back.
+    await knex('refresh_state').where('entity_id', 'kept').delete();
+    expect(await knex('final_entities')).toEqual([]);
+
+    await migrateUpOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
+      true,
+    );
   });
 
   it('20261007000000_stitch_failure_count.js', async () => {

@@ -34,6 +34,7 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
+import { queryEntitiesCountByKind } from '../database/metrics';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
@@ -2293,10 +2294,105 @@ describe.each(databases.eachSupportedId())(
         const stitchQueue = await knex('stitch_queue')
           .select('entity_ref')
           .orderBy('entity_ref');
+        // The deleted entity is queued too, so that the stitcher can turn its
+        // final row into a tombstone.
         expect(stitchQueue.map(r => r.entity_ref)).toEqual([
+          'k:default/root',
           'k:default/unrelated1',
           'k:default/unrelated2',
         ]);
+      });
+    });
+
+    describe('tombstones', () => {
+      it('hides tombstones from every read path', async () => {
+        await createDatabase();
+        const live: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'live' },
+          spec: { shared: 'x' },
+        };
+        const gone: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'gone' },
+          spec: { shared: 'x' },
+        };
+        await addEntity(live, [{ source: 's' }]);
+        const goneId = await addEntity(gone, [{ source: 's' }]);
+        // What the stitcher leaves behind once the candidate is deleted.
+        await knex('refresh_state').where('entity_id', goneId).delete();
+        await knex<DbSearchRow>('search').where('entity_id', goneId).delete();
+        await knex<DbFinalEntitiesRow>('final_entities')
+          .where('entity_id', goneId)
+          .update({ final_entity: null, hash: '', deleted_at: knex.fn.now() });
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+        const credentials = mockCredentials.none();
+        const names = (entities: (Entity | null)[]) =>
+          entities.map(e => e?.metadata.name ?? null);
+
+        // Unfiltered, filtered, and ordered listing
+        const unfiltered = await catalog.entities({ credentials });
+        expect(names(entitiesResponseToObjects(unfiltered.entities))).toEqual([
+          'live',
+        ]);
+        const filtered = await catalog.entities({
+          filter: { 'spec.shared': 'x' },
+          credentials,
+        });
+        expect(names(entitiesResponseToObjects(filtered.entities))).toEqual([
+          'live',
+        ]);
+        const ordered = await catalog.entities({
+          order: [{ field: 'metadata.name', order: 'asc' }],
+          credentials,
+        });
+        expect(names(entitiesResponseToObjects(ordered.entities))).toEqual([
+          'live',
+        ]);
+
+        // Paginated queries, with and without sort fields, and their counts
+        for (const orderFields of [
+          undefined,
+          [{ field: 'metadata.name', order: 'asc' as const }],
+        ]) {
+          const response = await catalog.queryEntities({
+            limit: 10,
+            orderFields,
+            credentials,
+          });
+          expect(names(entitiesResponseToObjects(response.items))).toEqual([
+            'live',
+          ]);
+          expect(response.totalItems).toBe(1);
+        }
+
+        // By ref, a tombstone looks exactly like a ref that never existed
+        const batch = await catalog.entitiesBatch({
+          entityRefs: ['k:default/gone', 'k:default/live', 'k:default/never'],
+          credentials,
+        });
+        expect(names(entitiesResponseToObjects(batch.items))).toEqual([
+          null,
+          'live',
+          null,
+        ]);
+
+        // Facets, ancestry and metrics
+        await expect(
+          catalog.facets({ facets: ['kind'], credentials }),
+        ).resolves.toEqual({ facets: { kind: [{ value: 'k', count: 1 }] } });
+        await expect(catalog.entityAncestry('k:default/gone')).rejects.toThrow(
+          'No such entity k:default/gone',
+        );
+        await expect(queryEntitiesCountByKind(knex)).resolves.toEqual(
+          new Map([['k', 1]]),
+        );
       });
     });
 
