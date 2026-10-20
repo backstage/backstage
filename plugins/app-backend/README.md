@@ -47,4 +47,4 @@ Be sure to register the app router last, as it serves content for HTML5-mode nav
 ## Public entry point configuration
 
 To restrict configuration exposed to unauthenticated users, see
-[Restricting public configuration](https://backstage.io/docs/tutorials/enable-public-entry/#restricting-public-configuration).
+[Restricting public configuration](https://backstage.io/docs/conf/writing/#restricting-public-configuration).

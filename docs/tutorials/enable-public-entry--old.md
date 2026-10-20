@@ -109,6 +109,6 @@ That's it!
 ## Restricting public configuration
 
 To restrict configuration exposed to unauthenticated users, see
-[Restricting public configuration](./enable-public-entry.md#restricting-public-configuration)
-in the public entry point guide. These configuration options also apply to apps
-using the old frontend system.
+[Restricting public configuration](../conf/writing.md#restricting-public-configuration)
+in the configuration guide. These configuration options also apply to apps using
+the old frontend system.
