@@ -419,22 +419,30 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       },
     );
 
-    it('propagates errors reading the existing subscription', async () => {
+    it('recreates a subscription if reading the existing subscription fails', async () => {
       databaseClient.findByResource = jest.fn().mockResolvedValue({
         id: 'old_id',
         expires_at: DateTime.now().plus({ minutes: 30 }).toJSDate(),
       });
       const error = new Error('Graph unavailable');
       msGraphClient.getSubscription = jest.fn().mockRejectedValue(error);
+      msGraphClient.createSubscription.mockResolvedValue({
+        id: 'new_id',
+        expirationDateTime: DateTime.now().plus({ hours: 1 }).toISO(),
+      });
 
-      await expect(
-        target.ensureActiveResourceSubscription('users'),
-      ).rejects.toBe(error);
+      await target.ensureActiveResourceSubscription('users');
 
-      expect(databaseClient.deleteById).not.toHaveBeenCalled();
-      expect(databaseClient.insert).not.toHaveBeenCalled();
-      expect(msGraphClient.createSubscription).not.toHaveBeenCalled();
-      expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Error fetching subscription old_id from MS Graph.',
+        error,
+      );
+      expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');
+      expect(databaseClient.insert).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'new_id', resource: 'users' }),
+      );
+      expect(msGraphClient.createSubscription).toHaveBeenCalled();
+      expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('old_id');
     });
 
     it('logs a warning if cleaning up the old subscription fails', async () => {
@@ -457,7 +465,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       await new Promise(resolve => setImmediate(resolve));
 
       expect(logger.warn).toHaveBeenCalledWith(
-        'Error cleaning up old subscription old_id: Error: delete failed',
+        'Error deleting old subscription old_id.',
         error,
       );
       expect(databaseClient.deleteById).toHaveBeenCalledWith('old_id');

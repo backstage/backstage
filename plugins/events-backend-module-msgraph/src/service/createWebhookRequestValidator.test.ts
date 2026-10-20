@@ -144,7 +144,7 @@ describe('createWebhookRequestValidator', () => {
       token_hash: 'h',
       token_salt: 's',
     });
-    (hashValidationToken as jest.Mock).mockReturnValue('not-h');
+    (hashValidationToken as jest.Mock).mockResolvedValue('not-h');
     await target(request, context);
     expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
     expect(logger.warn).toHaveBeenCalledWith(
@@ -168,7 +168,7 @@ describe('createWebhookRequestValidator', () => {
       return undefined;
     });
     (hashValidationToken as jest.Mock).mockImplementation(
-      (clientState, salt) => {
+      async (clientState, salt) => {
         if (clientState === 'a' && salt === 's') return 'h';
         if (clientState === 'c' && salt === 's2') return 'not-h2';
         return '';
@@ -198,7 +198,7 @@ describe('createWebhookRequestValidator', () => {
       return undefined;
     });
     (hashValidationToken as jest.Mock).mockImplementation(
-      (clientState, salt) => {
+      async (clientState, salt) => {
         if (clientState === 'a' && salt === 's') return 'h';
         if (clientState === 'c' && salt === 's2') return 'h2';
         return '';
@@ -224,7 +224,7 @@ describe('createWebhookRequestValidator', () => {
       token_hash: 'h',
       token_salt: 's',
     });
-    (hashValidationToken as jest.Mock).mockReturnValue('not-h');
+    (hashValidationToken as jest.Mock).mockResolvedValue('not-h');
     await target(request, context);
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining(

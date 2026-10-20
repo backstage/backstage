@@ -321,16 +321,6 @@ export class MicrosoftGraphSubscriptionManager {
 
     const isValid = isActive && notificationUrlMatches;
 
-    console.log({
-      resource,
-      isValid,
-      isActive,
-      expiresSoon,
-      notificationUrlMatches,
-      existingSubscriptionId,
-      expirationDateTime,
-    });
-
     if (!isActive) {
       logger.debug(
         `Subscription ${existingSubscriptionId} for resource '${resource}' has expired.`,
