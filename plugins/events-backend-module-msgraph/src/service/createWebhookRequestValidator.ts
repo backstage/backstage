@@ -105,7 +105,10 @@ export function createWebhookRequestValidator(
       }
 
       const { token_hash, token_salt } = subscriptionRecord;
-      const hashedClientState = hashValidationToken(clientState, token_salt);
+      const hashedClientState = await hashValidationToken(
+        clientState,
+        token_salt,
+      );
       if (hashedClientState !== token_hash) {
         logger.warn(
           `Invalid clientState for notification item: ${JSON.stringify(value)}`,
