@@ -1,1 +1,0 @@
-Fix TechDocs addons not rendering on the new frontend system.

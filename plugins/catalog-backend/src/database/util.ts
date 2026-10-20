@@ -48,6 +48,16 @@ export function whereInArray(column: string, values: string[]) {
 
 /**
  * Retries an operation on database deadlock errors.
+ *
+ * @remarks
+ * With a root Knex instance, the callback may run more than once. When wrapping
+ * a transaction, recreate the entire transaction on each attempt. Keep
+ * non-database side effects outside the callback, since they cannot be rolled
+ * back.
+ *
+ * With an existing Knex transaction, the callback runs exactly once and any
+ * deadlock is propagated to the owner, which must retry the whole transaction.
+ * Retrying only a statement or savepoint inside an aborted transaction is unsafe.
  */
 export async function retryOnDeadlock<T>(
   fn: () => Promise<T>,
@@ -55,6 +65,14 @@ export async function retryOnDeadlock<T>(
   retries = 3,
   baseMs = 25,
 ): Promise<T> {
+  // Retrying a statement inside an existing transaction is unsafe. In
+  // PostgreSQL a deadlock aborts the entire transaction, while in MySQL it
+  // rolls the transaction back. Let the caller retry the whole transaction
+  // instead.
+  if (knex.isTransaction) {
+    return fn();
+  }
+
   let attempt = 0;
   for (;;) {
     try {

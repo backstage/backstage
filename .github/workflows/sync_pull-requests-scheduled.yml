@@ -19,7 +19,7 @@ jobs:
       count: ${{ steps.batch.outputs.count }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
@@ -32,7 +32,7 @@ jobs:
 
       - name: Determine PR batch
         id: batch
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ steps.token.outputs.token }}
           script: |
@@ -119,12 +119,12 @@ jobs:
       max-parallel: 1
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
       - name: Backstage PR automation
-        uses: backstage/actions/pr-automation@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        uses: backstage/actions/pr-automation@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

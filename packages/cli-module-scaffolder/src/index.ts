@@ -32,7 +32,7 @@ export default createCliModule({
     });
     reg.addCommand({
       path: ['template', 'dry-run'],
-      description: 'Validate a software template without making changes',
+      description: 'Validate a software template file without making changes',
       execute: { loader: () => import('./commands/templateDryRun') },
     });
   },

@@ -60,6 +60,7 @@ export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactory[];
   // (undocumented)
   extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[];
+  instanceId?: string;
 }
 
 // @public

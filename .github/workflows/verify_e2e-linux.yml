@@ -26,7 +26,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:14@sha256:14bfab572eec6abf65892e1db7c3ba8d41b2a2855c1b143664907d6e146eb6e1
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -48,7 +48,7 @@ jobs:
     name: E2E Linux ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
@@ -61,13 +61,13 @@ jobs:
           mkdir -p ./context
           echo "$PR_NUMBER" > ./context/pr-number
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
         with:
           name: pr-context
           path: context/
 
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -77,13 +77,13 @@ jobs:
           git config --global user.name 'GitHub e2e user'
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

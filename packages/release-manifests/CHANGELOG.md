@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.15-next.0
+
+### Patch Changes
+
+- 5834faa: Release manifests now include requirements such as supported Node.js versions when that information is available from the release.
+
 ## 0.0.14
 
 ### Patch Changes

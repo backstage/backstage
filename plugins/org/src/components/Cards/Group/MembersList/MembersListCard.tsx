@@ -40,7 +40,6 @@ import { EntityRelationAggregation } from '../../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
 import {
-  Avatar,
   Box,
   Card,
   Flex,
@@ -50,6 +49,7 @@ import {
   TablePagination,
   Text,
 } from '@backstage/ui';
+import { UserAvatar } from '../../../UserAvatar';
 
 const useMemberStyles = makeStyles({
   card: {
@@ -96,11 +96,10 @@ const MemberComponent = (props: { member: UserEntity }) => {
       href={entityLink(props.member)}
       label={t('membersListCard.cardLabel', { memberName: displayName })}
     >
-      <Avatar
+      <UserAvatar
         className={classes.avatar}
-        name={displayName}
-        src={profile?.picture ?? ''}
-        purpose="decoration"
+        displayName={displayName}
+        entity={props.member}
         size="x-large"
       />
       <Flex className={classes.cardTextContainer} direction="column" gap="1">

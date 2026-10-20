@@ -24,3 +24,14 @@ export async function resolveAuth(instanceFlag?: string): Promise<{
   const accessToken = await auth.getAccessToken();
   return { baseUrl: auth.getBaseUrl(), accessToken };
 }
+
+/**
+ * Shared `--instance` flag definition, to be spread into each command's flags.
+ */
+export const instanceFlag = {
+  instance: {
+    type: String,
+    description:
+      'Name of the Backstage instance to use (defaults to the one chosen with "auth select")',
+  },
+};

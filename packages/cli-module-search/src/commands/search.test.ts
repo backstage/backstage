@@ -61,17 +61,9 @@ describe('search', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when no search term provided', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
-
-    await expect(searchCommand(ctx([]))).rejects.toThrow(
-      'Search term is required',
-    );
-  });
-
   it('queries with term', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: {},
+      flags: { type: [] },
       _: { term: ['my', 'service'] },
     });
     mockQuery.mockResolvedValue({ results: [] });
@@ -86,25 +78,17 @@ describe('search', () => {
       pageCursor: undefined,
     });
     expect(mockCli.mock.calls[0][0]).toEqual(
-      expect.objectContaining({ parameters: ['<term...>'] }),
+      expect.objectContaining({
+        parameters: ['<term...>'],
+        strictFlags: true,
+      }),
     );
   });
 
-  it('rejects JSON input for --types', async () => {
+  it('accepts repeatable document types', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { types: '["techdocs"]' },
-    });
-
-    await expect(
-      searchCommand(ctx(['docs', '--types', '["techdocs"]'])),
-    ).rejects.toThrow(
-      'JSON list input is not supported; use comma-separated values',
-    );
-  });
-
-  it('accepts comma-separated document types', async () => {
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: { types: 'techdocs,software-catalog' },
+      flags: { type: ['techdocs', 'software-catalog'] },
+      _: { term: ['docs'] },
     });
     mockQuery.mockResolvedValue({ results: [] });
 
@@ -121,8 +105,10 @@ describe('search', () => {
   it('accepts repeatable key-value filters', async () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: {
+        type: [],
         filter: ['kind=Component', 'lifecycle=production'],
       },
+      _: { term: ['service'] },
     });
     mockQuery.mockResolvedValue({ results: [] });
 
@@ -141,7 +127,7 @@ describe('search', () => {
 
   it('rejects JSON objects containing equals signs for --filter', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { filter: ['{"url":"https://example.com?a=b"}'] },
+      flags: { type: [], filter: ['{"url":"https://example.com?a=b"}'] },
       _: { term: ['service'] },
     });
 
@@ -170,9 +156,36 @@ describe('search', () => {
     }
   });
 
+  it('rejects removed flags and a missing term during parsing', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(code => {
+      throw new Error(`process.exit(${code})`);
+    });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    (mockCli as jest.Mock)
+      .mockImplementationOnce(actualCli)
+      .mockImplementationOnce(actualCli);
+
+    try {
+      await expect(
+        searchCommand(ctx(['service', '--types', 'techdocs'])),
+      ).rejects.toThrow('process.exit(1)');
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Unknown flag: --types'),
+      );
+      await expect(searchCommand(ctx([]))).rejects.toThrow('process.exit(1)');
+      expect(mockQuery).not.toHaveBeenCalled();
+    } finally {
+      logSpy.mockRestore();
+      exitSpy.mockRestore();
+      errorSpy.mockRestore();
+    }
+  });
+
   it('passes pagination flags', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'page-limit': 5, 'page-cursor': 'abc' },
+      flags: { type: [], limit: 5, cursor: 'abc' },
+      _: { term: ['term'] },
     });
     mockQuery.mockResolvedValue({ results: [] });
 
@@ -187,8 +200,23 @@ describe('search', () => {
     );
   });
 
+  it('rejects invalid --output values', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { type: [], output: 'yaml' },
+      _: { term: ['term'] },
+    });
+
+    await expect(searchCommand(ctx(['term']))).rejects.toThrow(
+      'Invalid --output value "yaml", expected "human" or "json"',
+    );
+    expect(mockQuery).not.toHaveBeenCalled();
+  });
+
   it('outputs JSON when --output json', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: { output: 'json' } });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { type: [], output: 'json' },
+      _: { term: ['test'] },
+    });
     mockQuery.mockResolvedValue({
       results: [{ document: { title: 'Test' } }],
       numberOfResults: 1,
@@ -206,7 +234,10 @@ describe('search', () => {
   });
 
   it('outputs human-readable format by default', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { type: [] },
+      _: { term: ['service'] },
+    });
     mockQuery.mockResolvedValue({
       results: [
         {
@@ -228,7 +259,10 @@ describe('search', () => {
   });
 
   it('uses top-level result text in human-readable output', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { type: [] },
+      _: { term: ['service'] },
+    });
     mockQuery.mockResolvedValue({
       results: [
         {
@@ -243,5 +277,49 @@ describe('search', () => {
 
     const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
     expect(output).toContain('Top-level search text');
+  });
+
+  describe('paging in human mode', () => {
+    const output = () => stdoutSpy.mock.calls.map(c => c[0]).join('');
+    const setTty = (value: boolean) => {
+      for (const stream of [process.stdout, process.stdin]) {
+        Object.defineProperty(stream, 'isTTY', { value, configurable: true });
+      }
+    };
+    const page = (title: string, nextPageCursor?: string) => ({
+      results: [{ document: { title } }],
+      numberOfResults: 2,
+      nextPageCursor,
+    });
+
+    beforeEach(() => {
+      (mockCli as jest.Mock).mockReturnValue({
+        flags: { type: [], limit: 1 },
+        _: { term: ['term'] },
+      });
+      mockQuery
+        .mockResolvedValueOnce(page('first', 'next-1'))
+        .mockResolvedValueOnce(page('second'));
+    });
+
+    afterEach(() => {
+      mockQuery.mockReset();
+      for (const stream of [process.stdout, process.stdin]) {
+        delete (stream as { isTTY?: boolean }).isTTY;
+      }
+    });
+
+    it.each([true, false])(
+      'prints a single page with a footer and the cursor hint (TTY: %s)',
+      async tty => {
+        setTty(tty);
+
+        await searchCommand(ctx(['term']));
+
+        expect(mockQuery).toHaveBeenCalledTimes(1);
+        expect(output()).toContain('Showing 1 of 2');
+        expect(output()).toContain('--cursor next-1');
+      },
+    );
   });
 });

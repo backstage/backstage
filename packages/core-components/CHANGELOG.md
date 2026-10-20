@@ -1,5 +1,34 @@
 # @backstage/core-components
 
+## 0.18.15-next.3
+
+### Patch Changes
+
+- e415488: Stop clearing the selected provider from `localStorage` when a sign-in loader is cancelled. Only clear it when the loader actually fails. Memoize `getSignInProviders` so it does not recreate the providers object on every render.
+- Updated dependencies
+  - @backstage/ui@0.19.0-next.0
+
+## 0.18.15-next.2
+
+### Patch Changes
+
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+
+## 0.18.15-next.1
+
+### Patch Changes
+
+- e859c29: Added `defaultCloseDelayMs` option to `SubmenuOptions` to configure a delay before a submenu closes.
+
+## 0.18.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+
 ## 0.18.14
 
 ### Patch Changes

@@ -1394,8 +1394,8 @@ export const ComboboxListBoxDefinition: {
     readonly options: {};
     readonly items: {};
     readonly children: {};
+    readonly hiddenKey: {};
     readonly dependencies: {};
-    readonly search: {};
     readonly loading: {};
     readonly isStale: {};
     readonly getItemTextValue: {};
@@ -2808,7 +2808,7 @@ export type MenuSectionOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export interface MenuSectionProps<T>
   extends MenuSectionOwnProps,
     Omit<MenuSectionProps_2<T>, keyof MenuSectionOwnProps> {}

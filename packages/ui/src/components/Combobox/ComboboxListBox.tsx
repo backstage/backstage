@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { cloneElement, useContext } from 'react';
+import { cloneElement } from 'react';
 import {
   Collection,
-  ComboBoxStateContext,
   Header,
   ListBox,
   ListBoxLoadMoreItem,
@@ -25,7 +24,6 @@ import {
   SelectableCollectionContext,
   Text,
 } from 'react-aria-components';
-import { useFilter } from 'react-aria';
 import clsx from 'clsx';
 import { useDefinition } from '../../hooks/useDefinition';
 import { normalizeOptions } from '../../utils/selectableCollection';
@@ -43,7 +41,6 @@ import type {
   NormalizedOptionSection,
 } from '../../types/selectableCollection';
 import type { ComboboxListBoxOwnProps } from './types';
-import type { Node } from '@react-types/shared';
 import { Skeleton } from '../Skeleton';
 import { useDelayedVisibility } from '../../hooks/useDelayedVisibility';
 
@@ -143,35 +140,6 @@ function renderComboboxOption(
   }
 
   return <ComboboxOptionItem key={item.id} option={item} />;
-}
-
-function getCollectionFilter<T extends CollectionItem>({
-  search,
-  hasItems,
-  inputValue,
-  contains,
-}: {
-  search?: ComboboxListBoxOwnProps<T>['search'];
-  hasItems: boolean;
-  inputValue: string;
-  contains: (textValue: string, inputValue: string) => boolean;
-}) {
-  const searchProps = typeof search === 'object' ? search : undefined;
-  if (searchProps?.mode === 'server') {
-    return undefined;
-  }
-
-  const customFilter = searchProps?.filter;
-  if (customFilter) {
-    return (_textValue: string, node: Node<T>) =>
-      customFilter(node.value as T, inputValue);
-  }
-
-  if (search || hasItems) {
-    return (textValue: string) => contains(textValue, inputValue);
-  }
-
-  return undefined;
 }
 
 function ComboboxCollection<T extends CollectionItem>({
@@ -283,22 +251,13 @@ export function ComboboxListBox<T extends CollectionItem>(
     options,
     items,
     children,
+    hiddenKey,
     dependencies,
-    search,
     loading,
     isStale,
     getItemTextValue,
   } = ownProps;
   const normalizedOptions = options && normalizeOptions(options);
-  const state = useContext(ComboBoxStateContext);
-  const { contains } = useFilter({ sensitivity: 'base' });
-  const inputValue = state?.inputValue ?? '';
-  const filter = getCollectionFilter({
-    search,
-    hasItems: items !== undefined,
-    inputValue,
-    contains,
-  });
   const isCollectionLoading =
     loading?.state === 'loading' ||
     loading?.state === 'filtering' ||
@@ -345,12 +304,14 @@ export function ComboboxListBox<T extends CollectionItem>(
 
   const busyListBox = <div aria-busy={isBusy || undefined}>{listBox}</div>;
 
-  if (!filter) {
+  if (hiddenKey === undefined) {
     return busyListBox;
   }
 
   return (
-    <SelectableCollectionContext.Provider value={{ filter }}>
+    <SelectableCollectionContext.Provider
+      value={{ filter: (_textValue, node) => node.key !== hiddenKey }}
+    >
       {busyListBox}
     </SelectableCollectionContext.Provider>
   );

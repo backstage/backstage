@@ -250,7 +250,9 @@ export class CatalogClient implements CatalogApi {
       filterPredicate = query;
       if (filter !== undefined) {
         const converted = convertFilterToPredicate(filter);
-        filterPredicate = { $all: [filterPredicate, converted] };
+        if (converted) {
+          filterPredicate = { $all: [filterPredicate, converted] };
+        }
       }
     }
 
@@ -407,9 +409,11 @@ export class CatalogClient implements CatalogApi {
       }
       if (filter !== undefined) {
         const converted = convertFilterToPredicate(filter);
-        filterPredicate = filterPredicate
-          ? { $all: [filterPredicate, converted] }
-          : converted;
+        if (filterPredicate && converted) {
+          filterPredicate = { $all: [filterPredicate, converted] };
+        } else {
+          filterPredicate = filterPredicate ?? converted;
+        }
       }
       if (filterPredicate !== undefined) {
         body.query = filterPredicate as unknown as { [key: string]: any };
@@ -548,9 +552,11 @@ export class CatalogClient implements CatalogApi {
     }
     if (filter !== undefined) {
       const converted = convertFilterToPredicate(filter);
-      filterPredicate = filterPredicate
-        ? { $all: [filterPredicate, converted] }
-        : converted;
+      if (filterPredicate && converted) {
+        filterPredicate = { $all: [filterPredicate, converted] };
+      } else {
+        filterPredicate = filterPredicate ?? converted;
+      }
     }
 
     return await this.requestOptional(
@@ -728,7 +734,9 @@ export class CatalogClient implements CatalogApi {
     const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
     do {
       const res = await this.queryEntities(
-        cursor ? { ...request, cursor, limit } : { ...request, limit },
+        cursor
+          ? { ...request, cursor, limit }
+          : { ...request, limit, totalItems: 'exclude' },
         options,
       );
 

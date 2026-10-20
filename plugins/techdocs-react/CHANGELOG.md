@@ -1,5 +1,34 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.16-next.2
+
+### Patch Changes
+
+- 450dd64: Isolated TechDocs addons in individual Suspense boundaries so that a lazy addon no longer hides the surrounding reader while it loads.
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.2
+  - @backstage/plugin-techdocs-common@0.1.2-next.0
+
+## 1.3.16-next.1
+
+### Patch Changes
+
+- f624dc6: Fixed Material UI styles for TechDocs addons in module-federated applications.
+- 7a4f545: Prevented TechDocs content from briefly appearing before page styles load.
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.1
+
+## 1.3.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+
 ## 1.3.15
 
 ### Patch Changes

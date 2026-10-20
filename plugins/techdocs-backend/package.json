@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
-  "version": "2.3.0",
+  "version": "2.4.0-next.2",
   "description": "The Backstage backend plugin that renders technical documentation for your components",
   "backstage": {
     "role": "backend-plugin",
@@ -68,6 +68,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.22.0",
@@ -81,7 +82,9 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@types/compression": "^1.7.5",
     "@types/express": "^4.17.6",
+    "compression": "^1.7.4",
     "msw": "^2.0.0",
     "supertest": "^7.0.0"
   },

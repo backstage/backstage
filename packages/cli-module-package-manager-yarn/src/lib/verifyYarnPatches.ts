@@ -49,6 +49,7 @@ export type PatchVerificationError = {
   kind: PatchVerificationErrorKind;
   message: string;
   location?: string;
+  repairHint?: PatchHoldbackFix;
 };
 
 export type VerifyYarnPatchesOptions = {
@@ -63,8 +64,9 @@ export type VerifyYarnPatchesResult = {
   errors: PatchVerificationError[];
 };
 
-type PatchDeclaration = {
+export type PatchDeclaration = {
   patchedIdent: string;
+  reference: string;
   source: string;
   resolvedSource?: string;
   components: string[];
@@ -75,7 +77,7 @@ type PatchDeclaration = {
   location: string;
 };
 
-type LocalPatchPath = {
+export type LocalPatchPath = {
   absolute: string;
   relative: string;
 };
@@ -84,6 +86,14 @@ type PatchedBackstagePackage = {
   name: string;
   version: string;
   location: string;
+  declaration: PatchDeclaration;
+};
+
+export type PatchHoldbackFix = {
+  packageName: string;
+  currentVersion: string;
+  targetVersion: string;
+  declaration: PatchDeclaration;
 };
 
 type ResolutionDeclaration = {
@@ -274,6 +284,7 @@ function parsePatchDeclaration(options: {
 
   return {
     patchedIdent: options.patchedIdent,
+    reference: options.range,
     source,
     components,
     parentLocator:
@@ -1014,6 +1025,7 @@ function getPatchedBackstagePackages(
       name: structUtils.stringifyIdent(source),
       version: range.selector,
       location: declaration.location,
+      declaration,
     });
   }
   return packages;
@@ -1165,11 +1177,18 @@ async function validateBackstagePatches(options: {
         location: patchedPackage.location,
       });
     } else if (releaseVersion !== patchedPackage.version) {
-      errors.push({
+      const error: PatchVerificationError = {
         kind: 'backstage-patch-holdback',
         message: `Patched package '${patchedPackage.name}' is at version '${patchedPackage.version}', but Backstage release '${backstageVersion}' requires version '${releaseVersion}'`,
         location: patchedPackage.location,
-      });
+      };
+      error.repairHint = {
+        packageName: patchedPackage.name,
+        currentVersion: patchedPackage.version,
+        targetVersion: releaseVersion,
+        declaration: patchedPackage.declaration,
+      };
+      errors.push(error);
     }
   }
 

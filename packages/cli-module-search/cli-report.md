@@ -34,13 +34,13 @@ Commands:
 ### `backstage-cli-module-search docs search`
 
 ```
-Usage: @backstage/cli-module-search docs search [flags...]
+Usage: @backstage/cli-module-search docs search [flags...] <term...>
 
 Options:
+  --cursor <string>
   --instance <string>
+  --limit <number>
   --output <string>
-  --page-cursor <string>
-  --page-limit <number>
   -h, --help
 ```
 
@@ -50,11 +50,11 @@ Options:
 Usage: @backstage/cli-module-search search [flags...] <term...>
 
 Options:
+  --cursor <string>
   --filter <string>
   --instance <string>
+  --limit <number>
   --output <string>
-  --page-cursor <string>
-  --page-limit <number>
-  --types <string>
+  --type <string>
   -h, --help
 ```

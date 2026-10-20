@@ -27,7 +27,7 @@ export function withDeclaredConnections(
       !registrations.some(({ type: registeredType }) => registeredType === type)
     ) {
       throw new InputError(
-        `Plugin attempted to look up an undeclared connection of type "${type}". Declare it during register() with declareConnection(reg, { type: "${type}" }).`,
+        `Plugin attempted to look up an undeclared connection of type "${type}". Declare it during register() with declareConnection(env, { type: "${type}" }).`,
       );
     }
   };

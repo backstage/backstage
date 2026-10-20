@@ -115,7 +115,7 @@ export class WinstonLogger implements RootLoggerService {
           if (redactionToTrim === null || redactionToTrim === undefined) {
             continue;
           }
-          // Trimming the string ensures that we don't accdentally get extra
+          // Trimming the string ensures that we don't accidentally get extra
           // newlines or other whitespace interfering with the redaction; this
           // can happen for example when using string literals in yaml
           const redaction = redactionToTrim.trim();

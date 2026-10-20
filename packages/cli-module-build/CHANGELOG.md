@@ -1,5 +1,30 @@
 # @backstage/cli-module-build
 
+## 0.1.9-next.2
+
+### Patch Changes
+
+- cc4ef47: Restored the default exclusion of `node_modules` from test coverage for this package.
+- f163298: Improved code splitting for frontend module federation remotes to reduce unnecessary downloads of unrelated lazy components from the same dependency scope. Shared dependencies and workspace code are extracted across lazy boundaries when the resulting shared chunk meets the size threshold. Regular application builds are unchanged.
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 2ece167: Updated dependency `webpack` to `~5.111.0`.
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/module-federation-common@0.1.6-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.1.8
 
 ### Patch Changes

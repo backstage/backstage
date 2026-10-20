@@ -15,24 +15,16 @@
  */
 
 import { useEffect } from 'react';
-import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { ErrorPage } from '@backstage/core-components';
+import { useApp, useAnalytics } from '@backstage/core-plugin-api';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 import { useLocation } from 'react-router-dom';
-import { techdocsTranslationRef } from '../../translation';
 
-type Props = {
-  errorMessage?: string;
-};
-
-export const TechDocsNotFound = ({ errorMessage }: Props) => {
-  const techdocsBuilder =
-    useApi(configApiRef).getOptionalString('techdocs.builder');
+export const TechDocsNotFound = () => {
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
   const analyticsApi = useAnalytics();
   const { entityRef } = useTechDocsReaderPage();
   const location = useLocation();
-  const { t } = useTranslationRef(techdocsTranslationRef);
 
   useEffect(() => {
     const { pathname, search, hash } = location;
@@ -41,16 +33,5 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
     });
   }, [analyticsApi, entityRef, location]);
 
-  let additionalInfo = '';
-  if (![undefined, 'local'].includes(techdocsBuilder)) {
-    additionalInfo = t('notFound.builderNote');
-  }
-
-  return (
-    <ErrorPage
-      status="404"
-      statusMessage={errorMessage || t('notFound.title')}
-      additionalInfo={additionalInfo}
-    />
-  );
+  return <NotFoundErrorPage />;
 };

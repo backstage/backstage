@@ -944,6 +944,23 @@ as a general syntax reference, and check the
 [Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
 for the supported features.
 
+#### How step values are typed
+
+The type of a templated value in `spec.steps` depends on how you write it:
+
+- **A single `${{ }}` expression** keeps the type of its result. For example, `${{ parameters.enabledDB }}` passes a boolean, and `${{ parameters.tags }}` passes an array.
+- **A single `{% %}` block** passes a boolean, number, `null`, array or object if it outputs one, and a string otherwise. For example, the following `if` gets the boolean `true` or `false`, so the step is skipped as expected:
+
+  ```yaml
+  if: "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}"
+  ```
+
+  Expressions inside the block keep the type of their result, so `{% if parameters.enabled %}${{ parameters.count }}{% endif %}` passes a number. If the block outputs nothing, the value is left out, as if it wasn't set.
+
+- **Anything else**, such as text combined with an expression (`v${{ parameters.version }}`), or whitespace around a block, passes a string.
+
+A `{% %}` block that outputs a number doesn't keep its formatting, so `1.10` becomes `1.1`. To pass a value such as a version number as a string, use a `${{ }}` expression instead.
+
 Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at
 [Templating Extensions](./templating-extensions.md).

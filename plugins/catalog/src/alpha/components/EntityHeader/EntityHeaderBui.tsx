@@ -37,6 +37,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   catalogApiRef,
   catalogReactTranslationRef,
+  EntityDisplayName,
   entityRouteRef,
   getEntityRelations,
   useAsyncEntity,
@@ -99,7 +100,7 @@ function HierarchyLinks(props: { refs: CompoundEntityRef[] }) {
         <Box as="li" display="inline" key={stringifyEntityRef(ref)}>
           {index > 0 ? ', ' : null}
           <Link href={entityLink(ref)} standalone>
-            {ref.name}
+            <EntityDisplayName entityRef={ref} />
           </Link>
         </Box>
       ))}

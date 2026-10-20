@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-gitea
 
+## 0.1.17-next.2
+
+### Patch Changes
+
+- f181c5f: Fixed the Gitea entity provider registering catalog-info.yaml locations against a hardcoded 'main' branch instead of each repository's actual default branch.
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.1
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 0.1.16
 
 ### Patch Changes

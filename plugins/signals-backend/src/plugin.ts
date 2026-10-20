@@ -39,6 +39,7 @@ export const signalsPlugin = createBackendPlugin({
         userInfo: coreServices.userInfo,
         auth: coreServices.auth,
         events: eventsServiceRef,
+        instanceMetadata: coreServices.rootInstanceMetadata,
       },
       async init({
         httpRouter,
@@ -49,6 +50,7 @@ export const signalsPlugin = createBackendPlugin({
         userInfo,
         auth,
         events,
+        instanceMetadata,
       }) {
         httpRouter.use(
           await createRouter({
@@ -59,8 +61,12 @@ export const signalsPlugin = createBackendPlugin({
             userInfo,
             auth,
             events,
+            instanceMetadata,
           }),
         );
+        // Browser WebSockets cannot send an Authorization header, so the
+        // credentials barrier must allow the handshake through. Authentication
+        // is enforced in the WebSocket upgrade handler via Sec-WebSocket-Protocol.
         httpRouter.addAuthPolicy({
           path: '/',
           allow: 'unauthenticated',

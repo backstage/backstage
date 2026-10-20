@@ -1,5 +1,34 @@
 # @backstage/cli-node
 
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7c6ab3d: Commands run through `runCli` now wait for `stdout` and `stderr` to be flushed before exiting, so large command output is no longer truncated on platforms where writes to `stdout` and `stderr` are asynchronous.
+- 6dc6bc6: Fixed CLIs created with `runCli` silently exiting when the root or a command group is invoked without a subcommand. They now display help for that level and complete successfully.
+
+  Help output now lists groups and commands in separate, alphabetically sorted sections. Group previews adapt to the terminal width, using 80 columns when unavailable. Nested groups expand breadth-first when space permits; unexpanded groups retain a trailing slash and truncated previews end in an ellipsis.
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- 3d6721d: Add intent-based CLI modules for catalog, scaffolder, and search.
+
+  New modules provide domain-oriented subcommands that talk directly to the corresponding plugins' REST APIs:
+
+  - `@backstage/cli-module-catalog`: `catalog list`, `catalog get`, `catalog validate`, `catalog register`, `catalog unregister`
+  - `@backstage/cli-module-scaffolder`: `template list`, `template execute`, `template dry-run`
+  - `@backstage/cli-module-search`: `search`, `docs search`
+
+  The commands support human-readable and JSON output, positional entity and template references, repeatable `key=value` filters and inputs, comma-separated fields and search types, and file-based catalog entity and template input.
+
+  `@backstage/cli-node` now provides shared parsers for repeatable `key=value` inputs and comma-separated lists.
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.3.4
 
 ### Patch Changes

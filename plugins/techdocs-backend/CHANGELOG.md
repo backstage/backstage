@@ -1,5 +1,42 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.4.0-next.2
+
+### Minor Changes
+
+- 45b0b89: Added a `get-techdocs-metadata` action to the TechDocs backend plugin, registered with the Actions Registry Service (alpha).
+
+### Patch Changes
+
+- 685aee1: Fixed TechDocs asset caching on reused HTTP connections to avoid listener leaks and cross-request response corruption. Existing cached assets are refreshed automatically.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@2.0.3-next.2
+  - @backstage/integration@2.1.3-next.1
+  - @backstage/plugin-techdocs-common@0.1.2-next.0
+
+## 2.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-techdocs-node@2.0.2-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+
+## 2.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-techdocs-node@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+
 ## 2.3.0
 
 ### Minor Changes

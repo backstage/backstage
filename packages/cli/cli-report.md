@@ -227,14 +227,12 @@ Commands:
 ### `backstage-cli catalog get`
 
 ```
-Usage: backstage-cli catalog get [flags...] [ref]
+Usage: backstage-cli catalog get [flags...] <ref>
 
 Options:
   --instance <string>
   --kind <string>
-  --name <string>
   --namespace <string>
-  --output <string>
   -h, --help
 ```
 
@@ -244,6 +242,7 @@ Options:
 Usage: backstage-cli catalog list [flags...]
 
 Options:
+  --cursor <string>
   --fields <string>
   --filter <string>
   --instance <string>
@@ -257,12 +256,10 @@ Options:
 ### `backstage-cli catalog register`
 
 ```
-Usage: backstage-cli catalog register [flags...]
+Usage: backstage-cli catalog register [flags...] <url>
 
 Options:
   --instance <string>
-  --location-url <string>
-  --output <string>
   -h, --help
 ```
 
@@ -275,21 +272,17 @@ Options:
   --instance <string>
   --location-id <string>
   --location-url <string>
-  --output <string>
   -h, --help
 ```
 
 ### `backstage-cli catalog validate`
 
 ```
-Usage: backstage-cli catalog validate [flags...]
+Usage: backstage-cli catalog validate [flags...] <file>
 
 Options:
-  --entity <string>
-  --entity-file <string>
   --instance <string>
   --location <string>
-  --output <string>
   -h, --help
 ```
 
@@ -410,13 +403,13 @@ Commands:
 ### `backstage-cli docs search`
 
 ```
-Usage: backstage-cli docs search [flags...]
+Usage: backstage-cli docs search [flags...] <term...>
 
 Options:
+  --cursor <string>
   --instance <string>
+  --limit <number>
   --output <string>
-  --page-cursor <string>
-  --page-limit <number>
   -h, --help
 ```
 
@@ -620,6 +613,7 @@ Options:
   --clearMocks
   --collectCoverage
   --collectCoverageFrom
+  --collectTests
   --color
   --colors
   --coverage
@@ -703,6 +697,7 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
+  --workerGracefulExitTimeout
   --workerThreads
   -b, --bail
   -c, --config
@@ -736,6 +731,7 @@ Commands:
 Usage: backstage-cli pm verify-patches [flags...]
 
 Options:
+  --fix
   -h, --help
 ```
 
@@ -851,12 +847,12 @@ Options:
 Usage: backstage-cli search [flags...] <term...>
 
 Options:
+  --cursor <string>
   --filter <string>
   --instance <string>
+  --limit <number>
   --output <string>
-  --page-cursor <string>
-  --page-limit <number>
-  --types <string>
+  --type <string>
   -h, --help
 ```
 
@@ -879,13 +875,10 @@ Commands:
 ### `backstage-cli template dry-run`
 
 ```
-Usage: backstage-cli template dry-run [flags...]
+Usage: backstage-cli template dry-run [flags...] <file>
 
 Options:
   --instance <string>
-  --output <string>
-  --template-file <string>
-  --template-ref <string>
   --value <string>
   -h, --help
 ```
@@ -893,14 +886,12 @@ Options:
 ### `backstage-cli template execute`
 
 ```
-Usage: backstage-cli template execute [flags...] [ref]
+Usage: backstage-cli template execute [flags...] <ref>
 
 Options:
   --instance <string>
   --namespace <string>
-  --output <string>
   --secret <string>
-  --template-ref <string>
   --value <string>
   -h, --help
 ```
@@ -911,6 +902,7 @@ Options:
 Usage: backstage-cli template list [flags...]
 
 Options:
+  --cursor <string>
   --filter <string>
   --instance <string>
   --limit <number>

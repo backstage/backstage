@@ -25,6 +25,8 @@ The following parameters are available:
 
 - `overrides` (array, optional): Allows to specify logger overrides for specific plugins or messages. Each override can match on plugin names, message patterns, or any field contained in the log, and set a custom log level for those matches.
 
+- `redactAllowlist` (array of strings, optional): A list of values that should not be redacted from log output. By default, all sensitive configuration values are automatically redacted. Use this option to allow specific values through when they are known to be safe to log.
+
 Log level overrides are useful for controlling the volume of logs generated in Backstage.
 They allow you to apply a global log level, `info` for example, while setting a stricter level, such as `warn`, for specific verbose plugins.
 
@@ -56,6 +58,10 @@ backend:
       - matchers:
           message: ['/^Registered scheduled task/']
         level: warn
+
+    # Allow specific secret values to appear in logs without being redacted
+    redactAllowlist:
+      - 'backstage'
 ```
 
 ### Modifying the log level

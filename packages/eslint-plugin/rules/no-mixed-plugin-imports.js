@@ -19,16 +19,33 @@
 const visitImports = require('../lib/visitImports');
 const getPackages = require('../lib/getPackages');
 const minimatch = require('minimatch');
+const path = require('node:path');
 
 /** @typedef {import('../lib/getPackages.js').ExtendedPackage} ExtendedPackage */
 
 /**
+ * Matches against the path relative to the package directory, so that
+ * directories above the package, such as a checkout under a dot-directory,
+ * do not affect the result. The absolute path is still tried so that
+ * existing patterns that refer to the location of the package keep working.
+ *
  * @param {string} pattern
  * @param {string} filePath
+ * @param {string} packageDir
  * @returns {boolean}
  */
-const matchesPattern = (pattern, filePath) => {
-  return new minimatch.Minimatch(pattern).match(filePath);
+const matchesPattern = (pattern, filePath, packageDir) => {
+  const matcher = new minimatch.Minimatch(pattern);
+  const relativePath = path
+    .relative(packageDir, filePath)
+    .split(path.sep)
+    .join('/');
+  // A negated pattern matches when the path does not match its positive form,
+  // so it must hold for both paths to keep the result of a plain match.
+  if (matcher.negate) {
+    return matcher.match(relativePath) && matcher.match(filePath);
+  }
+  return matcher.match(relativePath) || matcher.match(filePath);
 };
 
 const roleRules = [
@@ -127,8 +144,12 @@ module.exports = {
     const includePatterns = options.includedFiles || ['**/src/**'];
 
     if (
-      !includePatterns.some(pattern => matchesPattern(pattern, filePath)) ||
-      excludePatterns.some(pattern => matchesPattern(pattern, filePath))
+      !includePatterns.some(pattern =>
+        matchesPattern(pattern, filePath, pkg.dir),
+      ) ||
+      excludePatterns.some(pattern =>
+        matchesPattern(pattern, filePath, pkg.dir),
+      )
     ) {
       return {};
     }

@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications
 
+## 0.6.1-next.1
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-notifications-common@0.2.5-next.0
+  - @backstage/plugin-home-react@0.1.43-next.0
+  - @backstage/plugin-signals-react@0.0.27-next.0
+
 ## 0.6.0
 
 ### Minor Changes

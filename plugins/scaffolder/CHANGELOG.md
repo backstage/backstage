@@ -1,5 +1,53 @@
 # @backstage/plugin-scaffolder
 
+## 1.40.0-next.2
+
+### Minor Changes
+
+- d0cc453: Added a `Featured Templates` homepage widget that displays templates tagged with a configurable catalog tag, defaulting to `featured`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+  - @backstage/plugin-scaffolder-react@2.1.1-next.1
+
+## 1.39.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.4-next.1
+  - @backstage/plugin-techdocs-react@1.3.16-next.2
+  - @backstage/core-components@0.18.15-next.2
+  - @backstage/integration@2.1.3-next.1
+  - @backstage/plugin-techdocs-common@0.1.2-next.0
+
+## 1.39.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/plugin-scaffolder-common@2.3.1-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/plugin-techdocs-react@1.3.16-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+  - @backstage/plugin-scaffolder-react@2.1.1-next.0
+
 ## 1.39.0
 
 ### Minor Changes

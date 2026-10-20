@@ -272,3 +272,56 @@ changes.
 - Scenario 12 is new in this baseline. Its isolated workflow and dataset
   branches remain approximately 40 times faster than their ordered
   disjunction.
+
+---
+
+## Deep-page additions (2026-10-06)
+
+Scenarios 13 and 14 were measured independently on a production-scale staging
+read replica running PostgreSQL 18.6 with `work_mem = 32MB`. These additions do
+not replace the historical measurements for scenarios 1-12 above.
+
+An accompanying catalog count returned 720,486 non-null final entities. The
+scenario coverage checks found 204,085 entities matching `kind=api` and
+`spec.type=dataset`. These checks are separate snapshots of a live catalog,
+not one fixed snapshot shared by all runs. The planner estimated
+717,280 rows in `final_entities` and 29,530,400 rows in `search`.
+The `search.entity_id` distinct-value override was `-0.042962253`; no statistics
+or database settings were changed for these measurements.
+
+Both scenarios use fixed synthetic SQL cursor boundaries, not public API
+cursor tokens. ID `'e'` leaves 25,418 matches (skipping 87.5%); the name/ID pair
+`('s', 'e')` leaves 20,358 matches (skipping 90.0%). Both return 10,001 rows:
+a complete 10,000-entity page plus the extra row used to detect another page.
+Recheck these counts when measuring against different data: a boundary with
+few earlier matches or an incomplete page no longer represents this workload.
+
+Each median below uses three warm runs after one warm-up. A further warm run
+was captured as JSON, followed by a separate readable plan capture; their
+individual timings need not equal the median. Full plans are retained in
+[`plans.md`](./plans.md) and [`plans.json`](./plans.json).
+
+| Scenario                   | Warm execution times   | Median   | Shared buffer hits in JSON sample |
+| -------------------------- | ---------------------- | -------- | --------------------------------- |
+| 13. Deep dataset ID page   | 287.2, 283.5, 291.0 ms | 287.2 ms | 417,176                           |
+| 14. Deep dataset name page | 766.9, 756.2, 742.5 ms | 756.2 ms | 892,931                           |
+
+Both JSON samples have zero shared buffer reads and zero temporary blocks
+written. Buffer hits count accesses, not distinct blocks or bytes transferred.
+
+### Scenario 13: range scan with substantial filter-index work
+
+The `final_entities` primary-key scan applies `entity_id > 'e'` as an index
+condition. However, the merge joins still walk the leading entries of the
+`kind=api` and `spec.type=dataset` search indexes: about 189,000 entries each
+in the readable plan, despite returning only 10,001 rows. This is useful
+reference work that a first-page test would not expose.
+
+### Scenario 14: ordered scan with a late cursor filter
+
+The plan uses parallel ordered search scans and a Gather Merge, without a
+blocking sort. The cursor remains a filter rather than an index range:
+the readable plan discards about 626,000 earlier search entries across three
+processes and performs 52,427 final-entity and dataset-filter lookups.
+Its warm sub-second runtime therefore still hides substantial buffer work.
+Retain both the plan and the timing when comparing future query shapes.

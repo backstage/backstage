@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "2.0.9",
+  "version": "2.0.10-next.3",
   "description": "The Backstage plugin for browsing the Backstage catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -64,6 +64,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",

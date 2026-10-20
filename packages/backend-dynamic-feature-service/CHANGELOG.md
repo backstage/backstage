@@ -1,5 +1,48 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.8-next.1
+
+### Patch Changes
+
+- 786a8ea: Corrected the `schemaLocator` documentation to identify `dist/.config-schema.json` as the default dynamic-plugin config-schema path.
+- b9c9dd2: Internal refactor of dynamic backend plugin alpha-to-main entrypoint loading. No intended behavior change.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-defaults@0.18.1-next.1
+  - @backstage/backend-openapi-utils@0.7.3-next.1
+  - @backstage/plugin-app-node@0.1.50-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-catalog-backend@4.0.1-next.1
+  - @backstage/plugin-events-backend@0.6.7-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+  - @backstage/plugin-scaffolder-node@0.13.8-next.1
+  - @backstage/plugin-search-backend-node@1.4.9-next.1
+
+## 0.8.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/plugin-catalog-backend@4.0.1-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-defaults@0.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.8-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-events-backend@0.6.7-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/plugin-search-backend-node@1.4.9-next.0
+  - @backstage/backend-openapi-utils@0.7.3-next.0
+  - @backstage/cli-common@0.3.2-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-app-node@0.1.50-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
 ## 0.8.7
 
 ### Patch Changes

@@ -512,6 +512,25 @@ export const ServerBackedCustomItems = meta.story({
   render: () => <ServerBackedCustomCombobox />,
 });
 
+export const WithCustomSearch = meta.story({
+  render: () => (
+    <Combobox
+      label="Owner"
+      placeholder="Search by role"
+      items={serverOwners}
+      search={{
+        filter: (owner, query) =>
+          owner.role.toLowerCase().includes(query.toLowerCase()),
+      }}
+      style={{ width: 300 }}
+    >
+      {owner => (
+        <ComboboxItemText title={owner.name} description={owner.role} />
+      )}
+    </Combobox>
+  ),
+});
+
 export const Sizes = meta.story({
   args: {
     ...Default.input.args,

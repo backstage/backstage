@@ -1,7 +1,7 @@
 # @backstage/cli-module-package-manager-yarn
 
-Adds `backstage-cli pm verify-patches`, a read-only check for Yarn patch
-references, root resolutions, and patched Backstage package versions.
+Adds `backstage-cli pm verify-patches`, a check for Yarn patch references,
+root resolutions, and patched Backstage package versions.
 
 The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
@@ -30,11 +30,40 @@ are printed together and the command exits unsuccessfully if any are found.
 Repositories without `backstage.json` still receive generic patch validation;
 the Backstage release check is reported as skipped.
 
-The command does not run Yarn, install dependencies, or write project files.
-Use it alongside `yarn install --immutable`: immutable installs protect the
-resolved dependency state, while this command verifies that patch declarations,
-patch files, resolutions, the lockfile, and the selected Backstage release
-remain aligned.
+By default, the command does not run Yarn, install dependencies, or write
+project files. Use it alongside `yarn install --immutable`: immutable installs
+protect the resolved dependency state, while this command verifies that patch
+declarations, patch files, resolutions, the lockfile, and the selected
+Backstage release remain aligned.
+
+### Repairing an outdated Backstage patch
+
+When a Backstage release upgrade leaves a patched package pinned to its old
+version, the command can attempt a conservative repair:
+
+```shell
+yarn backstage-cli pm verify-patches --fix
+```
+
+The fixer handles exact-version `@backstage/*` patches declared in the root
+`resolutions`. It updates all eligible outdated patches to the versions in the
+selected Backstage release, runs one lockfile-only Yarn install, and then runs
+the full verification again. It never updates a patch to an older version and
+restores `package.json` and `yarn.lock` if the install or verification fails.
+Unsupported or ambiguous cases remain verification failures for manual repair.
+The `--fix` mode requires Yarn 3 or later.
+
+The repair runs in the working checkout using the repository's configured Yarn
+binary, plugins, and registry settings, with dependency build scripts disabled.
+Run it in a clean, exclusive checkout. An abrupt interruption can leave a
+partial change behind.
+
+For an automated Backstage version bump, run the commands in this order:
+
+```shell
+yarn backstage-cli versions:bump
+yarn backstage-cli pm verify-patches --fix
+```
 
 ## Release manifest environment
 

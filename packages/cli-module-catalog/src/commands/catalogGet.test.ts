@@ -60,21 +60,16 @@ describe('catalog get', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when neither a reference nor --name is provided', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
-
-    await expect(catalogGet(ctx([]))).rejects.toThrow(
-      'Entity reference or --name is required',
-    );
-  });
-
   it('queries the catalog by name only', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: { name: 'my-svc' } });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { ref: 'my-svc' },
+    });
     mockQueryEntities.mockResolvedValue({
       items: [{ kind: 'Component', metadata: { name: 'my-svc' } }],
     });
 
-    await catalogGet(ctx(['--name', 'my-svc']));
+    await catalogGet(ctx(['my-svc']));
 
     expect(mockQueryEntities).toHaveBeenCalledWith(
       { query: { 'metadata.name': 'my-svc' } },
@@ -121,16 +116,17 @@ describe('catalog get', () => {
     );
   });
 
-  it('passes kind and namespace when provided', async () => {
+  it('uses --kind and --namespace as defaults for a short reference', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { name: 'my-svc', kind: 'Component', namespace: 'prod' },
+      flags: { kind: 'Component', namespace: 'prod' },
+      _: { ref: 'my-svc' },
     });
     mockQueryEntities.mockResolvedValue({
       items: [{ kind: 'Component', metadata: { name: 'my-svc' } }],
     });
 
     await catalogGet(
-      ctx(['--name', 'my-svc', '--kind', 'Component', '--namespace', 'prod']),
+      ctx(['my-svc', '--kind', 'Component', '--namespace', 'prod']),
     );
 
     expect(mockQueryEntities).toHaveBeenCalledWith(
@@ -145,32 +141,84 @@ describe('catalog get', () => {
     );
   });
 
+  it('rejects --kind and --namespace that conflict with the reference', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { kind: 'API' },
+      _: { ref: 'component:my-svc' },
+    });
+    await expect(
+      catalogGet(ctx(['component:my-svc', '--kind', 'API'])),
+    ).rejects.toThrow('--kind API conflicts with the kind "component"');
+
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { namespace: 'dev' },
+      _: { ref: 'prod/my-svc' },
+    });
+    await expect(
+      catalogGet(ctx(['prod/my-svc', '--namespace', 'dev'])),
+    ).rejects.toThrow('--namespace dev conflicts with the namespace "prod"');
+    expect(mockQueryEntities).not.toHaveBeenCalled();
+  });
+
+  it('requires a reference and rejects unknown flags', async () => {
+    const actual = jest.requireActual('cleye');
+    (mockCli as jest.Mock)
+      .mockImplementationOnce(actual.cli)
+      .mockImplementationOnce(actual.cli);
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('exit');
+    });
+    const stderrSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      await expect(catalogGet(ctx(['my-svc', '--name', 'x']))).rejects.toThrow(
+        'exit',
+      );
+      await expect(catalogGet(ctx([]))).rejects.toThrow('exit');
+      expect(mockQueryEntities).not.toHaveBeenCalled();
+    } finally {
+      logSpy.mockRestore();
+      exitSpy.mockRestore();
+      stderrSpy.mockRestore();
+    }
+  });
+
   it('outputs entity as JSON', async () => {
     const entity = {
       kind: 'Component',
       metadata: { name: 'foo' },
       spec: { type: 'service' },
     };
-    (mockCli as jest.Mock).mockReturnValue({ flags: { name: 'foo' } });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { ref: 'foo' },
+    });
     mockQueryEntities.mockResolvedValue({ items: [entity] });
 
-    await catalogGet(ctx(['--name', 'foo']));
+    await catalogGet(ctx(['foo']));
 
     const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
     expect(JSON.parse(output)).toEqual(entity);
   });
 
   it('throws when no entity is found', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: { name: 'missing' } });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { ref: 'missing' },
+    });
     mockQueryEntities.mockResolvedValue({ items: [] });
 
-    await expect(catalogGet(ctx(['--name', 'missing']))).rejects.toThrow(
+    await expect(catalogGet(ctx(['missing']))).rejects.toThrow(
       'No entity found with name "missing"',
     );
   });
 
   it('throws when multiple entities are found', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: { name: 'dup' } });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { ref: 'dup' },
+    });
     mockQueryEntities.mockResolvedValue({
       items: [
         { kind: 'Component', metadata: { name: 'dup', namespace: 'default' } },
@@ -178,7 +226,7 @@ describe('catalog get', () => {
       ],
     });
 
-    await expect(catalogGet(ctx(['--name', 'dup']))).rejects.toThrow(
+    await expect(catalogGet(ctx(['dup']))).rejects.toThrow(
       'Multiple entities found with name "dup"',
     );
   });

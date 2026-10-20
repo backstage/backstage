@@ -603,6 +603,7 @@ export interface RootHttpRouterService {
 
 // @public (undocumented)
 export interface RootInstanceMetadataService {
+  getId(): string;
   // (undocumented)
   getInstalledPlugins: () => Promise<
     ReadonlyArray<RootInstanceMetadataServicePluginInfo>

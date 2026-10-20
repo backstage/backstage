@@ -1,5 +1,13 @@
 # @backstage/config
 
+## 1.3.10-next.0
+
+### Patch Changes
+
+- e156078: Reading a number from a configuration value that is an empty or whitespace-only string now fails with a clear conversion error, instead of silently returning `0`. Numeric strings, including ones with surrounding whitespace such as `'  42  '`, continue to be parsed as expected.
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+
 ## 1.3.9
 
 ### Patch Changes

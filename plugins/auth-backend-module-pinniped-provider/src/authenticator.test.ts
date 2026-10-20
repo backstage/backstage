@@ -29,6 +29,7 @@ import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { http, HttpResponse } from 'msw';
 import express from 'express';
 import { DateTime } from 'luxon';
+import { createDeferred } from '@backstage/types';
 
 describe('pinnipedAuthenticator', () => {
   let authCtx: any;
@@ -282,16 +283,13 @@ describe('pinnipedAuthenticator', () => {
     it('refreshes oidc metadata when an initial fetch fails before first use', async () => {
       await authCtx.getStrategy();
 
-      let signalMetadataRequest!: () => void;
-      const metadataRequest = new Promise<void>(resolve => {
-        signalMetadataRequest = resolve;
-      });
+      const metadataRequest = createDeferred();
 
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           () => {
-            signalMetadataRequest();
+            metadataRequest.resolve();
             return new HttpResponse(null, { status: 503 });
           },
         ),
@@ -546,10 +544,17 @@ describe('pinnipedAuthenticator', () => {
     });
 
     it('refreshes oidc metadata after a failed fetch', async () => {
+      await authCtx.getStrategy();
+
+      const metadataRequest = createDeferred();
+
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => new HttpResponse(null, { status: 503 }),
+          () => {
+            metadataRequest.resolve();
+            return new HttpResponse(null, { status: 503 });
+          },
         ),
       );
 
@@ -562,6 +567,9 @@ describe('pinnipedAuthenticator', () => {
             clientSecret: 'clientSecret',
           }),
         });
+
+      await metadataRequest;
+      await new Promise(resolve => setImmediate(resolve));
 
       mswServer.use(
         http.get(
@@ -693,10 +701,17 @@ describe('pinnipedAuthenticator', () => {
     });
 
     it('refreshes oidc metadata after a failed fetch', async () => {
+      await authCtx.getStrategy();
+
+      const metadataRequest = createDeferred();
+
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => new HttpResponse(null, { status: 503 }),
+          () => {
+            metadataRequest.resolve();
+            return new HttpResponse(null, { status: 503 });
+          },
         ),
       );
 
@@ -709,6 +724,9 @@ describe('pinnipedAuthenticator', () => {
             clientSecret: 'clientSecret',
           }),
         });
+
+      await metadataRequest;
+      await new Promise(resolve => setImmediate(resolve));
 
       mswServer.use(
         http.get(

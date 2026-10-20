@@ -1,5 +1,59 @@
 # @backstage/plugin-catalog
 
+## 2.0.10-next.3
+
+### Patch Changes
+
+- 6c74f3f: The catalog export button now respects filters that implement `getCatalogQuery`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+  - @backstage/core-compat-api@0.5.16-next.1
+
+## 2.0.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.4-next.1
+  - @backstage/plugin-techdocs-react@1.3.16-next.2
+  - @backstage/core-components@0.18.15-next.2
+  - @backstage/plugin-techdocs-common@0.1.2-next.0
+
+## 2.0.10-next.1
+
+### Patch Changes
+
+- 13adaa1: Updated internal React component names to improve debugging and tooling compatibility.
+- a7a1274: Use EntityDisplayName for hierarchy links in BUI entity header in order to display titles
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.3.16-next.1
+  - @backstage/core-components@0.18.15-next.1
+
+## 2.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/plugin-scaffolder-common@2.3.1-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/plugin-techdocs-react@1.3.16-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/core-compat-api@0.5.16-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+  - @backstage/plugin-search-react@1.11.9-next.0
+
 ## 2.0.9
 
 ### Patch Changes

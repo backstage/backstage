@@ -29,7 +29,7 @@ exact machine-diffable output in
 3. **Read the previous baseline** from `baseline.md`, its readable full plans
    from `plans.md`, and its exact plan output from `plans.json`.
 
-4. **Run each scenario** (12 total). For each one, record:
+4. **Run each scenario** (14 total). For each one, record:
 
    - Execution time
    - Planning time

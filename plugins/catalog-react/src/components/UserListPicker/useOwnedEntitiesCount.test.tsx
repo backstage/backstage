@@ -15,6 +15,7 @@
  */
 
 import { PropsWithChildren } from 'react';
+import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
 import {
@@ -23,7 +24,7 @@ import {
   useEntityList,
 } from '../../hooks';
 import { catalogApiRef } from '../../api';
-import { ApiRef, identityApiRef } from '@backstage/core-plugin-api';
+import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import {
@@ -32,52 +33,32 @@ import {
   EntityUserFilter,
 } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
-import { mockApis } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 
-const mockCatalogApi = catalogApiMock.mock();
-const mockIdentityApi = mockApis.identity({
-  ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
-  userEntityRef: 'user:default/spiderman',
-});
-jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
-
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
-  return {
-    ...actual,
-    useApi: (ref: ApiRef<any>) => {
-      if (ref === catalogApiRef) {
-        return mockCatalogApi;
-      } else if (ref === identityApiRef) {
-        return mockIdentityApi;
-      }
-      return actual.useApi(ref);
-    },
-  };
-});
+// The count is requested with limit 0, which tells it apart from the
+// EntityListProvider's own fetch of the entity list
+const countRequest = expect.objectContaining({ limit: 0 });
 
 describe('useOwnedEntitiesCount', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it(`shouldn't invoke queryEntities when filters are loading`, async () => {
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
+    const catalogApi = catalogApiMock();
+    const queryEntities = jest.spyOn(catalogApi, 'queryEntities');
+    const identityApi = mockApis.identity({
+      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
     });
-
-    const { result } = renderHook(() => useOwnedEntitiesCount(), {
-      wrapper: createWrapperWithInitialFilters({}),
-    });
-
-    await waitFor(() =>
-      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    const getBackstageIdentity = jest.spyOn(
+      identityApi,
+      'getBackstageIdentity',
     );
 
+    const { result } = renderHook(() => useOwnedEntitiesCount(), {
+      wrapper: createWrapper({ catalogApi, identityApi, filters: {} }),
+    });
+
+    await waitFor(() => expect(getBackstageIdentity).toHaveBeenCalled());
+
     await expect(
-      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(queryEntities).toHaveBeenCalledWith(countRequest)),
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
@@ -92,63 +73,90 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should properly apply the filters`, async () => {
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-user', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/spiderman' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-group', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:group/a-group' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-other', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'group:default/monsters' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'other-namespace', namespace: 'b-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/spiderman' }],
+        },
+      ],
+    });
+    const identityApi = mockApis.identity({
+      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
     });
 
     const { result } = renderHook(() => useOwnedEntitiesCount(), {
-      wrapper: createWrapperWithInitialFilters({
-        namespace: new EntityNamespaceFilter(['a-namespace']),
+      wrapper: createWrapper({
+        catalogApi,
+        identityApi,
+        filters: { namespace: new EntityNamespaceFilter(['a-namespace']) },
       }),
     });
 
     await waitFor(() =>
-      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
-    );
-
-    await waitFor(() =>
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        filter: {
-          'metadata.namespace': ['a-namespace'],
-          'relations.ownedBy': ['user:default/spiderman', 'user:group/a-group'],
-        },
-        limit: 0,
+      expect(result.current).toEqual({
+        count: 2,
+        loading: false,
+        filter: EntityUserFilter.owned([
+          'user:default/spiderman',
+          'user:group/a-group',
+        ]),
+        ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
       }),
     );
-
-    expect(result.current).toEqual({
-      count: 10,
-      loading: false,
-      filter: EntityUserFilter.owned([
-        'user:default/spiderman',
-        'user:group/a-group',
-      ]),
-      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
-    });
   });
 
   it(`should return count 0 without invoking queryEntities if owners filter doesn't have claims in common with logged in user`, async () => {
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-other', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'group:default/monsters' }],
+        },
+      ],
+    });
+    const queryEntities = jest.spyOn(catalogApi, 'queryEntities');
+    const identityApi = mockApis.identity({
+      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
     });
 
     const { result } = renderHook(() => useOwnedEntitiesCount(), {
-      wrapper: createWrapperWithInitialFilters({
-        namespace: new EntityNamespaceFilter(['a-namespace']),
-        owners: new EntityOwnerFilter(['group:default/monsters']),
+      wrapper: createWrapper({
+        catalogApi,
+        identityApi,
+        filters: {
+          namespace: new EntityNamespaceFilter(['a-namespace']),
+          owners: new EntityOwnerFilter(['group:default/monsters']),
+        },
       }),
     });
 
-    await waitFor(() =>
-      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
-    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
 
     await expect(
-      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(queryEntities).toHaveBeenCalledWith(countRequest)),
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
@@ -163,31 +171,30 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should return count 0 without invoking queryEntities if ownershipEntityRefs is empty`, async () => {
-    jest.spyOn(mockIdentityApi, 'getBackstageIdentity').mockResolvedValueOnce({
-      type: 'user',
-      ownershipEntityRefs: [],
-      userEntityRef: 'user:default/spiderman',
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-user', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/spiderman' }],
+        },
+      ],
     });
-
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
-    });
+    const queryEntities = jest.spyOn(catalogApi, 'queryEntities');
+    const identityApi = mockApis.identity({ ownershipEntityRefs: [] });
 
     const { result } = renderHook(() => useOwnedEntitiesCount(), {
-      wrapper: createWrapperWithInitialFilters({
-        namespace: new EntityNamespaceFilter(['a-namespace']),
+      wrapper: createWrapper({
+        catalogApi,
+        identityApi,
+        filters: { namespace: new EntityNamespaceFilter(['a-namespace']) },
       }),
     });
 
-    await waitFor(() =>
-      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
-    );
-
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(mockCatalogApi.queryEntities).not.toHaveBeenCalled();
+    expect(queryEntities).not.toHaveBeenCalledWith(countRequest);
     expect(result.current).toEqual({
       count: 0,
       loading: false,
@@ -197,67 +204,90 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should send claims in common between owners filter and logged in user`, async () => {
-    mockCatalogApi.queryEntities.mockResolvedValue({
-      items: [],
-      totalItems: 10,
-      pageInfo: {},
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-user', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:default/spiderman' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-group', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'user:group/a-group' }],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'owned-by-other', namespace: 'a-namespace' },
+          relations: [{ type: 'ownedBy', targetRef: 'group:default/monsters' }],
+        },
+      ],
+    });
+    const identityApi = mockApis.identity({
+      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
     });
 
     const { result } = renderHook(() => useOwnedEntitiesCount(), {
-      wrapper: createWrapperWithInitialFilters({
-        namespace: new EntityNamespaceFilter(['a-namespace']),
-        owners: new EntityOwnerFilter([
-          'group:default/monsters',
+      wrapper: createWrapper({
+        catalogApi,
+        identityApi,
+        filters: {
+          namespace: new EntityNamespaceFilter(['a-namespace']),
+          owners: new EntityOwnerFilter([
+            'group:default/monsters',
+            'user:group/a-group',
+          ]),
+        },
+      }),
+    });
+
+    // Only the group claim is in common, so the entity owned directly by the
+    // user is not counted
+    await waitFor(() =>
+      expect(result.current).toEqual({
+        count: 1,
+        loading: false,
+        filter: EntityUserFilter.owned([
+          'user:default/spiderman',
           'user:group/a-group',
         ]),
-      }),
-    });
-
-    await waitFor(() =>
-      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
-    );
-
-    await waitFor(() =>
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-        filter: {
-          'metadata.namespace': ['a-namespace'],
-          'relations.ownedBy': ['user:group/a-group'],
-        },
-        limit: 0,
+        ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
       }),
     );
-
-    expect(result.current).toEqual({
-      count: 10,
-      loading: false,
-      filter: EntityUserFilter.owned([
-        'user:default/spiderman',
-        'user:group/a-group',
-      ]),
-      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
-    });
   });
 });
 
-function createWrapperWithInitialFilters(
-  filters: Partial<DefaultEntityFilters>,
-) {
+function createWrapper(options: {
+  catalogApi: CatalogApi;
+  identityApi: IdentityApi;
+  filters: Partial<DefaultEntityFilters>;
+}) {
   function WrapFilters(props: PropsWithChildren<{}>) {
     const { updateFilters } = useEntityList();
 
     useMountEffect(() => {
-      updateFilters(filters);
+      updateFilters(options.filters);
     });
     return <>{props.children}</>;
   }
 
   return function Wrapper(props: PropsWithChildren<{}>) {
     return (
-      <MemoryRouter>
-        <EntityListProvider>
-          <WrapFilters>{props.children}</WrapFilters>
-        </EntityListProvider>
-      </MemoryRouter>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, options.catalogApi],
+          [identityApiRef, options.identityApi],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityListProvider>
+            <WrapFilters>{props.children}</WrapFilters>
+          </EntityListProvider>
+        </MemoryRouter>
+      </TestApiProvider>
     );
   };
 }

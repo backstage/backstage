@@ -1,5 +1,13 @@
 # @backstage/module-federation-common
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+
 ## 0.1.5
 
 ### Patch Changes

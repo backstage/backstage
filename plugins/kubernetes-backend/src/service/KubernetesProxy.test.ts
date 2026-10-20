@@ -124,7 +124,7 @@ describe('KubernetesProxy', () => {
     return req;
   };
 
-  const setupProxyPromise = ({
+  const setupProxyPromise = async ({
     proxyPath,
     requestPath,
     headers,
@@ -142,23 +142,34 @@ describe('KubernetesProxy', () => {
         .use(middleware.error()),
     );
 
-    const requestPromise = request(app).get(proxyPath + requestPath);
+    const server = await new Promise<Server>((resolve, reject) => {
+      const srv = app.listen(0, '127.0.0.1', () => resolve(srv));
+      srv.once('error', reject);
+    });
+    try {
+      const requestPromise = request(server).get(proxyPath + requestPath);
 
-    if (headers) {
-      for (const [headerName, headerValue] of Object.entries(headers)) {
-        requestPromise.set(headerName, headerValue);
+      if (headers) {
+        for (const [headerName, headerValue] of Object.entries(headers)) {
+          requestPromise.set(headerName, headerValue);
+        }
       }
+
+      // Wait for listening before using the URL so it includes the final port.
+      // Let this request through so it reaches the express router above.
+      const requestUrl = new URL(requestPromise.url);
+      worker.use(
+        http.all(`${requestUrl.origin}${requestUrl.pathname}`, () =>
+          passthrough(),
+        ),
+      );
+
+      return await requestPromise;
+    } finally {
+      await new Promise<void>((resolve, reject) => {
+        server.close(error => (error ? reject(error) : resolve()));
+      });
     }
-
-    // Let this request through so it reaches the express router above
-    const requestUrl = new URL(requestPromise.url);
-    worker.use(
-      http.all(`${requestUrl.origin}${requestUrl.pathname}`, () =>
-        passthrough(),
-      ),
-    );
-
-    return requestPromise;
   };
 
   beforeEach(() => {
@@ -508,23 +519,12 @@ describe('KubernetesProxy', () => {
         ),
       );
 
-      const app = express().use(
-        Router()
-          .use('/mountpath', realProxy.createRequestHandler({ permissionApi }))
-          .use(middleware.error()),
-      );
-
-      const proxyRequest = request(app)
-        .get(`/mountpath/api?command=${sentinel}`)
-        .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-      const proxyRequestUrl = new URL(proxyRequest.url);
-      worker.use(
-        http.all(`${proxyRequestUrl.origin}${proxyRequestUrl.pathname}`, () =>
-          passthrough(),
-        ),
-      );
-
-      await proxyRequest;
+      await setupProxyPromise({
+        proxyPath: '/mountpath',
+        requestPath: `/api?command=${sentinel}`,
+        headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+        proxyOverride: realProxy,
+      });
 
       const allLogCalls = [
         ...auditLogger.info.mock.calls,
@@ -735,7 +735,7 @@ describe('KubernetesProxy', () => {
         proxyOverride: proxyWithoutAuditor,
       });
 
-      await requestPromise.expect(200);
+      expect((await requestPromise).status).toBe(200);
 
       expect(auditor.createEvent).not.toHaveBeenCalled();
     });

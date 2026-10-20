@@ -17,6 +17,7 @@
 import { Knex } from 'knex';
 import uniq from 'lodash/uniq';
 import { DbRefreshStateRow } from '../../tables';
+import { retryOnDeadlock } from '../../util';
 import { markForStitching } from '../stitcher/markForStitching';
 
 /**
@@ -29,60 +30,120 @@ export async function deleteOrphanedEntities(options: {
 }): Promise<number> {
   const { knex } = options;
 
-  let total = 0;
+  const runIteration = async (tx: Knex.Transaction | Knex) => {
+    // Keep orphan discovery and relation lookup in one statement so that they
+    // observe the same database snapshot.
+    const findOrphanRefs = (orphanRefs: Knex.QueryBuilder) =>
+      orphanRefs
+        .from('refresh_state')
+        .select('refresh_state.entity_ref')
+        .leftOuterJoin(
+          'refresh_state_references',
+          'refresh_state_references.target_entity_ref',
+          'refresh_state.entity_ref',
+        )
+        .whereNull('refresh_state_references.target_entity_ref');
 
-  // Limit iterations for sanity
-  for (let i = 0; i < 100; ++i) {
-    const candidates = await knex
-      .with('orphans', ['entity_id', 'entity_ref'], orphans =>
-        orphans
-          .from('refresh_state')
-          .select('refresh_state.entity_id', 'refresh_state.entity_ref')
-          .leftOuterJoin(
-            'refresh_state_references',
-            'refresh_state_references.target_entity_ref',
-            'refresh_state.entity_ref',
-          )
-          .whereNull('refresh_state_references.target_entity_ref'),
-      )
+    const candidateQuery = tx.client.config.client.includes('pg')
+      ? tx.withMaterialized('orphan_refs', ['entity_ref'], findOrphanRefs)
+      : tx.with('orphan_refs', ['entity_ref'], findOrphanRefs);
+
+    const candidates = await candidateQuery
       .select({
-        entityId: 'orphans.entity_id',
-        relationSourceId: 'refresh_state.entity_id',
+        entityId: 'orphan.entity_id',
+        relationSourceId: 'relation_source.entity_id',
       })
-      .from('orphans')
+      .from('orphan_refs')
+      .join(
+        'refresh_state as orphan',
+        'orphan.entity_ref',
+        'orphan_refs.entity_ref',
+      )
       .leftOuterJoin(
         'relations',
         'relations.target_entity_ref',
-        'orphans.entity_ref',
+        'orphan_refs.entity_ref',
       )
       .leftOuterJoin(
-        'refresh_state',
-        'refresh_state.entity_ref',
+        'refresh_state as relation_source',
+        'relation_source.entity_ref',
         'relations.source_entity_ref',
       );
 
     if (!candidates.length) {
-      break;
+      return { deleted: 0, done: true };
     }
 
     const orphanIds: string[] = uniq(candidates.map(r => r.entityId));
-    const orphanRelationIds: string[] = uniq(
-      candidates.map(r => r.relationSourceId).filter(Boolean),
-    );
 
-    total += orphanIds.length;
+    // Serialize with concurrent reference inserts, which take a key-share lock
+    // on the target row while checking their foreign key. Rechecking in the
+    // following statement then observes references that committed while this
+    // lock was being acquired.
+    await tx<DbRefreshStateRow>('refresh_state')
+      .select('entity_id')
+      .whereIn('entity_id', orphanIds)
+      .forUpdate();
 
-    // Delete the orphans themselves
-    await knex
+    // Recheck the orphan status in the deletion statement. An entity may have
+    // gained a reference since the candidate query completed.
+    const deleted = await tx
       .table<DbRefreshStateRow>('refresh_state')
       .delete()
-      .whereIn('entity_id', orphanIds);
+      .whereIn('entity_id', orphanIds)
+      .whereNotExists(references =>
+        references
+          .select(tx.raw('1'))
+          .from('refresh_state_references')
+          .whereRaw('?? = ??', [
+            'refresh_state_references.target_entity_ref',
+            'refresh_state.entity_ref',
+          ]),
+      );
+
+    if (deleted === 0) {
+      return { deleted, done: true };
+    }
+
+    let deletedIds: Set<string>;
+    if (deleted === orphanIds.length) {
+      deletedIds = new Set(orphanIds);
+    } else {
+      const remaining = await tx<DbRefreshStateRow>('refresh_state')
+        .select('entity_id')
+        .whereIn('entity_id', orphanIds);
+      const remainingIds = new Set(remaining.map(row => row.entity_id));
+      deletedIds = new Set(orphanIds.filter(id => !remainingIds.has(id)));
+    }
+
+    const orphanRelationIds: string[] = uniq(
+      candidates
+        .filter(candidate => deletedIds.has(candidate.entityId))
+        .map(candidate => candidate.relationSourceId)
+        .filter(Boolean),
+    );
 
     // Mark all of the things that the orphans had relations to for stitching
     await markForStitching({
-      knex,
+      knex: tx,
       entityIds: orphanRelationIds,
     });
+
+    return { deleted, done: false };
+  };
+
+  let total = 0;
+
+  // Limit iterations for sanity
+  for (let i = 0; i < 100; ++i) {
+    const result = knex.isTransaction
+      ? await runIteration(knex)
+      : await retryOnDeadlock(() => knex.transaction(runIteration), knex);
+
+    total += result.deleted;
+    if (result.done) {
+      break;
+    }
   }
 
   return total;

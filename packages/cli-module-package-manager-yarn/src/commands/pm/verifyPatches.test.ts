@@ -17,16 +17,19 @@
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import type { CliCommandContext } from '@backstage/cli-node';
 
+jest.mock('../../lib/fixYarnPatches', () => ({ fixYarnPatches: jest.fn() }));
 jest.mock('../../lib/verifyYarnPatches', () => ({
   verifyYarnPatches: jest.fn(),
 }));
 
 import verifyYarnPatchesCommand from './verifyPatches';
+import { fixYarnPatches } from '../../lib/fixYarnPatches';
 import {
   verifyYarnPatches,
   type VerifyYarnPatchesResult,
 } from '../../lib/verifyYarnPatches';
 
+const mockFixYarnPatches = jest.mocked(fixYarnPatches);
 const mockVerifyYarnPatches = jest.mocked(verifyYarnPatches);
 
 const context: CliCommandContext = {
@@ -42,6 +45,21 @@ function healthyResult(
   backstageCheck: VerifyYarnPatchesResult['backstageCheck'],
 ): VerifyYarnPatchesResult {
   return { patchCount, backstageCheck, errors: [] };
+}
+
+function holdbackResult(): VerifyYarnPatchesResult {
+  return {
+    patchCount: 1,
+    backstageCheck: 'verified',
+    errors: [
+      {
+        kind: 'backstage-patch-holdback',
+        message:
+          "Patched package '@backstage/example' is at version '1.0.0', but Backstage release '1.0.1' requires version '1.0.1'",
+        location: 'package.json#resolutions.@backstage/example',
+      },
+    ],
+  };
 }
 
 describe('verifyYarnPatches command', () => {
@@ -121,6 +139,138 @@ describe('verifyYarnPatches command', () => {
 
     expect(stdoutSpy).toHaveBeenCalledWith(
       'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
+    );
+  });
+
+  it('repairs safe Backstage patch holdbacks before verifying', async () => {
+    const initialResult = holdbackResult();
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'fixed',
+      message:
+        "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
+    });
+    mockVerifyYarnPatches.mockResolvedValue(initialResult);
+
+    await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
+
+    expect(mockFixYarnPatches).toHaveBeenCalledWith({
+      rootDir: '/test-repository',
+      env: process.env,
+      verificationResult: initialResult,
+    });
+    expect(stdoutSpy).toHaveBeenCalledWith(
+      "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'.\n",
+    );
+    expect(mockVerifyYarnPatches).toHaveBeenCalledWith({
+      rootDir: '/test-repository',
+      env: process.env,
+    });
+    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(1);
+  });
+
+  it('repairs multiple holdbacks together', async () => {
+    const initialResult = holdbackResult();
+    initialResult.errors.push({
+      kind: 'backstage-patch-holdback',
+      message:
+        "Patched package '@backstage/other' is at version '2.0.0', but Backstage release '1.0.1' requires version '2.0.1'",
+      location: 'package.json#resolutions.@backstage/other',
+    });
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'fixed',
+      message: 'Retargeted two patches',
+    });
+    mockVerifyYarnPatches.mockResolvedValue(initialResult);
+
+    await verifyYarnPatchesCommand({
+      ...context,
+      args: ['--fix'],
+    });
+
+    expect(mockFixYarnPatches).toHaveBeenCalledWith({
+      rootDir: '/test-repository',
+      env: process.env,
+      verificationResult: initialResult,
+    });
+  });
+
+  it('reports an unsupported repair before the verifier diagnostics', async () => {
+    const initialResult = holdbackResult();
+    mockVerifyYarnPatches.mockResolvedValue(initialResult);
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'not-fixable',
+      message: 'Automatic repair is not supported',
+    });
+
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--fix'] }),
+    ).rejects.toThrow('Yarn patch verification failed');
+    expect(stderrSpy).toHaveBeenCalledWith(
+      'Automatic repair is not supported.\n',
+    );
+    expect(stderrSpy).toHaveBeenCalledWith('Yarn patch verification failed:\n');
+  });
+
+  it('does not report an error when --fix finds a healthy repository', async () => {
+    mockVerifyYarnPatches.mockResolvedValue(healthyResult(1, 'verified'));
+
+    await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
+
+    expect(stderrSpy).not.toHaveBeenCalled();
+    expect(stdoutSpy).toHaveBeenCalledWith(
+      'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
+    );
+    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(1);
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
+  });
+
+  it('does not attempt or report a repair for unrelated errors', async () => {
+    mockVerifyYarnPatches.mockResolvedValue({
+      patchCount: 0,
+      backstageCheck: 'skipped',
+      errors: [
+        {
+          kind: 'missing-lockfile',
+          message: 'No yarn.lock found',
+          location: 'yarn.lock',
+        },
+      ],
+    });
+
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--fix'] }),
+    ).rejects.toThrow('Yarn patch verification failed');
+
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
+    expect(stderrSpy).toHaveBeenCalledWith(
+      '  yarn.lock [missing-lockfile]: No yarn.lock found\n',
+    );
+    expect(stderrSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('No patch holdback could be repaired safely'),
+    );
+  });
+
+  it('does not attempt a repair when other errors accompany a holdback', async () => {
+    mockVerifyYarnPatches.mockResolvedValue({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        holdbackResult().errors[0],
+        {
+          kind: 'missing-lockfile',
+          message: 'No yarn.lock found',
+          location: 'yarn.lock',
+        },
+      ],
+    });
+
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--fix'] }),
+    ).rejects.toThrow('Yarn patch verification failed');
+
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
+    expect(stderrSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('No patch holdback could be repaired safely'),
     );
   });
 

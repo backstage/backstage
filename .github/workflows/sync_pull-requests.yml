@@ -19,13 +19,13 @@ jobs:
       github.event.workflow_run.event == 'pull_request'
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
       - name: Download PR context
         id: download
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           name: pr-context
@@ -36,7 +36,7 @@ jobs:
       - name: Read context
         if: steps.download.outcome == 'success'
         id: context
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const fs = require('fs');
@@ -90,7 +90,7 @@ jobs:
 
       - name: Backstage PR automation
         if: steps.context.outputs.pr-number
-        uses: backstage/actions/pr-automation@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        uses: backstage/actions/pr-automation@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

@@ -29,11 +29,17 @@ import {
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
+import { matchRoutes } from 'react-router-dom';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
   createExactRouteAliasResolver,
   createRouteAliasResolver,
 } from './RouteAliasResolver';
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return { ...actual, matchRoutes: jest.fn(actual.matchRoutes) };
+});
 
 const rest = {
   element: null,
@@ -59,6 +65,92 @@ function src(sourcePath: string) {
 const emptyResolver = createExactRouteAliasResolver(new Map());
 
 describe('RouteResolver', () => {
+  describe('route match caching', () => {
+    function createResolver() {
+      return new RouteResolver(
+        new Map<RouteRef, string>([
+          [ref2, 'parent/:x'],
+          [ref1, 'child'],
+        ]),
+        new Map([[ref1, ref2]]),
+        [
+          {
+            routeRefs: new Set([ref2]),
+            path: 'parent/:x',
+            ...rest,
+            children: [
+              MATCH_ALL_ROUTE,
+              { routeRefs: new Set([ref1]), path: 'child', ...rest },
+            ],
+          },
+        ],
+        new Map([[externalRef1, ref1]]),
+        '/base',
+        emptyResolver,
+        new Map(),
+      );
+    }
+
+    beforeEach(() => {
+      jest.mocked(matchRoutes).mockClear();
+    });
+
+    it('reuses matches across targets, including locations without a match', () => {
+      const r = createResolver();
+      expect(r.resolve(ref1, src('/base/parent/one/child'))?.()).toBe(
+        '/parent/one/child',
+      );
+      expect(r.resolve(subRef1, src('/base/parent/one/child'))?.()).toBe(
+        '/parent/one/child/foo',
+      );
+      expect(r.resolve(externalRef1, src('/base/parent/one/child'))?.()).toBe(
+        '/parent/one/child',
+      );
+      expect(matchRoutes).toHaveBeenCalledTimes(1);
+
+      expect(r.resolve(ref2, src('/base/missing'))?.({ x: 'two' })).toBe(
+        '/parent/two',
+      );
+      expect(r.resolve(ref2, src('/base/missing'))?.({ x: 'three' })).toBe(
+        '/parent/three',
+      );
+      expect(matchRoutes).toHaveBeenCalledTimes(2);
+    });
+
+    it('matches new locations without retaining stale parent parameters', () => {
+      const r = createResolver();
+      for (const value of ['one', 'two', 'one']) {
+        expect(r.resolve(ref1, src(`/base/parent/${value}/child`))?.()).toBe(
+          `/parent/${value}/child`,
+        );
+      }
+      expect(matchRoutes).toHaveBeenCalledTimes(2);
+
+      const other = createResolver();
+      expect(other.resolve(ref1, src('/base/parent/one/child'))?.()).toBe(
+        '/parent/one/child',
+      );
+      expect(matchRoutes).toHaveBeenCalledTimes(3);
+    });
+
+    it('evicts least recently used locations while retaining recently used ones', () => {
+      const r = createResolver();
+      const resolve = (value: string) =>
+        r.resolve(ref1, src(`/base/parent/${value}/child`))?.();
+      for (let i = 0; i < 32; i++) {
+        expect(resolve(String(i))).toBe(`/parent/${i}/child`);
+      }
+      expect(matchRoutes).toHaveBeenCalledTimes(32);
+
+      expect(resolve('0')).toBe('/parent/0/child');
+      expect(resolve('32')).toBe('/parent/32/child');
+      expect(resolve('0')).toBe('/parent/0/child');
+      expect(matchRoutes).toHaveBeenCalledTimes(33);
+      expect(resolve('1')).toBe('/parent/1/child');
+      expect(matchRoutes).toHaveBeenCalledTimes(34);
+    });
+  });
+
   it('should not resolve anything with an empty resolver', () => {
     const r = new RouteResolver(
       new Map(),

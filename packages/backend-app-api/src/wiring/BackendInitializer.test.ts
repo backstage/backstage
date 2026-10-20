@@ -1536,9 +1536,9 @@ describe('BackendInitializer', () => {
     await init.start();
   });
 
-  it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(1);
-    const backend = new BackendInitializer(baseFactories);
+  it('should add plugins and modules and default an empty instance ID', async () => {
+    expect.assertions(2);
+    const backend = new BackendInitializer(baseFactories, undefined, '');
     const plugin = createBackendPlugin({
       pluginId: 'test',
       register(reg) {
@@ -1556,6 +1556,9 @@ describe('BackendInitializer', () => {
             instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
+            expect(instanceMetadata.getId()).toMatch(
+              /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+            );
             await expect(
               instanceMetadata.getInstalledPlugins(),
             ).resolves.toEqual([
