@@ -1027,6 +1027,55 @@ describe.each(databases.eachSupportedId())(
       );
     });
 
+    it('does not tombstone with a claim that a newer request superseded', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const logger = mockServices.logger.mock();
+      await knex<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: 'my-id',
+        entity_ref: 'k:ns/n',
+        unprocessed_entity: '{}',
+        processed_entity: JSON.stringify({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n', namespace: 'ns' },
+        }),
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await performStitching({
+        knex,
+        logger,
+        ...(await getStitchClaim(knex, 'k:ns/n')),
+      });
+
+      await knex('refresh_state').where('entity_id', 'my-id').delete();
+      const staleClaim = await getStitchClaim(knex, 'k:ns/n');
+      // A newer request, such as from the entity being created again.
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+
+      await expect(
+        performStitching({ knex, logger, ...staleClaim }),
+      ).resolves.toBe('abandoned');
+      const [unchanged] = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(unchanged.final_entity).not.toBeNull();
+
+      await expect(
+        performStitching({
+          knex,
+          logger,
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        }),
+      ).resolves.toBe('changed');
+      const [tombstone] = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(tombstone.final_entity).toBeNull();
+      expect(Number(tombstone.generation)).toBeGreaterThan(
+        Number(unchanged.generation),
+      );
+    });
+
     it('retains failed work for a fenced retry and settles unprocessed work', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
