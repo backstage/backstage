@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications
 
+## 0.6.1
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- 298f908: Replaced the unmaintained `react-relative-time` dependency with an internal component based on `luxon`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-home-react@0.1.43
+  - @backstage/plugin-notifications-common@0.2.5
+  - @backstage/plugin-signals-react@0.0.27
+
 ## 0.6.1-next.1
 
 ### Patch Changes

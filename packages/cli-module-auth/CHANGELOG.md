@@ -1,5 +1,14 @@
 # @backstage/cli-module-auth
 
+## 0.1.5
+
+### Patch Changes
+
+- 2a83a41: Switched to version 4 of `zod` for internal validation.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/errors@1.3.2
+
 ## 0.1.5-next.0
 
 ### Patch Changes

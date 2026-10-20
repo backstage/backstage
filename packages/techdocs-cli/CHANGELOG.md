@@ -1,5 +1,22 @@
 # @techdocs/cli
 
+## 1.13.0
+
+### Minor Changes
+
+- 4d4f987: Add engine abstraction layer for multi-engine TechDocs support. Introduces `--engine` flag, engine config map, generator registry with `backstage.io/techdocs-engine` annotation support, `engine` field in `techdocs_metadata.json`, `serve:raw` command, and live-reload adapter interface. MkDocs remains the default with no behavior change.
+
+  The built-in generator is now registered under `mkdocs`; the previous `techdocs` key is kept as an alias, so existing `generators.register('techdocs', ...)` calls continue to work. The CLI's `--engine` flag takes precedence over the `backstage.io/techdocs-engine` annotation for all commands, and `serve:mkdocs` and the `--mkdocs-parameter-*` flags now print deprecation warnings.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@2.1.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config@1.3.10
+  - @backstage/catalog-model@1.10.2
+  - @backstage/cli-common@0.3.2
+
 ## 1.12.1-next.0
 
 ### Patch Changes

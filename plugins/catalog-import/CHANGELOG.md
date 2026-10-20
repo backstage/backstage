@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.19
+
+### Patch Changes
+
+- 3a0ac14: The catalog import page in the new frontend system no longer renders its own legacy header, and instead uses the page header provided by the app. Apps that use the old frontend system are not affected.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/integration@2.1.3
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-permission-react@0.5.6
+
 ## 0.13.19-next.1
 
 ### Patch Changes

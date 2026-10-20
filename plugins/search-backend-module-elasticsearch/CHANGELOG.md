@@ -1,5 +1,20 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 2.0.1
+
+### Patch Changes
+
+- 2153e90: Fixed search queries intermittently failing with a 500 error when a collator finished indexing. The index that the search alias pointed to before the rotation is no longer deleted immediately, so queries already running against it can complete. It is instead removed during the next indexing run for that document type. Note that this means the previous index is now retained between runs, so search storage usage per document type is roughly doubled.
+
+  Also improved error reporting for failed search queries. An index that disappears while a query is running is now reported as a missing index, and other query failures now include the underlying cause in the logs instead of `undefined`.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-search-backend-node@1.4.9
+  - @backstage/plugin-search-common@1.2.26
+
 ## 2.0.1-next.1
 
 ### Patch Changes

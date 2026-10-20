@@ -1,5 +1,17 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.20
+
+### Patch Changes
+
+- e956084: Use the backend instance ID to identify the event subscription, allowing deployments to control how Signals instances fan out events.
+- 3873113: The signals WebSocket endpoint now requires a valid user identity token. The token can appear anywhere in the requested WebSocket protocols. Connections without a token, with an invalid token, or with a non-user (service) token are rejected, and unauthenticated guest connections are no longer accepted.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-signals-node@0.2.6
+
 ## 0.3.20-next.2
 
 ### Patch Changes

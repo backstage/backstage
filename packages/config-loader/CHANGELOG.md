@@ -1,5 +1,15 @@
 # @backstage/config-loader
 
+## 1.11.4
+
+### Patch Changes
+
+- e5b7381: Config schemas now compile in roughly half the time, by skipping Ajv's code optimizer. The compiled validators only run a few times per process, so the optimized code never paid for itself. This speeds up backend startup, which compiles the full config schema, for example to find the secret config values to redact from logs.
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/cli-common@0.3.2
+
 ## 1.11.4-next.0
 
 ### Patch Changes
