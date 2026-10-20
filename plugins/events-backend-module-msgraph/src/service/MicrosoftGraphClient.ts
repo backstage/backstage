@@ -85,7 +85,7 @@ export class MicrosoftGraphClient {
   private constructor(private readonly clientWrapper: ClientWrapper) {}
 
   async getSubscription(subscriptionId: string) {
-    const subscription: Subscription | undefined = await this.clientCall(ms =>
+    const subscription: Subscription = await this.clientCall(ms =>
       ms.api(`/subscriptions/${subscriptionId}`).get(),
     );
     return subscription;

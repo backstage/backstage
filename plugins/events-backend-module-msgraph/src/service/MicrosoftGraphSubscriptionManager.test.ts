@@ -419,12 +419,34 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       },
     );
 
-    it('recreates a subscription if reading the existing subscription fails', async () => {
+    it('preserves the subscription if reading it fails with a non-NotFoundError', async () => {
       databaseClient.findByResource = jest.fn().mockResolvedValue({
         id: 'old_id',
         expires_at: DateTime.now().plus({ minutes: 30 }).toJSDate(),
       });
       const error = new Error('Graph unavailable');
+      msGraphClient.getSubscription = jest.fn().mockRejectedValue(error);
+
+      await expect(
+        target.ensureActiveResourceSubscription('users'),
+      ).rejects.toThrow(error);
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Error fetching subscription old_id from MS Graph.',
+        error,
+      );
+      expect(databaseClient.deleteById).not.toHaveBeenCalled();
+      expect(databaseClient.insert).not.toHaveBeenCalled();
+      expect(msGraphClient.createSubscription).not.toHaveBeenCalled();
+      expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
+    });
+
+    it('recreates the subscription if reading it fails with a NotFoundError', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue({
+        id: 'old_id',
+        expires_at: DateTime.now().plus({ minutes: 30 }).toJSDate(),
+      });
+      const error = new NotFoundError('missing');
       msGraphClient.getSubscription = jest.fn().mockRejectedValue(error);
       msGraphClient.createSubscription.mockResolvedValue({
         id: 'new_id',
