@@ -16,7 +16,6 @@
 
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import eventsModuleMicrosoftGraphRouter from './eventsModuleMicrosoftGraphRouter';
 import { MICROSOFT_GRAPH_TOPIC } from './topics';
@@ -27,7 +26,6 @@ describe('eventsModuleMicrosoftGraphRouter', () => {
     const backend = await startTestBackend({
       features: [
         eventsModuleMicrosoftGraphRouter,
-        catalogServiceMock.factory(),
         createServiceFactory({
           service: eventsServiceRef,
           deps: {},

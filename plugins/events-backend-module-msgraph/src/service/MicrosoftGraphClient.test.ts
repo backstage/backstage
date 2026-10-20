@@ -16,7 +16,6 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import type { Config } from '@backstage/config';
 import type { Client } from '@microsoft/microsoft-graph-client';
-import type { Subscription } from '@microsoft/microsoft-graph-types';
 import {
   type ClientWrapper,
   MicrosoftGraphClient,
@@ -25,6 +24,7 @@ import {
 class ApiClientMock implements ClientWrapper {
   readonly get = jest.fn();
   readonly post = jest.fn();
+  readonly patch = jest.fn();
   readonly delete = jest.fn();
   readonly api = jest.fn(() => this);
 
@@ -73,15 +73,13 @@ describe('MicrosoftGraphClient', () => {
       expect(() => MicrosoftGraphClient.fromConfig(badConfig)).toThrow();
     });
 
-    it('throws if notificationUrl is not a string', () => {
+    it('uses the provided client wrapper without requiring auth config', () => {
       const badConfig = mockServices.rootConfig({
-        data: {
-          events: { modules: { msgraph: { notificationUrl: { a: 'b' } } } },
-        },
+        data: {},
       });
-      expect(() =>
+      expect(
         MicrosoftGraphClient.fromConfig(badConfig, apiClientMock),
-      ).toThrow(/notificationUrl/);
+      ).toBeInstanceOf(MicrosoftGraphClient);
     });
 
     it('returns a client if config is valid', () => {
@@ -102,57 +100,6 @@ describe('MicrosoftGraphClient', () => {
     });
   });
 
-  describe('validateActiveSubscription', () => {
-    it('returns isValid=true if all checks pass', async () => {
-      const now = new Date();
-      const subscriptionObject = {
-        expirationDateTime: new Date(now.getTime() + 100000).toISOString(),
-        notificationUrl: 'http://localhost:7007/api/events/http/msgraph',
-      } as Subscription;
-      apiClientMock.get.mockResolvedValue(subscriptionObject);
-
-      const result = await client.validateActiveSubscription('subid');
-      expect(apiClientMock.api).toHaveBeenCalledWith('/subscriptions/subid');
-      expect(result).toEqual({
-        exists: true,
-        isActive: true,
-        notificationUrlMatches: true,
-        isValid: true,
-      });
-    });
-
-    it('returns isValid=false if subscription does not exist', async () => {
-      apiClientMock.get.mockResolvedValue(undefined);
-      const result = await client.validateActiveSubscription('subid');
-      expect(result).toEqual({
-        exists: false,
-        isActive: false,
-        notificationUrlMatches: false,
-        isValid: false,
-      });
-    });
-
-    it('returns isValid=false if subscription is expired', async () => {
-      apiClientMock.get.mockResolvedValue({
-        expirationDateTime: new Date(Date.now() - 100000).toISOString(),
-        notificationUrl: 'http://localhost:7007/api/events/http/msgraph',
-      } as Subscription);
-      const result = await client.validateActiveSubscription('subid');
-      expect(result.isActive).toBe(false);
-      expect(result.isValid).toBe(false);
-    });
-
-    it('returns isValid=false if notificationUrl does not match', async () => {
-      apiClientMock.get.mockResolvedValue({
-        expirationDateTime: new Date(Date.now() + 100000).toISOString(),
-        notificationUrl: 'http://wrong-url',
-      } as Subscription);
-      const result = await client.validateActiveSubscription('subid');
-      expect(result.notificationUrlMatches).toBe(false);
-      expect(result.isValid).toBe(false);
-    });
-  });
-
   describe('createSubscription', () => {
     it('calls MS Graph API with correct params and returns subscription', async () => {
       const fakeSub = { id: 'subid', expirationDateTime: undefined };
@@ -160,19 +107,40 @@ describe('MicrosoftGraphClient', () => {
       const result = await client.createSubscription({
         resource: 'users',
         validationToken: 'token',
+        notificationUrl: 'http://localhost:7007/api/events/http/msgraph',
+        expirationDateTime: new Date('2025-01-01T00:00:00.000Z'),
       });
       expect(apiClientMock.api).toHaveBeenCalledWith('/subscriptions');
       expect(apiClientMock.post).toHaveBeenCalledWith({
         changeType: 'updated,deleted',
         notificationUrl: 'http://localhost:7007/api/events/http/msgraph',
         resource: 'users',
-        expirationDateTime: expect.stringMatching(
-          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/, // ISO date format
-        ),
+        expirationDateTime: '2025-01-01T00:00:00.000Z',
         clientState: 'token',
       });
       expect(result.id).toBe('subid');
       expect(result.expirationDateTime).toBeDefined();
+    });
+  });
+
+  describe('renewSubscription', () => {
+    it('calls MS Graph API with the subscription path and new expiration', async () => {
+      const expirationDateTime = new Date('2025-02-01T00:00:00.000Z');
+      apiClientMock.patch.mockResolvedValue({});
+
+      const result = await client.renewSubscription({
+        subscriptionId: 'subid',
+        expirationDateTime,
+      });
+
+      expect(apiClientMock.api).toHaveBeenCalledWith('/subscriptions/subid');
+      expect(apiClientMock.patch).toHaveBeenCalledWith({
+        expirationDateTime: '2025-02-01T00:00:00.000Z',
+      });
+      expect(result).toEqual({
+        id: 'subid',
+        expirationDateTime: '2025-02-01T00:00:00.000Z',
+      });
     });
   });
 
