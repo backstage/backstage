@@ -26,7 +26,7 @@ const HTML_TEMPLATE_NAME = 'index.html.tmpl';
 export async function injectConfigIntoHtml(
   options: InjectOptions,
 ): Promise<Buffer | undefined> {
-  const { rootDir, appConfigs } = options;
+  const { rootDir, appConfigs, configFilter } = options;
 
   const templatePath = resolvePath(rootDir, HTML_TEMPLATE_NAME);
 
@@ -45,7 +45,7 @@ export async function injectConfigIntoHtml(
     interpolate: /<%=([\s\S]+?)%>/g,
   });
 
-  const publicPath = resolvePublicPath(config, options.appBaseUrl);
+  const publicPath = resolvePublicPath(config);
   const indexHtmlContent = templateSource({
     config,
     publicPath,
@@ -55,7 +55,7 @@ export async function injectConfigIntoHtml(
     '</head>',
     `
 <script type="backstage.io/config">
-${JSON.stringify(appConfigs, null, 2)
+${JSON.stringify(configFilter?.(appConfigs) ?? appConfigs, null, 2)
   // Note on the security aspects of this: We generally trust the app config to
   // be safe, since control of the app config effectively means full control of
   // the app. These substitutions are here as an extra precaution to avoid
@@ -70,9 +70,9 @@ ${JSON.stringify(appConfigs, null, 2)
   return Buffer.from(indexHtmlContentWithConfig, 'utf8');
 }
 
-function resolvePublicPath(config: Config, appBaseUrl?: string) {
+function resolvePublicPath(config: Config) {
   const baseUrl = new URL(
-    appBaseUrl ?? config.getOptionalString('app.baseUrl') ?? '/',
+    config.getOptionalString('app.baseUrl') ?? '/',
     'http://localhost:7007',
   );
   return baseUrl.pathname.replace(/\/+$/, '');

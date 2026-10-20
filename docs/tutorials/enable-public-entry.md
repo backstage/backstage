@@ -107,10 +107,10 @@ to expose; they do not control which extensions the public app loads. Normal
 frontend visibility rules still apply. Authenticated users continue to receive the
 full frontend-visible configuration.
 
-The public HTML template also receives the restricted config. Include any keys
-that your template reads, such as `app.title`, in `allowedConfig`. Asset URLs
-based on `publicPath` continue to use the full frontend-visible `app.baseUrl`,
-even if that key is omitted from the public config.
+Filtering applies to the injected configuration payload. HTML templates still
+receive the full frontend-visible config, so titles and asset paths work even
+when their config keys are omitted from `allowedConfig`. Values explicitly
+rendered by a template remain visible in the HTML regardless of these allowlists.
 
 Do not combine `app.publicConfig` with `app.disableConfigInjection: true`.
 Filtering requires runtime configuration injection; disabling injection serves

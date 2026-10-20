@@ -20,7 +20,7 @@ import {
   resolveSafeChildPath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { AppConfig, ConfigReader } from '@backstage/config';
+import type { AppConfig } from '@backstage/config';
 import helmet from 'helmet';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
@@ -249,10 +249,8 @@ export async function createRouter(
         logger: logger.child({ entry: 'public' }),
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
-        appConfigs: appConfigs && filterPublicConfig(appConfigs, config),
-        appBaseUrl:
-          appConfigs &&
-          ConfigReader.fromConfigs(appConfigs).getOptionalString('app.baseUrl'),
+        appConfigs,
+        configFilter: configs => filterPublicConfig(configs, config),
       }),
     );
 
@@ -278,14 +276,14 @@ async function createEntryPointRouter({
   assetStore,
   staticFallbackHandler,
   appConfigs,
-  appBaseUrl,
+  configFilter,
 }: {
   logger: LoggerService;
   rootDir: string;
   assetStore?: StaticAssetsStore;
   staticFallbackHandler?: express.Handler;
   appConfigs?: AppConfig[];
-  appBaseUrl?: string;
+  configFilter?: (appConfigs: AppConfig[]) => AppConfig[];
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
@@ -296,7 +294,7 @@ async function createEntryPointRouter({
       logger,
       rootDir,
       staticDir,
-      appBaseUrl,
+      configFilter,
     }));
 
   const router = Router();

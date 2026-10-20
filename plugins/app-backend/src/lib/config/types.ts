@@ -19,8 +19,8 @@ import { AppConfig } from '@backstage/config';
 
 export interface InjectOptions {
   appConfigs: AppConfig[];
-  /** Base URL used to resolve asset paths independently of the injected config. */
-  appBaseUrl?: string;
+  /** Filters the config payload immediately before serialization. */
+  configFilter?: (appConfigs: AppConfig[]) => AppConfig[];
   /** Directory of the public web content */
   rootDir: string;
   /** Directory of the static JS files to search for file to inject */

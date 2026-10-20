@@ -62,7 +62,7 @@ function readInjectedConfig(html: string) {
 
 describe('public entry point config', () => {
   beforeEach(() => {
-    const template = `<html><head><title><%= config.getOptionalString('app.title') ?? 'Sign in' %></title></head><body><script src="<%= publicPath %>/static/main.js"></script></body></html>`;
+    const template = `<html><head><title><%= config.getString('app.title') %></title></head><body><script src="<%= publicPath %>/static/main.js"></script></body></html>`;
     mockDir.setContent({
       'package.json': JSON.stringify({ name: 'test-app' }),
       'dist/static/main.js': 'main bundle',
@@ -218,6 +218,38 @@ describe('public entry point config', () => {
     expect(readInjectedConfig(signInResponse.text)).toEqual(frontendData);
   });
 
+  it('filters public JavaScript injection while preserving the main bundle config', async () => {
+    await Promise.all([
+      fs.remove(mockDir.resolve('dist/index.html.tmpl')),
+      fs.remove(mockDir.resolve('dist/public/index.html.tmpl')),
+      fs.writeFile(
+        mockDir.resolve('dist/static/main.js'),
+        '"__APP_INJECTED_RUNTIME_CONFIG__"',
+      ),
+      fs.writeFile(
+        mockDir.resolve('dist/public/static/main.js'),
+        '"__APP_INJECTED_RUNTIME_CONFIG__"',
+      ),
+    ]);
+    const app = await createApp({ allowedExtensions: ['api:auth'] });
+    const publicResponse = await request(app).get('/backstage/static/main.js');
+    const mainResponse = await request(app)
+      .get('/backstage/static/main.js')
+      .set('Cookie', mockCredentials.limitedUser.cookie());
+    for (const [response, expected] of [
+      [publicResponse, { app: { extensions: [extensions[1]] } }],
+      [mainResponse, frontendData],
+    ] as const) {
+      expect(response.status).toBe(200);
+      const serialized = response.text.match(
+        /\/\*__APP_INJECTED_CONFIG_MARKER__\*\/(.*?)\/\*__INJECTED_END__\*\//,
+      )?.[1];
+      expect(serialized).toBeDefined();
+      const configs = JSON.parse(JSON.parse(serialized!)) as AppConfig[];
+      expect(ConfigReader.fromConfigs(configs).get()).toEqual(expected);
+    }
+  });
+
   it.each([false, true])(
     'uses injected HTML for index aliases with public filtering enabled: %s',
     async restricted => {
@@ -323,9 +355,7 @@ describe('public entry point config', () => {
         },
       });
       expect(response.text).toContain('src="/backstage/static/main.js"');
-      expect(response.text).toContain(
-        includesApp ? '<title>Backstage</title>' : '<title>Sign in</title>',
-      );
+      expect(response.text).toContain('<title>Backstage</title>');
       const mainResponse = await request(app)
         .get('/backstage/')
         .set('Cookie', mockCredentials.limitedUser.cookie());
