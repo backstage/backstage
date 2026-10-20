@@ -187,7 +187,7 @@ describe('createWebhookRequestValidator', () => {
       token_hash: 'h',
       token_salt: 's',
     });
-    (hashValidationToken as jest.Mock).mockResolvedValue('not-h');
+    (hashValidationToken as jest.Mock).mockReturnValue('not-h');
     await target(request, context);
     expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
     expect(logger.warn).toHaveBeenCalledWith(
@@ -214,7 +214,7 @@ describe('createWebhookRequestValidator', () => {
       return undefined;
     });
     (hashValidationToken as jest.Mock).mockImplementation(
-      async (clientState, salt) => {
+      (clientState, salt) => {
         if (clientState === 'a' && salt === 's') return 'h';
         if (clientState === 'c' && salt === 's2') return 'not-h2';
         return '';
@@ -244,7 +244,7 @@ describe('createWebhookRequestValidator', () => {
       return undefined;
     });
     (hashValidationToken as jest.Mock).mockImplementation(
-      async (clientState, salt) => {
+      (clientState, salt) => {
         if (clientState === 'a' && salt === 's') return 'h';
         if (clientState === 'c' && salt === 's2') return 'h2';
         return '';
@@ -265,6 +265,121 @@ describe('createWebhookRequestValidator', () => {
     expect(context.reject).not.toHaveBeenCalled();
   });
 
+  it('verifies repeated credentials once per subscription and removes every clientState', async () => {
+    const request = createRequest({
+      body: {
+        value: [
+          { clientState: 'a', subscriptionId: 'b', resource: '/users/1' },
+          { clientState: 'x', subscriptionId: 'd', resource: '/users/2' },
+          { clientState: 'a', subscriptionId: 'b', resource: '/users/3' },
+          { clientState: 'x', subscriptionId: 'd', resource: '/users/4' },
+        ],
+      },
+    });
+    (databaseClient.getById as jest.Mock).mockResolvedValue({
+      token_hash: 'h',
+      token_salt: 's',
+    });
+    jest.mocked(hashValidationToken).mockReturnValue('h');
+
+    await target(request, context);
+
+    expect(databaseClient.getById).toHaveBeenCalledTimes(2);
+    expect(databaseClient.getById).toHaveBeenNthCalledWith(1, 'b');
+    expect(databaseClient.getById).toHaveBeenNthCalledWith(2, 'd');
+    expect(hashValidationToken).toHaveBeenCalledTimes(4);
+    expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
+    expect(hashValidationToken).toHaveBeenCalledWith('x', 's');
+    expect(request.body).toEqual({
+      value: [
+        { subscriptionId: 'b', resource: '/users/1' },
+        { subscriptionId: 'd', resource: '/users/2' },
+        { subscriptionId: 'b', resource: '/users/3' },
+        { subscriptionId: 'd', resource: '/users/4' },
+      ],
+    });
+    expect(logger.debug).toHaveBeenCalledWith(
+      'All 4 notification items are valid',
+    );
+    expect(context.reject).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['valid', 'invalid', 'valid', 'invalid'],
+    ['invalid', 'valid', 'invalid', 'valid'],
+  ])(
+    'checks differing client states separately: %j',
+    async (...clientStates) => {
+      const request = createRequest({
+        body: {
+          value: clientStates.map(clientState => ({
+            subscriptionId: 'b',
+            clientState,
+          })),
+        },
+      });
+      (databaseClient.getById as jest.Mock).mockResolvedValue({
+        token_hash: 'h',
+        token_salt: 's',
+      });
+      jest
+        .mocked(hashValidationToken)
+        .mockImplementation(clientState =>
+          clientState === 'valid' ? 'h' : 'not-h',
+        );
+
+      await target(request, context);
+
+      expect(databaseClient.getById).toHaveBeenCalledTimes(1);
+      expect(hashValidationToken).toHaveBeenCalledTimes(4);
+      expect(
+        jest
+          .mocked(hashValidationToken)
+          .mock.calls.filter(([state]) => state === 'valid'),
+      ).toHaveLength(2);
+      expect(
+        jest
+          .mocked(hashValidationToken)
+          .mock.calls.filter(([state]) => state === 'invalid'),
+      ).toHaveLength(2);
+      expect(request.body).toEqual({
+        value: clientStates.map(() => ({ subscriptionId: 'b' })),
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Only 2 valid notification items found among 4 items',
+      );
+      expect(context.reject).toHaveBeenCalledWith();
+    },
+  );
+
+  it('does not reuse successful verification across requests', async () => {
+    (databaseClient.getById as jest.Mock).mockResolvedValue({
+      token_hash: 'h',
+      token_salt: 's',
+    });
+    jest
+      .mocked(hashValidationToken)
+      .mockReturnValueOnce('h')
+      .mockReturnValueOnce('not-h');
+
+    const makeRequest = () =>
+      createRequest({
+        body: { value: [{ subscriptionId: 'b', clientState: 'a' }] },
+      });
+
+    await target(makeRequest(), context);
+    expect(context.reject).not.toHaveBeenCalled();
+
+    await target(makeRequest(), context);
+
+    expect(databaseClient.getById).toHaveBeenCalledTimes(2);
+    expect(hashValidationToken).toHaveBeenCalledTimes(2);
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Invalid clientState for notification item.',
+    );
+    expect(context.reject).toHaveBeenCalledWith();
+  });
+
   it('rejects if no valid notification items', async () => {
     const request = createRequest({
       body: {
@@ -278,7 +393,7 @@ describe('createWebhookRequestValidator', () => {
       token_hash: 'h',
       token_salt: 's',
     });
-    (hashValidationToken as jest.Mock).mockResolvedValue('not-h');
+    (hashValidationToken as jest.Mock).mockReturnValue('not-h');
     await target(request, context);
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining(
