@@ -31,7 +31,7 @@
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "backstage-cli package start",
+    "start": "backstage-cli package start --config app-config.example.yaml",
     "test": "backstage-cli package test"
   },
   "dependencies": {
