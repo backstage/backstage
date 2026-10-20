@@ -1,5 +1,13 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.14
+
+### Patch Changes
+
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+- Updated dependencies
+  - @backstage/integration@2.1.3
+
 ## 0.3.14-next.1
 
 ### Patch Changes

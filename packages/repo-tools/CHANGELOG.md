@@ -1,5 +1,22 @@
 # @backstage/repo-tools
 
+## 0.19.2
+
+### Patch Changes
+
+- b8c8132: CLI API reports now support help output with separate groups and commands sections, including commands nested within groups.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- 466bbea: Fixed CLI report generation failing when the `FORCE_COLOR` environment variable is set.
+- dec6175: When an API, CLI, SQL, or knip report is out of date in CI, the error output now shows a diff of the changes that need to be committed instead of printing the full expected report.
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/cli-common@0.3.2
+
 ## 0.19.2-next.3
 
 ### Patch Changes

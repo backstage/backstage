@@ -1,5 +1,17 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.9
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- 13adaa1: Updated internal React component names to improve debugging and tooling compatibility.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+
 ## 0.2.9-next.2
 
 ### Patch Changes
