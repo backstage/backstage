@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import chokidar from 'chokidar';
 import { ExitCodeError, run, targetPaths } from '@backstage/cli-common';
 import { Lockfile, PackageGraph } from '../../monorepo';
@@ -34,7 +37,27 @@ import {
   SelectedPackage,
 } from './selectPackages';
 
+const execFileAsync = promisify(execFile);
+
 const DEBOUNCE_MS = 200;
+
+/** Output and cache directories that never trigger a re-run */
+const IGNORED_WATCH_PATHS =
+  /(^|[/\\])(node_modules|dist|dist-types|coverage|\.cache|\.turbo|\.git)([/\\]|$)/;
+
+/** Checks whether Git ignores a file, for example through a .gitignore */
+async function isGitIgnored(file: string): Promise<boolean> {
+  try {
+    await execFileAsync('git', ['check-ignore', '--quiet', file], {
+      cwd: path.dirname(file),
+    });
+    return true;
+  } catch {
+    // Exit code 1 means not ignored, and any other failure, such as not being
+    // in a Git repository, is treated the same way
+    return false;
+  }
+}
 
 interface RunSettings {
   concurrency: number;
@@ -81,13 +104,18 @@ async function runPackages(
     const push = (data: Buffer) => reporter.onOutput(name, data);
     let error: Error | undefined;
     let untrack = () => {};
-    const hash = await hashPackage?.(item, options.packageArgs ?? []);
-    if (hash && cacheEntries?.has(hash)) {
-      reporter.onSkipped(name);
-      return;
-    }
-    reporter.onStart(name);
+    let hash: string | undefined;
+    let started = false;
     try {
+      // A failure to hash only fails this package, so that the run can wind
+      // down normally and other packages are not left running unattended
+      hash = await hashPackage?.(item, options.packageArgs ?? []);
+      if (hash && cacheEntries?.has(hash)) {
+        reporter.onSkipped(name);
+        return;
+      }
+      reporter.onStart(name);
+      started = true;
       const child = run(
         buildInvocation({
           execPath: process.execPath,
@@ -102,7 +130,7 @@ async function runPackages(
           onStderr: push,
           // Gives each package its own process group, so that it and any
           // workers it spawns can be killed together on interrupt
-          detached: true,
+          detached: process.platform !== 'win32',
           stdio: ['ignore', 'pipe', 'pipe'],
         },
       );
@@ -113,6 +141,9 @@ async function runPackages(
       if (!interrupt.interrupted) {
         failed.push(name);
       }
+    }
+    if (!started) {
+      reporter.onStart(name);
     }
     // A child that was killed by a signal resolves as a success, so the
     // result is not trustworthy once an interrupt has been received.
@@ -349,18 +380,29 @@ async function watchPackages(
   const watcher = chokidar.watch(
     selected.map(({ pkg }) => pkg.dir),
     {
-      ignored: /(^|[/\\])(node_modules|dist|\.git)([/\\]|$)/,
+      ignored: IGNORED_WATCH_PATHS,
       ignoreInitial: true,
     },
   );
   watcher.on('all', (_event, file) => {
-    for (const name of mapFilesToPackages([file], selected)) {
-      pending.add(name);
+    const names = mapFilesToPackages([file], selected);
+    if (names.size === 0 || Array.from(names).every(n => pending.has(n))) {
+      return;
     }
-    if (pending.size > 0) {
+    isGitIgnored(file).then(ignored => {
+      if (ignored) {
+        return;
+      }
+      names.forEach(name => pending.add(name));
       clearTimeout(timer);
-      timer = setTimeout(flush, DEBOUNCE_MS);
-    }
+      timer = setTimeout(() => {
+        flush().catch(error => {
+          process.stderr.write(
+            `Failed to re-run packages: ${error.stack ?? error}\n`,
+          );
+        });
+      }, DEBOUNCE_MS);
+    });
   });
 
   return new Promise<never>(() => {});

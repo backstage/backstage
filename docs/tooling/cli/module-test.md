@@ -61,7 +61,7 @@ Options:
 
 ## repo run test
 
-Run the tests of each package in the repository, one at a time per package. The
+Run the tests of each package in the repository. The
 command runs `package test` in a separate process for each package, and is a
 target of `repo run`. Only packages that have `backstage-cli package test` in
 their `test` script are included, and any further arguments in that script are
@@ -95,8 +95,8 @@ with `--since` only packages that match both are run. A selector that matches no
 package is an error.
 
 With `--success-cache`, a package that passed before and has not changed since
-is skipped and reported as `SKIPPED`, with a count in the summary. A package counts as changed if its files, the
-files of any of its local dependencies, its dependencies in `yarn.lock`, the
+is skipped and reported as `SKIPPED`, with a count in the summary. A package
+counts as changed if its files, the files of any of its local dependencies, its dependencies in `yarn.lock`, the
 arguments, or the Node.js version changed. The files include uncommitted
 changes and files that are not ignored by Git. Only packages that passed are
 recorded, and each pass is recorded as soon as the package finishes, so an
@@ -110,7 +110,7 @@ defines. An unknown option, or a `--` argument, is an error. Tests run once by
 default, use `--watch` to keep running.
 
 ```text
-Usage: backstage-cli repo run test [options]
+Usage: backstage-cli repo run test [packages...] [options]
 
 Options:
   -p, --package <selector> Only run the matching packages, can be repeated
@@ -130,7 +130,9 @@ exits successfully. Use `--no-include-dependents` to skip the dependents.
 
 With `--watch`, the command runs all selected packages once, then watches their
 files and re-runs the affected packages and their dependents. Changes made while
-a run is in progress are queued for the next run.
+a run is in progress are queued for the next run. Output directories such as
+`dist`, `coverage` and `.cache`, and files ignored by Git, do not trigger a
+re-run.
 
 Run `backstage-cli repo run --help` to list all available targets.
 

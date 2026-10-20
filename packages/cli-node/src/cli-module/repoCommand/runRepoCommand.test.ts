@@ -310,4 +310,34 @@ describe('runRepoCommand', () => {
       await fs.remove(dir);
     }
   });
+
+  it('treats a hashing failure as a failure of that package only', async () => {
+    jest.spyOn(Lockfile, 'load').mockResolvedValue({} as any);
+    jest
+      .mocked(createPackageHasher)
+      .mockImplementation(() => async (item: any) => {
+        if (item.pkg.packageJson.name === 'a') {
+          throw new Error('hash failed');
+        }
+        return 'b-hash';
+      });
+    runMock.mockImplementation(() => ({ waitForExit: async () => {} }));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'run-cache-'));
+    try {
+      await expect(
+        runRepoCommand(
+          options,
+          { ...context, args: ['--success-cache', '--success-cache-dir', dir] },
+          new RunInterrupt(jest.fn()),
+        ),
+      ).rejects.toThrow(ExitCodeError);
+    } finally {
+      await fs.remove(dir);
+    }
+
+    expect(runMock.mock.calls.map(c => c[1].cwd)).toEqual(['/repo/b']);
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      expect.stringContaining('1 package(s) failed:\n  a'),
+    );
+  });
 });
