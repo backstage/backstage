@@ -95,9 +95,7 @@ export function createWebhookRequestValidator(
       delete notification.clientState;
       if (!clientState || !subscriptionId) {
         logger.warn(
-          `Notification value item is missing required properties (clientState, subscriptionId): ${JSON.stringify(
-            value,
-          )}`,
+          `Notification value item is missing required properties (clientState, subscriptionId).`,
         );
         continue;
       }
@@ -114,9 +112,7 @@ export function createWebhookRequestValidator(
         token_salt,
       );
       if (hashedClientState !== token_hash) {
-        logger.warn(
-          `Invalid clientState for notification item: ${JSON.stringify(value)}`,
-        );
+        logger.warn(`Invalid clientState for notification item.`);
       } else {
         validValues++;
       }
