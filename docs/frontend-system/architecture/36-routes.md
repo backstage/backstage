@@ -89,6 +89,8 @@ Route references optionally accept a `params` option, which will require the lis
 
 A reference can also declare parameters from ancestor routes to build links from outside that route hierarchy. Ancestor parameters that are not declared must instead be available from the current routing context.
 
+Optional parameters in a mounted path, such as `:id?`, may be omitted from the reference's `params` to link without that parameter. If the reference declares `id`, callers must supply it even though the path allows it to be omitted. References targeting the same extension must still declare identical parameter contracts.
+
 ```tsx title="plugins/catalog/src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 

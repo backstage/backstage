@@ -127,7 +127,9 @@ function resolveTargetRef(
     for (;;) {
       expected = [
         ...new Set(
-          [...mountedPath.matchAll(/:([\w-]+)/g)].map(match => match[1]),
+          [...mountedPath.matchAll(/:([\w-]+)(\?)?/g)]
+            .filter(match => !match[2] || actual.includes(match[1]))
+            .map(match => match[1]),
         ),
       ].sort();
       if (

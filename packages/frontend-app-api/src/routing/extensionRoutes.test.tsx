@@ -789,3 +789,51 @@ it('validates and resolves repeated parameter names', () => {
     '/items/two/compare/two',
   );
 });
+
+it('allows optional mounted parameters without relaxing reference contracts', () => {
+  const omitted = createRouteRef({ extensionId: 'page:test/items' });
+  const supplied = createRouteRef({
+    extensionId: 'page:test/items',
+    params: ['id'],
+  });
+  const links = [omitted, supplied].map(ref => {
+    const plugin = createFrontendPlugin({
+      pluginId: 'test',
+      routes: { items: ref },
+      extensions: [page('items', '/items/:id?')],
+    });
+    const routes = createSpecializedApp({ features: [app, plugin] }).apis.get(
+      routeResolutionApiRef,
+    )!;
+    return ref === omitted
+      ? routes.resolve(omitted)?.()
+      : routes.resolve(supplied)?.({ id: 'one' });
+  });
+  expect(links).toEqual(['/items', '/items/one']);
+  for (const path of ['/items/:id', '/items/:id?/compare/:id']) {
+    expect(() =>
+      createSpecializedApp({
+        features: [
+          app,
+          createFrontendPlugin({
+            pluginId: 'test',
+            routes: { items: omitted },
+            extensions: [page('items', path)],
+          }),
+        ],
+      }),
+    ).toThrow(/mounted path requires \[id\]/);
+  }
+  expect(() =>
+    createSpecializedApp({
+      features: [
+        app,
+        createFrontendPlugin({
+          pluginId: 'test',
+          routes: { omitted, supplied },
+          extensions: [page('items', '/items/:id?')],
+        }),
+      ],
+    }),
+  ).toThrow(/Conflicting route parameter contracts/);
+});

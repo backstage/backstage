@@ -212,12 +212,16 @@ it.each(['renderInTestApp', 'renderTestApp'])(
     const unused = createExternalRouteRef({ params: ['id'] });
     const partial = createExternalRouteRef({ params: ['id', 'tab'] });
     const repeated = createExternalRouteRef({ params: ['id'] });
+    const omitted = createExternalRouteRef();
+    const supplied = createExternalRouteRef({ params: ['id'] });
     const catalog = createRouteRef({ extensionId: 'page:catalog' });
     const scaffolder = createRouteRef({ extensionId: 'page:scaffolder' });
     const Links = () => {
       const unusedLink = useRouteRef(unused);
       const partialLink = useRouteRef(partial);
       const repeatedLink = useRouteRef(repeated);
+      const omittedLink = useRouteRef(omitted);
+      const suppliedLink = useRouteRef(supplied);
       const catalogLink = useRouteRef({ ...catalog });
       const scaffolderLink = useRouteRef({ ...scaffolder });
       return (
@@ -225,7 +229,8 @@ it.each(['renderInTestApp', 'renderTestApp'])(
           {catalogLink?.()} and {scaffolderLink?.()} and{' '}
           {unusedLink?.({ id: 'ignored' })} and{' '}
           {partialLink?.({ id: 'one', tab: 'ignored' })} and{' '}
-          {repeatedLink?.({ id: 'two' })}
+          {repeatedLink?.({ id: 'two' })} and {omittedLink?.()} and{' '}
+          {suppliedLink?.({ id: 'three' })}
         </div>
       );
     };
@@ -235,6 +240,8 @@ it.each(['renderInTestApp', 'renderTestApp'])(
       '/unused': unused,
       '/partial/:id': partial,
       '/items/:id/compare/:id': repeated,
+      '/omitted/:id?': omitted,
+      '/supplied/:id?': supplied,
     };
     if (helper === 'renderInTestApp') {
       renderInTestApp(<Links />, { mountedRoutes });
@@ -249,7 +256,7 @@ it.each(['renderInTestApp', 'renderTestApp'])(
       });
     }
     return screen.findByText(
-      '/catalog and /create and /unused and /partial/one and /items/two/compare/two',
+      '/catalog and /create and /unused and /partial/one and /items/two/compare/two and /omitted and /supplied/three',
     );
   },
 );
