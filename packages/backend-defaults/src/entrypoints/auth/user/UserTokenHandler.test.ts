@@ -33,6 +33,9 @@ import {
 } from 'jose';
 import { randomUUID as uuid } from 'node:crypto';
 
+const nodeMajor = Number(process.versions.node.split('.')[0]);
+const itIfNode24 = nodeMajor >= 24 ? it : it.skip;
+
 const mockPublicKey = {
   kty: 'EC',
   x: 'GHlwg744e8JekzukPTdtix6R868D6fcWy0ooOx-NEZI',
@@ -203,39 +206,43 @@ describe('UserTokenHandler', () => {
       });
     });
 
-    it('should verify a valid user token signed with ML-DSA-65', async () => {
-      const algorithm = 'ML-DSA-65';
-      const pair = await generateKeyPair(algorithm);
-      const publicKey = await exportJWK(pair.publicKey);
-      const kid = uuid();
-      publicKey.kid = kid;
-      publicKey.alg = algorithm;
+    itIfNode24(
+      'should verify a valid user token signed with ML-DSA-65',
+      async () => {
+        const algorithm = 'ML-DSA-65';
+        const pair = await generateKeyPair(algorithm);
+        const publicKey = await exportJWK(pair.publicKey);
+        const kid = uuid();
+        publicKey.kid = kid;
+        publicKey.alg = algorithm;
 
-      server.use(
-        http.get('http://localhost:0/api/auth/.well-known/jwks.json', () =>
-          HttpResponse.json({ keys: [publicKey] }),
-        ),
-      );
+        server.use(
+          http.get('http://localhost:0/api/auth/.well-known/jwks.json', () =>
+            HttpResponse.json({ keys: [publicKey] }),
+          ),
+        );
 
-      const sub = 'user:development/guest';
-      const iat = Math.floor(Date.now() / 1000);
-      const token = await new SignJWT({
-        sub,
-        aud: 'backstage',
-        iat,
-        exp: iat + 3600,
-      })
-        .setProtectedHeader({
-          typ: 'vnd.backstage.user',
-          alg: algorithm,
-          kid,
+        const sub = 'user:development/guest';
+        const iat = Math.floor(Date.now() / 1000);
+        const token = await new SignJWT({
+          sub,
+          aud: 'backstage',
+          iat,
+          exp: iat + 3600,
         })
-        .sign(pair.privateKey);
+          .setProtectedHeader({
+            typ: 'vnd.backstage.user',
+            alg: algorithm,
+            kid,
+          })
+          .sign(pair.privateKey);
 
-      await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
-        userEntityRef: sub,
-      });
-    });
+        // eslint-disable-next-line jest/no-standalone-expect
+        await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
+          userEntityRef: sub,
+        });
+      },
+    );
 
     it('should fail to verify when the sub claim is missing', async () => {
       const expectedIssuedAt = 1712071714;

@@ -28,6 +28,9 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const logger = mockServices.logger.mock();
 
+const nodeMajor = Number(process.versions.node.split('.')[0]);
+const itIfNode24 = nodeMajor >= 24 ? it : it.skip;
+
 function jwtKid(jwt: string): string {
   const header = decodeProtectedHeader(jwt);
   if (!header.kid) {
@@ -236,7 +239,7 @@ describe('TokenFactory', () => {
     expect(verifyResult.protectedHeader.alg).toBe('ES256');
   });
 
-  it('should issue valid tokens signed with ML-DSA-65', async () => {
+  itIfNode24('should issue valid tokens signed with ML-DSA-65', async () => {
     const factory = new TokenFactory({
       issuer: 'my-issuer',
       keyStore: new MemoryKeyStore(),
@@ -251,7 +254,9 @@ describe('TokenFactory', () => {
 
     const { keys } = await factory.listPublicKeys();
     const verifyResult = await jwtVerify(token, createLocalJWKSet({ keys }));
+    // eslint-disable-next-line jest/no-standalone-expect
     expect(verifyResult.protectedHeader.alg).toBe('ML-DSA-65');
+    // eslint-disable-next-line jest/no-standalone-expect
     expect(verifyResult.payload.sub).toBe(entityRef);
   });
 });
