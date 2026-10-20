@@ -85,6 +85,27 @@ of a legacy plugin's pages.
 
 Legacy fallback mounts retain support for unused caller parameters.
 
+### Routing startup errors
+
+Routing validation reports app errors using these codes:
+
+| Code                       | Meaning                                                        |
+| -------------------------- | -------------------------------------------------------------- |
+| `ROUTE_OVERRIDE_INVALID`   | Unsupported overrides, conflicting aliases, or redirect cycles |
+| `ROUTE_PARAMETERS_INVALID` | Incompatible reference, binding, or mounted-path parameters    |
+| `ROUTE_TARGET_INVALID`     | A target extension cannot provide a route                      |
+| `ROUTE_MOUNT_CONFLICT`     | Multiple fallback mounts make the destination ambiguous        |
+| `ROUTE_NOT_FOUND`          | A target extension is missing                                  |
+
+These errors are fatal by default. Apps using `maybeCreateErrorPage` from
+`@backstage/frontend-defaults` can include these codes in its `warningCodes`
+option to log them as warnings instead. Affected routes remain unavailable,
+while valid routes continue to resolve. Invalid module overrides do not fall
+back to an earlier module or the original route.
+
+Declaration-time errors, such as invalid extension ID syntax or routes exposed
+outside the plugin namespace, still throw when creating the reference or feature.
+
 ### Defining References with Path Parameters
 
 Route references optionally accept a `params` option, which will require the listed parameter names to be present in the route path. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` parameters, like in this path `/entities/:kind/:namespace/:name`:

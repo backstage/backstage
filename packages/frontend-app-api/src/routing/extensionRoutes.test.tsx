@@ -124,9 +124,9 @@ it('resolves structural copies and sub routes alongside historical page refs', (
   expect(
     routes.resolve(createRouteRef({ extensionId: 'page:test/root' }))?.(),
   ).toBe('/test');
-  expect(() =>
+  expect(
     routes.resolve(createRouteRef({ extensionId: 'page:test/detail' })),
-  ).toThrow('parameters');
+  ).toBeUndefined();
 });
 
 it('shares module precedence with extensions and redirects structural targets', () => {
@@ -296,8 +296,12 @@ it('validates ownership and complete installed targets without rejecting disable
     pluginId: 'test',
     routes: { root: ref },
   });
-  expect(() => createSpecializedApp({ features: [app, plugin] })).toThrow(
-    'unknown extension',
+  expect(createSpecializedApp({ features: [app, plugin] }).errors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching('unknown extension'),
+      }),
+    ]),
   );
   const module = createFrontendModule({
     pluginId: 'test',
@@ -329,9 +333,15 @@ it('validates ownership and complete installed targets without rejecting disable
       }),
     ],
   });
-  expect(() =>
-    createSpecializedApp({ features: [app, plugin, nonRoutable] }),
-  ).toThrow('non-routable');
+  expect(
+    createSpecializedApp({ features: [app, plugin, nonRoutable] }).errors,
+  ).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching('non-routable'),
+      }),
+    ]),
+  );
   const conflict = createRouteRef({
     extensionId: 'page:test/root',
     params: ['id'],
@@ -341,16 +351,24 @@ it('validates ownership and complete installed targets without rejecting disable
     routes: { ref, conflict },
     extensions: [page('root', '/test')],
   });
-  expect(() =>
-    createSpecializedApp({ features: [app, conflictingPlugin] }),
-  ).toThrow('Conflicting route parameter contracts');
+  expect(
+    createSpecializedApp({ features: [app, conflictingPlugin] }).errors,
+  ).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching('Conflicting route parameter contracts'),
+      }),
+    ]),
+  );
   const mismatch = createFrontendPlugin({
     pluginId: 'test',
     routes: { ref },
     extensions: [page('root', '/:id')],
   });
-  expect(() => createSpecializedApp({ features: [app, mismatch] })).toThrow(
-    'parameters',
+  expect(createSpecializedApp({ features: [app, mismatch] }).errors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ message: expect.stringMatching('parameters') }),
+    ]),
   );
 });
 
@@ -402,8 +420,12 @@ it('uses deprecated mounts when the structural target is not mounted', () => {
   const duplicates = plugin.withOverrides({
     extensions: [page('second', '/other/:id', { ref: copy })],
   });
-  expect(() => createSpecializedApp({ features: [app, duplicates] })).toThrow(
-    'Ambiguous deprecated route mounts',
+  expect(createSpecializedApp({ features: [app, duplicates] }).errors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching('Ambiguous deprecated route mounts'),
+      }),
+    ]),
   );
   expect(() =>
     createSpecializedApp({
@@ -494,22 +516,41 @@ it('validates the winning overrides without falling back to earlier modules', ()
     features: [app, plugin, low, high],
   }).apis.get(routeResolutionApiRef)!;
   expect(routes.resolve(a)?.()).toBe('/b');
-  expect(() =>
-    createSpecializedApp({ features: [app, plugin, high, low] }),
-  ).toThrow(/Conflicting route overrides 'test.oldName' and 'test.newName'/);
-  expect(() =>
-    createSpecializedApp({
-      features: [
-        app,
-        plugin,
-        createFrontendModule({
-          pluginId: 'test',
-          routes: { oldName: b, other: a },
-        }),
-      ],
+  expect(
+    createSpecializedApp({ features: [app, plugin, high, low] }).errors,
+  ).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        code: 'ROUTE_OVERRIDE_INVALID',
+        message: expect.stringMatching(
+          /Conflicting route overrides 'test.oldName' and 'test.newName'/,
+        ),
+      }),
+    ]),
+  );
+  const cyclic = createSpecializedApp({
+    features: [
+      app,
+      plugin,
+      createFrontendModule({
+        pluginId: 'test',
+        routes: { oldName: b, other: a },
+      }),
+    ],
+  });
+  expect(cyclic.errors).toEqual([
+    expect.objectContaining({
+      code: 'ROUTE_OVERRIDE_INVALID',
+      message: expect.stringMatching(/Route redirect cycle/),
     }),
-  ).toThrow(/Route redirect cycle/);
-  expect(() =>
+  ]);
+  const cyclicRoutes = cyclic.apis.get(routeResolutionApiRef)!;
+  expect(cyclicRoutes.resolve(a)).toBeUndefined();
+  expect(cyclicRoutes.resolve({ ...b })).toBeUndefined();
+  expect(
+    cyclicRoutes.resolve(createRouteRef({ extensionId: 'page:test/c' }))?.(),
+  ).toBe('/c');
+  expect(
     createSpecializedApp({
       features: [
         app,
@@ -524,8 +565,14 @@ it('validates the winning overrides without falling back to earlier modules', ()
           },
         }),
       ],
-    }),
-  ).toThrow(/incompatible parameters/);
+    }).errors,
+  ).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching(/incompatible parameters/),
+      }),
+    ]),
+  );
 });
 
 it('only permits absolute route overrides after selecting the winning modules', () => {
@@ -558,9 +605,17 @@ it('only permits absolute route overrides after selecting the winning modules', 
       pluginId: 'test',
       routes: { [name]: ref },
     });
-    expect(() =>
-      createSpecializedApp({ features: [app, plugin, valid, invalid] }),
-    ).toThrow(/must replace an absolute route reference/);
+    expect(
+      createSpecializedApp({ features: [app, plugin, valid, invalid] }).errors,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringMatching(
+            /must replace an absolute route reference/,
+          ),
+        }),
+      ]),
+    );
   }
   const discarded = createFrontendModule({
     pluginId: 'test',
@@ -582,11 +637,19 @@ it('only permits absolute route overrides after selecting the winning modules', 
     pluginId: 'test',
     routes: { detail },
   });
-  expect(() =>
+  expect(
     createSpecializedApp({
       features: [app, emptyPlugin, introduced, discarded],
-    }),
-  ).toThrow(/must replace an absolute route reference/);
+    }).errors,
+  ).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching(
+          /must replace an absolute route reference/,
+        ),
+      }),
+    ]),
+  );
 });
 
 it('redirects routes first introduced by a module after selecting the final overrides', () => {
@@ -719,8 +782,14 @@ it('validates external override bindings against all registered callers', () => 
         externalRoutes: { item: replacement },
       }),
     ];
-    expect(() => createSpecializedApp({ features })).toThrow(
-      /does not provide the parameters required/,
+    expect(createSpecializedApp({ features }).errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringMatching(
+            /does not provide the parameters required/,
+          ),
+        }),
+      ]),
     );
   }
 });
@@ -815,7 +884,7 @@ it('allows optional mounted parameters without relaxing reference contracts', ()
   });
   expect(links).toEqual(['/items', '/items/one']);
   for (const path of ['/items/:id', '/items/:id?/compare/:id']) {
-    expect(() =>
+    expect(
       createSpecializedApp({
         features: [
           app,
@@ -825,10 +894,16 @@ it('allows optional mounted parameters without relaxing reference contracts', ()
             extensions: [page('items', path)],
           }),
         ],
-      }),
-    ).toThrow(/mounted path requires \[id\]/);
+      }).errors,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringMatching(/mounted path requires \[id\]/),
+        }),
+      ]),
+    );
   }
-  expect(() =>
+  expect(
     createSpecializedApp({
       features: [
         app,
@@ -838,8 +913,14 @@ it('allows optional mounted parameters without relaxing reference contracts', ()
           extensions: [page('items', '/items/:id?')],
         }),
       ],
-    }),
-  ).toThrow(/Conflicting route parameter contracts/);
+    }).errors,
+  ).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: expect.stringMatching(/Conflicting route parameter contracts/),
+      }),
+    ]),
+  );
 });
 
 it('resolves optional ancestors and repeated ancestor parameters', () => {
@@ -876,4 +957,112 @@ it('resolves optional ancestors and repeated ancestor parameters', () => {
       sourcePath: '/items/old/middle/details/old',
     })?.({ id: 'new' }),
   ).toBe('/items/new/middle/details/new');
+});
+
+it('reports invalid routes without breaking valid links or reviving overridden routes', () => {
+  const good = createRouteRef({ extensionId: 'page:test/good' });
+  const missing = createRouteRef({ extensionId: 'page:test/missing' });
+  const nonRoutable = createRouteRef({ extensionId: 'test/utility' });
+  const mismatch = createRouteRef({ extensionId: 'page:test/mismatch' });
+  const original = createRouteRef({ extensionId: 'page:test/original' });
+  // @ts-expect-error Historical reference uses aliasFor instead of extensionId
+  const alias = createRouteRef({ aliasFor: 'test.original' });
+  const overriddenExternal = createExternalRouteRef({
+    defaultTarget: 'test.original',
+  });
+  const sub = createSubRouteRef({ parent: good, path: '/:id' });
+  const replacement = createRouteRef({
+    extensionId: 'page:test/replacement',
+    params: ['id'],
+  });
+  const ambiguous = createRouteRef({ extensionId: 'page:test/ambiguous' });
+  const external = createExternalRouteRef({
+    defaultTarget: 'test.replacement',
+  });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: {
+      good,
+      missing,
+      nonRoutable,
+      mismatch,
+      original,
+      alias,
+      sub,
+      replacement,
+      ambiguous,
+    },
+    externalRoutes: { external, overriddenExternal },
+    extensions: [
+      page('good', '/good'),
+      page('mismatch', '/mismatch/:id'),
+      page('original', '/original'),
+      page('replacement', '/replacement/:id'),
+      page('first', '/first', { ref: ambiguous }),
+      page('second', '/second', { ref: ambiguous }),
+      createExtension({
+        name: 'utility',
+        attachTo: { id: 'app/root', input: 'children' },
+        output: [coreExtensionData.reactElement],
+        factory: () => [coreExtensionData.reactElement(<div />)],
+      }),
+    ],
+  });
+  const result = createSpecializedApp({
+    features: [
+      app,
+      plugin,
+      createFrontendModule({
+        pluginId: 'test',
+        routes: { original: replacement, sub: replacement },
+      }),
+    ],
+  });
+  expect(result.errors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        code: 'ROUTE_NOT_FOUND',
+        context: expect.objectContaining({ extensionId: 'page:test/missing' }),
+      }),
+      expect.objectContaining({
+        code: 'ROUTE_TARGET_INVALID',
+        context: expect.objectContaining({ extensionId: 'test/utility' }),
+      }),
+      expect.objectContaining({
+        code: 'ROUTE_PARAMETERS_INVALID',
+        context: expect.objectContaining({
+          expectedParams: ['id'],
+          actualParams: [],
+        }),
+      }),
+      expect.objectContaining({
+        code: 'ROUTE_OVERRIDE_INVALID',
+        context: { pluginId: 'test', routeId: 'test.sub' },
+      }),
+      expect.objectContaining({
+        code: 'ROUTE_MOUNT_CONFLICT',
+        context: {
+          extensionId: 'page:test/ambiguous',
+          mountExtensionIds: ['page:test/first', 'page:test/second'],
+        },
+      }),
+    ]),
+  );
+  const routes = result.apis.get(routeResolutionApiRef)!;
+  expect(routes.resolve(good)?.()).toBe('/good');
+  expect(routes.resolve(replacement)?.({ id: 'one' })).toBe('/replacement/one');
+  for (const ref of [
+    missing,
+    nonRoutable,
+    mismatch,
+    original,
+    alias,
+    overriddenExternal,
+    sub,
+    ambiguous,
+    external,
+  ]) {
+    expect(routes.resolve(ref)).toBeUndefined();
+    expect(routes.resolve({ ...ref })).toBeUndefined();
+  }
 });

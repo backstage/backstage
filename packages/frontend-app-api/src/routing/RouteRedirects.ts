@@ -16,12 +16,33 @@
 
 import { RouteRef, SubRouteRef } from '@backstage/frontend-plugin-api';
 import { OpaqueRouteRef, OpaqueSubRouteRef } from '@internal/frontend';
+import { RouteValidationError } from './RouteValidationError';
 
 function getRouteRefKey(ref: RouteRef): string | RouteRef {
   return OpaqueRouteRef.toInternal(ref).getExtensionId?.() ?? ref;
 }
 
 export class RouteRedirects {
+  private readonly invalid = new Map<
+    string | RouteRef | SubRouteRef,
+    RouteValidationError
+  >();
+
+  private invalidKey(
+    ref: RouteRef | SubRouteRef,
+  ): string | RouteRef | SubRouteRef {
+    if (!OpaqueSubRouteRef.isType(ref)) {
+      return getRouteRefKey(OpaqueRouteRef.toInternal(ref));
+    }
+    const sub = OpaqueSubRouteRef.toInternal(ref);
+    const id = OpaqueRouteRef.toInternal(sub.getParent()).getExtensionId?.();
+    return id === undefined ? ref : JSON.stringify([id, sub.path]);
+  }
+
+  invalidate(source: RouteRef | SubRouteRef, error: RouteValidationError) {
+    this.invalid.set(this.invalidKey(source), error);
+  }
+
   private readonly targets = new Map<
     string | RouteRef,
     { name: string; ref: RouteRef }
@@ -45,9 +66,11 @@ export class RouteRedirects {
       ) {
         return;
       }
-      throw new Error(
-        `Route override '${name}' must replace an absolute route reference with another absolute route reference; subroutes cannot be overridden`,
-      );
+      throw new RouteValidationError({
+        code: 'ROUTE_OVERRIDE_INVALID',
+        context: { pluginId: name.split('.')[0], routeId: name },
+        message: `Route override '${name}' must replace an absolute route reference with another absolute route reference; subroutes cannot be overridden`,
+      });
     }
     const sourceRef = OpaqueRouteRef.toInternal(source);
     const targetRef = OpaqueRouteRef.toInternal(target);
@@ -60,13 +83,15 @@ export class RouteRedirects {
       previous &&
       getRouteRefKey(previous.ref) !== getRouteRefKey(targetRef)
     ) {
-      throw new Error(
-        `Conflicting route overrides '${
+      throw new RouteValidationError({
+        code: 'ROUTE_OVERRIDE_INVALID',
+        context: { pluginId: name.split('.')[0], routeId: name },
+        message: `Conflicting route overrides '${
           previous.name
         }' and '${name}' redirect ${key} to different targets ${getRouteRefKey(
           previous.ref,
         )} and ${getRouteRefKey(targetRef)}`,
-      );
+      });
     }
     const sourceParams = sourceRef.getParams();
     const targetParams = targetRef.getParams();
@@ -74,14 +99,24 @@ export class RouteRedirects {
       JSON.stringify([...sourceParams].sort()) !==
       JSON.stringify([...targetParams].sort())
     ) {
-      throw new Error(
-        `Route override '${name}' has incompatible parameters, expected [${sourceParams}] but received [${targetParams}]`,
-      );
+      throw new RouteValidationError({
+        code: 'ROUTE_PARAMETERS_INVALID',
+        context: {
+          routeId: name,
+          expectedParams: sourceParams,
+          actualParams: targetParams,
+        },
+        message: `Route override '${name}' has incompatible parameters, expected [${sourceParams}] but received [${targetParams}]`,
+      });
     }
     this.targets.set(key, { name, ref: targetRef });
   }
 
   resolve(source: RouteRef | SubRouteRef): { ref: RouteRef; path: string } {
+    const invalidSource = this.invalid.get(this.invalidKey(source));
+    if (invalidSource) {
+      throw invalidSource;
+    }
     const subRoute = OpaqueSubRouteRef.isType(source)
       ? OpaqueSubRouteRef.toInternal(source)
       : undefined;
@@ -90,8 +125,17 @@ export class RouteRedirects {
     const visited = new Set<string | RouteRef>();
     for (;;) {
       const key = getRouteRefKey(ref);
+      const invalid = this.invalid.get(key);
+      if (invalid) {
+        throw invalid;
+      }
       if (visited.has(key)) {
-        throw new Error(`Route redirect cycle detected for ${key}`);
+        const name = this.targets.get(key)!.name;
+        throw new RouteValidationError({
+          code: 'ROUTE_OVERRIDE_INVALID',
+          context: { pluginId: name.split('.')[0], routeId: name },
+          message: `Route redirect cycle detected for ${key}`,
+        });
       }
       visited.add(key);
       const target = this.targets.get(key);

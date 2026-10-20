@@ -39,6 +39,8 @@ import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/res
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routeRefType } from '../../../core-plugin-api/src/routing/types';
 import { RouteRedirects } from './RouteRedirects';
+import { RouteValidationError } from './RouteValidationError';
+import { ErrorCollector } from '../wiring/createErrorCollector';
 import { joinPaths } from './joinPaths';
 
 const MAX_CACHED_SOURCE_LOCATIONS = 32;
@@ -60,6 +62,8 @@ function resolveTargetRef(
   redirects: RouteRedirects,
   externalRouteIds: Map<ExternalRouteRef, string>,
   externalBindingsById: Map<string, ExternalRouteRef>,
+  invalidExtensionIds: Set<string>,
+  fallbackMountIds: Map<string, Set<string>>,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
@@ -91,6 +95,13 @@ function resolveTargetRef(
     );
   }
 
+  const originalRoot = OpaqueSubRouteRef.isType(ref)
+    ? OpaqueSubRouteRef.toInternal(ref).getParent()
+    : OpaqueRouteRef.toInternal(ref);
+  const originalId = OpaqueRouteRef.toInternal(originalRoot).getExtensionId?.();
+  if (originalId && invalidExtensionIds.has(originalId)) {
+    return [undefined, ''];
+  }
   const params = OpaqueSubRouteRef.isType(ref)
     ? OpaqueSubRouteRef.toInternal(ref).getParams()
     : OpaqueRouteRef.toInternal(ref).getParams();
@@ -101,13 +112,23 @@ function resolveTargetRef(
   const internal = OpaqueRouteRef.toInternal(ref);
   const extensionId = internal.getExtensionId?.();
   if (extensionId !== undefined) {
+    if (invalidExtensionIds.has(extensionId)) {
+      return [undefined, ''];
+    }
     const hasTarget = extensionRoutes.get(extensionId) !== undefined;
     if (
       !hasTarget &&
       fallbackRoutes.has(extensionId) &&
       !fallbackRoutes.get(extensionId)
     ) {
-      throw new Error(`Ambiguous deprecated route mounts for '${extensionId}'`);
+      throw new RouteValidationError({
+        code: 'ROUTE_MOUNT_CONFLICT',
+        context: {
+          extensionId,
+          mountExtensionIds: [...(fallbackMountIds.get(extensionId) ?? [])],
+        },
+        message: `Ambiguous deprecated route mounts for '${extensionId}'`,
+      });
     }
     let mountedRef = hasTarget
       ? extensionRoutes.get(extensionId)
@@ -165,9 +186,16 @@ function resolveTargetRef(
       mountedRef = parent;
       mountedPath = joinPaths(routePaths.get(parent) ?? '', mountedPath);
     }
-    throw new Error(
-      `Route reference for '${extensionId}' has parameters [${actual}], but its mounted path requires [${expected}]`,
-    );
+    throw new RouteValidationError({
+      code: 'ROUTE_PARAMETERS_INVALID',
+      context: {
+        routeId: String(targetRouteRef),
+        extensionId,
+        expectedParams: expected,
+        actualParams: actual,
+      },
+      message: `Route reference for '${extensionId}' has parameters [${actual}], but its mounted path requires [${expected}]`,
+    });
   }
 
   // Find the path that our target route is bound to
@@ -246,6 +274,8 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
+  private readonly invalidExtensionIds = new Set<string>();
+  private readonly fallbackMountIds = new Map<string, Set<string>>();
   private readonly externalBindingsById = new Map<string, ExternalRouteRef>();
   private readonly extensionRoutes = new Map<string, RouteRef | undefined>();
   private readonly fallbackRoutes = new Map<string, RouteRef | undefined>();
@@ -301,6 +331,11 @@ export class RouteResolver implements RouteResolutionApi {
               id,
               this.fallbackRoutes.has(id) ? undefined : emittedRef,
             );
+            const mountIds = this.fallbackMountIds.get(id) ?? new Set<string>();
+            if (object.appNode) {
+              mountIds.add(object.appNode.spec.id);
+            }
+            this.fallbackMountIds.set(id, mountIds);
             mountedIds.add(id);
           }
         }
@@ -326,7 +361,7 @@ export class RouteResolver implements RouteResolutionApi {
         };
       });
     this.routeObjects = indexRoutes(routeObjects);
-    this.routeBindings = routeBindings;
+    this.routeBindings = new Map(routeBindings);
     for (const ref of routeBindings.keys()) {
       const id =
         externalRouteIds.get(ref) ??
@@ -340,8 +375,13 @@ export class RouteResolver implements RouteResolutionApi {
     this.routeRefsById = routeRefsById;
   }
 
-  validate(tree: AppTree, refs: Iterable<RouteRef | SubRouteRef>) {
-    const contracts = new Map<string, string>();
+  validate(
+    tree: AppTree,
+    refs: Iterable<RouteRef | SubRouteRef>,
+    collector: ErrorCollector,
+  ) {
+    const contracts = new Map<string, string[]>();
+    const reported = new Set<string>();
     const targets = [...refs, ...this.routeBindings.values()];
     for (const node of tree.nodes.values()) {
       const ref = node.instance?.getData(coreExtensionData.routeRef);
@@ -353,64 +393,92 @@ export class RouteResolver implements RouteResolutionApi {
       if (!ref) {
         continue;
       }
-      const originalRoot = OpaqueSubRouteRef.isType(ref)
-        ? OpaqueSubRouteRef.toInternal(ref).getParent()
-        : ref;
-      const original = OpaqueRouteRef.toInternal(originalRoot);
-      const originalId = original.getExtensionId?.();
-      if (originalId !== undefined) {
-        const contract = JSON.stringify([...original.getParams()].sort());
-        if (
-          contracts.has(originalId) &&
-          contracts.get(originalId) !== contract
-        ) {
-          throw new Error(
-            `Conflicting route parameter contracts for extension '${originalId}'`,
-          );
+      try {
+        const originalRoot = OpaqueSubRouteRef.isType(ref)
+          ? OpaqueSubRouteRef.toInternal(ref).getParent()
+          : ref;
+        const original = OpaqueRouteRef.toInternal(originalRoot);
+        const originalId = original.getExtensionId?.();
+        if (originalId !== undefined) {
+          const contract = [...original.getParams()].sort();
+          if (
+            contracts.has(originalId) &&
+            JSON.stringify(contracts.get(originalId)) !==
+              JSON.stringify(contract)
+          ) {
+            this.invalidExtensionIds.add(originalId);
+            throw new RouteValidationError({
+              code: 'ROUTE_PARAMETERS_INVALID',
+              context: {
+                routeId: String(ref),
+                extensionId: originalId,
+                expectedParams: contracts.get(originalId)!,
+                actualParams: contract,
+              },
+              message: `Conflicting route parameter contracts for extension '${originalId}'`,
+            });
+          }
+          contracts.set(originalId, contract);
         }
-        contracts.set(originalId, contract);
-      }
-      const root = this.redirects.resolve(ref).ref;
-      const internal = OpaqueRouteRef.toInternal(root);
-      const extensionId = internal.getExtensionId?.();
-      if (extensionId === undefined) {
-        continue;
-      }
-      const node = tree.nodes.get(extensionId);
-      if (!node && !this.fallbackRoutes.has(extensionId)) {
-        // Hybrid apps can register all of a legacy plugin's routes while only
-        // mounting some of its pages. Unmounted legacy routes remain unresolved.
-        if (routeRefType in internal) {
+        const root = this.redirects.resolve(ref).ref;
+        const internal = OpaqueRouteRef.toInternal(root);
+        const extensionId = internal.getExtensionId?.();
+        if (extensionId === undefined) {
           continue;
         }
-        throw new Error(
-          `Route reference targets unknown extension '${extensionId}'`,
+        const node = tree.nodes.get(extensionId);
+        if (!node && !this.fallbackRoutes.has(extensionId)) {
+          // Hybrid apps can register all of a legacy plugin's routes while only
+          // mounting some of its pages. Unmounted legacy routes remain unresolved.
+          if (routeRefType in internal) {
+            continue;
+          }
+          this.invalidExtensionIds.add(extensionId);
+          throw new RouteValidationError({
+            code: 'ROUTE_NOT_FOUND',
+            context: { routeId: String(ref), extensionId },
+            message: `Route reference targets unknown extension '${extensionId}'`,
+          });
+        }
+        const extension = node && toInternalExtension(node.spec.extension);
+        if (
+          extension &&
+          !Object.values(extension.output).some(
+            data => data.id === coreExtensionData.routePath.id,
+          )
+        ) {
+          this.invalidExtensionIds.add(extensionId);
+          throw new RouteValidationError({
+            code: 'ROUTE_TARGET_INVALID',
+            context: { routeId: String(ref), extensionId },
+            message: `Route reference targets non-routable extension '${extensionId}'`,
+          });
+        }
+        // Disabled and conditional targets can be known without having a mounted path.
+        resolveTargetRef(
+          ref,
+          this.routePaths,
+          this.routeParents,
+          this.routeBindings,
+          this.routeRefsById,
+          this.extensionRoutes,
+          this.fallbackRoutes,
+          this.redirects,
+          this.externalRouteIds,
+          this.externalBindingsById,
+          this.invalidExtensionIds,
+          this.fallbackMountIds,
         );
+      } catch (error) {
+        if (!(error instanceof RouteValidationError)) {
+          throw error;
+        }
+        const key = JSON.stringify(error.diagnostic);
+        if (!reported.has(key)) {
+          error.report(collector);
+          reported.add(key);
+        }
       }
-      const extension = node && toInternalExtension(node.spec.extension);
-      if (
-        extension &&
-        !Object.values(extension.output).some(
-          data => data.id === coreExtensionData.routePath.id,
-        )
-      ) {
-        throw new Error(
-          `Route reference targets non-routable extension '${extensionId}'`,
-        );
-      }
-      // Disabled and conditional targets can be known without having a mounted path.
-      resolveTargetRef(
-        ref,
-        this.routePaths,
-        this.routeParents,
-        this.routeBindings,
-        this.routeRefsById,
-        this.extensionRoutes,
-        this.fallbackRoutes,
-        this.redirects,
-        this.externalRouteIds,
-        this.externalBindingsById,
-      );
     }
     const callersById = new Map<string, Set<ExternalRouteRef>>();
     for (const [ref, id] of this.externalRouteIds) {
@@ -433,9 +501,17 @@ export class RouteResolver implements RouteResolutionApi {
       for (const caller of callers) {
         const params = OpaqueExternalRouteRef.toInternal(caller).getParams();
         if (targetParams.some(param => !params.includes(param))) {
-          throw new Error(
-            `External route ${caller} does not provide the parameters required by ${target}`,
-          );
+          collector.report({
+            code: 'ROUTE_PARAMETERS_INVALID',
+            context: {
+              routeId: id ?? String(caller),
+              expectedParams: targetParams,
+              actualParams: params,
+            },
+            message: `External route ${caller} does not provide the parameters required by ${target}`,
+          });
+          this.routeBindings.set(externalRef, undefined);
+          break;
         }
       }
     }
@@ -449,20 +525,31 @@ export class RouteResolver implements RouteResolutionApi {
     options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     // First figure out what our target absolute ref is, as well as our target path.
-    const [targetRef, targetPath] = resolveTargetRef(
-      anyRouteRef?.$$type === '@backstage/RouteRef'
-        ? this.routeAliasResolver(anyRouteRef)
-        : anyRouteRef,
-      this.routePaths,
-      this.routeParents,
-      this.routeBindings,
-      this.routeRefsById,
-      this.extensionRoutes,
-      this.fallbackRoutes,
-      this.redirects,
-      this.externalRouteIds,
-      this.externalBindingsById,
-    );
+    let targetRef: RouteRef | undefined;
+    let targetPath: string;
+    try {
+      [targetRef, targetPath] = resolveTargetRef(
+        anyRouteRef?.$$type === '@backstage/RouteRef'
+          ? this.routeAliasResolver(anyRouteRef)
+          : anyRouteRef,
+        this.routePaths,
+        this.routeParents,
+        this.routeBindings,
+        this.routeRefsById,
+        this.extensionRoutes,
+        this.fallbackRoutes,
+        this.redirects,
+        this.externalRouteIds,
+        this.externalBindingsById,
+        this.invalidExtensionIds,
+        this.fallbackMountIds,
+      );
+    } catch (error) {
+      if (!(error instanceof RouteValidationError)) {
+        throw error;
+      }
+      return undefined;
+    }
     if (!targetRef) {
       return undefined;
     }

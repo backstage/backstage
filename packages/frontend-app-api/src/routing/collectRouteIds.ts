@@ -31,6 +31,7 @@ import { isInternalFrontendModule } from '../../../frontend-plugin-api/src/wirin
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { validateRouteNamespace } from '../../../frontend-plugin-api/src/routing/validateRouteNamespace';
 import { RouteRedirects } from './RouteRedirects';
+import { RouteValidationError } from './RouteValidationError';
 import { ErrorCollector } from '../wiring/createErrorCollector';
 
 /** @internal */
@@ -139,10 +140,28 @@ export function collectRouteIds(
   const redirects = new RouteRedirects();
   for (const [name, source] of originalRoutes) {
     const target = routesById.get(name)!;
-    redirects.add(name, source, target);
+    try {
+      redirects.add(name, source, target);
+    } catch (error) {
+      if (!(error instanceof RouteValidationError)) {
+        throw error;
+      }
+      error.report(collector);
+      redirects.invalidate(source, error);
+    }
   }
-  for (const ref of allRoutes) {
-    redirects.resolve(ref);
+  for (const [name, source] of originalRoutes) {
+    try {
+      redirects.resolve(source);
+    } catch (error) {
+      if (!(error instanceof RouteValidationError)) {
+        throw error;
+      }
+      error.report(collector);
+      redirects.invalidate(source, error);
+      // Keep named bindings and legacy aliases pointed at the blocked source.
+      routesById.set(name, source);
+    }
   }
 
   return {

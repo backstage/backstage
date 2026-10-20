@@ -168,6 +168,33 @@ export type AppErrorTypes = {
   ROUTE_NOT_FOUND: {
     context: {
       routeId: string;
+      extensionId?: string;
+    };
+  };
+  ROUTE_OVERRIDE_INVALID: {
+    context: {
+      pluginId: string;
+      routeId: string;
+    };
+  };
+  ROUTE_PARAMETERS_INVALID: {
+    context: {
+      routeId: string;
+      extensionId?: string;
+      expectedParams: string[];
+      actualParams: string[];
+    };
+  };
+  ROUTE_TARGET_INVALID: {
+    context: {
+      routeId: string;
+      extensionId: string;
+    };
+  };
+  ROUTE_MOUNT_CONFLICT: {
+    context: {
+      extensionId: string;
+      mountExtensionIds: string[];
     };
   };
 };
