@@ -15,26 +15,25 @@
  */
 
 import { ForwardedError } from '@backstage/errors';
-import {
+import type {
   AuthorizationV1Api,
   BatchV1Api,
   CoreV1Api,
   Log,
-  KubeConfig,
-  VersionApi,
   V1Affinity,
   V1Job,
   V1NodeSelectorTerm,
 } from '@kubernetes/client-node';
+import fs from 'fs-extra';
 import { PassThrough, Writable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import { setTimeout as sleep } from 'node:timers/promises';
-import {
-  ContainerRunnerPullOptions,
-  KubernetesOptions,
-  TechDocsContainerRunner,
-} from './types';
+import { KubernetesOptions, TechDocsContainerRunner } from './types';
 import path from 'node:path';
+
+type RunContainerOptions = Parameters<
+  TechDocsContainerRunner['runContainer']
+>[0];
 
 export type KubernetesClient = {
   batch: BatchV1Api;
@@ -64,33 +63,15 @@ const REQUIRED_PERMISSIONS = [
  */
 export class KubernetesJobRunner implements TechDocsContainerRunner {
   private clientPromise?: Promise<KubernetesClient>;
+  // Only used in tests, as jest.mock doesn't intercept the dynamic import
+  private injectedKubernetesClient?: typeof import('@kubernetes/client-node');
 
   constructor(private readonly options: KubernetesOptions) {}
 
-  async runContainer(opts: {
-    imageName: string;
-    command?: string | string[];
-    args: string[];
-    logStream?: Writable;
-    mountDirs?: Record<string, string>;
-    workingDir?: string;
-    envVars?: Record<string, string>;
-    pullImage?: boolean;
-    defaultUser?: boolean;
-    pullOptions?: ContainerRunnerPullOptions;
-  }): Promise<void> {
+  async runContainer(opts: RunContainerOptions): Promise<void> {
     const client = await this.getClient();
     const { batch, namespace } = client;
-    const job = this.createNamespacedJobRequest(
-      opts.imageName,
-      opts.args,
-      opts.mountDirs || {},
-      opts.envVars || {},
-      opts.command,
-      opts.workingDir,
-      opts.pullImage,
-      opts.defaultUser,
-    );
+    const job = await this.createNamespacedJobRequest(opts);
 
     const created = await batch.createNamespacedJob({ namespace, body: job });
     const jobName = created.metadata!.name!; // generateName → server assigns the suffix
@@ -218,27 +199,55 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     };
   }
 
-  private createNamespacedJobRequest(
-    imageName: string,
-    args: string[],
-    mountDirs: Record<string, string>,
-    envVars: Record<string, string>,
-    command?: string | string[],
-    workingDir?: string,
-    pullImage?: boolean,
-    defaultUser?: boolean,
-  ): V1Job {
+  private async toSubPath(hostDir: string): Promise<string> {
+    // Docker can't bind symlinks either, so resolve both sides before comparing
+    const [workRoot, dir] = await Promise.all([
+      fs.realpath(this.options.workRoot),
+      fs.realpath(hostDir),
+    ]);
+    const subPath = path.relative(workRoot, dir);
+    if (
+      subPath === '..' ||
+      subPath.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(subPath)
+    ) {
+      throw new Error(
+        `${hostDir} is not on the shared volume mounted at ${this.options.workRoot}; set backend.workingDirectory to a path under it`,
+      );
+    }
+    return subPath.split(path.sep).join('/');
+  }
+
+  private async createNamespacedJobRequest({
+    imageName,
+    command,
+    args,
+    mountDirs = {},
+    workingDir,
+    envVars = {},
+    pullImage,
+    defaultUser,
+  }: RunContainerOptions): Promise<V1Job> {
+    const {
+      volumeClaimName,
+      imagePullSecrets = [],
+      activeDeadlineSeconds = 600,
+      ttlSecondsAfterFinished = 300,
+      resources,
+    } = this.options;
     // Match the Backstage process so it can read and clean up the output on the shared volume
-    const securityContext =
+    const user =
       !defaultUser && process.getuid && process.getgid
         ? { runAsUser: process.getuid(), runAsGroup: process.getgid() }
         : undefined;
-    // TODO: handle pullOptions
-    // TODO: update timeouts
-    // TODO: set automountServiceAccountToken: false so the build pod gets no API token
-    // TODO: add PSA-friendly securityContext (runAsNonRoot, allowPrivilegeEscalation: false, drop ALL)
-    // TODO: add resource requests/limits
-    const job: V1Job = {
+    const volumeMounts = await Promise.all(
+      Object.entries(mountDirs).map(async ([hostDir, mountPath]) => ({
+        name: 'work',
+        mountPath,
+        subPath: await this.toSubPath(hostDir),
+      })),
+    );
+    return {
       apiVersion: 'batch/v1',
       kind: 'Job',
       metadata: {
@@ -247,13 +256,21 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
       },
       spec: {
         backoffLimit: 0,
-        activeDeadlineSeconds: 600,
-        ttlSecondsAfterFinished: 300,
+        activeDeadlineSeconds,
+        ttlSecondsAfterFinished,
         template: {
           spec: {
             restartPolicy: 'Never',
-            securityContext,
+            automountServiceAccountToken: false,
+            securityContext: {
+              ...user,
+              runAsNonRoot: user && user.runAsUser !== 0 ? true : undefined,
+              seccompProfile: { type: 'RuntimeDefault' },
+            },
             affinity: this.createAffinity(),
+            imagePullSecrets: imagePullSecrets.length
+              ? imagePullSecrets.map(name => ({ name }))
+              : undefined,
             containers: [
               {
                 name: CONTAINER_NAME,
@@ -267,30 +284,24 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
                   name,
                   value,
                 })),
-                // TODO: throw if hostDir is outside workRoot (subPath starts with '..' or is absolute), e.g. dir: refs in local dev
-                // TODO: fs.realpath both hostDir and workRoot first, like DockerContainerRunner, so symlinks don't skew subPath
-                volumeMounts: Object.entries(mountDirs).map(
-                  ([hostDir, mountPath]) => ({
-                    name: 'work',
-                    mountPath,
-                    subPath: path.relative(this.options.workRoot, hostDir),
-                  }),
-                ),
+                resources,
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  capabilities: { drop: ['ALL'] },
+                },
+                volumeMounts,
               },
             ],
             volumes: [
               {
                 name: 'work',
-                persistentVolumeClaim: {
-                  claimName: this.options.volumeClaimName,
-                },
+                persistentVolumeClaim: { claimName: volumeClaimName },
               },
             ],
           },
         },
       },
     };
-    return job;
   }
 
   private async checkPermissions(client: KubernetesClient): Promise<void> {
@@ -336,9 +347,16 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
 
   private async createClient(): Promise<KubernetesClient> {
     // TODO: ESM-only package; switch to a static import once Node 22 is dropped (#34627)
-    // const { BatchV1Api, CoreV1Api, KubeConfig, Log, VersionApi } = await import(
-    //   '@kubernetes/client-node'
-    // );
+    const {
+      AuthorizationV1Api,
+      BatchV1Api,
+      CoreV1Api,
+      KubeConfig,
+      Log,
+      VersionApi,
+    } =
+      this.injectedKubernetesClient ??
+      (await import('@kubernetes/client-node'));
     const kc = new KubeConfig();
     kc.loadFromDefault();
 

@@ -19,10 +19,12 @@ import path from 'node:path';
 import { readGeneratorConfig, TechdocsGenerator } from './techdocs';
 import { getMkdocsYml, runCommand } from './helpers';
 import { sanitizeMkdocsYml } from './mkdocsPatchers';
+import { KubernetesJobRunner } from './KubernetesJobRunner';
 
 jest.mock('fs-extra');
 jest.mock('./helpers');
 jest.mock('./mkdocsPatchers');
+jest.mock('./KubernetesJobRunner');
 
 const mockLogger = {
   warn: jest.fn(),
@@ -329,6 +331,50 @@ describe('TechdocsGenerator.run', () => {
       expect.objectContaining({
         args: expect.arrayContaining(['-f', '/input/mkdocs.yaml']),
       }),
+    );
+  });
+
+  it('runs the build through a Kubernetes Job runner in kubernetes mode', async () => {
+    const kubernetes = {
+      namespace: 'backstage',
+      volumeClaimName: 'techdocs-work',
+      workRoot: '/var/backstage/work',
+      nodeName: 'node-1',
+      nodeAffinity: 'required',
+    };
+    const config = new ConfigReader({
+      techdocs: { generator: { runIn: 'kubernetes', kubernetes } },
+    });
+    expect(readGeneratorConfig(config, mockLogger as any).kubernetes).toEqual(
+      kubernetes,
+    );
+
+    const generator = TechdocsGenerator.fromConfig(config, {
+      logger: mockLogger as any,
+    });
+    expect(KubernetesJobRunner).toHaveBeenCalledWith(kubernetes);
+
+    await generator.run({
+      inputDir,
+      outputDir: '/tmp/outputDir',
+      logger: mockLogger as any,
+    });
+    const runner = jest.mocked(KubernetesJobRunner).mock.instances[0];
+    expect(runner.runContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageName: TechdocsGenerator.defaultDockerImage,
+        args: expect.arrayContaining(['-f', '/input/mkdocs.yaml']),
+        mountDirs: { [inputDir]: '/input', '/tmp/outputDir': '/output' },
+      }),
+    );
+
+    expect(() =>
+      TechdocsGenerator.fromConfig(
+        new ConfigReader({ techdocs: { generator: { runIn: 'kubernetes' } } }),
+        { logger: mockLogger as any },
+      ),
+    ).toThrow(
+      `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
     );
   });
 });

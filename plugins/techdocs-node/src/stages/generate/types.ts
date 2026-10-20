@@ -73,6 +73,25 @@ export type KubernetesOptions = {
    * How strongly build Jobs are scheduled onto `nodeName`. Defaults to "preferred", and has no effect without `nodeName`.
    */
   nodeAffinity?: 'preferred' | 'required' | 'none';
+  /**
+   * Names of Secrets used to pull the build image from a private registry. `pullOptions` is not used by this runner.
+   */
+  imagePullSecrets?: string[];
+  /**
+   * Maximum duration of a build before it is stopped. Defaults to 600.
+   */
+  activeDeadlineSeconds?: number;
+  /**
+   * How long finished build Jobs are kept before Kubernetes deletes them. Defaults to 300.
+   */
+  ttlSecondsAfterFinished?: number;
+  /**
+   * Resource requests and limits for the build container, e.g. `{ requests: { cpu: '250m', memory: '512Mi' } }`.
+   */
+  resources?: {
+    requests?: Record<string, string>;
+    limits?: Record<string, string>;
+  };
 };
 
 /**
