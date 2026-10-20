@@ -44,6 +44,12 @@ yarn backstage-cli config:docs
 
 ## Restricting public configuration
 
+:::note
+This feature is supported only with the default Rspack build. Legacy webpack
+builds, enabled with `LEGACY_WEBPACK_BUILD`, embed frontend configuration in the
+JavaScript bundle, which is not restricted by these allowlists.
+:::
+
 When serving a protected app with a
 [public entry point](../tutorials/enable-public-entry.md), the app backend injects
 all frontend-visible configuration into both entry points by default. To restrict
