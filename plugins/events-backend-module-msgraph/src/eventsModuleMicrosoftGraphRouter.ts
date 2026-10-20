@@ -17,7 +17,6 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { MicrosoftGraphEventRouter } from './router/MicrosoftGraphEventRouter';
 
@@ -29,15 +28,11 @@ export default createBackendModule({
       deps: {
         events: eventsServiceRef,
         logger: coreServices.logger,
-        auth: coreServices.auth,
-        catalog: catalogServiceRef,
       },
-      async init({ events, logger, auth, catalog }) {
+      async init({ events, logger }) {
         const eventRouter = new MicrosoftGraphEventRouter({
           events,
           logger,
-          auth,
-          catalog,
         });
 
         await eventRouter.subscribe();
