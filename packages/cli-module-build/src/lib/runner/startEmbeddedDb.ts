@@ -94,11 +94,7 @@ async function startEmbeddedDbInternal(
   // Isolate both Postgres and the library's exit hooks from terminal signals.
   const child = spawn(
     process.execPath,
-    [
-      require.resolve(
-        '@backstage/cli-module-build/config/embedded-postgres.cjs',
-      ),
-    ],
+    [require.resolve('@backstage/cli-module-build/embedded-postgres')],
     {
       detached: true,
       windowsHide: true,

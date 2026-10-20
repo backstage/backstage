@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// @ts-check
+
 const os = require('node:os');
 const fs = require('fs-extra');
 const { resolve: resolvePath } = require('node:path');
@@ -53,7 +55,10 @@ async function main() {
   if (!process.connected) {
     return;
   }
-  const [options] = message;
+  const options =
+    /** @type {import('./lib/runner/startEmbeddedDb').EmbeddedDbConnectionConfig} */ (
+      message[0]
+    );
   let pg;
   let tmpDir;
   let started = false;
@@ -88,12 +93,12 @@ async function main() {
     started = true;
     if (process.connected) {
       // A concurrent parent exit is handled by the disconnect listener.
-      process.send({ ready: true }, () => {});
+      process.send?.({ ready: true }, undefined, undefined, () => {});
     }
     await disconnected;
   } finally {
     try {
-      if (started) {
+      if (started && pg) {
         await pg.stop();
       }
     } finally {
@@ -107,12 +112,14 @@ async function main() {
 main().catch(error => {
   process.exitCode = 1;
   if (process.connected) {
-    process.send({ error: String(error) }, () => {
+    process.send?.({ error: String(error) }, undefined, undefined, () => {
       if (process.connected) {
-        process.disconnect();
+        process.disconnect?.();
       }
     });
   } else {
     console.error(error);
   }
 });
+
+module.exports = {};
