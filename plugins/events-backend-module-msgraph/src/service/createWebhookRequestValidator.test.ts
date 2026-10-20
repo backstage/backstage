@@ -114,10 +114,11 @@ describe('createWebhookRequestValidator', () => {
     // });
     await target(request, context);
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Notification value item is missing required properties',
-      ),
+      'Notification value item is missing required properties (clientState, subscriptionId): [{},{"subscriptionId":"b"}]',
     );
+    expect(request.body).toEqual({
+      value: [{}, { subscriptionId: 'b' }],
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       'No valid notification items found among 2 items',
     );
@@ -133,6 +134,9 @@ describe('createWebhookRequestValidator', () => {
     expect(logger.warn).toHaveBeenCalledWith(
       'No subscription record found for ID b',
     );
+    expect(request.body).toEqual({
+      value: [{ subscriptionId: 'b' }],
+    });
     expect(context.reject).toHaveBeenCalledWith();
   });
 
@@ -148,8 +152,11 @@ describe('createWebhookRequestValidator', () => {
     await target(request, context);
     expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Invalid clientState for notification item'),
+      'Invalid clientState for notification item: [{"subscriptionId":"b"}]',
     );
+    expect(request.body).toEqual({
+      value: [{ subscriptionId: 'b' }],
+    });
     expect(context.reject).toHaveBeenCalledWith();
   });
 
@@ -183,12 +190,12 @@ describe('createWebhookRequestValidator', () => {
     expect(context.reject).toHaveBeenCalled();
   });
 
-  it('accepts and logs debug if all notification items are valid', async () => {
+  it('accepts and removes clientState from all valid notification items', async () => {
     const request = createRequest({
       body: {
         value: [
-          { clientState: 'a', subscriptionId: 'b' },
-          { clientState: 'c', subscriptionId: 'd' },
+          { clientState: 'a', subscriptionId: 'b', resource: '/users/1' },
+          { clientState: 'c', subscriptionId: 'd', resource: '/users/2' },
         ],
       },
     });
@@ -205,6 +212,14 @@ describe('createWebhookRequestValidator', () => {
       },
     );
     await target(request, context);
+    expect(hashValidationToken).toHaveBeenNthCalledWith(1, 'a', 's');
+    expect(hashValidationToken).toHaveBeenNthCalledWith(2, 'c', 's2');
+    expect(request.body).toEqual({
+      value: [
+        { subscriptionId: 'b', resource: '/users/1' },
+        { subscriptionId: 'd', resource: '/users/2' },
+      ],
+    });
     expect(logger.debug).toHaveBeenCalledWith(
       'All 2 notification items are valid',
     );
