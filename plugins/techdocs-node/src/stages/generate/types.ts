@@ -74,7 +74,7 @@ export type GeneratorConfig = {
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
-  kubernetes: KubernetesOptions;
+  kubernetes?: KubernetesOptions;
   pullOptions?: ContainerRunnerPullOptions;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;

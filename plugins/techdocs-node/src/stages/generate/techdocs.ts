@@ -44,6 +44,7 @@ import {
   GeneratorOptions,
   GeneratorRunInType,
   GeneratorRunOptions,
+  KubernetesOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
@@ -275,7 +276,6 @@ export function readGeneratorConfig(
   config: Config,
   logger: LoggerService,
 ): GeneratorConfig {
-  // TODO: read techdocs.generator.kubernetes
   const legacyGeneratorType = config.getOptionalString(
     'techdocs.generators.techdocs',
   ) as GeneratorRunInType;
@@ -296,6 +296,9 @@ export function readGeneratorConfig(
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
     pullOptions: config.getOptional<ContainerRunnerPullOptions>(
       'techdocs.generator.pullOptions',
+    ),
+    kubernetes: config.getOptional<KubernetesOptions>(
+      'techdocs.generator.kubernetes',
     ),
     omitTechdocsCoreMkdocsPlugin: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
