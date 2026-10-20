@@ -114,7 +114,7 @@ describe('createWebhookRequestValidator', () => {
     // });
     await target(request, context);
     expect(logger.warn).toHaveBeenCalledWith(
-      'Notification value item is missing required properties (clientState, subscriptionId): [{},{"subscriptionId":"b"}]',
+      'Notification value item is missing required properties (clientState, subscriptionId).',
     );
     expect(request.body).toEqual({
       value: [{}, { subscriptionId: 'b' }],
@@ -152,7 +152,7 @@ describe('createWebhookRequestValidator', () => {
     await target(request, context);
     expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
     expect(logger.warn).toHaveBeenCalledWith(
-      'Invalid clientState for notification item: [{"subscriptionId":"b"}]',
+      'Invalid clientState for notification item.',
     );
     expect(request.body).toEqual({
       value: [{ subscriptionId: 'b' }],
