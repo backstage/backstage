@@ -104,6 +104,23 @@ describe('createWebhookRequestValidator', () => {
     expect(context.reject).toHaveBeenCalledWith();
   });
 
+  it.each([null, 'invalid', 1])(
+    'rejects if notification item is not an object: %p',
+    async notification => {
+      const request = createRequest({ body: { value: [notification] } });
+
+      await target(request, context);
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Notification value item is not an object: ${JSON.stringify(
+          notification,
+        )}`,
+      );
+      expect(databaseClient.getById).not.toHaveBeenCalled();
+      expect(context.reject).toHaveBeenCalledWith();
+    },
+  );
+
   it('warns and continues if notification item missing clientState or subscriptionId', async () => {
     const request = createRequest({
       body: { value: [{ clientState: 'a' }, { subscriptionId: 'b' }] },
@@ -114,7 +131,7 @@ describe('createWebhookRequestValidator', () => {
     // });
     await target(request, context);
     expect(logger.warn).toHaveBeenCalledWith(
-      'Notification value item is missing required properties (clientState, subscriptionId).',
+      'Notification value item is missing or contains invalid required properties (clientState, subscriptionId).',
     );
     expect(request.body).toEqual({
       value: [{}, { subscriptionId: 'b' }],
@@ -123,6 +140,28 @@ describe('createWebhookRequestValidator', () => {
       'No valid notification items found among 2 items',
     );
     expect(context.reject).toHaveBeenCalledWith();
+  });
+
+  it('rejects notification items when clientState or subscriptionId is not a string', async () => {
+    const request = createRequest({
+      body: {
+        value: [
+          { clientState: 1, subscriptionId: 'b' },
+          { clientState: 'c', subscriptionId: 2 },
+        ],
+      },
+    });
+
+    await target(request, context);
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Notification value item is missing or contains invalid required properties (clientState, subscriptionId).',
+    );
+    expect(databaseClient.getById).not.toHaveBeenCalled();
+    expect(request.body).toEqual({
+      value: [{ subscriptionId: 'b' }, { subscriptionId: 2 }],
+    });
+    expect(context.reject).toHaveBeenCalled();
   });
 
   it('warns if no subscription record found', async () => {
