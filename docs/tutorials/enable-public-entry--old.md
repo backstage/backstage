@@ -105,3 +105,10 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 5. Finally, as soon as you log in, you will be redirected to the main app home page (inspect the page and see that the protected bundle was served from the app backend after the redirect).
 
 That's it!
+
+## Restricting public configuration
+
+To restrict configuration exposed to unauthenticated users, see
+[Restricting public configuration](./enable-public-entry.md#restricting-public-configuration)
+in the public entry point guide. These configuration options also apply to apps
+using the old frontend system.

@@ -46,43 +46,5 @@ Be sure to register the app router last, as it serves content for HTML5-mode nav
 
 ## Public entry point configuration
 
-When serving a protected app with a public entry point, the app backend injects
-all frontend-visible configuration into both entry points by default. To restrict
-what is initially exposed to users without an authenticated session cookie,
-configure `app.publicConfig`:
-
-```yaml
-app:
-  publicConfig:
-    allowedConfig:
-      - app.title
-      - backend.baseUrl
-      - auth.environment
-      - auth.providers
-    allowedExtensions:
-      - sign-in-page:app
-```
-
-The presence of `app.publicConfig` enables filtering. Missing or empty lists allow
-no config keys or extensions. An existing extension list is replaced with an empty
-list when no extension IDs are allowed.
-Allowed key paths include their descendants, except that `app.extensions` is
-always controlled exclusively by `allowedExtensions`, including when `app` or
-`app.extensions` is listed in `allowedConfig`. Extension IDs are matched exactly
-for both string entries and object entries. These IDs select extension configuration
-to expose; they do not control which extensions the public app loads. Normal
-frontend visibility rules still apply. Authenticated users continue to receive the
-full frontend-visible configuration.
-
-The public HTML template also receives the restricted config. Include any keys
-that your template reads, such as `app.title`, in `allowedConfig`. Asset URLs
-based on `publicPath` continue to use the full frontend-visible `app.baseUrl`,
-even if that key is omitted from the public config.
-
-Do not combine `app.publicConfig` with `app.disableConfigInjection: true`.
-Filtering requires runtime configuration injection; disabling injection serves
-the configuration embedded at build time without applying these allowlists.
-
-This setting only applies when serving the enabled public entry point to
-unauthenticated users. It has no effect when that entry point is absent or
-disabled. The main entry point always receives the full frontend-visible config.
+To restrict configuration exposed to unauthenticated users, see
+[Restricting public configuration](https://backstage.io/docs/tutorials/enable-public-entry/#restricting-public-configuration).
