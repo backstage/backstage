@@ -115,14 +115,21 @@ describe('public entry point config', () => {
     jest.restoreAllMocks();
   });
 
-  async function createApp(publicConfig?: {
-    allowedConfig?: string[];
-    allowedExtensions?: string[];
-  }) {
+  async function createApp(
+    publicConfig?: {
+      allowedConfig?: string[];
+      allowedExtensions?: string[];
+    },
+    options?: {
+      disablePublicEntryPoint?: boolean;
+      disableConfigInjection?: boolean;
+    },
+  ) {
     const data = {
       app: {
         ...frontendData.app,
         disableStaticFallbackCache: true,
+        ...options,
         privateValue: 'backend-only',
         secret: 'app-secret',
         ...(publicConfig === undefined ? {} : { publicConfig }),
@@ -157,6 +164,30 @@ describe('public entry point config', () => {
     expect(readInjectedConfig(mainResponse.text)).toEqual(frontendData);
   });
 
+  it.each(['disabled', 'absent'])(
+    'keeps full config when the public entry point is %s',
+    async state => {
+      if (state === 'absent') {
+        await fs.remove(mockDir.resolve('dist/public'));
+      }
+      const app = await createApp(
+        {},
+        { disablePublicEntryPoint: state === 'disabled' },
+      );
+      const response = await request(app).get('/backstage/');
+      expect(response.status).toBe(200);
+      expect(readInjectedConfig(response.text)).toEqual(frontendData);
+    },
+  );
+
+  it('leaves build-time config untouched when config injection is disabled', async () => {
+    const app = await createApp({}, { disableConfigInjection: true });
+    const response = await request(app).get('/backstage/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('disallowed-build-config');
+    expect(response.text).not.toContain('backstage.io/config');
+  });
+
   it('selects visible keys and exact extension IDs without changing authenticated config', async () => {
     const app = await createApp({
       allowedConfig: ['app.title', 'backend', 'app.secret', 'app.privateValue'],
@@ -187,30 +218,39 @@ describe('public entry point config', () => {
     expect(readInjectedConfig(signInResponse.text)).toEqual(frontendData);
   });
 
-  it('uses restricted config for filesystem aliases of the built public index', async () => {
-    await fs.link(
-      mockDir.resolve('dist/public/index.html'),
-      mockDir.resolve('dist/public/index-alias.html'),
-    );
-    const app = await createApp({ allowedConfig: ['app.title'] });
-    for (const path of [
-      '/index.html',
-      '/%69ndex.html',
-      '/index%2ehtml',
-      '/index-alias.html',
-      '//index.html',
-      '/%2e/index.html',
-      '/INDEX.HTML',
-      '//',
-    ]) {
-      const response = await request(app).get(`/backstage${path}`);
-      expect(response.status).toBe(200);
-      expect(response.text).not.toContain('disallowed-build-config');
-      expect(readInjectedConfig(response.text)).toEqual({
-        app: { title: 'Backstage', extensions: [] },
-      });
-    }
-  });
+  it.each([false, true])(
+    'uses injected HTML for index aliases with public filtering enabled: %s',
+    async restricted => {
+      await fs.link(
+        mockDir.resolve('dist/public/index.html'),
+        mockDir.resolve('dist/public/index-alias.html'),
+      );
+      const app = await createApp(
+        restricted ? { allowedConfig: ['app.title'] } : undefined,
+      );
+      for (const path of [
+        '/index.html',
+        '/%69ndex.html',
+        '/index%2ehtml',
+        '/index-alias.html',
+        '//index.html',
+        '/%2e/index.html',
+        '/INDEX.HTML',
+        '//',
+      ]) {
+        const response = await request(app).get(`/backstage${path}`);
+        expect(response.status).toBe(200);
+        expect(response.text).not.toContain('disallowed-build-config');
+        expect(readInjectedConfig(response.text)).toEqual(
+          restricted
+            ? {
+                app: { title: 'Backstage', extensions: [] },
+              }
+            : frontendData,
+        );
+      }
+    },
+  );
 
   it('filters environment config with the same rules and preserves layer precedence', async () => {
     const envExtensions = [

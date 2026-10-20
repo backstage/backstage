@@ -48,7 +48,8 @@ Be sure to register the app router last, as it serves content for HTML5-mode nav
 
 When serving a protected app with a public entry point, the app backend injects
 all frontend-visible configuration into both entry points by default. To restrict
-what is initially exposed to unauthenticated users, configure `app.publicConfig`:
+what is initially exposed to users without an authenticated session cookie,
+configure `app.publicConfig`:
 
 ```yaml
 app:
@@ -78,7 +79,10 @@ that your template reads, such as `app.title`, in `allowedConfig`. Asset URLs
 based on `publicPath` continue to use the full frontend-visible `app.baseUrl`,
 even if that key is omitted from the public config.
 
-This filtering requires runtime configuration injection. When
-`app.disableConfigInjection` is enabled, the configuration embedded at build time
-is used instead. This setting only applies when serving the public entry point;
-it has no effect when that entry point is absent or disabled.
+Do not combine `app.publicConfig` with `app.disableConfigInjection: true`.
+Filtering requires runtime configuration injection; disabling injection serves
+the configuration embedded at build time without applying these allowlists.
+
+This setting only applies when serving the enabled public entry point to
+unauthenticated users. It has no effect when that entry point is absent or
+disabled. The main entry point always receives the full frontend-visible config.

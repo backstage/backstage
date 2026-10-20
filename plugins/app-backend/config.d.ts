@@ -55,7 +55,8 @@ export interface Config {
     /**
      * Restricts frontend-visible configuration injected into the unauthenticated
      * public entry point. If omitted, all frontend-visible configuration is included.
-     * Does not affect configuration served to authenticated users.
+     * Does not affect configuration served to authenticated users or apps without
+     * an enabled public entry point. Do not combine with disableConfigInjection.
      */
     publicConfig?: {
       /**

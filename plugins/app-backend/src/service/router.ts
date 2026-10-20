@@ -250,9 +250,6 @@ export async function createRouter(
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
         appConfigs: appConfigs && filterPublicConfig(appConfigs, config),
-        disableStaticIndex: Boolean(
-          appConfigs && config.has('app.publicConfig'),
-        ),
         appBaseUrl:
           appConfigs &&
           ConfigReader.fromConfigs(appConfigs).getOptionalString('app.baseUrl'),
@@ -282,7 +279,6 @@ async function createEntryPointRouter({
   staticFallbackHandler,
   appConfigs,
   appBaseUrl,
-  disableStaticIndex,
 }: {
   logger: LoggerService;
   rootDir: string;
@@ -290,7 +286,6 @@ async function createEntryPointRouter({
   staticFallbackHandler?: express.Handler;
   appConfigs?: AppConfig[];
   appBaseUrl?: string;
-  disableStaticIndex?: boolean;
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
@@ -342,7 +337,7 @@ async function createEntryPointRouter({
   rootRouter.use(async (req, _res, next) => {
     // Make sure / and /index.html are handled by the HTML5 route below.
     let isIndex = req.path === '/' || req.path === '/index.html';
-    if (disableStaticIndex && !isIndex) {
+    if (injectResult?.indexHtmlContent && !isIndex) {
       try {
         const path = resolveSafeChildPath(
           rootDir,
@@ -352,8 +347,11 @@ async function createEntryPointRouter({
           fs.stat(path),
           fs.stat(resolvePath(rootDir, 'index.html')),
         ]);
-        // Compare filesystem identity to cover encoded paths and platform-specific aliases.
-        isIndex = file.dev === index.dev && file.ino === index.ino;
+        const candidate = file.isDirectory()
+          ? await fs.stat(resolvePath(path, 'index.html'))
+          : file;
+        // Every alias of the built index must use the injected HTML as well.
+        isIndex = candidate.dev === index.dev && candidate.ino === index.ino;
       } catch {
         // Let express.static handle missing files, invalid paths, and malformed URL encoding.
       }
@@ -366,7 +364,6 @@ async function createEntryPointRouter({
   });
   rootRouter.use(
     express.static(rootDir, {
-      ...(disableStaticIndex ? { index: false } : {}),
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
         // link to static assets from recently deployed versions.
