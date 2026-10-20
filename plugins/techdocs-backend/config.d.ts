@@ -63,6 +63,24 @@ export interface Config {
       defaultEngine?: string;
 
       /**
+       * Settings for kubernetes runner
+       */
+      kubernetes?: {
+        /**
+         * the namespace in which the job is run (typically "backstage")
+         */
+        namespace?: string;
+        /**
+         * Name of the shared PVC claim between Backstage and K8s
+         */
+        volumeClaimName: string;
+        /**
+         * must match where the PVC is mounted in the Backstage pod, which is normally backend.workingDirectory.
+         */
+        workRoot: string;
+      };
+
+      /**
        * Override behavior for mkdocs.yml-based builds. Unless noted otherwise,
        * these settings apply to the MkDocs engine only.
        */

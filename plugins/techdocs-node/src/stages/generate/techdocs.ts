@@ -202,6 +202,9 @@ export class TechdocsGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
+        case 'kubernetes':
+          // TODO: construct KubernetesJobRunner from techdocs.generator.kubernetes config (namespace, volumeClaimName, workRoot)
+          throw new Error('not yet implemented');
         case 'docker': {
           const containerRunner =
             this.containerRunner || new DockerContainerRunner();
@@ -272,6 +275,7 @@ export function readGeneratorConfig(
   config: Config,
   logger: LoggerService,
 ): GeneratorConfig {
+  // TODO: read techdocs.generator.kubernetes
   const legacyGeneratorType = config.getOptionalString(
     'techdocs.generators.techdocs',
   ) as GeneratorRunInType;

@@ -22,9 +22,11 @@ import {
   Log,
   KubeConfig,
   VersionApi,
+  V1Job,
 } from '@kubernetes/client-node';
 import { Writable } from 'node:stream';
 import { ContainerRunnerPullOptions, TechDocsContainerRunner } from './types';
+import path from 'node:path';
 
 export type KubernetesClient = {
   batch: BatchV1Api;
@@ -50,9 +52,15 @@ const REQUIRED_PERMISSIONS = [
 export class KubernetesJobRunner implements TechDocsContainerRunner {
   private client?: KubernetesClient;
 
-  constructor(private readonly options: { namespace?: string } = {}) {}
+  constructor(
+    private readonly options: {
+      namespace?: string;
+      volumeClaimName: string;
+      workRoot: string;
+    },
+  ) {}
 
-  runContainer(opts: {
+  async runContainer(opts: {
     imageName: string;
     command?: string | string[];
     args: string[];
@@ -64,7 +72,90 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     defaultUser?: boolean;
     pullOptions?: ContainerRunnerPullOptions;
   }): Promise<void> {
+    const { batch, core, log, namespace } = await this.getClient();
+    const job = this.createNamespacedJobRequest(
+      opts.imageName,
+      opts.args,
+      opts.mountDirs || {},
+      opts.envVars || {},
+      opts.command,
+      opts.workingDir,
+      opts.pullImage,
+    );
+
+    const created = await batch.createNamespacedJob({ namespace, body: job });
+    const jobName = created.metadata!.name!; // generateName → server assigns the suffix
+    // TODO: wait for job completion via Complete/Failed conditions (readNamespacedJobStatus or Watch)
+    // TODO: stream logs: find pod via core.listNamespacedPod({ labelSelector: `job-name=${jobName}` }), wait until it leaves Pending, then log.log(..., { follow: true }) piped with { end: false }
+    // TODO: error checking: throw on Failed with the condition reason; on any error, delete the job with propagationPolicy 'Background'
     return Promise.resolve(undefined);
+  }
+
+  private createNamespacedJobRequest(
+    imageName: string,
+    args: string[],
+    mountDirs: Record<string, string>,
+    envVars: Record<string, string>,
+    command?: string | string[],
+    workingDir?: string,
+    pullImage?: boolean,
+  ): V1Job {
+    // TODO: handle the `defaultUser` security context
+    // TODO: handle pullOptions
+    // TODO: update timeouts
+    // TODO: set automountServiceAccountToken: false so the build pod gets no API token
+    // TODO: add PSA-friendly securityContext (runAsNonRoot, allowPrivilegeEscalation: false, drop ALL)
+    // TODO: add resource requests/limits
+    const job: V1Job = {
+      apiVersion: 'batch/v1',
+      kind: 'Job',
+      metadata: {
+        generateName: 'techdocs-',
+        labels: { 'app.kubernetes.io/managed-by': 'backstage-techdocs' },
+      },
+      spec: {
+        backoffLimit: 0,
+        activeDeadlineSeconds: 600,
+        ttlSecondsAfterFinished: 300,
+        template: {
+          spec: {
+            restartPolicy: 'Never',
+            containers: [
+              {
+                name: 'techdocs',
+                image: imageName,
+                imagePullPolicy: pullImage ? 'Always' : 'IfNotPresent',
+                command: typeof command === 'string' ? [command] : command,
+                args,
+                workingDir,
+                env: Object.entries(envVars).map(([name, value]) => ({
+                  name,
+                  value,
+                })),
+                // TODO: throw if hostDir is outside workRoot (subPath starts with '..' or is absolute), e.g. dir: refs in local dev
+                // TODO: fs.realpath both hostDir and workRoot first, like DockerContainerRunner, so symlinks don't skew subPath
+                volumeMounts: Object.entries(mountDirs).map(
+                  ([hostDir, mountPath]) => ({
+                    name: 'work',
+                    mountPath,
+                    subPath: path.relative(this.options.workRoot, hostDir),
+                  }),
+                ),
+              },
+            ],
+            volumes: [
+              {
+                name: 'work',
+                persistentVolumeClaim: {
+                  claimName: this.options.volumeClaimName,
+                },
+              },
+            ],
+          },
+        },
+      },
+    };
+    return job;
   }
 
   private async checkPermissions(client: KubernetesClient): Promise<void> {
@@ -110,7 +201,6 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     // const { BatchV1Api, CoreV1Api, KubeConfig, Log, VersionApi } = await import(
     //   '@kubernetes/client-node'
     // );
-
     const kc = new KubeConfig();
     kc.loadFromDefault();
 
