@@ -235,6 +235,26 @@ it'll take into account when present.
 - `BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING`
 
+`TestDatabases` creates databases as your tests ask for them, and drops them
+when the test file finishes. In PostgreSQL, every `DROP DATABASE` waits for an
+immediate checkpoint, which writes all changed data on the server to disk and
+waits for it to be synced. With many parallel test workers, these checkpoints
+can take tens of seconds each and make the `afterAll` hooks time out. The Docker
+based engines avoid this by keeping their data in memory. If you supply your own
+PostgreSQL server for tests, turn off durability on it, since the data is thrown
+away anyway:
+
+```sql
+ALTER SYSTEM SET fsync = off;
+ALTER SYSTEM SET synchronous_commit = off;
+ALTER SYSTEM SET full_page_writes = off;
+SELECT pg_reload_conf();
+```
+
+You could instead keep the data directory on a `tmpfs`, but then the test
+databases use memory, which can run out on CI machines that also run many test
+workers.
+
 ## Testing Service Factories
 
 To facilitate testing of service factories, the `@backstage/backend-test-utils`
