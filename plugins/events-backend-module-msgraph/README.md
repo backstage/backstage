@@ -2,10 +2,11 @@
 
 The Microsoft Graph backend module for the `@backstage/plugin-events-backend` plugin.
 
-This module helps you ingest Microsoft Graph change notifications into Backstage events. It does two things:
+This module helps you ingest Microsoft Graph change notifications into Backstage events. It does three things:
 
 - Registers an HTTP ingress for the `msgraph` topic and validates incoming webhook requests.
-- Subscribes to `msgraph` events and republishes them to specific topics for user/group upsert and delete operations.
+- Creates and refreshes Microsoft Graph subscriptions for users and groups.
+- Subscribes to `msgraph` events and republishes notifications to `msgraph/upsert` or `msgraph/delete`.
 
 ## Installation
 
@@ -25,8 +26,8 @@ backend.add(import('@backstage/plugin-events-backend-module-msgraph'));
 
 ## Configuration
 
-This module supports a single Microsoft Entra tenant per Backstage backend. The `tenantId` setting identifies that
-tenant; subscribing to multiple tenants is currently not supported.
+This module uses one set of Microsoft Entra application credentials, and therefore supports one tenant per Backstage
+backend. `subscriptionResources` must contain one or both of `users` and `groups`.
 
 Add module configuration in your `app-config.yaml`:
 
@@ -47,26 +48,36 @@ events:
       clientId: ${MSGRAPH_CLIENT_ID}
       clientSecret: ${MSGRAPH_CLIENT_SECRET}
 
-      # Optional startup delay before subscription scheduling
+      # Optional delay before Microsoft Graph subscription scheduling
       startupDelay: 30 seconds
 ```
 
+`notificationUrl` must be publicly reachable by Microsoft Graph and point to the events backend HTTP ingress for the
+`msgraph` topic (for example, `https://backstage-events.example.com/msgraph`). The module automatically
+creates and refreshes Graph subscriptions; the application registered with `clientId` must be authorized to manage
+subscriptions for the configured resources.
+
 ## Published Topics
 
-After receiving Microsoft Graph notifications on `msgraph`, the module republishes:
+The webhook ingress publishes validated notifications on `msgraph`. The event router partitions each notification
+collection by `changeType` and republishes:
 
-- `msgraph/upsert` for created or updated resources.
-- `msgraph/delete` for deleted resources.
+- `msgraph/upsert` for notifications with `changeType: updated` (for users and groups Microsoft Graph reports both creations and updates
+  this way).
+- `msgraph/delete` for notifications with `changeType: deleted`.
 
-The topics receive original Microsoft Graph notifications unchanged.
+Each published event payload is an array of the matching notification objects, not the original
+`ChangeNotificationCollection`. The notification objects are passed through unchanged (with `clientState` secret removed by the validator).
+Invalid collections and notifications with other change types are not forwarded.
 
 ## How it works
 
-Unlike GitHub webhook events, MS Graph events cannot be configured in the portal. Client Apps have to create new
-subscriptions themselves, specifying the webhook URLs, verification secrets/tokens and all other
-params [through an endpoint](https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=javascript#create-a-subscription).
-The module `@backstage/plugin-events-backend-module-msgraph` republishes notifications to the more specific
-`upsert`/`delete` topics without changing their payloads.
+Unlike GitHub webhook events, Microsoft Graph subscriptions must be created through the Graph API. This module
+creates subscriptions for the configured resources, handles Graph's endpoint validation request, and periodically
+checks and renews subscriptions. The subscription refresh runs immediately after startup (following any configured
+`startupDelay`) and then every five minutes. It stores subscription records and salted hashes of the generated
+`clientState` tokens in the Backstage database. On notification requests, it validates each notification against the
+stored subscription before the events backend publishes the event.
 
 ```mermaid
 sequenceDiagram
@@ -91,7 +102,9 @@ sequenceDiagram
   EventsPlugin ->> EventConsumer: "msgraph/upsert" and "msgraph/delete" topic events
 ```
 
-All incoming event requests are validated on `clientState`.
+Graph's subscription-validation request is answered with its `validationToken` as plain text. Notification requests are
+validated against the subscription's stored `clientState` hash; the `clientState` value is removed from notifications
+before they are published to avoid exposing it in logs or otherwise.
 
 ```mermaid
 sequenceDiagram
@@ -106,8 +119,8 @@ sequenceDiagram
     MicrosoftGraphSubscriptionsDatabaseClient ->> MicrosoftGraphSubscriptionManager: subscription IDs
     MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: validateActiveSubscription
     MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: expired/invalid subscriptions
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: createSubscription
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: insert subscription record with secret hash and salt
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: createSubscription/renewSubscription
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: insert/update subscription
   end
 
   Note over WebhookRequestValidator: on new webhook event
@@ -116,11 +129,9 @@ sequenceDiagram
   WebhookRequestValidator ->> WebhookRequestValidator: reject request if token_hash !== hashValidationToken(clientState, token_salt)
 ```
 
-Upsert/Delete events can later be consumed by e.g. Catalog entity providers to refresh groups and users.
-Currently, neither `MicrosoftGraphOrgEntityProvider` nor `MicrosoftGraphIncrementalEntityProvider` subscribe to these events.
-Group/User IDs from the Upsert events can be used to query MS Graph APIs for
-all data necessary to build Group/User entities. Delete events already contain `CompoundEntityRefs` at this point.
-Catalog entities can be deleted/added/updated via `connection.applyMutation({..., type: 'delta'})`.
+Consumers can subscribe to `msgraph/upsert` and `msgraph/delete` and use the notification `resource` to retrieve current
+data from Microsoft Graph or handle deletions. This module only routes notifications; it does not update catalog
+entities.
 
 ## How to test locally
 
@@ -138,9 +149,9 @@ events:
       subscriptionResources:
         - groups
         - users
+      tenantId: <...>
       clientId: <...>
       clientSecret: <...>
-      tenantId: <...>
 ```
 
 4. Run with DEBUG log level if you want to see all messages `LOG_LEVEL=DEBUG yarn start backend`
