@@ -110,9 +110,9 @@ outside the plugin namespace, still throw when creating the reference or feature
 
 Route references optionally accept a `params` option, which will require the listed parameter names to be present in the route path. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` parameters, like in this path `/entities/:kind/:namespace/:name`:
 
-A reference can also declare parameters from ancestor routes to build links from outside that route hierarchy. Required ancestor parameters that are not declared must instead be available from the current routing context.
+The target path includes the paths of all ancestor extensions. References must declare every required parameter in that complete path, and callers must supply their values even when linking from within the same route hierarchy. If a parameter name appears more than once, the supplied value replaces every occurrence.
 
-Optional ancestor parameters can be omitted when there is no current routing context; when present in that context, their values are preserved. Declared parameters also replace occurrences in ancestor paths, including when the same name occurs in the target's own path.
+Targeted references do not inherit parameter values from the current location. Optional ancestor parameters that are not declared are omitted from generated links.
 
 Optional parameters in a mounted path, such as `:id?`, may be omitted from the reference's `params` to link without that parameter. If the reference declares `id`, callers must supply it even though the path allows it to be omitted. References targeting the same extension must still declare identical parameter contracts.
 

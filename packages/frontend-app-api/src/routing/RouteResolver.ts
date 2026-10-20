@@ -17,7 +17,6 @@
 import { generatePath, matchRoutes, RouteMatch } from 'react-router-dom';
 import {
   RouteRef,
-  createRouteRef,
   AppTree,
   coreExtensionData,
   ExternalRouteRef,
@@ -46,25 +45,24 @@ import { joinPaths } from './joinPaths';
 const MAX_CACHED_SOURCE_LOCATIONS = 32;
 
 /**
- * Resolves the absolute route ref that our target route ref is pointing pointing to, as well
- * as the relative target path.
+ * Resolves the target reference and path, indicating whether the path is already
+ * absolute or needs a base path from the legacy routing context.
  *
  * Returns an undefined target ref if one could not be fully resolved.
  */
 function resolveTargetRef(
   targetRouteRef: AnyRouteRef,
   routePaths: Map<RouteRef, string>,
-  routeParents: Map<RouteRef, RouteRef | undefined>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
   routeRefsById: Map<string, RouteRef | SubRouteRef>,
-  extensionRoutes: Map<string, RouteRef | undefined>,
+  extensionRoutes: Map<string, string | undefined>,
   fallbackRoutes: Map<string, RouteRef | undefined>,
   redirects: RouteRedirects,
   externalRouteIds: Map<ExternalRouteRef, string>,
   externalBindingsById: Map<string, ExternalRouteRef>,
   invalidExtensionIds: Set<string>,
   fallbackMountIds: Map<string, Set<string>>,
-): readonly [RouteRef | undefined, string] {
+): readonly [ref: RouteRef | undefined, path: string, absolute?: boolean] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
   let ref: AnyRouteRef = targetRouteRef;
@@ -130,61 +128,32 @@ function resolveTargetRef(
         message: `Ambiguous deprecated route mounts for '${extensionId}'`,
       });
     }
-    let mountedRef = hasTarget
-      ? extensionRoutes.get(extensionId)
-      : fallbackRoutes.get(extensionId);
+    const mountedRef = hasTarget ? ref : fallbackRoutes.get(extensionId);
     if (!mountedRef) {
       return [undefined, ''];
     }
-    let mountedPath = joinPaths(routePaths.get(mountedRef) ?? '', path);
+    const mountedPath = joinPaths(
+      (hasTarget
+        ? extensionRoutes.get(extensionId)
+        : routePaths.get(mountedRef)) ?? '',
+      path,
+    );
     const actual = [...params].sort();
-    let expected: string[];
-    for (;;) {
-      expected = [
-        ...new Set(
-          [...mountedPath.matchAll(/:([\w-]+)(\?)?/g)]
-            .filter(match => !match[2] || actual.includes(match[1]))
-            .map(match => match[1]),
-        ),
-      ].sort();
-      if (
-        JSON.stringify(actual) === JSON.stringify(expected) ||
-        // Legacy mounts historically allow callers to supply unused parameters.
-        (!hasTarget &&
-          routeRefType in mountedRef &&
-          expected.every(param => actual.includes(param)))
-      ) {
-        // Include ancestor occurrences of declared parameters even when the
-        // local path already accounts for every parameter in the reference.
-        let ancestor = routeParents.get(mountedRef);
-        let ancestorPath = mountedPath;
-        while (ancestor) {
-          const segment = routePaths.get(ancestor) ?? '';
-          const ancestorParams = [...segment.matchAll(/:([\w-]+)(\?)?/g)];
-          if (
-            ancestorParams.some(
-              match => !match[2] && !actual.includes(match[1]),
-            )
-          ) {
-            break;
-          }
-          ancestorPath = joinPaths(segment, ancestorPath);
-          if (ancestorParams.some(match => actual.includes(match[1]))) {
-            mountedRef = ancestor;
-            mountedPath = ancestorPath;
-          }
-          ancestor = routeParents.get(ancestor);
-        }
-        return [mountedRef, mountedPath];
-      }
-      const parent = routeParents.get(mountedRef);
-      if (!parent || expected.some(param => !actual.includes(param))) {
-        break;
-      }
-      // Explicit ancestor parameters belong to the caller's path, rather than
-      // the source location used for scoped navigation.
-      mountedRef = parent;
-      mountedPath = joinPaths(routePaths.get(parent) ?? '', mountedPath);
+    const expected = [
+      ...new Set(
+        [...mountedPath.matchAll(/:([\w-]+)(\?)?/g)]
+          .filter(match => !match[2] || actual.includes(match[1]))
+          .map(match => match[1]),
+      ),
+    ].sort();
+    if (
+      JSON.stringify(actual) === JSON.stringify(expected) ||
+      // Legacy mounts historically allow callers to supply unused parameters.
+      (!hasTarget &&
+        routeRefType in mountedRef &&
+        expected.every(param => actual.includes(param)))
+    ) {
+      return [mountedRef, mountedPath, hasTarget];
     }
     throw new RouteValidationError({
       code: 'ROUTE_PARAMETERS_INVALID',
@@ -277,7 +246,7 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly invalidExtensionIds = new Set<string>();
   private readonly fallbackMountIds = new Map<string, Set<string>>();
   private readonly externalBindingsById = new Map<string, ExternalRouteRef>();
-  private readonly extensionRoutes = new Map<string, RouteRef | undefined>();
+  private readonly extensionRoutes = new Map<string, string | undefined>();
   private readonly fallbackRoutes = new Map<string, RouteRef | undefined>();
   private readonly routePaths: Map<RouteRef, string>;
   private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
@@ -312,17 +281,15 @@ export class RouteResolver implements RouteResolutionApi {
     }
     this.routePaths = new Map(routePaths);
     this.routeParents = new Map(routeParents);
-    // Canonical refs let extension-ID lookups share the path resolver while
-    // leaving historical page associations and their parent chains intact.
+    // Targeted refs use complete paths, independently of legacy ref boundaries.
     const indexRoutes = (
       objects: BackstageRouteObject[],
-      parent?: RouteRef,
-    ): BackstageRouteObject[] =>
-      objects.map(object => {
-        let ref = parent;
-        const refs = new Set(object.routeRefs);
+      parentPath: string,
+    ) => {
+      for (const object of objects) {
+        const path = joinPaths(parentPath, object.path);
         const mountedIds = new Set<string>();
-        for (const emittedRef of refs) {
+        for (const emittedRef of object.routeRefs) {
           const id = OpaqueRouteRef.toInternal(emittedRef).getExtensionId?.();
           if (id !== undefined && !mountedIds.has(id)) {
             // Deprecated registrations are fallback candidates only. Multiple
@@ -340,27 +307,15 @@ export class RouteResolver implements RouteResolutionApi {
           }
         }
         if (object.appNode) {
-          const extensionId = object.appNode.spec.id;
-          // @ts-expect-error Internal mount refs are identities, not extension targets
-          ref = createRouteRef({
-            params: [...object.path.matchAll(/:([\w-]+)/g)].map(
-              match => match[1],
-            ),
-          });
-          this.extensionRoutes.set(extensionId, ref);
-          this.routePaths.set(ref, object.path);
-          this.routeParents.set(ref, parent);
-          refs.add(ref);
+          this.extensionRoutes.set(object.appNode.spec.id, path);
         }
-        return {
-          ...object,
-          routeRefs: refs,
-          ...(object.children && {
-            children: indexRoutes(object.children, ref),
-          }),
-        };
-      });
-    this.routeObjects = indexRoutes(routeObjects);
+        if (object.children) {
+          indexRoutes(object.children, path);
+        }
+      }
+    };
+    indexRoutes(routeObjects, '');
+    this.routeObjects = routeObjects;
     this.routeBindings = new Map(routeBindings);
     for (const ref of routeBindings.keys()) {
       const id =
@@ -458,7 +413,6 @@ export class RouteResolver implements RouteResolutionApi {
         resolveTargetRef(
           ref,
           this.routePaths,
-          this.routeParents,
           this.routeBindings,
           this.routeRefsById,
           this.extensionRoutes,
@@ -527,13 +481,13 @@ export class RouteResolver implements RouteResolutionApi {
     // First figure out what our target absolute ref is, as well as our target path.
     let targetRef: RouteRef | undefined;
     let targetPath: string;
+    let absolutePath: boolean | undefined;
     try {
-      [targetRef, targetPath] = resolveTargetRef(
+      [targetRef, targetPath, absolutePath] = resolveTargetRef(
         anyRouteRef?.$$type === '@backstage/RouteRef'
           ? this.routeAliasResolver(anyRouteRef)
           : anyRouteRef,
         this.routePaths,
-        this.routeParents,
         this.routeBindings,
         this.routeRefsById,
         this.extensionRoutes,
@@ -554,19 +508,16 @@ export class RouteResolver implements RouteResolutionApi {
       return undefined;
     }
 
-    // The location that we get passed in uses the full path, so start by trimming off
-    // the app base path prefix in case we're running the app on a sub-path.
-    const relativeSourceLocation = this.trimPath(options?.sourcePath ?? '');
-
-    // Next we figure out the base path, which is the combination of the common parent path
-    // between our current location and our target location, as well as the additional path
-    // that is the difference between the parent path and the base of our target location.
-    const basePath = resolveBasePath(
-      targetRef,
-      this.matchSourceLocation(relativeSourceLocation),
-      this.routePaths,
-      this.routeParents,
-    );
+    // Only legacy mounts need a base path from the current routing context.
+    // Source locations include the app base path, which must be removed first.
+    const basePath = absolutePath
+      ? ''
+      : resolveBasePath(
+          targetRef,
+          this.matchSourceLocation(this.trimPath(options?.sourcePath ?? '')),
+          this.routePaths,
+          this.routeParents,
+        );
 
     const routeFunc: RouteFunc<TParams> = (...[params]) => {
       // We selectively encode some some known-dangerous characters in the

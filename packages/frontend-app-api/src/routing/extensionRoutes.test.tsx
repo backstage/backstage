@@ -95,7 +95,10 @@ it('resolves structural copies and sub routes alongside historical page refs', (
     params: ['id'],
   });
   const copy = { ...detail };
-  const child = createRouteRef({ extensionId: 'page:test/child' });
+  const child = createRouteRef({
+    extensionId: 'page:test/child',
+    params: ['id'],
+  });
   const sub = createSubRouteRef({ parent: copy, path: '/edit/:tab' });
   // @ts-expect-error Simulate a plugin compiled before extensionId was required
   const historical = createRouteRef();
@@ -117,10 +120,10 @@ it('resolves structural copies and sub routes alongside historical page refs', (
     '/test/one/edit/two',
   );
   expect(routes.resolve(historical)?.()).toBe('/old');
-  expect(routes.resolve(child, { sourcePath: '/test/one' })?.()).toBe(
-    '/test/one/child',
-  );
-  expect(() => routes.resolve(child)).toThrow('has parameters');
+  expect(
+    routes.resolve(child, { sourcePath: '/test/old' })?.({ id: 'one' }),
+  ).toBe('/test/one/child');
+  expect(routes.resolve(child)?.({ id: 'two' })).toBe('/test/two/child');
   expect(
     routes.resolve(createRouteRef({ extensionId: 'page:test/root' }))?.(),
   ).toBe('/test');
@@ -794,24 +797,37 @@ it('validates external override bindings against all registered callers', () => 
   }
 });
 
-it('resolves explicitly inherited parameters without losing scoped routing', () => {
+it('requires complete ancestor parameters regardless of source location', () => {
   const ref = createRouteRef({
     extensionId: 'page:test/details',
     params: ['org'],
   });
   const scoped = createRouteRef({ extensionId: 'page:test/scoped' });
+  // @ts-expect-error Simulate refs from before extension targets were introduced
+  const legacyParent = createRouteRef({ params: ['org'] });
+  // @ts-expect-error Simulate refs from before extension targets were introduced
+  const legacyChild = createRouteRef();
   const plugin = createFrontendPlugin({
     pluginId: 'test',
     routes: { details: ref, scoped },
     extensions: [
-      page('org', '/orgs/:org'),
+      page('org', '/orgs/:org', { ref: legacyParent }),
       page('details', 'details', { parent: 'page:test/org' }),
-      page('scoped', 'scoped', { parent: 'page:test/org' }),
+      page('scoped', 'scoped', { parent: 'page:test/org', ref: legacyChild }),
     ],
   });
-  const routes = createSpecializedApp({ features: [app, plugin] }).apis.get(
-    routeResolutionApiRef,
-  )!;
+  const result = createSpecializedApp({ features: [app, plugin] });
+  expect(result.errors).toEqual([
+    expect.objectContaining({
+      code: 'ROUTE_PARAMETERS_INVALID',
+      context: expect.objectContaining({
+        extensionId: 'page:test/scoped',
+        expectedParams: ['org'],
+        actualParams: [],
+      }),
+    }),
+  ]);
+  const routes = result.apis.get(routeResolutionApiRef)!;
   expect(routes.resolve(ref)?.({ org: 'one' })).toBe('/orgs/one/details');
   expect(
     routes.resolve(
@@ -825,10 +841,14 @@ it('resolves explicitly inherited parameters without losing scoped routing', () 
       tab: 'edit',
     }),
   ).toBe('/orgs/one/details/edit');
-  expect(routes.resolve(scoped, { sourcePath: '/orgs/one/details' })?.()).toBe(
-    '/orgs/one/scoped',
-  );
-  expect(() => routes.resolve(scoped)).toThrow('has parameters');
+  expect(
+    routes.resolve(scoped, { sourcePath: '/orgs/one/details' }),
+  ).toBeUndefined();
+  expect(routes.resolve(scoped)).toBeUndefined();
+  expect(
+    routes.resolve(legacyChild, { sourcePath: '/orgs/one/details' })?.(),
+  ).toBe('/orgs/one/scoped');
+  expect(() => routes.resolve(legacyChild)).toThrow('has parameters');
 });
 
 it('links to wildcard-mounted pages without a wildcard parameter', () => {
@@ -929,7 +949,7 @@ it('resolves optional ancestors and repeated ancestor parameters', () => {
   });
   const repeated = createRouteRef({
     extensionId: 'page:test/repeated-details',
-    params: ['id'],
+    params: ['id', 'org'],
   });
   const plugin = createFrontendPlugin({
     pluginId: 'test',
@@ -938,7 +958,7 @@ it('resolves optional ancestors and repeated ancestor parameters', () => {
       page('optional', '/orgs/:org?'),
       page('optional-details', 'details', { parent: 'page:test/optional' }),
       page('repeated', '/items/:id'),
-      page('middle', 'middle', { parent: 'page:test/repeated' }),
+      page('middle', 'orgs/:org', { parent: 'page:test/repeated' }),
       page('repeated-details', 'details/:id', { parent: 'page:test/middle' }),
     ],
   });
@@ -948,15 +968,15 @@ it('resolves optional ancestors and repeated ancestor parameters', () => {
   expect(routes.resolve(optional)?.()).toBe('/orgs/details');
   expect(
     routes.resolve(optional, { sourcePath: '/orgs/one/details' })?.(),
-  ).toBe('/orgs/one/details');
-  expect(routes.resolve(repeated)?.({ id: 'one' })).toBe(
-    '/items/one/middle/details/one',
+  ).toBe('/orgs/details');
+  expect(routes.resolve(repeated)?.({ id: 'one', org: 'two' })).toBe(
+    '/items/one/orgs/two/details/one',
   );
   expect(
     routes.resolve(repeated, {
-      sourcePath: '/items/old/middle/details/old',
-    })?.({ id: 'new' }),
-  ).toBe('/items/new/middle/details/new');
+      sourcePath: '/items/old/orgs/old/details/old',
+    })?.({ id: 'new', org: 'new-org' }),
+  ).toBe('/items/new/orgs/new-org/details/new');
 });
 
 it('reports invalid routes without breaking valid links or reviving overridden routes', () => {
