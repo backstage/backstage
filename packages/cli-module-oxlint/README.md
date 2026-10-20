@@ -52,7 +52,15 @@ The default `backstage` preset enables selected correctness and Backstage
 rules. Frontend configs load React and JSX accessibility plugins at top level;
 backend and CLI configs load Node rules at top level. Those role checks apply to
 JavaScript and TypeScript, while Jest is added only in test-file overrides with
-the full role plugin list. TypeScript AST rules also live at top level. Pass
+the full role plugin list. TypeScript AST rules also live at top level. TypeScript
+files under `src/**/generated/` also require a blank line after imports, and
+`--fix` removes their unused imports, which code generators such as
+`backstage-repo-tools package schema openapi generate` rely on. Like ESLint,
+unused arguments and `_` prefixed variables are allowed in these files. Each
+check follows the package's top-level setting for its rule and stays off when
+the package turns that rule off. When the package doesn't set
+`no-unused-vars`, it uses the severity of the `correctness` category. They apply
+after package `overrides`, so set them in top-level `rules`. Pass
 native Oxlint options such as `plugins`, `rules`, `overrides`, `ignorePatterns`,
 `categories`, and `options` to customize the returned config; explicit `rules`
 override factory defaults. Unknown preset names are rejected; `preset` is
@@ -126,3 +134,20 @@ enabled. Existing explicit dependency directives can still run their suggested
 Yarn command without `--fix`. A fix pass can expose new violations
 while exiting successfully, so run plain lint after every `--fix`. The CLI does
 not repeat fixes automatically.
+
+## Copyright headers
+
+The `backstage/notice` rule requires the Apache 2.0 copyright header used in
+the Backstage repository, and `--fix` inserts it. The rule is off by default.
+With `--fix`, the header replaces a leading empty `//` comment, which code
+generators such as `backstage-repo-tools package schema openapi generate` write
+as a placeholder, together with any license header that follows it. An empty
+`//` line followed by a line comment with text is kept. The factory builds each package configuration on its own, so
+enable the rule in every package's `.oxlintrc.js`:
+
+```javascript
+module.exports = require('@backstage/cli-module-oxlint/oxlint-factory')(
+  __dirname,
+  { rules: { 'backstage/notice': 'error' } },
+);
+```

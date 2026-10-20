@@ -19,6 +19,11 @@
 const SHEBANG_REGEX = /^#![^\r\n]*\r?\n/;
 
 const EXISTING_COMMENT_REGEX = /^\/\*[\s\S]*?\*\/\s*/;
+// An empty `//` line comment is a header placeholder, for example in files
+// written by `backstage-repo-tools package schema openapi generate`, unless the
+// next line is a line comment with text.
+const PLACEHOLDER_COMMENT_REGEX =
+  /^\/\/[ \t]*(?:\r?\n|$)(?![ \t]*\/\/[ \t]*\S)\s*/;
 const LICENSE_COMMENT_REGEX = /Copyright|Apache License|@license/i;
 
 function getHeaderText() {
@@ -73,19 +78,27 @@ module.exports = {
           fix(fixer) {
             const headerText = getHeaderText();
 
-            // Replace an existing leading comment only when it looks like a
-            // license header; pragma comments such as `@jest-environment` or
-            // rule suppressions are kept and the header is inserted in front
-            // of them instead.
-            const leadingComment = findLeadingComment(textAfterShebang);
-            if (leadingComment && LICENSE_COMMENT_REGEX.test(leadingComment)) {
-              return fixer.replaceTextRange(
-                [offset, offset + leadingComment.length],
-                headerText,
-              );
+            // Replace a placeholder, or an existing leading comment only when
+            // it looks like a license header; pragma comments such as
+            // `@jest-environment` or rule suppressions are kept and the header
+            // is inserted in front of them instead.
+            const placeholder = textAfterShebang.match(
+              PLACEHOLDER_COMMENT_REGEX,
+            );
+            // A valid header after a placeholder only needs the placeholder
+            // removed; any other license header after it is replaced too.
+            const start = offset + (placeholder ? placeholder[0].length : 0);
+            const rest = sourceText.substring(start);
+            if (placeholder && HEADER_REGEX.test(rest.substring(0, 1000))) {
+              return fixer.replaceTextRange([offset, start], '');
             }
 
-            return fixer.insertTextBeforeRange([offset, offset], headerText);
+            const leadingComment = findLeadingComment(rest);
+            const end =
+              leadingComment && LICENSE_COMMENT_REGEX.test(leadingComment)
+                ? start + leadingComment.length
+                : start;
+            return fixer.replaceTextRange([offset, end], headerText);
           },
         });
       },

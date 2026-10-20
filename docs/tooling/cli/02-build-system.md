@@ -212,7 +212,15 @@ from the intended package.
 The default `backstage` preset enables a selected set of native correctness and
 Backstage rules. Frontend roles load React and JSX accessibility plugins at
 the top level of the package config; backend and CLI roles load Node rules at
-the top level; Jest rules are scoped to test-file overrides. Pass native
+the top level; Jest rules are scoped to test-file overrides. TypeScript files
+under `src/**/generated/` also require a blank line after imports, and `--fix`
+removes their unused imports, which code generators such as
+`backstage-repo-tools package schema openapi generate` rely on. Like ESLint,
+unused arguments and `_` prefixed variables are allowed in these files. Each
+check follows the package's top-level setting for its rule and stays off when
+the package turns that rule off. When the package doesn't set
+`no-unused-vars`, it uses the severity of the `correctness` category. They apply
+after package `overrides`, so set them in top-level `rules`. Pass native
 Oxlint options such as `plugins`, `rules`,
 `overrides`, `ignorePatterns`, `categories`, and `options` to customize the
 config. Unknown preset names are rejected, and `preset` is not passed to
@@ -250,6 +258,15 @@ dependency directives still support their package-manager commands without
 sequential fixes may need another pass. Always run plain lint after `--fix`,
 since a fix pass can exit successfully while exposing new violations. The CLI
 does not loop automatically.
+
+The `backstage/notice` rule requires the Apache 2.0 copyright header used in
+the Backstage repository and is off by default. With `--fix`, it inserts the
+header and replaces a leading empty `//` placeholder comment, as written by
+`backstage-repo-tools package schema openapi generate`, together with any
+license header that follows it. An empty `//` line followed by a line comment with
+text is kept. Enable it with
+`rules: { 'backstage/notice': 'error' }` in each package's `.oxlintrc.js`,
+since the factory builds each package configuration on its own.
 
 Both lint commands accept `--fix`, `--format`, `--output-file`, and
 `--max-warnings`; `repo lint` also accepts `--since <ref>` and accepts

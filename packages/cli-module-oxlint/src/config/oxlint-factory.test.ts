@@ -18,6 +18,7 @@ import { spawnSync } from 'node:child_process';
 import {
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   readdirSync,
   rmSync,
   symlinkSync,
@@ -94,6 +95,7 @@ function runOxlint(
   configFile: string,
   cwd: string,
   files: string[],
+  extraArgs: string[] = [],
 ): { status: number | null; report: OxlintReport; stderr: string } {
   const bin = path.resolve(
     path.dirname(require.resolve('oxlint/package.json')),
@@ -108,6 +110,7 @@ function runOxlint(
       '--disable-nested-config',
       '--format',
       'json',
+      ...extraArgs,
       ...files,
     ],
     {
@@ -195,12 +198,82 @@ describe('Oxlint configuration factory', () => {
         `Unknown Oxlint preset: ${preset}`,
       );
     }
-    expect(config.overrides).toHaveLength(1);
+    expect(config.overrides).toHaveLength(2);
     expect(config.overrides[0].plugins).toEqual([
       ...BASE_PLUGINS,
       'node',
       'jest',
     ]);
+    const generatedFiles = ['ts', 'tsx', 'mts', 'cts'].map(
+      extension => `**/src/**/generated/**/*.${extension}`,
+    );
+    const generatedUnusedVars = {
+      vars: 'all',
+      varsIgnorePattern: '^_',
+      args: 'none',
+      argsIgnorePattern: '^_',
+      fix: { imports: 'safe-fix' },
+    };
+    expect(config.overrides[1]).toEqual({
+      files: generatedFiles,
+      rules: {
+        'no-unused-vars': ['error', generatedUnusedVars],
+        'import/newline-after-import': 'error',
+      },
+    });
+    // Generated files follow the package's own rule settings, and come after
+    // package overrides so that broader globs keep the generator fixes.
+    const packageOverride = {
+      files: ['src/**'],
+      rules: { 'no-unused-vars': ['error', { args: 'all' }] },
+    };
+    expect(
+      factory
+        .createConfigForRole(PACKAGE_DIR, 'node-library', {
+          rules: {
+            'no-unused-vars': ['warn', { varsIgnorePattern: '^unused' }],
+            'import/newline-after-import': 'off',
+          },
+          overrides: [packageOverride],
+        })
+        .overrides.slice(1),
+    ).toEqual([
+      packageOverride,
+      {
+        files: generatedFiles,
+        rules: {
+          'no-unused-vars': [
+            'warn',
+            { ...generatedUnusedVars, varsIgnorePattern: '^unused' },
+          ],
+        },
+      },
+    ]);
+    expect(
+      factory.createConfigForRole(PACKAGE_DIR, 'node-library', {
+        categories: { correctness: 'warn' },
+      }).overrides[1].rules?.['no-unused-vars'],
+    ).toEqual(['warn', generatedUnusedVars]);
+    expect(
+      factory.createConfigForRole(PACKAGE_DIR, 'node-library', {
+        categories: { correctness: 'off' },
+      }).overrides[1].rules,
+    ).toEqual({ 'import/newline-after-import': 'error' });
+    for (const name of ['eslint/no-unused-vars', 'typescript/no-unused-vars']) {
+      expect(
+        factory.createConfigForRole(PACKAGE_DIR, 'node-library', {
+          rules: { [name]: 'off' },
+        }).overrides[1].rules,
+      ).toEqual({ 'import/newline-after-import': 'error' });
+    }
+    expect(
+      factory.createConfigForRole(PACKAGE_DIR, 'node-library', {
+        rules: {
+          'no-unused-vars': 'off',
+          'import/newline-after-import': 'off',
+        },
+      }).overrides,
+    ).toHaveLength(1);
   });
 
   it('uses a package role and rejects packages without one', () => {
@@ -220,7 +293,7 @@ describe('Oxlint configuration factory', () => {
         'react/jsx-key': 'error',
         'jsx-a11y/alt-text': 'error',
       });
-      expect(config.overrides).toHaveLength(1);
+      expect(config.overrides).toHaveLength(2);
       expect(config.overrides[0].plugins).toEqual([
         ...BASE_PLUGINS,
         'react',
@@ -300,7 +373,7 @@ describe('Oxlint configuration factory', () => {
         expect.objectContaining({ property: 'toLowerCase' }),
         expect.objectContaining({ property: 'toUpperCase' }),
       ]);
-      expect(config.overrides.at(-1)?.rules).toEqual({
+      expect(config.overrides.at(-2)?.rules).toEqual({
         'custom/test': 'error',
       });
       expect(inputOverride.rules).toBe(inputOverrideRules);
@@ -605,6 +678,57 @@ describe('Oxlint configuration factory', () => {
       );
     } finally {
       rmSync(workspace, { recursive: true, force: true });
+    }
+  });
+  it('fixes unused imports and import spacing only in generated files', () => {
+    const packageDir = mkdtempSync(
+      path.join(os.tmpdir(), 'oxlint-factory-generated-'),
+    );
+    // Generated code may leave arguments and `_` prefixed variables unused.
+    const source =
+      "import { unused } from './unused';\nimport { used } from './used';\nexport const value = (request: string) => {\n  const _ignored = used;\n  return used;\n};\n";
+    const files = [
+      'src/schema/generated/models/Model.ts',
+      'src/handwritten.ts',
+    ];
+    try {
+      for (const file of files) {
+        mkdirSync(path.dirname(path.join(packageDir, file)), {
+          recursive: true,
+        });
+        writeFileSync(path.join(packageDir, file), source);
+      }
+      writeFileSync(
+        path.join(packageDir, 'package.json'),
+        JSON.stringify({ name: 'generated-fixture' }),
+      );
+      const configFile = path.join(packageDir, 'oxlintrc.json');
+      writeFileSync(
+        configFile,
+        JSON.stringify(
+          factory.createConfigForRole(packageDir, 'backend-plugin'),
+        ),
+      );
+
+      const { report, stderr } = runOxlint(configFile, packageDir, files, [
+        '--fix',
+      ]);
+
+      expect(stderr).toBe('');
+      expect(readFileSync(path.join(packageDir, files[0]), 'utf8')).toBe(
+        source
+          .replace("import { unused } from './unused';\n", '')
+          .replace("'./used';\n", "'./used';\n\n"),
+      );
+      expect(codesFor(report, 'Model.ts')).toEqual([]);
+      expect(readFileSync(path.join(packageDir, files[1]), 'utf8')).toBe(
+        source,
+      );
+      expect(new Set(codesFor(report, 'handwritten.ts'))).toEqual(
+        new Set(['eslint(no-unused-vars)']),
+      );
+    } finally {
+      rmSync(packageDir, { recursive: true, force: true });
     }
   });
 });

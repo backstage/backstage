@@ -30,6 +30,20 @@ const BASE_PLUGINS = [
 ];
 const TEST_FILES = ['**/*.test.*', '**/*.spec.*', '**/__tests__/**'];
 const JEST_RULES = { 'jest/no-focused-tests': 'error' };
+// Code generators such as `backstage-repo-tools package schema openapi
+// generate` rely on `--fix` to remove unused imports and separate imports from
+// the code that follows. Unused import removal is a suggestion by default, so
+// it is promoted to a safe fix for generated files only.
+const GENERATED_FILES = ['ts', 'tsx', 'mts', 'cts'].map(
+  extension => `**/src/**/generated/**/*.${extension}`,
+);
+// Matches the unused variable options ESLint uses for generated files.
+const GENERATED_UNUSED_VARS_OPTIONS = {
+  vars: 'all',
+  varsIgnorePattern: '^_',
+  args: 'none',
+  argsIgnorePattern: '^_',
+};
 const FRONTEND_ROLES = new Set([
   'web-library',
   'frontend',
@@ -131,8 +145,55 @@ function normalizeCategories(categories) {
   );
 }
 
-/** @param {string[]} plugins @param {any[]} extraOverrides */
-function createOverrides(plugins, extraOverrides) {
+/**
+ * Rules for generated files that follow the package's own settings: rules the
+ * package turns off stay off, and `no-unused-vars` keeps the package's
+ * severity and options on top of the ESLint defaults for generated files.
+ *
+ * @param {Record<string, any>} extraRules
+ * @param {Record<string, any>} categories
+ */
+function createGeneratedRules(extraRules, categories) {
+  /** @type {Record<string, any>} */
+  const rules = {};
+  const unusedVars = [
+    'no-unused-vars',
+    'eslint/no-unused-vars',
+    'typescript/no-unused-vars',
+  ]
+    .map(name => extraRules[name])
+    .find(setting => setting !== undefined);
+  if (
+    unusedVars === undefined
+      ? !isDisabled(categories.correctness)
+      : !isDisabled(unusedVars)
+  ) {
+    const [severity = categories.correctness ?? 'error', options = {}] =
+      Array.isArray(unusedVars) ? unusedVars : [unusedVars];
+    const objectOptions =
+      typeof options === 'string' ? { vars: options } : options;
+    rules['no-unused-vars'] = [
+      severity,
+      {
+        ...GENERATED_UNUSED_VARS_OPTIONS,
+        ...objectOptions,
+        fix: { imports: 'safe-fix', ...objectOptions.fix },
+      },
+    ];
+  }
+  const newlineAfterImport = extraRules['import/newline-after-import'];
+  if (!isDisabled(newlineAfterImport)) {
+    rules['import/newline-after-import'] = newlineAfterImport ?? 'error';
+  }
+  return rules;
+}
+
+/**
+ * @param {string[]} plugins
+ * @param {any[]} extraOverrides
+ * @param {Record<string, any>} generatedRules
+ */
+function createOverrides(plugins, extraOverrides, generatedRules) {
   return [
     {
       files: TEST_FILES,
@@ -145,6 +206,11 @@ function createOverrides(plugins, extraOverrides) {
         ? { plugins: withPlugins(plugins, override.plugins) }
         : {}),
     })),
+    // Last, so that package overrides that set these rules for broader globs
+    // such as `src/**` don't drop the fixes generators rely on.
+    ...(Object.keys(generatedRules).length
+      ? [{ files: GENERATED_FILES, rules: generatedRules }]
+      : []),
   ];
 }
 
@@ -255,7 +321,11 @@ function createConfigForRole(dir, role, extraConfig = {}) {
     ...(BACKEND_ROLES.has(role) ? { 'node/no-path-concat': 'error' } : {}),
   };
   const rules = { ...baseRules, ...extraRules };
-  const overrides = createOverrides(rolePlugins, extraOverrides);
+  const overrides = createOverrides(
+    rolePlugins,
+    extraOverrides,
+    createGeneratedRules(extraRules, extraCategories),
+  );
   if (preset === 'strict') {
     const protectedRules = new Set([
       ...Object.entries(baseRules)
