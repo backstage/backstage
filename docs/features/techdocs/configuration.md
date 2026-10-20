@@ -122,6 +122,7 @@ Backstage connects to the cluster using its in-cluster service account, or the k
 | `imagePullSecrets`        | Names of Secrets used to pull `techdocs.generator.dockerImage` from a private registry.                                                                          |
 | `activeDeadlineSeconds`   | Maximum duration of a build before it is stopped. Defaults to `600`.                                                                                             |
 | `ttlSecondsAfterFinished` | How long finished build Jobs are kept before Kubernetes deletes them. Defaults to `300`.                                                                         |
+| `cleanupIntervalSeconds`  | Minimum time between checks for build directories left on the shared volume by interrupted builds. Defaults to `600`.                                            |
 | `resources`               | Resource `requests` and `limits` for the build container.                                                                                                        |
 
 **Example:**
