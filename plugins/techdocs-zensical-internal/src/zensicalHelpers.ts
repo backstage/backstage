@@ -242,9 +242,12 @@ export async function normalizeSearchIndex(
 }
 
 function stripHtmlTags(html: string): string {
-  return html
-    .replace(/<[^>]*>/g, '')
-    .replace(/[<>]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  // Repeat until stable so removing one tag can't join fragments into another.
+  let text = html;
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/<[^>]*>/g, '');
+  } while (text !== previous);
+  return text.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
 }
