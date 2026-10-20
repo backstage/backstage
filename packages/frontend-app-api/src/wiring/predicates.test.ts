@@ -433,6 +433,21 @@ describe('createPredicateContextLoader', () => {
         expect(authorize).toHaveBeenCalledTimes(6);
       });
 
+      it('does not retry errors parsing or validating the response', async () => {
+        const parseError = new SyntaxError('Unexpected token < in JSON');
+        const validationError = Object.assign(new Error('Invalid input'), {
+          name: 'ZodError',
+        });
+        for (const error of [parseError, validationError]) {
+          const authorize = jest.fn().mockRejectedValue(error);
+
+          await expect(loaderWith({ authorize }).load()).rejects.toThrow(
+            'Failed to authorize extension permissions',
+          );
+          expect(authorize).toHaveBeenCalledTimes(1);
+        }
+      });
+
       it('does not retry client errors', async () => {
         const authorize = jest.fn().mockRejectedValue(responseError(401));
 
