@@ -61,13 +61,16 @@ export class MicrosoftGraphEventRouter {
   }
 
   async onEvent(event: EventParams): Promise<void> {
-    const parsedEvents = groupNotifications({ event, logger: this.logger });
+    const groupedNotifications = groupNotifications({
+      event,
+      logger: this.logger,
+    });
 
-    if (!parsedEvents) {
+    if (!groupedNotifications) {
       return;
     }
 
-    const { deleteNotifications, upsertNotifications } = parsedEvents;
+    const { deleteNotifications, upsertNotifications } = groupedNotifications;
 
     if (upsertNotifications.length > 0) {
       this.logger.debug(

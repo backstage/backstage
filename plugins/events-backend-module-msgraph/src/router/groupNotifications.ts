@@ -21,7 +21,6 @@ import type {
 } from '@microsoft/microsoft-graph-types';
 import type { EventParams } from '@backstage/plugin-events-node';
 
-const CHANGE_CREATED = 'created';
 const CHANGE_UPDATED = 'updated';
 const CHANGE_DELETED = 'deleted';
 
@@ -59,17 +58,14 @@ export function groupNotifications({
   for (const notification of changeNotifications) {
     const normalizedChangeType = notification.changeType?.toLowerCase();
 
-    if (
-      normalizedChangeType === CHANGE_CREATED ||
-      normalizedChangeType === CHANGE_UPDATED
-    ) {
+    if (normalizedChangeType === CHANGE_UPDATED) {
+      // User and group creations and updates are both notified as 'updated' changeType
       upsertNotifications.push(notification);
     } else if (normalizedChangeType === CHANGE_DELETED) {
       deleteNotifications.push(notification);
+    } else {
+      invalidNotifications.push(notification);
     }
-
-    // Unknown change types are considered invalid
-    invalidNotifications.push(notification);
   }
 
   if (invalidNotifications.length > 0) {

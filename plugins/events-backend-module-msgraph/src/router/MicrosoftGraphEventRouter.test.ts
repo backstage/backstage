@@ -14,33 +14,20 @@
  * limitations under the License.
  */
 
-import type {
-  BackstageCredentials,
-  BackstageServicePrincipal,
-} from '@backstage/backend-plugin-api';
 import { mockServices, type ServiceMock } from '@backstage/backend-test-utils';
-import {
-  type CatalogServiceMock,
-  catalogServiceMock,
-} from '@backstage/plugin-catalog-node/testUtils';
 import type { EventsService } from '@backstage/plugin-events-node';
 import {
   MICROSOFT_GRAPH_TOPIC,
-  TOPIC_MICROSOFT_GRAPH_UPSERT,
   TOPIC_MICROSOFT_GRAPH_DELETE,
+  TOPIC_MICROSOFT_GRAPH_UPSERT,
 } from '../topics';
 import { MicrosoftGraphEventRouter } from './MicrosoftGraphEventRouter';
-import { parseEvents } from './parseEvents';
-
-jest.mock('./parseEvents');
 
 describe('MicrosoftGraphEventRouter', () => {
   const topic = MICROSOFT_GRAPH_TOPIC;
 
   let events: ServiceMock<EventsService>;
   let logger: ReturnType<typeof mockServices.logger.mock>;
-  let auth: ReturnType<typeof mockServices.auth.mock>;
-  let catalog: ServiceMock<CatalogServiceMock>;
 
   let router: MicrosoftGraphEventRouter;
 
@@ -53,36 +40,9 @@ describe('MicrosoftGraphEventRouter', () => {
       child: jest.fn().mockImplementation(() => logger),
     });
 
-    auth = mockServices.auth.mock({
-      getOwnServiceCredentials: jest
-        .fn()
-        .mockResolvedValue(
-          'fake-credentials' as unknown as BackstageCredentials<BackstageServicePrincipal>,
-        ),
-    });
-
-    catalog = catalogServiceMock.mock({
-      getEntities: jest.fn().mockResolvedValue({
-        items: [
-          {
-            apiVersion: 'v1',
-            kind: 'User',
-            metadata: { name: 'u1', namespace: 'default' },
-          },
-          {
-            apiVersion: 'v1',
-            kind: 'Group',
-            metadata: { name: 'g1', namespace: 'default' },
-          },
-        ],
-      }),
-    });
-
     router = new MicrosoftGraphEventRouter({
       events,
       logger,
-      auth,
-      catalog,
     });
   });
 
@@ -97,112 +57,68 @@ describe('MicrosoftGraphEventRouter', () => {
     });
   });
 
-  it('does nothing if parseEvents returns undefined', async () => {
-    (parseEvents as jest.Mock).mockReturnValue(undefined);
+  it('does nothing if groupNotifications returns undefined', async () => {
     await router.onEvent({ topic, eventPayload: {} });
     expect(events.publish).not.toHaveBeenCalled();
   });
 
-  it('publishes upsert events for modified users and groups', async () => {
-    (parseEvents as jest.Mock).mockReturnValue({
-      upsertedUsers: [{ resourceId: 'u1' }],
-      upsertedGroups: [{ resourceId: 'g1' }],
-      deletedUsers: [],
-      deletedGroups: [],
-    });
+  it('publishes the grouped notifications to the matching subtopics', async () => {
+    const eventPayload = {
+      value: [
+        { changeType: 'updated', resource: 'users/u1' },
+        { changeType: 'updated', resource: 'groups/g1' },
+        { changeType: 'deleted', resource: 'users/u2' },
+      ],
+    };
     events.publish.mockResolvedValue();
-    await router.onEvent({ topic, eventPayload: {} });
-    expect(events.publish).toHaveBeenCalledWith({
+    await router.onEvent({ topic, eventPayload });
+    expect(events.publish).toHaveBeenNthCalledWith(1, {
       topic: TOPIC_MICROSOFT_GRAPH_UPSERT,
       eventPayload: [
-        { resourceType: 'user', resourceId: 'u1' },
-        { resourceType: 'group', resourceId: 'g1' },
+        { changeType: 'updated', resource: 'users/u1' },
+        { changeType: 'updated', resource: 'groups/g1' },
       ],
     });
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Forwarding 1 modified users and 1 modified groups',
-    );
-  });
-
-  it('publishes delete events for deleted users and groups', async () => {
-    (parseEvents as jest.Mock).mockReturnValue({
-      upsertedUsers: [],
-      upsertedGroups: [],
-      deletedUsers: [{ resourceId: 'u1' }],
-      deletedGroups: [{ resourceId: 'g1' }],
-    });
-    events.publish.mockResolvedValue();
-    await router.onEvent({ topic, eventPayload: {} });
-    expect(auth.getOwnServiceCredentials).toHaveBeenCalled();
-    expect(catalog.getEntities).toHaveBeenCalledWith(
-      {
-        filter: [
-          {
-            kind: 'Group',
-            'metadata.annotations.graph.microsoft.com/group-id': ['g1'],
-          },
-          {
-            kind: 'User',
-            'metadata.annotations.graph.microsoft.com/user-id': ['u1'],
-          },
-        ],
-        fields: ['metadata.name', 'kind', 'spec.type'],
-      },
-      { credentials: expect.anything() },
-    );
-    expect(events.publish).toHaveBeenCalledWith({
+    expect(events.publish).toHaveBeenNthCalledWith(2, {
       topic: TOPIC_MICROSOFT_GRAPH_DELETE,
-      eventPayload: [
-        { entityRef: { kind: 'User', name: 'u1', namespace: 'default' } },
-        { entityRef: { kind: 'Group', name: 'g1', namespace: 'default' } },
-      ],
+      eventPayload: [{ changeType: 'deleted', resource: 'users/u2' }],
     });
-    expect(logger.debug).toHaveBeenCalledWith('Forwarding 2 deleted entities');
-  });
-
-  it('does not publish delete events if no deleted entity refs', async () => {
-    (parseEvents as jest.Mock).mockReturnValue({
-      upsertedUsers: [],
-      upsertedGroups: [],
-      deletedUsers: [{ resourceId: 'u1' }],
-      deletedGroups: [],
-    });
-    catalog.getEntities.mockResolvedValue({ items: [] });
-    await router.onEvent({ topic, eventPayload: {} });
-    expect(events.publish).not.toHaveBeenCalledWith(
-      expect.objectContaining({ topic: TOPIC_MICROSOFT_GRAPH_DELETE }),
+    expect(events.publish.mock.calls[0][0].eventPayload).toEqual([
+      { changeType: 'updated', resource: 'users/u1' },
+      { changeType: 'updated', resource: 'groups/g1' },
+    ]);
+    expect(events.publish.mock.calls[1][0].eventPayload).toEqual([
+      { changeType: 'deleted', resource: 'users/u2' },
+    ]);
+    expect(logger.debug).toHaveBeenCalledWith(
+      'Forwarding 2 upsert notifications',
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      'Forwarding 1 delete notifications',
     );
   });
 
   it('propagates error if publish for upsert fails', async () => {
-    (parseEvents as jest.Mock).mockReturnValue({
-      upsertedUsers: [{ resourceId: 'u1' }],
-      upsertedGroups: [],
-      deletedUsers: [],
-      deletedGroups: [],
-    });
     events.publish.mockRejectedValueOnce(new Error('fail-upsert'));
-    await expect(router.onEvent({ topic, eventPayload: {} })).rejects.toThrow(
-      'fail-upsert',
-    );
+    await expect(
+      router.onEvent({
+        topic,
+        eventPayload: {
+          value: [{ changeType: 'updated', resource: 'users/u1' }],
+        },
+      }),
+    ).rejects.toThrow('fail-upsert');
   });
 
-  it('logs error if publish for delete fails', async () => {
-    (parseEvents as jest.Mock).mockReturnValue({
-      upsertedUsers: [],
-      upsertedGroups: [],
-      deletedUsers: [{ resourceId: 'u1' }],
-      deletedGroups: [],
-    });
-    // events.publish.mockResolvedValueOnce(undefined); // upsert
+  it('propagates error if publish for delete fails', async () => {
     events.publish.mockRejectedValueOnce(new Error('fail-delete'));
-
-    await router.onEvent({ topic, eventPayload: {} });
-    // Wait for the catch block to execute
-    await new Promise(r => setTimeout(r, 0));
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to publish user/group delete event'),
-      expect.any(Error),
-    );
+    await expect(
+      router.onEvent({
+        topic,
+        eventPayload: {
+          value: [{ changeType: 'deleted', resource: 'users/u1' }],
+        },
+      }),
+    ).rejects.toThrow('fail-delete');
   });
 });
