@@ -85,6 +85,10 @@ function createdJob() {
 }
 
 describe('KubernetesJobRunner', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
     workDir.setContent({ 'tree/repo': {}, 'techdocs-tmp-1': {} });
@@ -319,11 +323,27 @@ describe('KubernetesJobRunner', () => {
     await fs.utimes(workDir.resolve('techdocs-tmp-stale'), hourAgo, hourAgo);
     await fs.utimes(workDir.resolve('backstage-stale'), hourAgo, hourAgo);
 
-    await createRunner().runContainer(runOptions());
+    const runner = createRunner({ cleanupIntervalSeconds: 1200 });
+    await runner.runContainer(runOptions());
 
     expect(fs.existsSync(workDir.resolve('techdocs-tmp-stale'))).toBe(false);
     expect(fs.existsSync(workDir.resolve('techdocs-tmp-1'))).toBe(true);
     expect(fs.existsSync(workDir.resolve('backstage-stale'))).toBe(true);
+
+    workDir.addContent({ 'techdocs-tmp-orphan': {} });
+    await fs.utimes(workDir.resolve('techdocs-tmp-orphan'), hourAgo, hourAgo);
+    await runner.runContainer(runOptions());
+    expect(fs.existsSync(workDir.resolve('techdocs-tmp-orphan'))).toBe(true);
+
+    const now = Date.now();
+    const dateNow = jest.spyOn(Date, 'now');
+    dateNow.mockReturnValue(now + 11 * 60 * 1000);
+    await runner.runContainer(runOptions());
+    expect(fs.existsSync(workDir.resolve('techdocs-tmp-orphan'))).toBe(true);
+
+    dateNow.mockReturnValue(now + 21 * 60 * 1000);
+    await runner.runContainer(runOptions());
+    expect(fs.existsSync(workDir.resolve('techdocs-tmp-orphan'))).toBe(false);
   });
 
   it('checks cluster access and permissions before creating a Job', async () => {

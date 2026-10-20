@@ -772,7 +772,7 @@ To run TechDocs builds as Kubernetes Jobs:
 
 Build pods don't receive a service account token, use the `RuntimeDefault` seccomp profile, can't escalate privileges, and drop all Linux capabilities. They run as the same user and group as the Backstage process, so Backstage can read and clean up the generated files.
 
-Kubernetes deletes finished build Jobs after `ttlSecondsAfterFinished`. Failed Jobs are kept until then too, so you can inspect them with `kubectl describe`. Jobs that Backstage stops itself, for example after an image pull error, are deleted right away. If Backstage restarts during a build, it removes the build directories left on the shared volume the next time it runs a build.
+Kubernetes deletes finished build Jobs after `ttlSecondsAfterFinished`. Failed Jobs are kept until then too, so you can inspect them with `kubectl describe`. Jobs that Backstage stops itself, for example after an image pull error, are deleted right away. If Backstage stops during a build, for example because its node failed, the build directory stays on the shared volume. Backstage removes such directories once they are older than twice `activeDeadlineSeconds`, or one hour, whichever is longer.
 
 If a build fails, the error shown in TechDocs usually points to the cause:
 

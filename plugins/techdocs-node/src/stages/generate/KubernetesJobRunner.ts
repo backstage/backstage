@@ -70,6 +70,7 @@ const REQUIRED_PERMISSIONS = [
  */
 export class KubernetesJobRunner implements TechDocsContainerRunner {
   private clientPromise?: Promise<KubernetesClient>;
+  private lastStaleWorkDirSweep = 0;
   // Only used in tests, as jest.mock doesn't intercept the dynamic import
   private injectedKubernetesClient?: typeof import('@kubernetes/client-node');
 
@@ -81,6 +82,19 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
   async runContainer(opts: RunContainerOptions): Promise<void> {
     const client = await this.getClient();
     const { batch, namespace } = client;
+    const { cleanupIntervalSeconds = 600 } = this.options;
+    if (
+      Date.now() - this.lastStaleWorkDirSweep >
+      cleanupIntervalSeconds * 1000
+    ) {
+      this.lastStaleWorkDirSweep = Date.now();
+      await this.removeStaleWorkDirs().catch(error =>
+        this.logger?.warn(
+          `Failed to remove stale TechDocs build directories from ${this.options.workRoot}`,
+          error,
+        ),
+      );
+    }
     const job = await this.createNamespacedJobRequest(opts);
 
     const created = await batch.createNamespacedJob({ namespace, body: job });
@@ -185,7 +199,7 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     return job;
   }
 
-  // Build directories outlive a Backstage crash on the shared volume, unlike in a pod-local temp directory
+  // Build directories outlive a Backstage crash on the shared volume. Past 2x the deadline no Job can still be writing to them.
   private async removeStaleWorkDirs(): Promise<void> {
     const { workRoot, activeDeadlineSeconds = 600 } = this.options;
     const cutoff =
@@ -416,12 +430,6 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
         'default',
     };
     await this.checkPermissions(client);
-    await this.removeStaleWorkDirs().catch(error =>
-      this.logger?.warn(
-        `Failed to remove stale TechDocs build directories from ${this.options.workRoot}`,
-        error,
-      ),
-    );
     return client;
   }
 }

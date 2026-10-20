@@ -103,6 +103,11 @@ export interface Config {
          */
         ttlSecondsAfterFinished?: number;
         /**
+         * Minimum time between checks for build directories left on the shared volume
+         * by interrupted builds. Defaults to 600.
+         */
+        cleanupIntervalSeconds?: number;
+        /**
          * Resource requests and limits for the build container.
          */
         resources?: {
