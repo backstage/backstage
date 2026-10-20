@@ -1,5 +1,6 @@
 export const maxDescLength = 160;
 
+// Keeps the original text in `fullDescription` so it can be shown as a tooltip.
 export const truncateDescription = <T extends { description: string }>(
   itemData: T,
 ) =>
@@ -7,5 +8,6 @@ export const truncateDescription = <T extends { description: string }>(
     ? {
         ...itemData,
         description: itemData.description.slice(0, maxDescLength) + '...',
+        fullDescription: itemData.description,
       }
     : itemData;
