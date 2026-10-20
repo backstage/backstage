@@ -53,7 +53,7 @@ events:
 ```
 
 `notificationUrl` must be publicly reachable by Microsoft Graph and point to the events backend HTTP ingress for the
-`msgraph` topic (for example, `https://backstage-events.example.com/msgraph`). The module automatically
+`msgraph` topic (for example, `https://backstage-events.example.com/api/events/http/msgraph`). The module automatically
 creates and refreshes Graph subscriptions; the application registered with `clientId` must be authorized to manage
 subscriptions for the configured resources.
 
