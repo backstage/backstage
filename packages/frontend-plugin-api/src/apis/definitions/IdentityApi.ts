@@ -21,6 +21,18 @@ import { BackstageUserIdentity, ProfileInfo } from './auth';
 export type { CoreApis };
 
 /**
+ * Options for {@link IdentityApi.signOut}.
+ * @public
+ */
+export type SignOutOptions = {
+  /**
+   * If true, navigates back to the current window location after sign out,
+   * preserving path, search query, and hash. Defaults to false.
+   */
+  preserveLocation?: boolean;
+};
+
+/**
  * The Identity API used to identify and get information about the signed in user.
  *
  * @public
@@ -47,7 +59,7 @@ export type IdentityApi = {
   /**
    * Sign out the current user
    */
-  signOut(): Promise<void>;
+  signOut(options?: SignOutOptions): Promise<void>;
 };
 
 /**

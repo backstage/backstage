@@ -62,7 +62,7 @@ export const useLogoutDisconnectedUserEffect = ({
       const lastSeenOnlineSeconds = Math.ceil(lastSeenOnline.getTime() / 1000);
       if (nowSeconds - lastSeenOnlineSeconds > idleTimeoutSeconds) {
         lastSeenOnlineStore.delete();
-        identityApi.signOut();
+        identityApi.signOut({ preserveLocation: true });
         return;
       }
     }
