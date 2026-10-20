@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
 import type {
   AuthorizationV1Api,
@@ -52,6 +53,12 @@ const FATAL_WAITING_REASONS = [
   'CreateContainerConfigError',
 ];
 
+// The prefix DocsBuilder uses for its output directories under backend.workingDirectory
+const WORK_DIR_PREFIX = 'techdocs-tmp-';
+const MIN_STALE_WORK_DIR_AGE_SECONDS = 3600;
+
+class JobFailedError extends Error {}
+
 const REQUIRED_PERMISSIONS = [
   { group: 'batch', resource: 'jobs', verbs: ['create', 'get', 'delete'] },
   { group: '', resource: 'pods', verbs: ['list'] },
@@ -66,7 +73,10 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
   // Only used in tests, as jest.mock doesn't intercept the dynamic import
   private injectedKubernetesClient?: typeof import('@kubernetes/client-node');
 
-  constructor(private readonly options: KubernetesOptions) {}
+  constructor(
+    private readonly options: KubernetesOptions,
+    private readonly logger?: LoggerService,
+  ) {}
 
   async runContainer(opts: RunContainerOptions): Promise<void> {
     const client = await this.getClient();
@@ -82,13 +92,16 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
       }
       await this.waitForJobCompletion(client, jobName);
     } catch (error) {
-      await batch
-        .deleteNamespacedJob({
-          name: jobName,
-          namespace,
-          propagationPolicy: 'Background',
-        })
-        .catch(() => {});
+      // A failed Job has already stopped, so keep it until its TTL for debugging
+      if (!(error instanceof JobFailedError)) {
+        await batch
+          .deleteNamespacedJob({
+            name: jobName,
+            namespace,
+            propagationPolicy: 'Background',
+          })
+          .catch(() => {});
+      }
       throw error;
     }
   }
@@ -163,13 +176,34 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
       c => c.type === 'Failed' && c.status === 'True',
     );
     if (failed) {
-      throw new Error(
+      throw new JobFailedError(
         `Kubernetes job ${jobName} failed: ${failed.reason}${
           failed.message ? ` (${failed.message})` : ''
         }`,
       );
     }
     return job;
+  }
+
+  // Build directories outlive a Backstage crash on the shared volume, unlike in a pod-local temp directory
+  private async removeStaleWorkDirs(): Promise<void> {
+    const { workRoot, activeDeadlineSeconds = 600 } = this.options;
+    const cutoff =
+      Date.now() -
+      Math.max(2 * activeDeadlineSeconds, MIN_STALE_WORK_DIR_AGE_SECONDS) *
+        1000;
+    const entries = await fs.readdir(workRoot, { withFileTypes: true });
+    await Promise.all(
+      entries
+        .filter(e => e.isDirectory() && e.name.startsWith(WORK_DIR_PREFIX))
+        .map(async e => {
+          const dir = path.join(workRoot, e.name);
+          if ((await fs.stat(dir)).mtimeMs < cutoff) {
+            await fs.remove(dir);
+            this.logger?.info(`Removed stale TechDocs build directory ${dir}`);
+          }
+        }),
+    );
   }
 
   private createAffinity(): V1Affinity | undefined {
@@ -382,6 +416,12 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
         'default',
     };
     await this.checkPermissions(client);
+    await this.removeStaleWorkDirs().catch(error =>
+      this.logger?.warn(
+        `Failed to remove stale TechDocs build directories from ${this.options.workRoot}`,
+        error,
+      ),
+    );
     return client;
   }
 }

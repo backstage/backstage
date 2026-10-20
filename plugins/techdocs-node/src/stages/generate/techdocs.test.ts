@@ -352,7 +352,7 @@ describe('TechdocsGenerator.run', () => {
     const generator = TechdocsGenerator.fromConfig(config, {
       logger: mockLogger as any,
     });
-    expect(KubernetesJobRunner).toHaveBeenCalledWith(kubernetes);
+    expect(KubernetesJobRunner).toHaveBeenCalledWith(kubernetes, mockLogger);
 
     await generator.run({
       inputDir,

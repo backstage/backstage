@@ -99,7 +99,10 @@ export class TechdocsGenerator implements GeneratorBase {
           `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
         );
       }
-      this.containerRunner = new KubernetesJobRunner(this.options.kubernetes);
+      this.containerRunner = new KubernetesJobRunner(
+        this.options.kubernetes,
+        this.logger,
+      );
     } else {
       this.containerRunner = options.containerRunner;
     }

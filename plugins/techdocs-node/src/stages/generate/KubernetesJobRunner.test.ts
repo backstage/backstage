@@ -15,6 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import fs from 'fs-extra';
 import { PassThrough, Writable } from 'node:stream';
 import { KubernetesJobRunner } from './KubernetesJobRunner';
 import { KubernetesOptions } from './types';
@@ -264,7 +265,7 @@ describe('KubernetesJobRunner', () => {
     expect(mockBatch.createNamespacedJob).not.toHaveBeenCalled();
   });
 
-  it('deletes the Job and reports why the build failed', async () => {
+  it('reports why the build failed and deletes only Jobs that are still running', async () => {
     const runner = createRunner();
 
     mockBatch.readNamespacedJob.mockResolvedValue({
@@ -282,11 +283,7 @@ describe('KubernetesJobRunner', () => {
     await expect(runner.runContainer(runOptions())).rejects.toThrow(
       'Kubernetes job techdocs-abc failed: BackoffLimitExceeded (Job has reached the specified backoff limit)',
     );
-    expect(mockBatch.deleteNamespacedJob).toHaveBeenCalledWith({
-      name: 'techdocs-abc',
-      namespace: 'from-context',
-      propagationPolicy: 'Background',
-    });
+    expect(mockBatch.deleteNamespacedJob).not.toHaveBeenCalled();
 
     mockBatch.readNamespacedJob.mockResolvedValue({ status: {} });
     mockCore.listNamespacedPod.mockResolvedValue({
@@ -305,7 +302,28 @@ describe('KubernetesJobRunner', () => {
     await expect(runner.runContainer(runOptions())).rejects.toThrow(
       'Kubernetes job techdocs-abc could not start: ImagePullBackOff',
     );
-    expect(mockBatch.deleteNamespacedJob).toHaveBeenCalledTimes(2);
+    expect(mockBatch.deleteNamespacedJob).toHaveBeenCalledTimes(1);
+    expect(mockBatch.deleteNamespacedJob).toHaveBeenCalledWith({
+      name: 'techdocs-abc',
+      namespace: 'from-context',
+      propagationPolicy: 'Background',
+    });
+  });
+
+  it('removes stale build directories left on the shared volume', async () => {
+    workDir.addContent({
+      'techdocs-tmp-stale': { 'index.html': '' },
+      'backstage-stale': {},
+    });
+    const hourAgo = new Date(Date.now() - 2 * 3600 * 1000);
+    await fs.utimes(workDir.resolve('techdocs-tmp-stale'), hourAgo, hourAgo);
+    await fs.utimes(workDir.resolve('backstage-stale'), hourAgo, hourAgo);
+
+    await createRunner().runContainer(runOptions());
+
+    expect(fs.existsSync(workDir.resolve('techdocs-tmp-stale'))).toBe(false);
+    expect(fs.existsSync(workDir.resolve('techdocs-tmp-1'))).toBe(true);
+    expect(fs.existsSync(workDir.resolve('backstage-stale'))).toBe(true);
   });
 
   it('checks cluster access and permissions before creating a Job', async () => {
