@@ -43,8 +43,10 @@ same key as `--kind` or `--type` is an error. `--cursor` cannot be combined with
 Use `--fields` together with `--cursor` to keep the same field selection on
 later pages.
 
-Human output shows how many entities were shown and, when more are available,
-prints the `--cursor` value to continue from. JSON output contains a single page and `nextPageCursor`.
+In human output on a terminal, the command shows one page at a time with a
+status line such as `Page 2 of 7`. Press the right arrow key for the next page,
+the left arrow key for the previous page, and `q`, `Esc`, or `Ctrl+C` to quit.
+Otherwise it prints the `--cursor` value to continue from. JSON output contains a single page and `nextPageCursor`.
 
 ### Examples
 
