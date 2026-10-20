@@ -22,7 +22,9 @@ import {
   Log,
   KubeConfig,
   VersionApi,
+  V1Affinity,
   V1Job,
+  V1NodeSelectorTerm,
 } from '@kubernetes/client-node';
 import { PassThrough, Writable } from 'node:stream';
 import { finished } from 'node:stream/promises';
@@ -189,6 +191,33 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
     return job;
   }
 
+  private createAffinity(): V1Affinity | undefined {
+    const { nodeName, nodeAffinity = 'preferred' } = this.options;
+    if (!nodeName || nodeAffinity === 'none') {
+      return undefined;
+    }
+    // matchFields on metadata.name, as the kubernetes.io/hostname label can differ from the node name
+    const term: V1NodeSelectorTerm = {
+      matchFields: [
+        { key: 'metadata.name', operator: 'In', values: [nodeName] },
+      ],
+    };
+    return {
+      nodeAffinity:
+        nodeAffinity === 'required'
+          ? {
+              requiredDuringSchedulingIgnoredDuringExecution: {
+                nodeSelectorTerms: [term],
+              },
+            }
+          : {
+              preferredDuringSchedulingIgnoredDuringExecution: [
+                { weight: 100, preference: term },
+              ],
+            },
+    };
+  }
+
   private createNamespacedJobRequest(
     imageName: string,
     args: string[],
@@ -224,6 +253,7 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
           spec: {
             restartPolicy: 'Never',
             securityContext,
+            affinity: this.createAffinity(),
             containers: [
               {
                 name: CONTAINER_NAME,

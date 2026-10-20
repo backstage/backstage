@@ -78,6 +78,17 @@ export interface Config {
          * must match where the PVC is mounted in the Backstage pod, which is normally backend.workingDirectory.
          */
         workRoot: string;
+        /**
+         * Name of the node Backstage runs on, used to schedule build Jobs next to it.
+         * Usually set from the pod's spec.nodeName through the downward API.
+         */
+        nodeName?: string;
+        /**
+         * How strongly build Jobs are scheduled onto nodeName. "required" is needed for
+         * ReadWriteOnce volumes on network block storage. Defaults to "preferred", and has
+         * no effect without nodeName.
+         */
+        nodeAffinity?: 'preferred' | 'required' | 'none';
       };
 
       /**

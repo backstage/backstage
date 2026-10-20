@@ -65,6 +65,14 @@ export type KubernetesOptions = {
    * must match where the PVC is mounted in the Backstage pod, which is normally backend.workingDirectory.
    */
   workRoot: string;
+  /**
+   * Name of the node Backstage runs on, used to schedule build Jobs next to it.
+   */
+  nodeName?: string;
+  /**
+   * How strongly build Jobs are scheduled onto `nodeName`. Defaults to "preferred", and has no effect without `nodeName`.
+   */
+  nodeAffinity?: 'preferred' | 'required' | 'none';
 };
 
 /**
