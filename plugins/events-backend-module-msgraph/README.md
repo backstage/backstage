@@ -55,21 +55,18 @@ events:
 
 After receiving Microsoft Graph notifications on `msgraph`, the module republishes:
 
-- `msgraph/upsert` with payload items in the shape `{ resourceType, resourceId }`.
-- `msgraph/delete` with payload items in the shape `{ entityRef }`.
+- `msgraph/upsert` for created or updated resources.
+- `msgraph/delete` for deleted resources.
 
-For delete events, the module resolves entity references from the catalog using these annotations:
-
-- `metadata.annotations.graph.microsoft.com/user-id` for users
-- `metadata.annotations.graph.microsoft.com/group-id` for groups
+The topics receive original Microsoft Graph notifications unchanged.
 
 ## How it works
 
 Unlike GitHub webhook events, MS Graph events cannot be configured in the portal. Client Apps have to create new
 subscriptions themselves, specifying the webhook URLs, verification secrets/tokens and all other
 params [through an endpoint](https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=javascript#create-a-subscription).
-The new module `@backstage/plugin-events-backend-module-msgraph` looks up deleted entity references in the Catalog and
-re-publishes events to more specific `upsert`/`delete` topics.
+The module `@backstage/plugin-events-backend-module-msgraph` republishes notifications to the more specific
+`upsert`/`delete` topics without changing their payloads.
 
 ```mermaid
 sequenceDiagram
@@ -77,7 +74,6 @@ sequenceDiagram
   participant EventsPlugin
   participant WebhookRequestValidator
   participant MicrosoftGraphEventRouter
-  participant CatalogService
   participant EventConsumer
   eventsModuleMicrosoftGraphWebhook ->> EventsPlugin: eventsExtensionPoint.addHttpPostIngress
   EventsPlugin ->> WebhookRequestValidator: createWebhookRequestValidator
@@ -91,8 +87,6 @@ sequenceDiagram
   EventsPlugin ->> MicrosoftGraphEventRouter: MS Graph change/delete events<br/>published via "msgraph" topic
   MicrosoftGraphEventRouter ->> MicrosoftGraphEventRouter: validate payloads
   MicrosoftGraphEventRouter ->> EventsPlugin: change/add events re-published via "msgraph/upsert" topic
-  MicrosoftGraphEventRouter ->> CatalogService: find deleted entities by MS Graph IDs
-  CatalogService ->> MicrosoftGraphEventRouter: deleted entityRefs
   MicrosoftGraphEventRouter ->> EventsPlugin: delete events re-published via "msgraph/delete" topic
   EventsPlugin ->> EventConsumer: "msgraph/upsert" and "msgraph/delete" topic events
 ```
