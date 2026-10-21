@@ -201,6 +201,12 @@ export class MicrosoftGraphSubscriptionManager {
       this.resources,
     );
 
+    this.logger.info(
+      `Cleaning up subscriptions for non-configured resources: ${nonConfiguredResources.join(
+        ', ',
+      )}`,
+    );
+
     let noErrors = true;
 
     await this.database.transaction(async trx => {
@@ -208,12 +214,18 @@ export class MicrosoftGraphSubscriptionManager {
         // MySQL does not support RETURNING in DELETE queries, so we need to first find the subscription and then delete it
         const existingSubscription = await trx.findByResource(resource);
         if (!existingSubscription) {
+          this.logger.debug(
+            `No subscription record for resource ${resource} exists, nothing to clean up.`,
+          );
           continue;
         }
 
         const id = existingSubscription.id;
         try {
           await this.msGraphClient.deleteSubscription(id);
+          this.logger.info(
+            `Successfully deleted subscription ${id} for resource ${resource} from MS Graph.`,
+          );
         } catch (error) {
           if (!(error instanceof NotFoundError)) {
             noErrors = false;
@@ -229,6 +241,9 @@ export class MicrosoftGraphSubscriptionManager {
 
         try {
           await trx.deleteById(id);
+          this.logger.info(
+            `Successfully deleted subscription record ${id} for resource ${resource} from DB.`,
+          );
         } catch (error) {
           noErrors = false;
           this.logger.warn(
@@ -236,6 +251,10 @@ export class MicrosoftGraphSubscriptionManager {
             isError(error) ? error : undefined,
           );
         }
+
+        this.logger.info(
+          `Successfully cleaned up subscription ${id} for resource ${resource}.`,
+        );
       }
     });
 
