@@ -185,6 +185,6 @@ When refresh tokens are enabled through `auth.experimentalRefreshToken.enabled`,
 { "userEntityRef": "user:default/jane.doe" }
 ```
 
-The response contains the number of revoked sessions, for example `{ "revokedCount": 2 }`. Every call is recorded as an audit event.
+The response contains the number of revoked sessions, for example `{ "revokedCount": 2 }`. Every revocation is recorded as an audit event.
 
 Only service credentials are accepted, so users cannot call this endpoint directly. The calling service is responsible for checking that the request is allowed, for example by only exposing it to administrators. Access tokens that were already issued stay valid until they expire, which is controlled by `auth.backstageTokenExpiration`.
