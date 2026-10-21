@@ -7,6 +7,14 @@ The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
 Yarn Classic repositories.
 
+> **Note:** The `pm verify-patches` command is temporarily unavailable.
+> `@yarnpkg/core@4.9.2` was published with a broken dependency that makes
+> installation fail, so this module's Yarn dependencies have been made
+> optional and are no longer installed. Installing them yourself pulls in the
+> broken version again, so skip this command for now, including after
+> `versions:bump`. It will be restored in a future release once a fixed
+> version of `@yarnpkg/core` is published.
+
 ## Usage
 
 Run the command from a Yarn repository root:
