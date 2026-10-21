@@ -82,7 +82,7 @@ Adopters cannot switch on their own. About 30 source files in `@backstage/cli-no
 - pnpm support in `@backstage/repo-tools`, beyond the rename in [Lockfile Naming](#lockfile-naming). These commands resolve binaries from the root `node_modules/.bin` or call Yarn directly, and are known gaps under pnpm: `package-docs`, the OpenAPI commands, `api-reports`, and `type-deps`. They are deferred, not dismissed, and are documented as gaps until they are fixed.
 - Layouts where a package can only see its own dependencies: `hoist: false`, and the global virtual store when the backend is started with plain `node`. Backend plugins cannot locate their own files there. See [Node Linker](#node-linker).
 - Changes to the Backstage Yarn plugin or to `pm verify-patches`.
-- Making the Yarn package manager module optional. `@backstage/cli-defaults` includes it, so a pnpm app also installs the Yarn CLI packages, and `@yarnpkg/core` 4.9.2 has a dependency with the Yarn `patch:` protocol that pnpm cannot install. The template already pins `@yarnpkg/core` to 4.9.1 for both package managers, and the docs list this as a known gap. Making the module optional is a follow-up, together with how a command picks between several modules that provide it.
+- Making the Yarn package manager module optional. `@backstage/cli-defaults` includes it, so a pnpm app also installs the module. The Yarn packages that `pm verify-patches` needs, such as `@yarnpkg/core`, are optional peer dependencies of the module, which pnpm does not install, so they stay out of a pnpm app. Making the module itself optional is a follow-up, together with how a command picks between several modules that provide it.
 
 ## Proposal
 
