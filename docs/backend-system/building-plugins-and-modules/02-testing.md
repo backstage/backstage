@@ -250,7 +250,6 @@ for every database on the server, and with `fsync` off an operating system
 crash or power failure can corrupt all of them beyond repair. Never use these
 settings on a shared development or production server.
 
-
 ```sql
 ALTER SYSTEM SET fsync = off;
 ALTER SYSTEM SET synchronous_commit = off;
