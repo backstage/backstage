@@ -79,6 +79,10 @@ checks and renews subscriptions. The subscription refresh runs immediately after
 `clientState` tokens in the Backstage database. On notification requests, it validates each notification against the
 stored subscription before the events backend publishes the event.
 
+Each refresh also deletes subscriptions for resources no longer listed in `subscriptionResources` from Microsoft
+Graph and the database, so their notifications are no longer accepted. If Graph deletion fails, the refresh reports
+the error and retries on the next run.
+
 ```mermaid
 sequenceDiagram
   participant eventsModuleMicrosoftGraphWebhook
