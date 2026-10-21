@@ -18,9 +18,8 @@ import os from 'node:os';
 import crypto from 'node:crypto';
 import { cli } from 'cleye';
 import yargs from 'yargs';
-// 'jest-cli' is included with jest and should be kept in sync with the installed jest version
 // eslint-disable-next-line @backstage/no-undeclared-imports
-import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
+import type * as JestCli from 'jest-cli';
 import { relative as relativePath } from 'node:path';
 import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
 
@@ -133,6 +132,20 @@ export function createFlagFinder(args: string[]) {
 
 export default async ({ args, info }: CliCommandContext) => {
   const testGlobal = global as TestGlobal;
+
+  // 'jest-cli' is included with jest and must match the installed jest version,
+  // so it is loaded through the jest package rather than resolved from here.
+  /* eslint-disable-next-line no-restricted-syntax */
+  const jestHelpers = findOwnPaths(__dirname).resolve(
+    'config/getJestEnvironment.js',
+  );
+  const { resolveJest } = require(jestHelpers);
+  const {
+    run: runJest,
+    yargsOptions: jestYargsOptions,
+  }: typeof JestCli = require(require.resolve('jest-cli', {
+    paths: [resolveJest()],
+  }));
 
   for (const flag of ['successCache', 'successCacheDir', 'jestHelp']) {
     if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {

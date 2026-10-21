@@ -24,7 +24,7 @@ export async function checkIfDockerIsOperational(
   const isOperational = await runCheck(['docker', 'info']);
   if (isOperational) {
     logger.info(
-      'Docker is up and running. Proceed to starting up mkdocs server',
+      'Docker is up and running. Proceed to starting up documentation server',
     );
     return true;
   }

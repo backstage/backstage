@@ -330,7 +330,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     return JSON.parse(JSON.stringify(input), (_key, value) => {
       try {
         if (typeof value === 'string') {
-          return templateRenderer.renderValue(value, context);
+          return templateRenderer.renderValue(value, context, {
+            coercion: 'json',
+          });
         }
       } catch {
         return value;

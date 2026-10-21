@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { isValidHost } from '../helpers';
 
 const GITHUB_HOST = 'github.com';
@@ -147,13 +147,13 @@ export function readGithubIntegrationConfig(
   }
 
   if (apiBaseUrl) {
-    apiBaseUrl = trimEnd(apiBaseUrl, '/');
+    apiBaseUrl = lodash.trimEnd(apiBaseUrl, '/');
   } else if (host === GITHUB_HOST) {
     apiBaseUrl = GITHUB_API_BASE_URL;
   }
 
   if (rawBaseUrl) {
-    rawBaseUrl = trimEnd(rawBaseUrl, '/');
+    rawBaseUrl = lodash.trimEnd(rawBaseUrl, '/');
   } else if (host === GITHUB_HOST) {
     rawBaseUrl = GITHUB_RAW_BASE_URL;
   }

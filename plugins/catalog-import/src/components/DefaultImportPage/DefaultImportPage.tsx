@@ -31,12 +31,7 @@ import { catalogImportTranslationRef } from '../../translation';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
-/**
- * The default catalog import page.
- *
- * @public
- */
-export const DefaultImportPage = () => {
+export const ImportPageContent = () => {
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const theme = useTheme();
   const configApi = useApi(configApiRef);
@@ -54,21 +49,34 @@ export const DefaultImportPage = () => {
   ];
 
   return (
+    <Content>
+      <ContentHeader
+        title={t('defaultImportPage.contentHeaderTitle', { appTitle })}
+      >
+        <SupportButton>
+          {t('defaultImportPage.supportTitle', { appTitle })}
+        </SupportButton>
+      </ContentHeader>
+
+      <Grid container spacing={2}>
+        {isMobile ? contentItems : contentItems.reverse()}
+      </Grid>
+    </Content>
+  );
+};
+
+/**
+ * The default catalog import page.
+ *
+ * @public
+ */
+export const DefaultImportPage = () => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
+
+  return (
     <Page themeId="home">
       <Header title={t('defaultImportPage.headerTitle')} />
-      <Content>
-        <ContentHeader
-          title={t('defaultImportPage.contentHeaderTitle', { appTitle })}
-        >
-          <SupportButton>
-            {t('defaultImportPage.supportTitle', { appTitle })}
-          </SupportButton>
-        </ContentHeader>
-
-        <Grid container spacing={2}>
-          {isMobile ? contentItems : contentItems.reverse()}
-        </Grid>
-      </Content>
+      <ImportPageContent />
     </Page>
   );
 };

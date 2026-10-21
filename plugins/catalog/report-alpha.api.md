@@ -439,11 +439,11 @@ const _default: OverridableFrontendPlugin<
     }>;
     'entity-card:catalog/about': OverridableExtensionDefinition<{
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -509,11 +509,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'depends-on-components';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -550,11 +550,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'depends-on-resources';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -591,11 +591,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-components';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -632,11 +632,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-resources';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -673,11 +673,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-subcomponents';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -714,11 +714,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-subdomains';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -755,11 +755,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-systems';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -796,11 +796,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'labels';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -837,11 +837,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'links';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -878,14 +878,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         group: string | false | undefined;
         icon: string | undefined;
       };
       configInput: {
         path?: string | undefined;
         title?: string | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };

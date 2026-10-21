@@ -1,5 +1,18 @@
 # @backstage/core-compat-api
 
+## 0.5.16
+
+### Patch Changes
+
+- 8747376: Declared the dependencies of internally bundled code so that the package works with strict `node_modules` layouts.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-app-react@0.2.8
+
 ## 0.5.16-next.1
 
 ### Patch Changes

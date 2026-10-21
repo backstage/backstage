@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-// 'jest-runtime' is included with jest and should be kept in sync with the installed jest version
-// eslint-disable-next-line @backstage/no-undeclared-imports
-const { default: JestRuntime } = require('jest-runtime');
+const { resolveJest } = require('./getJestEnvironment');
+
+// 'jest-runtime' is included with jest and must match the installed jest version,
+// so it is loaded through jest's own @jest/core rather than resolved from here.
+const jestCorePath = require.resolve('@jest/core', { paths: [resolveJest()] });
+const jestRuntimePath = require.resolve('jest-runtime', {
+  paths: [jestCorePath],
+});
+const { default: JestRuntime } = require(jestRuntimePath);
 
 module.exports = class CachingJestRuntime extends JestRuntime {
   constructor(config, ...restArgs) {

@@ -95,7 +95,7 @@ const _default: OverridableFrontendPlugin<
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title: string | undefined;
         height: number | undefined;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
@@ -111,7 +111,7 @@ const _default: OverridableFrontendPlugin<
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title?: string | undefined;
         height?: number | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:

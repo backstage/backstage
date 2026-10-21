@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-node
 
+## 0.7.7
+
+### Patch Changes
+
+- 9724edd: Hardened return URL validation in the OAuth redirect flow. Failed sign-in attempts now return to the configured app URL with the error message, including when the return URL is invalid.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+
 ## 0.7.7-next.1
 
 ### Patch Changes

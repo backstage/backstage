@@ -129,7 +129,7 @@ const _default: OverridableFrontendPlugin<
         withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         group: string | false | undefined;
         icon: string | undefined;
       };
@@ -137,7 +137,7 @@ const _default: OverridableFrontendPlugin<
         withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };

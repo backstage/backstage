@@ -122,7 +122,7 @@ describe('AzureUrlReader', () => {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         config: createConfig('my-pat'),
         response: expect.objectContaining({
-          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&versionDescriptor.version=master&versionDescriptor.versionType=branch',
         }),
       },
       {
@@ -229,6 +229,61 @@ describe('AzureUrlReader', () => {
             ),
         ),
       );
+    });
+
+    it('uses the tag for both the tree etag and archive when a branch shares its name', async () => {
+      const requests: URL[] = [];
+      worker.use(
+        http.get(
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
+          ({ request }) => {
+            const url = new URL(request.url);
+            requests.push(url);
+            return HttpResponse.json({
+              value: [
+                {
+                  commitId:
+                    url.searchParams.get(
+                      'searchCriteria.itemVersion.versionType',
+                    ) === 'tag'
+                      ? 'tag-commit'
+                      : 'branch-commit',
+                },
+              ],
+            });
+          },
+        ),
+        http.get(
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/items',
+          ({ request }) => {
+            requests.push(new URL(request.url));
+            return new HttpResponse(new Uint8Array(repoBuffer), {
+              status: 200,
+              headers: { 'Content-Type': 'application/zip' },
+            });
+          },
+        ),
+      );
+
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository?version=GTrelease',
+        { etag: 'branch-commit' },
+      );
+
+      expect(response.etag).toBe('tag-commit');
+      expect(requests).toHaveLength(2);
+      expect(
+        requests[0].searchParams.get('searchCriteria.itemVersion.version'),
+      ).toBe('release');
+      expect(
+        requests[0].searchParams.get('searchCriteria.itemVersion.versionType'),
+      ).toBe('tag');
+      expect(requests[1].searchParams.get('versionDescriptor.version')).toBe(
+        'release',
+      );
+      expect(
+        requests[1].searchParams.get('versionDescriptor.versionType'),
+      ).toBe('tag');
     });
 
     it('returns the wanted files from an archive', async () => {

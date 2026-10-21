@@ -14,7 +14,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
@@ -28,7 +28,7 @@ jobs:
         run: git fetch --depth 1 origin "$GITHUB_BASE_REF"
 
       - name: setup-node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/
@@ -53,7 +53,7 @@ jobs:
           cat "$GITHUB_EVENT_PATH" > event.json
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: preview-spec
           path: |

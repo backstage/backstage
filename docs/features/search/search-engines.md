@@ -5,7 +5,7 @@ description: Choosing and configuring your search engine for Backstage
 ---
 
 Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
-and [Elasticsearch/OpenSearch](#elasticsearch-7x-and-opensearch).
+and [Elasticsearch/OpenSearch](#elasticsearch-and-opensearch).
 
 ## Lunr
 
@@ -102,11 +102,24 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## Elasticsearch (7.x) and OpenSearch
+## Elasticsearch and OpenSearch
 
 Backstage supports Elasticsearch and OpenSearch search engine connections,
 indexing and querying out of the box. Available configuration options enable
 usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
+
+### Supported versions
+
+| Search Engine | Supported Versions |
+| ------------- | ------------------ |
+| Elasticsearch | >= 8.19            |
+| OpenSearch    | 1.x, 2.x           |
+
+:::note
+Elasticsearch 7.x is no longer supported. See the [v1.55.0 release notes](../../releases/v1.55.0.md#breaking-elasticsearch-8-upgrade) for migration details.
+:::
+
+### Setup
 
 Similarly to Postgres above, Elasticsearch can be set up as follows.
 
@@ -137,10 +150,8 @@ Elasticsearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-The underlying functionality uses either the official Elasticsearch client
-version 8.19 or later (the only Elasticsearch 8.x release line that is
-[still supported](https://endoflife.date/elasticsearch)), or the OpenSearch
-client, when the `aws` or `opensearch` provider is configured.
+When the `aws` or `opensearch` provider is configured, the OpenSearch client is
+used instead of the Elasticsearch client.
 
 ### Example configurations
 
@@ -275,6 +286,21 @@ search:
 ```
 
 After applying this setting, an index name would look like this: `custom-prefix-software-catalog-index__20250219`
+
+### Elasticsearch index retention
+
+Each indexing run writes documents to a fresh index and then moves the search
+alias for that document type to it. To make sure searches that are already
+running can finish, the indexer keeps the previous index around for one more
+run:
+
+- The current and previous index are retained per document type, so in-flight
+  searches against the previous index can complete.
+- The previous index is deleted after the next successful indexing run for that
+  document type.
+- Your cluster's storage and shard capacity should allow for two indices per
+  document type between runs, and temporarily three while an indexing run is in
+  progress.
 
 ### Elasticsearch query config
 

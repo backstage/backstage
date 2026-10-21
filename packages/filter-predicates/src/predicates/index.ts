@@ -30,6 +30,7 @@ export {
   parseFilterPredicate,
 } from './schema';
 export type {
+  AnyFilterPredicate,
   FilterPredicate,
   FilterPredicateExpression,
   FilterPredicatePrimitive,
