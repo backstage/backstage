@@ -45,8 +45,9 @@ client replaces its previous session.
 ### Signing out from a client
 
 A client can revoke its own refresh token through the standard revocation
-endpoint, `/api/auth/v1/revoke`. For example, `backstage-cli auth logout` does
-this before removing the tokens it stores locally.
+endpoint, `/api/auth/v1/revoke`. The request must identify the client with its
+`client_id`. Clients that were registered through dynamic client registration
+must also authenticate with their client secret.
 
 ### Revoking all sessions of a user
 
@@ -74,7 +75,8 @@ exists in the catalog. If it does not, the session is revoked and the refresh
 fails. If your Backstage instance allows
 [sign-in without users in the catalog](./identity-resolver.md#sign-in-without-users-in-the-catalog),
 you can set `dangerouslyDisableCatalogPresenceCheck` to turn off this check.
-Without it, sessions of removed users stay valid until they expire.
+With this check disabled, sessions of removed users stay valid until they
+expire.
 
 ### Access tokens that were already issued
 
