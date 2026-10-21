@@ -242,7 +242,14 @@ waits for it to be synced. With many parallel test workers, these checkpoints
 can take tens of seconds each and make the `afterAll` hooks time out. The Docker
 based engines avoid this by keeping their data in memory. If you supply your own
 PostgreSQL server for tests, turn off durability on it, since the data is thrown
-away anyway:
+away anyway.
+
+Only do this on a dedicated PostgreSQL server that holds nothing but disposable
+test data, such as a CI service container. `ALTER SYSTEM` changes the setting
+for every database on the server, and with `fsync` off an operating system
+crash or power failure can corrupt all of them beyond repair. Never use these
+settings on a shared development or production server.
+
 
 ```sql
 ALTER SYSTEM SET fsync = off;
