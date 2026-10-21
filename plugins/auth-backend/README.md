@@ -177,14 +177,6 @@ auth:
    backstageTokenExpiration: { minutes: <user_defined_value> }
 ```
 
-## Revoking Offline Sessions of a User
+## Offline Access
 
-When refresh tokens are enabled through `auth.experimentalRefreshToken.enabled`, other backend services can revoke all offline sessions of a user, for example to sign a user out of the Backstage CLI and MCP clients. Send a `POST` request to `/api/auth/v1/offline-sessions/revoke` with the user entity ref in the body:
-
-```json
-{ "userEntityRef": "user:default/jane.doe" }
-```
-
-The response contains the number of revoked sessions, for example `{ "revokedCount": 2 }`. Every revocation is recorded as an audit event.
-
-Only service credentials are accepted, so users cannot call this endpoint directly. The calling service is responsible for checking that the request is allowed, for example by only exposing it to administrators. Access tokens that were already issued stay valid until they expire, which is controlled by `auth.backstageTokenExpiration`.
+See [Offline Access](https://backstage.io/docs/auth/offline-access) for how to enable refresh tokens for the Backstage CLI and MCP clients, and how to revoke them.

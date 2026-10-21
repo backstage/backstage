@@ -201,6 +201,7 @@ export default {
             'auth/oidc',
             'auth/add-auth-provider',
             'auth/service-to-service-auth',
+            'auth/offline-access',
             'auth/autologout',
             'auth/troubleshooting',
           ],
