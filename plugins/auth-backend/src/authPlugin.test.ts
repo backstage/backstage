@@ -199,8 +199,9 @@ describe('authPlugin', () => {
 
         const sessions = ['a', 'b', 'c'].map((id, index) => ({
           id,
+          // Sessions keep the ref casing from sign-in
           user_entity_ref:
-            index < 2 ? 'user:default/target' : 'user:default/other',
+            index < 2 ? 'user:default/Target' : 'user:default/other',
           oidc_client_id: null,
           token_hash: `hash-${id}`,
           created_at: knex.fn.now(),
@@ -216,8 +217,9 @@ describe('authPlugin', () => {
           .expect(403);
         await request(server)
           .post('/api/auth/v1/offline-sessions/revoke')
+          .set('Authorization', mockCredentials.none.header())
           .send({ userEntityRef: 'user:default/target' })
-          .expect(403);
+          .expect(401);
 
         await request(server)
           .post('/api/auth/v1/offline-sessions/revoke')
@@ -235,7 +237,7 @@ describe('authPlugin', () => {
         const res = await request(server)
           .post('/api/auth/v1/offline-sessions/revoke')
           .set('Authorization', mockCredentials.service.header())
-          .send({ userEntityRef: 'target' });
+          .send({ userEntityRef: 'TARGET' });
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ revokedCount: 2 });
 
