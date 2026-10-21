@@ -2416,6 +2416,17 @@ __metadata:
     "@yarnpkg/parsers": "npm:^3.0.0"
     "@yarnpkg/plugin-patch": "npm:^4.0.2"
     cleye: "npm:^2.6.0"
+  peerDependencies:
+    "@yarnpkg/cli": ^4.7.0
+    "@yarnpkg/core": ^4.9.1
+    "@yarnpkg/plugin-patch": ^4.0.2
+  peerDependenciesMeta:
+    "@yarnpkg/cli":
+      optional: true
+    "@yarnpkg/core":
+      optional: true
+    "@yarnpkg/plugin-patch":
+      optional: true
   bin:
     cli-module-package-manager-yarn: bin/backstage-cli-module-package-manager-yarn
   languageName: unknown

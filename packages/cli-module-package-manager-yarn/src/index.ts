@@ -21,6 +21,7 @@
 
 import { createCliModule } from '@backstage/cli-node';
 import packageJson from '../package.json';
+import { assertYarnPackagesAvailable } from './lib/assertYarnPackagesAvailable';
 
 export default createCliModule({
   packageJson,
@@ -30,7 +31,10 @@ export default createCliModule({
       description:
         'Verify Yarn patches, resolutions, and Backstage package versions',
       execute: {
-        loader: () => import('./commands/pm/verifyPatches'),
+        loader: () => {
+          assertYarnPackagesAvailable();
+          return import('./commands/pm/verifyPatches');
+        },
       },
     });
   },
