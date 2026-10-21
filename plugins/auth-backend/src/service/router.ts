@@ -19,7 +19,6 @@ import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import {
   AuthService,
-  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -46,7 +45,7 @@ import { OfflineAccessService } from './OfflineAccessService';
 
 interface RouterOptions {
   logger: LoggerService;
-  database: DatabaseService;
+  database: AuthDatabase;
   config: RootConfigService;
   discovery: DiscoveryService;
   auth: AuthService;
@@ -55,6 +54,7 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
+  userInfo: UserInfoDatabase;
   offlineAccess?: OfflineAccessService;
 }
 
@@ -65,10 +65,11 @@ export async function createRouter(
     logger,
     config,
     discovery,
-    database: db,
+    database,
     tokenFactoryAlgorithm,
     providerFactories = {},
     httpAuth,
+    userInfo,
   } = options;
 
   const router = Router();
@@ -76,14 +77,9 @@ export async function createRouter(
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
   const backstageTokenExpiration = readBackstageTokenExpiration(config);
-  const database = AuthDatabase.create(db);
 
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
-    database,
-  });
-
-  const userInfo = await UserInfoDatabase.create({
     database,
   });
 

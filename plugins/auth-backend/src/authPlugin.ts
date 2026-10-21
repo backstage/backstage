@@ -27,6 +27,8 @@ import {
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createAuthActions } from './actions';
+import { AuthDatabase } from './database/AuthDatabase';
+import { UserInfoDatabase } from './database/UserInfoDatabase';
 import { createRouter } from './service/router';
 import { OfflineAccessService } from './service/OfflineAccessService';
 
@@ -88,6 +90,11 @@ export const authPlugin = createBackendPlugin({
         actionsRegistry,
         userInfo,
       }) {
+        const authDb = AuthDatabase.create(database);
+        const userInfoDb = await UserInfoDatabase.create({
+          database: authDb,
+        });
+
         const refreshTokensEnabled = config.getOptionalBoolean(
           'auth.experimentalRefreshToken.enabled',
         );
@@ -100,19 +107,22 @@ export const authPlugin = createBackendPlugin({
               lifecycle,
               catalog,
               auth,
+              userInfo: userInfoDb,
+              ownershipResolver,
             })
           : undefined;
 
         const router = await createRouter({
           logger,
           config,
-          database,
+          database: authDb,
           discovery,
           auth,
           catalog,
           providerFactories: Object.fromEntries(providers),
           ownershipResolver,
           httpAuth,
+          userInfo: userInfoDb,
           offlineAccess,
         });
         httpRouter.addAuthPolicy({
