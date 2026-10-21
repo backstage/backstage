@@ -15,7 +15,7 @@
  */
 import { ClientSecretCredential } from '@azure/identity';
 import type { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Client } from '@microsoft/microsoft-graph-client';
 import type { Subscription } from '@microsoft/microsoft-graph-types';
 
@@ -161,13 +161,16 @@ export class MicrosoftGraphClient {
     try {
       return await this.clientWrapper.clientCall(call);
     } catch (err) {
-      if (
-        typeof err === 'object' &&
-        err !== null &&
-        'statusCode' in err &&
-        err.statusCode === 404
-      ) {
+      if (typeof err !== 'object' || err === null || !('statusCode' in err)) {
+        throw err;
+      }
+
+      if (err.statusCode === 404) {
         throw new NotFoundError('Microsoft Graph subscription not found', err);
+      }
+
+      if (err.statusCode === 409) {
+        throw new ConflictError('Microsoft Graph subscription conflict', err);
       }
 
       throw err;

@@ -15,6 +15,7 @@
  */
 import { mockServices } from '@backstage/backend-test-utils';
 import type { Config } from '@backstage/config';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import type { Client } from '@microsoft/microsoft-graph-client';
 import {
   type ClientWrapper,
@@ -97,6 +98,22 @@ describe('MicrosoftGraphClient', () => {
       expect(apiClientMock.api).toHaveBeenCalledWith('/subscriptions/subid');
       expect(apiClientMock.get).toHaveBeenCalled();
       expect(result).toBe(fakeSub);
+    });
+
+    it('throws a NotFoundError when the subscription does not exist', async () => {
+      apiClientMock.get.mockRejectedValue({ statusCode: 404 });
+
+      await expect(client.getSubscription('missing')).rejects.toBeInstanceOf(
+        NotFoundError,
+      );
+    });
+
+    it('throws a ConflictError when Microsoft Graph reports a conflict', async () => {
+      apiClientMock.get.mockRejectedValue({ statusCode: 409 });
+
+      await expect(client.getSubscription('subid')).rejects.toBeInstanceOf(
+        ConflictError,
+      );
     });
   });
 
