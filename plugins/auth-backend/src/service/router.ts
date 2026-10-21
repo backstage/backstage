@@ -18,6 +18,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import {
+  AuditorService,
   AuthService,
   DatabaseService,
   DiscoveryService,
@@ -27,7 +28,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { KeyStores } from '../identity/KeyStores';
 import { TokenFactory } from '../identity/TokenFactory';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
@@ -55,6 +57,7 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
+  auditor?: AuditorService;
   offlineAccess?: OfflineAccessService;
 }
 
@@ -69,6 +72,8 @@ export async function createRouter(
     tokenFactoryAlgorithm,
     providerFactories = {},
     httpAuth,
+    auditor,
+    offlineAccess,
   } = options;
 
   const router = Router();
@@ -168,6 +173,49 @@ export async function createRouter(
   });
 
   router.use(oidcRouter.getRouter());
+
+  if (offlineAccess) {
+    // Revokes all offline sessions (refresh tokens) of a user, for example
+    // when an administrator needs to sign a user out of all their clients.
+    // Only callable by other backend services, which are responsible for
+    // their own authorization of the request.
+    router.post('/v1/offline-sessions/revoke', async (req, res) => {
+      await httpAuth.credentials(req, { allow: ['service'] });
+
+      const { userEntityRef: rawRef } = req.body ?? {};
+      if (typeof rawRef !== 'string' || !rawRef) {
+        throw new InputError('Missing userEntityRef in request body');
+      }
+      let userEntityRef: string;
+      try {
+        userEntityRef = stringifyEntityRef(
+          parseEntityRef(rawRef, { defaultKind: 'user' }),
+        );
+      } catch (error) {
+        throw new InputError(`Invalid userEntityRef, ${error}`);
+      }
+      if (!userEntityRef.startsWith('user:')) {
+        throw new InputError('The userEntityRef must refer to a user entity');
+      }
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'offline-sessions-revoke',
+        severityLevel: 'high',
+        request: req,
+        meta: { userEntityRef },
+      });
+
+      try {
+        const revokedCount =
+          await offlineAccess.revokeRefreshTokensByUserEntityRef(userEntityRef);
+        await auditorEvent?.success({ meta: { revokedCount } });
+        res.json({ revokedCount });
+      } catch (error) {
+        await auditorEvent?.fail({ error });
+        throw error;
+      }
+    });
+  }
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {
