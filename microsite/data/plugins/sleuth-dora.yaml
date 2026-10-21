@@ -4,8 +4,8 @@ author: Backstage Runway
 authorUrl: https://backstagerunway.com
 category: Monitoring
 description: See Sleuth DORA metrics in Backstage for the whole organisation, for each team and for each service, with the change since the previous period.
-documentation: https://www.npmjs.com/package/@backstagerunway/plugin-sleuth-dora
-iconUrl: https://cdn.jsdelivr.net/npm/@backstagerunway/plugin-sleuth-dora/docs/logo/backstage-runway-icon-sky.svg
+documentation: https://github.com/BackstageRunway/backstage-sleuth/blob/main/plugins/sleuth-dora/README.md
+iconUrl: https://raw.githubusercontent.com/BackstageRunway/backstage-sleuth/main/plugins/sleuth-dora/docs/logo/backstage-runway-icon-sky.svg
 npmPackageName: '@backstagerunway/plugin-sleuth-dora'
 addedDate: '2026-10-12'
 status: active
