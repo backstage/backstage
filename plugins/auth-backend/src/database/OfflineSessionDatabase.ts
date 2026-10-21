@@ -95,7 +95,10 @@ export class OfflineSessionDatabase {
   async createSession(
     options: CreateOfflineSessionOptions,
   ): Promise<OfflineSession> {
-    const { id, userEntityRef, oidcClientId, tokenHash } = options;
+    const { id, oidcClientId, tokenHash } = options;
+    // Store entity refs in their canonical lowercase form, so that they can be
+    // matched exactly
+    const userEntityRef = options.userEntityRef.toLowerCase();
 
     await this.#knex.transaction(async trx => {
       // Delete existing session for same user and OIDC client
@@ -211,9 +214,8 @@ export class OfflineSessionDatabase {
    * Delete all sessions for a user entity ref
    */
   async deleteSessionsByUserEntityRef(userEntityRef: string): Promise<number> {
-    // Entity refs are case insensitive, but sessions store the ref as issued
     return await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
-      .whereRaw('LOWER(user_entity_ref) = ?', [userEntityRef.toLowerCase()])
+      .where('user_entity_ref', userEntityRef.toLowerCase())
       .delete();
   }
 
