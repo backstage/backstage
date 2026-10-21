@@ -326,6 +326,41 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         'groups',
       );
     });
+
+    it('waits for all resource refreshes before rejecting', async () => {
+      let rejectUsers!: (error: Error) => void;
+      let resolveGroups!: () => void;
+      const usersRefresh = new Promise<void>((_, reject) => {
+        rejectUsers = reject;
+      });
+      const groupsRefresh = new Promise<void>(resolve => {
+        resolveGroups = resolve;
+      });
+      target.ensureActiveResourceSubscription = jest
+        .fn()
+        .mockReturnValueOnce(usersRefresh)
+        .mockReturnValueOnce(groupsRefresh);
+
+      let settled = false;
+      const refresh = target.ensureActiveSubscriptions();
+      refresh.then(
+        () => {
+          settled = true;
+        },
+        () => {
+          settled = true;
+        },
+      );
+
+      const error = new Error('users refresh failed');
+      rejectUsers(error);
+      await new Promise(resolve => setImmediate(resolve));
+
+      expect(settled).toBe(false);
+
+      resolveGroups();
+      await expect(refresh).rejects.toBe(error);
+    });
   });
 
   describe('ensureActiveResourceSubscription', () => {
