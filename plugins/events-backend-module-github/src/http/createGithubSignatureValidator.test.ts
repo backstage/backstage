@@ -86,11 +86,12 @@ describe('createGithubSignatureValidator', () => {
       headers: {
         'x-hub-signature-256': signature,
       },
+      query: {},
       raw: {
         body: payloadBuffer,
         encoding: 'utf-8',
       },
-    } as Partial<RequestDetails> as unknown as RequestDetails;
+    } as RequestDetails;
   };
 
   it('should return undefined if no secret is configured', async () => {
