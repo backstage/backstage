@@ -265,75 +265,101 @@ export class MicrosoftGraphSubscriptionManager {
 
   async ensureActiveResourceSubscription(resource: string) {
     const logger = this.logger.child({ resource });
+    let createdSubscriptionId: string | undefined;
 
-    // Use a transaction to ensure synchronized between MS Graph and our DB
-    await this.database.transaction(async trx => {
-      const { existingSubscriptionId, isValid, expiresSoon } =
-        await this.checkExistingSubscription(trx, resource);
+    try {
+      await this.database.transaction(async trx => {
+        const { existingSubscriptionId, isValid, expiresSoon } =
+          await this.checkExistingSubscription(trx, resource);
 
-      if (existingSubscriptionId && isValid && !expiresSoon) {
-        logger.debug(
-          `Subscription '${existingSubscriptionId}' for resource '${resource}' is valid.`,
-        );
+        if (existingSubscriptionId && isValid && !expiresSoon) {
+          logger.debug(
+            `Subscription '${existingSubscriptionId}' for resource '${resource}' is valid.`,
+          );
 
-        return;
-      } else if (!existingSubscriptionId || !isValid) {
-        logger.debug(
-          `No valid subscription for resource '${resource}' exists, creating a new one.`,
-        );
+          return;
+        } else if (!existingSubscriptionId || !isValid) {
+          logger.debug(
+            `No valid subscription for resource '${resource}' exists, creating a new one.`,
+          );
 
-        if (existingSubscriptionId) {
-          // Clean up old subscription in MS Graph asynchronously if available
-          try {
-            await this.msGraphClient.deleteSubscription(existingSubscriptionId);
-          } catch (err) {
-            logger.warn(
-              `Error deleting old subscription ${existingSubscriptionId}.`,
-              isError(err) ? err : undefined,
-            );
+          if (existingSubscriptionId) {
+            // Clean up old subscription in MS Graph asynchronously if available
+            try {
+              await this.msGraphClient.deleteSubscription(
+                existingSubscriptionId,
+              );
+            } catch (err) {
+              logger.warn(
+                `Error deleting old subscription ${existingSubscriptionId}.`,
+                isError(err) ? err : undefined,
+              );
+            }
+
+            await trx.deleteById(existingSubscriptionId);
           }
 
-          await trx.deleteById(existingSubscriptionId);
-        }
+          const { validationToken, hash, salt } = newValidationToken();
+          const { id, expirationDateTime } =
+            await this.msGraphClient.createSubscription({
+              resource,
+              validationToken,
+              expirationDateTime: newExpirationDateTime(),
+              notificationUrl: this.getNotificationUrl(),
+            });
+          createdSubscriptionId = id;
 
-        const { validationToken, hash, salt } = newValidationToken();
-        const { id, expirationDateTime } =
-          await this.msGraphClient.createSubscription({
+          await trx.insert({
+            id,
             resource,
-            validationToken,
-            expirationDateTime: newExpirationDateTime(),
-            notificationUrl: this.getNotificationUrl(),
+            expires_at: new Date(expirationDateTime),
+            token_hash: hash,
+            token_salt: salt,
+          });
+        } else if (expiresSoon) {
+          logger.debug(
+            `Renewing expiring subscription for resource '${resource}'.`,
+          );
+
+          const { id, expirationDateTime } =
+            await this.msGraphClient.renewSubscription({
+              subscriptionId: existingSubscriptionId,
+              expirationDateTime: newExpirationDateTime(),
+            });
+
+          await trx.update({
+            id,
+            expires_at: new Date(expirationDateTime),
           });
 
-        await trx.insert({
-          id,
-          resource,
-          expires_at: new Date(expirationDateTime),
-          token_hash: hash,
-          token_salt: salt,
-        });
-        logger.info(
-          `Created new subscription ${id} for resource '${resource}'.`,
-        );
-      } else if (expiresSoon) {
-        logger.debug(
-          `Renewing expiring subscription for resource '${resource}'.`,
-        );
-
-        const { id, expirationDateTime } =
-          await this.msGraphClient.renewSubscription({
-            subscriptionId: existingSubscriptionId,
-            expirationDateTime: newExpirationDateTime(),
-          });
-
-        await trx.update({
-          id,
-          expires_at: new Date(expirationDateTime),
-        });
-
-        logger.info(`Subscription ${id} for resource '${resource}' renewed.`);
+          logger.info(`Subscription ${id} for resource '${resource}' renewed.`);
+        }
+      });
+    } catch (error) {
+      if (createdSubscriptionId) {
+        try {
+          this.logger.warn(
+            `Failed to persist subscription ${createdSubscriptionId} for resource '${resource}' in DB. Cleaning up MS Graph subscription.`,
+            isError(error) ? error : undefined,
+          );
+          await this.msGraphClient.deleteSubscription(createdSubscriptionId);
+        } catch (cleanupError) {
+          if (!(cleanupError instanceof NotFoundError)) {
+            logger.error(
+              `Failed to delete unpersisted subscription ${createdSubscriptionId} for resource '${resource}' from MS Graph. Manual cleanup may be required.`,
+              isError(cleanupError) ? cleanupError : undefined,
+            );
+          }
+        }
       }
-    });
+      throw error;
+    }
+
+    if (createdSubscriptionId) {
+      logger.info(
+        `Created new subscription ${createdSubscriptionId} for resource '${resource}'.`,
+      );
+    }
   }
 
   private async checkExistingSubscription(

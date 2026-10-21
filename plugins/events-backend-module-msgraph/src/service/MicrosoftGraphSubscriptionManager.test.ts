@@ -427,6 +427,53 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       );
     });
 
+    it('deletes a newly created subscription if persisting it fails', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue(undefined);
+      msGraphClient.createSubscription.mockResolvedValue({
+        id: 'subid',
+        expirationDateTime: DateTime.now().plus({ minutes: 45 }).toISO(),
+      });
+      const error = new Error('database unavailable');
+      databaseClient.insert.mockRejectedValue(error);
+
+      await expect(
+        target.ensureActiveResourceSubscription('users'),
+      ).rejects.toBe(error);
+
+      expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('subid');
+      expect(logger.warn).toHaveBeenCalledWith(
+        "Failed to persist subscription subid for resource 'users' in DB. Cleaning up MS Graph subscription.",
+        error,
+      );
+      expect(logger.info).not.toHaveBeenCalledWith(
+        "Created new subscription subid for resource 'users'.",
+      );
+    });
+
+    it.each([
+      [new Error('Graph unavailable'), true],
+      [new NotFoundError('missing'), false],
+    ])(
+      'preserves the database error when cleanup fails with %p',
+      async (cleanupError, shouldLogError) => {
+        databaseClient.findByResource = jest.fn().mockResolvedValue(undefined);
+        msGraphClient.createSubscription.mockResolvedValue({
+          id: 'subid',
+          expirationDateTime: DateTime.now().plus({ minutes: 45 }).toISO(),
+        });
+        const error = new Error('database unavailable');
+        databaseClient.insert.mockRejectedValue(error);
+        msGraphClient.deleteSubscription.mockRejectedValue(cleanupError);
+
+        await expect(
+          target.ensureActiveResourceSubscription('users'),
+        ).rejects.toBe(error);
+
+        expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith('subid');
+        expect(logger.error).toHaveBeenCalledTimes(shouldLogError ? 1 : 0);
+      },
+    );
+
     it('recreates expired subscription if found in DB', async () => {
       databaseClient.findByResource = jest.fn().mockResolvedValue({
         id: 'old_id',
