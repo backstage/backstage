@@ -250,11 +250,17 @@ export class MicrosoftGraphSubscriptionManager {
    * Ensures that all configured resources have an active subscription in MS Graph and in the database.
    */
   async ensureActiveSubscriptions() {
-    await Promise.all(
+    const results = await Promise.allSettled(
       this.resources.map(resource =>
         this.ensureActiveResourceSubscription(resource),
       ),
     );
+
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        throw result.reason;
+      }
+    }
   }
 
   async ensureActiveResourceSubscription(resource: string) {
