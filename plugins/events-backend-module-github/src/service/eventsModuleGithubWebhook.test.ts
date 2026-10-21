@@ -40,7 +40,7 @@ describe('eventsModuleGithubWebhook', () => {
         body: payloadBuffer,
         encoding: 'utf-8',
       },
-    } as Partial<RequestDetails> as unknown as RequestDetails;
+    } as RequestDetails;
   };
 
   it('should not add ingress if validator is undefined', async () => {
