@@ -25,16 +25,19 @@ describe('groupNotifications', () => {
     jest.clearAllMocks();
   });
 
-  it('returns undefined and logs warning for invalid payload', () => {
-    const result = groupNotifications({
-      event: { topic, eventPayload: {} },
-      logger,
-    });
-    expect(result).toBeUndefined();
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Received invalid event payload'),
-    );
-  });
+  it.each([{}, null, undefined])(
+    'returns undefined and logs warning for invalid payload %p',
+    eventPayload => {
+      const result = groupNotifications({
+        event: { topic, eventPayload },
+        logger,
+      });
+      expect(result).toBeUndefined();
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Received invalid event payload'),
+      );
+    },
+  );
 
   it('returns undefined and logs info for no valid notifications', () => {
     const result = groupNotifications({

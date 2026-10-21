@@ -154,7 +154,7 @@ describe('eventsModuleMicrosoftGraphWebhook', () => {
                     clientId: 'test-client',
                     clientSecret: 'test-secret',
                     notificationUrl: 'https://example.com/webhook',
-                    resources: ['users'],
+                    subscriptionResources: ['users'],
                   },
                 },
               },
