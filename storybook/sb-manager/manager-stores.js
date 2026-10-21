@@ -1,4 +1,4 @@
-import "../_browser-chunks/chunk-A242L54C.js";
+import "../_browser-chunks/chunk-IMSF75WX.js";
 
 // src/manager/manager-stores.ts
 import {

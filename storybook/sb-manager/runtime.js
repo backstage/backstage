@@ -9,11 +9,20 @@ var __require = /* @__PURE__ */ ((x2) => typeof require < "u" ? require : typeof
   if (typeof require < "u") return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x2 + '" is not supported');
 });
-var __esm = (fn, res) => function() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+var __esm = (fn, res, err) => function() {
+  if (err) throw err[0];
+  try {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  } catch (e2) {
+    throw err = [e2], e2;
+  }
 };
 var __commonJS = (cb, mod) => function() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e2) {
+    throw mod = 0, e2;
+  }
 };
 var __export = (target, all) => {
   for (var name in all)
@@ -100,7 +109,7 @@ var require_factoryWithThrowingShims = __commonJS({
     }
     emptyFunctionWithReset.resetWarningCache = emptyFunction;
     module.exports = function() {
-      function shim(props, propName, componentName, location2, propFullName, secret) {
+      function shim(props, propName, componentName2, location2, propFullName, secret) {
         if (secret !== ReactPropTypesSecret) {
           var err = new Error(
             "Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types"
@@ -463,7 +472,7 @@ var require_scroll = __commonJS({
     };
     function make(prop) {
       return function(el, to, opts, cb) {
-        opts = opts || {}, typeof opts == "function" && (cb = opts, opts = {}), typeof cb != "function" && (cb = noop5);
+        opts = opts || {}, typeof opts == "function" && (cb = opts, opts = {}), typeof cb != "function" && (cb = noop6);
         var start = ms(), from = el[prop], ease = opts.ease || inOutSine, duration = isNaN(opts.duration) ? 350 : +opts.duration, cancelled = !1;
         return from === to ? cb(E_NOSCROLL, el[prop]) : requestAnimationFrame(animate), cancel;
         function cancel() {
@@ -481,7 +490,7 @@ var require_scroll = __commonJS({
     function inOutSine(n3) {
       return 0.5 * (1 - Math.cos(Math.PI * n3));
     }
-    function noop5() {
+    function noop6() {
     }
   }
 });
@@ -541,7 +550,7 @@ var require_cjs = __commonJS({
       var stringValue = Object.prototype.toString.call(value);
       return stringValue === "[object RegExp]" || stringValue === "[object Date]" || isReactElement(value);
     }
-    var canUseSymbol = typeof Symbol == "function" && Symbol.for, REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for("react.element") : 60103;
+    var canUseSymbol = typeof Symbol == "function" && Symbol.for, REACT_ELEMENT_TYPE = canUseSymbol ? /* @__PURE__ */ Symbol.for("react.element") : 60103;
     function isReactElement(value) {
       return value.$$typeof === REACT_ELEMENT_TYPE;
     }
@@ -609,8 +618,8 @@ var require_cjs = __commonJS({
 var require_react_is_production_min = __commonJS({
   "../../node_modules/downshift/node_modules/react-is/cjs/react-is.production.min.js"(exports) {
     "use strict";
-    var b2 = Symbol.for("react.element"), c2 = Symbol.for("react.portal"), d2 = Symbol.for("react.fragment"), e2 = Symbol.for("react.strict_mode"), f2 = Symbol.for("react.profiler"), g2 = Symbol.for("react.provider"), h2 = Symbol.for("react.context"), k2 = Symbol.for("react.server_context"), l3 = Symbol.for("react.forward_ref"), m2 = Symbol.for("react.suspense"), n3 = Symbol.for("react.suspense_list"), p2 = Symbol.for("react.memo"), q2 = Symbol.for("react.lazy"), t2 = Symbol.for("react.offscreen"), u2;
-    u2 = Symbol.for("react.module.reference");
+    var b2 = /* @__PURE__ */ Symbol.for("react.element"), c2 = /* @__PURE__ */ Symbol.for("react.portal"), d2 = /* @__PURE__ */ Symbol.for("react.fragment"), e2 = /* @__PURE__ */ Symbol.for("react.strict_mode"), f2 = /* @__PURE__ */ Symbol.for("react.profiler"), g2 = /* @__PURE__ */ Symbol.for("react.provider"), h2 = /* @__PURE__ */ Symbol.for("react.context"), k2 = /* @__PURE__ */ Symbol.for("react.server_context"), l3 = /* @__PURE__ */ Symbol.for("react.forward_ref"), m2 = /* @__PURE__ */ Symbol.for("react.suspense"), n3 = /* @__PURE__ */ Symbol.for("react.suspense_list"), p2 = /* @__PURE__ */ Symbol.for("react.memo"), q2 = /* @__PURE__ */ Symbol.for("react.lazy"), t2 = /* @__PURE__ */ Symbol.for("react.offscreen"), u2;
+    u2 = /* @__PURE__ */ Symbol.for("react.module.reference");
     function v2(a2) {
       if (typeof a2 == "object" && a2 !== null) {
         var r4 = a2.$$typeof;
@@ -1249,7 +1258,7 @@ var require_store2 = __commonJS({
 init_react();
 
 // global-externals:storybook/internal/channels
-var channels_default = __STORYBOOK_CHANNELS__, { Channel, HEARTBEAT_INTERVAL, HEARTBEAT_MAX_LATENCY, PostMessageTransport, WebsocketTransport, createBrowserChannel } = __STORYBOOK_CHANNELS__;
+var channels_default = __STORYBOOK_CHANNELS__, { Channel, HEARTBEAT_INTERVAL, HEARTBEAT_MAX_LATENCY, PostMessageTransport, SERVER_CHANNEL_PATH, WebsocketTransport, clearChannel, createBrowserChannel, ensureChannel, getChannel, installNoopChannel, requireChannel, setChannel } = __STORYBOOK_CHANNELS__;
 
 // global-externals:storybook/internal/core-events
 var core_events_default = __STORYBOOK_CORE_EVENTS__, { AI_PROMPT_NUDGE, AI_SETUP_ANALYTICS_REQUEST, AI_SETUP_ANALYTICS_RESPONSE, ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GHOST_STORIES_REQUEST, GHOST_STORIES_RESPONSE, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, SHARE_ISOLATE_MODE, SIDEBAR_FILTER_CHANGED, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
@@ -1524,16 +1533,16 @@ __export(icons_exports, {
 var icons_default = __STORYBOOK_ICONS__, { AccessibilityAltIcon, AccessibilityIcon, AccessibilityIgnoredIcon, AddIcon, AdminIcon, AlertAltIcon, AlertIcon, AlignLeftIcon, AlignRightIcon, AppleIcon, ArrowBottomLeftIcon, ArrowBottomRightIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowSolidDownIcon, ArrowSolidLeftIcon, ArrowSolidRightIcon, ArrowSolidUpIcon, ArrowTopLeftIcon, ArrowTopRightIcon, ArrowUpIcon, AzureDevOpsIcon, BackIcon, BasketIcon, BatchAcceptIcon, BatchDenyIcon, BeakerIcon, BellIcon, BitbucketIcon, BoldIcon, BookIcon, BookmarkHollowIcon, BookmarkIcon, BottomBarIcon, BottomBarToggleIcon, BoxIcon, BranchIcon, BrowserIcon, BugIcon, ButtonIcon, CPUIcon, CalendarIcon, CameraIcon, CameraStabilizeIcon, CategoryIcon, CertificateIcon, ChangedIcon, ChatIcon, CheckIcon, ChecklistIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronSmallDownIcon, ChevronSmallLeftIcon, ChevronSmallRightIcon, ChevronSmallUpIcon, ChevronUpIcon, ChromaticIcon, ChromeIcon, CircleHollowIcon, CircleIcon, ClearIcon, CloseAltIcon, CloseIcon, CloudHollowIcon, CloudIcon, CogIcon, CollapseIcon, CommandIcon, CommentAddIcon, CommentIcon, CommentsIcon, CommitIcon, CompassIcon, ComponentDrivenIcon, ComponentIcon, ContrastIcon, ContrastIgnoredIcon, ControlsIcon, CopyIcon, CreditIcon, CrossIcon, DashboardIcon, DatabaseIcon, DeleteIcon, DiamondIcon, DirectionIcon, DiscordIcon, DocChartIcon, DocListIcon, DocumentIcon, DownloadIcon, DragIcon, EditIcon, EditorIcon, EllipsisIcon, EmailIcon, ExpandAltIcon, ExpandIcon, EyeCloseIcon, EyeIcon, FaceHappyIcon, FaceNeutralIcon, FaceSadIcon, FacebookIcon, FailedIcon, FastForwardIcon, FigmaIcon, FilesIcon, FilterIcon, FlagIcon, FolderIcon, FormIcon, GDriveIcon, GiftIcon, GithubIcon, GitlabIcon, GlobeIcon, GoogleIcon, GraphBarIcon, GraphLineIcon, GraphqlIcon, GridAltIcon, GridIcon, GrowIcon, HeartHollowIcon, HeartIcon, HomeIcon, HourglassIcon, InfoIcon, ItalicIcon, JumpToIcon, KeyIcon, LightningIcon, LightningOffIcon, LinkBrokenIcon, LinkIcon, LinkedinIcon, LinuxIcon, ListOrderedIcon, ListUnorderedIcon, LocationIcon, LockIcon, MarkdownIcon, MarkupIcon, MediumIcon, MemoryIcon, MenuIcon, MergeIcon, MirrorIcon, MobileIcon, MoonIcon, NutIcon, OutboxIcon, OutlineIcon, PaintBrushAltIcon, PaintBrushIcon, PaperClipIcon, ParagraphIcon, PassedIcon, PhoneIcon, PhotoDragIcon, PhotoIcon, PhotoStabilizeIcon, PinAltIcon, PinIcon, PlayAllHollowIcon, PlayBackIcon, PlayHollowIcon, PlayIcon, PlayNextIcon, PlusIcon, PointerDefaultIcon, PointerHandIcon, PopOutIcon, PowerIcon, PrintIcon, ProceedIcon, ProfileIcon, PullRequestIcon, QuestionIcon, RSSIcon, RedirectIcon, ReduxIcon, RefreshIcon, ReplyIcon, RepoIcon, RequestChangeIcon, RewindIcon, RulerIcon, SaveIcon, SearchIcon, ShareAltIcon, ShareIcon, ShieldIcon, SideBySideIcon, SidebarAltIcon, SidebarAltToggleIcon, SidebarIcon, SidebarToggleIcon, SortDownIcon, SortUpIcon, SpeakerIcon, StackedIcon, StarHollowIcon, StarIcon, StatusFailIcon, StatusIcon, StatusNewIcon, StatusPassIcon, StatusWarnIcon, StickerIcon, StopAltHollowIcon, StopAltIcon, StopIcon, StorybookIcon, StructureIcon, SubtractIcon, SunIcon, SupportIcon, SweepIcon, SwitchAltIcon, SyncIcon, TabletIcon, ThumbsUpIcon, TimeIcon, TimerIcon, TransferIcon, TrashIcon, TwitterIcon, TypeIcon, UbuntuIcon, UndoIcon, UnfoldIcon, UnlockIcon, UnpinIcon, UploadIcon, UserAddIcon, UserAltIcon, UserIcon, UsersIcon, VSCodeIcon, VerifiedIcon, VideoIcon, WandIcon, WatchIcon, WindowsIcon, WrenchIcon, XIcon, YoutubeIcon, ZoomIcon, ZoomOutIcon, ZoomResetIcon, iconList } = __STORYBOOK_ICONS__;
 
 // global-externals:storybook/manager-api
-var manager_api_default = __STORYBOOK_API__, { ActiveTabs, Consumer, ManagerContext, Provider, RequestResponseError, Tag, addons, combineParameters, controlOrMetaKey, controlOrMetaSymbol, eventMatchesShortcut, eventToShortcut, experimental_MockUniversalStore, experimental_UniversalStore, experimental_getStatusStore, experimental_getTestProviderStore, experimental_requestResponse, experimental_useStatusStore, experimental_useTestProviderStore, experimental_useUniversalStore, internal_checklistStore, internal_fullStatusStore, internal_fullTestProviderStore, internal_universalChecklistStore, internal_universalStatusStore, internal_universalTestProviderStore, isMacLike, isShortcutTaken, keyToSymbol, merge, mockChannel, optionOrAltSymbol, shortcutMatchesShortcut, shortcutToAriaKeyshortcuts, shortcutToHumanString, types, useAddonState, useArgTypes, useArgs, useChannel, useGlobalTypes, useGlobals, useParameter, useSharedState, useStoryPrepared, useStorybookApi, useStorybookState } = __STORYBOOK_API__;
+var manager_api_default = __STORYBOOK_API__, { ActiveTabs, Consumer, ManagerContext, Provider, RequestResponseError, Tag, addons, combineParameters, controlOrMetaKey, controlOrMetaSymbol, eventMatchesShortcut, eventToShortcut, experimental_MockUniversalStore, experimental_UniversalStore, experimental_getStatusStore, experimental_getTestProviderStore, experimental_requestResponse, experimental_useStatusStore, experimental_useTestProviderStore, experimental_useUniversalStore, getService, internal_checklistStore, internal_fullStatusStore, internal_fullTestProviderStore, internal_universalChecklistStore, internal_universalStatusStore, internal_universalTestProviderStore, isMacLike, isShortcutTaken, keyToSymbol, merge, mockChannel, optionOrAltSymbol, registerService, shortcutMatchesShortcut, shortcutToAriaKeyshortcuts, shortcutToHumanString, types, useAddonState, useArgTypes, useArgs, useChannel, useGlobalTypes, useGlobals, useParameter, useServiceCommand, useServiceQuery, useSharedState, useStoryPrepared, useStorybookApi, useStorybookState } = __STORYBOOK_API__;
 
 // global-externals:storybook/theming
-var theming_default = __STORYBOOK_THEMING__, { CacheProvider, ClassNames, Global, ThemeProvider, background, color, convert, create, createCache, createGlobal, createReset, css, darken, ensure, getPreferredColorScheme, ignoreSsrWarning, isPropValid, jsx, keyframes, lighten, srOnlyStyles, styled, themes, tokens, typography, useTheme, withTheme } = __STORYBOOK_THEMING__;
+var theming_default = __STORYBOOK_THEMING__, { CacheProvider, ClassNames, Global, ThemeProvider, background, color, convert, create, createCache, createGlobal, createReset, css, darken, ensure, getPreferredColorScheme, ignoreSsrWarning, isPropValid, jsx, keyframes, lighten, srOnlyStyles, srOnlyUnsetStyles, styled, themes, tokens, typography, useTheme, withTheme } = __STORYBOOK_THEMING__;
 
 // src/toolbar/components/ToolbarManager.tsx
 init_react();
 
 // global-externals:storybook/internal/components
-var components_default = __STORYBOOK_COMPONENTS__, { A, AbstractToolbar, ActionBar, ActionList, AddonPanel, Badge, Bar, Blockquote, Button, Card, ClipboardCode, Code, Collapsible, DL, Div, DocumentWrapper, EmptyTabContent, ErrorFormatter, FlexBar, Form, H1, H2, H3, H4, H5, H6, HR, IconButton, Img, LI, Link, ListItem, Loader, Modal, ModalDecorator, OL, P, Placeholder, Popover, PopoverProvider, Pre, ProgressSpinner, ResetWrapper, ScrollArea, Select, Separator, Spaced, Span, StatelessTab, StatelessTabList, StatelessTabPanel, StatelessTabsView, StorybookIcon: StorybookIcon2, StorybookLogo, SyntaxHighlighter, TT, TabBar, TabButton, TabList, TabPanel, TabWrapper, Table, Tabs, TabsState, TabsView, ToggleButton, Toolbar, Tooltip, TooltipLinkList, TooltipMessage, TooltipNote, TooltipProvider, UL, WithTooltip, WithTooltipPure, Zoom, codeCommon, components, convertToReactAriaPlacement, createCopyToClipboardFunction, getStoryHref, interleaveSeparators, nameSpaceClassNames, resetComponents, useTabsState, withReset } = __STORYBOOK_COMPONENTS__;
+var components_default = __STORYBOOK_COMPONENTS__, { A, AbstractToolbar, ActionBar, ActionList, AddonPanel, Badge, Bar, Blockquote, Button, Card, ClipboardCode, Code, Collapsible, DL, Div, DocumentWrapper, EmptyTabContent, ErrorFormatter, FlexBar, Form, H1, H2, H3, H4, H5, H6, HR, IconButton, Img, LI, Link, ListItem, Loader, Modal, ModalDecorator, OL, P, Placeholder, Popover, PopoverProvider, Pre, ProgressSpinner, ResetWrapper, ScrollArea, Select, Separator, Spaced, Span, StatelessTab, StatelessTabList, StatelessTabPanel, StatelessTabsView, StorybookIcon: StorybookIcon2, StorybookLogo, SyntaxHighlighter, TT, TabBar, TabButton, TabList, TabPanel, TabWrapper, Table, Tabs, TabsState, TabsView, ToggleButton, Toolbar, Tooltip, TooltipLinkList, TooltipMessage, TooltipNote, TooltipProvider, UL, WithTooltip, WithTooltipPure, Zoom, codeCommon, components, convertToReactAriaPlacement, createCopyToClipboardFunction, getStoryHref, interleaveSeparators, nameSpaceClassNames, resetComponents, useCopyButton, useTabsState, withReset } = __STORYBOOK_COMPONENTS__;
 
 // src/toolbar/utils/normalize-toolbar-arg-type.ts
 var defaultItemValues = {
@@ -1610,6 +1619,7 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   facesad: "FaceSadIcon",
   accessibility: "AccessibilityIcon",
   accessibilityalt: "AccessibilityAltIcon",
+  accessibilityignored: "AccessibilityIgnoredIcon",
   arrowup: "ChevronUpIcon",
   arrowdown: "ChevronDownIcon",
   arrowleft: "ChevronLeftIcon",
@@ -1618,22 +1628,38 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   arrowdownalt: "ArrowDownIcon",
   arrowleftalt: "ArrowLeftIcon",
   arrowrightalt: "ArrowRightIcon",
+  arrowtopleft: "ArrowTopLeftIcon",
+  arrowtopright: "ArrowTopRightIcon",
+  arrowbottomleft: "ArrowBottomLeftIcon",
+  arrowbottomright: "ArrowBottomRightIcon",
+  arrowsolidup: "ArrowSolidUpIcon",
+  arrowsoliddown: "ArrowSolidDownIcon",
+  arrowsolidleft: "ArrowSolidLeftIcon",
+  arrowsolidright: "ArrowSolidRightIcon",
+  chevronsmallup: "ChevronSmallUpIcon",
+  chevronsmalldown: "ChevronSmallDownIcon",
+  chevronsmallleft: "ChevronSmallLeftIcon",
+  chevronsmallright: "ChevronSmallRightIcon",
   expandalt: "ExpandAltIcon",
   collapse: "CollapseIcon",
   expand: "ExpandIcon",
   unfold: "UnfoldIcon",
   transfer: "TransferIcon",
   redirect: "RedirectIcon",
+  jumpto: "JumpToIcon",
+  popout: "PopOutIcon",
   undo: "UndoIcon",
   reply: "ReplyIcon",
   sync: "SyncIcon",
   upload: "UploadIcon",
   download: "DownloadIcon",
+  save: "SaveIcon",
   back: "BackIcon",
   proceed: "ProceedIcon",
   refresh: "RefreshIcon",
   globe: "GlobeIcon",
   compass: "CompassIcon",
+  direction: "DirectionIcon",
   location: "LocationIcon",
   pin: "PinIcon",
   time: "TimeIcon",
@@ -1644,7 +1670,9 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   info: "InfoIcon",
   question: "QuestionIcon",
   support: "SupportIcon",
+  bug: "BugIcon",
   alert: "AlertIcon",
+  alertalt: "AlertAltIcon",
   email: "EmailIcon",
   phone: "PhoneIcon",
   link: "LinkIcon",
@@ -1655,6 +1683,7 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   share: "ShareIcon",
   circle: "CircleIcon",
   circlehollow: "CircleHollowIcon",
+  diamond: "DiamondIcon",
   bookmarkhollow: "BookmarkHollowIcon",
   bookmark: "BookmarkIcon",
   hearthollow: "HeartHollowIcon",
@@ -1669,13 +1698,19 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   beaker: "BeakerIcon",
   hourglass: "HourglassIcon",
   flag: "FlagIcon",
+  gift: "GiftIcon",
+  sticker: "StickerIcon",
   cloudhollow: "CloudHollowIcon",
+  cloud: "CloudIcon",
   edit: "EditIcon",
+  editor: "EditorIcon",
   cog: "CogIcon",
   nut: "NutIcon",
   wrench: "WrenchIcon",
+  wand: "WandIcon",
   ellipsis: "EllipsisIcon",
   check: "CheckIcon",
+  checklist: "ChecklistIcon",
   form: "FormIcon",
   batchdeny: "BatchDenyIcon",
   batchaccept: "BatchAcceptIcon",
@@ -1693,14 +1728,22 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   passed: "PassedIcon",
   changed: "ChangedIcon",
   failed: "FailedIcon",
+  status: "StatusIcon",
+  statuspass: "StatusPassIcon",
+  statusfail: "StatusFailIcon",
+  statuswarn: "StatusWarnIcon",
+  statusnew: "StatusNewIcon",
   clear: "ClearIcon",
+  sweep: "SweepIcon",
   comment: "CommentIcon",
   commentadd: "CommentAddIcon",
   requestchange: "RequestChangeIcon",
   comments: "CommentsIcon",
+  chat: "ChatIcon",
   lock: "LockIcon",
   unlock: "UnlockIcon",
   key: "KeyIcon",
+  command: "CommandIcon",
   outbox: "OutboxIcon",
   credit: "CreditIcon",
   button: "ButtonIcon",
@@ -1726,8 +1769,11 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   photo: "PhotoIcon",
   component: "ComponentIcon",
   grid: "GridIcon",
+  gridalt: "GridAltIcon",
   outline: "OutlineIcon",
   photodrag: "PhotoDragIcon",
+  photostabilize: "PhotoStabilizeIcon",
+  drag: "DragIcon",
   search: "SearchIcon",
   zoom: "ZoomIcon",
   zoomout: "ZoomOutIcon",
@@ -1737,21 +1783,27 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   lightning: "LightningIcon",
   lightningoff: "LightningOffIcon",
   contrast: "ContrastIcon",
+  contrastignored: "ContrastIgnoredIcon",
   switchalt: "SwitchAltIcon",
   mirror: "MirrorIcon",
   grow: "GrowIcon",
   paintbrush: "PaintBrushIcon",
+  paintbrushalt: "PaintBrushAltIcon",
   ruler: "RulerIcon",
   stop: "StopIcon",
   camera: "CameraIcon",
+  camerastabilize: "CameraStabilizeIcon",
   video: "VideoIcon",
   speaker: "SpeakerIcon",
   play: "PlayIcon",
   playback: "PlayBackIcon",
   playnext: "PlayNextIcon",
+  playhollow: "PlayHollowIcon",
+  playallhollow: "PlayAllHollowIcon",
   rewind: "RewindIcon",
   fastforward: "FastForwardIcon",
   stopalt: "StopAltIcon",
+  stopalthollow: "StopAltHollowIcon",
   sidebyside: "SideBySideIcon",
   stacked: "StackedIcon",
   sun: "SunIcon",
@@ -1761,6 +1813,7 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   copy: "CopyIcon",
   category: "CategoryIcon",
   folder: "FolderIcon",
+  files: "FilesIcon",
   print: "PrintIcon",
   graphline: "GraphLineIcon",
   calendar: "CalendarIcon",
@@ -1768,10 +1821,15 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   menu: "MenuIcon",
   menualt: "MenuIcon",
   filter: "FilterIcon",
+  sortup: "SortUpIcon",
+  sortdown: "SortDownIcon",
   docchart: "DocChartIcon",
   doclist: "DocListIcon",
   markup: "MarkupIcon",
   bold: "BoldIcon",
+  italic: "ItalicIcon",
+  alignleft: "AlignLeftIcon",
+  alignright: "AlignRightIcon",
   paperclip: "PaperClipIcon",
   listordered: "ListOrderedIcon",
   listunordered: "ListUnorderedIcon",
@@ -1800,9 +1858,11 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   gitlab: "GitlabIcon",
   google: "GoogleIcon",
   graphql: "GraphqlIcon",
+  linkedin: "LinkedinIcon",
   medium: "MediumIcon",
   redux: "ReduxIcon",
   twitter: "TwitterIcon",
+  x: "XIcon",
   youtube: "YoutubeIcon",
   vscode: "VSCodeIcon"
 };
@@ -1933,7 +1993,7 @@ init_react();
 var client_default = __REACT_DOM_CLIENT__, { createRoot, hydrateRoot } = __REACT_DOM_CLIENT__;
 
 // global-externals:storybook/internal/manager-errors
-var manager_errors_default = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Category, ProviderDoesNotExtendBaseProviderError, StatusTypeIdMismatchError, UncaughtManagerError } = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__;
+var manager_errors_default = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Category, OpenServiceStaticSnapshotInvalidError, OpenServiceStaticSnapshotLoadError, ProviderDoesNotExtendBaseProviderError, StatusTypeIdMismatchError, UncaughtManagerError, UniversalStoreFollowerTimeoutError } = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__;
 
 // global-externals:storybook/internal/router
 var router_default = __STORYBOOK_ROUTER__, { BaseLocationProvider, DEEPLY_EQUAL, Link: Link2, Location, LocationProvider, Match, MemoryRouter, Route, buildArgsParam, deepDiff, getMatch, parsePath, queryFromLocation, stringifyQuery, useNavigate } = __STORYBOOK_ROUTER__;
@@ -2285,6 +2345,9 @@ W.propTypes = { base: import_prop_types.default.object, bodyAttributes: import_p
 
 // src/manager/App.tsx
 init_react();
+
+// src/shared/review/features.ts
+var isReviewFeatureEnabled = (features) => features?.experimentalReview !== !1 && !!features?.changeDetection;
 
 // src/manager/components/error-boundary/ManagerErrorBoundary.tsx
 init_react();
@@ -3006,6 +3069,186 @@ Component Stack:${errorInfo.componentStack}`)
 // src/manager/components/layout/Layout.tsx
 init_react();
 
+// ../../node_modules/es-toolkit/dist/compat/_internal/getSymbols.mjs
+function getSymbols(object) {
+  return Object.getOwnPropertySymbols(object).filter((symbol) => Object.prototype.propertyIsEnumerable.call(object, symbol));
+}
+
+// ../../node_modules/es-toolkit/dist/compat/_internal/getTag.mjs
+function getTag(value) {
+  return value == null ? value === void 0 ? "[object Undefined]" : "[object Null]" : Object.prototype.toString.call(value);
+}
+
+// ../../node_modules/es-toolkit/dist/compat/_internal/tags.mjs
+var regexpTag = "[object RegExp]", stringTag = "[object String]", numberTag = "[object Number]", booleanTag = "[object Boolean]", argumentsTag = "[object Arguments]", symbolTag = "[object Symbol]", dateTag = "[object Date]", mapTag = "[object Map]", setTag = "[object Set]", arrayTag = "[object Array]", functionTag = "[object Function]", arrayBufferTag = "[object ArrayBuffer]", objectTag = "[object Object]", errorTag = "[object Error]", dataViewTag = "[object DataView]", uint8ArrayTag = "[object Uint8Array]", uint8ClampedArrayTag = "[object Uint8ClampedArray]", uint16ArrayTag = "[object Uint16Array]", uint32ArrayTag = "[object Uint32Array]", bigUint64ArrayTag = "[object BigUint64Array]", int8ArrayTag = "[object Int8Array]", int16ArrayTag = "[object Int16Array]", int32ArrayTag = "[object Int32Array]", bigInt64ArrayTag = "[object BigInt64Array]", float32ArrayTag = "[object Float32Array]", float64ArrayTag = "[object Float64Array]";
+
+// ../../node_modules/es-toolkit/dist/predicate/isPlainObject.mjs
+function isPlainObject(value) {
+  if (!value || typeof value != "object")
+    return !1;
+  let proto = Object.getPrototypeOf(value);
+  return proto === null || proto === Object.prototype || Object.getPrototypeOf(proto) === null ? Object.prototype.toString.call(value) === "[object Object]" : !1;
+}
+
+// ../../node_modules/es-toolkit/dist/string/words.mjs
+var CASE_SPLIT_PATTERN = new RegExp("\\p{Lu}?\\p{Ll}+|[0-9]+|\\p{Lu}+(?!\\p{Ll})|\\p{Emoji_Presentation}|\\p{Extended_Pictographic}|\\p{L}+", "gu");
+
+// ../../node_modules/es-toolkit/dist/compat/util/eq.mjs
+function eq(value, other) {
+  return value === other || Number.isNaN(value) && Number.isNaN(other);
+}
+
+// ../../node_modules/es-toolkit/dist/predicate/isEqualWith.mjs
+function isEqualWith(a2, b2, areValuesEqual) {
+  return isEqualWithImpl(a2, b2, void 0, void 0, void 0, void 0, areValuesEqual);
+}
+function isEqualWithImpl(a2, b2, property, aParent, bParent, stack, areValuesEqual) {
+  let result = areValuesEqual(a2, b2, property, aParent, bParent, stack);
+  if (result !== void 0)
+    return result;
+  if (typeof a2 == typeof b2)
+    switch (typeof a2) {
+      case "bigint":
+      case "string":
+      case "boolean":
+      case "symbol":
+      case "undefined":
+        return a2 === b2;
+      case "number":
+        return a2 === b2 || Object.is(a2, b2);
+      case "function":
+        return a2 === b2;
+      case "object":
+        return areObjectsEqual(a2, b2, stack, areValuesEqual);
+    }
+  return areObjectsEqual(a2, b2, stack, areValuesEqual);
+}
+function areObjectsEqual(a2, b2, stack, areValuesEqual) {
+  if (Object.is(a2, b2))
+    return !0;
+  let aTag = getTag(a2), bTag = getTag(b2);
+  if (aTag === argumentsTag && (aTag = objectTag), bTag === argumentsTag && (bTag = objectTag), aTag !== bTag)
+    return !1;
+  switch (aTag) {
+    case stringTag:
+      return a2.toString() === b2.toString();
+    case numberTag: {
+      let x2 = a2.valueOf(), y2 = b2.valueOf();
+      return eq(x2, y2);
+    }
+    case booleanTag:
+    case dateTag:
+    case symbolTag:
+      return Object.is(a2.valueOf(), b2.valueOf());
+    case regexpTag:
+      return a2.source === b2.source && a2.flags === b2.flags;
+    case functionTag:
+      return a2 === b2;
+  }
+  stack = stack ?? /* @__PURE__ */ new Map();
+  let aStack = stack.get(a2), bStack = stack.get(b2);
+  if (aStack != null && bStack != null)
+    return aStack === b2;
+  stack.set(a2, b2), stack.set(b2, a2);
+  try {
+    switch (aTag) {
+      case mapTag: {
+        if (a2.size !== b2.size)
+          return !1;
+        for (let [key, value] of a2.entries())
+          if (!b2.has(key) || !isEqualWithImpl(value, b2.get(key), key, a2, b2, stack, areValuesEqual))
+            return !1;
+        return !0;
+      }
+      case setTag: {
+        if (a2.size !== b2.size)
+          return !1;
+        let aValues = Array.from(a2.values()), bValues = Array.from(b2.values());
+        for (let i2 = 0; i2 < aValues.length; i2++) {
+          let aValue = aValues[i2], index = bValues.findIndex((bValue) => isEqualWithImpl(aValue, bValue, void 0, a2, b2, stack, areValuesEqual));
+          if (index === -1)
+            return !1;
+          bValues.splice(index, 1);
+        }
+        return !0;
+      }
+      case arrayTag:
+      case uint8ArrayTag:
+      case uint8ClampedArrayTag:
+      case uint16ArrayTag:
+      case uint32ArrayTag:
+      case bigUint64ArrayTag:
+      case int8ArrayTag:
+      case int16ArrayTag:
+      case int32ArrayTag:
+      case bigInt64ArrayTag:
+      case float32ArrayTag:
+      case float64ArrayTag: {
+        if (typeof Buffer < "u" && Buffer.isBuffer(a2) !== Buffer.isBuffer(b2) || a2.length !== b2.length)
+          return !1;
+        for (let i2 = 0; i2 < a2.length; i2++)
+          if (!isEqualWithImpl(a2[i2], b2[i2], i2, a2, b2, stack, areValuesEqual))
+            return !1;
+        return !0;
+      }
+      case arrayBufferTag:
+        return a2.byteLength !== b2.byteLength ? !1 : areObjectsEqual(new Uint8Array(a2), new Uint8Array(b2), stack, areValuesEqual);
+      case dataViewTag:
+        return a2.byteLength !== b2.byteLength || a2.byteOffset !== b2.byteOffset ? !1 : areObjectsEqual(new Uint8Array(a2), new Uint8Array(b2), stack, areValuesEqual);
+      case errorTag:
+        return a2.name === b2.name && a2.message === b2.message;
+      case objectTag: {
+        if (!(areObjectsEqual(a2.constructor, b2.constructor, stack, areValuesEqual) || isPlainObject(a2) && isPlainObject(b2)))
+          return !1;
+        let aKeys = [...Object.keys(a2), ...getSymbols(a2)], bKeys = [...Object.keys(b2), ...getSymbols(b2)];
+        if (aKeys.length !== bKeys.length)
+          return !1;
+        for (let i2 = 0; i2 < aKeys.length; i2++) {
+          let propKey = aKeys[i2], aProp = a2[propKey];
+          if (!Object.hasOwn(b2, propKey))
+            return !1;
+          let bProp = b2[propKey];
+          if (!isEqualWithImpl(aProp, bProp, propKey, a2, b2, stack, areValuesEqual))
+            return !1;
+        }
+        return !0;
+      }
+      default:
+        return !1;
+    }
+  } finally {
+    stack.delete(a2), stack.delete(b2);
+  }
+}
+
+// ../../node_modules/es-toolkit/dist/function/noop.mjs
+function noop() {
+}
+
+// ../../node_modules/es-toolkit/dist/predicate/isEqual.mjs
+function isEqual(a2, b2) {
+  return isEqualWith(a2, b2, noop);
+}
+
+// global-externals:storybook/theming/create
+var create_default = __STORYBOOK_THEMING_CREATE__, { create: create2, themes: themes2 } = __STORYBOOK_THEMING_CREATE__;
+
+// src/shared/review/routes.ts
+var REVIEW_COLLECTION_QUERY_PARAM = "collection", isReviewSummaryPath = (path) => path === "/review/" || path === "/review", isReviewCollectionStoryRoute = (path, customQueryParams) => !!path && path.startsWith("/story/") && customQueryParams?.[REVIEW_COLLECTION_QUERY_PARAM] !== void 0;
+
+// src/manager-api/modules/layout.ts
+var { document: document2 } = scope;
+var isPagesViewMode = (viewMode) => viewMode !== void 0 && viewMode !== "story" && viewMode !== "docs" && viewMode !== "review";
+var focusableUIElements = {
+  addonPanel: "storybook-panel-region",
+  storySearchField: "storybook-explorer-searchfield",
+  storyListMenu: "storybook-explorer-menu",
+  storyPanelRoot: "storybook-panel-root",
+  showAddonPanel: "storybook-show-addon-panel",
+  sidebarRegion: "storybook-sidebar-region",
+  showSidebar: "storybook-show-sidebar"
+};
+
 // src/manager/constants.ts
 var MEDIA_DESKTOP_BREAKPOINT = "@media (min-width: 600px)";
 
@@ -3035,9 +3278,6 @@ function useMediaQuery(query) {
 
 // src/manager/components/layout/LayoutProvider.tsx
 var LayoutContext = createContext({
-  isMobileMenuOpen: !1,
-  setMobileMenuOpen: () => {
-  },
   isMobileAboutOpen: !1,
   setMobileAboutOpen: () => {
   },
@@ -3047,10 +3287,8 @@ var LayoutContext = createContext({
   isDesktop: !1,
   isMobile: !1
 }), LayoutProvider = ({ children, forceDesktop }) => {
-  let [isMobileMenuOpen, setMobileMenuOpen] = useState(!1), [isMobileAboutOpen, setMobileAboutOpen] = useState(!1), [isMobilePanelOpen, setMobilePanelOpen] = useState(!1), isDesktop = forceDesktop ?? useMediaQuery(`(min-width: ${600}px)`), isMobile2 = !isDesktop, contextValue = useMemo(
+  let [isMobileAboutOpen, setMobileAboutOpen] = useState(!1), [isMobilePanelOpen, setMobilePanelOpen] = useState(!1), isDesktop = forceDesktop ?? useMediaQuery(`(min-width: ${600}px)`), isMobile2 = !isDesktop, contextValue = useMemo(
     () => ({
-      isMobileMenuOpen,
-      setMobileMenuOpen,
       isMobileAboutOpen,
       setMobileAboutOpen,
       isMobilePanelOpen,
@@ -3058,16 +3296,7 @@ var LayoutContext = createContext({
       isDesktop,
       isMobile: isMobile2
     }),
-    [
-      isMobileMenuOpen,
-      setMobileMenuOpen,
-      isMobileAboutOpen,
-      setMobileAboutOpen,
-      isMobilePanelOpen,
-      setMobilePanelOpen,
-      isDesktop,
-      isMobile2
-    ]
+    [isMobileAboutOpen, isMobilePanelOpen, isDesktop, isMobile2]
   );
   return react_default.createElement(LayoutContext.Provider, { value: contextValue }, children);
 }, useLayout = () => useContext(LayoutContext);
@@ -3557,15 +3786,15 @@ function $7215afc6de606d6b$var$restoreScrollPosition(scrollableElements) {
 }
 
 // ../../node_modules/@react-aria/utils/dist/platform.mjs
-function $c87311424ea30a05$var$testUserAgent(re) {
+function $c87311424ea30a05$var$testUserAgent(re2) {
   var _window_navigator_userAgentData;
   if (typeof window > "u" || window.navigator == null) return !1;
   let brands = (_window_navigator_userAgentData = window.navigator.userAgentData) === null || _window_navigator_userAgentData === void 0 ? void 0 : _window_navigator_userAgentData.brands;
-  return Array.isArray(brands) && brands.some((brand) => re.test(brand.brand)) || re.test(window.navigator.userAgent);
+  return Array.isArray(brands) && brands.some((brand) => re2.test(brand.brand)) || re2.test(window.navigator.userAgent);
 }
-function $c87311424ea30a05$var$testPlatform(re) {
+function $c87311424ea30a05$var$testPlatform(re2) {
   var _window_navigator_userAgentData;
-  return typeof window < "u" && window.navigator != null ? re.test(((_window_navigator_userAgentData = window.navigator.userAgentData) === null || _window_navigator_userAgentData === void 0 ? void 0 : _window_navigator_userAgentData.platform) || window.navigator.platform) : !1;
+  return typeof window < "u" && window.navigator != null ? re2.test(((_window_navigator_userAgentData = window.navigator.userAgentData) === null || _window_navigator_userAgentData === void 0 ? void 0 : _window_navigator_userAgentData.platform) || window.navigator.platform) : !1;
 }
 function $c87311424ea30a05$var$cached(fn) {
   let res = null;
@@ -3971,7 +4200,7 @@ function $9446cca9a3875146$export$7d15b64cf5a3a4c4(value, min = -1 / 0, max = 1 
 
 // ../../node_modules/@react-aria/landmark/dist/useLandmark.mjs
 init_react();
-var import_shim = __toESM(require_shim(), 1), $a86207c5d7f7e1fb$var$LANDMARK_API_VERSION = 1, $a86207c5d7f7e1fb$var$landmarkSymbol = Symbol.for("react-aria-landmark-manager");
+var import_shim = __toESM(require_shim(), 1), $a86207c5d7f7e1fb$var$LANDMARK_API_VERSION = 1, $a86207c5d7f7e1fb$var$landmarkSymbol = /* @__PURE__ */ Symbol.for("react-aria-landmark-manager");
 function $a86207c5d7f7e1fb$var$subscribe(fn) {
   return document.addEventListener("react-aria-landmark-manager-change", fn), () => document.removeEventListener("react-aria-landmark-manager-change", fn);
 }
@@ -4253,7 +4482,7 @@ var MobileAddonsDrawer = ({
     ariaLabel: "Addon panel",
     transitionDuration: 300,
     variant: "bottom-drawer",
-    height: "42vh",
+    height: "42dvh",
     id,
     open: isOpen,
     onOpenChange
@@ -4564,7 +4793,7 @@ var MobileMenuDrawer = ({
     ariaLabel: "Menu",
     transitionDuration: 300,
     variant: "bottom-drawer",
-    height: "80vh",
+    height: "80dvh",
     id,
     open: isOpen,
     onOpenChange
@@ -4591,17 +4820,58 @@ var useFullStoryName = () => {
     fullStoryName = `${typeof parentLabel == "string" ? parentLabel : node.name}/${fullStoryName}`;
   }
   return fullStoryName;
-}, MobileNavigation = ({
-  menu,
-  panel,
+}, MobileBottomBarContent = ({
+  fullStoryName,
+  isMobileMenuOpen,
+  setMobileMenuOpen,
+  isMobilePanelOpen,
+  setMobilePanelOpen,
+  showMenu,
   showPanel,
-  ...props
+  navShortcut
 }) => {
-  let { isMobileMenuOpen, isMobilePanelOpen, setMobileMenuOpen, setMobilePanelOpen } = useLayout(), fullStoryName = useFullStoryName(), headingId = $bdb11010cef70236$export$f680877a34711e37(), sectionRef = useRef(null), { landmarkProps } = useLandmark(
+  let headingId = $bdb11010cef70236$export$f680877a34711e37(), sectionRef = useRef(null), { landmarkProps } = useLandmark(
     { "aria-labelledby": headingId, role: "banner" },
     sectionRef
   );
-  return react_default.createElement(Container4, { ...props }, react_default.createElement(
+  return react_default.createElement(MobileBottomBar, { className: "sb-bar", ...landmarkProps, ref: sectionRef }, react_default.createElement("h2", { id: headingId, className: "sb-sr-only" }, "Navigation controls"), showMenu && react_default.createElement(
+    BottomBarButton,
+    {
+      padding: "small",
+      variant: "ghost",
+      onClick: () => setMobileMenuOpen(!isMobileMenuOpen),
+      ariaLabel: "Open navigation menu",
+      "aria-expanded": isMobileMenuOpen,
+      "aria-controls": isMobileMenuOpen ? "storybook-mobile-menu" : void 0,
+      shortcut: navShortcut
+    },
+    react_default.createElement(MenuIcon, null),
+    react_default.createElement(Text, null, fullStoryName)
+  ), react_default.createElement("span", { className: "sb-sr-only", "aria-current": "page" }, fullStoryName), showPanel && react_default.createElement(
+    BottomBarButton,
+    {
+      padding: "small",
+      variant: "ghost",
+      onClick: () => setMobilePanelOpen(!0),
+      ariaLabel: "Open addon panel",
+      "aria-expanded": isMobilePanelOpen,
+      "aria-controls": isMobilePanelOpen ? "storybook-mobile-addon-panel" : void 0
+    },
+    react_default.createElement(BottomBarToggleIcon, null)
+  ));
+}, MobileNavigation = ({
+  menu,
+  panel,
+  showMenu = !0,
+  showPanel,
+  ...props
+}) => {
+  let { isMobilePanelOpen, setMobilePanelOpen } = useLayout(), fullStoryName = useFullStoryName(), api = useStorybookApi(), { layout, ui } = useStorybookState(), isMobileMenuOpen = layout.showMobileNavigation, setMobileMenuOpen = useCallback((open) => api.setMobileNavigation(open), [api]), apiRef = useRef(api);
+  apiRef.current = api, useEffect(() => () => apiRef.current.setMobileNavigation(!1), []);
+  let navShortcut = ui.enableShortcuts ?? !0 ? api.getShortcutKeys().toggleNav : void 0;
+  return useLayoutEffect(() => {
+    showMenu || setMobileMenuOpen(!1);
+  }, [showMenu, setMobileMenuOpen]), react_default.createElement(Container4, { ...props }, showMenu && react_default.createElement(
     MobileMenuDrawer,
     {
       id: "storybook-mobile-menu",
@@ -4617,30 +4887,19 @@ var useFullStoryName = () => {
       onOpenChange: setMobilePanelOpen
     },
     panel
-  ), !isMobilePanelOpen && react_default.createElement(MobileBottomBar, { className: "sb-bar", ...landmarkProps, ref: sectionRef }, react_default.createElement("h2", { id: headingId, className: "sb-sr-only" }, "Navigation controls"), react_default.createElement(
-    BottomBarButton,
+  ), !isMobilePanelOpen && (showMenu || showPanel) && react_default.createElement(
+    MobileBottomBarContent,
     {
-      padding: "small",
-      variant: "ghost",
-      onClick: () => setMobileMenuOpen(!isMobileMenuOpen),
-      ariaLabel: "Open navigation menu",
-      "aria-expanded": isMobileMenuOpen,
-      "aria-controls": "storybook-mobile-menu"
-    },
-    react_default.createElement(MenuIcon, null),
-    react_default.createElement(Text, null, fullStoryName)
-  ), react_default.createElement("span", { className: "sb-sr-only", "aria-current": "page" }, fullStoryName), showPanel && react_default.createElement(
-    BottomBarButton,
-    {
-      padding: "small",
-      variant: "ghost",
-      onClick: () => setMobilePanelOpen(!0),
-      ariaLabel: "Open addon panel",
-      "aria-expanded": isMobilePanelOpen,
-      "aria-controls": "storybook-mobile-addon-panel"
-    },
-    react_default.createElement(BottomBarToggleIcon, null)
-  )));
+      fullStoryName,
+      isMobileMenuOpen,
+      setMobileMenuOpen,
+      isMobilePanelOpen,
+      setMobilePanelOpen,
+      showMenu,
+      showPanel,
+      navShortcut
+    }
+  ));
 }, Container4 = styled.section(({ theme }) => ({
   bottom: 0,
   left: 0,
@@ -4724,19 +4983,22 @@ init_react();
 
 // src/components/components/tooltip/TooltipNote.tsx
 init_react();
-var Note = styled.div(({ theme }) => ({
-  padding: "2px 6px",
-  lineHeight: "16px",
-  fontSize: 10,
-  fontWeight: theme.typography.weight.bold,
-  color: theme.color.lightest,
-  boxShadow: "0 0 5px 0 rgba(0, 0, 0, 0.3)",
-  borderRadius: 4,
-  whiteSpace: "nowrap",
-  pointerEvents: "none",
-  zIndex: -1,
-  background: theme.base === "light" ? "rgba(60, 60, 60, 0.9)" : "rgba(0, 0, 0, 0.95)"
-})), TooltipNote2 = ({ note, ...props }) => react_default.createElement(Note, { ...props }, note);
+var DEFAULT_MAX_WIDTH = 260, Note = styled.div(
+  ({ theme }) => ({
+    fontFamily: theme.typography.fonts.base,
+    padding: "2px 6px",
+    lineHeight: "16px",
+    fontSize: 10,
+    fontWeight: theme.typography.weight.bold,
+    color: theme.color.lightest,
+    boxShadow: "0 0 5px 0 rgba(0, 0, 0, 0.3)",
+    borderRadius: 4,
+    pointerEvents: "none",
+    zIndex: -1,
+    background: theme.base === "light" ? "rgba(60, 60, 60, 0.9)" : "rgba(0, 0, 0, 0.95)"
+  }),
+  ({ maxWidth }) => ({ maxWidth })
+), TooltipNote2 = ({ note, maxWidth = DEFAULT_MAX_WIDTH, ...props }) => react_default.createElement(Note, { maxWidth, ...props }, note);
 
 // src/components/components/tooltip/TooltipProvider.tsx
 init_react();
@@ -4935,7 +5197,7 @@ var $f6c31cce2adf654f$var$_shouldStopPropagation = /* @__PURE__ */ new WeakMap()
     let currentTarget = (_state_target = state?.target) !== null && _state_target !== void 0 ? _state_target : originalEvent.currentTarget, rect = currentTarget?.getBoundingClientRect(), x2, y2 = 0, clientX, clientY = null;
     originalEvent.clientX != null && originalEvent.clientY != null && (clientX = originalEvent.clientX, clientY = originalEvent.clientY), rect && (clientX != null && clientY != null ? (x2 = clientX - rect.left, y2 = clientY - rect.top) : (x2 = rect.width / 2, y2 = rect.height / 2)), this.type = type, this.pointerType = pointerType, this.target = originalEvent.currentTarget, this.shiftKey = originalEvent.shiftKey, this.metaKey = originalEvent.metaKey, this.ctrlKey = originalEvent.ctrlKey, this.altKey = originalEvent.altKey, this.x = x2, this.y = y2;
   }
-}, $f6c31cce2adf654f$var$LINK_CLICKED = Symbol("linkClicked"), $f6c31cce2adf654f$var$STYLE_ID = "react-aria-pressable-style", $f6c31cce2adf654f$var$PRESSABLE_ATTRIBUTE = "data-react-aria-pressable";
+}, $f6c31cce2adf654f$var$LINK_CLICKED = /* @__PURE__ */ Symbol("linkClicked"), $f6c31cce2adf654f$var$STYLE_ID = "react-aria-pressable-style", $f6c31cce2adf654f$var$PRESSABLE_ATTRIBUTE = "data-react-aria-pressable";
 function $f6c31cce2adf654f$export$45712eceda6fad21(props) {
   let { onPress, onPressChange, onPressStart, onPressEnd, onPressUp, onClick, isDisabled, isPressed: isPressedProp, preventFocusOnPress, shouldCancelOnPointerExit, allowTextSelectionOnPress, ref: domRef, ...domProps } = $f6c31cce2adf654f$var$usePressResponderContext(props), [isPressed, setPressed] = useState(!1), ref = useRef({
     isPressed: !1,
@@ -5483,7 +5745,7 @@ init_react();
 
 // ../../node_modules/react-aria-components/dist/utils.mjs
 init_react();
-var $64fa3d84918910a7$export$c62b8e45d58ddad9 = Symbol("default");
+var $64fa3d84918910a7$export$c62b8e45d58ddad9 = /* @__PURE__ */ Symbol("default");
 function $64fa3d84918910a7$export$2881499e37b75b9a({ values, children }) {
   for (let [Context2, value] of values)
     children = react_default.createElement(Context2.Provider, {
@@ -5935,7 +6197,7 @@ function $148a7a147e38ea7f$export$702d680b21cbd764(localeString) {
 
 // ../../node_modules/@react-aria/i18n/dist/useDefaultLocale.mjs
 init_react();
-var $1e5a04cdaf7d1af8$var$localeSymbol = Symbol.for("react-aria.i18n.locale");
+var $1e5a04cdaf7d1af8$var$localeSymbol = /* @__PURE__ */ Symbol.for("react-aria.i18n.locale");
 function $1e5a04cdaf7d1af8$export$f09106e7c6677ec5() {
   let locale = typeof window < "u" && window[$1e5a04cdaf7d1af8$var$localeSymbol] || typeof navigator < "u" && (navigator.language || navigator.userLanguage) || "en-US";
   try {
@@ -6021,11 +6283,11 @@ function memoize(fn, options2) {
     serializer
   });
 }
-function isPrimitive(value) {
+function isPrimitive2(value) {
   return value == null || typeof value == "number" || typeof value == "boolean";
 }
 function monadic(fn, cache, serializer, arg) {
-  var cacheKey = isPrimitive(arg) ? arg : serializer(arg), computedValue = cache.get(cacheKey);
+  var cacheKey = isPrimitive2(arg) ? arg : serializer(arg), computedValue = cache.get(cacheKey);
   return typeof computedValue > "u" && (computedValue = fn.call(this, arg), cache.set(cacheKey, computedValue)), computedValue;
 }
 function variadic(fn, cache, serializer) {
@@ -8828,9 +9090,6 @@ var IntlMessageFormat = (
 // ../../node_modules/@react-aria/i18n/dist/useMessageFormatter.mjs
 init_react();
 
-// ../../node_modules/@internationalized/string/dist/LocalizedStringDictionary.mjs
-var $5b160d28a433310d$var$localeSymbol = Symbol.for("react-aria.i18n.locale"), $5b160d28a433310d$var$stringsSymbol = Symbol.for("react-aria.i18n.strings");
-
 // ../../node_modules/@react-aria/i18n/dist/useLocalizedStringFormatter.mjs
 init_react();
 
@@ -9847,11 +10106,12 @@ function useDragging({
 }) {
   let panelResizerRef = useRef(null), sidebarResizerRef = useRef(null), sidebarMaxWidth = computeSidebarMaxWidth(panelPosition, rightPanelWidth, showPanel), panelMaxSize = computePanelMaxSize(panelPosition, navSize);
   return useEffect(() => {
-    let panelResizer = panelResizerRef.current, sidebarResizer = sidebarResizerRef.current, previewIframe = document.querySelector("#storybook-preview-iframe"), draggedElement = null, onDragStart = (e2) => {
-      e2.preventDefault(), setState((state) => ({
+    let panelResizer = panelResizerRef.current, sidebarResizer = sidebarResizerRef.current, draggedElement = null, onDragStart = (e2) => {
+      e2.preventDefault(), e2.currentTarget === panelResizer ? draggedElement = panelResizer : e2.currentTarget === sidebarResizer && (draggedElement = sidebarResizer), setState((state) => ({
         ...state,
-        isDragging: !0
-      })), e2.currentTarget === panelResizer ? draggedElement = panelResizer : e2.currentTarget === sidebarResizer && (draggedElement = sidebarResizer), window.addEventListener("mousemove", onDrag), window.addEventListener("mouseup", onDragEnd), previewIframe && (previewIframe.style.pointerEvents = "none");
+        isDragging: !0,
+        dragCursor: draggedElement === panelResizer && state.panelPosition === "bottom" ? "row-resize" : "col-resize"
+      })), window.addEventListener("mousemove", onDrag), window.addEventListener("mouseup", onDragEnd);
     }, onDragEnd = () => {
       setState((state) => {
         if (draggedElement === sidebarResizer && state.navSize < 240 && state.navSize > 0)
@@ -9878,7 +10138,7 @@ function useDragging({
           ...state,
           isDragging: !1
         };
-      }), window.removeEventListener("mousemove", onDrag), window.removeEventListener("mouseup", onDragEnd), previewIframe?.removeAttribute("style"), draggedElement = null;
+      }), window.removeEventListener("mousemove", onDrag), window.removeEventListener("mouseup", onDragEnd), draggedElement = null;
     }, onDrag = (e2) => {
       if (e2.buttons === 0) {
         onDragEnd();
@@ -9963,7 +10223,7 @@ function useDragging({
       );
     };
     return panelResizer?.addEventListener("mousedown", onDragStart), sidebarResizer?.addEventListener("mousedown", onDragStart), panelResizer?.addEventListener("keydown", onPanelKeyDown), sidebarResizer?.addEventListener("keydown", onSidebarKeyDown), () => {
-      panelResizer?.removeEventListener("mousedown", onDragStart), sidebarResizer?.removeEventListener("mousedown", onDragStart), panelResizer?.removeEventListener("keydown", onPanelKeyDown), sidebarResizer?.removeEventListener("keydown", onSidebarKeyDown), previewIframe?.removeAttribute("style");
+      panelResizer?.removeEventListener("mousedown", onDragStart), sidebarResizer?.removeEventListener("mousedown", onDragStart), panelResizer?.removeEventListener("keydown", onPanelKeyDown), sidebarResizer?.removeEventListener("keydown", onSidebarKeyDown);
     };
   }, [
     // we need to rerun this effect when the panel is shown/hidden or when changing between mobile/desktop to re-attach the event listeners
@@ -10028,7 +10288,8 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
 }) => {
   let prevManagerLayoutStateRef = react_default.useRef(managerLayoutState), [internalDraggingSizeState, setInternalDraggingSizeState] = useState({
     ...managerLayoutState,
-    isDragging: !1
+    isDragging: !1,
+    dragCursor: "col-resize"
   });
   useEffect(() => {
     internalDraggingSizeState.isDragging || // don't interrupt user's drag
@@ -10047,7 +10308,7 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
       ...nextState
     }, setManagerLayoutState(nextState);
   }, [internalDraggingSizeState, setManagerLayoutState]);
-  let isPagesShown = managerLayoutState.viewMode !== void 0 && managerLayoutState.viewMode !== "story" && managerLayoutState.viewMode !== "docs", isPanelShown = managerLayoutState.viewMode === "story" && !hasTab, { navSize, rightPanelWidth, bottomPanelHeight } = internalDraggingSizeState.isDragging ? internalDraggingSizeState : managerLayoutState, customisedNavSize = api.getNavSizeWithCustomisations?.(navSize) ?? navSize, customisedShowPanel = api.getShowPanelWithCustomisations?.(isPanelShown) ?? isPanelShown, { panelResizerRef, sidebarResizerRef, sidebarMaxWidth, panelMaxSize } = useDragging({
+  let isPagesShown = isPagesViewMode(managerLayoutState.viewMode), isPanelShown = managerLayoutState.viewMode === "story" && !hasTab, { navSize, rightPanelWidth, bottomPanelHeight } = internalDraggingSizeState.isDragging ? internalDraggingSizeState : managerLayoutState, customisedNavSize = api.getNavSizeWithCustomisations?.(navSize) ?? navSize, customisedShowPanel = api.getShowPanelWithCustomisations?.(isPanelShown) ?? isPanelShown, { panelResizerRef, sidebarResizerRef, sidebarMaxWidth, panelMaxSize } = useDragging({
     setState: setInternalDraggingSizeState,
     isDesktop,
     navSize: customisedNavSize,
@@ -10066,12 +10327,15 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
     panelMaxSize,
     showPages: isPagesShown,
     showPanel: customisedShowPanel,
-    isDragging: internalDraggingSizeState.isDragging
+    isDragging: internalDraggingSizeState.isDragging,
+    dragCursor: internalDraggingSizeState.dragCursor
   };
 }, OrderedMobileNavigation = styled(MobileNavigation)({
   order: 1
 }), Layout = ({ managerLayoutState, setManagerLayoutState, hasTab, ...slots }) => {
-  let { isDesktop, isMobile: isMobile2 } = useLayout(), api = useStorybookApi(), {
+  let { isDesktop, isMobile: isMobile2 } = useLayout(), api = useStorybookApi();
+  useStorybookState();
+  let showSidebar = api.getNavAvailability() === "shown", {
     navSize,
     rightPanelWidth,
     bottomPanelHeight,
@@ -10081,20 +10345,23 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
     sidebarMaxWidth,
     panelMaxSize,
     showPages,
-    showPanel
+    showPanel,
+    isDragging,
+    dragCursor
   } = useLayoutSyncingState({ api, managerLayoutState, setManagerLayoutState, isDesktop, hasTab });
   return useLandmarkIndicator(), react_default.createElement(
     LayoutContainer,
     {
       panelPosition: managerLayoutState.panelPosition,
       showPanel,
+      showSidebar,
       style: {
         "--nav-width": `${navSize}px`,
         "--right-panel-width": `${rightPanelWidth}px`,
         "--bottom-panel-height": `${bottomPanelHeight}px`
       }
     },
-    react_default.createElement(react_default.Fragment, null, isDesktop && react_default.createElement(
+    react_default.createElement(react_default.Fragment, null, isDesktop && showSidebar && react_default.createElement(
       SidebarContainer,
       {
         navSize,
@@ -10102,11 +10369,12 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
         sidebarResizerRef
       },
       slots.slotSidebar
-    ), isMobile2 && react_default.createElement(
+    ), isMobile2 && !showPages && react_default.createElement(
       OrderedMobileNavigation,
       {
         menu: slots.slotSidebar,
         panel: slots.slotPanel,
+        showMenu: showSidebar,
         showPanel
       }
     ), react_default.createElement(
@@ -10116,7 +10384,7 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
         slotMain: slots.slotMain,
         slotPages: slots.slotPages
       }
-    ), isDesktop && showPanel && react_default.createElement(
+    ), slots.slotOverlay && react_default.createElement(ContentOverlayCell, null, slots.slotOverlay), isDesktop && showPanel && react_default.createElement(
       PanelContainer,
       {
         bottomPanelHeight,
@@ -10126,9 +10394,25 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
         position: panelPosition
       },
       slots.slotPanel
-    ), isMobile2 && react_default.createElement(Notifications, null))
+    ), isMobile2 && !showPages && react_default.createElement(Notifications, null)),
+    isDragging && react_default.createElement(DragShield, { style: { cursor: dragCursor } })
   );
-}, LayoutContainer = styled.div(({ panelPosition, showPanel }) => ({
+}, ContentOverlayCell = styled.div({
+  position: "absolute",
+  inset: 0,
+  pointerEvents: "none",
+  zIndex: 2,
+  [MEDIA_DESKTOP_BREAKPOINT]: {
+    position: "relative",
+    inset: "auto",
+    gridArea: "content"
+  }
+}), DragShield = styled.div({
+  position: "fixed",
+  inset: 0,
+  zIndex: 10
+}), LayoutContainer = styled.div(({ panelPosition, showPanel, showSidebar }) => ({
+  position: "relative",
   width: "100%",
   height: ["100vh", "100dvh"],
   overflow: "hidden",
@@ -10138,21 +10422,1435 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
   [MEDIA_DESKTOP_BREAKPOINT]: {
     display: "grid",
     gap: 0,
-    // This uses CSS variables to prevent Emotion from generating a new CSS className for every possible value
-    gridTemplateColumns: `minmax(0, var(--nav-width)) minmax(${100}px, 1fr) minmax(0, var(--right-panel-width))`,
+    gridTemplateColumns: showSidebar ? `minmax(0, var(--nav-width)) minmax(${100}px, 1fr) minmax(0, var(--right-panel-width))` : `minmax(${100}px, 1fr) minmax(0, var(--right-panel-width))`,
     gridTemplateRows: "1fr minmax(0, var(--bottom-panel-height))",
-    gridTemplateAreas: showPanel ? panelPosition === "right" ? `"sidebar content panel"
-                  "sidebar content panel"` : `"sidebar content content"
-                "sidebar panel   panel"` : `"sidebar content content"
-                  "sidebar content content"`
+    gridTemplateAreas: !showSidebar && !showPanel ? `"content content"
+                "content content"` : !showSidebar && showPanel ? panelPosition === "right" ? `"content panel"
+                  "content panel"` : `"content content"
+                "panel   panel"` : showPanel ? panelPosition === "right" ? `"sidebar content panel"
+                "sidebar content panel"` : `"sidebar content content"
+              "sidebar panel   panel"` : `"sidebar content content"
+                "sidebar content content"`
   }
 }));
 
-// src/manager/container/Panel.tsx
+// src/manager/components/review/components/ReviewPersistentLayer.tsx
+init_react();
+
+// src/manager/components/review/screens/ReviewSummaryHost.tsx
+init_react();
+
+// src/shared/review/events.ts
+var REVIEW_NAMESPACE = "storybook/review", REVIEW_EVENTS = {
+  // tab → core-server: a review page (summary or detail) was viewed; forwarded to telemetry.
+  PAGEVIEW: `${REVIEW_NAMESPACE}/pageview`
+};
+
+// src/manager/components/review/constants.ts
+var PAGE_ID = `${REVIEW_NAMESPACE}/page`, REVIEW_CHANGES_URL = "/review/", REVIEW_MODE_SESSION_KEY = `${REVIEW_NAMESPACE}/review-mode`, PRE_REVIEW_RETURN_KEY = `${REVIEW_NAMESPACE}/pre-review-return`, AUTO_ENTERED_SESSION_KEY = `${REVIEW_NAMESPACE}/auto-entered`, autoEnteredLatchValue = (createdAt) => String(createdAt ?? "unknown"), VISITED_REVIEW_CREATED_AT_KEY = `${REVIEW_NAMESPACE}/visited-created-at`, NOTIFIED_REVIEW_CREATED_AT_KEY = `${REVIEW_NAMESPACE}/notified-created-at`, REVIEW_AVAILABLE_NOTIFICATION_ID = `${REVIEW_NAMESPACE}/review-available`, reviewAvailableNotificationId = (createdAt) => `${REVIEW_AVAILABLE_NOTIFICATION_ID}/${createdAt}`;
+
+// src/manager/components/review/review-context.ts
+init_react();
+var noop2 = () => {
+}, emptyReviewContextValue = {
+  review: null,
+  pendingReview: null,
+  storyInfo: {},
+  flattenedEntries: [],
+  newlyAddedStoryIds: /* @__PURE__ */ new Set(),
+  activeEntry: null,
+  activeIndex: -1,
+  isSummaryVisible: !1,
+  banner: null,
+  isInReviewMode: !1,
+  openSummary: noop2,
+  openEntry: noop2,
+  leaveReview: noop2,
+  dismiss: noop2
+}, ReviewContext = createContext(emptyReviewContextValue), useReviewContext = () => useContext(ReviewContext);
+
+// src/manager/components/review/session-store.ts
+var sessionStore = {
+  read(key) {
+    try {
+      return sessionStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  write(key, value) {
+    try {
+      sessionStorage.setItem(key, value);
+    } catch {
+    }
+  },
+  remove(key) {
+    try {
+      sessionStorage.removeItem(key);
+    } catch {
+    }
+  }
+};
+
+// src/manager/components/review/screens/SummaryScreen.tsx
+init_react();
+
+// src/manager/components/review/components/AttentionBanner.tsx
+init_react();
+
+// src/manager/components/review/components/CopyButton.tsx
+init_react();
+function CopyButton({
+  children,
+  childrenOnCopy,
+  content,
+  onCopy,
+  ariaLabel,
+  ariaLabelOnCopy,
+  duration,
+  ...buttonProps
+}) {
+  let { children: buttonChildren, buttonProps: copyButtonProps } = useCopyButton({
+    children,
+    childrenOnCopy,
+    content,
+    onCopy,
+    ariaLabel,
+    ariaLabelOnCopy,
+    duration
+  });
+  return react_default.createElement(Button, { ...buttonProps, ...copyButtonProps }, buttonChildren);
+}
+
+// src/manager/components/review/components/AttentionBanner.tsx
+var STALE_REFRESH_PROMPT = "Generate a fresh review including my latest changes using the review-create tool.", Region = styled.div({
+  flexShrink: 0
+}), Bar2 = styled.div(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 8,
+  flexShrink: 0,
+  padding: "4px 16px",
+  background: theme.background.hoverable,
+  color: theme.color.defaultText,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  fontSize: theme.typography.size.s2,
+  minHeight: 40
+})), PopoverContent = styled.div({
+  padding: 15,
+  width: 280,
+  boxSizing: "border-box"
+}), Title = styled.div(({ theme }) => ({
+  fontWeight: theme.typography.weight.bold
+})), Message = styled.div(({ theme }) => ({
+  color: theme.color.defaultText,
+  lineHeight: "18px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  gap: 8
+})), Prompt = styled.p(({ theme }) => ({
+  margin: 0,
+  fontFamily: theme.typography.fonts.mono,
+  fontSize: theme.typography.size.s1 - 1,
+  padding: "6px 10px",
+  background: theme.background.app,
+  boxShadow: `inset 0 0 0 1px ${theme.appBorderColor}`,
+  borderRadius: theme.appBorderRadius
+})), AttentionBanner = (props) => {
+  let { kind } = props, regionRef = useRef(null), { landmarkProps } = useLandmark(
+    { role: "region", "aria-label": "Review status" },
+    regionRef
+  );
+  if (kind === "pending-update") {
+    let { onAccept } = props;
+    return react_default.createElement(Region, { ref: regionRef, ...landmarkProps }, react_default.createElement(Bar2, { role: "status", "aria-live": "polite" }, react_default.createElement("span", null, "A new review is available."), react_default.createElement(Button, { variant: "solid", padding: "small", onClick: onAccept }, "Update")));
+  }
+  return react_default.createElement(Region, { ref: regionRef, ...landmarkProps }, react_default.createElement(Bar2, { role: "status", "aria-live": "polite" }, react_default.createElement("span", null, "Code changes detected. This review may be stale.", " ", react_default.createElement(
+    PopoverProvider,
+    {
+      ariaLabel: "Prompt to refresh stale review",
+      placement: "bottom",
+      padding: 0,
+      popover: react_default.createElement(PopoverContent, null, react_default.createElement(Message, null, react_default.createElement(Title, null, "Prompt for your agent to refresh this review:"), react_default.createElement(Prompt, null, STALE_REFRESH_PROMPT), react_default.createElement(
+        CopyButton,
+        {
+          appearance: "agentic",
+          padding: "small",
+          ariaLabel: "Copy prompt to refresh this review",
+          ariaLabelOnCopy: "Prompt copied to clipboard",
+          content: STALE_REFRESH_PROMPT,
+          childrenOnCopy: react_default.createElement(react_default.Fragment, null, react_default.createElement(CheckIcon, null), " Copy prompt")
+        },
+        react_default.createElement(CopyIcon, null),
+        "Copy prompt"
+      )))
+    },
+    react_default.createElement(Link, null, react_default.createElement("strong", null, "Ask your agent to refresh it."))
+  ))));
+};
+
+// src/manager/components/review/components/CollectionGrid.tsx
+init_react();
+
+// src/viewport/constants.ts
+var ADDON_ID = "storybook/viewport", PARAM_KEY = "viewport", PANEL_ID = `${ADDON_ID}/panel`, TOOL_ID = `${ADDON_ID}/tool`, RESPONSIVE_VIEWPORT_VALUE = "100pct-100pct";
+
+// src/shared/constants/iframe-resize.ts
+var IFRAME_RESIZE_CONTEXT = "iframe.resize", IFRAME_RESIZE_REQUEST_CONTEXT = "iframe.resize.request", isPositiveFinite = (value) => typeof value == "number" && Number.isFinite(value) && value > 0, parseViewport = (value) => {
+  if (!value || typeof value != "object")
+    return;
+  let viewport = value;
+  if (typeof viewport.name != "string" || typeof viewport.value != "string")
+    return;
+  let parsed = {
+    name: viewport.name,
+    value: viewport.value
+  };
+  if (viewport.width !== void 0) {
+    if (!isPositiveFinite(viewport.width))
+      return;
+    parsed.width = viewport.width;
+  }
+  if (viewport.height !== void 0) {
+    if (!isPositiveFinite(viewport.height))
+      return;
+    parsed.height = viewport.height;
+  }
+  return parsed;
+}, parseIframeResizeMessage = (data) => {
+  try {
+    let parsed = typeof data == "string" ? JSON.parse(data) : data;
+    if (parsed?.context !== IFRAME_RESIZE_CONTEXT || !isPositiveFinite(parsed.width) || !isPositiveFinite(parsed.height))
+      return null;
+    let viewport = parseViewport(parsed.viewport);
+    return parsed.viewport !== void 0 && viewport === void 0 ? null : {
+      width: parsed.width,
+      height: parsed.height,
+      ...viewport ? { viewport } : {}
+    };
+  } catch {
+    return null;
+  }
+}, hasFixedViewportDimensions = (viewport) => !!viewport && viewport.value !== RESPONSIVE_VIEWPORT_VALUE && typeof viewport.width == "number" && viewport.width > 0 && typeof viewport.height == "number" && viewport.height > 0, iframeResizeViewportsEqual = (left, right) => left === right ? !0 : !left || !right ? !left && !right : left.name === right.name && left.value === right.value && left.width === right.width && left.height === right.height, iframeResizeDimensionsEqual = (left, right) => !left || left.width !== right.width || left.height !== right.height ? !1 : iframeResizeViewportsEqual(left.viewport, right.viewport);
+
+// src/manager/components/review/review-types.ts
+var fallbackStoryInfo = (storyId) => {
+  let separator = storyId.indexOf("--");
+  return separator === -1 ? { title: storyId, name: "Story" } : {
+    title: storyId.slice(0, separator),
+    name: storyId.slice(separator + 2) || "Story"
+  };
+};
+
+// src/manager/components/review/components/usePreviewThumbnail.ts
+init_react();
+
+// src/manager/components/review/components/previewScheduler.ts
+var activePreviewLoads = 0, previewQueue = [];
+function startTask(task) {
+  task.state = "started", activePreviewLoads += 1, task.deadline = setTimeout(() => releaseTask(task), 1500), task.start();
+}
+function startQueuedPreviews() {
+  for (; activePreviewLoads < 3 && previewQueue.length > 0; )
+    startTask(previewQueue.shift());
+}
+function releaseTask(task) {
+  task.state !== "released" && (task.state === "started" ? (clearTimeout(task.deadline), activePreviewLoads -= 1) : previewQueue.splice(previewQueue.indexOf(task), 1), task.state = "released", startQueuedPreviews());
+}
+function enqueuePreview(start) {
+  let task = { start, state: "queued" };
+  return previewQueue.push(task), startQueuedPreviews(), {
+    forceStart: () => {
+      task.state === "queued" && (previewQueue.splice(previewQueue.indexOf(task), 1), startTask(task));
+    },
+    release: () => releaseTask(task)
+  };
+}
+
+// src/manager/components/review/components/previewThumbnailState.ts
+var initialThumbnailState = {
+  phase: "idle",
+  src: void 0,
+  dimensions: null,
+  bootId: 0
+}, isThumbnailLoading = ({ phase }) => phase === "queued" || phase === "booting" || phase === "measured", thumbnailReducer = (state, event) => {
+  switch (event.type) {
+    case "enqueued":
+      return { ...state, phase: "queued", dimensions: null };
+    case "started":
+      return state.phase !== "queued" ? state : { ...state, phase: "booting", src: event.src, bootId: state.bootId + 1 };
+    case "resized": {
+      if (state.phase === "booting" || state.phase === "measured") {
+        let unchanged = iframeResizeDimensionsEqual(state.dimensions, event.dimensions);
+        return state.phase === "measured" && unchanged ? state : {
+          ...state,
+          phase: "measured",
+          dimensions: unchanged ? state.dimensions : event.dimensions
+        };
+      }
+      return state.phase === "settled" ? iframeResizeDimensionsEqual(state.dimensions, event.dimensions) ? state : { ...state, dimensions: event.dimensions } : state;
+    }
+    case "settled":
+      return state.phase === "booting" || state.phase === "measured" ? { ...state, phase: "settled" } : state;
+    case "evicted":
+      return state.phase === "idle" ? state : { ...initialThumbnailState, bootId: state.bootId };
+  }
+};
+
+// src/manager/components/review/components/usePreviewThumbnail.ts
+var PREVIEW_SCALE_SETTLE_FALLBACK_MS = 1500 * 3, PREVIEW_MOUNT_ROOT_MARGIN = "50% 0px", PREVIEW_EVICT_ROOT_MARGIN = "150% 0px", getScrollRoot = (element) => {
+  let radixViewport = element.closest("[data-radix-scroll-area-viewport]");
+  if (radixViewport)
+    return radixViewport;
+  let current = element.parentElement;
+  for (; current; ) {
+    let { overflowY } = window.getComputedStyle(current);
+    if (overflowY === "auto" || overflowY === "scroll")
+      return current;
+    current = current.parentElement;
+  }
+  return null;
+}, usePreviewThumbnail = ({
+  storyId,
+  getPreviewHref,
+  summaryHidden = !1
+}) => {
+  let cellRef = useRef(null), iframeRef = useRef(null), [isInView, setIsInView] = useState(!1), [state, dispatch] = useReducer(thumbnailReducer, initialThumbnailState), handleRef = useRef(null), settleRafRef = useRef({ raf1: 0, raf2: 0 }), { src, bootId } = state;
+  useEffect(() => {
+    let host = cellRef.current;
+    if (!host || summaryHidden)
+      return;
+    let scrollRoot = getScrollRoot(host), root2 = scrollRoot && scrollRoot.clientHeight > 0 ? scrollRoot : null, mountObserver = new IntersectionObserver(
+      ([entry]) => {
+        entry.isIntersecting && setIsInView(!0);
+      },
+      { root: root2, rootMargin: PREVIEW_MOUNT_ROOT_MARGIN }
+    ), evictObserver = new IntersectionObserver(
+      ([entry]) => {
+        entry.isIntersecting || setIsInView(!1);
+      },
+      { root: root2, rootMargin: PREVIEW_EVICT_ROOT_MARGIN }
+    );
+    return mountObserver.observe(host), evictObserver.observe(host), () => {
+      mountObserver.disconnect(), evictObserver.disconnect();
+    };
+  }, [summaryHidden]), useEffect(() => {
+    isInView || dispatch({ type: "evicted" });
+  }, [isInView]), useEffect(() => {
+    if (!isInView)
+      return;
+    let previewHref = getPreviewHref(storyId);
+    dispatch({ type: "enqueued" });
+    let handle = enqueuePreview(() => {
+      dispatch({ type: "started", src: previewHref });
+    });
+    return handleRef.current = handle, () => {
+      handle.release(), handleRef.current = null;
+    };
+  }, [isInView, storyId, getPreviewHref]), useEffect(() => {
+    if (!src)
+      return;
+    let timer = setTimeout(() => dispatch({ type: "settled" }), PREVIEW_SCALE_SETTLE_FALLBACK_MS);
+    return () => clearTimeout(timer);
+  }, [bootId, src]);
+  let handleResize = useCallback((dimensions) => {
+    dispatch({ type: "resized", dimensions }), cancelAnimationFrame(settleRafRef.current.raf1), cancelAnimationFrame(settleRafRef.current.raf2), settleRafRef.current.raf1 = requestAnimationFrame(() => {
+      settleRafRef.current.raf2 = requestAnimationFrame(() => {
+        dispatch({ type: "settled" });
+      });
+    });
+  }, []);
+  useEffect(() => {
+    let rafs = settleRafRef.current;
+    return () => {
+      cancelAnimationFrame(rafs.raf1), cancelAnimationFrame(rafs.raf2);
+    };
+  }, []), useLayoutEffect(() => {
+    if (!src)
+      return;
+    let iframe = iframeRef.current;
+    if (!iframe)
+      return;
+    let onMessage = (event) => {
+      if (event.source === null || event.source !== iframe.contentWindow)
+        return;
+      let dimensions = parseIframeResizeMessage(event.data);
+      dimensions && handleResize(dimensions);
+    };
+    window.addEventListener("message", onMessage);
+    let requestRemeasure = () => {
+      try {
+        iframe.contentWindow?.postMessage(
+          JSON.stringify({ context: IFRAME_RESIZE_REQUEST_CONTEXT }),
+          "*"
+        );
+      } catch {
+      }
+    };
+    return requestRemeasure(), iframe.addEventListener("load", requestRemeasure), () => {
+      window.removeEventListener("message", onMessage), iframe.removeEventListener("load", requestRemeasure);
+    };
+  }, [src, handleResize]);
+  let finishCurrent = useCallback(() => {
+    handleRef.current?.release();
+  }, []), forceStartCurrent = useCallback(() => {
+    handleRef.current?.forceStart();
+  }, []);
+  return {
+    cellRef,
+    iframeRef,
+    src,
+    isPreviewLoading: isThumbnailLoading(state),
+    rememberedDimensions: state.dimensions,
+    forceStartCurrent,
+    finishCurrent
+  };
+};
+
+// src/manager/components/review/components/CollectionGrid.tsx
+var band = (cols) => {
+  let cap = cols * 2;
+  return {
+    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+    [`&:not([data-show-all]):has(> [data-cell]:nth-child(${cap + 1})) > [data-cell]:nth-child(n + ${cap})`]: {
+      display: "none"
+    },
+    [`&:not([data-show-all]):has(> [data-cell]:nth-child(${cap + 1})) > [data-review-all]`]: {
+      display: "flex"
+    }
+  };
+}, GridContainer = styled.div({
+  containerType: "inline-size",
+  containerName: "review-grid"
+}), Grid = styled.div({
+  display: "grid",
+  alignItems: "stretch",
+  gap: 12,
+  padding: 12,
+  gridTemplateColumns: "minmax(0, 1fr)",
+  "@container review-grid (max-width: 629.98px)": band(1),
+  "@container review-grid (min-width: 630px) and (max-width: 844.98px)": band(2),
+  "@container review-grid (min-width: 845px) and (max-width: 1259.98px)": band(3),
+  "@container review-grid (min-width: 1260px)": band(4)
+}), Cell = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  minWidth: 0,
+  overflow: "hidden"
+}), FrameShell = styled.div({
+  width: "100%",
+  minWidth: 0,
+  maxWidth: "100%",
+  aspectRatio: "3 / 2",
+  position: "relative"
+}), DEFAULT_CONTENT_WIDTH = 300, THUMBNAIL_BOOTSTRAP_SCALE = 0.5, getPreviewFrameLayout = (dimensions) => dimensions ? hasFixedViewportDimensions(dimensions.viewport) ? {
+  style: {
+    "--vp-w": dimensions.viewport.width,
+    "--vp-h": dimensions.viewport.height
+  },
+  viewportFill: !0
+} : { style: { "--content-w": dimensions.width }, viewportFill: !1 } : {
+  style: { "--scale": THUMBNAIL_BOOTSTRAP_SCALE },
+  viewportFill: !1
+}, Frame = styled.a(({ theme }) => ({
+  position: "absolute",
+  inset: 0,
+  display: "block",
+  boxSizing: "border-box",
+  containerType: "inline-size",
+  containerName: "preview-frame",
+  "--content-w": DEFAULT_CONTENT_WIDTH,
+  "--fit-w": "calc(100cqw / (var(--content-w) * 1px))",
+  "--fit": "min(1, var(--fit-w))",
+  "--scale": "max(0.5, min(1, round(down, var(--fit), 0.25)))",
+  "--vp-scale": "calc(100cqw / (var(--vp-w) * 1px))",
+  borderRadius: 6,
+  overflow: "hidden",
+  background: theme.background.app,
+  border: `1px solid ${theme.appBorderColor}`,
+  transition: "border-color 120ms ease",
+  textDecoration: "none",
+  outline: "none",
+  "& [data-preview-scale]": {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    transformOrigin: "top left"
+  },
+  "&[data-viewport-fill] [data-preview-scale]": {
+    width: "calc(var(--vp-w) * 1px)",
+    height: "calc(var(--vp-h) * 1px)",
+    transform: "scale(var(--vp-scale))"
+  },
+  "&:not([data-viewport-fill]) [data-preview-scale]": {
+    width: "calc(100% / var(--scale))",
+    height: "calc(100% / var(--scale))",
+    transform: "scale(var(--scale))"
+  },
+  "&[href]:hover": {
+    borderColor: theme.color.secondary
+  },
+  "&:focus-visible": {
+    outline: `${theme.barSelectedColor} solid 2px`,
+    outlineOffset: -2
+  }
+})), Preview = styled.iframe(({ theme }) => ({
+  display: "block",
+  width: "100%",
+  height: "100%",
+  background: theme.background.preview,
+  border: 0,
+  pointerEvents: "none"
+})), PreviewLoading = styled.div(({ theme }) => ({
+  position: "absolute",
+  inset: 0,
+  zIndex: 1,
+  display: "grid",
+  placeItems: "center",
+  background: theme.background.app,
+  pointerEvents: "none"
+})), ActionBar2 = styled.div({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+  minHeight: 36,
+  marginTop: "auto"
+}), Label = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 4,
+  flex: 1,
+  minWidth: 0,
+  marginLeft: 10,
+  overflow: "hidden"
+}), LabelComponent = styled.span({
+  fontWeight: 700,
+  whiteSpace: "nowrap",
+  flexShrink: 0,
+  maxWidth: "60%",
+  overflow: "hidden",
+  textOverflow: "ellipsis"
+}), LabelSeparator = styled.span(({ theme }) => ({
+  color: theme.textMutedColor,
+  flexShrink: 0
+})), LabelStory = styled.span({
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  marginRight: 4
+}), NewBadge = styled(Badge)({
+  flexShrink: 0
+}), ReviewAllCell = styled(Cell)({
+  display: "none"
+}), ReviewAllShell = styled.div({
+  width: "100%",
+  minWidth: 0,
+  maxWidth: "100%",
+  aspectRatio: "3 / 2",
+  minHeight: 50
+}), ReviewAllFrame = styled.div(({ theme }) => ({
+  display: "grid",
+  placeItems: "center",
+  width: "100%",
+  height: "100%",
+  boxSizing: "border-box",
+  borderRadius: 6,
+  background: theme.background.app,
+  border: `1px dashed ${theme.appBorderColor}`
+})), deriveStoryInfo = (info) => ({
+  component: info.title.split("/").pop() ?? info.title,
+  name: info.name
+}), StoryPreviewCell = ({ storyId, href, info, getPreviewHref, summaryHidden = !1 }) => {
+  let {
+    cellRef,
+    iframeRef,
+    src,
+    isPreviewLoading,
+    rememberedDimensions,
+    forceStartCurrent,
+    finishCurrent
+  } = usePreviewThumbnail({ storyId, getPreviewHref, summaryHidden }), { component, name } = deriveStoryInfo(info), readableTitle = `${component} \u2013 ${name}`, { style: frameStyle, viewportFill } = getPreviewFrameLayout(rememberedDimensions), preview = src ? react_default.createElement("div", { "data-preview-scale": !0 }, react_default.createElement(
+    Preview,
+    {
+      ref: iframeRef,
+      "data-is-storybook-thumbnail": !0,
+      title: readableTitle,
+      src,
+      "data-content-width": rememberedDimensions?.width,
+      "data-content-height": rememberedDimensions?.height,
+      tabIndex: -1,
+      scrolling: "no",
+      onLoad: finishCurrent,
+      onError: finishCurrent
+    }
+  )) : null;
+  return react_default.createElement(Cell, { ref: cellRef, role: "listitem", "data-cell": !0, "data-testid": "review-collection-grid-cell" }, react_default.createElement(FrameShell, null, react_default.createElement(
+    Frame,
+    {
+      as: href ? "a" : "div",
+      ...href ? { href } : {},
+      "data-testid": "review-collection-grid-frame",
+      "data-viewport-fill": viewportFill || void 0,
+      style: frameStyle,
+      "aria-label": href ? `Review story ${readableTitle}` : void 0,
+      onMouseEnter: forceStartCurrent,
+      onFocus: forceStartCurrent
+    },
+    isPreviewLoading ? react_default.createElement(PreviewLoading, { "data-testid": "review-preview-loading" }, react_default.createElement(Loader, null)) : null,
+    preview
+  )), react_default.createElement(ActionBar2, null, react_default.createElement(Label, null, react_default.createElement(LabelComponent, null, component), react_default.createElement(LabelSeparator, null, "/"), react_default.createElement(LabelStory, null, name), info.changeStatus === "new" || info.isNewlyAdded ? react_default.createElement(NewBadge, { status: "positive", compact: !0 }, "New") : null)));
+}, CollectionGrid = ({
+  storyIds,
+  getStoryHref: getStoryHref2,
+  getStoryPreviewHref,
+  showAll = !1,
+  onShowAll,
+  storyInfo,
+  summaryHidden = !1
+}) => react_default.createElement(GridContainer, null, react_default.createElement(Grid, { role: "list", "data-show-all": showAll || void 0, "data-testid": "review-collection-grid" }, storyIds.map((storyId, storyIndex) => {
+  let info = storyInfo[storyId] ?? fallbackStoryInfo(storyId);
+  return react_default.createElement(
+    StoryPreviewCell,
+    {
+      key: storyId,
+      storyId,
+      href: getStoryHref2?.(storyId, storyIndex),
+      info,
+      getPreviewHref: getStoryPreviewHref,
+      summaryHidden
+    }
+  );
+}), react_default.createElement(ReviewAllCell, { role: "presentation", "data-review-all": !0 }, react_default.createElement(ReviewAllShell, null, react_default.createElement(ReviewAllFrame, null, react_default.createElement(Button, { size: "medium", onClick: () => onShowAll?.() }, "Review all ", storyIds.length))), react_default.createElement(ActionBar2, { "aria-hidden": "true" }))));
+
+// src/manager/components/review/components/Markdown.tsx
+init_react();
+var createInlinePattern = () => /(\*\*([\s\S]+?)\*\*|\*([\s\S]+?)\*|_([\s\S]+?)_|`([\s\S]+?)`)/g, parseInline = (text) => {
+  let nodes = [], pattern = createInlinePattern(), lastIndex = 0, key = 0, match;
+  for (; (match = pattern.exec(text)) !== null; ) {
+    match.index > lastIndex && nodes.push(text.slice(lastIndex, match.index));
+    let [token, , bold, italicStar, italicUnderscore, code] = match;
+    bold !== void 0 ? nodes.push(react_default.createElement("strong", { key: key++ }, parseInline(bold))) : italicStar !== void 0 ? nodes.push(react_default.createElement("em", { key: key++ }, parseInline(italicStar))) : italicUnderscore !== void 0 ? nodes.push(react_default.createElement("em", { key: key++ }, parseInline(italicUnderscore))) : code !== void 0 && nodes.push(react_default.createElement("code", { key: key++ }, code)), lastIndex = match.index + token.length;
+  }
+  return lastIndex < text.length && nodes.push(text.slice(lastIndex)), nodes;
+}, Markdown = ({ children }) => {
+  let paragraphs = children.split(/\n{2,}/).filter((paragraph) => paragraph.trim() !== "");
+  return react_default.createElement(react_default.Fragment, null, paragraphs.map((paragraph, index) => react_default.createElement("p", { key: index }, parseInline(paragraph))));
+};
+
+// src/manager/components/review/components/ReviewHeader.tsx
+init_react();
+var Root = styled.header(({ theme, $variant }) => ({
+  containerType: "inline-size",
+  containerName: "review-header",
+  display: "flex",
+  flexDirection: "column",
+  flexShrink: 0,
+  width: "100%",
+  background: $variant === "toolbar" ? theme.barBg : theme.background.content,
+  color: theme.color.defaultText,
+  ...$variant === "page" ? { borderBottom: `1px solid ${theme.appBorderColor}` } : {}
+})), TopRow = styled.div(({ $variant }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  padding: $variant === "toolbar" ? "16px 16px 8px 16px" : "16px",
+  minHeight: 40
+})), Main = styled.div({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  flex: "1 1 auto",
+  minWidth: 0
+}), Leading = styled.div({
+  display: "flex",
+  alignItems: "center",
+  alignSelf: "flex-start",
+  flexShrink: 0
+}), TextBlock = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+  minWidth: 0
+}), Title2 = styled.h1(({ theme }) => ({
+  margin: "2px 0",
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontSize: theme.typography.size.m1,
+  fontWeight: theme.typography.weight.bold,
+  lineHeight: "24px"
+})), Subtitle = styled.div(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: 8,
+  color: theme.textMutedColor,
+  fontSize: theme.typography.size.s2,
+  lineHeight: "20px"
+})), Actions = styled.div({
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: 6,
+  flex: "0 1 auto",
+  marginLeft: "auto"
+}), SecondRow = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  padding: "0 16px 2px 16px",
+  minHeight: 39
+}), ReviewHeader = ({
+  leading,
+  title: title2,
+  subtitle,
+  actions,
+  secondRow,
+  variant = "page"
+}) => {
+  let titleId = $bdb11010cef70236$export$f680877a34711e37(), regionRef = useRef(null), { landmarkProps } = useLandmark({ "aria-labelledby": titleId, role: "banner" }, regionRef);
+  return react_default.createElement(Root, { $variant: variant, ref: regionRef, ...landmarkProps }, react_default.createElement(TopRow, { $variant: variant }, react_default.createElement(Main, null, leading ? react_default.createElement(Leading, null, leading) : null, react_default.createElement(TextBlock, null, react_default.createElement(Title2, { id: titleId }, title2), subtitle ? react_default.createElement(Subtitle, null, subtitle) : null)), actions ? react_default.createElement(Actions, null, actions) : null), secondRow ? react_default.createElement(SecondRow, null, secondRow) : null);
+};
+
+// src/manager/components/review/review-navigation.ts
+var prettifyComponentId = (componentId) => componentId.split(/[-/]/).filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" "), buildReviewChangesSummaryHref = () => `?path=${REVIEW_CHANGES_URL}`, STORYBOOK_ROOT_HREF = "/", buildSummaryBackHref = (returnSearch) => returnSearch || STORYBOOK_ROOT_HREF, REVIEW_SUMMARY_BACK_ATTR = "data-review-summary-back", buildReviewStoryTarget = (entry) => `/story/${entry.storyId}&${REVIEW_COLLECTION_QUERY_PARAM}=${entry.collectionIndex}`, buildReviewStoryHref = (entry) => `?path=${buildReviewStoryTarget(entry)}`, parseReviewStoryHref = (href) => {
+  if (!href.startsWith("?path=/story/"))
+    return null;
+  let query = href.startsWith("?") ? href.slice(1) : href, params = new URLSearchParams(query), path = params.get("path");
+  if (!path?.startsWith("/story/"))
+    return null;
+  let storyId = path.slice(7), collectionIndex = parseCollectionIndex(
+    params.get(REVIEW_COLLECTION_QUERY_PARAM) ?? void 0
+  );
+  return !storyId || collectionIndex === void 0 ? null : { storyId, collectionIndex };
+}, isReviewReturnSearch = (search) => {
+  let normalized = search.startsWith("?") ? search.slice(1) : search, params = new URLSearchParams(normalized), path = params.get("path") ?? "";
+  return isReviewSummaryPath(path) || path.startsWith(REVIEW_CHANGES_URL) ? !0 : path.startsWith("/story/") && params.has(REVIEW_COLLECTION_QUERY_PARAM);
+}, parseStoryIdFromPath = (path) => path.startsWith("/story/") && path.slice(7) || null, parseCollectionIndex = (value) => {
+  if (value === void 0 || !/^\d+$/.test(value))
+    return;
+  let parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : void 0;
+}, resolveActiveNavEntry = (entries, storyId, collectionIndex) => {
+  if (entries.length === 0)
+    return null;
+  if (collectionIndex !== void 0) {
+    let exact = entries.find(
+      (entry) => entry.storyId === storyId && entry.collectionIndex === collectionIndex
+    );
+    if (exact)
+      return exact;
+  }
+  return entries.find((entry) => entry.storyId === storyId) ?? null;
+}, resolveNavIndex = (entries, active) => entries.findIndex(
+  (entry) => entry.storyId === active.storyId && entry.collectionIndex === active.collectionIndex
+);
+
+// src/manager/components/review/screens/SummaryScreen.tsx
+var MarkdownWrapper = styled(DocumentWrapper)(({ theme }) => ({
+  color: theme.color.defaultText,
+  p: {
+    margin: 0
+  },
+  "p + p": {
+    marginTop: 10
+  },
+  code: {
+    color: "inherit",
+    verticalAlign: "text-bottom",
+    fontSize: "0.85em",
+    margin: 0,
+    padding: "0 4px",
+    background: "transparent",
+    border: "none",
+    boxShadow: `inset 0 0 0 1px ${theme.appBorderColor}`,
+    borderRadius: theme.appBorderRadius
+  }
+})), Page = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  height: "100dvh",
+  minHeight: 0,
+  overflow: "hidden",
+  background: theme.background.app,
+  color: theme.color.defaultText,
+  fontFamily: theme.typography.fonts.base,
+  fontSize: theme.typography.size.s2
+})), Empty = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: 16,
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100dvh",
+  color: theme.color.defaultText,
+  "& > div": {
+    display: "flex",
+    alignItems: "center",
+    gap: 8
+  }
+})), ListScroll = styled.div({
+  flex: 1,
+  minHeight: 0
+}), Main2 = styled.main({
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  padding: 12,
+  // Cards must keep their intrinsic height so the list scrolls; without this
+  // the default flex-shrink collapses them to fit the viewport and Card's
+  // overflow:hidden clips the content at the bottom.
+  "& > *": {
+    flexShrink: 0
+  }
+}), SummaryCard = styled(Card)({
+  display: "flex",
+  alignItems: "flex-start",
+  padding: "9px 12px",
+  gap: 10,
+  svg: {
+    flexShrink: 0,
+    marginTop: 4
+  }
+}), SummaryLandmark = ({ children }) => {
+  let asideRef = useRef(null), { landmarkProps } = useLandmark(
+    { role: "complementary", "aria-label": "Summary" },
+    asideRef
+  );
+  return react_default.createElement("aside", { ref: asideRef, ...landmarkProps }, children);
+}, SummaryContent = styled(MarkdownWrapper)({
+  flex: 1,
+  minWidth: 0,
+  // Keep the "Summary:" heading and the first description paragraph on the same
+  // line, matching the previous inline "**Summary:** …" rendering.
+  "& > p:first-of-type": {
+    display: "inline"
+  }
+}), SummaryHeading = styled.h2(({ theme }) => ({
+  // Double the ampersand to outrank the DocumentWrapper's `.wrapper h2` rule
+  // (specificity 0,1,1), which would otherwise enlarge this and add a bottom
+  // border, so the label stays identical to the inline bold it replaces.
+  "&&": {
+    display: "inline",
+    margin: 0,
+    padding: 0,
+    fontSize: "inherit",
+    fontWeight: theme.typography.weight.bold,
+    lineHeight: "inherit",
+    color: "inherit",
+    border: "none"
+  }
+})), CardHead = styled.div({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+  padding: "6px 10px 6px 12px",
+  minHeight: 40,
+  cursor: "pointer"
+}), CardTitle = styled.h2(({ theme }) => ({
+  minWidth: 0,
+  margin: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontSize: "inherit",
+  fontWeight: theme.typography.weight.bold,
+  lineHeight: "20px",
+  color: theme.color.defaultText
+})), CardControls = styled.div({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: 6,
+  flexShrink: 0
+}), CardCount = styled.span(({ theme }) => ({
+  minWidth: 28,
+  fontFamily: theme.typography.fonts.mono,
+  fontSize: theme.typography.size.s2 - 1,
+  lineHeight: "20px",
+  textAlign: "center",
+  color: theme.textMutedColor
+})), ToggleChevronIcon = styled(ChevronSmallDownIcon)({
+  transition: "transform 160ms ease"
+}), CardRationale = styled(MarkdownWrapper)(({ theme }) => ({
+  color: theme.textMutedColor,
+  margin: "0 12px"
+})), Footer = styled.div(({ theme }) => ({
+  color: theme.textMutedColor,
+  padding: "10px 10px 30px",
+  fontSize: theme.typography.size.s2,
+  textAlign: "center",
+  textWrap: "balance"
+})), CollectionLandmark = ({
+  titleId,
+  children
+}) => {
+  let regionRef = useRef(null), { landmarkProps } = useLandmark({ role: "region", "aria-labelledby": titleId }, regionRef);
+  return react_default.createElement("section", { ref: regionRef, ...landmarkProps }, children);
+}, FooterLandmark = ({ children }) => {
+  let regionRef = useRef(null), { landmarkProps } = useLandmark(
+    { role: "contentinfo", "aria-label": "About this review" },
+    regionRef
+  );
+  return react_default.createElement(Footer, { as: "section", ref: regionRef, ...landmarkProps }, children);
+}, pluralize = (count, singular, plural = `${singular}s`) => `${count} ${count === 1 ? singular : plural}`, formatCreatedAgo = (createdAt, nowMs) => {
+  let elapsedMs = Math.max(0, nowMs - createdAt);
+  if (elapsedMs < 6e4)
+    return "just now";
+  let elapsedMinutes = Math.floor(elapsedMs / 6e4);
+  return elapsedMinutes < 60 ? `${elapsedMinutes}m ago` : `${Math.floor(elapsedMinutes / 60)}h ago`;
+}, SummaryScreen = ({
+  state,
+  storyInfo = {},
+  getStoryPreviewHref,
+  banner = null,
+  summaryHidden = !1,
+  onDismiss,
+  returnSearch = null
+}) => {
+  let [expandedCollections, setExpandedCollections] = useState(() => /* @__PURE__ */ new Set()), [showAllCollections, setShowAllCollections] = useState(() => /* @__PURE__ */ new Set()), [showNewOnly, setShowNewOnly] = useState(!1), [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    let intervalId = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 1e4);
+    return () => window.clearInterval(intervalId);
+  }, []), useLayoutEffect(() => {
+    if (!state) {
+      setExpandedCollections(/* @__PURE__ */ new Set()), setShowAllCollections(/* @__PURE__ */ new Set());
+      return;
+    }
+    setExpandedCollections(new Set(state.collections.map((_2, index) => index))), setShowAllCollections(/* @__PURE__ */ new Set());
+  }, [state?.createdAt]);
+  let newStoryCount = useMemo(
+    () => new Set(
+      (state?.collections ?? []).flatMap((c2) => c2.storyIds).filter((id) => storyInfo[id]?.isNewlyAdded)
+    ).size,
+    [state, storyInfo]
+  ), visibleCollections = useMemo(
+    () => (state?.collections ?? []).map((collection, index) => {
+      let storyIds = showNewOnly ? collection.storyIds.filter((id) => storyInfo[id]?.isNewlyAdded) : collection.storyIds;
+      return { collection, index, storyIds };
+    }).filter((entry) => entry.storyIds.length > 0),
+    [state?.collections, showNewOnly, storyInfo]
+  );
+  if (!state)
+    return react_default.createElement(Empty, null, react_default.createElement("span", null, "Waiting for the agent to display a review\u2026"), react_default.createElement("div", null, react_default.createElement(
+      CopyButton,
+      {
+        appearance: "agentic",
+        padding: "small",
+        ariaLabel: "Copy prompt to refresh this review",
+        ariaLabelOnCopy: "Prompt copied to clipboard",
+        content: "Generate a Storybook review including my latest changes using the review-create tool.",
+        childrenOnCopy: react_default.createElement(react_default.Fragment, null, react_default.createElement(CheckIcon, null), " Copy prompt")
+      },
+      react_default.createElement(CopyIcon, null),
+      "Copy prompt"
+    ), react_default.createElement(Button, { padding: "small", onClick: onDismiss, ariaLabel: "Close review screen" }, react_default.createElement(CloseIcon, null), "Close")));
+  let storyCount = new Set(state.collections.flatMap((collection) => collection.storyIds)).size, createdAgo = state.createdAt ? formatCreatedAgo(state.createdAt, nowMs) : null, toggleCollection = (index) => {
+    setExpandedCollections((previous) => {
+      let next = new Set(previous);
+      return next.has(index) ? next.delete(index) : next.add(index), next;
+    });
+  }, markCollectionShowAll = (index) => {
+    setShowAllCollections(
+      (previous) => previous.has(index) ? previous : new Set(previous).add(index)
+    );
+  };
+  return react_default.createElement(Page, null, banner && react_default.createElement(AttentionBanner, { ...banner }), react_default.createElement(
+    ReviewHeader,
+    {
+      leading: react_default.createElement(Button, { variant: "ghost", size: "small", padding: "small", ariaLabel: "Exit review", asChild: !0 }, react_default.createElement("a", { href: buildSummaryBackHref(returnSearch), [REVIEW_SUMMARY_BACK_ATTR]: "" }, react_default.createElement(ChevronSmallLeftIcon, null), react_default.createElement(StorybookIcon, null))),
+      title: state.title,
+      subtitle: react_default.createElement(react_default.Fragment, null, react_default.createElement("span", null, "Showing ", pluralize(storyCount, "story", "stories"), " for quick review"), createdAgo ? react_default.createElement(react_default.Fragment, null, react_default.createElement("span", null, "\u2022"), react_default.createElement("span", null, createdAgo)) : null),
+      actions: newStoryCount > 0 ? react_default.createElement(
+        ToggleButton,
+        {
+          variant: "ghost",
+          size: "small",
+          padding: "small",
+          ariaLabel: !1,
+          tooltip: "Toggle filtering of new stories",
+          pressed: showNewOnly,
+          onClick: () => setShowNewOnly((v2) => !v2)
+        },
+        newStoryCount,
+        " new"
+      ) : null
+    }
+  ), react_default.createElement(ListScroll, null, react_default.createElement(ScrollArea, { vertical: !0 }, react_default.createElement(Main2, null, react_default.createElement(SummaryLandmark, null, react_default.createElement(SummaryCard, { color: "agentic" }, react_default.createElement(WandIcon, null), react_default.createElement(SummaryContent, null, react_default.createElement(SummaryHeading, null, "Summary:"), " ", react_default.createElement(Markdown, null, state.description)))), visibleCollections.length === 0 ? react_default.createElement(Footer, null, showNewOnly ? "No new stories found." : "No collections found.") : visibleCollections.map(({ collection, index, storyIds }) => {
+    let isExpanded = expandedCollections.has(index), titleId = `review-collection-title-${index}`;
+    return react_default.createElement(CollectionLandmark, { key: `${collection.title}-${index}`, titleId }, react_default.createElement(Card, null, react_default.createElement(
+      Collapsible,
+      {
+        collapsed: !isExpanded,
+        summary: react_default.createElement(CardHead, { onClick: () => toggleCollection(index) }, react_default.createElement(CardTitle, { id: titleId }, collection.title), react_default.createElement(CardControls, null, react_default.createElement(
+          CardCount,
+          {
+            "aria-label": pluralize(storyIds.length, "story", "stories")
+          },
+          storyIds.length
+        ), react_default.createElement(
+          IconButton,
+          {
+            variant: "ghost",
+            size: "small",
+            padding: "small",
+            ariaLabel: isExpanded ? `Collapse collection ${collection.title}` : `Expand collection ${collection.title}`,
+            "aria-expanded": isExpanded,
+            onClick: (event) => {
+              event.stopPropagation(), toggleCollection(index);
+            }
+          },
+          react_default.createElement(
+            ToggleChevronIcon,
+            {
+              style: { transform: `rotate(${isExpanded ? -180 : 0}deg)` }
+            }
+          )
+        )))
+      },
+      collection.rationale ? react_default.createElement(CardRationale, null, react_default.createElement(Markdown, null, collection.rationale)) : null,
+      react_default.createElement(
+        CollectionGrid,
+        {
+          storyIds,
+          showAll: showAllCollections.has(index),
+          onShowAll: () => markCollectionShowAll(index),
+          storyInfo,
+          getStoryHref: (storyId) => buildReviewStoryHref({ collectionIndex: index, storyId }),
+          getStoryPreviewHref,
+          summaryHidden
+        }
+      )
+    )));
+  }), react_default.createElement(FooterLandmark, null, "This review shows the ", pluralize(storyCount, "story", "stories"), " most relevant for you to spot-check right now. Because this is AI-curated, results may be inaccurate or incomplete.")))));
+};
+
+// src/manager/components/review/screens/ReviewSummaryHost.tsx
+var SummaryHost = styled.div(({ $visible }) => ({
+  position: "absolute",
+  inset: 0,
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  visibility: $visible ? "visible" : "hidden",
+  pointerEvents: $visible ? "auto" : "none"
+})), ReviewSummaryHost = () => {
+  let api = useStorybookApi(), { review, storyInfo, banner, isInReviewMode, isSummaryVisible, dismiss } = useReviewContext(), getStoryPreviewHref = useCallback(
+    (storyId) => api.getStoryHrefs(storyId, { embed: !0, freeze: !0 }).previewHref,
+    [api]
+  );
+  return !isSummaryVisible && !isInReviewMode ? null : react_default.createElement(
+    SummaryHost,
+    {
+      ref: (node) => {
+        node && (node.inert = !isSummaryVisible);
+      },
+      $visible: isSummaryVisible,
+      "aria-hidden": isSummaryVisible ? void 0 : !0,
+      "data-review-summary": isSummaryVisible ? "visible" : "hidden"
+    },
+    react_default.createElement(
+      SummaryScreen,
+      {
+        state: review,
+        storyInfo,
+        getStoryPreviewHref,
+        banner,
+        summaryHidden: !isSummaryVisible,
+        onDismiss: dismiss,
+        returnSearch: sessionStore.read(PRE_REVIEW_RETURN_KEY)
+      }
+    )
+  );
+};
+
+// src/manager/components/review/useReviewNavigationInterceptor.ts
+init_react();
+var isReviewStoryHref = (href) => href.startsWith("?path=/story/") && href.includes(`${REVIEW_COLLECTION_QUERY_PARAM}=`), isReviewSummaryHref = (href) => href === buildReviewChangesSummaryHref(), useReviewNavigationInterceptor = () => {
+  let { openSummary, openEntry, leaveReview } = useReviewContext();
+  useEffect(() => {
+    let onClick = (event) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+        return;
+      let { target } = event, anchor = target instanceof Element ? target.closest("a") : null, href = anchor?.getAttribute("href");
+      if (!href)
+        return;
+      if (anchor?.hasAttribute(REVIEW_SUMMARY_BACK_ATTR)) {
+        event.preventDefault(), leaveReview();
+        return;
+      }
+      if (!isReviewStoryHref(href) && !isReviewSummaryHref(href))
+        return;
+      if (event.preventDefault(), isReviewSummaryHref(href)) {
+        openSummary();
+        return;
+      }
+      let entry = parseReviewStoryHref(href);
+      entry && openEntry(entry);
+    };
+    return document.addEventListener("click", onClick), () => document.removeEventListener("click", onClick);
+  }, [openSummary, openEntry, leaveReview]);
+};
+
+// src/manager/components/review/components/ReviewNotification.tsx
+init_react();
+
+// src/manager/components/review/review-notification.ts
+var isUnseen = (createdAt) => createdAt !== void 0 && sessionStore.read(VISITED_REVIEW_CREATED_AT_KEY) !== String(createdAt), readVisitedCreatedAt = () => {
+  let raw = sessionStore.read(VISITED_REVIEW_CREATED_AT_KEY);
+  if (raw === null)
+    return;
+  let visited = Number(raw);
+  return Number.isFinite(visited) ? visited : void 0;
+}, isSupersededByVisit = (createdAt) => {
+  let visited = readVisitedCreatedAt();
+  return createdAt !== void 0 && visited !== void 0 && visited > createdAt;
+}, readNotifiedCreatedAt = () => {
+  let raw = sessionStore.read(NOTIFIED_REVIEW_CREATED_AT_KEY);
+  if (raw === null)
+    return;
+  let notified = Number(raw);
+  return Number.isFinite(notified) ? notified : void 0;
+}, isOnReviewRoute = (path, collectionIndex) => isReviewSummaryPath(path) || path.startsWith("/story/") && collectionIndex !== void 0, shouldSkipArrivalNotification = (path, collectionIndex, review, displayed, deferred) => isOnReviewRoute(path, collectionIndex) ? deferred?.createdAt !== void 0 && deferred.createdAt === review.createdAt ? !0 : displayed?.createdAt !== void 0 && displayed.createdAt === review.createdAt : !1, pickReviewToNotify = (displayed, deferred) => deferred?.createdAt !== void 0 && isUnseen(deferred.createdAt) ? deferred : displayed?.createdAt !== void 0 && isUnseen(displayed.createdAt) && !isSupersededByVisit(displayed.createdAt) ? displayed : null, shouldAutoAcceptOnRoute = (path, collectionIndex, candidate, displayed, deferred) => {
+  let createdAt = candidate.createdAt;
+  return !(createdAt === void 0 || !isUnseen(createdAt) || displayed?.createdAt !== createdAt || !isOnReviewRoute(path, collectionIndex) || deferred?.createdAt !== void 0 && deferred.createdAt !== displayed.createdAt);
+}, clearReviewNotifications = (api, ...createdAts) => {
+  for (let createdAt of new Set(
+    createdAts.filter((value) => value != null)
+  ))
+    api.clearNotification(reviewAvailableNotificationId(createdAt));
+  api.clearNotification(REVIEW_AVAILABLE_NOTIFICATION_ID);
+}, acceptReviewNotification = (api, createdAt) => {
+  createdAt !== void 0 && (clearReviewNotifications(api, createdAt), sessionStore.write(VISITED_REVIEW_CREATED_AT_KEY, String(createdAt)), sessionStore.write(NOTIFIED_REVIEW_CREATED_AT_KEY, String(createdAt)));
+}, clearReviewNotificationsOnDismiss = (api, displayed, deferred) => {
+  clearReviewNotifications(api, displayed?.createdAt, deferred?.createdAt, readNotifiedCreatedAt()), sessionStore.remove(VISITED_REVIEW_CREATED_AT_KEY), sessionStore.remove(NOTIFIED_REVIEW_CREATED_AT_KEY);
+}, claimNotificationSlot = (api, createdAt, ...extraCreatedAts) => !isUnseen(createdAt) || readNotifiedCreatedAt() === createdAt ? !1 : (clearReviewNotifications(api, readNotifiedCreatedAt(), ...extraCreatedAts), sessionStore.write(NOTIFIED_REVIEW_CREATED_AT_KEY, String(createdAt)), !0), readCollectionIndex = (queryParams) => parseCollectionIndex(queryParams?.[REVIEW_COLLECTION_QUERY_PARAM]);
+
+// src/manager/components/review/components/ReviewNotification.tsx
+var ReviewNotification = () => {
+  let api = useStorybookApi(), { path, customQueryParams } = useStorybookState(), { review: displayed, pendingReview: deferred, banner, openSummary } = useReviewContext(), collectionIndex = readCollectionIndex(customQueryParams), deferredRef = useRef(deferred);
+  deferredRef.current = deferred;
+  let bannerRef = useRef(banner);
+  bannerRef.current = banner;
+  let handleNotificationClick = useCallback(
+    (createdAt) => {
+      let pendingReview = deferredRef.current, currentBanner = bannerRef.current;
+      if (pendingReview?.createdAt === createdAt && currentBanner?.kind === "pending-update") {
+        currentBanner.onAccept();
+        return;
+      }
+      acceptReviewNotification(api, createdAt), openSummary();
+    },
+    [api, openSummary]
+  );
+  return useLayoutEffect(() => {
+    let review = pickReviewToNotify(displayed, deferred);
+    if (!review)
+      return;
+    if (shouldAutoAcceptOnRoute(path, collectionIndex, review, displayed, deferred)) {
+      acceptReviewNotification(api, review.createdAt);
+      return;
+    }
+    if (shouldSkipArrivalNotification(path, collectionIndex, review, displayed, deferred))
+      return;
+    let createdAt = review.createdAt;
+    createdAt === void 0 || !claimNotificationSlot(api, createdAt, displayed?.createdAt, deferred?.createdAt) || api.addNotification({
+      id: reviewAvailableNotificationId(createdAt),
+      content: {
+        headline: "New review available",
+        subHeadline: review.title ?? "Open the curated review to spot-check your changes"
+      },
+      icon: react_default.createElement(WandIcon, null),
+      onClick: ({ onDismiss }) => {
+        handleNotificationClick(createdAt), onDismiss();
+      }
+    });
+  }, [api, collectionIndex, handleNotificationClick, displayed, deferred, path]), null;
+};
+
+// src/manager/components/review/components/ReviewPersistentLayer.tsx
+var ReviewPersistentLayer = () => (useReviewNavigationInterceptor(), react_default.createElement(react_default.Fragment, null, react_default.createElement(ReviewNotification, null), react_default.createElement(ReviewSummaryHost, null)));
+
+// src/manager/components/review/components/ReviewProvider.tsx
 init_react();
 
 // global-externals:storybook/internal/types
-var types_default = __STORYBOOK_TYPES__, { Addon_TypesEnum, CHANGE_DETECTION_STATUS_TYPE_ID, CoreWebpackCompiler, Feature, SupportedBuilder, SupportedFramework, SupportedLanguage, SupportedRenderer } = __STORYBOOK_TYPES__;
+var types_default = __STORYBOOK_TYPES__, { Addon_TypesEnum, CHANGE_DETECTION_STATUS_TYPE_ID, CoreWebpackCompiler, Feature, NON_AGGREGATED_STATUS_TYPE_IDS, REVIEW_EVENTS: REVIEW_EVENTS2, REVIEW_NAMESPACE: REVIEW_NAMESPACE2, REVIEW_STATUS_TYPE_ID, SupportedBuilder, SupportedFramework, SupportedLanguage, SupportedRenderer } = __STORYBOOK_TYPES__;
+
+// src/manager/components/review/review-status.ts
+var REVIEWING_STATUS_VALUE = "status-value:reviewing", collectReviewStoryIds = (review) => {
+  let storyIds = /* @__PURE__ */ new Set();
+  for (let collection of review.collections)
+    for (let storyId of collection.storyIds)
+      storyIds.add(storyId);
+  return storyIds;
+}, createReviewStatus = (storyId) => ({
+  storyId,
+  typeId: REVIEW_STATUS_TYPE_ID,
+  value: REVIEWING_STATUS_VALUE,
+  title: "",
+  description: "",
+  sidebarContextMenu: !1
+}), applyReviewStatuses = (statusStore2, storyIds) => {
+  statusStore2.unset(), storyIds.size > 0 && statusStore2.set([...storyIds].map(createReviewStatus));
+}, clearReviewStatuses = (statusStore2) => {
+  statusStore2.unset();
+};
+
+// src/manager/components/review/review-mode.ts
+var FILTERS_SNAPSHOT_SESSION_KEY = `${REVIEW_NAMESPACE}/filters-snapshot`, stripReviewingStatusFilter = (filters) => ({
+  ...filters,
+  includedStatusFilters: filters.includedStatusFilters.filter(
+    (value) => value !== REVIEWING_STATUS_VALUE
+  ),
+  excludedStatusFilters: filters.excludedStatusFilters.filter(
+    (value) => value !== REVIEWING_STATUS_VALUE
+  )
+}), readJson = (key) => {
+  let raw = sessionStore.read(key);
+  if (raw === null)
+    return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}, enterReviewMode = async (api, filters, mode) => {
+  if (!mode.isActive()) {
+    sessionStore.write(
+      FILTERS_SNAPSHOT_SESSION_KEY,
+      JSON.stringify(stripReviewingStatusFilter(filters))
+    ), mode.setActive(!0);
+    try {
+      await api.setAllTagFilters([], []), await api.setAllStatusFilters([REVIEWING_STATUS_VALUE], []);
+    } catch (error) {
+      throw mode.setActive(!1), sessionStore.remove(FILTERS_SNAPSHOT_SESSION_KEY), error;
+    }
+  }
+}, exitReviewMode = async (api, mode) => {
+  let filters = readJson(FILTERS_SNAPSHOT_SESSION_KEY);
+  if (filters) {
+    let restored = stripReviewingStatusFilter(filters);
+    await api.setAllTagFilters(restored.includedTagFilters, restored.excludedTagFilters), await api.setAllStatusFilters(restored.includedStatusFilters, restored.excludedStatusFilters);
+  } else
+    await api.removeStatusFilters([REVIEWING_STATUS_VALUE]);
+  sessionStore.remove(FILTERS_SNAPSHOT_SESSION_KEY), mode.setActive(!1);
+};
+
+// src/manager/components/review/review-actions.ts
+var navigateToReviewEntry = (api, navigate, entry, filters, mode) => {
+  enterReviewMode(api, filters, mode), api.setQueryParams({ [REVIEW_COLLECTION_QUERY_PARAM]: String(entry.collectionIndex) }), navigate(buildReviewStoryTarget(entry));
+}, navigateToReviewSummary = (api, navigate, filters, mode) => {
+  enterReviewMode(api, filters, mode), api.setQueryParams({ [REVIEW_COLLECTION_QUERY_PARAM]: null }), navigate(REVIEW_CHANGES_URL);
+}, navigateOutOfReview = async (api, navigate, returnSearch, mode, { visitCreatedAt, onExitingChange } = {}) => {
+  api.setQueryParams({ [REVIEW_COLLECTION_QUERY_PARAM]: null }), onExitingChange?.(!0);
+  try {
+    if (await exitReviewMode(api, mode), visitCreatedAt !== void 0 && acceptReviewNotification(api, visitCreatedAt), returnSearch && !isReviewReturnSearch(returnSearch)) {
+      navigate(returnSearch.startsWith("?") ? returnSearch : `?${returnSearch}`, { plain: !0 });
+      return;
+    }
+    api.selectFirstStory();
+  } finally {
+    onExitingChange?.(!1);
+  }
+}, dismissReview = async () => {
+  try {
+    await getService("core/review", { internal: !0 }).commands.dismissReview(void 0);
+  } catch (error) {
+    logger.error("Failed to dismiss review", error);
+  }
+}, acceptPendingReview = async (api, navigate, filters, mode, pending) => {
+  if (pending) {
+    try {
+      await getService("core/review", { internal: !0 }).commands.acceptPending(void 0);
+    } catch (error) {
+      logger.error("Failed to accept pending review", error);
+      return;
+    }
+    acceptReviewNotification(api, pending.createdAt), sessionStore.write(AUTO_ENTERED_SESSION_KEY, autoEnteredLatchValue(pending.createdAt)), enterReviewMode(api, filters, mode), navigate(buildReviewChangesSummaryHref(), { plain: !0 });
+  }
+};
+
+// src/manager/components/review/review-story-info.ts
+var getStoryChangeStatus = (allStatuses, storyId) => {
+  let changeValue = Object.values(allStatuses[storyId] ?? {}).find(
+    (status) => status.typeId === CHANGE_DETECTION_STATUS_TYPE_ID
+  )?.value;
+  if (changeValue === "status-value:new")
+    return "new";
+  if (changeValue === "status-value:modified")
+    return "modified";
+}, buildNewlyAddedStoryIds = (state, allStatuses) => {
+  let ids = /* @__PURE__ */ new Set(), isChangeDetectedNew = (storyId) => Object.values(allStatuses[storyId] ?? {}).some((status) => status.value === "status-value:new");
+  for (let collection of state.collections)
+    for (let storyId of collection.storyIds)
+      isChangeDetectedNew(storyId) && ids.add(storyId);
+  return ids;
+}, resolveStoryTitleAndName = (storyId, internalIndex, index, api) => {
+  let fromInternal = internalIndex?.entries[storyId];
+  if (fromInternal?.type === "story" && fromInternal.title)
+    return { title: fromInternal.title, name: fromInternal.name };
+  let direct = index?.[storyId], entry = direct?.type === "story" ? direct : index ? api.findLeafEntry(index, storyId) : void 0;
+  return entry?.type === "story" && entry.title ? { title: entry.title, name: entry.name } : fallbackStoryInfo(storyId);
+}, buildStoryInfo = (state, index, internalIndex, api, allStatuses, newlyAddedStoryIds) => {
+  let info = {};
+  for (let collection of state.collections)
+    for (let storyId of collection.storyIds)
+      storyId in info || (info[storyId] = {
+        ...resolveStoryTitleAndName(storyId, internalIndex, index, api),
+        isNewlyAdded: newlyAddedStoryIds.has(storyId) || void 0,
+        changeStatus: getStoryChangeStatus(allStatuses, storyId)
+      });
+  return info;
+};
+
+// src/manager/components/review/useReviewFiltersRef.ts
+init_react();
+var useReviewFiltersRef = () => {
+  let { includedStatusFilters, excludedStatusFilters, includedTagFilters, excludedTagFilters } = useStorybookState(), filtersRef = useRef({
+    includedStatusFilters: [],
+    excludedStatusFilters: [],
+    includedTagFilters: [],
+    excludedTagFilters: []
+  });
+  return filtersRef.current = {
+    includedStatusFilters: includedStatusFilters ?? [],
+    excludedStatusFilters: excludedStatusFilters ?? [],
+    includedTagFilters: includedTagFilters ?? [],
+    excludedTagFilters: excludedTagFilters ?? []
+  }, filtersRef;
+};
+
+// src/manager/components/review/components/ReviewProvider.tsx
+var reviewStatusStore = experimental_getStatusStore(REVIEW_STATUS_TYPE_ID), EMPTY_ENTRIES = [], ReviewProvider = ({ children }) => {
+  let api = useStorybookApi(), navigate = useNavigate(), { index, internal_index, path, viewMode, customQueryParams, location: location2 } = useStorybookState(), reviewService = getService("core/review", { internal: !0 }), { data: currentData } = useServiceQuery(reviewService.queries.current), { data: pendingData } = useServiceQuery(reviewService.queries.pending), { data: entriesData } = useServiceQuery(reviewService.queries.flattenedEntries), { data: bannerKind } = useServiceQuery(reviewService.queries.bannerKind), review = currentData ?? null, pendingReview = pendingData ?? null, flattenedEntries = entriesData ?? EMPTY_ENTRIES, [isInReviewMode, setIsInReviewMode] = useState(
+    () => sessionStore.read(REVIEW_MODE_SESSION_KEY) === "1"
+  ), isInReviewModeRef = useRef(isInReviewMode), mode = useMemo(
+    () => ({
+      isActive: () => isInReviewModeRef.current,
+      setActive: (active) => {
+        isInReviewModeRef.current = active, active ? sessionStore.write(REVIEW_MODE_SESSION_KEY, "1") : sessionStore.remove(REVIEW_MODE_SESSION_KEY), setIsInReviewMode(active);
+      }
+    }),
+    []
+  ), isExitingRef = useRef(!1), setExiting = useCallback((exiting) => {
+    isExitingRef.current = exiting;
+  }, []), lastPageviewKeyRef = useRef(null), lastProjectedRef = useRef({ current: null, pending: null }), collectionParam = customQueryParams?.[REVIEW_COLLECTION_QUERY_PARAM], filtersRef = useReviewFiltersRef(), isSummaryVisible = isReviewSummaryPath(path), isSummaryVisibleRef = useRef(isSummaryVisible);
+  isSummaryVisibleRef.current = isSummaryVisible, useEffect(() => {
+    if (currentData === void 0)
+      return;
+    let previous = lastProjectedRef.current;
+    if (lastProjectedRef.current = { current: currentData, pending: pendingData ?? null }, currentData === null) {
+      if (previous.current === null && previous.pending === null)
+        return;
+      clearReviewStatuses(reviewStatusStore), sessionStore.remove(AUTO_ENTERED_SESSION_KEY), clearReviewNotificationsOnDismiss(api, previous.current, previous.pending), (isInReviewModeRef.current || isSummaryVisibleRef.current) && navigateOutOfReview(api, navigate, sessionStore.read(PRE_REVIEW_RETURN_KEY), mode, {
+        onExitingChange: setExiting
+      });
+      return;
+    }
+  }, [api, navigate, mode, setExiting, currentData, pendingData]), useEffect(() => {
+    review && applyReviewStatuses(reviewStatusStore, collectReviewStoryIds(review));
+  }, [review]);
+  let allStatuses = experimental_useStatusStore(), newlyAddedStoryIds = useMemo(
+    () => review ? buildNewlyAddedStoryIds(review, allStatuses) : /* @__PURE__ */ new Set(),
+    [allStatuses, review]
+  ), storyInfo = useMemo(
+    () => review ? buildStoryInfo(review, index, internal_index, api, allStatuses, newlyAddedStoryIds) : {},
+    [allStatuses, api, index, internal_index, newlyAddedStoryIds, review]
+  ), collectionIndex = parseCollectionIndex(collectionParam), storyIdFromPath = parseStoryIdFromPath(path), activeEntry = review && storyIdFromPath ? resolveActiveNavEntry(flattenedEntries, storyIdFromPath, collectionIndex) : null, activeIndex = activeEntry ? resolveNavIndex(flattenedEntries, activeEntry) : -1, openSummary = useCallback(() => {
+    navigateToReviewSummary(api, navigate, filtersRef.current, mode);
+  }, [api, navigate, filtersRef, mode]), openEntry = useCallback(
+    (entry) => {
+      navigateToReviewEntry(api, navigate, entry, filtersRef.current, mode);
+    },
+    [api, navigate, filtersRef, mode]
+  ), reviewCreatedAt = review?.createdAt, leaveReview = useCallback(() => {
+    navigateOutOfReview(api, navigate, sessionStore.read(PRE_REVIEW_RETURN_KEY), mode, {
+      visitCreatedAt: reviewCreatedAt,
+      onExitingChange: setExiting
+    });
+  }, [api, navigate, mode, reviewCreatedAt, setExiting]), hasReview = review !== null, dismiss = useCallback(() => {
+    if (!hasReview) {
+      navigateOutOfReview(api, navigate, sessionStore.read(PRE_REVIEW_RETURN_KEY), mode, {
+        onExitingChange: setExiting
+      });
+      return;
+    }
+    dismissReview();
+  }, [api, navigate, mode, hasReview, setExiting]), onAcceptPendingUpdate = useCallback(() => {
+    acceptPendingReview(api, navigate, filtersRef.current, mode, pendingReview);
+  }, [api, navigate, filtersRef, mode, pendingReview]), banner = useMemo(
+    () => bannerKind === "pending-update" ? { kind: "pending-update", onAccept: onAcceptPendingUpdate } : bannerKind === "stale" ? { kind: "stale" } : null,
+    [bannerKind, onAcceptPendingUpdate]
+  );
+  useEffect(() => {
+    if (!review) {
+      lastPageviewKeyRef.current = null;
+      return;
+    }
+    let page = null, key = null;
+    isSummaryVisible ? (page = "summary", key = "summary") : isInReviewMode && activeEntry && (page = "detail", key = `detail:${activeEntry.storyId}`), !(!page || key === lastPageviewKeyRef.current) && (lastPageviewKeyRef.current = key, api.emit(REVIEW_EVENTS.PAGEVIEW, { page, reviewCreatedAt: review.createdAt }));
+  }, [review, isSummaryVisible, isInReviewMode, activeEntry, api]), useEffect(() => {
+    if (!review || !isSummaryVisible || mode.isActive() || isExitingRef.current)
+      return;
+    let latch = autoEnteredLatchValue(review.createdAt);
+    sessionStore.read(AUTO_ENTERED_SESSION_KEY) !== latch && (sessionStore.write(AUTO_ENTERED_SESSION_KEY, latch), enterReviewMode(api, filtersRef.current, mode));
+  }, [review, isSummaryVisible, api, filtersRef, mode]), useEffect(() => {
+    if (isInReviewMode || viewMode !== "story" && viewMode !== "docs")
+      return;
+    let search = location2?.search;
+    search && !isReviewReturnSearch(search) && sessionStore.write(PRE_REVIEW_RETURN_KEY, search);
+  }, [isInReviewMode, viewMode, location2?.search]);
+  let value = useMemo(
+    () => ({
+      review,
+      pendingReview,
+      storyInfo,
+      flattenedEntries,
+      newlyAddedStoryIds,
+      activeEntry,
+      activeIndex,
+      isSummaryVisible,
+      banner,
+      isInReviewMode,
+      openSummary,
+      openEntry,
+      leaveReview,
+      dismiss
+    }),
+    [
+      review,
+      pendingReview,
+      storyInfo,
+      flattenedEntries,
+      newlyAddedStoryIds,
+      activeEntry,
+      activeIndex,
+      isSummaryVisible,
+      banner,
+      isInReviewMode,
+      openSummary,
+      openEntry,
+      leaveReview,
+      dismiss
+    ]
+  );
+  return react_default.createElement(ReviewContext.Provider, { value }, children);
+};
+
+// src/manager/container/Panel.tsx
+init_react();
 
 // src/core-events/index.ts
 var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.GHOST_STORIES_REQUEST = "ghostStoriesRequest", events2.GHOST_STORIES_RESPONSE = "ghostStoriesResponse", events2.AI_SETUP_ANALYTICS_RESPONSE = "aiSetupAnalyticsResponse", events2.AI_SETUP_ANALYTICS_REQUEST = "aiSetupAnalyticsRequest", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2.SHARE_ISOLATE_MODE = "shareIsolateMode", events2.AI_PROMPT_NUDGE = "aiPromptNudge", events2.SIDEBAR_FILTER_CHANGED = "sidebarFilterChanged", events2))(events || {});
@@ -10226,182 +11924,6 @@ var {
   AI_PROMPT_NUDGE: AI_PROMPT_NUDGE2,
   SIDEBAR_FILTER_CHANGED: SIDEBAR_FILTER_CHANGED2
 } = events;
-
-// ../../node_modules/es-toolkit/dist/compat/_internal/getSymbols.mjs
-function getSymbols(object) {
-  return Object.getOwnPropertySymbols(object).filter((symbol) => Object.prototype.propertyIsEnumerable.call(object, symbol));
-}
-
-// ../../node_modules/es-toolkit/dist/compat/_internal/getTag.mjs
-function getTag(value) {
-  return value == null ? value === void 0 ? "[object Undefined]" : "[object Null]" : Object.prototype.toString.call(value);
-}
-
-// ../../node_modules/es-toolkit/dist/compat/_internal/tags.mjs
-var regexpTag = "[object RegExp]", stringTag = "[object String]", numberTag = "[object Number]", booleanTag = "[object Boolean]", argumentsTag = "[object Arguments]", symbolTag = "[object Symbol]", dateTag = "[object Date]", mapTag = "[object Map]", setTag = "[object Set]", arrayTag = "[object Array]", functionTag = "[object Function]", arrayBufferTag = "[object ArrayBuffer]", objectTag = "[object Object]", errorTag = "[object Error]", dataViewTag = "[object DataView]", uint8ArrayTag = "[object Uint8Array]", uint8ClampedArrayTag = "[object Uint8ClampedArray]", uint16ArrayTag = "[object Uint16Array]", uint32ArrayTag = "[object Uint32Array]", bigUint64ArrayTag = "[object BigUint64Array]", int8ArrayTag = "[object Int8Array]", int16ArrayTag = "[object Int16Array]", int32ArrayTag = "[object Int32Array]", bigInt64ArrayTag = "[object BigInt64Array]", float32ArrayTag = "[object Float32Array]", float64ArrayTag = "[object Float64Array]";
-
-// ../../node_modules/es-toolkit/dist/predicate/isPlainObject.mjs
-function isPlainObject(value) {
-  if (!value || typeof value != "object")
-    return !1;
-  let proto = Object.getPrototypeOf(value);
-  return proto === null || proto === Object.prototype || Object.getPrototypeOf(proto) === null ? Object.prototype.toString.call(value) === "[object Object]" : !1;
-}
-
-// ../../node_modules/es-toolkit/dist/string/words.mjs
-var CASE_SPLIT_PATTERN = new RegExp("\\p{Lu}?\\p{Ll}+|[0-9]+|\\p{Lu}+(?!\\p{Ll})|\\p{Emoji_Presentation}|\\p{Extended_Pictographic}|\\p{L}+", "gu");
-
-// ../../node_modules/es-toolkit/dist/compat/util/eq.mjs
-function eq(value, other) {
-  return value === other || Number.isNaN(value) && Number.isNaN(other);
-}
-
-// ../../node_modules/es-toolkit/dist/predicate/isEqualWith.mjs
-function isEqualWith(a2, b2, areValuesEqual) {
-  return isEqualWithImpl(a2, b2, void 0, void 0, void 0, void 0, areValuesEqual);
-}
-function isEqualWithImpl(a2, b2, property, aParent, bParent, stack, areValuesEqual) {
-  let result = areValuesEqual(a2, b2, property, aParent, bParent, stack);
-  if (result !== void 0)
-    return result;
-  if (typeof a2 == typeof b2)
-    switch (typeof a2) {
-      case "bigint":
-      case "string":
-      case "boolean":
-      case "symbol":
-      case "undefined":
-        return a2 === b2;
-      case "number":
-        return a2 === b2 || Object.is(a2, b2);
-      case "function":
-        return a2 === b2;
-      case "object":
-        return areObjectsEqual(a2, b2, stack, areValuesEqual);
-    }
-  return areObjectsEqual(a2, b2, stack, areValuesEqual);
-}
-function areObjectsEqual(a2, b2, stack, areValuesEqual) {
-  if (Object.is(a2, b2))
-    return !0;
-  let aTag = getTag(a2), bTag = getTag(b2);
-  if (aTag === argumentsTag && (aTag = objectTag), bTag === argumentsTag && (bTag = objectTag), aTag !== bTag)
-    return !1;
-  switch (aTag) {
-    case stringTag:
-      return a2.toString() === b2.toString();
-    case numberTag: {
-      let x2 = a2.valueOf(), y2 = b2.valueOf();
-      return eq(x2, y2);
-    }
-    case booleanTag:
-    case dateTag:
-    case symbolTag:
-      return Object.is(a2.valueOf(), b2.valueOf());
-    case regexpTag:
-      return a2.source === b2.source && a2.flags === b2.flags;
-    case functionTag:
-      return a2 === b2;
-  }
-  stack = stack ?? /* @__PURE__ */ new Map();
-  let aStack = stack.get(a2), bStack = stack.get(b2);
-  if (aStack != null && bStack != null)
-    return aStack === b2;
-  stack.set(a2, b2), stack.set(b2, a2);
-  try {
-    switch (aTag) {
-      case mapTag: {
-        if (a2.size !== b2.size)
-          return !1;
-        for (let [key, value] of a2.entries())
-          if (!b2.has(key) || !isEqualWithImpl(value, b2.get(key), key, a2, b2, stack, areValuesEqual))
-            return !1;
-        return !0;
-      }
-      case setTag: {
-        if (a2.size !== b2.size)
-          return !1;
-        let aValues = Array.from(a2.values()), bValues = Array.from(b2.values());
-        for (let i2 = 0; i2 < aValues.length; i2++) {
-          let aValue = aValues[i2], index = bValues.findIndex((bValue) => isEqualWithImpl(aValue, bValue, void 0, a2, b2, stack, areValuesEqual));
-          if (index === -1)
-            return !1;
-          bValues.splice(index, 1);
-        }
-        return !0;
-      }
-      case arrayTag:
-      case uint8ArrayTag:
-      case uint8ClampedArrayTag:
-      case uint16ArrayTag:
-      case uint32ArrayTag:
-      case bigUint64ArrayTag:
-      case int8ArrayTag:
-      case int16ArrayTag:
-      case int32ArrayTag:
-      case bigInt64ArrayTag:
-      case float32ArrayTag:
-      case float64ArrayTag: {
-        if (typeof Buffer < "u" && Buffer.isBuffer(a2) !== Buffer.isBuffer(b2) || a2.length !== b2.length)
-          return !1;
-        for (let i2 = 0; i2 < a2.length; i2++)
-          if (!isEqualWithImpl(a2[i2], b2[i2], i2, a2, b2, stack, areValuesEqual))
-            return !1;
-        return !0;
-      }
-      case arrayBufferTag:
-        return a2.byteLength !== b2.byteLength ? !1 : areObjectsEqual(new Uint8Array(a2), new Uint8Array(b2), stack, areValuesEqual);
-      case dataViewTag:
-        return a2.byteLength !== b2.byteLength || a2.byteOffset !== b2.byteOffset ? !1 : areObjectsEqual(new Uint8Array(a2), new Uint8Array(b2), stack, areValuesEqual);
-      case errorTag:
-        return a2.name === b2.name && a2.message === b2.message;
-      case objectTag: {
-        if (!(areObjectsEqual(a2.constructor, b2.constructor, stack, areValuesEqual) || isPlainObject(a2) && isPlainObject(b2)))
-          return !1;
-        let aKeys = [...Object.keys(a2), ...getSymbols(a2)], bKeys = [...Object.keys(b2), ...getSymbols(b2)];
-        if (aKeys.length !== bKeys.length)
-          return !1;
-        for (let i2 = 0; i2 < aKeys.length; i2++) {
-          let propKey = aKeys[i2], aProp = a2[propKey];
-          if (!Object.hasOwn(b2, propKey))
-            return !1;
-          let bProp = b2[propKey];
-          if (!isEqualWithImpl(aProp, bProp, propKey, a2, b2, stack, areValuesEqual))
-            return !1;
-        }
-        return !0;
-      }
-      default:
-        return !1;
-    }
-  } finally {
-    stack.delete(a2), stack.delete(b2);
-  }
-}
-
-// ../../node_modules/es-toolkit/dist/function/noop.mjs
-function noop() {
-}
-
-// ../../node_modules/es-toolkit/dist/predicate/isEqual.mjs
-function isEqual(a2, b2) {
-  return isEqualWith(a2, b2, noop);
-}
-
-// global-externals:storybook/theming/create
-var create_default = __STORYBOOK_THEMING_CREATE__, { create: create3, themes: themes2 } = __STORYBOOK_THEMING_CREATE__;
-
-// src/manager-api/modules/layout.ts
-var { document: document2 } = scope;
-var focusableUIElements = {
-  addonPanel: "storybook-panel-region",
-  storySearchField: "storybook-explorer-searchfield",
-  storyListMenu: "storybook-explorer-menu",
-  storyPanelRoot: "storybook-panel-root",
-  showAddonPanel: "storybook-show-addon-panel",
-  sidebarRegion: "storybook-sidebar-region",
-  showSidebar: "storybook-show-sidebar"
-};
 
 // src/manager/components/panel/Panel.tsx
 init_react();
@@ -10555,6 +12077,154 @@ var import_memoizerific2 = __toESM(require_memoizerific(), 1);
 // src/manager/components/preview/Preview.tsx
 init_react();
 
+// src/manager/components/review/components/ReviewToolbarHeader.tsx
+init_react();
+
+// src/manager/components/review/components/ReviewCollectionPicker.tsx
+init_react();
+var derivePickerLabel = (storyId, info) => {
+  if (info)
+    return { component: info.title.split("/").pop() ?? info.title, story: info.name };
+  let [componentId, ...rest2] = storyId.split("--");
+  return {
+    component: prettifyComponentId(componentId),
+    story: prettifyComponentId(rest2.join("--")) || "Story"
+  };
+}, ReviewCollectionPicker = ({
+  entries,
+  activeEntry,
+  storyInfo,
+  children
+}) => {
+  let { openEntry } = useReviewContext(), options2 = entries.map((entry, index) => {
+    let { component, story } = derivePickerLabel(entry.storyId, storyInfo[entry.storyId]);
+    return { value: index, title: component, description: story };
+  }), activeValue = resolveNavIndex(entries, activeEntry), [nextStory, setNextStory] = react_default.useState(void 0);
+  return useEffect(() => {
+    nextStory && openEntry(nextStory);
+  }, [nextStory, openEntry]), react_default.createElement(
+    Select,
+    {
+      ariaLabel: "Select story",
+      size: "small",
+      padding: "small",
+      options: options2,
+      defaultOptions: activeValue >= 0 ? activeValue : void 0,
+      showSelectedOptionTitle: !1,
+      onSelect: (value) => {
+        let entry = typeof value == "number" ? entries[value] : void 0;
+        setNextStory(entry);
+      }
+    },
+    children
+  );
+};
+
+// src/manager/components/review/components/ReviewToolbarHeader.tsx
+var Root2 = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  flexShrink: 0,
+  width: "100%",
+  background: theme.background.content,
+  zIndex: 4
+})), HeaderWrap = styled.div({
+  position: "relative",
+  flexShrink: 0
+}), ProgressBar = styled.div(({ theme }) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  zIndex: 1,
+  width: "100%",
+  height: 3,
+  overflow: "hidden",
+  background: theme.background.app
+})), ProgressFill = styled.div(({ theme }) => ({
+  position: "absolute",
+  insetBlock: 0,
+  left: 0,
+  background: theme.color.secondary,
+  transition: "width 200ms ease"
+})), SubtitleStrong = styled.span(({ theme }) => ({
+  fontWeight: 700,
+  color: theme.color.defaultText
+})), SubtitleSeparator = styled.span(({ theme }) => ({
+  color: theme.color.defaultText
+})), SubtitleText = styled.span(({ theme }) => ({
+  color: theme.color.defaultText
+})), Counter = styled.span(({ theme }) => ({
+  fontVariantNumeric: "tabular-nums",
+  fontFamily: theme.typography.fonts.mono,
+  fontWeight: theme.typography.weight.regular
+})), NavButton = ({
+  entry,
+  ariaLabel,
+  icon
+}) => entry ? react_default.createElement(Button, { variant: "ghost", size: "small", padding: "small", ariaLabel, asChild: !0 }, react_default.createElement("a", { href: buildReviewStoryHref(entry) }, icon)) : react_default.createElement(Button, { variant: "ghost", size: "small", padding: "small", ariaLabel, disabled: !0 }, icon), componentName = (componentTitle) => componentTitle.split("/").map((part) => part.trim()).filter(Boolean).pop() ?? componentTitle, ReviewToolbarHeader = () => {
+  let {
+    review,
+    banner,
+    storyInfo,
+    flattenedEntries,
+    newlyAddedStoryIds,
+    activeEntry,
+    activeIndex
+  } = useReviewContext();
+  if (!review || !activeEntry || activeIndex < 0)
+    return null;
+  let collectionTitle = review.collections[activeEntry.collectionIndex]?.title ?? "Review", totalStories = flattenedEntries.length, hasPrevious = activeIndex > 0, hasNext = activeIndex < totalStories - 1, previousEntry = hasPrevious ? flattenedEntries[activeIndex - 1] : null, nextEntry = hasNext ? flattenedEntries[activeIndex + 1] : null, progress = totalStories > 1 ? activeIndex / (totalStories - 1) : 0, currentStoryInfo = storyInfo[activeEntry.storyId], isNewlyAdded = newlyAddedStoryIds.has(activeEntry.storyId), metadataSubtitle = currentStoryInfo?.title && currentStoryInfo.name ? react_default.createElement(react_default.Fragment, null, react_default.createElement(SubtitleStrong, null, componentName(currentStoryInfo.title)), react_default.createElement(SubtitleSeparator, null, "/"), react_default.createElement(SubtitleText, null, currentStoryInfo.name)) : null, subtitle = metadataSubtitle || isNewlyAdded ? react_default.createElement(react_default.Fragment, null, metadataSubtitle, isNewlyAdded ? react_default.createElement(Badge, { status: "positive" }, "New") : null) : void 0;
+  return react_default.createElement(Root2, { "data-testid": "review-toolbar-header" }, banner && react_default.createElement(AttentionBanner, { ...banner }), react_default.createElement(HeaderWrap, null, react_default.createElement(
+    ProgressBar,
+    {
+      role: "progressbar",
+      "aria-label": "Review progress",
+      "aria-valuenow": activeIndex + 1,
+      "aria-valuemin": 1,
+      "aria-valuemax": totalStories,
+      "data-testid": "review-progress"
+    },
+    react_default.createElement(
+      ProgressFill,
+      {
+        "data-testid": "review-progress-fill",
+        style: { width: `${progress * 100}%` }
+      }
+    )
+  ), react_default.createElement(
+    ReviewHeader,
+    {
+      variant: "toolbar",
+      leading: react_default.createElement(Button, { variant: "ghost", size: "small", padding: "small", ariaLabel: "Back to review", asChild: !0 }, react_default.createElement("a", { href: buildReviewChangesSummaryHref() }, react_default.createElement(ChevronSmallLeftIcon, null), react_default.createElement(WandIcon, null))),
+      title: collectionTitle,
+      subtitle,
+      actions: react_default.createElement(react_default.Fragment, null, react_default.createElement(
+        ReviewCollectionPicker,
+        {
+          entries: flattenedEntries,
+          activeEntry,
+          storyInfo
+        },
+        react_default.createElement(Counter, null, activeIndex + 1, "/", totalStories)
+      ), react_default.createElement(
+        NavButton,
+        {
+          entry: previousEntry,
+          ariaLabel: "Previous story",
+          icon: react_default.createElement(ChevronSmallLeftIcon, null)
+        }
+      ), react_default.createElement(
+        NavButton,
+        {
+          entry: nextEntry,
+          ariaLabel: "Next story",
+          icon: react_default.createElement(ChevronSmallRightIcon, null)
+        }
+      ))
+    }
+  )));
+};
+
 // src/manager/components/preview/FramesRenderer.tsx
 init_react();
 
@@ -10563,9 +12233,6 @@ init_react();
 
 // src/viewport/useViewport.ts
 init_react();
-
-// src/viewport/constants.ts
-var ADDON_ID = "storybook/viewport", PARAM_KEY = "viewport", PANEL_ID = `${ADDON_ID}/panel`, TOOL_ID = `${ADDON_ID}/tool`;
 
 // src/viewport/defaults.ts
 var MINIMAL_VIEWPORTS = {
@@ -10603,18 +12270,23 @@ var MINIMAL_VIEWPORTS = {
   }
 };
 
-// src/viewport/useViewport.ts
-var URL_VALUE_PATTERN = /^([0-9]{1,4})([a-z]{0,4})-([0-9]{1,4})([a-z]{0,4})$/, VIEWPORT_MIN_WIDTH = 40, VIEWPORT_MIN_HEIGHT = 40, cycle = (viewports, current, direction = 1) => {
-  let keys = Object.keys(viewports), nextIndex = (current ? keys.indexOf(current) : -1) + direction;
-  return nextIndex < 0 ? keys[keys.length - 1] : nextIndex >= keys.length ? keys[0] : keys[nextIndex];
-}, normalizeGlobal = (value, defaultIsRotated) => typeof value == "string" ? { value, isRotated: defaultIsRotated } : { value: value?.value, isRotated: value?.isRotated ?? defaultIsRotated }, parseGlobals = (globals, storyGlobals, userGlobals, options2, lastSelectedOption, disable, viewMode) => {
+// src/viewport/resolveViewport.ts
+var VIEWPORT_MIN_WIDTH = 40, VIEWPORT_MIN_HEIGHT = 40, URL_VALUE_PATTERN = /^([0-9]{1,4})([a-z]{0,4})-([0-9]{1,4})([a-z]{0,4})$/, normalizeGlobal = (value, defaultIsRotated) => typeof value == "string" ? { value, isRotated: defaultIsRotated } : { value: value?.value, isRotated: value?.isRotated ?? defaultIsRotated }, resolveViewport = ({
+  globals,
+  storyGlobals,
+  userGlobals,
+  options: options2,
+  lastSelectedOption,
+  disable = !1,
+  viewMode
+}) => {
   if (viewMode !== "story")
     return {
       name: "Responsive",
       type: "desktop",
       width: "100%",
       height: "100%",
-      value: "100pct-100pct",
+      value: RESPONSIVE_VIEWPORT_VALUE,
       option: void 0,
       isCustom: !1,
       isDefault: !0,
@@ -10657,24 +12329,39 @@ var URL_VALUE_PATTERN = /^([0-9]{1,4})([a-z]{0,4})-([0-9]{1,4})([a-z]{0,4})$/, V
     type: "desktop",
     width: "100%",
     height: "100%",
-    value: "100pct-100pct",
+    value: RESPONSIVE_VIEWPORT_VALUE,
     option: void 0,
     isCustom: !1,
     isDefault: !0,
     isLocked,
     isRotated: !1
   };
-}, useViewport = () => {
-  let api = useStorybookApi(), { viewMode } = api.getUrlState(), lastSelectedOption = useRef(), parameter = useParameter(PARAM_KEY), [globals, updateGlobals, storyGlobals, userGlobals] = useGlobals(), { options: options2 = MINIMAL_VIEWPORTS, disable = !1 } = parameter || {}, { name, type, width, height, value, option, isCustom, isDefault, isLocked, isRotated } = parseGlobals(
+};
+
+// src/viewport/useViewport.ts
+var cycle = (viewports, current, direction = 1) => {
+  let keys = Object.keys(viewports), nextIndex = (current ? keys.indexOf(current) : -1) + direction;
+  return nextIndex < 0 ? keys[keys.length - 1] : nextIndex >= keys.length ? keys[0] : keys[nextIndex];
+}, normalizeGlobal2 = (value, defaultIsRotated) => typeof value == "string" ? { value, isRotated: defaultIsRotated } : { value: value?.value, isRotated: value?.isRotated ?? defaultIsRotated }, useViewport = () => {
+  let api = useStorybookApi(), { viewMode } = api.getUrlState(), lastSelectedOption = useRef(), parameter = useParameter(PARAM_KEY), [globals, updateGlobals, storyGlobals, userGlobals] = useGlobals();
+  useEffect(() => {
+    if (parameter && "defaultViewport" in parameter) {
+      let value2 = parameter.defaultViewport;
+      deprecate(
+        `The \`viewport.defaultViewport\` parameter was removed in Storybook 10. Use \`globals: { viewport: ${JSON.stringify(value2)} }\` instead, or run \`npx storybook automigrate\` to update your code automatically.`
+      );
+    }
+  }, [parameter]);
+  let { options: options2 = MINIMAL_VIEWPORTS, disable = !1 } = parameter || {}, { name, type, width, height, value, option, isCustom, isDefault, isLocked, isRotated } = resolveViewport({
     globals,
     storyGlobals,
     userGlobals,
-    options2,
-    lastSelectedOption.current,
+    options: options2,
+    lastSelectedOption: lastSelectedOption.current,
     disable,
     viewMode
-  ), update2 = useCallback(
-    (input) => updateGlobals({ [PARAM_KEY]: normalizeGlobal(input, !1) }),
+  }), update2 = useCallback(
+    (input) => updateGlobals({ [PARAM_KEY]: normalizeGlobal2(input, !1) }),
     [updateGlobals]
   ), resize = useCallback(
     (width2, height2) => {
@@ -11211,7 +12898,7 @@ var getActive = (refId, refs) => refId && refs[refId] ? `storybook-ref-${refId}`
   }
 })), whenSidebarIsVisible = ({ api, state }) => ({
   isFullscreen: api.getIsFullscreen(),
-  isNavShown: api.getIsNavShown(),
+  isNavShown: api.getNavAvailability() === "shown",
   selectedStoryId: state.storyId
 }), styles = {
   '#root [data-is-storybook="false"]': {
@@ -11232,7 +12919,7 @@ var getActive = (refId, refs) => refId && refs[refId] ? `storybook-ref-${refId}`
   let version3 = refs[refId]?.version, active = getActive(refId, refs), { current: frames } = useRef({}), refsToLoad = Object.values(refs).filter((ref) => ref.type === "auto-inject" || ref.id === refId, {});
   return frames["storybook-preview-iframe"] || (frames["storybook-preview-iframe"] = api.getStoryHrefs(storyId, {
     queryParams: { ...queryParams, ...version3 && { version: version3 } },
-    refId,
+    refId: void 0,
     viewMode
   }).previewHref), refsToLoad.forEach((ref) => {
     let id = `storybook-ref-${ref.id}`;
@@ -11251,7 +12938,8 @@ var fullScreenMapper = ({ api, state }) => ({
   isFullscreen: api.getIsFullscreen(),
   shortcut: api.getShortcutKeys().fullScreen,
   hasPanel: Object.keys(api.getElements(Addon_TypesEnum.PANEL)).length > 0,
-  singleStory: state.singleStory
+  singleStory: state.singleStory,
+  isNavUnavailable: api.getNavAvailability() === "unavailable"
 }), fullScreenTool = {
   title: "fullscreen",
   id: "fullscreen",
@@ -11260,7 +12948,7 @@ var fullScreenMapper = ({ api, state }) => ({
   match: (p2) => ["story", "docs"].includes(p2.viewMode),
   render: () => {
     let { isMobile: isMobile2 } = useLayout();
-    return isMobile2 ? null : react_default.createElement(Consumer, { filter: fullScreenMapper }, ({ toggle, isFullscreen, shortcut, hasPanel, singleStory }) => (!singleStory || singleStory && hasPanel) && react_default.createElement(
+    return isMobile2 ? null : react_default.createElement(Consumer, { filter: fullScreenMapper }, ({ toggle, isFullscreen, shortcut, hasPanel, singleStory, isNavUnavailable }) => !isNavUnavailable && (!singleStory || singleStory && hasPanel) && react_default.createElement(
       Button,
       {
         key: "full",
@@ -11362,13 +13050,13 @@ var PreviewContainer = styled.div({
   width: "100%",
   height: "100%",
   overflow: "hidden"
-}), FrameWrap = styled.main({
+}), FrameWrap = styled.main(({ theme }) => ({
   overflow: "auto",
   width: "100%",
   zIndex: 3,
-  background: "transparent",
+  background: theme.background.app,
   flex: 1
-}), CanvasWrap = styled.div(
+})), CanvasWrap = styled.div(
   {
     alignContent: "center",
     alignItems: "center",
@@ -11378,8 +13066,8 @@ var PreviewContainer = styled.div({
     gridTemplateColumns: "100%",
     gridTemplateRows: "100%",
     position: "relative",
-    minWidth: "100%",
-    minHeight: "100%"
+    width: "100%",
+    height: "100%"
   },
   ({ show }) => ({ display: show ? "grid" : "none" })
 ), UnstyledLink = styled(Link2)({
@@ -11455,7 +13143,7 @@ var Wrapper2 = styled.span(({ theme }) => ({
   "& + &": {
     marginLeft: 6
   }
-})), Shortcut = ({ keys }) => react_default.createElement(Wrapper2, null, keys.map((key) => react_default.createElement(Key, { key }, shortcutToHumanString([key]))));
+})), Shortcut = ({ keys }) => react_default.createElement(Wrapper2, null, (keys ?? []).map((key) => react_default.createElement(Key, { key }, shortcutToHumanString([key]))));
 
 // src/manager/components/preview/tools/zoom.tsx
 var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL_ZOOM_LEVEL = 1, ZoomButton = styled(ToggleButton)({
@@ -11624,7 +13312,7 @@ var canvasMapper = ({ state, api }) => ({
   route: ({ storyId, refId }) => refId ? `/story/${refId}_${storyId}` : `/story/${storyId}`,
   match: ({ viewMode }) => !!(viewMode && viewMode.match(/^(story|docs)$/)),
   render: () => null
-}), Preview = react_default.memo(function(props) {
+}), Preview2 = react_default.memo(function(props) {
   let {
     api,
     id: previewId,
@@ -11639,7 +13327,9 @@ var canvasMapper = ({ state, api }) => ({
     toolsExtra,
     tabs,
     wrappers,
-    tabId
+    tabId,
+    path,
+    queryParams
   } = props, tabState = useTabsState({
     selected: tabId ?? "canvas",
     onSelectionChange: (key) => {
@@ -11653,7 +13343,7 @@ var canvasMapper = ({ state, api }) => ({
     }))
   });
   tabs.length > 1 && deprecate("Addon tabs are deprecated and will be removed in Storybook 11.");
-  let tabContent = tabs.find((tab) => tab.id === tabId)?.render, shouldScale = viewMode === "story", { showToolbar } = options2, customisedShowToolbar = api.getShowToolbarWithCustomisations(showToolbar), previousStoryId = useRef(storyId);
+  let tabContent = tabs.find((tab) => tab.id === tabId)?.render, shouldScale = viewMode === "story", { showToolbar } = options2, customisedShowToolbar = api.getShowToolbarWithCustomisations(showToolbar), isReviewCollectionStory = isReviewFeatureEnabled(scope.FEATURES) && isReviewCollectionStoryRoute(path, queryParams), previousStoryId = useRef(storyId);
   useEffect(() => {
     if (entry && viewMode) {
       if (storyId === previousStoryId.current)
@@ -11672,7 +13362,7 @@ var canvasMapper = ({ state, api }) => ({
     { "aria-labelledby": "main-preview-heading", role: "main" },
     mainRef
   );
-  return react_default.createElement(Fragment, null, previewId === "main" && react_default.createElement(W, { key: "description" }, react_default.createElement("title", null, description)), react_default.createElement(ZoomProvider, { shouldScale }, react_default.createElement(PreviewContainer, null, react_default.createElement(
+  return react_default.createElement(Fragment, null, previewId === "main" && react_default.createElement(W, { key: "description" }, react_default.createElement("title", null, description)), react_default.createElement(ZoomProvider, { shouldScale }, react_default.createElement(PreviewContainer, null, customisedShowToolbar && isReviewCollectionStory ? react_default.createElement(ReviewToolbarHeader, null) : null, react_default.createElement(
     ToolbarComp,
     {
       key: "tools",
@@ -11784,9 +13474,8 @@ var SHOW_ADDON_PANEL_BUTTON_ID = "storybook-show-addon-panel", menuMapper = ({ a
 // src/manager/components/preview/tools/menu.tsx
 init_react();
 var menuMapper2 = ({ api, state }) => ({
-  isVisible: api.getIsNavShown(),
+  navAvailability: api.getNavAvailability(),
   singleStory: state.singleStory,
-  viewMode: state.viewMode,
   showSidebar: async (forceFocus) => {
     api.toggleNav(!0), api.focusOnUIElement(focusableUIElements.sidebarRegion, {
       forceFocus,
@@ -11799,7 +13488,7 @@ var menuMapper2 = ({ api, state }) => ({
   type: types.TOOL,
   // @ts-expect-error (non strict)
   match: ({ viewMode }) => ["story", "docs"].includes(viewMode),
-  render: () => react_default.createElement(Consumer, { filter: menuMapper2 }, ({ isVisible, showSidebar, singleStory }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
+  render: () => react_default.createElement(Consumer, { filter: menuMapper2 }, ({ navAvailability, showSidebar, singleStory }) => !singleStory && navAvailability === "hidden" && react_default.createElement(react_default.Fragment, null, react_default.createElement(
     Button,
     {
       padding: "small",
@@ -12768,23 +14457,24 @@ var QRContent = styled.div(() => ({})), QRTitle = styled.div(({ theme }) => ({
   id: "isolationMode",
   type: types.TOOLEXTRA,
   match: ({ viewMode, tabId }) => viewMode === "story" && !tabId,
-  render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ api, storyId, refId }) => {
-    if (!storyId) return null;
-    let originHrefs = api.getStoryHrefs(storyId, { base: "origin", refId });
-    return react_default.createElement(
-      Button,
-      {
-        padding: "small",
-        variant: "ghost",
-        ariaLabel: "Open in isolation mode",
-        tooltip: "Open in isolation mode",
-        onClick: () => {
-          window.open(originHrefs.previewHref, "_blank", "noopener,noreferrer"), api.emit(SHARE_ISOLATE_MODE, originHrefs.previewHref);
-        }
-      },
-      react_default.createElement(PopOutIcon, null)
-    );
-  })
+  render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ api, storyId, refId }) => storyId ? react_default.createElement(
+    Button,
+    {
+      padding: "small",
+      variant: "ghost",
+      ariaLabel: "Open in isolation mode",
+      tooltip: "Open in isolation mode",
+      onClick: () => {
+        let originHrefs = api.getStoryHrefs(storyId, {
+          base: "origin",
+          refId,
+          inheritArgs: !0
+        });
+        window.open(originHrefs.previewHref, "_blank", "noopener,noreferrer"), api.emit(SHARE_ISOLATE_MODE, originHrefs.previewHref);
+      }
+    },
+    react_default.createElement(PopOutIcon, null)
+  ) : null)
 };
 
 // src/manager/container/Preview.tsx
@@ -12836,6 +14526,7 @@ var defaultTabs = [createCanvasTab()], defaultTools = [menuTool, remountTool], d
     refs,
     storyId,
     baseUrl: PREVIEW_URL || "iframe.html",
+    path,
     queryParams: customQueryParams,
     tools,
     toolsExtra,
@@ -12852,7 +14543,7 @@ var defaultTabs = [createCanvasTab()], defaultTools = [menuTool, remountTool], d
     tabId
   };
 }, PreviewConnected = react_default.memo(function(props) {
-  return react_default.createElement(Consumer, { filter: mapper4 }, (fromState) => react_default.createElement(Preview, { ...props, ...fromState }));
+  return react_default.createElement(Consumer, { filter: mapper4 }, (fromState) => react_default.createElement(Preview2, { ...props, ...fromState }));
 }), Preview_default = PreviewConnected;
 
 // src/manager/container/Sidebar.tsx
@@ -13069,7 +14760,7 @@ function partialImpl(func, placeholder, ...partialArgs) {
   };
   return func.prototype && (partialed.prototype = Object.create(func.prototype)), partialed;
 }
-var placeholderSymbol = Symbol("partial.placeholder");
+var placeholderSymbol = /* @__PURE__ */ Symbol("partial.placeholder");
 partial.placeholder = placeholderSymbol;
 
 // ../../node_modules/es-toolkit/dist/function/partialRight.mjs
@@ -13083,7 +14774,7 @@ function partialRightImpl(func, placeholder, ...partialArgs) {
   };
   return func.prototype && (partialedRight.prototype = Object.create(func.prototype)), partialedRight;
 }
-var placeholderSymbol2 = Symbol("partialRight.placeholder");
+var placeholderSymbol2 = /* @__PURE__ */ Symbol("partialRight.placeholder");
 partialRight.placeholder = placeholderSymbol2;
 
 // ../../node_modules/es-toolkit/dist/function/retry.mjs
@@ -13108,7 +14799,7 @@ init_react();
 
 // ../addons/a11y/src/constants.ts
 var ADDON_ID2 = "storybook/a11y", PANEL_ID2 = `${ADDON_ID2}/panel`;
-var UI_STATE_ID = `${ADDON_ID2}/ui`, RESULT = `${ADDON_ID2}/result`, REQUEST = `${ADDON_ID2}/request`, RUNNING = `${ADDON_ID2}/running`, ERROR = `${ADDON_ID2}/error`, MANUAL = `${ADDON_ID2}/manual`, SELECT = `${ADDON_ID2}/select`, DOCUMENTATION_LINK = "writing-tests/accessibility-testing", DOCUMENTATION_DISCREPANCY_LINK = `${DOCUMENTATION_LINK}#why-are-my-tests-failing-in-different-environments`;
+var UI_STATE_ID = `${ADDON_ID2}/ui`, RESULT = `${ADDON_ID2}/result`, REQUEST = `${ADDON_ID2}/request`, RUNNING = `${ADDON_ID2}/running`, ERROR = `${ADDON_ID2}/error`, MANUAL = `${ADDON_ID2}/manual`, DOCUMENTATION_LINK = "writing-tests/accessibility-testing", DOCUMENTATION_DISCREPANCY_LINK = `${DOCUMENTATION_LINK}#why-are-my-tests-failing-in-different-environments`;
 
 // ../addons/onboarding/src/constants.ts
 var ADDON_ID3 = "storybook/onboarding", ADDON_ONBOARDING_CHANNEL = `${ADDON_ID3}/channel`;
@@ -13218,7 +14909,7 @@ var StorybookError = class _StorybookError extends Error {
      * ```
      */
     this.subErrors = [];
-    this.category = props.category, this.documentation = props.documentation ?? !1, this.code = props.code, this.isHandledError = props.isHandledError ?? !1, this.name = props.name, this.subErrors = props.subErrors ?? [];
+    this.category = props.category, this.documentation = props.documentation ?? !1, this.code = props.code, this.isHandledError = props.isHandledError ?? !1, this.agentFacing = props.agentFacing ?? !1, this.name = props.name, this.subErrors = props.subErrors ?? [];
   }
   get fullErrorCode() {
     return parseErrorCode({ code: this.code, category: this.category });
@@ -13262,6 +14953,15 @@ var StatusTypeIdMismatchError2 = class extends StorybookError {
       )}`
     });
     this.data = data;
+  }
+}, UniversalStoreFollowerTimeoutError2 = class extends StorybookError {
+  constructor(followerId) {
+    super({
+      name: "UniversalStoreFollowerTimeoutError",
+      category: "MANAGER_UNIVERSAL-STORE" /* MANAGER_UNIVERSAL_STORE */,
+      code: 1,
+      message: `Timed out waiting for leader state for UniversalStore follower with id: '${followerId}'. Ensure a leader with the same id exists and is reachable before creating a follower.`
+    });
   }
 };
 
@@ -13342,6 +15042,7 @@ var statusValueShortName = (value) => value === "status-value:affected" ? "relat
   "status-value:new": "Newly added stories",
   "status-value:modified": "Stories closely linked to code changes",
   "status-value:affected": "Stories likely to be affected by code changes",
+  "status-value:reviewing": "Stories included in the active review",
   "status-value:warning": "Stories with warnings",
   "status-value:error": "Stories with failing tests",
   "status-value:unknown": "Stories with unknown status"
@@ -13424,7 +15125,6 @@ function createStatusStore({
                   status,
                   typeId
                 });
-              case "preview":
               default:
                 throw new StatusTypeIdMismatchError3({
                   status,
@@ -13465,6 +15165,7 @@ function createStatusStore({
 
 // src/cli/AddonVitestService.constants.ts
 var SUPPORTED_FRAMEWORKS = [
+  "angular-vite" /* ANGULAR_VITE */,
   "html-vite" /* HTML_VITE */,
   "nextjs-vite" /* NEXTJS_VITE */,
   "preact-vite" /* PREACT_VITE */,
@@ -14323,15 +16024,7 @@ function toValue(str, measurement, popperOffsets, referenceOffsets) {
     return str;
   if (unit.indexOf("%") === 0) {
     var element = void 0;
-    switch (unit) {
-      case "%p":
-        element = popperOffsets;
-        break;
-      case "%":
-      case "%r":
-      default:
-        element = referenceOffsets;
-    }
+    unit === "%p" ? element = popperOffsets : element = referenceOffsets;
     var rect = getClientRect(element);
     return rect[measurement] / 100 * value;
   } else if (unit === "vh" || unit === "vw") {
@@ -15617,14 +17310,14 @@ function _toPropertyKey(arg) {
   return typeof key == "symbol" ? key : String(key);
 }
 var DEFAULTS = { flip: { padding: 20 }, preventOverflow: { padding: 10 } }, VALIDATOR_ARG_ERROR_MESSAGE = "The typeValidator argument must be a function with the signature function(props, propName, componentName).", MESSAGE_ARG_ERROR_MESSAGE = "The error message is optional, but must be a string if provided.";
-function propIsRequired(condition, props, propName, componentName) {
-  return typeof condition == "boolean" ? condition : typeof condition == "function" ? condition(props, propName, componentName) : condition ? !!condition : !1;
+function propIsRequired(condition, props, propName, componentName2) {
+  return typeof condition == "boolean" ? condition : typeof condition == "function" ? condition(props, propName, componentName2) : condition ? !!condition : !1;
 }
 function propExists(props, propName) {
   return Object.hasOwnProperty.call(props, propName);
 }
-function missingPropError(props, propName, componentName, message) {
-  return message ? new Error(message) : new Error("Required ".concat(props[propName], " `").concat(propName, "` was not specified in `").concat(componentName, "`."));
+function missingPropError(props, propName, componentName2, message) {
+  return message ? new Error(message) : new Error("Required ".concat(props[propName], " `").concat(propName, "` was not specified in `").concat(componentName2, "`."));
 }
 function guardAgainstInvalidArgTypes(typeValidator, message) {
   if (typeof typeValidator != "function")
@@ -15633,10 +17326,10 @@ function guardAgainstInvalidArgTypes(typeValidator, message) {
     throw new TypeError(MESSAGE_ARG_ERROR_MESSAGE);
 }
 function isRequiredIf(typeValidator, condition, message) {
-  return guardAgainstInvalidArgTypes(typeValidator, message), function(props, propName, componentName) {
+  return guardAgainstInvalidArgTypes(typeValidator, message), function(props, propName, componentName2) {
     for (var _len = arguments.length, rest2 = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++)
       rest2[_key - 3] = arguments[_key];
-    return propIsRequired(condition, props, propName, componentName) ? propExists(props, propName) ? typeValidator.apply(void 0, [props, propName, componentName].concat(rest2)) : missingPropError(props, propName, componentName, message) : typeValidator.apply(void 0, [props, propName, componentName].concat(rest2));
+    return propIsRequired(condition, props, propName, componentName2) ? propExists(props, propName) ? typeValidator.apply(void 0, [props, propName, componentName2].concat(rest2)) : missingPropError(props, propName, componentName2, message) : typeValidator.apply(void 0, [props, propName, componentName2].concat(rest2));
   };
 }
 var STATUS2 = { INIT: "init", IDLE: "idle", OPENING: "opening", OPEN: "open", CLOSING: "closing", ERROR: "error" }, isReact16 = react_dom_default.createPortal !== void 0;
@@ -15666,7 +17359,7 @@ function once3(element, event, cb) {
     cb(e2), off(element, event, _nextCB);
   }, on(element, event, _nextCB, capture);
 }
-function noop2() {
+function noop3() {
 }
 var ReactFloaterPortal = (function(_React$Component) {
   _inherits(ReactFloaterPortal2, _React$Component);
@@ -15902,7 +17595,7 @@ _defineProperty(ReactFloater, "propTypes", { autoOpen: import_prop_types2.defaul
 }), content: isRequiredIf(import_prop_types2.default.node, function(props) {
   return !props.component;
 }), debug: import_prop_types2.default.bool, disableAnimation: import_prop_types2.default.bool, disableFlip: import_prop_types2.default.bool, disableHoverToClick: import_prop_types2.default.bool, event: import_prop_types2.default.oneOf(["hover", "click"]), eventDelay: import_prop_types2.default.number, footer: import_prop_types2.default.node, getPopper: import_prop_types2.default.func, hideArrow: import_prop_types2.default.bool, id: import_prop_types2.default.oneOfType([import_prop_types2.default.string, import_prop_types2.default.number]), offset: import_prop_types2.default.number, open: import_prop_types2.default.bool, options: import_prop_types2.default.object, placement: import_prop_types2.default.oneOf(["top", "top-start", "top-end", "bottom", "bottom-start", "bottom-end", "left", "left-start", "left-end", "right", "right-start", "right-end", "auto", "center"]), showCloseButton: import_prop_types2.default.bool, style: import_prop_types2.default.object, styles: import_prop_types2.default.object, target: import_prop_types2.default.oneOfType([import_prop_types2.default.object, import_prop_types2.default.string]), title: import_prop_types2.default.node, wrapperOptions: import_prop_types2.default.shape({ offset: import_prop_types2.default.number, placement: import_prop_types2.default.oneOf(["top", "top-start", "top-end", "bottom", "bottom-start", "bottom-end", "left", "left-start", "left-end", "right", "right-start", "right-end", "auto"]), position: import_prop_types2.default.bool }) });
-_defineProperty(ReactFloater, "defaultProps", { autoOpen: !1, callback: noop2, debug: !1, disableAnimation: !1, disableFlip: !1, disableHoverToClick: !1, event: "click", eventDelay: 0.4, getPopper: noop2, hideArrow: !1, offset: 15, placement: "bottom", showCloseButton: !1, styles: {}, target: null, wrapperOptions: { position: !1 } });
+_defineProperty(ReactFloater, "defaultProps", { autoOpen: !1, callback: noop3, debug: !1, disableAnimation: !1, disableFlip: !1, disableHoverToClick: !1, event: "click", eventDelay: 0.4, getPopper: noop3, hideArrow: !1, offset: 15, placement: "bottom", showCloseButton: !1, styles: {}, target: null, wrapperOptions: { position: !1 } });
 
 // ../../node_modules/react-joyride/dist/index.mjs
 init_react();
@@ -17626,7 +19319,8 @@ var LocationMonitor = {
 };
 
 // src/shared/utils/ai-prompts.ts
-function getAiSetupPrompt(executor = "npx storybook") {
+var DEFAULT_STORYBOOK_EXECUTOR = "npx storybook";
+function getAiSetupPrompt(executor = DEFAULT_STORYBOOK_EXECUTOR) {
   return `Run \`${executor} ai setup\` and follow its instructions precisely.`;
 }
 
@@ -18592,7 +20286,7 @@ var $319e236875307eab$var$LiveAnnouncer = class {
 };
 
 // src/shared/useCopyButton.ts
-function useCopyButton({
+function useCopyButton2({
   children = "Copy",
   childrenOnCopy = "Copied!",
   content,
@@ -18734,13 +20428,13 @@ var fadeScaleIn = keyframes`
     react_default.createElement(ActionList.Icon, null, react_default.createElement(ListUnorderedIcon, null)),
     children
   );
-}, CopyButton = ({
+}, CopyButton2 = ({
   label,
   copyContent,
   onClick,
   ...props
 }) => {
-  let { children: copyChildren, buttonProps: copyButtonProps } = useCopyButton({
+  let { children: copyChildren, buttonProps: copyButtonProps } = useCopyButton2({
     children: label,
     childrenOnCopy: react_default.createElement(react_default.Fragment, null, react_default.createElement(CheckIcon, null), " Copied!"),
     onCopy: onClick,
@@ -18848,7 +20542,7 @@ var fadeScaleIn = keyframes`
         react_default.createElement(ActionList.Icon, null, item.isCompleted && animated ? react_default.createElement(Particles, { anchor: Checked, key: item.id }) : item.icon ? react_default.createElement(item.icon, null) : react_default.createElement(CircleHollowIcon, null)),
         react_default.createElement(ActionList.Text, null, react_default.createElement(ItemLabel, { isCompleted: item.isCompleted, isSkipped: item.isSkipped }, item.label))
       ), item.action && (item.action.copyContent ? react_default.createElement(
-        CopyButton,
+        CopyButton2,
         {
           "data-target-id": item.id,
           label: item.action.label,
@@ -20088,14 +21782,14 @@ var isRendererReact = scope.STORYBOOK_RENDERER === "react", CreateNewStoryFileMo
     }), onOpenChange(!1);
   }, [api, onOpenChange]), handleFileSearch = useCallback(() => {
     setLoading(!0);
-    let channel = addons.getChannel(), set = (data) => {
-      data.id === fileSearchQueryDeferred && (data.success ? setSearchResults(data.payload.files) : setError({ error: data.error }), channel.off(FILE_COMPONENT_SEARCH_RESPONSE, set), setLoading(!1), emittedValue.current = null);
+    let channel2 = addons.getChannel(), set = (data) => {
+      data.id === fileSearchQueryDeferred && (data.success ? setSearchResults(data.payload.files) : setError({ error: data.error }), channel2.off(FILE_COMPONENT_SEARCH_RESPONSE, set), setLoading(!1), emittedValue.current = null);
     };
-    return channel.on(FILE_COMPONENT_SEARCH_RESPONSE, set), fileSearchQueryDeferred !== "" && emittedValue.current !== fileSearchQueryDeferred ? (emittedValue.current = fileSearchQueryDeferred, channel.emit(FILE_COMPONENT_SEARCH_REQUEST, {
+    return channel2.on(FILE_COMPONENT_SEARCH_RESPONSE, set), fileSearchQueryDeferred !== "" && emittedValue.current !== fileSearchQueryDeferred ? (emittedValue.current = fileSearchQueryDeferred, channel2.emit(FILE_COMPONENT_SEARCH_REQUEST, {
       id: fileSearchQueryDeferred,
       payload: {}
     })) : (setSearchResults(null), setLoading(!1)), () => {
-      channel.off(FILE_COMPONENT_SEARCH_RESPONSE, set);
+      channel2.off(FILE_COMPONENT_SEARCH_RESPONSE, set);
     };
   }, [fileSearchQueryDeferred]), handleCreateNewStory = useCallback(
     async ({
@@ -20106,7 +21800,7 @@ var isRendererReact = scope.STORYBOOK_RENDERER === "react", CreateNewStoryFileMo
       selectedItemId
     }) => {
       try {
-        let channel = addons.getChannel(), createNewStoryResult = await experimental_requestResponse(channel, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, {
+        let channel2 = addons.getChannel(), createNewStoryResult = await experimental_requestResponse(channel2, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, {
           componentExportName,
           componentFilePath,
           componentIsDefaultExport,
@@ -20116,15 +21810,11 @@ var isRendererReact = scope.STORYBOOK_RENDERER === "react", CreateNewStoryFileMo
         let storyId = createNewStoryResult.storyId;
         await trySelectStory(api.selectStory, storyId), handleSuccessfullyCreatedStory(componentExportName), handleFileSearch();
       } catch (e2) {
-        switch (e2?.payload?.type) {
-          case "STORY_FILE_EXISTS":
-            let err = e2;
-            await trySelectStory(api.selectStory, err.payload.kind), handleStoryAlreadyExists();
-            break;
-          default:
-            setError({ selectedItemId, error: e2?.message });
-            break;
-        }
+        if (e2?.payload?.type === "STORY_FILE_EXISTS") {
+          let err = e2;
+          await trySelectStory(api.selectStory, err.payload.kind), handleStoryAlreadyExists();
+        } else
+          setError({ selectedItemId, error: e2?.message });
       }
     },
     [api?.selectStory, handleSuccessfullyCreatedStory, handleFileSearch, handleStoryAlreadyExists]
@@ -20184,6 +21874,30 @@ var HighlightStyles = ({ refId, itemId }) => react_default.createElement(
 // src/manager/components/sidebar/Refs.tsx
 init_react();
 
+// src/shared/constants/tags.ts
+var Tag2 = {
+  /** Indicates that autodocs should be generated for this component */
+  AUTODOCS: "autodocs",
+  /** MDX documentation attached to a component's stories file */
+  ATTACHED_MDX: "attached-mdx",
+  /** Standalone MDX documentation not attached to stories */
+  UNATTACHED_MDX: "unattached-mdx",
+  /** Story has a play function */
+  PLAY_FN: "play-fn",
+  /** Story has a test function */
+  TEST_FN: "test-fn",
+  /** Development environment tag */
+  DEV: "dev",
+  /** Test environment tag */
+  TEST: "test",
+  /** Manifest generation tag */
+  MANIFEST: "manifest"
+}, BUILT_IN_FILTERS = {
+  _docs: (entry, excluded) => excluded ? entry.type !== "docs" : entry.type === "docs",
+  _play: (entry, excluded) => excluded ? entry.type !== "story" || !entry.tags?.includes(Tag2.PLAY_FN) : entry.type === "story" && !!entry.tags?.includes(Tag2.PLAY_FN),
+  _test: (entry, excluded) => excluded ? entry.type !== "story" || entry.subtype !== "test" : entry.type === "story" && entry.subtype === "test"
+}, USER_TAG_FILTER = (tag) => (entry, excluded) => excluded ? !entry.tags?.includes(tag) : !!entry.tags?.includes(tag);
+
 // src/shared/utils/story-index-filters.ts
 var getActiveFilterCount = ({
   includedTagFilters,
@@ -20240,7 +21954,7 @@ var scrollIntoView = (element, center = !1) => {
     default:
       return "ready";
   }
-}, isAncestor = (element, maybeAncestor) => !element || !maybeAncestor ? !1 : element === maybeAncestor ? !0 : isAncestor(element.parentElement || void 0, maybeAncestor), removeNoiseFromName = (storyName) => storyName.replaceAll(/(\s|-|_)/gi, ""), isStoryHoistable = (storyName, componentName) => removeNoiseFromName(storyName) === removeNoiseFromName(componentName);
+}, isAncestor = (element, maybeAncestor) => !element || !maybeAncestor ? !1 : element === maybeAncestor ? !0 : isAncestor(element.parentElement || void 0, maybeAncestor), removeNoiseFromName = (storyName) => storyName.replaceAll(/(\s|-|_)/gi, ""), isStoryHoistable = (storyName, componentName2) => removeNoiseFromName(storyName) === removeNoiseFromName(componentName2);
 
 // src/manager/components/sidebar/RefBlocks.tsx
 init_react();
@@ -20447,7 +22161,7 @@ var { document: document4, window: globalWindow3 } = scope, IndicatorPlacement =
     marginRight: 10,
     flex: "unset"
   }
-})), Message = ({ href, blank = !0, children, onClick }) => react_default.createElement(StyledMessage, { href, target: blank ? "_blank" : void 0, onClick }, children), MessageWrapper = styled.div(
+})), Message2 = ({ href, blank = !0, children, onClick }) => react_default.createElement(StyledMessage, { href, target: blank ? "_blank" : void 0, onClick }, children), MessageWrapper = styled.div(
   ({ isMobile: isMobile2 }) => ({
     width: isMobile2 ? "calc(100vw - 20px)" : 280,
     boxSizing: "border-box",
@@ -20518,10 +22232,10 @@ var { document: document4, window: globalWindow3 } = scope, IndicatorPlacement =
   )
 ), ReadyMessage = ({ url, componentCount, leafCount }) => {
   let theme = useTheme();
-  return react_default.createElement(Message, { href: url.replace(/\/?$/, "/index.html") }, react_default.createElement(GlobeIcon, { color: theme.color.secondary }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "View external Storybook"), react_default.createElement("div", null, "Explore ", componentCount, " components and ", leafCount, " stories in a new browser tab.")));
+  return react_default.createElement(Message2, { href: url.replace(/\/?$/, "/index.html") }, react_default.createElement(GlobeIcon, { color: theme.color.secondary }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "View external Storybook"), react_default.createElement("div", null, "Explore ", componentCount, " components and ", leafCount, " stories in a new browser tab.")));
 }, SourceCodeMessage = ({ url }) => {
   let theme = useTheme();
-  return react_default.createElement(Message, { href: url }, react_default.createElement(MarkupIcon, { color: theme.color.secondary }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "View source code")));
+  return react_default.createElement(Message2, { href: url }, react_default.createElement(MarkupIcon, { color: theme.color.secondary }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "View source code")));
 }, LoginRequiredMessage = ({ loginUrl, id }) => {
   let theme = useTheme(), open = useCallback(
     (e2) => {
@@ -20536,19 +22250,19 @@ var { document: document4, window: globalWindow3 } = scope, IndicatorPlacement =
     },
     [id, loginUrl]
   );
-  return react_default.createElement(Message, { onClick: open, blank: !1 }, react_default.createElement(LockIcon, { color: theme.color.gold }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Log in required"), react_default.createElement("div", null, "You need to authenticate to view this Storybook's components.")));
+  return react_default.createElement(Message2, { onClick: open, blank: !1 }, react_default.createElement(LockIcon, { color: theme.color.gold }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Log in required"), react_default.createElement("div", null, "You need to authenticate to view this Storybook's components.")));
 }, ReadDocsMessage = () => {
   let theme = useTheme();
-  return react_default.createElement(Message, { href: "https://storybook.js.org/docs/sharing/storybook-composition?ref=ui" }, react_default.createElement(DocumentIcon, { color: theme.color.green }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Read Composition docs"), react_default.createElement("div", null, "Learn how to combine multiple Storybooks into one.")));
+  return react_default.createElement(Message2, { href: "https://storybook.js.org/docs/sharing/storybook-composition?ref=ui" }, react_default.createElement(DocumentIcon, { color: theme.color.green }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Read Composition docs"), react_default.createElement("div", null, "Learn how to combine multiple Storybooks into one.")));
 }, ErrorOccurredMessage = ({ url }) => {
   let theme = useTheme();
-  return react_default.createElement(Message, { href: url.replace(/\/?$/, "/index.html") }, react_default.createElement(AlertIcon, { color: theme.color.negative }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Something went wrong"), react_default.createElement("div", null, "This external Storybook didn't load. Debug it in a new tab now.")));
+  return react_default.createElement(Message2, { href: url.replace(/\/?$/, "/index.html") }, react_default.createElement(AlertIcon, { color: theme.color.negative }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Something went wrong"), react_default.createElement("div", null, "This external Storybook didn't load. Debug it in a new tab now.")));
 }, LoadingMessage = ({ url }) => {
   let theme = useTheme();
-  return react_default.createElement(Message, { href: url.replace(/\/?$/, "/index.html") }, react_default.createElement(TimeIcon, { color: theme.color.secondary }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Please wait"), react_default.createElement("div", null, "This Storybook is loading.")));
+  return react_default.createElement(Message2, { href: url.replace(/\/?$/, "/index.html") }, react_default.createElement(TimeIcon, { color: theme.color.secondary }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Please wait"), react_default.createElement("div", null, "This Storybook is loading.")));
 }, PerformanceDegradedMessage = () => {
   let theme = useTheme();
-  return react_default.createElement(Message, { href: "https://storybook.js.org/docs/sharing/storybook-composition?ref=ui" }, react_default.createElement(LightningIcon, { color: theme.color.gold }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Reduce lag"), react_default.createElement("div", null, "Learn how to speed up Composition performance.")));
+  return react_default.createElement(Message2, { href: "https://storybook.js.org/docs/sharing/storybook-composition?ref=ui" }, react_default.createElement(LightningIcon, { color: theme.color.gold }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Reduce lag"), react_default.createElement("div", null, "Learn how to speed up Composition performance.")));
 };
 
 // src/manager/components/sidebar/Tree.tsx
@@ -20567,7 +22281,7 @@ var Svg2 = styled.svg`
   display: inline-block;
   shape-rendering: inherit;
   vertical-align: middle;
-`, GROUP_ID = "icon--group", COMPONENT_ID = "icon--component", DOCUMENT_ID = "icon--document", STORY_ID = "icon--story", TEST_ID = "icon--test", SUCCESS_ID = "icon--success", ERROR_ID = "icon--error", WARNING_ID = "icon--warning", DOT_ID = "icon--dot", NEW_ID = "icon--new", MODIFIED_ID = "icon--modified", AFFECTED_ID = "icon--affected", IconSymbols = () => react_default.createElement(Svg2, { "data-chromatic": "ignore" }, react_default.createElement("symbol", { id: GROUP_ID }, react_default.createElement(
+`, GROUP_ID = "icon--group", COMPONENT_ID = "icon--component", DOCUMENT_ID = "icon--document", STORY_ID = "icon--story", TEST_ID = "icon--test", SUCCESS_ID = "icon--success", ERROR_ID = "icon--error", WARNING_ID = "icon--warning", DOT_ID = "icon--dot", NEW_ID = "icon--new", MODIFIED_ID = "icon--modified", AFFECTED_ID = "icon--affected", REVIEWING_ID = "icon--reviewing", IconSymbols = () => react_default.createElement(Svg2, { "data-chromatic": "ignore" }, react_default.createElement("symbol", { id: GROUP_ID }, react_default.createElement(
   "path",
   {
     fillRule: "evenodd",
@@ -20637,39 +22351,13 @@ var Svg2 = styled.svg`
     d: "M7.206 3.044a.498.498 0 01.23.212l3.492 5.985a.494.494 0 01.006.507.497.497 0 01-.443.252H3.51a.499.499 0 01-.437-.76l3.492-5.984a.497.497 0 01.642-.212zM7 4.492L4.37 9h5.26L7 4.492z",
     fill: "currentColor"
   }
-)), react_default.createElement("symbol", { id: DOT_ID }, react_default.createElement("circle", { cx: "3", cy: "3", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: NEW_ID }, react_default.createElement(
+)), react_default.createElement("symbol", { id: DOT_ID }, react_default.createElement("circle", { cx: "3", cy: "3", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: NEW_ID }, react_default.createElement("rect", { x: "6", y: "3.5", width: "2", height: "7", rx: "1", fill: "currentColor" }), react_default.createElement("rect", { x: "3.5", y: "6", width: "7", height: "2", rx: "1", fill: "currentColor" })), react_default.createElement("symbol", { id: MODIFIED_ID }, react_default.createElement("circle", { cx: "7", cy: "7", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: AFFECTED_ID }, react_default.createElement("circle", { cx: "7", cy: "7", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: REVIEWING_ID }, react_default.createElement(
   "path",
   {
-    d: "M7 3.5L6.96971 3.68173C6.68873 5.36762 5.36762 6.68873 3.68173 6.96971L3.5 7",
-    stroke: "currentColor",
-    strokeLinecap: "round",
-    fill: "none"
+    d: "M7.052 3.004c.01 0 .02 0 .03.002.004 0 .01.003.015.004a.493.493 0 01.051.013l.043.015a.497.497 0 01.089.049l.03.023c.015.012.029.023.042.036.012.012.023.026.035.04l.023.03c.01.015.019.03.027.047.008.014.016.028.022.043.006.014.01.028.015.043.005.017.01.034.013.051l.005.017.03.182A3.5 3.5 0 0010.4 6.476l.182.03c.005 0 .01.003.016.004a.494.494 0 01.051.013l.043.015a.503.503 0 01.089.049l.03.023c.015.012.029.023.042.036.012.012.023.026.035.04l.023.03c.01.015.019.03.027.047.008.014.016.028.022.043l.014.04.014.054.005.017c.002.01 0 .019.001.028.002.018.004.036.004.054 0 .018-.002.035-.004.053v.03l-.006.015a.479.479 0 01-.013.051l-.015.043a.507.507 0 01-.049.089l-.023.03-.035.042-.042.035-.03.023a.503.503 0 01-.046.027c-.014.008-.028.016-.043.022-.014.006-.028.01-.043.015a.491.491 0 01-.051.013l-.016.005-.182.03A3.5 3.5 0 007.522 10.4l-.03.182c0 .005-.004.01-.005.016a.491.491 0 01-.013.051l-.015.043a.503.503 0 01-.049.089l-.023.03-.035.042-.041.035-.03.023a.507.507 0 01-.047.027c-.014.008-.028.016-.043.022-.014.006-.028.01-.043.015a.479.479 0 01-.051.013l-.016.005c-.01.002-.02 0-.03.001-.017.002-.034.004-.052.004-.018 0-.036-.002-.054-.004h-.028c-.006-.002-.011-.005-.017-.006a.503.503 0 01-.051-.013l-.043-.015a.505.505 0 01-.089-.049l-.03-.023c-.015-.012-.029-.023-.041-.035-.013-.013-.024-.027-.036-.042l-.023-.03a.503.503 0 01-.027-.046c-.008-.014-.016-.028-.022-.043-.006-.014-.01-.028-.015-.043a.494.494 0 01-.013-.051l-.004-.016-.03-.182a3.5 3.5 0 00-2.877-2.877l-.182-.03c-.006 0-.011-.004-.017-.005a.493.493 0 01-.051-.013l-.043-.015a.492.492 0 01-.089-.049l-.03-.023c-.015-.012-.029-.023-.041-.035-.013-.013-.024-.027-.036-.041l-.023-.03a.497.497 0 01-.027-.047c-.008-.014-.016-.028-.022-.043-.006-.013-.01-.028-.015-.043a.493.493 0 01-.013-.051l-.004-.016c-.002-.01-.001-.02-.002-.03C3.002 7.035 3 7.018 3 7c0-.018.002-.036.004-.054 0-.009 0-.019.002-.028 0-.006.003-.011.004-.017l.015-.054.013-.04a.498.498 0 01.049-.089l.023-.03.026-.032.02-.02.03-.025.03-.023a.498.498 0 01.047-.027c.014-.008.028-.016.043-.022.014-.006.028-.01.043-.015A.493.493 0 013.4 6.51l.017-.004.182-.03a3.5 3.5 0 002.877-2.877l.03-.182c0-.006.003-.011.004-.017a.493.493 0 01.013-.051l.015-.043a.498.498 0 01.049-.089l.023-.03.026-.032.02-.02.03-.025.03-.023a.498.498 0 01.047-.027c.014-.008.028-.016.043-.022.014-.006.028-.01.043-.015A.493.493 0 016.9 3.01l.017-.004c.01-.002.019-.001.028-.002C6.963 3.002 6.981 3 7 3c.018 0 .035.002.053.004z",
+    fill: "currentColor"
   }
-), react_default.createElement(
-  "path",
-  {
-    d: "M7 3.5L7.03029 3.68173C7.31127 5.36762 8.63238 6.68873 10.3183 6.96971L10.5 7",
-    stroke: "currentColor",
-    strokeLinecap: "round",
-    fill: "none"
-  }
-), react_default.createElement(
-  "path",
-  {
-    d: "M7 10.5L6.96971 10.3183C6.68873 8.63238 5.36762 7.31127 3.68173 7.03029L3.5 7",
-    stroke: "currentColor",
-    strokeLinecap: "round",
-    fill: "none"
-  }
-), react_default.createElement(
-  "path",
-  {
-    d: "M7 10.5L7.03029 10.3183C7.31127 8.63238 8.63238 7.31127 10.3183 7.03029L10.5 7",
-    stroke: "currentColor",
-    strokeLinecap: "round",
-    fill: "none"
-  }
-), react_default.createElement("path", { d: "M7 4.5L4.5 7L7 9.5L9.5 7L7 4.5Z", fill: "currentColor" })), react_default.createElement("symbol", { id: MODIFIED_ID }, react_default.createElement("circle", { cx: "7", cy: "7", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: AFFECTED_ID }, react_default.createElement("circle", { cx: "7", cy: "7", r: "3", fill: "currentColor" }))), UseSymbol = ({ type }) => type === "group" ? react_default.createElement("use", { xlinkHref: `#${GROUP_ID}` }) : type === "component" ? react_default.createElement("use", { xlinkHref: `#${COMPONENT_ID}` }) : type === "document" ? react_default.createElement("use", { xlinkHref: `#${DOCUMENT_ID}` }) : type === "story" ? react_default.createElement("use", { xlinkHref: `#${STORY_ID}` }) : type === "test" ? react_default.createElement("use", { xlinkHref: `#${TEST_ID}` }) : type === "success" ? react_default.createElement("use", { xlinkHref: `#${SUCCESS_ID}` }) : type === "error" ? react_default.createElement("use", { xlinkHref: `#${ERROR_ID}` }) : type === "warning" ? react_default.createElement("use", { xlinkHref: `#${WARNING_ID}` }) : type === "dot" ? react_default.createElement("use", { xlinkHref: `#${DOT_ID}` }) : type === "new" ? react_default.createElement("use", { xlinkHref: `#${NEW_ID}` }) : type === "modified" ? react_default.createElement("use", { xlinkHref: `#${MODIFIED_ID}` }) : type === "affected" ? react_default.createElement("use", { xlinkHref: `#${AFFECTED_ID}` }) : null;
+))), UseSymbol = ({ type }) => type === "group" ? react_default.createElement("use", { xlinkHref: `#${GROUP_ID}` }) : type === "component" ? react_default.createElement("use", { xlinkHref: `#${COMPONENT_ID}` }) : type === "document" ? react_default.createElement("use", { xlinkHref: `#${DOCUMENT_ID}` }) : type === "story" ? react_default.createElement("use", { xlinkHref: `#${STORY_ID}` }) : type === "test" ? react_default.createElement("use", { xlinkHref: `#${TEST_ID}` }) : type === "success" ? react_default.createElement("use", { xlinkHref: `#${SUCCESS_ID}` }) : type === "error" ? react_default.createElement("use", { xlinkHref: `#${ERROR_ID}` }) : type === "warning" ? react_default.createElement("use", { xlinkHref: `#${WARNING_ID}` }) : type === "dot" ? react_default.createElement("use", { xlinkHref: `#${DOT_ID}` }) : type === "new" ? react_default.createElement("use", { xlinkHref: `#${NEW_ID}` }) : type === "reviewing" ? react_default.createElement("use", { xlinkHref: `#${REVIEWING_ID}` }) : type === "modified" ? react_default.createElement("use", { xlinkHref: `#${MODIFIED_ID}` }) : type === "affected" ? react_default.createElement("use", { xlinkHref: `#${AFFECTED_ID}` }) : null;
 
 // src/manager/utils/status.tsx
 var SmallIcons = styled(CircleIcon)({
@@ -20686,6 +22374,7 @@ var SmallIcons = styled(CircleIcon)({
   "status-value:pending",
   "status-value:success",
   "status-value:affected",
+  "status-value:reviewing",
   "status-value:modified",
   "status-value:new",
   "status-value:warning",
@@ -20723,6 +22412,11 @@ var SmallIcons = styled(CircleIcon)({
       iconColor: theme.fgColor.accent,
       textColor: null
     },
+    "status-value:reviewing": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "reviewing" })),
+      iconColor: theme.fgColor.agentic,
+      textColor: null
+    },
     "status-value:warning": {
       icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "warning" })),
       iconColor: theme.color.warning,
@@ -20734,9 +22428,33 @@ var SmallIcons = styled(CircleIcon)({
       textColor: theme.fgColor.negative
     }
   }[status];
-});
+}), shouldShowChangeStatus = (changeStatus, isModifiedFilterActive) => changeStatus !== "status-value:unknown" && changeStatus !== "status-value:affected" && (changeStatus !== "status-value:modified" || isModifiedFilterActive), isAggregatedTestStatus = (status) => !NON_AGGREGATED_STATUS_TYPE_IDS.includes(status.typeId);
+function getSidebarVisibleStatus({
+  theme,
+  item,
+  statuses,
+  groupDualStatus,
+  isModifiedFilterActive
+}) {
+  let statusByType = statuses ?? {};
+  if (item.type === "group" || item.type === "component" || item.type === "story" && item.children && item.children.length > 0) {
+    let { changeStatus: localChange, testStatus: localTest } = getChangeDetectionStatus(statusByType), groupDual = groupDualStatus?.[item.id] ?? {
+      change: "status-value:unknown",
+      test: "status-value:unknown"
+    }, branchChange = getMostCriticalStatusValue([localChange, groupDual.change]), branchTest = getMostCriticalStatusValue([localTest, groupDual.test]);
+    return shouldShowChangeStatus(branchChange, isModifiedFilterActive) ? { icon: getStatus(theme, branchChange).icon, status: branchChange } : { icon: getStatus(theme, branchTest).icon, status: branchTest };
+  }
+  if (item.type === "story" && !(item.children && item.children.length > 0) && item.subtype !== "test" || item.type === "docs") {
+    let { changeStatus, testStatus } = getChangeDetectionStatus(statusByType);
+    return shouldShowChangeStatus(changeStatus, isModifiedFilterActive) ? { icon: getStatus(theme, changeStatus).icon, status: changeStatus } : { icon: getStatus(theme, testStatus).icon, status: testStatus };
+  }
+  let leafStatuses = Object.values(statusByType).filter(
+    (status) => isAggregatedTestStatus(status) || status.value === "status-value:new"
+  ), leafStatus = getMostCriticalStatusValue(leafStatuses.map((s2) => s2.value));
+  return { icon: getStatus(theme, leafStatus).icon, status: leafStatus };
+}
 function getChangeDetectionStatus(statuses) {
-  let changeValues = Object.values(statuses).filter((status) => status.typeId === CHANGE_DETECTION_STATUS_TYPE_ID).map((status) => status.value), testValues = Object.values(statuses).filter((status) => status.typeId !== CHANGE_DETECTION_STATUS_TYPE_ID).map((status) => status.value);
+  let changeValues = Object.values(statuses).filter((status) => status.typeId === CHANGE_DETECTION_STATUS_TYPE_ID).map((status) => status.value), testValues = Object.values(statuses).filter(isAggregatedTestStatus).map((status) => status.value);
   return {
     changeStatus: getMostCriticalStatusValue(changeValues),
     testStatus: getMostCriticalStatusValue(testValues)
@@ -20745,13 +22463,16 @@ function getChangeDetectionStatus(statuses) {
 var getMostCriticalStatusValue = (statusValues) => statusPriority.reduce(
   (acc, value) => statusValues.includes(value) ? value : acc,
   "status-value:unknown"
-);
+), statusesExcludingReview = (statuses) => statuses.filter((status) => status.typeId !== REVIEW_STATUS_TYPE_ID);
 function getGroupStatus(collapsedData, allStatuses) {
   return Object.values(collapsedData).reduce((acc, item) => {
     if (item.type === "group" || item.type === "component" || item.type === "story") {
       let leafs = getDescendantIds(collapsedData, item.id, !1).map((id) => collapsedData[id]).filter((i2) => i2.type === "story"), combinedStatus = getMostCriticalStatusValue(
-        // @ts-expect-error (non strict)
-        leafs.flatMap((story) => Object.values(allStatuses[story.id] || {})).map((s2) => s2.value)
+        statusesExcludingReview(
+          leafs.flatMap(
+            (story) => Object.values(allStatuses[story.id] || {})
+          )
+        ).map((s2) => s2.value)
       );
       combinedStatus && (acc[item.id] = combinedStatus);
     }
@@ -20763,7 +22484,7 @@ function getGroupDualStatus(collapsedData, allStatuses) {
     if (item.type === "group" || item.type === "component" || item.type === "story") {
       let allDescendantStatuses = getDescendantIds(collapsedData, item.id, !1).map((id) => collapsedData[id]).filter((i2) => i2.type === "story").flatMap(
         (story) => Object.values(allStatuses[story.id] || {})
-      ), changeValues = allDescendantStatuses.filter((s2) => s2.typeId === CHANGE_DETECTION_STATUS_TYPE_ID).map((s2) => s2.value), testValues = allDescendantStatuses.filter((s2) => s2.typeId !== CHANGE_DETECTION_STATUS_TYPE_ID).map((s2) => s2.value);
+      ), changeValues = allDescendantStatuses.filter((s2) => s2.typeId === CHANGE_DETECTION_STATUS_TYPE_ID).map((s2) => s2.value), testValues = allDescendantStatuses.filter(isAggregatedTestStatus).map((s2) => s2.value);
       acc[item.id] = {
         change: getMostCriticalStatusValue(changeValues),
         test: getMostCriticalStatusValue(testValues)
@@ -20820,10 +22541,6 @@ var withStatusColor = ({ theme, status }) => ({
 ), StatusButton = forwardRef((props, ref) => react_default.createElement(StyledButton, { variant: "ghost", padding: "small", ...props, ref }));
 StatusButton.displayName = "StatusButton";
 
-// src/manager/components/sidebar/StatusContext.tsx
-init_react();
-var StatusContext = createContext({});
-
 // src/manager/components/sidebar/ContextMenu.tsx
 var empty = {
   onMouseEnter: () => {
@@ -20838,17 +22555,17 @@ var empty = {
   "&:focus-visible": {
     outlineOffset: -2
   }
-}), useContextMenu = (context, links, api) => {
-  let [hoverCount, setHoverCount] = useState(0), [isOpen, setIsOpen] = useState(!1), { allStatuses, groupStatus } = useContext(StatusContext), exportName = context && "exportName" in context ? context.exportName ?? "" : "", { children: copyText, buttonProps: copyButtonProps } = useCopyButton({
+}), useContextMenu = (context, links, api, visibleStatus) => {
+  let [hoverCount, setHoverCount] = useState(0), [isOpen, setIsOpen] = useState(!1), exportName = context && "exportName" in context ? context.exportName ?? "" : "", { children: copyText, buttonProps: copyButtonProps } = useCopyButton2({
     children: "Copy story name",
     content: exportName
-  }), shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, topLinks = useMemo(() => {
+  }), openInEditorShortcut = api.getShortcutKeys()?.openInEditor, topLinks = useMemo(() => {
     let defaultLinks = [];
     return context && "importPath" in context && context.importPath && defaultLinks.push({
       id: "open-in-editor",
       title: "Open in editor",
       icon: react_default.createElement(EditorIcon, null),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.openInEditor }) : null,
+      right: openInEditorShortcut ? react_default.createElement(Shortcut, { keys: openInEditorShortcut }) : null,
       onClick: (e2) => {
         context.importPath && (e2.preventDefault(), api.openInEditor({ file: context.importPath }));
       }
@@ -20865,7 +22582,7 @@ var empty = {
         e2.preventDefault(), copyButtonProps.onClick(e2);
       }
     }), defaultLinks;
-  }, [api, context, copyText, copyButtonProps, enableShortcuts, shortcutKeys]), handlers = useMemo(() => ({
+  }, [api, context, copyText, copyButtonProps, openInEditorShortcut]), handlers = useMemo(() => ({
     onMouseEnter: () => {
       setHoverCount((c2) => c2 + 1);
     },
@@ -20878,20 +22595,7 @@ var empty = {
   }), []), providerLinks = useMemo(() => {
     let registeredTestProviders = api.getElements(Addon_TypesEnum.experimental_TEST_PROVIDER);
     return hoverCount ? generateTestProviderLinks(registeredTestProviders, context) : [];
-  }, [api, context, hoverCount]), shouldRender = !context.refId && (providerLinks.length > 0 || links.length > 0 || topLinks.length > 0), isLeafNode = context.type === "story" || context.type === "docs", itemStatus = useMemo(() => {
-    let status = "status-value:unknown";
-    if (!context)
-      return status;
-    if (isLeafNode) {
-      let values = Object.values(allStatuses?.[context.id] || {}).map((s2) => s2.value);
-      status = getMostCriticalStatusValue(values);
-    }
-    if (!isLeafNode) {
-      let groupValue = groupStatus && groupStatus[context.id];
-      status = groupValue === "status-value:success" || groupValue === void 0 ? "status-value:unknown" : groupValue;
-    }
-    return status;
-  }, [allStatuses, groupStatus, context, isLeafNode]), MenuIcon2 = useMemo(() => context.type !== "story" && context.type !== "docs" ? itemStatus !== "status-value:success" && itemStatus !== "status-value:unknown" ? react_default.createElement("svg", { key: "icon", viewBox: "0 0 6 6", width: "6", height: "6" }, react_default.createElement(UseSymbol, { type: "dot" })) : react_default.createElement(EllipsisIcon, null) : itemStatus === "status-value:error" ? react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "error" })) : itemStatus === "status-value:warning" ? react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "warning" })) : itemStatus === "status-value:success" ? react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "success" })) : react_default.createElement(EllipsisIcon, null), [itemStatus, context.type]);
+  }, [api, context, hoverCount]), shouldRender = !context.refId && (providerLinks.length > 0 || links.length > 0 || topLinks.length > 0), buttonStatus = visibleStatus?.status ?? "status-value:unknown", menuIcon = visibleStatus?.icon ?? react_default.createElement(EllipsisIcon, null);
   return useMemo(() => globalThis.CONFIG_TYPE !== "DEVELOPMENT" ? empty : {
     onMouseEnter: handlers.onMouseEnter,
     node: shouldRender ? react_default.createElement(
@@ -20913,13 +22617,13 @@ var empty = {
           "data-testid": "context-menu",
           ariaLabel: "Open context menu",
           type: "button",
-          status: itemStatus,
+          status: buttonStatus,
           onClick: handlers.onOpen
         },
-        MenuIcon2
+        menuIcon
       )
     ) : null
-  }, [context, handlers, isOpen, shouldRender, links, topLinks, itemStatus, MenuIcon2]);
+  }, [context, handlers, isOpen, shouldRender, links, topLinks, buttonStatus, menuIcon]);
 }, LiveContextMenu = ({
   context,
   links,
@@ -20941,6 +22645,10 @@ function generateTestProviderLinks(registeredTestProviders, context) {
     } : null;
   }).filter(Boolean);
 }
+
+// src/manager/components/sidebar/StatusContext.tsx
+init_react();
+var StatusContext = createContext({});
 
 // src/manager/components/sidebar/TreeNode.tsx
 init_react();
@@ -20967,14 +22675,12 @@ var CollapseIconWrapper = styled.div(({ theme, isExpanded }) => ({
 )));
 
 // src/manager/components/sidebar/TreeNode.tsx
-var TypeIcon2 = styled.svg(
-  ({ theme, type }) => ({
-    width: 14,
-    height: 14,
-    flex: "0 0 auto",
-    color: type === "group" ? theme.base === "dark" ? theme.color.primary : theme.color.ultraviolet : type === "component" ? theme.color.secondary : type === "document" ? theme.base === "dark" ? theme.color.gold : "#ff8300" : type === "story" ? theme.color.seafoam : type === "test" ? theme.color.green : "currentColor"
-  })
-), commonNodeStyles = ({
+var TypeIcon2 = styled.svg(({ theme, type }) => ({
+  width: 14,
+  height: 14,
+  flex: "0 0 auto",
+  color: type === "group" ? theme.base === "dark" ? theme.color.primary : theme.color.ultraviolet : type === "component" ? theme.color.secondary : type === "document" ? theme.base === "dark" ? theme.color.gold : "#ff8300" : type === "story" ? theme.color.seafoam : type === "heading" ? theme.color.secondary : type === "test" ? theme.color.green : "currentColor"
+})), commonNodeStyles = ({
   theme,
   depth = 0,
   isExpandable = !1
@@ -21094,7 +22800,7 @@ var { document: document5 } = scope, initializeExpanded = ({
     (acc, id) => Object.assign(acc, { [id]: id in initialExpanded ? initialExpanded[id] : !0 }),
     {}
   );
-}, noop3 = () => {
+}, noop4 = () => {
 }, useExpanded = ({
   containerRef,
   isBrowsing,
@@ -21142,7 +22848,7 @@ var { document: document5 } = scope, initializeExpanded = ({
   }, [data]);
   return useEffect(() => api ? (api.on(STORIES_COLLAPSE_ALL, collapseAll), api.on(STORIES_EXPAND_ALL, expandAll), () => {
     api.off(STORIES_COLLAPSE_ALL, collapseAll), api.off(STORIES_EXPAND_ALL, expandAll);
-  }) : noop3, [api, collapseAll, expandAll]), useEffect(() => {
+  }) : noop4, [api, collapseAll, expandAll]), useEffect(() => {
     let menuElement = document5.getElementById("storybook-explorer-menu"), navigateTree = throttle((event) => {
       let highlightedItemId = highlightedRef.current?.refId === refId && highlightedRef.current?.itemId;
       if (!isBrowsing || !containerRef.current || !highlightedItemId || event.repeat || !matchesModifiers(!1, event))
@@ -21280,7 +22986,7 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
     onSelectStoryId,
     api,
     isModifiedFilterActive
-  } = props, theme = useTheme(), { isDesktop, isMobile: isMobile2, setMobileMenuOpen } = useLayout(), statusLinks = useMemo(() => item.type === "story" || item.type === "docs" ? Object.entries(statuses).filter(([, status]) => status.sidebarContextMenu !== !1).sort((a2, b2) => statusPriority.indexOf(a2[1].value) - statusPriority.indexOf(b2[1].value)).map(([typeId, status]) => ({
+  } = props, theme = useTheme(), { isDesktop, isMobile: isMobile2 } = useLayout(), statusLinks = useMemo(() => item.type === "story" || item.type === "docs" ? Object.entries(statuses).filter(([, status]) => status.sidebarContextMenu !== !1).filter(([, status]) => status.typeId !== REVIEW_STATUS_TYPE_ID).sort((a2, b2) => statusPriority.indexOf(a2[1].value) - statusPriority.indexOf(b2[1].value)).map(([typeId, status]) => ({
     id: typeId,
     title: status.title,
     description: status.description,
@@ -21289,12 +22995,21 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
     onClick: () => {
       onSelectStoryId(item.id), internal_fullStatusStore.selectStatuses([status]);
     }
-  })) : [], [item.id, item.type, onSelectStoryId, statuses, theme]), contextMenu = useContextMenu(item, statusLinks, api);
+  })) : [], [item.id, item.type, onSelectStoryId, statuses, theme]), visibleStatus = useMemo(
+    () => getSidebarVisibleStatus({
+      theme,
+      item,
+      statuses,
+      groupDualStatus,
+      isModifiedFilterActive
+    }),
+    [theme, item, statuses, groupDualStatus, isModifiedFilterActive]
+  ), contextMenu = useContextMenu(item, statusLinks, api, visibleStatus);
   refId !== "storybook_internal" && (contextMenu = { node: null, onMouseEnter: () => {
   } });
   let id = createId(item.id, refId);
   if (item.type === "story" && !("children" in item && item.children) && (!("subtype" in item) || item.subtype !== "test") || item.type === "docs") {
-    let LeafNode3 = item.type === "docs" ? DocumentNode : StoryLeafNode, { changeStatus, testStatus } = getChangeDetectionStatus(statuses || {}), leafChangeIcon = changeStatus === "status-value:unknown" || changeStatus === "status-value:affected" || changeStatus === "status-value:modified" && !isModifiedFilterActive ? null : getStatus(theme, changeStatus).icon, { icon: testIcon } = getStatus(theme, testStatus), overallStoryStatus = getMostCriticalStatusValue([changeStatus, testStatus]), { textColor } = getStatus(theme, overallStoryStatus);
+    let LeafNode3 = item.type === "docs" ? DocumentNode : StoryLeafNode, { changeStatus, testStatus } = getChangeDetectionStatus(statuses || {}), leafChangeIcon = shouldShowChangeStatus(changeStatus, isModifiedFilterActive) ? getStatus(theme, changeStatus).icon : null, { icon: testIcon } = getStatus(theme, testStatus), overallStoryStatus = getMostCriticalStatusValue([changeStatus, testStatus]), { textColor } = getStatus(theme, overallStoryStatus);
     return react_default.createElement(
       LeafNodeStyleWrapper,
       {
@@ -21316,7 +23031,7 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
           id,
           depth: isOrphan ? item.depth : item.depth - 1,
           onClick: (event) => {
-            event.preventDefault(), onSelectStoryId(item.id), isMobile2 && setMobileMenuOpen(!1);
+            event.preventDefault(), onSelectStoryId(item.id), isMobile2 && api.setMobileNavigation(!1);
           },
           ...item.type === "docs" && { docsMode }
         },
@@ -21414,7 +23129,7 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
     ), groupDual = groupDualStatus?.[item.id] || {
       change: "status-value:unknown",
       test: "status-value:unknown"
-    }, branchChange = getMostCriticalStatusValue([localChange, groupDual.change]), branchTest = getMostCriticalStatusValue([localTest, groupDual.test]), branchChangeIcon = branchChange !== "status-value:unknown" && branchChange !== "status-value:affected" && (branchChange !== "status-value:modified" || isModifiedFilterActive) ? getStatus(theme, branchChange).icon : null, branchTestIcon = getStatus(theme, branchTest).icon, overallStatus = getMostCriticalStatusValue([branchChange, branchTest]), color2 = overallStatus ? getStatus(theme, overallStatus).textColor : null;
+    }, branchChange = getMostCriticalStatusValue([localChange, groupDual.change]), branchTest = getMostCriticalStatusValue([localTest, groupDual.test]), branchChangeIcon = shouldShowChangeStatus(branchChange, isModifiedFilterActive) ? getStatus(theme, branchChange).icon : null, branchTestIcon = getStatus(theme, branchTest).icon, overallStatus = getMostCriticalStatusValue([branchChange, branchTest]), color2 = overallStatus ? getStatus(theme, overallStatus).textColor : null;
     return react_default.createElement(
       LeafNodeStyleWrapper,
       {
@@ -21532,7 +23247,7 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
         id,
         depth: isOrphan ? item.depth : item.depth - 1,
         onClick: (event) => {
-          event.preventDefault(), onSelectStoryId(item.id), isMobile2 && setMobileMenuOpen(!1);
+          event.preventDefault(), onSelectStoryId(item.id), isMobile2 && api.setMobileNavigation(!1);
         }
       },
       item.renderLabel?.(item, api) || item.name
@@ -21541,7 +23256,7 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
     contextMenu.node,
     leafStatusButton
   );
-}), Root = react_default.memo(function({
+}), Root3 = react_default.memo(function({
   setExpanded,
   isFullyExpanded,
   expandableDescendants,
@@ -21640,7 +23355,7 @@ var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => ch
       return (
         // @ts-expect-error (TODO)
         react_default.createElement(
-          Root,
+          Root3,
           {
             api,
             key: id,
@@ -21911,6 +23626,366 @@ var Explorer = react_default.memo(function({
   );
 });
 
+// src/manager/components/sidebar/Filter.tsx
+init_react();
+
+// src/manager/components/sidebar/FilterPanel.tsx
+init_react();
+
+// src/manager/components/sidebar/FilterPanelLink.tsx
+init_react();
+var MutedText = styled.span(({ theme }) => ({
+  color: theme.textMutedColor
+})), StatusIcon2 = styled.span(({ $iconColor }) => ({
+  display: "contents",
+  color: $iconColor ?? void 0,
+  "> svg": {
+    transform: "scale(1.3)"
+  }
+})), createFilterLink = ({
+  id,
+  type,
+  title: title2,
+  tooltip,
+  count,
+  icon,
+  isIncluded,
+  isExcluded,
+  onCheckboxChange,
+  onInvert
+}) => {
+  let isChecked = isIncluded || isExcluded, toggleLabel = `${type} filter: ${isExcluded ? `exclude ${title2}` : title2}`, toggleTooltip = tooltip ?? `${isChecked ? "Remove" : "Add"} ${type} filter: ${title2}`, invertButtonLabel = `${isExcluded ? "Include" : "Exclude"} ${type}: ${title2}`;
+  return {
+    id: `filter-${type}-${id}`,
+    content: react_default.createElement(ActionList.HoverItem, { targetId: `filter-${type}-${id}` }, react_default.createElement(ActionList.Action, { as: "label", ariaLabel: !1, tabIndex: -1, tooltip: toggleTooltip }, react_default.createElement(ActionList.Icon, null, isExcluded ? react_default.createElement(DeleteIcon, null) : isIncluded ? null : icon, react_default.createElement(
+      Form.Checkbox,
+      {
+        checked: isChecked,
+        onChange: onCheckboxChange,
+        "data-tag": title2,
+        "aria-label": toggleLabel
+      }
+    )), react_default.createElement(ActionList.Text, null, react_default.createElement("span", null, title2, isExcluded && react_default.createElement(MutedText, null, " (excluded)"))), isExcluded ? react_default.createElement("s", null, count) : react_default.createElement("span", null, count)), react_default.createElement(
+      ActionList.Button,
+      {
+        "data-target-id": `filter-${type}-${id}`,
+        ariaLabel: invertButtonLabel,
+        onClick: onInvert
+      },
+      react_default.createElement("span", { style: { minWidth: 45 } }, isExcluded ? "Include" : "Exclude")
+    ))
+  };
+};
+
+// src/manager/components/sidebar/FilterPanel.utils.ts
+var BUILT_IN_TAGS = /* @__PURE__ */ new Set([
+  "dev",
+  "test",
+  "autodocs",
+  "attached-mdx",
+  "unattached-mdx",
+  "play-fn",
+  "test-fn",
+  "manifest"
+]), STATUS_DISPLAY_ORDER = [
+  "status-value:new",
+  "status-value:modified",
+  "status-value:affected",
+  "status-value:reviewing"
+], areFiltersEqual = (left, right) => left.length === right.length && (/* @__PURE__ */ new Set([...left, ...right])).size === left.length, getFilterFunction = (tag) => Object.hasOwn(BUILT_IN_FILTERS, tag) ? BUILT_IN_FILTERS[tag] : USER_TAG_FILTER(tag);
+
+// src/manager/components/sidebar/useFilterData.tsx
+init_react();
+var BUILT_IN_FILTER_DEFS = [
+  { id: "_docs", title: "Documentation", icon: react_default.createElement(DocumentIcon, { color: color.gold }), tag: "_docs" },
+  { id: "_play", title: "Play", icon: react_default.createElement(PlayHollowIcon, { color: color.seafoam }), tag: "_play" },
+  { id: "_test", title: "Testing", icon: react_default.createElement(BeakerIcon, { color: color.green }), tag: "_test" }
+];
+function useTagFilterEntries(indexJson) {
+  return useMemo(() => {
+    let entries = Object.values(indexJson.entries), userTagsCounts = entries.reduce((acc, entry) => (entry.tags?.forEach((tag) => {
+      BUILT_IN_TAGS.has(tag) || (acc[tag] = (acc[tag] || 0) + 1);
+    }), acc), {}), tagEntries = Object.entries(userTagsCounts).map(([tag, count]) => ({
+      id: tag,
+      type: "tag",
+      title: tag,
+      count,
+      icon: null
+    })), getBuiltInCount = (filterFn) => entries.filter((entry) => filterFn?.(entry)).length;
+    return { builtInEntries: BUILT_IN_FILTER_DEFS.map((def) => ({
+      id: def.id,
+      type: "built-in",
+      title: def.title,
+      icon: def.icon,
+      count: getBuiltInCount(getFilterFunction(def.tag))
+    })), tagEntries };
+  }, [indexJson.entries]);
+}
+function useStatusFilterEntries(allStatuses) {
+  return useMemo(() => {
+    let changeDetectionEnabled = !!globalThis?.FEATURES?.changeDetection, counts = countStatusesByValue(allStatuses), reviewingCount = counts["status-value:reviewing"] ?? 0;
+    return !changeDetectionEnabled && reviewingCount === 0 ? [] : (changeDetectionEnabled ? STATUS_DISPLAY_ORDER : ["status-value:reviewing"]).map((statusValue) => ({
+      statusValue,
+      shortName: statusValueShortName(statusValue),
+      description: statusValueDescription(statusValue),
+      count: counts[statusValue] ?? 0
+    })).filter((entry) => entry.statusValue !== "status-value:reviewing" || entry.count > 0);
+  }, [allStatuses]);
+}
+
+// src/manager/components/sidebar/FilterPanel.tsx
+var Wrapper7 = styled.div({
+  minWidth: 240,
+  maxWidth: 300,
+  maxHeight: 15.5 * 32 + 8,
+  // 15.5 items at 32px each + 8px padding
+  overflow: "hidden",
+  overflowY: "auto",
+  scrollbarWidth: "thin"
+}), FilterPanel = ({
+  api,
+  indexJson,
+  defaultIncludedFilters,
+  defaultExcludedFilters,
+  includedFilters,
+  excludedFilters,
+  allStatuses,
+  includedStatusFilters,
+  excludedStatusFilters
+}) => {
+  let theme = useTheme(), { builtInEntries, tagEntries } = useTagFilterEntries(indexJson), statusEntries = useStatusFilterEntries(allStatuses), toTagFilterItem = useCallback(
+    (entry) => {
+      if (entry.count === 0 && entry.type === "built-in") return null;
+      let isIncluded = includedFilters.includes(entry.id), isExcluded = excludedFilters.includes(entry.id), isChecked = isIncluded || isExcluded;
+      return {
+        id: entry.id,
+        type: entry.type,
+        title: entry.title,
+        count: entry.count,
+        icon: entry.icon,
+        isIncluded,
+        isExcluded,
+        onCheckboxChange: () => {
+          isChecked ? api.removeTagFilters([entry.id]) : api.addTagFilters([entry.id], !1);
+        },
+        onInvert: () => api.addTagFilters([entry.id], !isExcluded)
+      };
+    },
+    [api, includedFilters, excludedFilters]
+  ), toStatusFilterItem = useCallback(
+    (entry) => {
+      let isRelated = entry.statusValue === "status-value:affected", shortName = isRelated ? "related" : entry.shortName, isIncluded = includedStatusFilters.includes(entry.statusValue), isExcluded = excludedStatusFilters.includes(entry.statusValue), isChecked = isIncluded || isExcluded, { icon: statusIconEl, iconColor } = getStatus(theme, entry.statusValue), icon = isRelated ? react_default.createElement("span", { "aria-hidden": "true" }) : statusIconEl ? react_default.createElement(StatusIcon2, { $iconColor: iconColor }, statusIconEl) : null;
+      return {
+        id: shortName,
+        type: "status",
+        title: shortName.charAt(0).toUpperCase() + shortName.slice(1),
+        tooltip: entry.description,
+        count: entry.count,
+        icon,
+        isIncluded,
+        isExcluded,
+        onCheckboxChange: () => {
+          isChecked ? api.removeStatusFilters([entry.statusValue]) : api.addStatusFilters([entry.statusValue], !1);
+        },
+        onInvert: () => api.addStatusFilters([entry.statusValue], !isExcluded)
+      };
+    },
+    [api, includedStatusFilters, excludedStatusFilters, theme]
+  ), builtInItems = useMemo(
+    () => builtInEntries.sort((a2, b2) => a2.id.localeCompare(b2.id)).map(toTagFilterItem).filter((f2) => f2 !== null),
+    [builtInEntries, toTagFilterItem]
+  ), tagItems = useMemo(
+    () => tagEntries.sort((a2, b2) => a2.id.localeCompare(b2.id)).map(toTagFilterItem).filter((f2) => f2 !== null),
+    [tagEntries, toTagFilterItem]
+  ), statusItems = useMemo(
+    () => statusEntries.map(toStatusFilterItem),
+    [statusEntries, toStatusFilterItem]
+  ), changeDetectionStatusItems = useMemo(
+    () => statusItems.filter((item) => item.id !== "reviewing"),
+    [statusItems]
+  ), reviewingStatusItems = useMemo(
+    () => statusItems.filter((item) => item.id === "reviewing"),
+    [statusItems]
+  ), filterIds = useMemo(
+    () => [...builtInEntries.map((e2) => e2.id), ...tagEntries.map((e2) => e2.id)],
+    [builtInEntries, tagEntries]
+  ), setAllFilters = useCallback(
+    (selected) => api.setAllTagFilters(selected ? filterIds : [], []),
+    [api, filterIds]
+  ), isDefaultSelection = areFiltersEqual(includedFilters, defaultIncludedFilters) && areFiltersEqual(excludedFilters, defaultExcludedFilters), hasDefaultSelection = defaultIncludedFilters.length > 0 || defaultExcludedFilters.length > 0, isNothingSelectedYet = includedFilters.length === 0 && excludedFilters.length === 0 && includedStatusFilters.length === 0 && excludedStatusFilters.length === 0, hasItems = builtInItems.length > 0 || tagItems.length > 0;
+  return react_default.createElement(Wrapper7, null, hasItems && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, isNothingSelectedYet ? react_default.createElement(
+    ActionList.Button,
+    {
+      ariaLabel: !1,
+      id: "select-all",
+      key: "select-all",
+      onClick: () => setAllFilters(!0)
+    },
+    react_default.createElement(BatchAcceptIcon, null),
+    react_default.createElement(ActionList.Text, null, "Select all")
+  ) : react_default.createElement(
+    ActionList.Button,
+    {
+      ariaLabel: !1,
+      id: "deselect-all",
+      key: "deselect-all",
+      onClick: async () => {
+        await setAllFilters(!1), await api.resetStatusFilters();
+      }
+    },
+    react_default.createElement(SweepIcon, null),
+    react_default.createElement(ActionList.Text, null, "Clear filters")
+  ), hasDefaultSelection && react_default.createElement(
+    ActionList.Button,
+    {
+      id: "reset-filters",
+      key: "reset-filters",
+      onClick: () => api.resetTagFilters(),
+      ariaLabel: "Reset filters",
+      tooltip: "Reset to default selection",
+      disabled: isDefaultSelection
+    },
+    react_default.createElement(UndoIcon, null)
+  ))), reviewingStatusItems.length > 0 && react_default.createElement(ActionList, null, reviewingStatusItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), builtInItems.length > 0 && react_default.createElement(ActionList, null, builtInItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), changeDetectionStatusItems.length > 0 && react_default.createElement(ActionList, null, changeDetectionStatusItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), tagItems.length > 0 && react_default.createElement(ActionList, null, tagItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), tagItems.length === 0 && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(
+    ActionList.Link,
+    {
+      ariaLabel: !1,
+      href: api.getDocsUrl({ subpath: "writing-stories/tags#custom-tags" }),
+      target: "_blank"
+    },
+    react_default.createElement(ActionList.Icon, null, react_default.createElement(DocumentIcon, null)),
+    react_default.createElement(ActionList.Text, null, react_default.createElement("span", null, "Learn how to add tags")),
+    react_default.createElement(ActionList.Icon, null, react_default.createElement(ShareAltIcon, null))
+  ))));
+};
+
+// src/manager/components/sidebar/Filter.tsx
+var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
+  "&:focus-visible": {
+    outlineOffset: 4
+  },
+  ...$isHighlighted && {
+    background: theme.background.hoverable,
+    color: theme.color.secondary
+  }
+})), TagSelected = styled(Badge)(({ theme }) => ({
+  position: "absolute",
+  top: 7,
+  right: 7,
+  transform: "translate(50%, -50%)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 3,
+  height: 6,
+  minWidth: 6,
+  lineHeight: "px",
+  boxShadow: `${theme.barSelectedColor} 0 0 0 1px inset`,
+  fontSize: theme.typography.size.s1 - 1,
+  background: theme.barSelectedColor,
+  color: theme.color.inverseText
+})), filterMapper = ({ api, state }) => ({
+  api,
+  indexJson: state.internal_index,
+  activeFilterCount: getActiveFilterCount(state),
+  defaultIncludedFilters: state.defaultIncludedTagFilters,
+  defaultExcludedFilters: state.defaultExcludedTagFilters,
+  includedFilters: state.includedTagFilters,
+  excludedFilters: state.excludedTagFilters,
+  includedStatusFilters: state.includedStatusFilters ?? [],
+  excludedStatusFilters: state.excludedStatusFilters ?? []
+}), FilterInner = ({
+  api,
+  indexJson,
+  activeFilterCount,
+  defaultIncludedFilters,
+  defaultExcludedFilters,
+  includedFilters,
+  excludedFilters,
+  includedStatusFilters,
+  excludedStatusFilters
+}) => {
+  let [expanded, setExpanded] = useState(!1), allStatuses = experimental_useStatusStore(), handleToggleExpand = useCallback(
+    (event) => {
+      event.preventDefault(), setExpanded(!expanded);
+    },
+    [expanded]
+  );
+  return react_default.createElement(
+    PopoverProvider,
+    {
+      ariaLabel: "Tag filters",
+      placement: "bottom",
+      onVisibleChange: setExpanded,
+      offset: 8,
+      padding: 0,
+      popover: () => react_default.createElement(
+        FilterPanel,
+        {
+          api,
+          indexJson,
+          defaultIncludedFilters,
+          defaultExcludedFilters,
+          includedFilters,
+          excludedFilters,
+          allStatuses,
+          includedStatusFilters,
+          excludedStatusFilters
+        }
+      )
+    },
+    react_default.createElement(
+      StyledButton2,
+      {
+        key: "tags",
+        ariaLabel: activeFilterCount ? `${activeFilterCount} active tag ${activeFilterCount !== 1 ? "filters" : "filter"}` : "Tag filters",
+        ariaDescription: "Filter the items shown in a sidebar based on the tags applied to them.",
+        variant: "ghost",
+        padding: "small",
+        $isHighlighted: activeFilterCount > 0,
+        onClick: handleToggleExpand
+      },
+      react_default.createElement(FilterIcon, null),
+      activeFilterCount > 0 && react_default.createElement(TagSelected, null)
+    )
+  );
+}, Filter = () => react_default.createElement(Consumer, { filter: filterMapper }, ({
+  api,
+  indexJson,
+  activeFilterCount,
+  defaultIncludedFilters,
+  defaultExcludedFilters,
+  includedFilters,
+  excludedFilters,
+  includedStatusFilters,
+  excludedStatusFilters
+}) => indexJson ? react_default.createElement(
+  FilterInner,
+  {
+    api,
+    indexJson,
+    activeFilterCount,
+    defaultIncludedFilters,
+    defaultExcludedFilters,
+    includedFilters,
+    excludedFilters,
+    includedStatusFilters,
+    excludedStatusFilters
+  }
+) : null);
+
 // src/manager/components/sidebar/Heading.tsx
 init_react();
 
@@ -22026,7 +24101,7 @@ var buttonStyleAdditions = ({
     ) : linkContent
   ));
 })))), SidebarMenu = ({ menu, isHighlighted, onClick }) => {
-  let [isTooltipVisible, setIsTooltipVisible] = useState(!1), { isMobile: isMobile2, setMobileMenuOpen } = useLayout();
+  let [isTooltipVisible, setIsTooltipVisible] = useState(!1), { isMobile: isMobile2 } = useLayout(), api = useStorybookApi();
   return isMobile2 ? react_default.createElement(MenuButtonGroup, null, react_default.createElement(
     SidebarButton,
     {
@@ -22048,7 +24123,7 @@ var buttonStyleAdditions = ({
       variant: "ghost",
       ariaLabel: "Close menu",
       highlighted: !1,
-      onClick: () => setMobileMenuOpen(!1),
+      onClick: () => api.setMobileNavigation(!1),
       isMobile: !0
     },
     react_default.createElement(CloseIcon, null)
@@ -22140,6 +24215,64 @@ var BrandArea = styled.div(({ theme }) => ({
   ...props
 }) => react_default.createElement(HeadingWrapper, { ...props }, skipLinkHref && react_default.createElement(SkipToCanvasLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: skipLinkHref, tabIndex: 0 }, "Skip to content")), react_default.createElement(BrandArea, null, react_default.createElement(Brand, null)), react_default.createElement(SidebarMenu, { menu, isHighlighted: menuHighlighted, onClick: onMenuClick }));
 
+// src/manager/components/sidebar/ReviewWidget.tsx
+init_react();
+var HEADING_ID = "storybook-review-widget-heading", Region2 = styled.section({
+  width: "100%"
+}), HeaderContent = styled(ActionList.Text)({
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  gap: 6,
+  // Reserve room for the dismiss button, which is positioned in the top-right
+  // corner so it comes last in the tab order (after the review action).
+  paddingRight: 24
+}), HeaderTitle = styled.h2(({ theme }) => ({
+  margin: 0,
+  color: theme.color.defaultText,
+  fontWeight: theme.typography.weight.bold,
+  fontSize: theme.typography.size.s1,
+  lineHeight: `${theme.typography.size.s3}px`
+})), AgenticIcon = styled(WandIcon)(({ theme }) => ({
+  color: theme.fgColor.agentic
+})), DismissButton = styled(ActionList.Button)({
+  position: "absolute",
+  top: 4,
+  right: 4,
+  zIndex: 1
+}), DismissIcon = styled(CloseAltIcon)({
+  padding: 1
+}), useActiveReviewStoryCount = () => {
+  let { review } = useReviewContext();
+  return useMemo(() => review ? collectReviewStoryIds(review).size : 0, [review]);
+}, useActiveReviewTitle = () => {
+  let { review } = useReviewContext();
+  return review?.title ?? null;
+}, ReviewWidget = () => {
+  let api = useStorybookApi(), { openSummary, dismiss } = useReviewContext(), storyCount = useActiveReviewStoryCount(), reviewTitle = useActiveReviewTitle(), regionRef = useRef(null), { landmarkProps } = useLandmark(
+    { role: "region", "aria-labelledby": HEADING_ID },
+    regionRef
+  );
+  if (!api.getIsNavShown() || storyCount === 0)
+    return null;
+  let onOpen = () => {
+    openSummary();
+  }, onDismiss = (event) => {
+    event.stopPropagation(), dismiss();
+  }, storyLabel = storyCount === 1 ? "story" : "stories";
+  return react_default.createElement(Region2, { ref: regionRef, ...landmarkProps }, react_default.createElement(Card, { color: "agentic", outlineAnimation: "spin", id: "storybook-review-widget" }, react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(HeaderContent, null, react_default.createElement(AgenticIcon, { "aria-hidden": !0 }), react_default.createElement(HeaderTitle, { id: HEADING_ID }, "Quick review")))), react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(
+    ActionList.Action,
+    {
+      ariaLabel: reviewTitle ? `Review ${storyCount} ${storyLabel}: ${reviewTitle}` : `Review ${storyCount} ${storyLabel}`,
+      disableAllTooltips: !0,
+      appearance: "agentic",
+      onClick: onOpen
+    },
+    react_default.createElement(ActionList.Text, null, react_default.createElement("strong", null, "Review ", storyCount, " ", storyLabel), reviewTitle ? react_default.createElement("small", null, reviewTitle) : null)
+  ))), react_default.createElement(DismissButton, { appearance: "agentic", ariaLabel: "Dismiss review", onClick: onDismiss }, react_default.createElement(DismissIcon, null))));
+}, ReviewWidget_default = ReviewWidget;
+
 // src/manager/components/sidebar/Search.tsx
 init_react();
 
@@ -22214,9 +24347,9 @@ var t = (t2) => typeof t2 == "object" && t2 != null && t2.nodeType === 1, e = (t
 // ../../node_modules/downshift/dist/downshift.esm.js
 var idCounter = 0;
 function cbToCb(cb) {
-  return typeof cb == "function" ? cb : noop4;
+  return typeof cb == "function" ? cb : noop5;
 }
-function noop4() {
+function noop5() {
 }
 function scrollIntoView2(node, menuNode) {
   if (node) {
@@ -22836,7 +24969,7 @@ var unknown = 0, mouseUp = 1, itemMouseEnter = 2, keyDownArrowUp = 3, keyDownArr
     }, _proto.componentWillUnmount = function() {
       this.cleanup();
     }, _proto.render = function() {
-      var children = unwrapArray(this.props.children, noop4);
+      var children = unwrapArray(this.props.children, noop5);
       this.clearItems(), this.getRootProps.called = !1, this.getRootProps.refKey = void 0, this.getRootProps.suppressRefError = void 0, this.getMenuProps.called = !1, this.getMenuProps.refKey = void 0, this.getMenuProps.suppressRefError = void 0, this.getLabelProps.called = !1, this.getInputProps.called = !1;
       var element = unwrapArray(children(this.getStateAndHelpers()));
       if (!element)
@@ -22854,12 +24987,12 @@ var unknown = 0, mouseUp = 1, itemMouseEnter = 2, keyDownArrowUp = 3, keyDownArr
     itemToString: function(i2) {
       return i2 == null ? "" : String(i2);
     },
-    onStateChange: noop4,
-    onInputValueChange: noop4,
-    onUserAction: noop4,
-    onChange: noop4,
-    onSelect: noop4,
-    onOuterClick: noop4,
+    onStateChange: noop5,
+    onInputValueChange: noop5,
+    onUserAction: noop5,
+    onChange: noop5,
+    onSelect: noop5,
+    onOuterClick: noop5,
     selectedItemChanged: function(prevItem, item) {
       return prevItem !== item;
     },
@@ -23017,7 +25150,7 @@ function useMouseAndTouchTracker(environment, handleBlur, downshiftElementsRefs)
   });
   return useEffect(function() {
     if (!environment)
-      return noop4;
+      return noop5;
     var downshiftElements = downshiftElementsRefs.map(function(ref) {
       return ref.current;
     });
@@ -23042,7 +25175,7 @@ function useMouseAndTouchTracker(environment, handleBlur, downshiftElementsRefs)
   }, [downshiftElementsRefs, environment, handleBlur]), mouseAndTouchTrackersRef.current;
 }
 var useGetterPropsCalledChecker = function() {
-  return noop4;
+  return noop5;
 };
 function useA11yMessageStatus(getA11yStatusMessage2, options2, dependencyArray, environment) {
   environment === void 0 && (environment = {});
@@ -23064,7 +25197,7 @@ function useScrollIntoView(_ref3) {
     highlightedIndex < 0 || !isOpen || !Object.keys(itemRefs.current).length || (shouldScrollRef.current === !1 ? shouldScrollRef.current = !0 : scrollIntoViewProp(getItemNodeFromIndex(highlightedIndex), menuElement));
   }, [highlightedIndex]), shouldScrollRef;
 }
-var useControlPropsValidator = noop4;
+var useControlPropsValidator = noop5;
 function getChangesOnSelection(props, highlightedIndex, inputValue) {
   var _props$items;
   inputValue === void 0 && (inputValue = !0);
@@ -23200,7 +25333,7 @@ function getItemIndexByCharacterKey(_a2) {
 }
 var propTypes$2 = __assign(__assign({}, commonDropdownPropTypes), { items: import_prop_types3.default.array.isRequired, isItemDisabled: import_prop_types3.default.func }), defaultProps$2 = __assign(__assign({}, defaultProps$3), { isItemDisabled: function() {
   return !1;
-} }), validatePropTypes$2 = noop4, ToggleButtonClick$1 = 0, ToggleButtonKeyDownArrowDown = 1, ToggleButtonKeyDownArrowUp = 2, ToggleButtonKeyDownCharacter = 3, ToggleButtonKeyDownEscape = 4, ToggleButtonKeyDownHome = 5, ToggleButtonKeyDownEnd = 6, ToggleButtonKeyDownEnter = 7, ToggleButtonKeyDownSpaceButton = 8, ToggleButtonKeyDownPageUp = 9, ToggleButtonKeyDownPageDown = 10, ToggleButtonBlur = 11, MenuMouseLeave$1 = 12, ItemMouseMove$1 = 13, ItemClick$1 = 14, FunctionToggleMenu$1 = 15, FunctionOpenMenu$1 = 16, FunctionCloseMenu$1 = 17, FunctionSetHighlightedIndex$1 = 18, FunctionSelectItem$1 = 19, FunctionSetInputValue$1 = 20, FunctionReset$2 = 21, stateChangeTypes$2 = Object.freeze({
+} }), validatePropTypes$2 = noop5, ToggleButtonClick$1 = 0, ToggleButtonKeyDownArrowDown = 1, ToggleButtonKeyDownArrowUp = 2, ToggleButtonKeyDownCharacter = 3, ToggleButtonKeyDownEscape = 4, ToggleButtonKeyDownHome = 5, ToggleButtonKeyDownEnd = 6, ToggleButtonKeyDownEnter = 7, ToggleButtonKeyDownSpaceButton = 8, ToggleButtonKeyDownPageUp = 9, ToggleButtonKeyDownPageDown = 10, ToggleButtonBlur = 11, MenuMouseLeave$1 = 12, ItemMouseMove$1 = 13, ItemClick$1 = 14, FunctionToggleMenu$1 = 15, FunctionOpenMenu$1 = 16, FunctionCloseMenu$1 = 17, FunctionSetHighlightedIndex$1 = 18, FunctionSelectItem$1 = 19, FunctionSetInputValue$1 = 20, FunctionReset$2 = 21, stateChangeTypes$2 = Object.freeze({
   __proto__: null,
   FunctionCloseMenu: FunctionCloseMenu$1,
   FunctionOpenMenu: FunctionOpenMenu$1,
@@ -23603,7 +25736,7 @@ function useControlledReducer(reducer, props, createInitialState, isStateEqual2)
     }
   }, [state.selectedItem, props.selectedItem]), [getState2(state, props), dispatch];
 }
-var validatePropTypes$1 = noop4, defaultProps$1 = _extends({}, defaultProps$3, {
+var validatePropTypes$1 = noop5, defaultProps$1 = _extends({}, defaultProps$3, {
   isItemDisabled: function() {
     return !1;
   }
@@ -23983,7 +26116,7 @@ var propTypes = {
   environment: defaultProps$3.environment,
   keyNavigationNext: "ArrowRight",
   keyNavigationPrevious: "ArrowLeft"
-}, validatePropTypes = noop4, SelectedItemClick = 0, SelectedItemKeyDownDelete = 1, SelectedItemKeyDownBackspace = 2, SelectedItemKeyDownNavigationNext = 3, SelectedItemKeyDownNavigationPrevious = 4, DropdownKeyDownNavigationPrevious = 5, DropdownKeyDownBackspace = 6, DropdownClick = 7, FunctionAddSelectedItem = 8, FunctionRemoveSelectedItem = 9, FunctionSetSelectedItems = 10, FunctionSetActiveIndex = 11, FunctionReset = 12, stateChangeTypes = Object.freeze({
+}, validatePropTypes = noop5, SelectedItemClick = 0, SelectedItemKeyDownDelete = 1, SelectedItemKeyDownBackspace = 2, SelectedItemKeyDownNavigationNext = 3, SelectedItemKeyDownNavigationPrevious = 4, DropdownKeyDownNavigationPrevious = 5, DropdownKeyDownBackspace = 6, DropdownClick = 7, FunctionAddSelectedItem = 8, FunctionRemoveSelectedItem = 9, FunctionSetSelectedItems = 10, FunctionSetActiveIndex = 11, FunctionReset = 12, stateChangeTypes = Object.freeze({
   __proto__: null,
   DropdownClick,
   DropdownKeyDownBackspace,
@@ -24224,8 +26357,9 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
   maxPatternLength: 32,
   minMatchCharLength: 1,
   keys: [
-    { name: "name", weight: 0.7 },
-    { name: "path", weight: 0.3 }
+    { name: "name", weight: 0.6 },
+    { name: "path", weight: 0.3 },
+    { name: "anchors.title", weight: 0.1 }
   ]
 }, SearchBar = styled.div({
   display: "flex",
@@ -24310,7 +26444,7 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
   flexShrink: 0
 })), FocusKeyCmd = styled.span({
   fontSize: "14px"
-}), Actions = styled.div({
+}), Actions2 = styled.div({
   display: "flex",
   alignItems: "center",
   gap: 2
@@ -24325,26 +26459,50 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
   belowSearchContent
 }) {
   let api = useStorybookApi(), inputRef = useRef(null), [inputPlaceholder, setPlaceholder] = useState("Find components"), [allComponents, showAllComponents] = useState(!1), searchShortcut = api ? shortcutToHumanString(api.getShortcutKeys().search) : "/", makeFuse = useCallback(() => {
-    let list = dataset.entries.reduce((acc, [refId, { index, allStatuses }]) => {
-      let groupStatus = getGroupStatus(index || {}, allStatuses ?? {});
-      return index && acc.push(
-        ...Object.values(index).map((item) => {
-          let storyStatuses = allStatuses?.[item.id], mostCriticalStatusValue = storyStatuses ? getMostCriticalStatusValue(Object.values(storyStatuses).map((s2) => s2.value)) : null;
-          return {
-            ...searchItem(item, dataset.hash[refId]),
-            status: mostCriticalStatusValue ?? groupStatus[item.id] ?? null
-          };
-        })
-      ), acc;
-    }, []);
+    let list = [];
+    for (let [refId, { index, allStatuses }] of dataset.entries) {
+      if (!index)
+        continue;
+      let groupStatus = getGroupStatus(index || {}, allStatuses ?? {}), datasetValues = Object.values(index);
+      for (let datasetValue of datasetValues) {
+        let storyStatuses = allStatuses?.[datasetValue.id], status = (storyStatuses ? getMostCriticalStatusValue(
+          Object.values(storyStatuses).filter((status2) => status2.typeId !== REVIEW_STATUS_TYPE_ID).map((status2) => status2.value)
+        ) : null) ?? groupStatus[datasetValue.id] ?? null;
+        if (datasetValue.type !== "docs" || !globalThis?.FEATURES?.experimentalSearchDocsHeadings) {
+          list.push({
+            ...searchItem(datasetValue, dataset.hash[refId]),
+            status
+          });
+          continue;
+        }
+        let { anchors, ...baseSearchItem } = searchItem(datasetValue, dataset.hash[refId]);
+        list.push({
+          ...baseSearchItem,
+          status
+        }), anchors?.forEach((anchor) => {
+          let namePostfix = baseSearchItem.path?.[0] === anchor.title ? "" : ` / ${anchor.title}`;
+          list.push({
+            ...baseSearchItem,
+            anchors: [anchor],
+            // Fuse requires unique ids, so suffix the entry id with the anchor's DOM id
+            id: `${datasetValue.id}#${anchor.id}`,
+            name: `${datasetValue.name}${namePostfix}`,
+            status
+          });
+        });
+      }
+    }
     return new import_fuse.default(list, options);
   }, [dataset]), getResults = useCallback(
     (input) => {
       let fuse = makeFuse();
       if (!input)
         return [];
-      let results = [], resultIds = /* @__PURE__ */ new Set(), distinctResults = fuse.search(input).filter(({ item }) => !(item.type === "component" || item.type === "docs" || item.type === "story") || // @ts-expect-error (non strict)
-      resultIds.has(item.parent) ? !1 : (resultIds.add(item.id), !0));
+      let results = [], resultIds = /* @__PURE__ */ new Set(), allMatches = fuse.search(input).filter(({ item }) => item.type === "component" || item.type === "docs" || item.type === "story"), docsParentIds = /* @__PURE__ */ new Set();
+      allMatches.forEach(({ item }) => {
+        item.type === "docs" && item.parent && docsParentIds.add(item.parent);
+      });
+      let pendingDocsReplacements = /* @__PURE__ */ new Set(), distinctResults = allMatches.filter(({ item }) => item.type === "component" && docsParentIds.has(item.id) ? (resultIds.has(item.id) || (resultIds.add(item.id), pendingDocsReplacements.add(item.id)), !1) : item.type === "docs" && item.parent && pendingDocsReplacements.has(item.parent) ? (pendingDocsReplacements.delete(item.parent), resultIds.add(item.id), !0) : resultIds.has(item.parent) ? !1 : (resultIds.add(item.id), item.type === "docs" && item.parent && resultIds.add(item.parent), !0));
       return distinctResults.length && (results = distinctResults.slice(0, allComponents ? 1e3 : DEFAULT_MAX_SEARCH_RESULTS), distinctResults.length > DEFAULT_MAX_SEARCH_RESULTS && !allComponents && results.push({
         showAll: () => showAllComponents(!0),
         totalCount: distinctResults.length,
@@ -24354,12 +26512,18 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
     [allComponents, makeFuse]
   ), onSelect = useCallback(
     (selectedItem) => {
-      if (isSearchResult(selectedItem)) {
-        let { id, refId } = selectedItem.item;
-        api?.selectStory(id, void 0, { ref: refId !== DEFAULT_REF_ID && refId }), inputRef.current.blur(), showAllComponents(!1);
-        return;
+      if (selectedItem) {
+        if (isSearchResult(selectedItem)) {
+          let { id: rawId, refId } = selectedItem.item, [storyId, anchor] = rawId.split("#");
+          api?.selectStory(storyId, void 0, {
+            // @ts-expect-error (non strict)
+            ref: refId !== DEFAULT_REF_ID && refId,
+            scrollTo: anchor
+          }), inputRef.current.blur(), showAllComponents(!1);
+          return;
+        }
+        isExpandType(selectedItem) && selectedItem.showAll();
       }
-      isExpandType(selectedItem) && selectedItem.showAll();
     },
     [api]
   ), onInputValueChange = useCallback((inputValue, stateAndHelpers) => {
@@ -24373,7 +26537,7 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
             // Prevent clearing the input on blur
             inputValue: state.inputValue,
             // Return to the tree view after selecting an item
-            isOpen: state.inputValue && !state.selectedItem
+            isOpen: !!state.inputValue && !state.selectedItem
           };
         case Downshift.stateChangeTypes.mouseUp:
           return state;
@@ -24388,91 +26552,102 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
     },
     []
   ), { isMobile: isMobile2 } = useLayout(), searchLandmarkRef = useRef(null), { landmarkProps } = useLandmark({ role: "search" }, searchLandmarkRef);
-  return (
-    // @ts-expect-error (non strict)
-    react_default.createElement(
-      Downshift,
-      {
-        initialInputValue: initialQuery,
-        stateReducer: stateReducer2,
-        itemToString: (result) => result?.item?.name || "",
-        scrollIntoView: (e2) => scrollIntoView(e2),
-        onSelect,
-        onInputValueChange
-      },
-      ({
-        isOpen,
-        openMenu,
-        closeMenu,
-        inputValue,
-        getInputProps,
-        getItemProps,
-        getLabelProps,
-        getMenuProps,
-        getRootProps,
-        highlightedIndex,
-        reset
-      }) => {
-        let input = inputValue ? inputValue.trim() : "", results = input ? getResults(input) : [], lastViewed = !input && getLastViewed();
-        lastViewed && lastViewed.length && (results = lastViewed.reduce((acc, { storyId, refId }) => {
-          let data = dataset.hash[refId];
-          if (data && data.index && data.index[storyId]) {
-            let story = data.index[storyId], item = story.type === "story" ? data.index[story.parent] : story;
-            acc.some((res) => res.item.refId === refId && res.item.id === item.id) || acc.push({ item: searchItem(item, dataset.hash[refId]), matches: [], score: 0 });
-          }
-          return acc;
-        }, []));
-        let inputId = "storybook-explorer-searchfield", inputProps = getInputProps({
-          id: inputId,
-          ref: inputRef,
-          required: !0,
-          type: "search",
-          placeholder: inputPlaceholder,
-          onFocus: () => {
-            openMenu(), setPlaceholder("Type to find...");
-          },
-          onBlur: () => setPlaceholder("Find components"),
-          onKeyDown: (e2) => {
-            e2.key === "Escape" && inputValue.length === 0 && inputRef.current.blur();
-          }
-        }), labelProps = getLabelProps({
-          htmlFor: inputId
-        });
-        return react_default.createElement(react_default.Fragment, null, react_default.createElement(ScreenReaderLabel, { ...labelProps }, "Search for components"), react_default.createElement(SearchBar, { ref: searchLandmarkRef, ...landmarkProps }, react_default.createElement(
-          SearchField2,
-          {
-            ...getRootProps({ refKey: "" }, { suppressRefError: !0 }),
-            isMobile: isMobile2,
-            className: "search-field"
-          },
-          react_default.createElement(IconWrapper, null, react_default.createElement(SearchIcon, null)),
-          react_default.createElement(Input, { ...inputProps, isMobile: isMobile2 }),
-          !isMobile2 && enableShortcuts && !isOpen && react_default.createElement(FocusKey, null, searchShortcut === "\u2318 K" ? react_default.createElement(react_default.Fragment, null, react_default.createElement(FocusKeyCmd, null, "\u2318"), "K") : searchShortcut),
-          react_default.createElement(Actions, null, input && react_default.createElement(
-            Button,
-            {
-              padding: "small",
-              variant: "ghost",
-              ariaLabel: "Clear search",
-              onClick: () => {
-                reset({ inputValue: "" }), closeMenu(), inputRef.current?.focus();
+  return react_default.createElement(
+    Downshift,
+    {
+      initialInputValue: initialQuery,
+      stateReducer: stateReducer2,
+      itemToString: (result) => result?.item?.name || "",
+      scrollIntoView: (e2) => scrollIntoView(e2),
+      onSelect,
+      onInputValueChange
+    },
+    ({
+      isOpen,
+      openMenu,
+      closeMenu,
+      inputValue,
+      getInputProps,
+      getItemProps,
+      getLabelProps,
+      getMenuProps,
+      getRootProps,
+      highlightedIndex,
+      reset
+    }) => {
+      let input = inputValue ? inputValue.trim() : "", results = input ? getResults(input) : [], lastViewed = !input && getLastViewed();
+      lastViewed && lastViewed.length && (results = lastViewed.reduce((acc, { storyId, refId, anchor }) => {
+        let data = dataset.hash[refId];
+        if (data && data.index && data.index[storyId]) {
+          let story = data.index[storyId], item = story.type === "story" ? data.index[story.parent] : story, entryId = anchor ? `${item.id}#${anchor}` : item.id;
+          if (!acc.some((res) => res.item.refId === refId && res.item.id === entryId)) {
+            let baseItem = searchItem(item, dataset.hash[refId]), resultItem = baseItem;
+            if (anchor && item.type === "docs") {
+              let matchingAnchor = item.anchors?.find((a2) => a2.id === anchor);
+              if (matchingAnchor) {
+                let namePostfix = baseItem.path?.[0] === matchingAnchor.title ? "" : ` / ${matchingAnchor.title}`;
+                resultItem = {
+                  ...baseItem,
+                  id: entryId,
+                  name: `${item.name}${namePostfix}`
+                };
               }
-            },
-            react_default.createElement(CloseIcon, null)
-          ), searchFieldContent)
-        ), searchBarContent), !isOpen && belowSearchContent, react_default.createElement(FocusContainer, { tabIndex: 0, id: "storybook-explorer-menu" }, children({
-          query: input,
-          results,
-          isNavVisible: !isOpen && document7.activeElement !== inputRef.current,
-          isNavReachable: !isOpen || input.length === 0,
-          isSearchResultRendered: isOpen,
-          closeMenu,
-          getMenuProps,
-          getItemProps,
-          highlightedIndex
-        })));
-      }
-    )
+            }
+            acc.push({ item: resultItem, matches: [], score: 0 });
+          }
+        }
+        return acc;
+      }, []));
+      let inputId = "storybook-explorer-searchfield", inputProps = getInputProps({
+        id: inputId,
+        ref: inputRef,
+        required: !0,
+        type: "search",
+        placeholder: inputPlaceholder,
+        onFocus: () => {
+          openMenu(), setPlaceholder("Type to find...");
+        },
+        onBlur: () => setPlaceholder("Find components"),
+        onKeyDown: (e2) => {
+          e2.key === "Escape" && inputValue.length === 0 && inputRef.current.blur();
+        }
+      }), labelProps = getLabelProps({
+        htmlFor: inputId
+      });
+      return react_default.createElement(react_default.Fragment, null, react_default.createElement(ScreenReaderLabel, { ...labelProps }, "Search for components"), react_default.createElement(SearchBar, { ref: searchLandmarkRef, ...landmarkProps }, react_default.createElement(
+        SearchField2,
+        {
+          ...getRootProps({ refKey: "" }, { suppressRefError: !0 }),
+          isMobile: isMobile2,
+          className: "search-field"
+        },
+        react_default.createElement(IconWrapper, null, react_default.createElement(SearchIcon, null)),
+        react_default.createElement(Input, { ...inputProps, isMobile: isMobile2 }),
+        !isMobile2 && enableShortcuts && !isOpen && react_default.createElement(FocusKey, null, searchShortcut === "\u2318 K" ? react_default.createElement(react_default.Fragment, null, react_default.createElement(FocusKeyCmd, null, "\u2318"), "K") : searchShortcut),
+        react_default.createElement(Actions2, null, input && react_default.createElement(
+          Button,
+          {
+            padding: "small",
+            variant: "ghost",
+            ariaLabel: "Clear search",
+            onClick: () => {
+              reset({ inputValue: "" }), closeMenu(), inputRef.current?.focus();
+            }
+          },
+          react_default.createElement(CloseIcon, null)
+        ), searchFieldContent)
+      ), searchBarContent), !isOpen && belowSearchContent, react_default.createElement(FocusContainer, { tabIndex: 0, id: "storybook-explorer-menu" }, children({
+        query: input,
+        results,
+        isNavVisible: !isOpen && document7.activeElement !== inputRef.current,
+        isNavReachable: !isOpen || input.length === 0,
+        isSearchResultRendered: isOpen,
+        closeMenu,
+        getMenuProps,
+        getItemProps,
+        highlightedIndex
+      })));
+    }
   );
 });
 
@@ -24549,7 +26724,7 @@ var { document: document8 } = scope, ResultsList = styled.ol({
     { cursor: 0, nodes: [] }
   );
   return react_default.createElement("span", null, result);
-}), Title = styled.div({
+}), Title3 = styled.div({
   display: "grid",
   justifyContent: "start",
   gridAutoColumns: "auto",
@@ -24574,7 +26749,8 @@ var { document: document8 } = scope, ResultsList = styled.ol({
   },
   "& > span + span": {
     "&:before": {
-      content: "' / '"
+      content: "' / '",
+      whiteSpace: "pre"
     }
   }
 })), Result = react_default.memo(function({ item, matches, onClick, ...props }) {
@@ -24588,7 +26764,7 @@ var { document: document8 } = scope, ResultsList = styled.ol({
     api && props.isHighlighted && item.type === "component" && api.emit(PRELOAD_ENTRIES, { ids: [item.children[0]] }, { options: { target: item.refId } });
   }, [api, props.isHighlighted, item]);
   let nameMatch = matches.find((match) => match.key === "name"), pathMatches = matches.filter((match) => match.key === "path"), icon = item.status ? getStatus(theme, item.status).icon : null;
-  return react_default.createElement(ResultRow, { ...props, onClick: click }, react_default.createElement(IconWrapper2, null, item.type === "component" && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "component" }, react_default.createElement(UseSymbol, { type: "component" })), item.type === "story" && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: item.subtype }, react_default.createElement(UseSymbol, { type: item.subtype })), !(item.type === "component" || item.type === "story") && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "document" }, react_default.createElement(UseSymbol, { type: "document" }))), react_default.createElement(ResultRowContent, { className: "search-result-item--label" }, react_default.createElement(Title, null, react_default.createElement(Highlight, { match: nameMatch }, item.name)), react_default.createElement(Path, null, item.path.map((group, index) => react_default.createElement("span", { key: index }, react_default.createElement(Highlight, { match: pathMatches.find((match) => match.arrayIndex === index) }, group))))), item.status ? react_default.createElement(StatusLabel, { status: item.status }, icon) : null);
+  return react_default.createElement(ResultRow, { ...props, onClick: click }, react_default.createElement(IconWrapper2, null, item.type === "component" && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "component" }, react_default.createElement(UseSymbol, { type: "component" })), item.type === "story" && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: item.subtype }, react_default.createElement(UseSymbol, { type: item.subtype })), !(item.type === "component" || item.type === "story") && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "document" }, react_default.createElement(UseSymbol, { type: "document" }))), react_default.createElement(ResultRowContent, { className: "search-result-item--label" }, react_default.createElement(Title3, null, react_default.createElement(Highlight, { match: nameMatch }, item.name)), react_default.createElement(Path, null, item.path.map((group, index) => react_default.createElement("span", { key: index }, react_default.createElement(Highlight, { match: pathMatches.find((match) => match.arrayIndex === index) }, group))))), item.status ? react_default.createElement(StatusLabel, { status: item.status }, icon) : null);
 }), SearchResults = react_default.memo(function({
   query,
   results,
@@ -24655,6 +26831,519 @@ var { document: document8 } = scope, ResultsList = styled.ol({
   }));
 });
 
+// src/manager/components/sidebar/ShowChangesButton.tsx
+init_react();
+
+// src/shared/universal-store/instances.ts
+var instances = /* @__PURE__ */ new Map();
+
+// src/shared/universal-store/index.ts
+var CHANNEL_EVENT_PREFIX = "UNIVERSAL_STORE:", ProgressState = {
+  PENDING: "PENDING",
+  RESOLVED: "RESOLVED",
+  REJECTED: "REJECTED"
+}, _UniversalStore = class _UniversalStore {
+  constructor(options2, environmentOverrides) {
+    /** Enable debug logs for this store */
+    this.debugging = !1;
+    // TODO: narrow type of listeners based on event type
+    this.listeners = /* @__PURE__ */ new Map([["*", /* @__PURE__ */ new Set()]]);
+    /** Gets the current state */
+    this.getState = () => (this.debug("getState", { state: this.state }), this.state);
+    /**
+     * Subscribes to store events
+     *
+     * @returns A function to unsubscribe
+     */
+    this.subscribe = (eventTypeOrListener, maybeListener) => {
+      let subscribesToAllEvents = typeof eventTypeOrListener == "function", eventType = subscribesToAllEvents ? "*" : eventTypeOrListener, listener = subscribesToAllEvents ? eventTypeOrListener : maybeListener;
+      if (this.debug("subscribe", { eventType, listener }), !listener)
+        throw new TypeError(
+          `Missing first subscribe argument, or second if first is the event type, when subscribing to a UniversalStore with id '${this.id}'`
+        );
+      return this.listeners.has(eventType) || this.listeners.set(eventType, /* @__PURE__ */ new Set()), this.listeners.get(eventType).add(listener), () => {
+        this.debug("unsubscribe", { eventType, listener }), this.listeners.has(eventType) && (this.listeners.get(eventType).delete(listener), this.listeners.get(eventType)?.size === 0 && this.listeners.delete(eventType));
+      };
+    };
+    /** Sends a custom event to the other stores */
+    this.send = (event) => {
+      if (this.debug("send", { event }), this.status !== _UniversalStore.Status.READY)
+        throw new TypeError(
+          dedent`Cannot send event before store is ready. You can get the current status with store.status,
+        or await store.readyPromise to wait for the store to be ready before sending events.
+        ${JSON.stringify(
+            {
+              event,
+              id: this.id,
+              actor: this.actor,
+              environment: this.environment
+            },
+            null,
+            2
+          )}`
+        );
+      this.emitToListeners(event, { actor: this.actor }), this.emitToChannel(event, { actor: this.actor });
+    };
+    if (this.debugging = options2.debug ?? !1, !_UniversalStore.isInternalConstructing)
+      throw new TypeError(
+        "UniversalStore is not constructable - use UniversalStore.create() instead"
+      );
+    if (_UniversalStore.isInternalConstructing = !1, this.id = options2.id, this.actorId = Date.now().toString(36) + Math.random().toString(36).substring(2), this.actorType = options2.leader ? _UniversalStore.ActorType.LEADER : _UniversalStore.ActorType.FOLLOWER, this.state = options2.initialState, this.channelEventName = `${CHANNEL_EVENT_PREFIX}${this.id}`, this.debug("constructor", {
+      options: options2,
+      environmentOverrides,
+      channelEventName: this.channelEventName
+    }), this.actor.type === _UniversalStore.ActorType.LEADER)
+      this.syncing = {
+        state: ProgressState.RESOLVED,
+        promise: Promise.resolve()
+      };
+    else {
+      let syncingResolve, syncingReject, syncingPromise = new Promise((resolve, reject) => {
+        syncingResolve = () => {
+          this.syncing.state === ProgressState.PENDING && (this.syncing.state = ProgressState.RESOLVED, resolve());
+        }, syncingReject = (reason) => {
+          this.syncing.state === ProgressState.PENDING && (this.syncing.state = ProgressState.REJECTED, reject(reason));
+        };
+      });
+      this.syncing = {
+        state: ProgressState.PENDING,
+        promise: syncingPromise,
+        resolve: syncingResolve,
+        reject: syncingReject
+      };
+    }
+    this.getState = this.getState.bind(this), this.setState = this.setState.bind(this), this.subscribe = this.subscribe.bind(this), this.onStateChange = this.onStateChange.bind(this), this.send = this.send.bind(this), this.emitToChannel = this.emitToChannel.bind(this), this.prepareThis = this.prepareThis.bind(this), this.emitToListeners = this.emitToListeners.bind(this), this.handleChannelEvents = this.handleChannelEvents.bind(this), this.debug = this.debug.bind(this), this.channel = environmentOverrides?.channel ?? _UniversalStore.preparation.channel, this.environment = environmentOverrides?.environment ?? _UniversalStore.preparation.environment, this.channel && this.environment ? (environmentOverrides || _UniversalStore.preparation.resolve({
+      channel: this.channel,
+      environment: this.environment
+    }), this.prepareThis({ channel: this.channel, environment: this.environment })) : _UniversalStore.preparation.promise.then(this.prepareThis);
+  }
+  /** The environment this realm was prepared as, or `undefined` before `__prepare`. */
+  static get preparedEnvironment() {
+    return _UniversalStore.preparation.environment;
+  }
+  static setupPreparationPromise() {
+    let resolveRef, rejectRef, promise = new Promise(
+      (resolve, reject) => {
+        resolveRef = (args) => {
+          resolve(args);
+        }, rejectRef = (...args) => {
+          reject(args);
+        };
+      }
+    );
+    _UniversalStore.preparation = {
+      resolve: resolveRef,
+      reject: rejectRef,
+      promise
+    };
+  }
+  /** The actor object representing the store instance with a unique ID and a type */
+  get actor() {
+    return Object.freeze({
+      id: this.actorId,
+      type: this.actorType,
+      environment: this.environment ?? _UniversalStore.Environment.UNKNOWN
+    });
+  }
+  /**
+   * The current state of the store, that signals both if the store is prepared by Storybook and
+   * also - in the case of a follower - if the state has been synced with the leader's state.
+   */
+  get status() {
+    if (!this.channel || !this.environment)
+      return _UniversalStore.Status.UNPREPARED;
+    switch (this.syncing?.state) {
+      case ProgressState.PENDING:
+      case void 0:
+        return _UniversalStore.Status.SYNCING;
+      case ProgressState.REJECTED:
+        return _UniversalStore.Status.ERROR;
+      case ProgressState.RESOLVED:
+      default:
+        return _UniversalStore.Status.READY;
+    }
+  }
+  /**
+   * A promise that resolves when the store is fully ready. A leader will be ready when the store
+   * has been prepared by Storybook, which is almost instantly.
+   *
+   * A follower will be ready when the state has been synced with the leader's state, within a few
+   * hundred milliseconds.
+   */
+  untilReady() {
+    let preparation = this.channel && this.environment ? Promise.resolve() : _UniversalStore.preparation.promise;
+    return Promise.all([preparation, this.syncing?.promise]);
+  }
+  /** Creates a new instance of UniversalStore */
+  static create(options2) {
+    if (!options2 || typeof options2?.id != "string")
+      throw new TypeError("id is required and must be a string, when creating a UniversalStore");
+    options2.debug && console.debug(
+      dedent`[UniversalStore]
+        create`,
+      { options: options2 }
+    );
+    let existing = instances.get(options2.id);
+    if (existing)
+      return console.warn(dedent`UniversalStore with id "${options2.id}" already exists in this environment, re-using existing.
+        You should reuse the existing instance instead of trying to create a new one.`), existing;
+    _UniversalStore.isInternalConstructing = !0;
+    let store2 = new _UniversalStore(options2);
+    return instances.set(options2.id, store2), store2;
+  }
+  /**
+   * Used by Storybook to set the channel for all instances of UniversalStore in the given
+   * environment.
+   *
+   * @internal
+   */
+  static __prepare(channel2, environment) {
+    _UniversalStore.preparation.channel = channel2, _UniversalStore.preparation.environment = environment, _UniversalStore.preparation.resolve({ channel: channel2, environment });
+  }
+  /**
+   * Updates the store's state
+   *
+   * Either a new state or a state updater function can be passed to the method.
+   */
+  setState(updater) {
+    let previousState = this.state, newState = typeof updater == "function" ? updater(previousState) : updater;
+    if (this.debug("setState", { newState, previousState, updater }), this.status !== _UniversalStore.Status.READY)
+      throw new TypeError(
+        dedent`Cannot set state before store is ready. You can get the current status with store.status,
+        or await store.readyPromise to wait for the store to be ready before sending events.
+        ${JSON.stringify(
+          {
+            newState,
+            id: this.id,
+            actor: this.actor,
+            environment: this.environment
+          },
+          null,
+          2
+        )}`
+      );
+    this.state = newState;
+    let event = {
+      type: _UniversalStore.InternalEventType.SET_STATE,
+      payload: {
+        state: newState,
+        previousState
+      }
+    };
+    this.emitToChannel(event, { actor: this.actor }), this.emitToListeners(event, { actor: this.actor });
+  }
+  /**
+   * Subscribes to state changes
+   *
+   * @returns Unsubscribe function
+   */
+  onStateChange(listener) {
+    return this.debug("onStateChange", { listener }), this.subscribe(
+      _UniversalStore.InternalEventType.SET_STATE,
+      ({ payload }, eventInfo) => {
+        listener(payload.state, payload.previousState, eventInfo);
+      }
+    );
+  }
+  emitToChannel(event, eventInfo) {
+    this.debug("emitToChannel", { event, eventInfo, channel: !!this.channel }), this.channel?.emit(this.channelEventName, {
+      event,
+      eventInfo
+    });
+  }
+  prepareThis({
+    channel: channel2,
+    environment
+  }) {
+    this.channel = channel2, this.environment = environment, this.debug("prepared", { channel: !!channel2, environment }), this.channel.on(this.channelEventName, this.handleChannelEvents), this.actor.type === _UniversalStore.ActorType.LEADER ? this.emitToChannel(
+      { type: _UniversalStore.InternalEventType.LEADER_CREATED },
+      { actor: this.actor }
+    ) : (this.emitToChannel(
+      { type: _UniversalStore.InternalEventType.FOLLOWER_CREATED },
+      { actor: this.actor }
+    ), this.emitToChannel(
+      { type: _UniversalStore.InternalEventType.EXISTING_STATE_REQUEST },
+      { actor: this.actor }
+    ), setTimeout(() => {
+      this.syncing.reject(new UniversalStoreFollowerTimeoutError2(this.id));
+    }, 1e3));
+  }
+  emitToListeners(event, eventInfo) {
+    let eventTypeListeners = this.listeners.get(event.type), everythingListeners = this.listeners.get("*");
+    this.debug("emitToListeners", {
+      event,
+      eventInfo,
+      eventTypeListeners,
+      everythingListeners
+    }), [...eventTypeListeners ?? [], ...everythingListeners ?? []].forEach(
+      (listener) => listener(event, eventInfo)
+    );
+  }
+  handleChannelEvents(channelEvent) {
+    let { event, eventInfo } = channelEvent;
+    if ([eventInfo.actor.id, eventInfo.forwardingActor?.id].includes(this.actor.id)) {
+      this.debug("handleChannelEvents: Ignoring event from self", { channelEvent });
+      return;
+    } else if (this.syncing?.state === ProgressState.PENDING && event.type !== _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE) {
+      this.debug("handleChannelEvents: Ignoring event while syncing", { channelEvent });
+      return;
+    }
+    if (this.debug("handleChannelEvents", { channelEvent }), this.actor.type === _UniversalStore.ActorType.LEADER) {
+      let shouldForwardEvent = !0;
+      switch (event.type) {
+        case _UniversalStore.InternalEventType.EXISTING_STATE_REQUEST:
+          shouldForwardEvent = !1;
+          let responseEvent = {
+            type: _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE,
+            payload: this.state
+          };
+          this.debug("handleChannelEvents: responding to existing state request", {
+            responseEvent
+          }), this.emitToChannel(responseEvent, { actor: this.actor }), this.emitToListeners(responseEvent, { actor: this.actor });
+          break;
+        case _UniversalStore.InternalEventType.LEADER_CREATED:
+          shouldForwardEvent = !1, this.syncing.state = ProgressState.REJECTED, this.debug("handleChannelEvents: erroring due to second leader being created", {
+            event
+          }), console.error(
+            dedent`Detected multiple UniversalStore leaders created with the same id "${this.id}".
+            Only one leader can exists at a time, your stores are now in an invalid state.
+            Leaders detected:
+            this: ${JSON.stringify(this.actor, null, 2)}
+            other: ${JSON.stringify(eventInfo.actor, null, 2)}`
+          );
+          break;
+      }
+      shouldForwardEvent && (this.debug("handleChannelEvents: forwarding event", { channelEvent }), this.emitToChannel(event, { actor: eventInfo.actor, forwardingActor: this.actor }));
+    }
+    if (this.actor.type === _UniversalStore.ActorType.FOLLOWER)
+      switch (event.type) {
+        case _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE:
+          if (this.debug("handleChannelEvents: Setting state from leader's existing state response", {
+            event
+          }), this.syncing?.state !== ProgressState.PENDING)
+            break;
+          this.syncing.resolve?.();
+          let setStateEvent = {
+            type: _UniversalStore.InternalEventType.SET_STATE,
+            payload: {
+              state: event.payload,
+              previousState: this.state
+            }
+          };
+          this.state = event.payload, this.emitToListeners(setStateEvent, eventInfo);
+          break;
+      }
+    event.type === _UniversalStore.InternalEventType.SET_STATE && (this.debug("handleChannelEvents: Setting state", { event }), this.state = event.payload.state), this.emitToListeners(event, { actor: eventInfo.actor });
+  }
+  debug(message, data) {
+    this.debugging && console.debug(
+      dedent`[UniversalStore::${this.id}::${this.environment ?? _UniversalStore.Environment.UNKNOWN}]
+        ${message}`,
+      JSON.stringify(
+        {
+          data,
+          actor: this.actor,
+          state: this.state,
+          status: this.status
+        },
+        null,
+        2
+      )
+    );
+  }
+  /**
+   * Used to reset the static fields of the UniversalStore class when cleaning up tests
+   *
+   * @internal
+   */
+  static __reset() {
+    _UniversalStore.preparation.reject(new Error("reset")), _UniversalStore.setupPreparationPromise(), _UniversalStore.isInternalConstructing = !1;
+  }
+};
+/**
+ * Defines the possible actor types in the store system
+ *
+ * @readonly
+ */
+_UniversalStore.ActorType = {
+  LEADER: "LEADER",
+  FOLLOWER: "FOLLOWER"
+}, /**
+ * Defines the possible environments the store can run in
+ *
+ * @readonly
+ */
+_UniversalStore.Environment = {
+  SERVER: "SERVER",
+  MANAGER: "MANAGER",
+  PREVIEW: "PREVIEW",
+  UNKNOWN: "UNKNOWN",
+  MOCK: "MOCK"
+}, /**
+ * Internal event types used for store synchronization
+ *
+ * @readonly
+ */
+_UniversalStore.InternalEventType = {
+  EXISTING_STATE_REQUEST: "__EXISTING_STATE_REQUEST",
+  EXISTING_STATE_RESPONSE: "__EXISTING_STATE_RESPONSE",
+  SET_STATE: "__SET_STATE",
+  LEADER_CREATED: "__LEADER_CREATED",
+  FOLLOWER_CREATED: "__FOLLOWER_CREATED"
+}, _UniversalStore.Status = {
+  UNPREPARED: "UNPREPARED",
+  SYNCING: "SYNCING",
+  READY: "READY",
+  ERROR: "ERROR"
+}, // This is used to check if constructor was called from the static factory create()
+_UniversalStore.isInternalConstructing = !1, _UniversalStore.setupPreparationPromise();
+var UniversalStore = _UniversalStore;
+
+// src/shared/universal-store/use-universal-store-manager.ts
+init_react();
+var useUniversalStore = (universalStore, selector) => {
+  let snapshotRef = useRef(
+    selector ? selector(universalStore.getState()) : universalStore.getState()
+  ), subscribe = useCallback(
+    (listener) => universalStore.onStateChange((state2, previousState) => {
+      if (!selector) {
+        snapshotRef.current = state2, listener();
+        return;
+      }
+      let selectedState = selector(state2), selectedPreviousState = selector(previousState);
+      !isEqual(selectedState, selectedPreviousState) && (snapshotRef.current = selectedState, listener());
+    }),
+    [universalStore, selector]
+  ), getSnapshot = useCallback(() => {
+    let currentState = universalStore.getState(), selectedState = selector ? selector(currentState) : currentState;
+    return isEqual(selectedState, snapshotRef.current) || (snapshotRef.current = selectedState), snapshotRef.current;
+  }, [universalStore, selector]);
+  return [useSyncExternalStore(subscribe, getSnapshot), universalStore.setState];
+};
+
+// src/manager-api/stores/status.ts
+var statusStore = createStatusStore({
+  universalStatusStore: UniversalStore.create({
+    ...UNIVERSAL_STATUS_STORE_OPTIONS,
+    leader: globalThis.CONFIG_TYPE === "PRODUCTION"
+  }),
+  useUniversalStore,
+  environment: "manager"
+}), { fullStatusStore, getStatusStoreByTypeId, useStatusStore, universalStatusStore } = statusStore;
+
+// src/manager-api/modules/statuses.ts
+var computeStatusFilterFn = (includedStatusFilters, excludedStatusFilters) => (entry) => {
+  if (!includedStatusFilters.length && !excludedStatusFilters.length)
+    return !0;
+  let storyStatuses = (fullStatusStore.getAll() ?? {})[entry.id], storyStatusValues = storyStatuses ? Object.values(storyStatuses).map((s2) => s2.value) : [], passesInclude = !includedStatusFilters.length || includedStatusFilters.some((v2) => storyStatusValues.includes(v2)), passesExclude = !excludedStatusFilters.length || excludedStatusFilters.every((v2) => !storyStatusValues.includes(v2));
+  return passesInclude && passesExclude;
+};
+
+// src/manager-api/modules/tags.ts
+var import_memoizerific5 = __toESM(require_memoizerific(), 1);
+var getDefaultTagsFromPreset = (0, import_memoizerific5.default)(1)((presets) => {
+  let presetEntries = Object.entries(presets);
+  return {
+    included: presetEntries.filter(([, option]) => option.defaultFilterSelection === "include").map(([tag]) => tag),
+    excluded: presetEntries.filter(([, option]) => option.defaultFilterSelection === "exclude").map(([tag]) => tag)
+  };
+});
+var computeTagsFilterFn = (includedTagFilters, excludedTagFilters) => {
+  let computeFilterFunctions = (set) => Object.values(
+    set.reduce(
+      (acc, tag) => (Object.hasOwn(BUILT_IN_FILTERS, tag) ? acc["built-in"].push(BUILT_IN_FILTERS[tag]) : acc.user.push(USER_TAG_FILTER(tag)), acc),
+      { "built-in": [], user: [] }
+    )
+  ).filter((group) => group.length > 0);
+  return (item) => {
+    let included = computeFilterFunctions(includedTagFilters), excluded = computeFilterFunctions(excludedTagFilters);
+    return (!included.length || included.every((group) => group.some((filterFn) => filterFn(item, !1)))) && (!excluded.length || excluded.every((group) => group.every((filterFn) => filterFn(item, !0))));
+  };
+};
+
+// src/manager/components/sidebar/ShowChangesButton.tsx
+var Wrapper8 = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 4,
+  marginTop: -8
+}), StyledCTA = styled(ToggleButton)({
+  flex: 1,
+  justifyContent: "flex-start"
+}), StyledIcon = styled.svg(({ theme }) => ({
+  color: theme.fgColor.accent
+})), NEW = "status-value:new", MOD = "status-value:modified", ShowChangesButton = () => {
+  let api = useStorybookApi(), {
+    internal_index: index,
+    includedStatusFilters: rawIncludedStatusFilters,
+    excludedStatusFilters: rawExcludedStatusFilters,
+    includedTagFilters: rawIncludedTagFilters,
+    excludedTagFilters: rawExcludedTagFilters
+  } = useStorybookState(), allStatuses = experimental_useStatusStore(), activeReviewStoryCount = useActiveReviewStoryCount(), { newCount, modifiedCount } = useMemo(() => {
+    if (!index)
+      return { newCount: 0, modifiedCount: 0 };
+    let includedStatusFilters2 = rawIncludedStatusFilters ?? [], excludedStatusFilters2 = rawExcludedStatusFilters ?? [], includedTagFilters = rawIncludedTagFilters ?? [], excludedTagFilters = rawExcludedTagFilters ?? [], contextualIncludedStatuses = includedStatusFilters2.filter((s2) => s2 !== NEW && s2 !== MOD), contextualExcludedStatuses = excludedStatusFilters2.filter((s2) => s2 !== NEW && s2 !== MOD), tagFilterFn = computeTagsFilterFn(includedTagFilters, excludedTagFilters), statusFilterFn = computeStatusFilterFn(
+      contextualIncludedStatuses,
+      contextualExcludedStatuses
+    ), next = 0, modified = 0, entries = index.entries ?? {};
+    for (let [storyId, statusesByType] of Object.entries(allStatuses)) {
+      let entry = entries[storyId];
+      if (!entry)
+        continue;
+      let entryWithStatuses = { ...entry, statuses: statusesByType };
+      if (!tagFilterFn(entryWithStatuses) || !statusFilterFn(entryWithStatuses))
+        continue;
+      let statuses = Object.values(statusesByType);
+      statuses.some(({ value }) => value === NEW) && (next += 1), statuses.some(({ value }) => value === MOD) && (modified += 1);
+    }
+    return { newCount: next, modifiedCount: modified };
+  }, [
+    index,
+    allStatuses,
+    rawIncludedStatusFilters,
+    rawExcludedStatusFilters,
+    rawIncludedTagFilters,
+    rawExcludedTagFilters
+  ]), includedStatusFilters = rawIncludedStatusFilters ?? [], excludedStatusFilters = rawExcludedStatusFilters ?? [], isActive = includedStatusFilters.includes(NEW) && includedStatusFilters.includes(MOD);
+  if (!globalThis.FEATURES?.changeDetection || activeReviewStoryCount > 0 || newCount === 0 && modifiedCount === 0)
+    return null;
+  let clearFilters = () => {
+    let nextIncluded = includedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD), nextExcluded = excludedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD);
+    api.setAllStatusFilters(nextIncluded, nextExcluded);
+  }, onClick = () => {
+    if (isActive)
+      clearFilters();
+    else {
+      let nextIncluded = Array.from(/* @__PURE__ */ new Set([...includedStatusFilters, NEW, MOD])), nextExcluded = excludedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD);
+      api.setAllStatusFilters(nextIncluded, nextExcluded);
+    }
+  }, onClearClick = (e2) => {
+    e2.stopPropagation(), clearFilters();
+  }, changeKinds = newCount > 0 && modifiedCount > 0 ? "new and modified" : newCount > 0 ? "new" : "modified", label = `${isActive ? "Showing" : "Show"} ${changeKinds} stories`, ariaLabel = `${label} since last commit`;
+  return react_default.createElement(Wrapper8, null, react_default.createElement(
+    StyledCTA,
+    {
+      variant: "ghost",
+      padding: "small",
+      pressed: isActive,
+      ariaLabel,
+      onClick
+    },
+    react_default.createElement(StyledIcon, { viewBox: "0 0 14 14", width: "14", height: "14", "aria-hidden": !0 }, react_default.createElement(UseSymbol, { type: "modified" })),
+    label
+  ), isActive && react_default.createElement(
+    Button,
+    {
+      variant: "ghost",
+      padding: "small",
+      size: "small",
+      onClick: onClearClick,
+      ariaLabel: "Clear"
+    },
+    react_default.createElement(UndoIcon, null)
+  ));
+};
+
 // src/manager/components/sidebar/SidebarBottom.tsx
 init_react();
 
@@ -24701,7 +27390,7 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
 })), Content3 = styled.div({
   display: "flex",
   flexDirection: "column"
-}), Bar2 = styled.div(({ onClick }) => ({
+}), Bar3 = styled.div(({ onClick }) => ({
   display: "flex",
   width: "100%",
   cursor: onClick ? "pointer" : "default",
@@ -24836,7 +27525,7 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
       outlineAttrs: landmarkProps
     },
     react_default.createElement("h2", { id: "storybook-testing-widget-heading", className: "sb-sr-only" }, "Component tests"),
-    react_default.createElement(Bar2, { ...hasTestProviders ? { onClick: (e2) => toggleCollapsed(e2) } : {} }, react_default.createElement(Action, null, hasTestProviders && react_default.createElement(
+    react_default.createElement(Bar3, { ...hasTestProviders ? { onClick: (e2) => toggleCollapsed(e2) } : {} }, react_default.createElement(Action, null, hasTestProviders && react_default.createElement(
       Optional,
       {
         content: react_default.createElement(RunButton, { isRunning, onRunAll }, isRunning ? "Running..." : "Run tests"),
@@ -24971,7 +27660,7 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
     }
   }, []), useEffect(() => {
     let filter = getFilter(warningCount > 0 && warningsActive, errorCount > 0 && errorsActive);
-    api.experimental_setFilter("sidebar-bottom-filter", filter);
+    api.experimental_setFilters({ "sidebar-bottom-filter": filter });
   }, [api, warningCount, errorCount, warningsActive, errorsActive]), !warningCount && !errorCount && Object.values(registeredTestProviders).length === 0 && notifications.length === 0 ? null : react_default.createElement(Fragment, null, react_default.createElement(Spacer, { id: SIDEBAR_BOTTOM_SPACER_ID, ref: spacerRef }), react_default.createElement(Content4, { id: SIDEBAR_BOTTOM_WRAPPER_ID, ref: wrapperRef }, react_default.createElement(NotificationList, { notifications, clearNotification: api.clearNotification }), isDevelopment && react_default.createElement(
     TestingWidget,
     {
@@ -25019,907 +27708,16 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
   );
 };
 
-// src/manager/components/sidebar/Filter.tsx
-init_react();
-
-// src/manager/components/sidebar/FilterPanel.tsx
-init_react();
-
-// src/manager/components/sidebar/FilterPanelLink.tsx
-init_react();
-var MutedText = styled.span(({ theme }) => ({
-  color: theme.textMutedColor
-})), StatusIcon2 = styled.span(({ $iconColor }) => ({
-  display: "contents",
-  color: $iconColor ?? void 0,
-  "> svg": {
-    transform: "scale(1.3)"
-  }
-})), createFilterLink = ({
-  id,
-  type,
-  title: title2,
-  tooltip,
-  count,
-  icon,
-  isIncluded,
-  isExcluded,
-  onCheckboxChange,
-  onInvert
-}) => {
-  let isChecked = isIncluded || isExcluded, toggleLabel = `${type} filter: ${isExcluded ? `exclude ${title2}` : title2}`, toggleTooltip = tooltip ?? `${isChecked ? "Remove" : "Add"} ${type} filter: ${title2}`, invertButtonLabel = `${isExcluded ? "Include" : "Exclude"} ${type}: ${title2}`;
-  return {
-    id: `filter-${type}-${id}`,
-    content: react_default.createElement(ActionList.HoverItem, { targetId: `filter-${type}-${id}` }, react_default.createElement(ActionList.Action, { as: "label", ariaLabel: !1, tabIndex: -1, tooltip: toggleTooltip }, react_default.createElement(ActionList.Icon, null, isExcluded ? react_default.createElement(DeleteIcon, null) : isIncluded ? null : icon, react_default.createElement(
-      Form.Checkbox,
-      {
-        checked: isChecked,
-        onChange: onCheckboxChange,
-        "data-tag": title2,
-        "aria-label": toggleLabel
-      }
-    )), react_default.createElement(ActionList.Text, null, react_default.createElement("span", null, title2, isExcluded && react_default.createElement(MutedText, null, " (excluded)"))), isExcluded ? react_default.createElement("s", null, count) : react_default.createElement("span", null, count)), react_default.createElement(
-      ActionList.Button,
-      {
-        "data-target-id": `filter-${type}-${id}`,
-        ariaLabel: invertButtonLabel,
-        onClick: onInvert
-      },
-      react_default.createElement("span", { style: { minWidth: 45 } }, isExcluded ? "Include" : "Exclude")
-    ))
-  };
-};
-
-// src/shared/constants/tags.ts
-var Tag2 = {
-  /** Indicates that autodocs should be generated for this component */
-  AUTODOCS: "autodocs",
-  /** MDX documentation attached to a component's stories file */
-  ATTACHED_MDX: "attached-mdx",
-  /** Standalone MDX documentation not attached to stories */
-  UNATTACHED_MDX: "unattached-mdx",
-  /** Story has a play function */
-  PLAY_FN: "play-fn",
-  /** Story has a test function */
-  TEST_FN: "test-fn",
-  /** Development environment tag */
-  DEV: "dev",
-  /** Test environment tag */
-  TEST: "test",
-  /** Manifest generation tag */
-  MANIFEST: "manifest"
-}, BUILT_IN_FILTERS = {
-  _docs: (entry, excluded) => excluded ? entry.type !== "docs" : entry.type === "docs",
-  _play: (entry, excluded) => excluded ? entry.type !== "story" || !entry.tags?.includes(Tag2.PLAY_FN) : entry.type === "story" && !!entry.tags?.includes(Tag2.PLAY_FN),
-  _test: (entry, excluded) => excluded ? entry.type !== "story" || entry.subtype !== "test" : entry.type === "story" && entry.subtype === "test"
-}, USER_TAG_FILTER = (tag) => (entry, excluded) => excluded ? !entry.tags?.includes(tag) : !!entry.tags?.includes(tag);
-
-// src/manager/components/sidebar/FilterPanel.utils.ts
-var BUILT_IN_TAGS = /* @__PURE__ */ new Set([
-  "dev",
-  "test",
-  "autodocs",
-  "attached-mdx",
-  "unattached-mdx",
-  "play-fn",
-  "test-fn",
-  "manifest"
-]), STATUS_DISPLAY_ORDER = [
-  "status-value:new",
-  "status-value:modified",
-  "status-value:affected"
-], areFiltersEqual = (left, right) => left.length === right.length && (/* @__PURE__ */ new Set([...left, ...right])).size === left.length, getFilterFunction = (tag) => Object.hasOwn(BUILT_IN_FILTERS, tag) ? BUILT_IN_FILTERS[tag] : USER_TAG_FILTER(tag);
-
-// src/manager/components/sidebar/useFilterData.tsx
-init_react();
-var BUILT_IN_FILTER_DEFS = [
-  { id: "_docs", title: "Documentation", icon: react_default.createElement(DocumentIcon, { color: color.gold }), tag: "_docs" },
-  { id: "_play", title: "Play", icon: react_default.createElement(PlayHollowIcon, { color: color.seafoam }), tag: "_play" },
-  { id: "_test", title: "Testing", icon: react_default.createElement(BeakerIcon, { color: color.green }), tag: "_test" }
-];
-function useTagFilterEntries(indexJson) {
-  return useMemo(() => {
-    let entries = Object.values(indexJson.entries), userTagsCounts = entries.reduce((acc, entry) => (entry.tags?.forEach((tag) => {
-      BUILT_IN_TAGS.has(tag) || (acc[tag] = (acc[tag] || 0) + 1);
-    }), acc), {}), tagEntries = Object.entries(userTagsCounts).map(([tag, count]) => ({
-      id: tag,
-      type: "tag",
-      title: tag,
-      count,
-      icon: null
-    })), getBuiltInCount = (filterFn) => entries.filter((entry) => filterFn?.(entry)).length;
-    return { builtInEntries: BUILT_IN_FILTER_DEFS.map((def) => ({
-      id: def.id,
-      type: "built-in",
-      title: def.title,
-      icon: def.icon,
-      count: getBuiltInCount(getFilterFunction(def.tag))
-    })), tagEntries };
-  }, [indexJson.entries]);
-}
-function useStatusFilterEntries(allStatuses) {
-  return useMemo(() => {
-    if (!globalThis?.FEATURES?.changeDetection)
-      return [];
-    let counts = countStatusesByValue(allStatuses);
-    return STATUS_DISPLAY_ORDER.map((statusValue) => ({
-      statusValue,
-      shortName: statusValueShortName(statusValue),
-      description: statusValueDescription(statusValue),
-      count: counts[statusValue] ?? 0
-    }));
-  }, [allStatuses]);
-}
-
-// src/manager/components/sidebar/FilterPanel.tsx
-var Wrapper7 = styled.div({
-  minWidth: 240,
-  maxWidth: 300,
-  maxHeight: 15.5 * 32 + 8,
-  // 15.5 items at 32px each + 8px padding
-  overflow: "hidden",
-  overflowY: "auto",
-  scrollbarWidth: "thin"
-}), FilterPanel = ({
-  api,
-  indexJson,
-  defaultIncludedFilters,
-  defaultExcludedFilters,
-  includedFilters,
-  excludedFilters,
-  allStatuses,
-  includedStatusFilters,
-  excludedStatusFilters
-}) => {
-  let theme = useTheme(), { builtInEntries, tagEntries } = useTagFilterEntries(indexJson), statusEntries = useStatusFilterEntries(allStatuses), toTagFilterItem = useCallback(
-    (entry) => {
-      if (entry.count === 0 && entry.type === "built-in") return null;
-      let isIncluded = includedFilters.includes(entry.id), isExcluded = excludedFilters.includes(entry.id), isChecked = isIncluded || isExcluded;
-      return {
-        id: entry.id,
-        type: entry.type,
-        title: entry.title,
-        count: entry.count,
-        icon: entry.icon,
-        isIncluded,
-        isExcluded,
-        onCheckboxChange: () => {
-          isChecked ? api.removeTagFilters([entry.id]) : api.addTagFilters([entry.id], !1);
-        },
-        onInvert: () => api.addTagFilters([entry.id], !isExcluded)
-      };
-    },
-    [api, includedFilters, excludedFilters]
-  ), toStatusFilterItem = useCallback(
-    (entry) => {
-      let shortName = entry.shortName === "affected" ? "related" : entry.shortName, isIncluded = includedStatusFilters.includes(entry.statusValue), isExcluded = excludedStatusFilters.includes(entry.statusValue), isChecked = isIncluded || isExcluded, { icon: statusIconEl, iconColor } = getStatus(theme, entry.statusValue), showIcon = statusIconEl && entry.statusValue !== "status-value:affected";
-      return {
-        id: shortName,
-        type: "status",
-        title: shortName.charAt(0).toUpperCase() + shortName.slice(1),
-        tooltip: entry.description,
-        count: entry.count,
-        icon: showIcon ? react_default.createElement(StatusIcon2, { $iconColor: iconColor }, statusIconEl) : null,
-        isIncluded,
-        isExcluded,
-        onCheckboxChange: () => {
-          isChecked ? api.removeStatusFilters([entry.statusValue]) : api.addStatusFilters([entry.statusValue], !1);
-        },
-        onInvert: () => api.addStatusFilters([entry.statusValue], !isExcluded)
-      };
-    },
-    [api, includedStatusFilters, excludedStatusFilters, theme]
-  ), builtInItems = useMemo(
-    () => builtInEntries.sort((a2, b2) => a2.id.localeCompare(b2.id)).map(toTagFilterItem).filter((f2) => f2 !== null),
-    [builtInEntries, toTagFilterItem]
-  ), tagItems = useMemo(
-    () => tagEntries.sort((a2, b2) => a2.id.localeCompare(b2.id)).map(toTagFilterItem).filter((f2) => f2 !== null),
-    [tagEntries, toTagFilterItem]
-  ), statusItems = useMemo(
-    () => statusEntries.map(toStatusFilterItem),
-    [statusEntries, toStatusFilterItem]
-  ), filterIds = useMemo(
-    () => [...builtInEntries.map((e2) => e2.id), ...tagEntries.map((e2) => e2.id)],
-    [builtInEntries, tagEntries]
-  ), setAllFilters = useCallback(
-    (selected) => api.setAllTagFilters(selected ? filterIds : [], []),
-    [api, filterIds]
-  ), isDefaultSelection = areFiltersEqual(includedFilters, defaultIncludedFilters) && areFiltersEqual(excludedFilters, defaultExcludedFilters), hasDefaultSelection = defaultIncludedFilters.length > 0 || defaultExcludedFilters.length > 0, isNothingSelectedYet = includedFilters.length === 0 && excludedFilters.length === 0 && includedStatusFilters.length === 0 && excludedStatusFilters.length === 0, hasItems = builtInItems.length > 0 || tagItems.length > 0;
-  return react_default.createElement(Wrapper7, null, hasItems && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, isNothingSelectedYet ? react_default.createElement(
-    ActionList.Button,
-    {
-      ariaLabel: !1,
-      id: "select-all",
-      key: "select-all",
-      onClick: () => setAllFilters(!0)
-    },
-    react_default.createElement(BatchAcceptIcon, null),
-    react_default.createElement(ActionList.Text, null, "Select all")
-  ) : react_default.createElement(
-    ActionList.Button,
-    {
-      ariaLabel: !1,
-      id: "deselect-all",
-      key: "deselect-all",
-      onClick: async () => {
-        await setAllFilters(!1), await api.resetStatusFilters();
-      }
-    },
-    react_default.createElement(SweepIcon, null),
-    react_default.createElement(ActionList.Text, null, "Clear filters")
-  ), hasDefaultSelection && react_default.createElement(
-    ActionList.Button,
-    {
-      id: "reset-filters",
-      key: "reset-filters",
-      onClick: () => api.resetTagFilters(),
-      ariaLabel: "Reset filters",
-      tooltip: "Reset to default selection",
-      disabled: isDefaultSelection
-    },
-    react_default.createElement(UndoIcon, null)
-  ))), builtInItems.length > 0 && react_default.createElement(ActionList, null, builtInItems.map((item) => {
-    let link = createFilterLink(item);
-    return react_default.createElement(Fragment, { key: link.id }, link.content);
-  })), statusItems.length > 0 && react_default.createElement(ActionList, null, statusItems.map((item) => {
-    let link = createFilterLink(item);
-    return react_default.createElement(Fragment, { key: link.id }, link.content);
-  })), tagItems.length > 0 && react_default.createElement(ActionList, null, tagItems.map((item) => {
-    let link = createFilterLink(item);
-    return react_default.createElement(Fragment, { key: link.id }, link.content);
-  })), tagItems.length === 0 && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(
-    ActionList.Link,
-    {
-      ariaLabel: !1,
-      href: api.getDocsUrl({ subpath: "writing-stories/tags#custom-tags" }),
-      target: "_blank"
-    },
-    react_default.createElement(ActionList.Icon, null, react_default.createElement(DocumentIcon, null)),
-    react_default.createElement(ActionList.Text, null, react_default.createElement("span", null, "Learn how to add tags")),
-    react_default.createElement(ActionList.Icon, null, react_default.createElement(ShareAltIcon, null))
-  ))));
-};
-
-// src/manager/components/sidebar/Filter.tsx
-var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
-  "&:focus-visible": {
-    outlineOffset: 4
-  },
-  ...$isHighlighted && {
-    background: theme.background.hoverable,
-    color: theme.color.secondary
-  }
-})), TagSelected = styled(Badge)(({ theme }) => ({
-  position: "absolute",
-  top: 7,
-  right: 7,
-  transform: "translate(50%, -50%)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 3,
-  height: 6,
-  minWidth: 6,
-  lineHeight: "px",
-  boxShadow: `${theme.barSelectedColor} 0 0 0 1px inset`,
-  fontSize: theme.typography.size.s1 - 1,
-  background: theme.barSelectedColor,
-  color: theme.color.inverseText
-})), filterMapper = ({ api, state }) => ({
-  api,
-  indexJson: state.internal_index,
-  activeFilterCount: getActiveFilterCount(state),
-  defaultIncludedFilters: state.defaultIncludedTagFilters,
-  defaultExcludedFilters: state.defaultExcludedTagFilters,
-  includedFilters: state.includedTagFilters,
-  excludedFilters: state.excludedTagFilters,
-  includedStatusFilters: state.includedStatusFilters ?? [],
-  excludedStatusFilters: state.excludedStatusFilters ?? []
-}), FilterInner = ({
-  api,
-  indexJson,
-  activeFilterCount,
-  defaultIncludedFilters,
-  defaultExcludedFilters,
-  includedFilters,
-  excludedFilters,
-  includedStatusFilters,
-  excludedStatusFilters
-}) => {
-  let [expanded, setExpanded] = useState(!1), allStatuses = experimental_useStatusStore(), handleToggleExpand = useCallback(
-    (event) => {
-      event.preventDefault(), setExpanded(!expanded);
-    },
-    [expanded]
-  );
-  return react_default.createElement(
-    PopoverProvider,
-    {
-      ariaLabel: "Tag filters",
-      placement: "bottom",
-      onVisibleChange: setExpanded,
-      offset: 8,
-      padding: 0,
-      popover: () => react_default.createElement(
-        FilterPanel,
-        {
-          api,
-          indexJson,
-          defaultIncludedFilters,
-          defaultExcludedFilters,
-          includedFilters,
-          excludedFilters,
-          allStatuses,
-          includedStatusFilters,
-          excludedStatusFilters
-        }
-      )
-    },
-    react_default.createElement(
-      StyledButton2,
-      {
-        key: "tags",
-        ariaLabel: activeFilterCount ? `${activeFilterCount} active tag ${activeFilterCount !== 1 ? "filters" : "filter"}` : "Tag filters",
-        ariaDescription: "Filter the items shown in a sidebar based on the tags applied to them.",
-        variant: "ghost",
-        padding: "small",
-        $isHighlighted: activeFilterCount > 0,
-        onClick: handleToggleExpand
-      },
-      react_default.createElement(FilterIcon, null),
-      activeFilterCount > 0 && react_default.createElement(TagSelected, null)
-    )
-  );
-}, Filter = () => react_default.createElement(Consumer, { filter: filterMapper }, ({
-  api,
-  indexJson,
-  activeFilterCount,
-  defaultIncludedFilters,
-  defaultExcludedFilters,
-  includedFilters,
-  excludedFilters,
-  includedStatusFilters,
-  excludedStatusFilters
-}) => indexJson ? react_default.createElement(
-  FilterInner,
-  {
-    api,
-    indexJson,
-    activeFilterCount,
-    defaultIncludedFilters,
-    defaultExcludedFilters,
-    includedFilters,
-    excludedFilters,
-    includedStatusFilters,
-    excludedStatusFilters
-  }
-) : null);
-
-// src/manager/components/sidebar/ReviewChangesButton.tsx
-init_react();
-
-// src/shared/universal-store/instances.ts
-var instances = /* @__PURE__ */ new Map();
-
-// src/shared/universal-store/index.ts
-var CHANNEL_EVENT_PREFIX = "UNIVERSAL_STORE:", ProgressState = {
-  PENDING: "PENDING",
-  RESOLVED: "RESOLVED",
-  REJECTED: "REJECTED"
-}, _UniversalStore = class _UniversalStore {
-  constructor(options2, environmentOverrides) {
-    /** Enable debug logs for this store */
-    this.debugging = !1;
-    // TODO: narrow type of listeners based on event type
-    this.listeners = /* @__PURE__ */ new Map([["*", /* @__PURE__ */ new Set()]]);
-    /** Gets the current state */
-    this.getState = () => (this.debug("getState", { state: this.state }), this.state);
-    /**
-     * Subscribes to store events
-     *
-     * @returns A function to unsubscribe
-     */
-    this.subscribe = (eventTypeOrListener, maybeListener) => {
-      let subscribesToAllEvents = typeof eventTypeOrListener == "function", eventType = subscribesToAllEvents ? "*" : eventTypeOrListener, listener = subscribesToAllEvents ? eventTypeOrListener : maybeListener;
-      if (this.debug("subscribe", { eventType, listener }), !listener)
-        throw new TypeError(
-          `Missing first subscribe argument, or second if first is the event type, when subscribing to a UniversalStore with id '${this.id}'`
-        );
-      return this.listeners.has(eventType) || this.listeners.set(eventType, /* @__PURE__ */ new Set()), this.listeners.get(eventType).add(listener), () => {
-        this.debug("unsubscribe", { eventType, listener }), this.listeners.has(eventType) && (this.listeners.get(eventType).delete(listener), this.listeners.get(eventType)?.size === 0 && this.listeners.delete(eventType));
-      };
-    };
-    /** Sends a custom event to the other stores */
-    this.send = (event) => {
-      if (this.debug("send", { event }), this.status !== _UniversalStore.Status.READY)
-        throw new TypeError(
-          dedent`Cannot send event before store is ready. You can get the current status with store.status,
-        or await store.readyPromise to wait for the store to be ready before sending events.
-        ${JSON.stringify(
-            {
-              event,
-              id: this.id,
-              actor: this.actor,
-              environment: this.environment
-            },
-            null,
-            2
-          )}`
-        );
-      this.emitToListeners(event, { actor: this.actor }), this.emitToChannel(event, { actor: this.actor });
-    };
-    if (this.debugging = options2.debug ?? !1, !_UniversalStore.isInternalConstructing)
-      throw new TypeError(
-        "UniversalStore is not constructable - use UniversalStore.create() instead"
-      );
-    if (_UniversalStore.isInternalConstructing = !1, this.id = options2.id, this.actorId = Date.now().toString(36) + Math.random().toString(36).substring(2), this.actorType = options2.leader ? _UniversalStore.ActorType.LEADER : _UniversalStore.ActorType.FOLLOWER, this.state = options2.initialState, this.channelEventName = `${CHANNEL_EVENT_PREFIX}${this.id}`, this.debug("constructor", {
-      options: options2,
-      environmentOverrides,
-      channelEventName: this.channelEventName
-    }), this.actor.type === _UniversalStore.ActorType.LEADER)
-      this.syncing = {
-        state: ProgressState.RESOLVED,
-        promise: Promise.resolve()
-      };
-    else {
-      let syncingResolve, syncingReject, syncingPromise = new Promise((resolve, reject) => {
-        syncingResolve = () => {
-          this.syncing.state === ProgressState.PENDING && (this.syncing.state = ProgressState.RESOLVED, resolve());
-        }, syncingReject = (reason) => {
-          this.syncing.state === ProgressState.PENDING && (this.syncing.state = ProgressState.REJECTED, reject(reason));
-        };
-      });
-      this.syncing = {
-        state: ProgressState.PENDING,
-        promise: syncingPromise,
-        resolve: syncingResolve,
-        reject: syncingReject
-      };
-    }
-    this.getState = this.getState.bind(this), this.setState = this.setState.bind(this), this.subscribe = this.subscribe.bind(this), this.onStateChange = this.onStateChange.bind(this), this.send = this.send.bind(this), this.emitToChannel = this.emitToChannel.bind(this), this.prepareThis = this.prepareThis.bind(this), this.emitToListeners = this.emitToListeners.bind(this), this.handleChannelEvents = this.handleChannelEvents.bind(this), this.debug = this.debug.bind(this), this.channel = environmentOverrides?.channel ?? _UniversalStore.preparation.channel, this.environment = environmentOverrides?.environment ?? _UniversalStore.preparation.environment, this.channel && this.environment ? (_UniversalStore.preparation.resolve({ channel: this.channel, environment: this.environment }), this.prepareThis({ channel: this.channel, environment: this.environment })) : _UniversalStore.preparation.promise.then(this.prepareThis);
-  }
-  static setupPreparationPromise() {
-    let resolveRef, rejectRef, promise = new Promise(
-      (resolve, reject) => {
-        resolveRef = (args) => {
-          resolve(args);
-        }, rejectRef = (...args) => {
-          reject(args);
-        };
-      }
-    );
-    _UniversalStore.preparation = {
-      resolve: resolveRef,
-      reject: rejectRef,
-      promise
-    };
-  }
-  /** The actor object representing the store instance with a unique ID and a type */
-  get actor() {
-    return Object.freeze({
-      id: this.actorId,
-      type: this.actorType,
-      environment: this.environment ?? _UniversalStore.Environment.UNKNOWN
-    });
-  }
-  /**
-   * The current state of the store, that signals both if the store is prepared by Storybook and
-   * also - in the case of a follower - if the state has been synced with the leader's state.
-   */
-  get status() {
-    if (!this.channel || !this.environment)
-      return _UniversalStore.Status.UNPREPARED;
-    switch (this.syncing?.state) {
-      case ProgressState.PENDING:
-      case void 0:
-        return _UniversalStore.Status.SYNCING;
-      case ProgressState.REJECTED:
-        return _UniversalStore.Status.ERROR;
-      case ProgressState.RESOLVED:
-      default:
-        return _UniversalStore.Status.READY;
-    }
-  }
-  /**
-   * A promise that resolves when the store is fully ready. A leader will be ready when the store
-   * has been prepared by Storybook, which is almost instantly.
-   *
-   * A follower will be ready when the state has been synced with the leader's state, within a few
-   * hundred milliseconds.
-   */
-  untilReady() {
-    return Promise.all([_UniversalStore.preparation.promise, this.syncing?.promise]);
-  }
-  /** Creates a new instance of UniversalStore */
-  static create(options2) {
-    if (!options2 || typeof options2?.id != "string")
-      throw new TypeError("id is required and must be a string, when creating a UniversalStore");
-    options2.debug && console.debug(
-      dedent`[UniversalStore]
-        create`,
-      { options: options2 }
-    );
-    let existing = instances.get(options2.id);
-    if (existing)
-      return console.warn(dedent`UniversalStore with id "${options2.id}" already exists in this environment, re-using existing.
-        You should reuse the existing instance instead of trying to create a new one.`), existing;
-    _UniversalStore.isInternalConstructing = !0;
-    let store2 = new _UniversalStore(options2);
-    return instances.set(options2.id, store2), store2;
-  }
-  /**
-   * Used by Storybook to set the channel for all instances of UniversalStore in the given
-   * environment.
-   *
-   * @internal
-   */
-  static __prepare(channel, environment) {
-    _UniversalStore.preparation.channel = channel, _UniversalStore.preparation.environment = environment, _UniversalStore.preparation.resolve({ channel, environment });
-  }
-  /**
-   * Updates the store's state
-   *
-   * Either a new state or a state updater function can be passed to the method.
-   */
-  setState(updater) {
-    let previousState = this.state, newState = typeof updater == "function" ? updater(previousState) : updater;
-    if (this.debug("setState", { newState, previousState, updater }), this.status !== _UniversalStore.Status.READY)
-      throw new TypeError(
-        dedent`Cannot set state before store is ready. You can get the current status with store.status,
-        or await store.readyPromise to wait for the store to be ready before sending events.
-        ${JSON.stringify(
-          {
-            newState,
-            id: this.id,
-            actor: this.actor,
-            environment: this.environment
-          },
-          null,
-          2
-        )}`
-      );
-    this.state = newState;
-    let event = {
-      type: _UniversalStore.InternalEventType.SET_STATE,
-      payload: {
-        state: newState,
-        previousState
-      }
-    };
-    this.emitToChannel(event, { actor: this.actor }), this.emitToListeners(event, { actor: this.actor });
-  }
-  /**
-   * Subscribes to state changes
-   *
-   * @returns Unsubscribe function
-   */
-  onStateChange(listener) {
-    return this.debug("onStateChange", { listener }), this.subscribe(
-      _UniversalStore.InternalEventType.SET_STATE,
-      ({ payload }, eventInfo) => {
-        listener(payload.state, payload.previousState, eventInfo);
-      }
-    );
-  }
-  emitToChannel(event, eventInfo) {
-    this.debug("emitToChannel", { event, eventInfo, channel: !!this.channel }), this.channel?.emit(this.channelEventName, {
-      event,
-      eventInfo
-    });
-  }
-  prepareThis({
-    channel,
-    environment
-  }) {
-    this.channel = channel, this.environment = environment, this.debug("prepared", { channel: !!channel, environment }), this.channel.on(this.channelEventName, this.handleChannelEvents), this.actor.type === _UniversalStore.ActorType.LEADER ? this.emitToChannel(
-      { type: _UniversalStore.InternalEventType.LEADER_CREATED },
-      { actor: this.actor }
-    ) : (this.emitToChannel(
-      { type: _UniversalStore.InternalEventType.FOLLOWER_CREATED },
-      { actor: this.actor }
-    ), this.emitToChannel(
-      { type: _UniversalStore.InternalEventType.EXISTING_STATE_REQUEST },
-      { actor: this.actor }
-    ), setTimeout(() => {
-      this.syncing.reject(
-        new TypeError(
-          `No existing state found for follower with id: '${this.id}'. Make sure a leader with the same id exists before creating a follower.`
-        )
-      );
-    }, 1e3));
-  }
-  emitToListeners(event, eventInfo) {
-    let eventTypeListeners = this.listeners.get(event.type), everythingListeners = this.listeners.get("*");
-    this.debug("emitToListeners", {
-      event,
-      eventInfo,
-      eventTypeListeners,
-      everythingListeners
-    }), [...eventTypeListeners ?? [], ...everythingListeners ?? []].forEach(
-      (listener) => listener(event, eventInfo)
-    );
-  }
-  handleChannelEvents(channelEvent) {
-    let { event, eventInfo } = channelEvent;
-    if ([eventInfo.actor.id, eventInfo.forwardingActor?.id].includes(this.actor.id)) {
-      this.debug("handleChannelEvents: Ignoring event from self", { channelEvent });
-      return;
-    } else if (this.syncing?.state === ProgressState.PENDING && event.type !== _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE) {
-      this.debug("handleChannelEvents: Ignoring event while syncing", { channelEvent });
-      return;
-    }
-    if (this.debug("handleChannelEvents", { channelEvent }), this.actor.type === _UniversalStore.ActorType.LEADER) {
-      let shouldForwardEvent = !0;
-      switch (event.type) {
-        case _UniversalStore.InternalEventType.EXISTING_STATE_REQUEST:
-          shouldForwardEvent = !1;
-          let responseEvent = {
-            type: _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE,
-            payload: this.state
-          };
-          this.debug("handleChannelEvents: responding to existing state request", {
-            responseEvent
-          }), this.emitToChannel(responseEvent, { actor: this.actor }), this.emitToListeners(responseEvent, { actor: this.actor });
-          break;
-        case _UniversalStore.InternalEventType.LEADER_CREATED:
-          shouldForwardEvent = !1, this.syncing.state = ProgressState.REJECTED, this.debug("handleChannelEvents: erroring due to second leader being created", {
-            event
-          }), console.error(
-            dedent`Detected multiple UniversalStore leaders created with the same id "${this.id}".
-            Only one leader can exists at a time, your stores are now in an invalid state.
-            Leaders detected:
-            this: ${JSON.stringify(this.actor, null, 2)}
-            other: ${JSON.stringify(eventInfo.actor, null, 2)}`
-          );
-          break;
-      }
-      shouldForwardEvent && (this.debug("handleChannelEvents: forwarding event", { channelEvent }), this.emitToChannel(event, { actor: eventInfo.actor, forwardingActor: this.actor }));
-    }
-    if (this.actor.type === _UniversalStore.ActorType.FOLLOWER)
-      switch (event.type) {
-        case _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE:
-          if (this.debug("handleChannelEvents: Setting state from leader's existing state response", {
-            event
-          }), this.syncing?.state !== ProgressState.PENDING)
-            break;
-          this.syncing.resolve?.();
-          let setStateEvent = {
-            type: _UniversalStore.InternalEventType.SET_STATE,
-            payload: {
-              state: event.payload,
-              previousState: this.state
-            }
-          };
-          this.state = event.payload, this.emitToListeners(setStateEvent, eventInfo);
-          break;
-      }
-    switch (event.type) {
-      case _UniversalStore.InternalEventType.SET_STATE:
-        this.debug("handleChannelEvents: Setting state", { event }), this.state = event.payload.state;
-        break;
-    }
-    this.emitToListeners(event, { actor: eventInfo.actor });
-  }
-  debug(message, data) {
-    this.debugging && console.debug(
-      dedent`[UniversalStore::${this.id}::${this.environment ?? _UniversalStore.Environment.UNKNOWN}]
-        ${message}`,
-      JSON.stringify(
-        {
-          data,
-          actor: this.actor,
-          state: this.state,
-          status: this.status
-        },
-        null,
-        2
-      )
-    );
-  }
-  /**
-   * Used to reset the static fields of the UniversalStore class when cleaning up tests
-   *
-   * @internal
-   */
-  static __reset() {
-    _UniversalStore.preparation.reject(new Error("reset")), _UniversalStore.setupPreparationPromise(), _UniversalStore.isInternalConstructing = !1;
-  }
-};
-/**
- * Defines the possible actor types in the store system
- *
- * @readonly
- */
-_UniversalStore.ActorType = {
-  LEADER: "LEADER",
-  FOLLOWER: "FOLLOWER"
-}, /**
- * Defines the possible environments the store can run in
- *
- * @readonly
- */
-_UniversalStore.Environment = {
-  SERVER: "SERVER",
-  MANAGER: "MANAGER",
-  PREVIEW: "PREVIEW",
-  UNKNOWN: "UNKNOWN",
-  MOCK: "MOCK"
-}, /**
- * Internal event types used for store synchronization
- *
- * @readonly
- */
-_UniversalStore.InternalEventType = {
-  EXISTING_STATE_REQUEST: "__EXISTING_STATE_REQUEST",
-  EXISTING_STATE_RESPONSE: "__EXISTING_STATE_RESPONSE",
-  SET_STATE: "__SET_STATE",
-  LEADER_CREATED: "__LEADER_CREATED",
-  FOLLOWER_CREATED: "__FOLLOWER_CREATED"
-}, _UniversalStore.Status = {
-  UNPREPARED: "UNPREPARED",
-  SYNCING: "SYNCING",
-  READY: "READY",
-  ERROR: "ERROR"
-}, // This is used to check if constructor was called from the static factory create()
-_UniversalStore.isInternalConstructing = !1, _UniversalStore.setupPreparationPromise();
-var UniversalStore = _UniversalStore;
-
-// src/shared/universal-store/use-universal-store-manager.ts
-init_react();
-var useUniversalStore = (universalStore, selector) => {
-  let snapshotRef = useRef(
-    selector ? selector(universalStore.getState()) : universalStore.getState()
-  ), subscribe = useCallback(
-    (listener) => universalStore.onStateChange((state2, previousState) => {
-      if (!selector) {
-        snapshotRef.current = state2, listener();
-        return;
-      }
-      let selectedState = selector(state2), selectedPreviousState = selector(previousState);
-      !isEqual(selectedState, selectedPreviousState) && (snapshotRef.current = selectedState, listener());
-    }),
-    [universalStore, selector]
-  ), getSnapshot = useCallback(() => {
-    let currentState = universalStore.getState(), selectedState = selector ? selector(currentState) : currentState;
-    return isEqual(selectedState, snapshotRef.current) || (snapshotRef.current = selectedState), snapshotRef.current;
-  }, [universalStore, selector]);
-  return [useSyncExternalStore(subscribe, getSnapshot), universalStore.setState];
-};
-
-// src/manager-api/stores/status.ts
-var statusStore = createStatusStore({
-  universalStatusStore: UniversalStore.create({
-    ...UNIVERSAL_STATUS_STORE_OPTIONS,
-    leader: globalThis.CONFIG_TYPE === "PRODUCTION"
-  }),
-  useUniversalStore,
-  environment: "manager"
-}), { fullStatusStore, getStatusStoreByTypeId, useStatusStore, universalStatusStore } = statusStore;
-
-// src/manager-api/modules/statuses.ts
-var computeStatusFilterFn = (includedStatusFilters, excludedStatusFilters) => (entry) => {
-  if (!includedStatusFilters.length && !excludedStatusFilters.length)
-    return !0;
-  let storyStatuses = (fullStatusStore.getAll() ?? {})[entry.id], storyStatusValues = storyStatuses ? Object.values(storyStatuses).map((s2) => s2.value) : [], passesInclude = !includedStatusFilters.length || includedStatusFilters.some((v2) => storyStatusValues.includes(v2)), passesExclude = !excludedStatusFilters.length || excludedStatusFilters.every((v2) => !storyStatusValues.includes(v2));
-  return passesInclude && passesExclude;
-};
-
-// src/manager-api/modules/tags.ts
-var import_memoizerific5 = __toESM(require_memoizerific(), 1);
-var getDefaultTagsFromPreset = (0, import_memoizerific5.default)(1)((presets) => {
-  let presetEntries = Object.entries(presets);
-  return {
-    included: presetEntries.filter(([, option]) => option.defaultFilterSelection === "include").map(([tag]) => tag),
-    excluded: presetEntries.filter(([, option]) => option.defaultFilterSelection === "exclude").map(([tag]) => tag)
-  };
-});
-var computeTagsFilterFn = (includedTagFilters, excludedTagFilters) => {
-  let computeFilterFunctions = (set) => Object.values(
-    set.reduce(
-      (acc, tag) => (Object.hasOwn(BUILT_IN_FILTERS, tag) ? acc["built-in"].push(BUILT_IN_FILTERS[tag]) : acc.user.push(USER_TAG_FILTER(tag)), acc),
-      { "built-in": [], user: [] }
-    )
-  ).filter((group) => group.length > 0);
-  return (item) => {
-    let included = computeFilterFunctions(includedTagFilters), excluded = computeFilterFunctions(excludedTagFilters);
-    return (!included.length || included.every((group) => group.some((filterFn) => filterFn(item, !1)))) && (!excluded.length || excluded.every((group) => group.every((filterFn) => filterFn(item, !0))));
-  };
-};
-
-// src/manager/components/sidebar/ReviewChangesButton.tsx
-var Wrapper8 = styled.div({
-  display: "flex",
-  alignItems: "center",
-  gap: 4,
-  marginTop: -8
-}), StyledCTA = styled(ToggleButton)({
-  flex: 1,
-  justifyContent: "flex-start"
-}), StyledIcon = styled.svg(({ theme }) => ({
-  color: theme.fgColor.accent
-})), NEW = "status-value:new", MOD = "status-value:modified", ReviewChangesButton = () => {
-  let api = useStorybookApi(), {
-    internal_index: index,
-    includedStatusFilters: rawIncludedStatusFilters,
-    excludedStatusFilters: rawExcludedStatusFilters,
-    includedTagFilters: rawIncludedTagFilters,
-    excludedTagFilters: rawExcludedTagFilters
-  } = useStorybookState(), allStatuses = experimental_useStatusStore(), { newCount, modifiedCount } = useMemo(() => {
-    if (!index)
-      return { newCount: 0, modifiedCount: 0 };
-    let includedStatusFilters2 = rawIncludedStatusFilters ?? [], excludedStatusFilters2 = rawExcludedStatusFilters ?? [], includedTagFilters = rawIncludedTagFilters ?? [], excludedTagFilters = rawExcludedTagFilters ?? [], contextualIncludedStatuses = includedStatusFilters2.filter((s2) => s2 !== NEW && s2 !== MOD), contextualExcludedStatuses = excludedStatusFilters2.filter((s2) => s2 !== NEW && s2 !== MOD), tagFilterFn = computeTagsFilterFn(includedTagFilters, excludedTagFilters), statusFilterFn = computeStatusFilterFn(
-      contextualIncludedStatuses,
-      contextualExcludedStatuses
-    ), next = 0, modified = 0, entries = index.entries ?? {};
-    for (let [storyId, statusesByType] of Object.entries(allStatuses)) {
-      let entry = entries[storyId];
-      if (!entry)
-        continue;
-      let entryWithStatuses = { ...entry, statuses: statusesByType };
-      if (!tagFilterFn(entryWithStatuses) || !statusFilterFn(entryWithStatuses))
-        continue;
-      let statuses = Object.values(statusesByType);
-      statuses.some(({ value }) => value === NEW) && (next += 1), statuses.some(({ value }) => value === MOD) && (modified += 1);
-    }
-    return { newCount: next, modifiedCount: modified };
-  }, [
-    index,
-    allStatuses,
-    rawIncludedStatusFilters,
-    rawExcludedStatusFilters,
-    rawIncludedTagFilters,
-    rawExcludedTagFilters
-  ]), includedStatusFilters = rawIncludedStatusFilters ?? [], excludedStatusFilters = rawExcludedStatusFilters ?? [], isReviewActive = includedStatusFilters.includes(NEW) && includedStatusFilters.includes(MOD);
-  if (!globalThis.FEATURES?.changeDetection || newCount === 0 && modifiedCount === 0)
-    return null;
-  let clearReview = () => {
-    let nextIncluded = includedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD), nextExcluded = excludedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD);
-    api.setAllStatusFilters(nextIncluded, nextExcluded);
-  }, onClick = () => {
-    if (isReviewActive)
-      clearReview();
-    else {
-      let nextIncluded = Array.from(/* @__PURE__ */ new Set([...includedStatusFilters, NEW, MOD])), nextExcluded = excludedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD);
-      api.setAllStatusFilters(nextIncluded, nextExcluded);
-    }
-  }, onClearClick = (e2) => {
-    e2.stopPropagation(), clearReview();
-  }, changeKinds = newCount > 0 && modifiedCount > 0 ? "new and modified" : newCount > 0 ? "new" : "modified", label = `${isReviewActive ? "Reviewing" : "Review"} ${changeKinds} stories`;
-  return react_default.createElement(Wrapper8, null, react_default.createElement(
-    StyledCTA,
-    {
-      variant: "ghost",
-      padding: "small",
-      pressed: isReviewActive,
-      ariaLabel: label,
-      onClick
-    },
-    react_default.createElement(StyledIcon, { viewBox: "0 0 14 14", width: "14", height: "14", "aria-hidden": !0 }, react_default.createElement(UseSymbol, { type: "new" })),
-    label
-  ), isReviewActive && react_default.createElement(
-    Button,
-    {
-      variant: "ghost",
-      padding: "small",
-      size: "small",
-      onClick: onClearClick,
-      ariaLabel: "Clear",
-      tooltip: "Clear"
-    },
-    react_default.createElement(CloseIcon, null)
-  ));
-}, ReviewChangesButton_default = ReviewChangesButton;
-
 // src/manager/components/sidebar/useLastViewed.ts
 init_react();
 var import_store2 = __toESM(require_store2(), 1), save = debounce((value) => import_store2.default.set("lastViewedStoryIds", value), 1e3), useLastViewed = (selection) => {
   let initialLastViewedStoryIds = useMemo(() => {
     let items = import_store2.default.get("lastViewedStoryIds");
     return !items || !Array.isArray(items) ? [] : items.some((item) => typeof item == "object" && item.storyId && item.refId) ? items : [];
-  }, [import_store2.default]), lastViewedRef = useRef(initialLastViewedStoryIds), updateLastViewed = useCallback(
+  }, []), lastViewedRef = useRef(initialLastViewedStoryIds), updateLastViewed = useCallback(
     (story) => {
       let items = lastViewedRef.current, index = items.findIndex(
-        ({ storyId, refId }) => storyId === story.storyId && refId === story.refId
+        ({ storyId, refId, anchor }) => storyId === story.storyId && refId === story.refId && anchor === story.anchor
       );
       index !== 0 && (index === -1 ? lastViewedRef.current = [story, ...items] : lastViewedRef.current = [story, ...items.slice(0, index), ...items.slice(index + 1)], save(lastViewedRef.current));
     },
@@ -25983,6 +27781,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container11 = styled.header(({ theme 
   // @ts-expect-error (non strict)
   storyId = null,
   refId = DEFAULT_REF_ID,
+  anchor,
   index,
   indexJson,
   indexError,
@@ -25996,10 +27795,13 @@ var DEFAULT_REF_ID = "storybook_internal", Container11 = styled.header(({ theme 
   onMenuClick,
   showCreateStoryButton = isDevelopment && isRendererReact2
 }) {
-  let [isFileSearchModalOpen, setIsFileSearchModalOpen] = useState(!1), selected = useMemo(() => storyId && { storyId, refId }, [storyId, refId]), dataset = useCombination(index, indexError, previewInitialized, allStatuses, refs), isLoading = !index && !indexError, hasEntries = Object.keys(indexJson?.entries ?? {}).length > 0, lastViewedProps = useLastViewed(selected), { isMobile: isMobile2 } = useLayout(), api = useStorybookApi(), { viewMode } = api.getUrlState(), headerRef = useRef(null), { landmarkProps } = useLandmark(
+  let [isFileSearchModalOpen, setIsFileSearchModalOpen] = useState(!1), selected = useMemo(
+    () => storyId ? { storyId, refId, anchor } : null,
+    [storyId, refId, anchor]
+  ), dataset = useCombination(index, indexError, previewInitialized, allStatuses, refs), isLoading = !index && !indexError, hasEntries = Object.keys(indexJson?.entries ?? {}).length > 0, lastViewedProps = useLastViewed(selected), { isMobile: isMobile2 } = useLayout(), api = useStorybookApi(), { viewMode } = api.getUrlState(), headerRef = useRef(null), { landmarkProps } = useLandmark(
     { "aria-labelledby": "global-site-h1", role: "banner" },
     headerRef
-  ), skipLinkHref = viewMode !== void 0 && viewMode !== "story" && viewMode !== "docs" ? "#main-content-wrapper" : "#storybook-preview-wrapper";
+  ), skipLinkHref = isPagesViewMode(viewMode) ? "#main-content-wrapper" : "#storybook-preview-wrapper", showReviewWidget = useActiveReviewStoryCount() > 0, showOnboardingChecklist = !isLoading && scope.CONFIG_TYPE === "DEVELOPMENT" && scope.FEATURES?.sidebarOnboardingChecklist !== !1 && !showReviewWidget;
   return react_default.createElement(
     Container11,
     {
@@ -26020,7 +27822,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container11 = styled.header(({ theme 
         isLoading,
         onMenuClick
       }
-    ), !isLoading && scope.CONFIG_TYPE === "DEVELOPMENT" && scope.FEATURES?.sidebarOnboardingChecklist !== !1 && react_default.createElement(ChecklistWidget, null)), react_default.createElement(
+    ), showOnboardingChecklist ? react_default.createElement(ChecklistWidget, null) : null), !isLoading && showReviewWidget ? react_default.createElement(ReviewWidget_default, null) : null, react_default.createElement(
       Search,
       {
         dataset,
@@ -26045,7 +27847,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container11 = styled.header(({ theme 
           }
         )),
         searchFieldContent: react_default.createElement(Filter, null),
-        belowSearchContent: react_default.createElement(ReviewChangesButton_default, null),
+        belowSearchContent: react_default.createElement(ShowChangesButton, null),
         ...lastViewedProps
       },
       ({
@@ -26221,14 +28023,14 @@ var ProgressCircle2 = styled(ProgressSpinner)(({ theme }) => ({
       id: actionName,
       title: label,
       onClick: () => action(),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: keys[actionName] }) : null
+      right: enableShortcuts && keys[actionName] ? react_default.createElement(Shortcut, { keys: keys[actionName] }) : null
     }));
   }, [api, enableShortcuts, shortcutKeys]);
   return useMemo(
     () => [
       [
         about,
-        ...scope.CONFIG_TYPE === "DEVELOPMENT" ? [guide] : [],
+        ...scope.CONFIG_TYPE === "DEVELOPMENT" && scope.FEATURES?.menuOnboardingChecklist !== !1 ? [guide] : [],
         ...enableShortcuts ? [shortcuts] : []
       ],
       [sidebarToggle, toolbarToogle, addonsToggle, up, down, prev, next, collapse],
@@ -26262,6 +28064,7 @@ var Sidebar3 = react_default.memo(function({ onMenuClick }) {
       viewMode,
       storyId,
       refId,
+      location: location2,
       layout: { showToolbar },
       // FIXME: This is the actual `index.json` index where the `index` below
       // is actually the stories hash. We should fix this up and make it consistent.
@@ -26282,6 +28085,7 @@ var Sidebar3 = react_default.memo(function({ onMenuClick }) {
       refs,
       storyId,
       refId,
+      anchor: location2?.hash ? location2.hash.slice(1) : void 0,
       viewMode,
       showToolbar,
       isPanelShown: api.getIsPanelShown(),
@@ -26305,9 +28109,12 @@ var Sidebar3 = react_default.memo(function({ onMenuClick }) {
 }), Sidebar_default = Sidebar3;
 
 // src/manager/App.tsx
-var App = ({ managerLayoutState, setManagerLayoutState, pages, hasTab }) => {
+var MainPreview = () => {
+  let { isSummaryVisible } = useReviewContext();
+  return isSummaryVisible ? null : react_default.createElement(Preview_default, { id: "main", withLoader: !0 });
+}, App = ({ managerLayoutState, setManagerLayoutState, pages, hasTab }) => {
   let { setMobileAboutOpen } = useLayout(), { enableShortcuts = !0 } = addons.getConfig();
-  return useEffect(() => {
+  useEffect(() => {
     document.body.setAttribute("data-shortcuts-enabled", enableShortcuts ? "true" : "false");
   }, [enableShortcuts]), useEffect(() => {
     let rootElement = document.getElementById("root");
@@ -26321,18 +28128,21 @@ var App = ({ managerLayoutState, setManagerLayoutState, pages, hasTab }) => {
       attributes: !0,
       attributeFilter: ["inert"]
     }), () => observer.disconnect();
-  }, []), react_default.createElement(react_default.Fragment, null, react_default.createElement(Global, { styles: createGlobal }), react_default.createElement(ManagerErrorBoundary, null, react_default.createElement(
+  }, []);
+  let isReviewEnabled = isReviewFeatureEnabled(scope.FEATURES), layout = react_default.createElement(
     Layout,
     {
       hasTab,
       managerLayoutState,
       setManagerLayoutState,
-      slotMain: react_default.createElement(Preview_default, { id: "main", withLoader: !0 }),
+      slotOverlay: isReviewEnabled ? react_default.createElement(ReviewPersistentLayer, null) : void 0,
+      slotMain: react_default.createElement(MainPreview, null),
       slotSidebar: react_default.createElement(Sidebar_default, { onMenuClick: () => setMobileAboutOpen((state) => !state) }),
       slotPanel: react_default.createElement(Panel_default, null),
       slotPages: pages.map(({ id, render: Content6 }) => react_default.createElement(Content6, { key: id }))
     }
-  )));
+  );
+  return react_default.createElement(react_default.Fragment, null, react_default.createElement(Global, { styles: createGlobal }), react_default.createElement(ManagerErrorBoundary, null, isReviewEnabled ? react_default.createElement(ReviewProvider, null, layout) : layout));
 };
 
 // src/manager/provider.ts
@@ -26370,7 +28180,7 @@ var Container12 = styled.div({
     width: "auto",
     marginRight: 8
   }
-}), Footer = styled.div(({ theme }) => ({
+}), Footer2 = styled.div(({ theme }) => ({
   marginBottom: 24,
   display: "flex",
   flexDirection: "column",
@@ -26378,7 +28188,7 @@ var Container12 = styled.div({
   color: theme.base === "light" ? theme.color.dark : theme.color.lightest,
   fontWeight: theme.typography.weight.regular,
   fontSize: theme.typography.size.s2
-})), Actions2 = styled.div({
+})), Actions3 = styled.div({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
@@ -26393,7 +28203,7 @@ var Container12 = styled.div({
   "&:hover": {
     color: theme.base === "light" ? theme.color.darkest : theme.color.lightest
   }
-})), AboutScreen = ({ onNavigateToWhatsNew }) => react_default.createElement(Container12, null, react_default.createElement(Header, null, react_default.createElement(StorybookLogo, { alt: "Storybook" })), react_default.createElement(UpgradeBlock, { onNavigateToWhatsNew }), react_default.createElement(Footer, null, react_default.createElement(Actions2, null, react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://github.com/storybookjs/storybook" }, react_default.createElement(GithubIcon, null), "GitHub")), react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://storybook.js.org/docs?ref=ui" }, react_default.createElement(DocumentIcon, { style: { display: "inline", marginRight: 5 } }), "Documentation"))), react_default.createElement("div", null, "Open source software maintained by", " ", react_default.createElement(StyledLink, { href: "https://www.chromatic.com/" }, "Chromatic"), " and the", " ", react_default.createElement(StyledLink, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community"))));
+})), AboutScreen = ({ onNavigateToWhatsNew }) => react_default.createElement(Container12, null, react_default.createElement(Header, null, react_default.createElement(StorybookLogo, { alt: "Storybook" })), react_default.createElement(UpgradeBlock, { onNavigateToWhatsNew }), react_default.createElement(Footer2, null, react_default.createElement(Actions3, null, react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://github.com/storybookjs/storybook" }, react_default.createElement(GithubIcon, null), "GitHub")), react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://storybook.js.org/docs?ref=ui" }, react_default.createElement(DocumentIcon, { style: { display: "inline", marginRight: 5 } }), "Documentation"))), react_default.createElement("div", null, "Open source software maintained by", " ", react_default.createElement(StyledLink, { href: "https://www.chromatic.com/" }, "Chromatic"), " and the", " ", react_default.createElement(StyledLink, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community"))));
 
 // src/manager/settings/AboutPage.tsx
 var NotificationClearer = class extends Component {
@@ -26630,7 +28440,7 @@ var Sections = styled.ol(({ theme }) => ({
   width: visible ? "auto" : 0,
   height: visible ? 18 : 16,
   transition: "all var(--transition-duration, 0.2s)"
-})), Actions3 = styled.div({
+})), Actions4 = styled.div({
   alignSelf: "flex-end",
   flexDirection: "row-reverse",
   display: "flex",
@@ -26650,7 +28460,7 @@ var Sections = styled.ol(({ theme }) => ({
   copyContent,
   onClick
 }) => {
-  let { children: copyChildren, buttonProps: copyButtonProps } = useCopyButton({
+  let { children: copyChildren, buttonProps: copyButtonProps } = useCopyButton2({
     children: label,
     onCopy: onClick,
     content: copyContent
@@ -26695,7 +28505,7 @@ var Sections = styled.ol(({ theme }) => ({
           },
           react_default.createElement(StatusIcon3, null, react_default.createElement(Checked2, { "data-visible": progress === 100 })),
           react_default.createElement(SectionHeading, null, title2),
-          react_default.createElement(Actions3, null, react_default.createElement(
+          react_default.createElement(Actions4, null, react_default.createElement(
             ToggleButton2,
             {
               ...toggleProps,
@@ -26739,7 +28549,7 @@ var Sections = styled.ol(({ theme }) => ({
                   },
                   react_default.createElement(StatusIcon3, null, react_default.createElement(Checked2, { "data-visible": isChecked }), react_default.createElement(Skipped, { visible: isSkipped }, "Skipped")),
                   react_default.createElement(ItemHeading, { skipped: isSkipped }, item.label),
-                  react_default.createElement(Actions3, null, itemContent && react_default.createElement(
+                  react_default.createElement(Actions4, null, itemContent && react_default.createElement(
                     ToggleButton2,
                     {
                       ...toggleProps,
@@ -26861,8 +28671,8 @@ var AiCtaCard = styled.div(({ theme }) => ({
   gap: 8,
   justifyContent: "flex-end",
   marginTop: 12
-}), CopyButton2 = ({ api }) => {
-  let { children: buttonChildren, buttonProps } = useCopyButton({
+}), CopyButton3 = ({ api }) => {
+  let { children: buttonChildren, buttonProps } = useCopyButton2({
     children: "Copy prompt",
     childrenOnCopy: react_default.createElement(react_default.Fragment, null, react_default.createElement(CheckIcon, null), " Copied!"),
     content: getAiSetupPrompt(),
@@ -26877,7 +28687,7 @@ var AiCtaCard = styled.div(({ theme }) => ({
   skip
 }) => {
   let api = useStorybookApi();
-  return !item.isDone && !item.isAccepted && !item.isCompleted ? react_default.createElement(AiCtaCard, null, react_default.createElement(AiCtaHeadingRow, null, item.isSkipped && react_default.createElement(StatusIcon3, null, react_default.createElement(Skipped, { visible: !0 }, "Skipped")), react_default.createElement(AiCtaHeading, { $skipped: item.isSkipped }, "Set up Storybook with AI"), item.isSkipped && react_default.createElement(Button, { ariaLabel: "Undo", variant: "ghost", padding: "small", onClick: () => reset(item.id) }, react_default.createElement(UndoIcon, null))), react_default.createElement(Collapsible.Content, { collapsed: item.isSkipped }, react_default.createElement(AiCtaDescription, null, "Run a prompt in your AI agent to analyze your codebase, configure decorators and mocks, write sample stories for your UI components, and verify everything works."), react_default.createElement(AiCtaActions, null, react_default.createElement(Button, { variant: "ghost", size: "medium", ariaLabel: !1, onClick: () => skip(item.id) }, "Skip"), react_default.createElement(CopyButton2, { api })))) : null;
+  return !item.isDone && !item.isAccepted && !item.isCompleted ? react_default.createElement(AiCtaCard, null, react_default.createElement(AiCtaHeadingRow, null, item.isSkipped && react_default.createElement(StatusIcon3, null, react_default.createElement(Skipped, { visible: !0 }, "Skipped")), react_default.createElement(AiCtaHeading, { $skipped: item.isSkipped }, "Set up Storybook with AI"), item.isSkipped && react_default.createElement(Button, { ariaLabel: "Undo", variant: "ghost", padding: "small", onClick: () => reset(item.id) }, react_default.createElement(UndoIcon, null))), react_default.createElement(Collapsible.Content, { collapsed: item.isSkipped }, react_default.createElement(AiCtaDescription, null, "Run a prompt in your AI agent to analyze your codebase, configure decorators and mocks, write sample stories for your UI components, and verify everything works."), react_default.createElement(AiCtaActions, null, react_default.createElement(Button, { variant: "ghost", size: "medium", ariaLabel: !1, onClick: () => skip(item.id) }, "Skip"), react_default.createElement(CopyButton3, { api })))) : null;
 };
 
 // src/manager/settings/GuidePage.tsx
@@ -26915,7 +28725,7 @@ init_react();
 
 // src/manager/settings/SettingsFooter.tsx
 init_react();
-var Footer2 = styled.div(({ theme }) => ({
+var Footer3 = styled.div(({ theme }) => ({
   display: "flex",
   paddingTop: 20,
   marginTop: 20,
@@ -26924,7 +28734,7 @@ var Footer2 = styled.div(({ theme }) => ({
   "& > * + *": {
     marginLeft: 20
   }
-})), SettingsFooter = (props) => react_default.createElement(Footer2, { ...props }, react_default.createElement(Link, { secondary: !0, href: "https://storybook.js.org?ref=ui", cancel: !1, target: "_blank" }, "Docs"), react_default.createElement(Link, { secondary: !0, href: "https://github.com/storybookjs/storybook", cancel: !1, target: "_blank" }, "GitHub"), react_default.createElement(
+})), SettingsFooter = (props) => react_default.createElement(Footer3, { ...props }, react_default.createElement(Link, { secondary: !0, href: "https://storybook.js.org?ref=ui", cancel: !1, target: "_blank" }, "Docs"), react_default.createElement(Link, { secondary: !0, href: "https://github.com/storybookjs/storybook", cancel: !1, target: "_blank" }, "GitHub"), react_default.createElement(
   Link,
   {
     secondary: !0,
@@ -27199,7 +29009,7 @@ var Centered = styled.div({
 }), LoaderWrapper2 = styled.div({
   position: "relative",
   height: "32px"
-}), Message2 = styled.div(({ theme }) => ({
+}), Message3 = styled.div(({ theme }) => ({
   paddingTop: "12px",
   color: theme.textMutedColor,
   maxWidth: "295px",
@@ -27223,7 +29033,7 @@ var Centered = styled.div({
   onToggleNotifications,
   copyContent
 }) => {
-  let theme = useTheme(), { children: copyText, buttonProps: copyButtonProps } = useCopyButton({
+  let theme = useTheme(), { children: copyText, buttonProps: copyButtonProps } = useCopyButton2({
     children: "Copy Link",
     content: copyContent
   });
@@ -27248,7 +29058,7 @@ var Centered = styled.div({
   width: 32,
   height: 32,
   margin: "0 auto"
-})), WhatsNewLoader = () => react_default.createElement(Centered, null, react_default.createElement(LoaderWrapper2, null, react_default.createElement(Loader, null)), react_default.createElement(Message2, null, "Loading...")), MaxWaitTimeMessaging = () => react_default.createElement(Centered, null, react_default.createElement(AlertIcon2, null), react_default.createElement(Message2, null, "The page couldn't be loaded. Check your internet connection and try again.")), PureWhatsNewScreen = ({
+})), WhatsNewLoader = () => react_default.createElement(Centered, null, react_default.createElement(LoaderWrapper2, null, react_default.createElement(Loader, null)), react_default.createElement(Message3, null, "Loading...")), MaxWaitTimeMessaging = () => react_default.createElement(Centered, null, react_default.createElement(AlertIcon2, null), react_default.createElement(Message3, null, "The page couldn't be loaded. Check your internet connection and try again.")), PureWhatsNewScreen = ({
   didHitMaxWaitTime,
   isLoaded,
   onLoad,
@@ -27320,7 +29130,7 @@ var { document: document9 } = scope, Content5 = styled(ScrollArea)(({ theme }) =
         children: react_default.createElement(RouteWrapper, { path: "about" }, react_default.createElement(AboutPage, { key: "about" }))
       }
     ];
-    return scope.CONFIG_TYPE === "DEVELOPMENT" && tabsToInclude.push({
+    return scope.CONFIG_TYPE === "DEVELOPMENT" && scope.FEATURES?.menuOnboardingChecklist !== !1 && tabsToInclude.push({
       id: "guide",
       title: "Guide",
       children: react_default.createElement(RouteWrapper, { path: "guide" }, react_default.createElement(GuidePage, { key: "guide" }))
@@ -27377,7 +29187,7 @@ var { document: document9 } = scope, Content5 = styled(ScrollArea)(({ theme }) =
 // src/manager/index.tsx
 ThemeProvider.displayName = "ThemeProvider";
 q.displayName = "HelmetProvider";
-var Root3 = ({ provider }) => react_default.createElement(q, { key: "helmet.Provider" }, react_default.createElement(LocationProvider, { key: "location.provider" }, react_default.createElement(Main, { provider }))), Main = ({ provider }) => {
+var Root5 = ({ provider }) => react_default.createElement(q, { key: "helmet.Provider" }, react_default.createElement(LocationProvider, { key: "location.provider" }, react_default.createElement(Main3, { provider }))), Main3 = ({ provider }) => {
   let navigate = useNavigate();
   return react_default.createElement(Location, { key: "location.consumer" }, (locationData) => react_default.createElement(
     Provider,
@@ -27417,7 +29227,7 @@ var Root3 = ({ provider }) => react_default.createElement(q, { key: "helmet.Prov
 function renderStorybookUI(domNode, provider) {
   if (!(provider instanceof Provider2))
     throw new ProviderDoesNotExtendBaseProviderError();
-  createRoot(domNode).render(react_default.createElement(Root3, { key: "root", provider }));
+  createRoot(domNode).render(react_default.createElement(Root5, { key: "root", provider }));
 }
 
 // src/manager/runtime.tsx
@@ -27431,12 +29241,15 @@ addons.register(
     render: () => react_default.createElement(ToolbarManager, null)
   })
 );
+var channel = createBrowserChannel({ page: "manager" });
+addons.setChannel(channel);
+channel.emit(CHANNEL_CREATED);
 var ReactProvider = class extends Provider2 {
   constructor() {
-    super();
+    super(...arguments);
+    this.addons = addons;
+    this.channel = channel;
     this.wsDisconnected = !1;
-    let channel = createBrowserChannel({ page: "manager" });
-    addons.setChannel(channel), channel.emit(CHANNEL_CREATED), this.addons = addons, this.channel = channel, scope.__STORYBOOK_ADDONS_CHANNEL__ = channel;
   }
   getElements(type) {
     return this.addons.getElements(type);

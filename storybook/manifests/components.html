@@ -124,6 +124,8 @@
       #filter-errors:target ~ header .filter-pill[data-k='errors'],
       #filter-infos:target ~ header .filter-pill[data-k='infos'],
       #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'],
+      #filter-story-warnings:target ~ header .filter-pill[data-k='story-warnings'],
+      #filter-no-api:target ~ header .filter-pill[data-k='no-api'],
       #filter-doc-errors:target ~ header .filter-pill[data-k='docs'],
       #filter-docs:target ~ header .filter-pill[data-k='docs'] {
           box-shadow: 0 0 0 var(--active-ring) currentColor;
@@ -135,6 +137,8 @@
       #filter-errors,
       #filter-infos,
       #filter-story-errors,
+      #filter-story-warnings,
+      #filter-no-api,
       #filter-doc-errors,
       #filter-docs {
           display: none;
@@ -160,6 +164,14 @@
           display: flex;
           flex-direction: column;
           gap: 10px;
+          /* Keep a deep-linked card clear of the sticky header when scrolled into view */
+          scroll-margin-top: 110px;
+      }
+
+      /* Highlight the card deep-linked via components.html#<manifest-id> */
+      .card:target {
+          box-shadow: 0 0 0 2px var(--info);
+          border-color: var(--info);
       }
 
       .head {
@@ -241,6 +253,16 @@
           border-color: color-mix(in srgb, var(--err) 55%, var(--border));
       }
 
+      .snippet-warning {
+          margin-top: 8px;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid color-mix(in srgb, var(--info) 45%, var(--border));
+          background: var(--info-bg);
+          color: #b3d9ff;
+          font-size: 12px;
+      }
+
       .as-toggle {
           cursor: pointer;
       }
@@ -300,7 +322,7 @@
           display: grid;
       }
 
-      /* Colored notes for prop type error + info */
+      /* Colored notes for API error + info */
       .note {
           padding: 12px;
           border: 1px solid var(--border);
@@ -456,6 +478,14 @@
           display: none;
       }
 
+      #filter-story-warnings:target ~ main .card:not(.has-story-warning) {
+          display: none;
+      }
+
+      #filter-no-api:target ~ main .card:not(.missing-api) {
+          display: none;
+      }
+
       #filter-doc-errors:target ~ main .card:not(.has-doc-error) {
           display: none;
       }
@@ -583,18 +613,20 @@
 <span id="filter-errors"></span>
 <span id="filter-infos"></span>
 <span id="filter-story-errors"></span>
+<span id="filter-story-warnings"></span>
+<span id="filter-no-api"></span>
 <span id="filter-doc-errors"></span>
 <span id="filter-docs"></span>
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><span class="filter-pill ok" aria-disabled="true">552 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><a class="filter-pill" data-k="no-api" href="#filter-no-api">7/54 without API description</a><span class="filter-pill ok" aria-disabled="true">552 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>2.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>6.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -605,10 +637,13 @@
     <div class="grid" role="list">
       
 <article
+  id="backstage-ui-accordion"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Accordion">
@@ -693,6 +728,7 @@ className?: string</code></pre>
     &lt;/AccordionPanel&gt;
   &lt;/Accordion&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -712,6 +748,7 @@ className?: string</code></pre>
     &lt;/AccordionPanel&gt;
   &lt;/Accordion&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -737,6 +774,7 @@ className?: string</code></pre>
     &lt;/AccordionPanel&gt;
   &lt;/Accordion&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -753,6 +791,7 @@ className?: string</code></pre>
     &lt;/AccordionPanel&gt;
   &lt;/Accordion&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -796,6 +835,7 @@ className?: string</code></pre>
     &lt;/Accordion&gt;
   &lt;/AccordionGroup&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -839,6 +879,7 @@ className?: string</code></pre>
     &lt;/Accordion&gt;
   &lt;/AccordionGroup&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -920,6 +961,7 @@ className?: string</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -927,10 +969,13 @@ className?: string</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-alert"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Alert">
@@ -1029,6 +1074,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Alert title=&quot;This is an alert message&quot; icon /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1061,6 +1107,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1097,6 +1144,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1129,6 +1177,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1151,6 +1200,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1193,6 +1243,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
           &lt;/Button&gt;
         } /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1202,6 +1253,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithActionsAndDescriptions = () =&gt; &lt;Alert description=&quot;This is a description of the alert.&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1240,6 +1292,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1266,6 +1319,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1293,6 +1347,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1342,6 +1397,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1359,6 +1415,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
       md: &#39;warning&#39;,
       lg: &#39;danger&#39;,
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1384,6 +1441,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/Box&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -1391,10 +1449,13 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-avatar"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Avatar">
@@ -1485,6 +1546,7 @@ src: string</code></pre>
               <pre><code>const Default = () =&gt; &lt;Avatar
     src=&quot;https://avatars.githubusercontent.com/u/1540635?v=4&quot;
     name=&quot;Charles de Dreuille&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1494,6 +1556,7 @@ src: string</code></pre>
               
               
               <pre><code>const Fallback = () =&gt; &lt;Avatar src=&quot;https://avatars.githubusercontent.com/u/15406AAAAAAAAA&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1518,6 +1581,7 @@ src: string</code></pre>
         &lt;Avatar size=&quot;x-large&quot; src=&quot;&quot; /&gt;
     &lt;/Flex&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1547,6 +1611,7 @@ src: string</code></pre>
         &lt;/Flex&gt;
     &lt;/Flex&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -1554,10 +1619,13 @@ src: string</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-badge"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Badge">
@@ -1635,6 +1703,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Badge&gt;Banana&lt;/Badge&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1649,6 +1718,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
     &lt;Badge size=&quot;medium&quot;&gt;Banana&lt;/Badge&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1667,6 +1737,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
     &lt;/Badge&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -1674,10 +1745,13 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-box"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Box">
@@ -1822,6 +1896,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
       fontWeight: &#39;bold&#39;,
       color: &#39;#2563eb&#39;,
     }}&gt;{null}&lt;/Box&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1850,6 +1925,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box my=&quot;6&quot; children=&quot;MY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1878,6 +1954,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box my={{ initial: &#39;2&#39;, sm: &#39;6&#39; }} children=&quot;MY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1906,6 +1983,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box my=&quot;42px&quot; children=&quot;MY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1934,6 +2012,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box my={{ initial: &#39;9px&#39;, sm: &#39;42px&#39; }} children=&quot;MY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -1962,6 +2041,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box children=&quot;PY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2002,6 +2082,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box children=&quot;PY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2030,6 +2111,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box children=&quot;PY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2070,6 +2152,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;Box children=&quot;PY&quot; /&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2094,6 +2177,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;CardDisplay&gt;Responsive&lt;/CardDisplay&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2123,6 +2207,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     &lt;Box bg=&quot;success&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Success
               &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2140,6 +2225,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Box&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -2147,10 +2233,13 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-button"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Button">
@@ -2235,6 +2324,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Button&gt;Button&lt;/Button&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2269,6 +2359,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2343,6 +2434,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2361,6 +2453,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Button&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2374,6 +2467,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;Button iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/Button&gt;
     &lt;Button iconStart={&lt;RiCloudLine /&gt;} iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/Button&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2387,6 +2481,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;Button iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/Button&gt;
     &lt;Button iconStart={&lt;RiCloudLine /&gt;} iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/Button&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2421,6 +2516,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2438,6 +2534,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       xs: &#39;small&#39;,
       sm: &#39;medium&#39;,
     }}&gt;Button&lt;/Button&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2462,6 +2559,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Button&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2543,6 +2641,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2587,6 +2686,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -2594,10 +2694,13 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-buttonicon"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="ButtonIcon">
@@ -2676,6 +2779,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;ButtonIcon icon={&lt;RiCloudLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2691,6 +2795,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ButtonIcon icon={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2705,6 +2810,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ButtonIcon icon={&lt;RiCloudLine /&gt;} size=&quot;medium&quot; /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2720,6 +2826,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ButtonIcon isDisabled icon={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2738,6 +2845,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
       sm: &#39;medium&#39;,
     }}
     icon={&lt;RiCloudLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2765,6 +2873,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2836,6 +2945,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -2843,10 +2953,13 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-buttonlink"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="ButtonLink">
@@ -2925,6 +3038,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;ButtonLink&gt;Button&lt;/ButtonLink&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2961,6 +3075,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/ButtonLink&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2979,6 +3094,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/ButtonLink&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -2992,6 +3108,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ButtonLink iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/ButtonLink&gt;
     &lt;ButtonLink iconStart={&lt;RiCloudLine /&gt;} iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/ButtonLink&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3005,6 +3122,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ButtonLink iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/ButtonLink&gt;
     &lt;ButtonLink iconStart={&lt;RiCloudLine /&gt;} iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Button&lt;/ButtonLink&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3026,6 +3144,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/ButtonLink&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3043,6 +3162,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       xs: &#39;small&#39;,
       sm: &#39;medium&#39;,
     }}&gt;Button&lt;/ButtonLink&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -3050,10 +3170,13 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-card"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Card">
@@ -3137,6 +3260,7 @@ style?: CSSProperties</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Card&gt;Hello world&lt;/Card&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3149,6 +3273,7 @@ style?: CSSProperties</code></pre>
     &lt;CardHeader&gt;Header&lt;/CardHeader&gt;
     &lt;CardBody&gt;Body&lt;/CardBody&gt;
 &lt;/Card&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3160,6 +3285,7 @@ style?: CSSProperties</code></pre>
               <pre><code>const LongBody = () =&gt; (
   &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;{content}&lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3176,6 +3302,7 @@ style?: CSSProperties</code></pre>
     &lt;CardBody&gt;{content}&lt;/CardBody&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3195,6 +3322,7 @@ style?: CSSProperties</code></pre>
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3208,6 +3336,7 @@ style?: CSSProperties</code></pre>
     &lt;CardBody&gt;{listRowContent}&lt;/CardBody&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3224,6 +3353,7 @@ style?: CSSProperties</code></pre>
     &lt;CardBody&gt;{listRowContent}&lt;/CardBody&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3240,6 +3370,7 @@ style?: CSSProperties</code></pre>
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3278,6 +3409,7 @@ style?: CSSProperties</code></pre>
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3316,6 +3448,7 @@ style?: CSSProperties</code></pre>
         &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3349,6 +3482,7 @@ style?: CSSProperties</code></pre>
         &lt;/CardBody&gt;
     &lt;/Card&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3387,6 +3521,7 @@ style?: CSSProperties</code></pre>
         &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3417,6 +3552,7 @@ style?: CSSProperties</code></pre>
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3444,6 +3580,7 @@ style?: CSSProperties</code></pre>
     &lt;CardFooter&gt;Opens backstage.io&lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3487,6 +3624,7 @@ style?: CSSProperties</code></pre>
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3512,6 +3650,7 @@ style?: CSSProperties</code></pre>
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3536,6 +3675,7 @@ style?: CSSProperties</code></pre>
     &lt;/Card&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -3554,6 +3694,7 @@ style?: CSSProperties</code></pre>
       <div class="hint">CardHeader component.</div>
       <div class="kv"><span class="chip">public:  </span></div>
       <pre><code>import { CardHeader } from &quot;@backstage/ui&quot;;</code></pre>
+      
       
       
           <pre><code>Component: packages/ui/src/components/Card/Card.tsx::CardHeader (react-docgen)</code></pre>
@@ -3576,6 +3717,7 @@ className?: string</code></pre>
       <pre><code>import { CardBody } from &quot;@backstage/ui&quot;;</code></pre>
       
       
+      
           <pre><code>Component: packages/ui/src/components/Card/Card.tsx::CardBody (react-docgen)</code></pre>
           <pre><code>children?: ReactNode
 
@@ -3596,6 +3738,7 @@ className?: string</code></pre>
       <pre><code>import { CardFooter } from &quot;@backstage/ui&quot;;</code></pre>
       
       
+      
           <pre><code>Component: packages/ui/src/components/Card/Card.tsx::CardFooter (react-docgen)</code></pre>
           <pre><code>children?: ReactNode
 
@@ -3606,10 +3749,13 @@ className?: string</code></pre>
   </div>
 </article>
 <article
+  id="recipes-cards-with-list"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="CardswithList">
@@ -3728,6 +3874,7 @@ import {
     &lt;/Grid.Root&gt;
   &lt;/Container&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3750,6 +3897,7 @@ import {
             icons={false} /&gt;
     &lt;/Grid.Root&gt;
 &lt;/Container&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3764,6 +3912,7 @@ import {
         &lt;ServiceListCard title=&quot;Backend services&quot; items={backendServices} description /&gt;
     &lt;/Grid.Root&gt;
 &lt;/Container&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -3771,10 +3920,13 @@ import {
   </div>
 </article>
 <article
+  id="guidelines-cards-with-table"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="CardswithTable">
@@ -3874,6 +4026,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;CardsWithTableLayout /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -3881,10 +4034,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-checkbox"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Checkbox">
@@ -3952,6 +4108,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Checkbox&gt;Accept terms and conditions&lt;/Checkbox&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3961,6 +4118,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Selected = () =&gt; &lt;Checkbox isSelected /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3970,6 +4128,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Indeterminate = () =&gt; &lt;Checkbox isIndeterminate&gt;Select all&lt;/Checkbox&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3982,6 +4141,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               unsubscribe from these communications at any time. Please review our{&#39; &#39;}
       &lt;Link href=&quot;#&quot;&gt;Privacy Policy&lt;/Link&gt;
     &lt;/&gt;)&lt;/Checkbox&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -3991,6 +4151,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Invalid = () =&gt; &lt;Checkbox isInvalid /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4020,6 +4181,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Checkbox&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -4027,10 +4189,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-checkboxgroup"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="CheckboxGroup">
@@ -4111,6 +4276,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4134,6 +4300,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
         &lt;Text&gt;Selected: {values.join(&#39;, &#39;) || &#39;none&#39;}&lt;/Text&gt;
     &lt;/&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4147,6 +4314,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4160,6 +4328,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4174,6 +4343,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               &lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4188,6 +4358,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               &lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4201,6 +4372,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4214,6 +4386,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4228,6 +4401,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4241,6 +4415,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4258,6 +4433,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Checkbox value=&quot;slack&quot;&gt;Slack&lt;/Checkbox&gt;
     &lt;Checkbox value=&quot;email&quot;&gt;Email&lt;/Checkbox&gt;
 &lt;/CheckboxGroup&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -4265,10 +4441,13 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-combobox"
   class="card 
-  no-error 
-  has-info 
+  no-error
+  has-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="Combobox">
@@ -4276,7 +4455,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Combobox</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         <label for="c-13-backstage-ui-combobox-info" class="badge info as-toggle">1 info</label>
         <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">24 stories</label>
         
@@ -4344,6 +4523,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     options={fontOptions}
     placeholder=&quot;Pick a font&quot;
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4359,6 +4539,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     placeholder=&quot;Search countries&quot;
     search
     name=&quot;country&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4368,6 +4549,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithIcon = () =&gt; &lt;Combobox style={{ width: 300 }} icon={&lt;RiCloudLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4382,6 +4564,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     options={sectionedOptions}
     placeholder=&quot;Pick a font&quot;
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4397,6 +4580,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     placeholder=&quot;Type any country&quot;
     allowsCustomValue
     name=&quot;country&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4411,6 +4595,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ComboboxItemTypesColumn size=&quot;medium&quot; /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4424,6 +4609,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     {owner =&gt; &lt;ComboboxItemProfile name={owner.name} src={owner.src} /&gt;}
   &lt;/Combobox&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4433,6 +4619,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const ServerBackedOptions = () =&gt; &lt;ServerBackedCombobox /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4442,6 +4629,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const ServerBackedCustomItems = () =&gt; &lt;ServerBackedCustomCombobox /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4466,6 +4654,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     )}
   &lt;/Combobox&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4478,6 +4667,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;Combobox style={{ width: 300 }} size=&quot;small&quot; icon={&lt;RiCloudLine /&gt;} /&gt;
     &lt;Combobox style={{ width: 300 }} size=&quot;medium&quot; icon={&lt;RiCloudLine /&gt;} /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4487,6 +4677,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;Combobox style={{ width: 300 }} isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4496,6 +4687,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;Combobox style={{ width: 300 }} isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4507,6 +4699,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const WithLabelAndDescription = () =&gt; &lt;Combobox
     style={{ width: 300 }}
     description=&quot;Choose a font family for your document&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4516,6 +4709,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithDefaultValue = () =&gt; &lt;Combobox style={{ width: 300 }} defaultValue=&quot;serif&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4525,6 +4719,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithFullWidth = () =&gt; &lt;Combobox style={{ width: &#39;100%&#39; }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4534,6 +4729,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const NoOptions = () =&gt; &lt;Combobox style={{ width: 300 }} options={undefined} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4543,6 +4739,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DisabledOption = () =&gt; &lt;Combobox style={{ width: 300 }} disabledKeys={[&#39;cursive&#39;, &#39;serif&#39;]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4552,6 +4749,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithValue = () =&gt; &lt;Combobox style={{ width: 300 }} value=&quot;mono&quot; defaultValue=&quot;serif&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4563,6 +4761,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const WithError = () =&gt; &lt;Form validationErrors={{ font: &#39;Invalid font family&#39; }}&gt;
     &lt;Combobox style={{ width: 300 }} /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4594,6 +4793,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     placeholder=&quot;Select a document template&quot;
     name=&quot;template&quot;
     defaultValue=&quot;annual-report-2024&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4603,6 +4803,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLongNamesAndPadding = () =&gt; &lt;Combobox style={{ width: 300 }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4643,6 +4844,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4673,6 +4875,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
             name=&quot;font-labelledby&quot; /&gt;
     &lt;/div&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -4680,10 +4883,13 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-container"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Container">
@@ -4764,6 +4970,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Container&gt;&lt;DecorativeBox /&gt;&lt;/Container&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4777,6 +4984,7 @@ style?: React.CSSProperties</code></pre>
     &lt;DecorativeBox /&gt;
   &lt;/div&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4786,6 +4994,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const WithPaddingY = () =&gt; &lt;Container py=&quot;4&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4795,6 +5004,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const WithPaddingTop = () =&gt; &lt;Container pt=&quot;4&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4804,6 +5014,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const WithPaddingBottom = () =&gt; &lt;Container pb=&quot;4&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4813,6 +5024,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const WithMarginY = () =&gt; &lt;Container my=&quot;4&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4822,6 +5034,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const WithMarginTop = () =&gt; &lt;Container mt=&quot;4&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4831,6 +5044,7 @@ style?: React.CSSProperties</code></pre>
               
               
               <pre><code>const WithMarginBottom = () =&gt; &lt;Container mb=&quot;4&quot; /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -4838,10 +5052,13 @@ style?: React.CSSProperties</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-datepicker"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="DatePicker">
@@ -4919,6 +5136,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;DatePicker style={{ width: 280 }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4928,6 +5146,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;DatePicker style={{ width: 280 }} label=&quot;Date&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4940,6 +5159,7 @@ import { Form } from "react-aria-components";</code></pre>
     style={{ width: 280 }}
     label=&quot;Date&quot;
     description=&quot;Select the date of your event.&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4952,6 +5172,7 @@ import { Form } from "react-aria-components";</code></pre>
     style={{ width: 280 }}
     label=&quot;Booking date&quot;
     defaultValue={parseDate(&#39;2025-02-03&#39;)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4970,6 +5191,7 @@ import { Form } from "react-aria-components";</code></pre>
     &lt;DatePicker style={{ width: 280 }} size=&quot;small&quot; label=&quot;Small&quot; /&gt;
     &lt;DatePicker style={{ width: 280 }} size=&quot;medium&quot; label=&quot;Medium&quot; /&gt;
 &lt;/div&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -4991,6 +5213,7 @@ import { Form } from "react-aria-components";</code></pre>
     &lt;DatePicker style={{ width: 280 }} label=&quot;Trip date&quot; isRequired /&gt;
     &lt;Button type=&quot;submit&quot;&gt;Submit&lt;/Button&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5004,6 +5227,7 @@ import { Form } from "react-aria-components";</code></pre>
     label=&quot;Date&quot;
     isDisabled
     defaultValue={parseDate(&#39;2025-03-01&#39;)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5018,6 +5242,7 @@ import { Form } from "react-aria-components";</code></pre>
     isInvalid
     errorMessage=&quot;The selected date is not available.&quot;
     defaultValue={parseDate(&#39;2025-04-01&#39;)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5032,6 +5257,7 @@ import { Form } from "react-aria-components";</code></pre>
     description=&quot;You can only select dates within the next 30 days.&quot;
     minValue={today(getLocalTimeZone())}
     maxValue={today(getLocalTimeZone()).add({ days: 30 })} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5051,6 +5277,7 @@ import { Form } from "react-aria-components";</code></pre>
             isDateUnavailable={date =&gt; isWeekend(date, locale)} /&gt;
     );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -5058,10 +5285,13 @@ import { Form } from "react-aria-components";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-daterangepicker"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="DateRangePicker">
@@ -5139,6 +5369,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;DateRangePicker style={{ width: 360 }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5148,6 +5379,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;DateRangePicker style={{ width: 360 }} label=&quot;Date range&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5160,6 +5392,7 @@ import { Form } from "react-aria-components";</code></pre>
     style={{ width: 360 }}
     label=&quot;Date range&quot;
     description=&quot;Select a start and end date for your event.&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5175,6 +5408,7 @@ import { Form } from "react-aria-components";</code></pre>
       start: parseDate(&#39;2025-02-03&#39;),
       end: parseDate(&#39;2025-02-14&#39;),
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5193,6 +5427,7 @@ import { Form } from "react-aria-components";</code></pre>
     &lt;DateRangePicker style={{ width: 360 }} size=&quot;small&quot; label=&quot;Small&quot; /&gt;
     &lt;DateRangePicker style={{ width: 360 }} size=&quot;medium&quot; label=&quot;Medium&quot; /&gt;
 &lt;/div&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5214,6 +5449,7 @@ import { Form } from "react-aria-components";</code></pre>
     &lt;DateRangePicker style={{ width: 360 }} label=&quot;Trip dates&quot; isRequired /&gt;
     &lt;Button type=&quot;submit&quot;&gt;Submit&lt;/Button&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5230,6 +5466,7 @@ import { Form } from "react-aria-components";</code></pre>
       start: parseDate(&#39;2025-03-01&#39;),
       end: parseDate(&#39;2025-03-15&#39;),
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5247,6 +5484,7 @@ import { Form } from "react-aria-components";</code></pre>
       start: parseDate(&#39;2025-04-01&#39;),
       end: parseDate(&#39;2025-04-10&#39;),
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5261,6 +5499,7 @@ import { Form } from "react-aria-components";</code></pre>
     description=&quot;You can only select dates within the next 30 days.&quot;
     minValue={today(getLocalTimeZone())}
     maxValue={today(getLocalTimeZone()).add({ days: 30 })} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5280,6 +5519,7 @@ import { Form } from "react-aria-components";</code></pre>
             isDateUnavailable={date =&gt; isWeekend(date, locale)} /&gt;
     );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -5287,10 +5527,13 @@ import { Form } from "react-aria-components";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-table-dev"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="dev">
@@ -5438,6 +5681,7 @@ import { Fragment } from "react";</code></pre>
 
   return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5505,6 +5749,7 @@ import { Fragment } from "react";</code></pre>
 
   return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5571,6 +5816,7 @@ import { Fragment } from "react";</code></pre>
     &lt;/div&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5665,6 +5911,7 @@ import { Fragment } from "react";</code></pre>
     &lt;/div&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5715,6 +5962,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5757,6 +6005,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5793,6 +6042,7 @@ import { Fragment } from "react";</code></pre>
     &lt;/div&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5835,6 +6085,7 @@ import { Fragment } from "react";</code></pre>
 
   return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5879,6 +6130,7 @@ import { Fragment } from "react";</code></pre>
 
   return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5946,6 +6198,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -5976,6 +6229,7 @@ import { Fragment } from "react";</code></pre>
     &lt;/TableRoot&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6025,6 +6279,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6057,6 +6312,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6089,6 +6345,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6122,6 +6379,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6155,6 +6413,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6206,6 +6465,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6238,6 +6498,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6270,6 +6531,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6303,6 +6565,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6336,6 +6599,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6390,6 +6654,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6444,6 +6709,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6501,6 +6767,7 @@ import { Fragment } from "react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6661,6 +6928,7 @@ import { Fragment } from "react";</code></pre>
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -6668,10 +6936,13 @@ import { Fragment } from "react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-dialog"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Dialog">
@@ -6773,6 +7044,7 @@ width?: number | string</code></pre>
         &lt;/DialogTrigger&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6782,6 +7054,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const Open = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6811,6 +7084,7 @@ width?: number | string</code></pre>
         &lt;/Dialog&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6850,6 +7124,7 @@ width?: number | string</code></pre>
         &lt;/DialogFooter&gt;
     &lt;/Dialog&gt;
 &lt;/DialogTrigger&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6859,6 +7134,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const FixedHeight = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen width={undefined} height={500} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6868,6 +7144,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const FixedWidthAndHeight = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen={undefined} height={400} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6877,6 +7154,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const FullWidthAndHeight = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen width=&quot;100%&quot; height=&quot;100%&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6902,6 +7180,7 @@ width?: number | string</code></pre>
         &lt;/DialogFooter&gt;
     &lt;/Dialog&gt;
 &lt;/DialogTrigger&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6935,6 +7214,7 @@ width?: number | string</code></pre>
         &lt;/DialogFooter&gt;
     &lt;/Dialog&gt;
 &lt;/DialogTrigger&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6966,6 +7246,7 @@ width?: number | string</code></pre>
         &lt;/DialogFooter&gt;
     &lt;/Dialog&gt;
 &lt;/DialogTrigger&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6975,6 +7256,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const PreviewFixedWidthAndHeight = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen={undefined} width={600} height={400} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -6984,6 +7266,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const PreviewWithForm = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen={undefined} /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -6991,10 +7274,13 @@ width?: number | string</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-fielderror"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="FieldError">
@@ -7074,6 +7360,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
     &lt;/TextField&gt;
   &lt;/Form&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7096,6 +7383,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
     &lt;FieldError&gt;This is a custom error message.&lt;/FieldError&gt;
   &lt;/TextField&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7123,6 +7411,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
     &lt;/FieldError&gt;
   &lt;/TextField&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -7130,10 +7419,13 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-fieldlabel"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="FieldLabel">
@@ -7233,6 +7525,7 @@ secondaryLabel?: string | null</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;FieldLabel label=&quot;Label&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7242,6 +7535,7 @@ secondaryLabel?: string | null</code></pre>
               
               
               <pre><code>const WithSecondaryLabel = () =&gt; &lt;FieldLabel secondaryLabel=&quot;Secondary Label&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7251,6 +7545,7 @@ secondaryLabel?: string | null</code></pre>
               
               
               <pre><code>const WithDescription = () =&gt; &lt;FieldLabel description=&quot;Description&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7260,6 +7555,7 @@ secondaryLabel?: string | null</code></pre>
               
               
               <pre><code>const WithAllFields = () =&gt; &lt;FieldLabel secondaryLabel=&quot;Secondary Label&quot; description=&quot;Description&quot; /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -7267,10 +7563,13 @@ secondaryLabel?: string | null</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-flex"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Flex">
@@ -7396,6 +7695,7 @@ style?: CSSProperties</code></pre>
       &lt;DecorativeBox /&gt;
       &lt;DecorativeBox /&gt;
     &lt;/&gt;)&lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7405,6 +7705,7 @@ style?: CSSProperties</code></pre>
               
               
               <pre><code>const ColumnDirection = () =&gt; &lt;Flex direction=&quot;column&quot;&gt;{null}&lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7414,6 +7715,7 @@ style?: CSSProperties</code></pre>
               
               
               <pre><code>const RowDirection = () =&gt; &lt;Flex direction=&quot;row&quot;&gt;{null}&lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7427,6 +7729,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7440,6 +7743,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7453,6 +7757,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7466,6 +7771,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7479,6 +7785,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7492,6 +7799,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7505,6 +7813,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7536,6 +7845,7 @@ style?: CSSProperties</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7549,6 +7859,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox /&gt;
     &lt;DecorativeBox /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7562,6 +7873,7 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox /&gt;
     &lt;DecorativeBox /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7588,6 +7900,7 @@ style?: CSSProperties</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7617,6 +7930,7 @@ style?: CSSProperties</code></pre>
     &lt;Flex bg=&quot;success&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Success
               &lt;/Flex&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7640,6 +7954,7 @@ style?: CSSProperties</code></pre>
         &lt;/Flex&gt;
     &lt;/Flex&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -7647,10 +7962,13 @@ style?: CSSProperties</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-fullpage"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="FullPage">
@@ -7727,6 +8045,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/FullPage&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7752,6 +8071,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/FullPage&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7775,6 +8095,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/FullPage&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -7782,10 +8103,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-header"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Header">
@@ -7892,6 +8216,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Header title=&quot;Page Title&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7901,6 +8226,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithTabs = () =&gt; &lt;Header tabs={tabs} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7937,6 +8263,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     }
   /&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7946,6 +8273,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithBreadcrumbs = () =&gt; &lt;Header breadcrumbs={[{ label: &#39;Home&#39;, href: &#39;/&#39; }]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7959,6 +8287,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
       { label: &#39;Home&#39;, href: &#39;/&#39; },
       { label: &#39;Long Breadcrumb Name&#39;, href: &#39;/long-breadcrumb&#39; },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7969,6 +8298,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               <pre><code>const WithDescription = () =&gt; &lt;Header
     description=&quot;This is a description of the page. It can include [inline links](https://backstage.io).&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7983,6 +8313,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
       { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
       { label: &#39;Gold&#39; },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -7996,6 +8327,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
       { label: &#39;Owner&#39;, value: &#39;platform-team&#39; },
       { label: &#39;Type&#39;, value: &#39;website&#39; },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8023,6 +8355,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     ]}
   /&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8058,6 +8391,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     ]}
   /&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8091,6 +8425,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     ]}
   /&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8126,6 +8461,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     ]}
   /&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8163,6 +8499,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     ]}
   /&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8172,6 +8509,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithGroupedTabs = () =&gt; &lt;Header tabs={groupedTabs} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8181,6 +8519,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithExplicitActiveTab = () =&gt; &lt;Header tabs={tabs} activeTabId=&quot;campaigns&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8214,6 +8553,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     &lt;/Container&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8248,6 +8588,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     &lt;/Container&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8282,6 +8623,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     &lt;/Container&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8321,6 +8663,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     &lt;/Container&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -8328,10 +8671,13 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-link"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Link">
@@ -8415,6 +8761,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Link href=&quot;/&quot;&gt;Sign up for Backstage&lt;/Link&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8424,6 +8771,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const ExternalLink = () =&gt; &lt;Link href=&quot;https://backstage.io&quot; target=&quot;_blank&quot;&gt;Sign up for Backstage&lt;/Link&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8442,6 +8790,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;Link href=&quot;https://ui.backstage.io&quot; variant=&quot;body-small&quot;&gt;Link&lt;/Link&gt;
     &lt;Link href=&quot;https://ui.backstage.io&quot; variant=&quot;body-x-small&quot;&gt;Link&lt;/Link&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8490,6 +8839,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8614,6 +8964,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8623,6 +8974,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Truncate = () =&gt; &lt;Link href=&quot;/&quot; truncate style={{ width: &#39;480px&#39; }}&gt;A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man&#39;s father is my father&#39;s son.” Who is in the painting?&lt;/Link&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8632,6 +8984,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const Standalone = () =&gt; &lt;Link href=&quot;/&quot; standalone&gt;Standalone link (no underline by default)&lt;/Link&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8648,6 +9001,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;Link href=&quot;/&quot; standalone children=&quot;Sign up for Backstage&quot; /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8661,6 +9015,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       xs: &#39;title-x-small&#39;,
       md: &#39;body-x-small&#39;,
     }}&gt;Link&lt;/Link&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -8668,10 +9023,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-list"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="List">
@@ -8755,6 +9113,7 @@ import {
               <pre><code>const Default = () =&gt; &lt;List style={{ width: 320 }} aria-label=&quot;List&quot; items={items}&gt;
     {item =&gt; &lt;ListRow id={item.id}&gt;{item.label}&lt;/ListRow&gt;}
 &lt;/List&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8770,6 +9129,7 @@ import {
       &lt;/ListRow&gt;
     )}
 &lt;/List&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8785,6 +9145,7 @@ import {
       &lt;/ListRow&gt;
     )}
 &lt;/List&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8808,6 +9169,7 @@ import {
         &lt;/List&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8835,6 +9197,7 @@ import {
         &lt;/List&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8860,6 +9223,7 @@ import {
         &lt;/List&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8889,6 +9253,7 @@ import {
         &lt;/List&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8904,6 +9269,7 @@ import {
     disabledKeys={[&#39;typescript&#39;, &#39;rust&#39;]}&gt;
     {item =&gt; &lt;ListRow id={item.id}&gt;{item.label}&lt;/ListRow&gt;}
 &lt;/List&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8919,6 +9285,7 @@ import {
       &lt;/ListRow&gt;
     )}
 &lt;/List&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8944,6 +9311,7 @@ import {
       &lt;/ListRow&gt;
     )}
 &lt;/List&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -8970,6 +9338,7 @@ import {
       &lt;/ListRow&gt;
     )}
 &lt;/List&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -8977,10 +9346,13 @@ import {
   </div>
 </article>
 <article
+  id="backstage-ui-menu"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
@@ -8988,7 +9360,7 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         
         <label for="c-26-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
         
@@ -9076,6 +9448,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9106,6 +9479,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9124,6 +9498,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9150,6 +9525,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9173,6 +9549,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9193,6 +9570,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9211,6 +9589,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9229,6 +9608,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9255,6 +9635,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9278,6 +9659,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9300,6 +9682,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9320,6 +9703,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9350,6 +9734,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9387,6 +9772,7 @@ import {
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9424,6 +9810,7 @@ import {
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9454,6 +9841,7 @@ import {
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -9461,10 +9849,13 @@ import {
   </div>
 </article>
 <article
+  id="backstage-ui-menuautocomplete"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
@@ -9472,7 +9863,7 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         
         <label for="c-27-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
         
@@ -9541,6 +9932,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuAutocomplete&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9564,6 +9956,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuAutocomplete&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9605,6 +9998,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9647,6 +10041,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9674,6 +10069,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Menu&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -9681,10 +10077,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-menuautocompletelistbox"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
@@ -9692,7 +10091,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         
         <label for="c-28-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
         
@@ -9773,6 +10172,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9805,6 +10205,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9838,6 +10239,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9878,6 +10280,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9919,6 +10322,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -9961,6 +10365,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -9968,10 +10373,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-menulistbox"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
@@ -9979,7 +10387,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         
         <label for="c-29-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
         
@@ -10035,6 +10443,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuListBox&gt;
   &lt;/MenuTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10073,6 +10482,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10110,6 +10520,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10147,6 +10558,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/MenuTrigger&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -10154,10 +10566,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-numberfield"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="NumberField">
@@ -10251,6 +10666,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
     style={{
       maxWidth: &#39;300px&#39;,
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10263,6 +10679,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
     &lt;NumberField size=&quot;small&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;
     &lt;NumberField size=&quot;medium&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10272,6 +10689,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DefaultValue = () =&gt; &lt;NumberField defaultValue={42} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10281,6 +10699,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;NumberField label=&quot;Label&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10290,6 +10709,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithDescription = () =&gt; &lt;NumberField description=&quot;Description&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10299,6 +10719,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;NumberField isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10308,6 +10729,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;NumberField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10317,6 +10739,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithIcon = () =&gt; &lt;NumberField size=&quot;small&quot; icon={&lt;RiTimeLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10326,6 +10749,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DisabledWithIcon = () =&gt; &lt;NumberField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10337,6 +10761,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               <pre><code>const ShowError = () =&gt; &lt;Form validationErrors={{ quantity: &#39;Value is out of range&#39; }}&gt;
     &lt;NumberField /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10346,6 +10771,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Validation = () =&gt; &lt;NumberField validate={(value: number) =&gt; (value &lt; 0 ? &#39;Must be positive&#39; : null)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10361,6 +10787,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
     step={1}
     icon={&lt;RiTimeLine /&gt;}
     style={{ maxWidth: &#39;200px&#39; }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10384,6 +10811,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10399,6 +10827,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
     maxValue={20}
     step={5}
     style={{ maxWidth: &#39;200px&#39; }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10451,6 +10880,7 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -10458,10 +10888,13 @@ import { RiSparklingLine, RiTimeLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-passwordfield"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="PasswordField">
@@ -10555,6 +10988,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     style={{
       maxWidth: &#39;300px&#39;,
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10567,6 +11001,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     &lt;PasswordField size=&quot;small&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;
     &lt;PasswordField size=&quot;medium&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10576,6 +11011,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DefaultValue = () =&gt; &lt;PasswordField defaultValue=&quot;https://example.com&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10585,6 +11021,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;PasswordField label=&quot;Label&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10594,6 +11031,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithDescription = () =&gt; &lt;PasswordField description=&quot;Description&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10603,6 +11041,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;PasswordField isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10612,6 +11051,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;PasswordField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10621,6 +11061,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithIcon = () =&gt; &lt;PasswordField size=&quot;small&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10630,6 +11071,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DisabledWithIcon = () =&gt; &lt;PasswordField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10641,6 +11083,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               <pre><code>const ShowError = () =&gt; &lt;Form validationErrors={{ secret: &#39;Invalid secret&#39; }}&gt;
     &lt;PasswordField /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10650,6 +11093,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Validation = () =&gt; &lt;PasswordField validate={value =&gt; (value === &#39;admin&#39; ? &#39;Nice try!&#39; : null)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10673,6 +11117,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -10680,10 +11125,13 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-pluginheader"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="PluginHeader">
@@ -10773,6 +11221,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               
               
               <pre><code>const Default = () =&gt; &lt;PluginHeader /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10782,6 +11231,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               
               
               <pre><code>const WithTabs = () =&gt; &lt;PluginHeader tabs={tabs} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10812,6 +11262,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/MenuTrigger&gt;
       &lt;/&gt;
     } /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10821,6 +11272,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               
               
               <pre><code>const WithAllOptionsAndTabs = () =&gt; &lt;PluginHeader tabs={tabs} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10841,6 +11293,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10861,6 +11314,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10884,6 +11338,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10942,6 +11397,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -10983,6 +11439,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11042,6 +11499,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11057,6 +11515,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
       { label: &#39;Services&#39;, href: &#39;/services&#39; },
       { label: &#39;my-service&#39;, href: &#39;/services/my-service&#39; },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11079,6 +11538,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         href: &#39;/services/long/another&#39;,
       },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11096,6 +11556,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
       { label: &#39;Setup&#39;, href: &#39;/docs/guides/setup&#39; },
       { label: &#39;Introduction&#39;, href: &#39;/docs/guides/setup/introduction&#39; },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11112,6 +11573,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
       { label: &#39;my-service&#39;, href: &#39;/services/my-service&#39; },
     ]}
     tabs={tabs} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11146,6 +11608,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/MenuTrigger&gt;
       &lt;/&gt;
     } /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11171,6 +11634,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         href: &#39;/docs/guides/setup/introduction&#39;,
       },
     ]} /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -11178,10 +11642,13 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
   </div>
 </article>
 <article
+  id="recipes-pluginheader-and-header"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="PluginHeaderandHeader">
@@ -11306,6 +11773,7 @@ import {
     &lt;PageContent /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11332,6 +11800,7 @@ import {
     &lt;PageContent /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11347,6 +11816,7 @@ import {
     &lt;PageContent /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11364,6 +11834,7 @@ import {
     &lt;/CorePage&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11393,6 +11864,7 @@ import {
     &lt;/CorePage&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11452,6 +11924,7 @@ import {
     &lt;PageContent /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11501,6 +11974,7 @@ import {
     &lt;/&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11555,6 +12029,7 @@ import {
     &lt;/&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11605,6 +12080,7 @@ import {
     &lt;/&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -11612,10 +12088,13 @@ import {
   </div>
 </article>
 <article
+  id="backstage-ui-popover"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Popover">
@@ -11706,6 +12185,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11727,6 +12207,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11748,6 +12229,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11769,6 +12251,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11790,6 +12273,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11811,6 +12295,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11832,6 +12317,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11859,6 +12345,7 @@ hideArrow?: boolean</code></pre>
     &lt;/DialogTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11886,6 +12373,7 @@ hideArrow?: boolean</code></pre>
     &lt;/DialogTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11919,6 +12407,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11940,6 +12429,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -11964,6 +12454,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12010,6 +12501,7 @@ hideArrow?: boolean</code></pre>
     &lt;/Popover&gt;
   &lt;/DialogTrigger&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -12017,10 +12509,13 @@ hideArrow?: boolean</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-radiogroup"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="RadioGroup">
@@ -12099,6 +12594,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Radio value=&quot;charmander&quot;&gt;Charmander&lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12112,6 +12608,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Radio value=&quot;charmander&quot;&gt;Charmander&lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12125,6 +12622,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Radio value=&quot;charmander&quot;&gt;Charmander&lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12138,6 +12636,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Radio value=&quot;charmander&quot;&gt;Charmander&lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12152,6 +12651,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               &lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12166,6 +12666,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               &lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12180,6 +12681,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               &lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12197,6 +12699,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Radio value=&quot;charmander&quot;&gt;Charmander&lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12210,6 +12713,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     &lt;Radio value=&quot;charmander&quot;&gt;Charmander&lt;/Radio&gt;
     &lt;Radio value=&quot;squirtle&quot;&gt;Squirtle&lt;/Radio&gt;
 &lt;/RadioGroup&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -12217,10 +12721,13 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-searchautocomplete"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="SearchAutocomplete">
@@ -12380,6 +12887,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/SearchAutocomplete&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12417,6 +12925,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/SearchAutocomplete&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12472,6 +12981,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/SearchAutocomplete&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12514,6 +13024,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12566,6 +13077,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12620,6 +13132,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12658,6 +13171,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/SearchAutocomplete&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12696,6 +13210,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/SearchAutocomplete&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12729,6 +13244,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         &lt;/SearchAutocomplete&gt;
     );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -12736,10 +13252,13 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-searchfield"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="SearchField">
@@ -12849,6 +13368,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
       maxWidth: &#39;300px&#39;,
     }}
     aria-label=&quot;Search&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12861,6 +13381,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     &lt;SearchField size=&quot;small&quot; /&gt;
     &lt;SearchField size=&quot;medium&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12870,6 +13391,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DefaultValue = () =&gt; &lt;SearchField defaultValue=&quot;https://example.com&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12879,6 +13401,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;SearchField label=&quot;Label&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12888,6 +13411,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithDescription = () =&gt; &lt;SearchField description=&quot;Description&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12897,6 +13421,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;SearchField isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12906,6 +13431,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;SearchField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12915,6 +13441,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithIcon = () =&gt; &lt;SearchField placeholder=&quot;Enter a URL&quot; size=&quot;small&quot; icon={&lt;RiEBike2Line /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12924,6 +13451,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DisabledWithIcon = () =&gt; &lt;SearchField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12935,6 +13463,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               <pre><code>const ShowError = () =&gt; &lt;Form validationErrors={{ url: &#39;Invalid URL&#39; }}&gt;
     &lt;SearchField /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12944,6 +13473,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Validation = () =&gt; &lt;SearchField validate={value =&gt; (value === &#39;admin&#39; ? &#39;Nice try!&#39; : null)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12967,6 +13497,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12982,6 +13513,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     &lt;/Flex&gt;
     &lt;SearchField startCollapsed size=&quot;small&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -12991,6 +13523,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const StartCollapsedWithValue = () =&gt; &lt;SearchField defaultValue=&quot;https://example.com&quot; size=&quot;small&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13023,6 +13556,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13055,6 +13589,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13081,6 +13616,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     &lt;Button size=&quot;medium&quot; variant=&quot;secondary&quot;&gt;Hello world
               &lt;/Button&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13100,6 +13636,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13117,6 +13654,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13134,6 +13672,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13174,6 +13713,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -13181,10 +13721,13 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-select"
   class="card 
-  no-error 
-  has-info 
+  no-error
+  has-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="Select">
@@ -13192,7 +13735,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         <label for="c-38-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
         <label for="c-38-backstage-ui-select-stories" class="badge ok as-toggle">29 stories</label>
         
@@ -13247,6 +13790,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Select style={{ width: 300 }} options={fontOptions} name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13260,6 +13804,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     label=&quot;Country&quot;
     search={{ placeholder: &#39;Search countries...&#39; }}
     options={countries} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13274,6 +13819,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;SelectItemTypesColumn size=&quot;medium&quot; /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13283,6 +13829,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const ClientSearchShorthand = () =&gt; &lt;Select style={{ width: 300 }} label=&quot;Country&quot; search options={countries} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13292,6 +13839,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const ServerBackedNonSearchableOptions = () =&gt; &lt;ServerBackedSelect searchable={false} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13301,6 +13849,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const ServerBackedOptions = () =&gt; &lt;ServerBackedSelect searchable /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13310,6 +13859,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const ServerBackedCustomItems = () =&gt; &lt;ServerBackedCustomSelect /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13328,6 +13878,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
       { id: &#39;option3&#39;, label: &#39;Option 3&#39; },
       { id: &#39;option4&#39;, label: &#39;Option 4&#39; },
     ]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13342,6 +13893,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     search={{ placeholder: &#39;Filter skills...&#39; }}
     selectionMode=&quot;multiple&quot;
     options={skills} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13355,6 +13907,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     label=&quot;Font Family&quot;
     options={sectionedOptions}
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13369,6 +13922,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     search={{ placeholder: &#39;Search fonts...&#39; }}
     options={sectionedOptions}
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13383,6 +13937,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     options={fontOptions}
     placeholder=&quot;Select a font&quot;
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13392,6 +13947,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;Select style={{ width: 300 }} label=&quot;Font Family&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13401,6 +13957,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithFullWidth = () =&gt; &lt;Select style={{ width: &#39;100%&#39; }} label=&quot;Font Family&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13412,6 +13969,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const WithLabelAndDescription = () =&gt; &lt;Select
     style={{ width: 300 }}
     description=&quot;Choose a font family for your document&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13421,6 +13979,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithIcon = () =&gt; &lt;Select style={{ width: 300 }} icon={&lt;RiCloudLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13433,6 +13992,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;Select style={{ width: 300 }} size=&quot;small&quot; icon={&lt;RiCloudLine /&gt;} /&gt;
     &lt;Select style={{ width: 300 }} size=&quot;medium&quot; icon={&lt;RiCloudLine /&gt;} /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13442,6 +14002,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;Select style={{ width: 300 }} isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13451,6 +14012,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;Select style={{ width: 300 }} isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13460,6 +14022,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DisabledOption = () =&gt; &lt;Select style={{ width: 300 }} disabledKeys={[&#39;cursive&#39;, &#39;serif&#39;]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13469,6 +14032,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const NoOptions = () =&gt; &lt;Select style={{ width: 300 }} options={undefined} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13478,6 +14042,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithValue = () =&gt; &lt;Select style={{ width: 300 }} value=&quot;mono&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13491,6 +14056,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     defaultValue=&quot;serif&quot;
     options={fontOptions}
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13504,6 +14070,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     label=&quot;Font Family&quot;
     options={generateOptions()}
     name=&quot;font&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13515,6 +14082,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const WithError = () =&gt; &lt;Form validationErrors={{ font: &#39;Invalid font family&#39; }}&gt;
     &lt;Select style={{ width: 300 }} name=&quot;font&quot; /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13556,6 +14124,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     placeholder=&quot;Select a document template&quot;
     name=&quot;template&quot;
     defaultValue=&quot;annual-report-2024&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13565,6 +14134,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLongNamesAndPadding = () =&gt; &lt;Select style={{ width: 300 }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13605,6 +14175,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13633,6 +14204,7 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
             name=&quot;font-labelledby&quot; /&gt;
     &lt;/div&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -13640,10 +14212,13 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-skeleton"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Skeleton">
@@ -13716,6 +14291,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Skeleton width={80} height={24} rounded={false} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13725,6 +14301,7 @@ width?: number | string</code></pre>
               
               
               <pre><code>const Rounded = () =&gt; &lt;Skeleton width={48} height={48} rounded /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13747,6 +14324,7 @@ width?: number | string</code></pre>
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13762,6 +14340,7 @@ width?: number | string</code></pre>
     &lt;Skeleton width={240} height={12} /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13798,6 +14377,7 @@ width?: number | string</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -13805,10 +14385,13 @@ width?: number | string</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-slider"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Slider">
@@ -13881,6 +14464,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               
               
               <pre><code>const SingleThumb = () =&gt; &lt;Slider label=&quot;Volume&quot; defaultValue={50} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13890,6 +14474,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               
               
               <pre><code>const SingleThumbWithRange = () =&gt; &lt;Slider label=&quot;Brightness&quot; minValue={0} maxValue={100} defaultValue={75} step={5} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13899,6 +14484,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               
               
               <pre><code>const RangeSlider = () =&gt; &lt;Slider label=&quot;Price Range&quot; defaultValue={[25, 75]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13913,6 +14499,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     maxValue={40}
     defaultValue={[0, 20]}
     step={5} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13932,6 +14519,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
       currency: &#39;USD&#39;,
       maximumFractionDigits: 0,
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13946,6 +14534,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     minValue={0}
     maxValue={100}
     defaultValue={[18, 65]} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13955,6 +14544,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;Slider label=&quot;Score Range&quot; defaultValue={[20, 80]} isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13964,6 +14554,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;Slider label=&quot;Disabled Range&quot; defaultValue={[30, 70]} isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13973,6 +14564,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
               
               
               <pre><code>const WithSteps = () =&gt; &lt;Slider label=&quot;Rating&quot; minValue={0} maxValue={5} step={0.5} defaultValue={3.5} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -13992,6 +14584,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }} /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -13999,10 +14592,13 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-switch"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Switch">
@@ -14072,6 +14668,7 @@ label?: string</code></pre>
               
               
               <pre><code>const Default = () =&gt; &lt;Switch label=&quot;Switch&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14081,6 +14678,7 @@ label?: string</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;Switch isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14116,6 +14714,7 @@ label?: string</code></pre>
         &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Box&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14125,6 +14724,7 @@ label?: string</code></pre>
               
               
               <pre><code>const AutoBgDisabled = () =&gt; &lt;Switch isDisabled /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -14132,10 +14732,13 @@ label?: string</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-tablepagination"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="TablePagination">
@@ -14241,6 +14844,7 @@ totalCount?: number</code></pre>
     onPreviousPage={noop}
     onPageSizeChange={noop}
     showPageSizeOptions /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14250,6 +14854,7 @@ totalCount?: number</code></pre>
               
               
               <pre><code>const FirstPage = () =&gt; &lt;TablePagination /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14259,6 +14864,7 @@ totalCount?: number</code></pre>
               
               
               <pre><code>const LastPage = () =&gt; &lt;TablePagination offset={90} hasNextPage={false} hasPreviousPage /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14268,6 +14874,7 @@ totalCount?: number</code></pre>
               
               
               <pre><code>const MiddlePage = () =&gt; &lt;TablePagination offset={40} hasPreviousPage /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14277,6 +14884,7 @@ totalCount?: number</code></pre>
               
               
               <pre><code>const WithoutPageSizeOptions = () =&gt; &lt;TablePagination showPageSizeOptions={false} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14286,6 +14894,7 @@ totalCount?: number</code></pre>
               
               
               <pre><code>const CursorPagination = () =&gt; &lt;TablePagination offset={undefined} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14302,6 +14911,7 @@ totalCount?: number</code></pre>
       const totalPages = Math.ceil((totalCount ?? 0) / pageSize);
       return `Page ${page} of ${totalPages}`;
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14311,6 +14921,7 @@ totalCount?: number</code></pre>
               
               
               <pre><code>const EmptyState = () =&gt; &lt;TablePagination totalCount={0} hasNextPage={false} /&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -14318,10 +14929,13 @@ totalCount?: number</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-tabs"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Tabs">
@@ -14397,6 +15011,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/TabList&gt;
   &lt;/Tabs&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14423,6 +15038,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/TabPanel&gt;
   &lt;/Tabs&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14459,6 +15075,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14495,6 +15112,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14535,6 +15153,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14575,6 +15194,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14619,6 +15239,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14658,6 +15279,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14717,6 +15339,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14763,6 +15386,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14808,6 +15432,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14848,6 +15473,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14897,6 +15523,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14925,6 +15552,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/TabPanel&gt;
   &lt;/Tabs&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -14988,6 +15616,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -14995,10 +15624,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-taggroup"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="TagGroup">
@@ -15075,6 +15707,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
       &lt;Tag key={item.id}&gt;{item.name}&lt;/Tag&gt;
     ))}
 &lt;/TagGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15099,6 +15732,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         ))}
     &lt;/TagGroup&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15121,6 +15755,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         &lt;/TagGroup&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15145,6 +15780,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         &lt;/TagGroup&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15160,6 +15796,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
       &lt;/Tag&gt;
     ))}
 &lt;/TagGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15175,6 +15812,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
       &lt;/Tag&gt;
     ))}
 &lt;/TagGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15190,6 +15828,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
       &lt;/Tag&gt;
     ))}
 &lt;/TagGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15215,6 +15854,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         &lt;/TagGroup&gt;
     );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15242,6 +15882,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         &lt;/TagGroup&gt;
     );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -15249,10 +15890,13 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
   </div>
 </article>
 <article
+  id="backstage-ui-text"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="Text">
@@ -15342,6 +15986,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
               
               
               <pre><code>const Default = () =&gt; &lt;Text&gt;A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man&#39;s father is my father&#39;s son.” Who is in the painting?&lt;/Text&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15360,6 +16005,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     &lt;Text variant=&quot;body-small&quot; style={{ maxWidth: &#39;264px&#39; }}&gt;Text&lt;/Text&gt;
     &lt;Text variant=&quot;body-x-small&quot; style={{ maxWidth: &#39;224px&#39; }}&gt;Text&lt;/Text&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15404,6 +16050,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15420,6 +16067,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     &lt;Text color=&quot;success&quot; children=&quot;I am success&quot;&gt;Text&lt;/Text&gt;
     &lt;Text color=&quot;info&quot; children=&quot;I am info&quot;&gt;Text&lt;/Text&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15429,6 +16077,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
               
               
               <pre><code>const Truncate = () =&gt; &lt;Text truncate as=&quot;p&quot; style={{ width: &#39;480px&#39; }}&gt;Text&lt;/Text&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15442,6 +16091,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
       xs: &#39;title-x-small&#39;,
       md: &#39;body-large&#39;,
     }}&gt;Text&lt;/Text&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15451,6 +16101,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
               
               
               <pre><code>const WrappedInLink = () =&gt; &lt;Text&gt;Text&lt;/Text&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15460,6 +16111,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
               
               
               <pre><code>const CustomRender = () =&gt; &lt;Text as=&quot;label&quot;&gt;Text&lt;/Text&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15496,6 +16148,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     &lt;/Text&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -15503,10 +16156,13 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
   </div>
 </article>
 <article
+  id="backstage-ui-textareafield"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="TextAreaField">
@@ -15600,6 +16256,7 @@ import { Form } from "react-aria-components";</code></pre>
     style={{
       maxWidth: &#39;300px&#39;,
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15609,6 +16266,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;TextAreaField label=&quot;Message&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15618,6 +16276,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const WithDescription = () =&gt; &lt;TextAreaField description=&quot;Share as much detail as you like.&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15627,6 +16286,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;TextAreaField isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15636,6 +16296,7 @@ import { Form } from "react-aria-components";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;TextAreaField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15648,6 +16309,7 @@ import { Form } from "react-aria-components";</code></pre>
     &lt;TextAreaField size=&quot;small&quot; label=&quot;Small&quot; /&gt;
     &lt;TextAreaField size=&quot;medium&quot; label=&quot;Medium&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15662,6 +16324,7 @@ import { Form } from "react-aria-components";</code></pre>
       { length: 12 },
       (_, i) =&gt; `Line ${i + 1}: this content scrolls within a fixed height.`,
     ).join(&#39;\n&#39;)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15673,6 +16336,7 @@ import { Form } from "react-aria-components";</code></pre>
               <pre><code>const ShowError = () =&gt; &lt;Form validationErrors={{ message: &#39;Message is required&#39; }}&gt;
     &lt;TextAreaField /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
         </div>
     
@@ -15680,10 +16344,13 @@ import { Form } from "react-aria-components";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-textfield"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="TextField">
@@ -15786,6 +16453,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     style={{
       maxWidth: &#39;300px&#39;,
     }} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15798,6 +16466,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     &lt;TextField size=&quot;small&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;
     &lt;TextField size=&quot;medium&quot; icon={&lt;RiSparklingLine /&gt;} /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15807,6 +16476,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DefaultValue = () =&gt; &lt;TextField defaultValue=&quot;https://example.com&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15816,6 +16486,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithLabel = () =&gt; &lt;TextField label=&quot;Label&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15825,6 +16496,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithDescription = () =&gt; &lt;TextField description=&quot;Description&quot; /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15834,6 +16506,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Required = () =&gt; &lt;TextField isRequired /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15843,6 +16516,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; &lt;TextField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15852,6 +16526,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithIcon = () =&gt; &lt;TextField placeholder=&quot;Enter a URL&quot; size=&quot;small&quot; icon={&lt;RiEyeLine /&gt;} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15861,6 +16536,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const DisabledWithIcon = () =&gt; &lt;TextField isDisabled /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15872,6 +16548,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               <pre><code>const ShowError = () =&gt; &lt;Form validationErrors={{ url: &#39;Invalid URL&#39; }}&gt;
     &lt;TextField /&gt;
 &lt;/Form&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15881,6 +16558,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Validation = () =&gt; &lt;TextField validate={value =&gt; (value === &#39;admin&#39; ? &#39;Nice try!&#39; : null)} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15904,6 +16582,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -15952,6 +16631,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -15959,10 +16639,13 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   </div>
 </article>
 <article
+  id="app-toast"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="ToastContainer">
@@ -16059,6 +16742,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16068,6 +16752,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PreviewToast = () =&gt; &lt;ToastContainer queue={previewQueue} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16077,6 +16762,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const LongTitle = () =&gt; &lt;ToastContainer queue={longTitleQueue} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16086,6 +16772,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const LongDescription = () =&gt; &lt;ToastContainer queue={longDescriptionQueue} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16095,6 +16782,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PreviewToastWithTimer = () =&gt; &lt;ToastContainer queue={timerQueue} /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16165,6 +16853,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16200,6 +16889,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16236,6 +16926,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16292,6 +16983,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/MemoryRouter&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16349,6 +17041,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16358,6 +17051,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const ProgrammaticDismiss = () =&gt; &lt;ProgrammaticDismissStory /&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16418,6 +17112,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Flex&gt;
   &lt;/&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16503,6 +17198,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -16510,10 +17206,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   </div>
 </article>
 <article
+  id="backstage-ui-togglebutton"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="ToggleButton">
@@ -16587,6 +17286,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
               
               
               <pre><code>const Default = () =&gt; &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16629,6 +17329,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16643,6 +17344,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;ToggleButton size=&quot;medium&quot;&gt;Medium&lt;/ToggleButton&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16657,6 +17359,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;ToggleButton iconEnd={&lt;RiCheckLine /&gt;}&gt;Favorite&lt;/ToggleButton&gt;
     &lt;ToggleButton iconEnd={&lt;RiCheckLine /&gt;} /&gt;
 &lt;/Flex&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16676,6 +17379,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;ToggleButton aria-label=&quot;Next&quot; iconStart={&lt;RiArrowRightSLine /&gt;} /&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16691,6 +17395,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;ToggleButton iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Next&lt;/ToggleButton&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16707,6 +17412,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;/ToggleButton&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16731,6 +17437,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16764,6 +17471,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16867,6 +17575,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -16874,10 +17583,13 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
   </div>
 </article>
 <article
+  id="backstage-ui-togglebuttongroup"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="ToggleButtonGroup">
@@ -16949,6 +17661,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;cats&quot;&gt;Cats&lt;/ToggleButton&gt;
     &lt;ToggleButton id=&quot;birds&quot;&gt;Birds&lt;/ToggleButton&gt;
 &lt;/ToggleButtonGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -16962,6 +17675,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;backend&quot;&gt;Backend&lt;/ToggleButton&gt;
     &lt;ToggleButton id=&quot;platform&quot;&gt;Platform&lt;/ToggleButton&gt;
 &lt;/ToggleButtonGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17032,6 +17746,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17045,6 +17760,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;dog&quot;&gt;Dog&lt;/ToggleButton&gt;
     &lt;ToggleButton id=&quot;bird&quot;&gt;Bird&lt;/ToggleButton&gt;
 &lt;/ToggleButtonGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17061,6 +17777,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;two&quot;&gt;Two&lt;/ToggleButton&gt;
     &lt;ToggleButton id=&quot;three&quot;&gt;Three&lt;/ToggleButton&gt;
 &lt;/ToggleButtonGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17078,6 +17795,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;three&quot;&gt;Three&lt;/ToggleButton&gt;
   &lt;/ToggleButtonGroup&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17091,6 +17809,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;afternoon&quot;&gt;Afternoon&lt;/ToggleButton&gt;
     &lt;ToggleButton id=&quot;evening&quot;&gt;Evening&lt;/ToggleButton&gt;
 &lt;/ToggleButtonGroup&gt;;</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17119,6 +17838,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;/Flex&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17143,6 +17863,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;/ToggleButton&gt;
   &lt;/ToggleButtonGroup&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17158,6 +17879,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;ToggleButton id=&quot;next&quot; iconEnd={&lt;RiArrowRightSLine /&gt;} /&gt;
   &lt;/ToggleButtonGroup&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -17165,10 +17887,13 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   </div>
 </article>
 <article
+  id="backstage-ui-tooltip"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  missing-api
   no-doc-error"
   role="listitem"
   aria-label="TooltipTrigger">
@@ -17176,7 +17901,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TooltipTrigger</h2>
       <div class="badges">
-        
+        <span class="badge">no API description</span>
         
         <label for="c-51-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
         
@@ -17232,6 +17957,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;Tooltip&gt;{children ?? &#39;I am a tooltip&#39;}&lt;/Tooltip&gt;
   &lt;/TooltipTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17251,6 +17977,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;Tooltip&gt;{children ?? &#39;I am a tooltip&#39;}&lt;/Tooltip&gt;
   &lt;/TooltipTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17270,6 +17997,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;Tooltip&gt;{children ?? &#39;I am a tooltip&#39;}&lt;/Tooltip&gt;
   &lt;/TooltipTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17289,6 +18017,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;Tooltip&gt;{children ?? &#39;I am a tooltip&#39;}&lt;/Tooltip&gt;
   &lt;/TooltipTrigger&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17308,6 +18037,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;/TooltipTrigger&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17327,6 +18057,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;Tooltip&gt;{children ?? &#39;I am a tooltip&#39;}&lt;/Tooltip&gt;
   &lt;/TooltipTrigger&gt;
 );</code></pre>
+              
             </div>
         </div>
     
@@ -17334,10 +18065,13 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   </div>
 </article>
 <article
+  id="backstage-ui-table-visual"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="visual">
@@ -17467,6 +18201,7 @@ virtualized?: | boolean
 
   return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17504,6 +18239,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17541,6 +18277,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17576,6 +18313,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17643,6 +18381,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17675,6 +18414,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17707,6 +18447,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17744,6 +18485,7 @@ virtualized?: | boolean
     /&gt;
   );
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17797,6 +18539,7 @@ virtualized?: | boolean
 
   return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -17906,6 +18649,7 @@ virtualized?: | boolean
     &lt;/div&gt;
   );
 };</code></pre>
+              
             </div>
         </div>
     
@@ -17913,10 +18657,13 @@ virtualized?: | boolean
   </div>
 </article>
 <article
+  id="backstage-ui-visuallyhidden"
   class="card 
-  no-error 
-  no-info 
+  no-error
+  no-info
   no-story-error
+  no-story-warning
+  
   no-doc-error"
   role="listitem"
   aria-label="VisuallyHidden">
@@ -17992,6 +18739,7 @@ virtualized?: | boolean
     &lt;/VisuallyHidden&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
             <div class="note ok">
               <div class="row">
@@ -18019,6 +18767,7 @@ virtualized?: | boolean
     &lt;/Text&gt;
   &lt;/Flex&gt;
 );</code></pre>
+              
             </div>
         </div>
     
