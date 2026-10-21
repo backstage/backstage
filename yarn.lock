@@ -17222,27 +17222,24 @@ __metadata:
   linkType: hard
 
 "@storybook/addon-vitest@npm:^10.4.0":
-  version: 10.4.1
-  resolution: "@storybook/addon-vitest@npm:10.4.1"
+  version: 10.6.3
+  resolution: "@storybook/addon-vitest@npm:10.6.3"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.2"
   peerDependencies:
-    "@vitest/browser": ^3.0.0 || ^4.0.0
-    "@vitest/browser-playwright": ^4.0.0
-    "@vitest/runner": ^3.0.0 || ^4.0.0
-    storybook: ^10.4.1
-    vitest: ^3.0.0 || ^4.0.0
+    "@vitest/browser": ^4.0.0 || ^5.0.0
+    "@vitest/browser-playwright": ^4.0.0 || ^5.0.0
+    storybook: ^10.6.3
+    vitest: ^4.0.0 || ^5.0.0
   peerDependenciesMeta:
     "@vitest/browser":
       optional: true
     "@vitest/browser-playwright":
       optional: true
-    "@vitest/runner":
-      optional: true
     vitest:
       optional: true
-  checksum: 10/bc8df2c1526868e22a73a755953e48dba20052f3e95f9cc88c33ea5801e1489649c9c4f4617c19c9c9411743beb6e2b94aa6046c343656919290d71bdbd3403f
+  checksum: 10/202d182d958f8e3c395e17c445c66d784a82518a9a9fce48803419b9ea496986e1b67d9fb0bad2e0fadf288a026e0e45bbec29a5c1734608fb33f880ba3d019c
   languageName: node
   linkType: hard
 
