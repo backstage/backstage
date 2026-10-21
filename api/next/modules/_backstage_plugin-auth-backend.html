@@ -141,6 +141,13 @@ Click <a href="https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectory
 <pre><code><span class="hl-14">auth</span><span class="hl-2">:</span><br/><span class="hl-2">   </span><span class="hl-14">backstageTokenExpiration</span><span class="hl-2">: { </span><span class="hl-14">minutes</span><span class="hl-2">: &lt;</span><span class="hl-13">user_defined_value</span><span class="hl-2">&gt; }</span>
 </code><button>Copy</button></pre>
 
+<h2 id="revoking-offline-sessions-of-a-user" class="tsd-anchor-link">Revoking Offline Sessions of a User<a href="#revoking-offline-sessions-of-a-user" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>When refresh tokens are enabled through <code>auth.experimentalRefreshToken.enabled</code>, other backend services can revoke all offline sessions of a user, for example to sign a user out of the Backstage CLI and MCP clients. Send a <code>POST</code> request to <code>/api/auth/v1/offline-sessions/revoke</code> with the user entity ref in the body:</p>
+<pre><code class="json"><span class="hl-2">{ </span><span class="hl-17">&quot;userEntityRef&quot;</span><span class="hl-2">: </span><span class="hl-4">&quot;user:default/jane.doe&quot;</span><span class="hl-2"> }</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The response contains the number of revoked sessions, for example <code>{ &quot;revokedCount&quot;: 2 }</code>. Every revocation is recorded as an audit event.</p>
+<p>Only service credentials are accepted, so users cannot call this endpoint directly. The calling service is responsible for checking that the request is allowed, for example by only exposing it to administrators. Access tokens that were already issued stay valid until they expire, which is controlled by <code>auth.backstageTokenExpiration</code>.</p>
 </section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="variables">Variables<a href="#variables" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="default"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Variable"><use href="../assets/icons.svg#icon-32"></use></svg><a href="../variables/_backstage_plugin-auth-backend.default.html">default</a><a href="#default" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details></div>
@@ -184,7 +191,8 @@ Click <a href="https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectory
 <li><a href="#authentication-providers"><span>Authentication providers</span></a></li>
 <li><a href="#token-issuers"><span>Token issuers</span></a></li>
 <li><a href="#links"><span>Links</span></a></li>
-<li><a href="#configuring-token-expiration-in-app-config"><span>Configuring <wbr/>Token <wbr/>Expiration in <wbr/>App <wbr/>Config</span></a></li></ul>
+<li><a href="#configuring-token-expiration-in-app-config"><span>Configuring <wbr/>Token <wbr/>Expiration in <wbr/>App <wbr/>Config</span></a></li>
+<li><a href="#revoking-offline-sessions-of-a-user"><span>Revoking <wbr/>Offline <wbr/>Sessions of a <wbr/>User</span></a></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Variables</summary>
 <div><a href="#default"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Variable"><use href="../assets/icons.svg#icon-32"></use></svg><span>default</span></a></div></details></div></details></div>
 <div class="site-menu">
