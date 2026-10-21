@@ -45,6 +45,29 @@ import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
+import { z } from 'zod/v4';
+import { fromZodError } from 'zod-validation-error/v4';
+
+const revokeOfflineSessionsRequestSchema = z.object({
+  userEntityRef: z
+    .string()
+    .min(1)
+    .transform((ref, ctx) => {
+      try {
+        const entityRef = parseEntityRef(ref, { defaultKind: 'user' });
+        if (entityRef.kind.toLocaleLowerCase('en-US') === 'user') {
+          return stringifyEntityRef(entityRef);
+        }
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Must refer to a user entity',
+        });
+      } catch (error) {
+        ctx.addIssue({ code: 'custom', message: String(error) });
+      }
+      return z.NEVER;
+    }),
+});
 
 interface RouterOptions {
   logger: LoggerService;
@@ -182,21 +205,13 @@ export async function createRouter(
     router.post('/v1/offline-sessions/revoke', async (req, res) => {
       await httpAuth.credentials(req, { allow: ['service'] });
 
-      const { userEntityRef: rawRef } = req.body ?? {};
-      if (typeof rawRef !== 'string' || !rawRef) {
-        throw new InputError('Missing userEntityRef in request body');
+      const parseResult = revokeOfflineSessionsRequestSchema.safeParse(
+        req.body ?? {},
+      );
+      if (!parseResult.success) {
+        throw new InputError(fromZodError(parseResult.error).message);
       }
-      let userEntityRef: string;
-      try {
-        userEntityRef = stringifyEntityRef(
-          parseEntityRef(rawRef, { defaultKind: 'user' }),
-        );
-      } catch (error) {
-        throw new InputError(`Invalid userEntityRef, ${error}`);
-      }
-      if (!userEntityRef.startsWith('user:')) {
-        throw new InputError('The userEntityRef must refer to a user entity');
-      }
+      const { userEntityRef } = parseResult.data;
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'offline-sessions-revoke',
