@@ -45,14 +45,14 @@ function getDefaultOwnershipEntityRefs(entity: Entity) {
   return Array.from(new Set([stringifyEntityRef(entity), ...membershipRefs]));
 }
 
-// Subjects are stored and matched exactly throughout the auth backend, so make
-// sure that they are always in their canonical form. Invalid subjects are
-// passed through as-is, and rejected by the token issuer.
-function canonicalizeSubject(sub: string): string {
+// Entity refs in claims are stored and matched exactly throughout the auth
+// backend, so make sure that they are always in their canonical form. Invalid
+// refs are passed through as-is, and rejected by the token issuer.
+function canonicalizeEntityRef(ref: string): string {
   try {
-    return stringifyEntityRef(parseEntityRef(sub));
+    return stringifyEntityRef(parseEntityRef(ref));
   } catch {
-    return sub;
+    return ref;
   }
 }
 
@@ -108,8 +108,11 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   }
 
   async issueToken(params: TokenParams) {
-    const sub = canonicalizeSubject(params.claims.sub);
-    const { sub: _sub, ent = [sub], ...additionalClaims } = params.claims;
+    const { sub: rawSub, ent: rawEnt, ...additionalClaims } = params.claims;
+    const sub = canonicalizeEntityRef(rawSub);
+    const ent = rawEnt
+      ? Array.from(new Set(rawEnt.map(canonicalizeEntityRef)))
+      : [sub];
     const claims = {
       sub,
       ent,
