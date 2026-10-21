@@ -27,6 +27,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, NotFoundError } from '@backstage/errors';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { ROOT_CONTEXT, context } from '@opentelemetry/api';
 
 const WINDOW_MAX_COUNT_DEFAULT = 10_000;
 const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
@@ -224,7 +225,11 @@ class DatabaseEventBusListener {
       await this.#connPromise;
       return;
     }
-    this.#connPromise = Promise.resolve().then(async () => {
+    // The listener connection outlives the call that creates it, and its keepalive
+    // interval and event handlers capture the trace context that is active when
+    // they are registered. Connect in the root context so that later queries are
+    // not attached to the trace of whichever request opened the connection.
+    const connect = context.bind(ROOT_CONTEXT, async () => {
       const conn = await this.#client.acquireRawConnection();
 
       try {
@@ -263,6 +268,7 @@ class DatabaseEventBusListener {
         throw error;
       }
     });
+    this.#connPromise = Promise.resolve().then(connect);
     try {
       await this.#connPromise;
     } catch (error) {

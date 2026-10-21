@@ -5240,6 +5240,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@opentelemetry/api": "npm:^1.9.0"
     "@types/content-type": "npm:^1.1.8"
     "@types/express": "npm:^4.17.6"
     content-type: "npm:^1.0.5"

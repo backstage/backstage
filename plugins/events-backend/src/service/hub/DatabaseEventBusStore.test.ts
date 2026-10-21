@@ -19,6 +19,16 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
+import {
+  Context,
+  ContextManager,
+  ROOT_CONTEXT,
+  Span,
+  TraceFlags,
+  context as otelContext,
+  trace,
+} from '@opentelemetry/api';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 
 jest.setTimeout(60_000);
@@ -28,6 +38,45 @@ const logger = mockServices.logger.mock();
 const databases = TestDatabases.create({
   ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
+
+// Minimal AsyncLocalStorage-backed context manager, so that the test can observe
+// which trace context the listener connection captures.
+class TestContextManager implements ContextManager {
+  readonly #storage = new AsyncLocalStorage<Context>();
+
+  active(): Context {
+    return this.#storage.getStore() ?? ROOT_CONTEXT;
+  }
+
+  with<A extends unknown[], F extends (...args: A) => ReturnType<F>>(
+    ctx: Context,
+    fn: F,
+    thisArg?: ThisParameterType<F>,
+    ...args: A
+  ): ReturnType<F> {
+    return this.#storage.run(ctx, () => fn.apply(thisArg, args));
+  }
+
+  bind<T>(ctx: Context, target: T): T {
+    if (typeof target !== 'function') {
+      return target;
+    }
+    const run = (thisArg: unknown, args: unknown[]) =>
+      this.with(ctx, () => target.apply(thisArg, args));
+    return function bound(this: unknown, ...args: unknown[]) {
+      return run(this, args);
+    } as T;
+  }
+
+  enable(): this {
+    return this;
+  }
+
+  disable(): this {
+    this.#storage.disable();
+    return this;
+  }
+}
 
 const nonPostgresDatabases = TestDatabases.create({
   ids: ['SQLITE_3', 'MYSQL_8'],
@@ -56,6 +105,59 @@ describe.each(nonPostgresDatabases.eachSupportedId())(
 describe.each(databases.eachSupportedId())(
   'DatabaseEventBusStore, %p',
   databaseId => {
+    it('does not attach the listener connection to the trace of the caller', async () => {
+      const db = await databases.init(databaseId);
+      const lifecycle = mockServices.lifecycle.mock();
+      const store = await DatabaseEventBusStore.create({
+        database: mockServices.database.mock({ getClient: async () => db }),
+        logger,
+        scheduler: mockServices.scheduler.mock(),
+        lifecycle,
+      });
+      await store.upsertSubscription(
+        'tester',
+        ['test'],
+        mockCredentials.service(),
+      );
+
+      const requestSpan = trace.wrapSpanContext({
+        traceId: '0af7651916cd43dd8448eb211c80319c',
+        spanId: 'b7ad6b7169203331',
+        traceFlags: TraceFlags.SAMPLED,
+      });
+      const spansAtKeepaliveSetup: Array<Span | undefined> = [];
+      const realSetInterval = global.setInterval;
+      const setIntervalSpy = jest
+        .spyOn(global, 'setInterval')
+        .mockImplementation(((
+          callback: (...args: unknown[]) => void,
+          ms?: number,
+          ...args: unknown[]
+        ) => {
+          if (ms === 60_000) {
+            spansAtKeepaliveSetup.push(trace.getSpan(otelContext.active()));
+          }
+          return realSetInterval(callback, ms, ...args);
+        }) as typeof setInterval);
+      otelContext.setGlobalContextManager(new TestContextManager());
+
+      try {
+        await otelContext.with(trace.setSpan(ROOT_CONTEXT, requestSpan), () =>
+          store.setupListener('tester', {
+            signal: new AbortController().signal,
+          }),
+        );
+
+        expect(spansAtKeepaliveSetup).toEqual([undefined]);
+      } finally {
+        otelContext.disable();
+        setIntervalSpy.mockRestore();
+        for (const [hook] of lifecycle.addShutdownHook.mock.calls) {
+          await hook();
+        }
+      }
+    });
+
     it('should clean up old events', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({ logger, db });
