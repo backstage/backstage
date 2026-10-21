@@ -41,8 +41,8 @@ export function groupNotifications({
   event: EventParams;
   logger: LoggerService;
 }) {
-  const { value: changeNotifications } =
-    eventPayload as ChangeNotificationCollection;
+  const { value: changeNotifications } = (eventPayload ??
+    {}) as ChangeNotificationCollection;
 
   if (!changeNotifications || !Array.isArray(changeNotifications)) {
     logger.warn(
