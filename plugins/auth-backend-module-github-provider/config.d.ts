@@ -33,6 +33,9 @@ export interface Config {
           signIn?: {
             resolvers: Array<
               | {
+                  /**
+                   * @deprecated Use `userIdMatchingUserEntityAnnotation` instead.
+                   */
                   resolver: 'usernameMatchingUserEntityName';
                   dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
                 }

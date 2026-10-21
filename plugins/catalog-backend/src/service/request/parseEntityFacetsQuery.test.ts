@@ -20,7 +20,7 @@ describe('parseEntityFacetsQuery', () => {
   it('parses facets with no query', () => {
     expect(parseEntityFacetsQuery({ facets: ['kind'] })).toEqual({
       facets: ['kind'],
-      query: undefined,
+      filter: undefined,
     });
   });
 
@@ -32,7 +32,7 @@ describe('parseEntityFacetsQuery', () => {
       }),
     ).toEqual({
       facets: ['spec.type'],
-      query: { kind: 'Component' },
+      filter: { kind: 'Component' },
     });
   });
 
@@ -42,7 +42,7 @@ describe('parseEntityFacetsQuery', () => {
     };
     expect(parseEntityFacetsQuery({ facets: ['spec.type'], query })).toEqual({
       facets: ['spec.type'],
-      query,
+      filter: query,
     });
   });
 

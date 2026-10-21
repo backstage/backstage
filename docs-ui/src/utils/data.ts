@@ -155,6 +155,11 @@ export const components: Page[] = [
     slug: 'text',
   },
   {
+    title: 'TextAreaField',
+    slug: 'text-area-field',
+    status: 'new',
+  },
+  {
     title: 'TextField',
     slug: 'text-field',
   },

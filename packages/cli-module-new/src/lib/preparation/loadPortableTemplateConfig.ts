@@ -24,8 +24,8 @@ import {
   TEMPLATE_FILE_NAME,
 } from '../types';
 import { parse as parseYaml } from 'yaml';
-import { z } from 'zod/v3';
-import { fromZodError } from 'zod-validation-error/v3';
+import { z } from 'zod';
+import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
 
 type FrontendSystem = 'new' | 'legacy' | 'unknown';

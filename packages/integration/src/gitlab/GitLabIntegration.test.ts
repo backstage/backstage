@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import {
   GitLabIntegration,
@@ -94,9 +94,9 @@ describe('GitLabIntegration', () => {
 
       let calledUrl: string | undefined;
       worker.use(
-        rest.get('https://h.com/api/v4', (req, res, ctx) => {
-          calledUrl = req.url.href;
-          return res(ctx.status(200));
+        http.get('https://h.com/api/v4', ({ request }) => {
+          calledUrl = request.url;
+          return new HttpResponse(null, { status: 200 });
         }),
       );
 
@@ -107,12 +107,12 @@ describe('GitLabIntegration', () => {
     it('applies retry logic when maxRetries > 0', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res(ctx.status(429), ctx.json({}));
+            return new HttpResponse(null, { status: 429 });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -138,9 +138,9 @@ describe('GitLabIntegration', () => {
     it('does not retry when status code is not in retryStatusCodes', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
-          return res(ctx.status(404));
+          return new HttpResponse(null, { status: 404 });
         }),
       );
 
@@ -165,9 +165,9 @@ describe('GitLabIntegration', () => {
     it('stops retrying after maxRetries attempts', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
-          return res(ctx.status(429));
+          return new HttpResponse(null, { status: 429 });
         }),
       );
 
@@ -222,12 +222,12 @@ describe('GitLabIntegration', () => {
 
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res(ctx.status(429), ctx.json({}));
+            return new HttpResponse(null, { status: 429 });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -257,16 +257,15 @@ describe('GitLabIntegration', () => {
     it('retries based on configured status codes', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res(
-              ctx.status(429),
-              ctx.set('Retry-After', '1'),
-              ctx.json({}),
-            );
+            return new HttpResponse(null, {
+              status: 429,
+              headers: { 'Retry-After': '1' },
+            });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -291,12 +290,12 @@ describe('GitLabIntegration', () => {
     it('retries multiple times for persistent failures', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount < 3) {
-            return res(ctx.status(500), ctx.json({}));
+            return new HttpResponse(null, { status: 500 });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -323,12 +322,12 @@ describe('GitLabIntegration', () => {
     it('retries on transient network errors and returns once recovered', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res.networkError('boom');
+            return HttpResponse.error();
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -353,9 +352,9 @@ describe('GitLabIntegration', () => {
     it('surfaces the error after exhausting retries on persistent network errors', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
-          return res.networkError('boom');
+          return HttpResponse.error();
         }),
       );
 

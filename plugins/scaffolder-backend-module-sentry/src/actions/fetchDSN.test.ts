@@ -131,13 +131,13 @@ describe('sentry:fetch:dsn action', () => {
       http.get(
         `https://sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
         async () => {
-          return HttpResponse.text('Bad response', { status: 400 });
+          return HttpResponse.text('TOP_SECRET_RESPONSE', { status: 200 });
         },
       ),
     );
 
     await expect(() => action.handler(actionContext)).rejects.toThrow(
-      new InputError(`Unexpected Sentry Response Type: Bad response`),
+      new InputError('Unexpected Sentry response content type'),
     );
   });
 
@@ -158,8 +158,62 @@ describe('sentry:fetch:dsn action', () => {
     );
 
     await expect(() => action.handler(actionContext)).rejects.toThrow(
-      new InputError(`Sentry Response was: Project not found`),
+      new InputError('Sentry API request failed with status 404'),
     );
+  });
+
+  it('should not expose an invalid JSON response body.', async () => {
+    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+
+    worker.use(
+      http.get(
+        `https://sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        async () => {
+          return new HttpResponse('TOP_SECRET_RESPONSE', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        },
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('Invalid JSON response from Sentry'),
+    );
+  });
+
+  it('should reject redirects without requesting the redirect target.', async () => {
+    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+    const redirectTarget = jest.fn(async () => {
+      return HttpResponse.json(
+        [{ dsn: { public: 'https://test@sentry.io/123' } }],
+        { status: 200 },
+      );
+    });
+
+    worker.use(
+      http.get(
+        `https://sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        ({ request }) => {
+          expect(request.redirect).toBe('error');
+          return HttpResponse.redirect(
+            'https://untrusted.example/api/0/projects/org/project/keys/',
+            302,
+          );
+        },
+      ),
+      http.get(
+        'https://untrusted.example/api/0/projects/org/project/keys/',
+        redirectTarget,
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('Failed to request Sentry API'),
+    );
+    expect(redirectTarget).not.toHaveBeenCalled();
   });
 
   it('should throw InputError when no keys are returned.', async () => {
@@ -198,14 +252,23 @@ describe('sentry:fetch:dsn action', () => {
     );
   });
 
-  it('should fetch DSN with custom apiBaseUrl.', async () => {
+  it('should accept a normalized action apiBaseUrl that matches the configured URL.', async () => {
     expect.assertions(3);
 
-    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
+    const action = createSentryFetchDSNAction(
+      createScaffolderConfig({
+        sentry: {
+          token: sentryScaffolderConfigToken,
+          apiBaseUrl: 'https://custom.sentry.io/api/0',
+        },
+      }),
+    );
     const actionContext = getActionContext();
     actionContext.input = {
       ...actionContext.input,
-      apiBaseUrl: 'https://custom.sentry.io/api/0',
+      authToken: undefined,
+      apiBaseUrl: 'https://custom.sentry.io/api/0/',
     };
     const mockDSN = 'https://test@sentry.io/123';
 
@@ -214,7 +277,7 @@ describe('sentry:fetch:dsn action', () => {
         `https://custom.sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
         async ({ request }) => {
           expect(request.headers.get('Authorization')).toBe(
-            `Bearer ${actionContext.input.authToken}`,
+            `Bearer ${sentryScaffolderConfigToken}`,
           );
           expect(request.headers.get('Content-Type')).toBe(`application/json`);
           return HttpResponse.json([{ dsn: { public: mockDSN } }], {
@@ -226,6 +289,67 @@ describe('sentry:fetch:dsn action', () => {
 
     await action.handler(actionContext);
     expect(actionContext.output).toHaveBeenCalledWith('dsn', mockDSN);
+  });
+
+  it('should reject an action apiBaseUrl that does not safely match the configured URL.', async () => {
+    const action = createSentryFetchDSNAction(
+      createScaffolderConfig({
+        sentry: {
+          apiBaseUrl: 'https://config.sentry.io/api/0',
+        },
+      }),
+    );
+    const actionContext = getActionContext();
+    actionContext.isDryRun = true;
+    actionContext.input = {
+      ...actionContext.input,
+      apiBaseUrl: 'https://config.sentry.io.evil/api/0',
+    };
+    const requestHandler = jest.fn(async () => {
+      return HttpResponse.json(
+        [{ dsn: { public: 'https://test@sentry.io/123' } }],
+        { status: 200 },
+      );
+    });
+
+    worker.use(
+      http.get(
+        `https://config.sentry.io.evil/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        requestHandler,
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('apiBaseUrl must match the effective Sentry API base URL'),
+    );
+    expect(requestHandler).not.toHaveBeenCalled();
+  });
+
+  it('should reject an empty action apiBaseUrl.', async () => {
+    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+    actionContext.input = {
+      ...actionContext.input,
+      apiBaseUrl: '',
+    };
+    const requestHandler = jest.fn(async () => {
+      return HttpResponse.json(
+        [{ dsn: { public: 'https://test@sentry.io/123' } }],
+        { status: 200 },
+      );
+    });
+
+    worker.use(
+      http.get(
+        `https://sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        requestHandler,
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('apiBaseUrl must be a valid HTTP(S) URL'),
+    );
+    expect(requestHandler).not.toHaveBeenCalled();
   });
 
   it('should fetch DSN with apiBaseUrl from config.', async () => {
@@ -247,6 +371,41 @@ describe('sentry:fetch:dsn action', () => {
         async ({ request }) => {
           expect(request.headers.get('Authorization')).toBe(
             `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          return HttpResponse.json([{ dsn: { public: mockDSN } }], {
+            status: 200,
+          });
+        },
+      ),
+    );
+
+    await action.handler(actionContext);
+    expect(actionContext.output).toHaveBeenCalledWith('dsn', mockDSN);
+  });
+
+  it('should use the auth token and apiBaseUrl from config together.', async () => {
+    expect.assertions(3);
+
+    const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
+    const action = createSentryFetchDSNAction(
+      createScaffolderConfig({
+        sentry: {
+          token: sentryScaffolderConfigToken,
+          apiBaseUrl: 'https://config.sentry.io/api/0',
+        },
+      }),
+    );
+    const actionContext = getActionContext();
+    actionContext.input.authToken = undefined;
+    const mockDSN = 'https://test@sentry.io/123';
+
+    worker.use(
+      http.get(
+        `https://config.sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer ${sentryScaffolderConfigToken}`,
           );
           expect(request.headers.get('Content-Type')).toBe(`application/json`);
           return HttpResponse.json([{ dsn: { public: mockDSN } }], {

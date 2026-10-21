@@ -24,6 +24,7 @@ import {
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { waitFor, screen } from '@testing-library/react';
+import { z } from 'zod';
 
 describe('CatalogFilterBlueprint', () => {
   it('should create an extension with sane defaults', () => {
@@ -63,10 +64,8 @@ describe('CatalogFilterBlueprint', () => {
       inputs: {
         mock: createExtensionInput([coreExtensionData.reactElement]),
       },
-      config: {
-        schema: {
-          test: z => z.string(),
-        },
+      configSchema: {
+        test: z.string(),
       },
       factory(originalFactory, { config, inputs }) {
         return originalFactory({

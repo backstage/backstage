@@ -15,10 +15,14 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import {
+  ButtonIcon,
+  ButtonIconProps,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import { MouseEventHandler, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -58,6 +62,15 @@ export interface CopyTextButtonProps {
    * Default: "Copy text"
    */
   'aria-label'?: string;
+
+  /**
+   * The visual variant of the button
+   *
+   * @remarks
+   *
+   * Default: "primary"
+   */
+  variant?: ButtonIconProps['variant'];
 }
 
 /**
@@ -86,10 +99,12 @@ export function CopyTextButton(props: CopyTextButtonProps) {
     tooltipDelay = 1000,
     tooltipText = t('copyTextButton.tooltipText'),
     'aria-label': ariaLabel = 'Copy text',
+    variant,
   } = props;
   const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
   const [{ error }, copyToClipboard] = useCopyToClipboard();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (error) {
@@ -97,26 +112,44 @@ export function CopyTextButton(props: CopyTextButtonProps) {
     }
   }, [error, errorApi]);
 
-  const handleCopyClick: MouseEventHandler = e => {
-    e.stopPropagation();
+  const handleCopyClick = () => {
+    // Clear any existing timeout to reset the timer on repeated clicks
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
     setOpen(true);
     copyToClipboard(text);
+
+    // Set new timeout to close tooltip
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, tooltipDelay);
   };
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <>
-      <Tooltip
-        id="copy-test-tooltip"
-        title={tooltipText}
-        placement="top"
-        leaveDelay={tooltipDelay}
-        onClose={() => setOpen(false)}
-        open={open}
-      >
-        <IconButton onClick={handleCopyClick} aria-label={ariaLabel}>
-          <CopyIcon />
-        </IconButton>
-      </Tooltip>
-    </>
+    <TooltipTrigger
+      isOpen={open}
+      onOpenChange={isOpen => {
+        if (!isOpen) setOpen(false);
+      }}
+    >
+      <ButtonIcon
+        icon={<CopyIcon />}
+        onPress={handleCopyClick}
+        aria-label={ariaLabel}
+        variant={variant}
+      />
+      <Tooltip>{tooltipText}</Tooltip>
+    </TooltipTrigger>
   );
 }

@@ -10,9 +10,15 @@ The frontend feature loader provided in this package works hand-in-hand with the
 - To enable this loader, you should:
 
   - Enable the backend dynamic features in your backend application, as explained in the [`backend-dynamic-feature-service` README.md file](../backend-dynamic-feature-service/README.md#how-it-works)
+  - Install the `@backstage/frontend-dynamic-feature-loader` package in your frontend app:
+    ```sh
+    yarn --cwd packages/app add @backstage/frontend-dynamic-feature-loader
+    ```
   - Add the frontend feature loader to the list of features when creating the frontend application:
 
     ```typescript
+    import { dynamicFrontendFeaturesLoader } from '@backstage/frontend-dynamic-feature-loader';
+
     const app = createApp({
       features: [...someOtherFeatures, dynamicFrontendFeaturesLoader()],
     });
@@ -22,7 +28,7 @@ The frontend feature loader provided in this package works hand-in-hand with the
 
 Adding a frontend plugin (with new frontend system support, possibly in alpha support), is straightforward and consists in:
 
-- bundling the frontend plugin with the [`backstage-cli package bundle`](../../docs/tooling/cli/03-commands.md#package-bundle) command, thus producing a self-contained bundle based on Module Federation.
+- bundling the frontend plugin with the [`backstage-cli package bundle`](../../docs/tooling/cli/module-build.md#package-bundle) command, thus producing a self-contained bundle based on Module Federation.
 - copying the bundle folder into the Backstage installation dynamic plugins root folder for dynamic loading.
 
 So from a `my-backstage-plugin` frontend plugin package folder, you would use the following command:

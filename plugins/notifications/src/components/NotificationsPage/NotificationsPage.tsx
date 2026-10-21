@@ -24,6 +24,12 @@ import {
 import { Grid } from '@backstage/ui';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSearchParams } from 'react-router-dom';
+import {
+  Notification,
+  NotificationSeverity,
+  NotificationStatus,
+} from '@backstage/plugin-notifications-common';
 import { notificationsTranslationRef } from '../../translation';
 
 const TableTitleKeys = {
@@ -46,10 +52,6 @@ import {
   GetNotificationsResponse,
   GetTopicsResponse,
 } from '../../api';
-import {
-  NotificationSeverity,
-  NotificationStatus,
-} from '@backstage/plugin-notifications-common';
 
 const ThrottleDelayMs = 2000;
 
@@ -81,7 +83,14 @@ function NotificationsPageContent(
   } = props;
 
   const [refresh, setRefresh] = useState(false);
+  // TODO: Reuse useNotificationsRefresh instead of duplicating signals +
+  // polling refresh logic here.
   const { lastSignal } = useSignal('notifications');
+  const [searchParams] = useSearchParams();
+  const highlightedNotificationId = searchParams.get('id') || undefined;
+  const [highlightedNotification, setHighlightedNotification] = useState<
+    Notification | undefined
+  >();
   const [unreadOnly, setUnreadOnly] = useState<boolean | undefined>(true);
   const [saved, setSaved] = useState<boolean | undefined>(undefined);
   const [pageNumber, setPageNumber] = useState(0);
@@ -158,15 +167,71 @@ function NotificationsPageContent(
     }
   }, [lastSignal, throttledSetRefresh]);
 
+  useEffect(() => {
+    if (!highlightedNotificationId) {
+      setHighlightedNotification(undefined);
+      return;
+    }
+
+    setPageNumber(0);
+  }, [highlightedNotificationId]);
+
+  const { value: fetchedHighlightedNotification } = useNotificationsApi(
+    api => {
+      if (!highlightedNotificationId) {
+        return Promise.resolve(undefined);
+      }
+      return api.getNotification(highlightedNotificationId);
+    },
+    [highlightedNotificationId],
+  );
+
+  useEffect(() => {
+    if (!fetchedHighlightedNotification) {
+      return;
+    }
+
+    setHighlightedNotification(fetchedHighlightedNotification);
+    if (!fetchedHighlightedNotification.read) {
+      setUnreadOnly(true);
+    } else {
+      setUnreadOnly(false);
+    }
+  }, [fetchedHighlightedNotification]);
+
   const onUpdate = () => {
     throttledSetRefresh(true);
   };
+
+  const notifications = value?.[0]?.notifications;
+  const displayedNotifications = useMemo(() => {
+    if (
+      !highlightedNotification ||
+      notifications?.some(
+        notification => notification.id === highlightedNotification.id,
+      )
+    ) {
+      return notifications;
+    }
+
+    // Allow pageSize + 1 so a deep-linked notification can be injected
+    // without silently dropping a row that belongs on this page.
+    return [highlightedNotification, ...(notifications ?? [])];
+  }, [notifications, highlightedNotification]);
+
+  const injectedHighlightedNotification =
+    highlightedNotification &&
+    !notifications?.some(
+      notification => notification.id === highlightedNotification.id,
+    );
+  const displayedPageSize = injectedHighlightedNotification
+    ? pageSize + 1
+    : pageSize;
 
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
 
-  const notifications = value?.[0]?.notifications;
   const totalCount = value?.[0]?.totalCount;
   const isUnread = !!value?.[1]?.unread;
   const allTopics = value?.[2]?.topics;
@@ -214,13 +279,14 @@ function NotificationsPageContent(
             isLoading={loading}
             isUnread={isUnread}
             markAsReadOnLinkOpen={markAsReadOnLinkOpen}
-            notifications={notifications}
+            notifications={displayedNotifications}
+            highlightedNotificationId={highlightedNotificationId}
             onUpdate={onUpdate}
             setContainsText={setContainsText}
             onPageChange={setPageNumber}
             onRowsPerPageChange={setPageSize}
             page={pageNumber}
-            pageSize={pageSize}
+            pageSize={displayedPageSize}
             totalCount={totalCount}
           />
         </Grid.Item>

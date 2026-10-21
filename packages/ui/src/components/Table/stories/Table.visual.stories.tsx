@@ -21,6 +21,7 @@ import { Table, CellText, CellProfile, useTable, type ColumnConfig } from '..';
 import { data as data1 } from './mocked-data1';
 import { data as data4 } from './mocked-data4';
 import { selectionData, selectionColumns, tableStoriesMeta } from './utils';
+import { Text } from '../../Text';
 
 const meta = {
   title: 'Backstage UI/Table/visual',
@@ -385,5 +386,109 @@ export const CustomPageSizeOptions: Story = {
     });
 
     return <Table columnConfig={columns} {...tableProps} />;
+  },
+};
+
+export const ColumnWidthsWithFr: Story = {
+  render: () => {
+    const fixedColumns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name (3fr)',
+        isRowHeader: true,
+        width: '3fr',
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner (2fr)',
+        width: '2fr',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type (1fr)',
+        width: '1fr',
+        cell: item => <CellText title={item.type} />,
+      },
+      {
+        id: 'lifecycle',
+        label: 'Lifecycle (1fr)',
+        width: '1fr',
+        cell: item => <CellText title={item.lifecycle} />,
+      },
+    ];
+
+    const constrainedColumns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name (3fr, min 200px)',
+        isRowHeader: true,
+        defaultWidth: '3fr',
+        minWidth: 200,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner (2fr, 120–300px)',
+        defaultWidth: '2fr',
+        minWidth: 120,
+        maxWidth: 300,
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type (1fr, 80–150px)',
+        defaultWidth: '1fr',
+        minWidth: 80,
+        maxWidth: 150,
+        cell: item => <CellText title={item.type} />,
+      },
+      {
+        id: 'lifecycle',
+        label: 'Lifecycle (1fr, 80–150px)',
+        defaultWidth: '1fr',
+        minWidth: 80,
+        maxWidth: 150,
+        cell: item => <CellText title={item.lifecycle} />,
+      },
+    ];
+
+    const fixed = useTable({
+      mode: 'complete',
+      getData: () => data1,
+      paginationOptions: { pageSize: 5 },
+    });
+
+    const constrained = useTable({
+      mode: 'complete',
+      getData: () => data1,
+      paginationOptions: { pageSize: 5 },
+    });
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div>
+          <Text variant="body-large" color="secondary">
+            Fixed ratios with width — columns keep their proportions
+          </Text>
+          <Table columnConfig={fixedColumns} {...fixed.tableProps} />
+        </div>
+        <div>
+          <Text variant="body-large" color="secondary">
+            Resizable with defaultWidth — fr ratios with pixel min/max
+            constraints
+          </Text>
+          <Table
+            columnConfig={constrainedColumns}
+            {...constrained.tableProps}
+          />
+        </div>
+      </div>
+    );
   },
 };

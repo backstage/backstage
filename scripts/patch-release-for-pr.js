@@ -28,6 +28,7 @@ const owner = 'backstage';
 const repo = 'backstage';
 const rootDir = path.resolve(__dirname, '..');
 const PATCH_FILE_PATTERN = /^pr-(\d+)\.txt$/;
+const pushRetryDelays = [5_000, 15_000];
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -43,6 +44,95 @@ async function run(command, ...args) {
   }
 
   return stdout.trim();
+}
+
+function wait(delay) {
+  return new Promise(resolve => setTimeout(resolve, delay));
+}
+
+async function ensureRemoteBranch({
+  branchName,
+  baseSha,
+  client = octokit,
+  runCommand = run,
+}) {
+  try {
+    await client.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branchName}`,
+    });
+  } catch (error) {
+    if (error.status !== 404) {
+      throw error;
+    }
+
+    console.log(`Creating ${branchName} at the patch release base`);
+    try {
+      await client.git.createRef({
+        owner,
+        repo,
+        ref: `refs/heads/${branchName}`,
+        sha: baseSha,
+      });
+    } catch (createError) {
+      if (createError.status !== 422) {
+        throw createError;
+      }
+
+      try {
+        await client.git.getRef({
+          owner,
+          repo,
+          ref: `heads/${branchName}`,
+        });
+      } catch {
+        throw createError;
+      }
+    }
+  }
+
+  await runCommand(
+    'git',
+    'fetch',
+    'origin',
+    `refs/heads/${branchName}:refs/remotes/origin/${branchName}`,
+  );
+}
+
+async function pushBranch(
+  branchName,
+  { runCommand = run, wait: waitForRetry = wait } = {},
+) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await runCommand(
+        'git',
+        'push',
+        'origin',
+        '-u',
+        '--force-with-lease',
+        branchName,
+      );
+      return;
+    } catch (error) {
+      const retryDelay = pushRetryDelays[attempt];
+      const output = `${error.message ?? ''}\n${error.stderr ?? ''}`;
+      if (
+        retryDelay !== undefined &&
+        output.includes(
+          'Unable to determine if workflow can be created or updated due to timeout',
+        )
+      ) {
+        console.warn(
+          `GitHub workflow check timed out, retrying push in ${retryDelay}ms`,
+        );
+        await waitForRetry(retryDelay);
+        continue;
+      }
+      throw error;
+    }
+  }
 }
 
 /**
@@ -230,19 +320,18 @@ async function main(args) {
     process.env.PATCH_RELEASE_BRANCH ||
     `patch-release-pr-${prNumbers.join('-')}`;
 
-  // Check if branch already exists (for CI workflows using fixed branch name)
-  try {
-    await run(
-      'git',
-      'show-ref',
-      '--verify',
-      '--quiet',
-      `refs/heads/${branchName}`,
-    );
-    await run('git', 'checkout', branchName);
-  } catch {
-    await run('git', 'checkout', '-b', branchName);
+  if (process.env.PATCH_RELEASE_BRANCH) {
+    const patchBaseSha = await run('git', 'rev-parse', 'HEAD');
+    await ensureRemoteBranch({ branchName, baseSha: patchBaseSha });
   }
+
+  // Always start fresh from the release base to keep the PR diff clean
+  try {
+    await run('git', 'branch', '-D', branchName);
+  } catch {
+    // Branch didn't exist locally, that's fine
+  }
+  await run('git', 'checkout', '-b', branchName);
 
   const appliedPrNumbers = [];
 
@@ -344,15 +433,28 @@ async function main(args) {
     )}`,
   );
 
+  // Copy patch files from master so they appear in the PR diff
+  const patchesDir = path.join(rootDir, '.patches');
+  await fs.ensureDir(patchesDir);
+  for (const prNumber of appliedPrNumbers) {
+    const patchFileName = `pr-${prNumber}.txt`;
+    try {
+      const { stdout: content } = await execFile(
+        'git',
+        ['show', `origin/master:.patches/${patchFileName}`],
+        { cwd: rootDir },
+      );
+      await fs.writeFile(path.join(patchesDir, patchFileName), content);
+    } catch {
+      console.log(`Patch file ${patchFileName} not found on master, skipping`);
+    }
+  }
+
   console.log('Running "yarn install" ...');
   await run('yarn', 'install');
 
   console.log('Running "yarn release" ...');
   await run('yarn', 'release');
-
-  // Note: Patch files are not deleted here because this script runs in the patch
-  // release branch, not master. The cleanup_patch-files.yml workflow handles
-  // deletion from master after the patch release PR is merged.
 
   await run('git', 'add', '.');
   await run(
@@ -364,12 +466,8 @@ async function main(args) {
     'Generate Release',
   );
 
-  // Use force push if using a specific branch name (for CI workflows)
-  if (process.env.PATCH_RELEASE_BRANCH) {
-    await run('git', 'push', 'origin', '-u', '--force-with-lease', branchName);
-  } else {
-    await run('git', 'push', 'origin', '-u', branchName);
-  }
+  // Always force push since we rebuild the branch from scratch each time
+  await pushBranch(branchName);
 
   // Generate PR body using only applied patches
   let body;
@@ -408,7 +506,11 @@ async function main(args) {
   }
 }
 
-main(process.argv.slice(2)).catch(error => {
-  console.error(error.stack || error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main(process.argv.slice(2)).catch(error => {
+    console.error(error.stack || error);
+    process.exit(1);
+  });
+}
+
+module.exports = { ensureRemoteBranch, pushBranch };

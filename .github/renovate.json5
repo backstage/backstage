@@ -4,12 +4,6 @@
   extends: ['config:best-practices', ':gitSignOff'],
   // do not pin dev dependencies, which are part of the best-practices preset
   ignorePresets: [':pinDevDependencies', ':pinDigest', 'docker:pinDigests'],
-  constraints: {
-    // TODO(freben): Remove this later; it addresses a temporary issue in corepack
-    // https://github.com/nodejs/corepack/issues/379
-    // https://github.com/renovatebot/renovate/discussions/27465
-    corepack: '0.24.1',
-  },
   // the default limit is 10 PRs
   prConcurrentLimit: 20,
   postUpdateOptions: ['yarnDedupeHighest'],
@@ -42,6 +36,7 @@
       groupName: 'OpenTelemetry packages',
       rangeStrategy: 'replace',
       matchPackageNames: ['/^@opentelemetry\\//'],
+      separateMajorMinor: false,
     },
     // We update yarn packages manually as it's gzip'd and we don't want to pollute the repository too much.
     {
@@ -52,6 +47,10 @@
     {
       matchPackageNames: ['browser-actions/setup-chrome'],
       enabled: false,
+    },
+    {
+      matchManagers: ['github-actions'],
+      pinDigests: true,
     },
     // ESM only majors, that we're not ready for yet
     {

@@ -20,11 +20,24 @@ import {
   LightningCssMinimizerRspackPlugin,
   RspackOptionsNormalized,
 } from '@rspack/core';
+import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
 
 export const optimization = (
   options: BundlingOptions,
 ): RspackOptionsNormalized['optimization'] => {
-  const { isDev, webpack } = options;
+  const { isDev, moduleFederationRemote, webpack } = options;
+  const sharedRemoteChunks = {
+    chunks: 'async' as const,
+    name: false as const,
+    minChunks: 2,
+    minSize: 20_000,
+    maxAsyncRequests: Infinity,
+    maxInitialRequests: Infinity,
+    reuseExistingChunk: true,
+    // Extracted styles retain the ordering of their importing chunks. Sharing
+    // them across unrelated lazy boundaries can introduce conflicting orders.
+    type: /^(?!css\/mini-extract$)/,
+  };
 
   const MinifyPlugin = webpack
     ? require('esbuild-loader').EsbuildPlugin
@@ -49,47 +62,62 @@ export const optimization = (
     runtimeChunk: 'single',
     splitChunks: {
       automaticNameDelimiter: '-',
-      cacheGroups: {
-        default: false,
-        // Put all vendor code needed for initial page load in individual files if they're big
-        // enough, if they're smaller they end up in the main
-        packages: {
-          chunks: 'initial',
-          test(module: any) {
-            return Boolean(
-              module?.resource?.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/),
-            );
-          },
-          name(module: any) {
-            // get the name. E.g. node_modules/packageName/not/this/part.js
-            // or node_modules/packageName
-            const packageName = module.resource.match(
-              /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
-            )[1];
+      cacheGroups: moduleFederationRemote
+        ? {
+            default: false,
+            defaultVendors: false,
+            dependencies: {
+              ...sharedRemoteChunks,
+              test: /[\\/]node_modules[\\/]/,
+              priority: 10,
+            },
+            workspace: {
+              ...sharedRemoteChunks,
+              priority: 0,
+            },
+          }
+        : {
+            default: false,
+            // Put large dependencies from the initial page load in individual files.
+            packages: {
+              chunks: 'initial',
+              test(module: any) {
+                return Boolean(
+                  module?.resource?.match(
+                    /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+                  ),
+                );
+              },
+              name(module: any) {
+                // get the name. E.g. node_modules/packageName/not/this/part.js
+                // or node_modules/packageName
+                const packageName = module.resource.match(
+                  /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+                )[1];
 
-            // npm package names are URL-safe, but some servers don't like @ symbols
-            return packageName.replace('@', '');
+                // npm package names are URL-safe, but some servers don't like @ symbols
+                return packageName.replace('@', '');
+              },
+              filename: isDev
+                ? 'module-[name].js'
+                : `static/module-[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].js`,
+              priority: 10,
+              minSize: 100000,
+              minChunks: 1,
+              ...(webpack && {
+                maxAsyncRequests: Infinity,
+                maxInitialRequests: Infinity,
+              }),
+            }, // filename is not included in type, but we need it
+            // Group together the smallest modules
+            vendor: {
+              chunks: 'initial',
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendor',
+              priority: 5,
+              enforce: true,
+            },
           },
-          filename: isDev
-            ? 'module-[name].js'
-            : 'static/module-[name].[contenthash:8].js',
-          priority: 10,
-          minSize: 100000,
-          minChunks: 1,
-          ...(webpack && {
-            maxAsyncRequests: Infinity,
-            maxInitialRequests: Infinity,
-          }),
-        }, // filename is not included in type, but we need it
-        // Group together the smallest modules
-        vendor: {
-          chunks: 'initial',
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendor',
-          priority: 5,
-          enforce: true,
-        },
-      },
     },
   };
 };

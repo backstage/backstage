@@ -43,6 +43,28 @@ export const RepoUrlPickerFieldSchema = makeFieldSchema({
         .array(z.string())
         .optional()
         .describe('List of allowed repos in the given SCM platform'),
+      ownerLabel: z
+        .string()
+        .optional()
+        .describe('Custom label for the owner/namespace field'),
+      ownerDescription: z
+        .string()
+        .optional()
+        .describe('Custom description for the owner/namespace field'),
+      repoLabel: z
+        .string()
+        .optional()
+        .describe('Custom label for the repository name field'),
+      repoDescription: z
+        .string()
+        .optional()
+        .describe('Custom description for the repository name field'),
+      disableRepoAutocomplete: z
+        .boolean()
+        .optional()
+        .describe(
+          'If true, renders a plain text input instead of an autocomplete dropdown for the repository name',
+        ),
       requestUserCredentials: z
         .object({
           secretsKey: z

@@ -1,4 +1,5 @@
 abc
+accessor
 accessors
 ACLs
 addon
@@ -11,7 +12,9 @@ ajv
 Alaria
 Alef
 allowedHosts
+allowlist
 allowlisted
+allowlists
 Anddddd
 Apdex
 api
@@ -20,6 +23,7 @@ approvers
 asciidoc
 async
 Atlassian
+autocomplete
 autofix
 autologout
 automations
@@ -27,6 +31,7 @@ autoscaling
 autoselect
 Avro
 backend's
+backoff
 backported
 backporting
 BEPs
@@ -135,6 +140,7 @@ Dockerize
 dockerode
 Docusaurus
 Dominik
+dirtyreload
 DOMPurify
 don'ts
 dynatrace
@@ -153,6 +159,7 @@ etag
 Expedia
 facto
 failover
+falsy
 faq
 Fargate
 faqs
@@ -186,6 +193,7 @@ Hackathons
 hackathon
 haproxy
 hardcoded
+hardcodes
 hardcoding
 harness
 Helidon
@@ -201,6 +209,7 @@ http
 https
 Iain
 idempotency
+idempotent
 Iglesias
 iLert
 img
@@ -228,6 +237,7 @@ json
 jsonnet
 JSONSchema
 jsx
+justfile
 JWTs
 Kaewkasi
 Kaswell
@@ -252,6 +262,7 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+livereload
 liveness
 LLMs
 LocalStack
@@ -271,6 +282,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+materialx
 matchers
 md
 memcache
@@ -312,6 +324,7 @@ neuro
 newrelic
 nginx
 nodegit
+nodemailer
 nodejs
 nohoist
 nonces
@@ -319,6 +332,7 @@ noop
 npm
 nullable
 nunjucks
+nunjitsu
 nvarchar
 nvm
 OAuth
@@ -330,6 +344,7 @@ Oldsberg
 onboarded
 onboarding
 onelogin
+oasdiff
 openapi
 OpenSearch
 OpenShift
@@ -362,6 +377,8 @@ pipx
 plaintext
 plantuml
 Platformize
+pluggable
+Pluggable
 Podman
 posix
 postgres
@@ -383,6 +400,7 @@ pseudonymized
 pubsub
 Pulumi
 pygments
+pymdown
 pymdownx
 rankdir
 readme
@@ -484,9 +502,12 @@ subfolders
 subheader
 subheaders
 subkey
+submenu
 subpage
 subpath
 subpaths
+subplan
+subplans
 subroute
 subroutes
 subquery
@@ -555,13 +576,16 @@ unregister
 unregistering
 unregisters
 unregistration
+unpatched
 unreviewed
 unstarred
 untemplated
 untracked
+untrusted
 upsert
 upstreams
 upvote
+UIs
 URIs
 url
 URLs
@@ -594,6 +618,8 @@ xyz
 yaml
 Zalando
 Zhou
+zensical
+Zensical
 zod
 Zolotusky
 zoomable

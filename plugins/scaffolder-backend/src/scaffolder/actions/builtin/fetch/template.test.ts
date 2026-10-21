@@ -26,6 +26,7 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 import { createFetchTemplateAction } from './template';
 import {
   fetchContents,
@@ -90,6 +91,30 @@ describe('fetch:template', () => {
   });
 
   describe('handler', () => {
+    it('requires an explicit token for SCM reads when configured', async () => {
+      const integrations = ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: { github: [{ host: 'github.com' }] },
+        }),
+      );
+      const requiredAction = createFetchTemplateAction({
+        reader: Symbol('UrlReader') as unknown as UrlReaderService,
+        integrations,
+        requireScmUserCredentials: true,
+      });
+
+      await expect(
+        requiredAction.handler(
+          mockContext({
+            url: 'https://github.com/backstage/community/tree/main',
+          }),
+        ),
+      ).rejects.toThrow(
+        'No user credentials provided for host github.com, but scaffolder.requireScmUserCredentials is enabled',
+      );
+      expect(mockFetchContents).not.toHaveBeenCalled();
+    });
+
     it('throws if output directory is outside the workspace', async () => {
       await expect(() =>
         action.handler(mockContext({ targetPath: '../' })),
@@ -225,6 +250,8 @@ describe('fetch:template', () => {
               subdir: {
                 'templated-content.txt':
                   '${{ values.name }}: ${{ values.count }}',
+                'regex.txt':
+                  '${{ "test-project" | replace(r/^test-(.+)$/, "$1-template") }}',
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
@@ -272,6 +299,9 @@ describe('fetch:template', () => {
             'utf-8',
           ),
         ).resolves.toEqual('test-project: 1234');
+        await expect(
+          fs.readFile(`${workspacePath}/target/subdir/regex.txt`, 'utf-8'),
+        ).resolves.toEqual('project-template');
       });
 
       it('processes dotfiles', async () => {

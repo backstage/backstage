@@ -77,6 +77,8 @@ export class PinnipedStrategyCache {
     this.callbackUrl = callbackUrl;
     this.config = config;
     this.strategyPromise = this.buildStrategy();
+    // Observe eager discovery failures until getStrategy handles the retry.
+    void this.strategyPromise.catch(() => {});
   }
 
   public async getStrategy(): Promise<{

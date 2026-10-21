@@ -23,7 +23,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { instance: instanceFlag },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       flags: {
         instance: {
           type: String,

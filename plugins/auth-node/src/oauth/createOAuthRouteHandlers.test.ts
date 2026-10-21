@@ -234,6 +234,7 @@ describe('createOAuthRouteHandlers', () => {
             stateTransform: async state => ({
               state: { ...state, nonce: '123' },
             }),
+            isOriginAllowed: origin => origin === 'https://remotehost',
           }),
         ),
       );
@@ -270,6 +271,91 @@ describe('createOAuthRouteHandlers', () => {
         },
         { ctx: 'authenticator' },
       );
+    });
+
+    it('should validate redirect destinations before starting authentication', async () => {
+      const app = wrapInApp(
+        createOAuthRouteHandlers({
+          ...baseConfig,
+          isOriginAllowed: origin => origin === 'http://127.0.0.1',
+        }),
+      );
+
+      for (const [redirectUrl, status] of [
+        [undefined, 400],
+        ['', 400],
+        ['invalid-url', 400],
+        ['//untrusted.example/path', 400],
+        ['https://untrusted.example/path', 403],
+        ['http://127.0.0.1@untrusted.example/path', 403],
+        // eslint-disable-next-line no-script-url
+        ['javascript:alert(1)', 403],
+      ] as const) {
+        const res = await request(app).get('/my-provider/start').query({
+          env: 'development',
+          flow: 'redirect',
+          redirectUrl,
+        });
+
+        expect(res.status).toBe(status);
+        expect(res.get('Location')).toBeUndefined();
+        expect(res.get('Set-Cookie')).toBeUndefined();
+      }
+      expect(mockAuthenticator.start).not.toHaveBeenCalled();
+    });
+
+    it('should reject malformed origin', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: 'not-a-valid-url' });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'InputError',
+          message: expect.stringContaining(
+            'App origin is invalid, failed to parse',
+          ),
+        },
+      });
+    });
+
+    it('should reject empty origin', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: '' });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'InputError',
+          message: expect.stringContaining(
+            'App origin is invalid, failed to parse',
+          ),
+        },
+      });
+    });
+
+    it('should reject disallowed origin', async () => {
+      const app = wrapInApp(
+        createOAuthRouteHandlers({
+          ...baseConfig,
+          isOriginAllowed: () => false,
+        }),
+      );
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: 'https://disallowed.com' });
+
+      expect(res.status).toBe(403);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'NotAllowedError',
+          message: "Origin 'https://disallowed.com' is not allowed",
+        },
+      });
     });
   });
 
@@ -734,6 +820,7 @@ describe('createOAuthRouteHandlers', () => {
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
             signInResolver: async () => ({ token: mockBackstageToken }),
+            isOriginAllowed: origin => origin === 'https://127.0.0.1:3000',
           }),
         ),
       );
@@ -766,6 +853,51 @@ describe('createOAuthRouteHandlers', () => {
       expect(getGrantedScopesCookie(agent).value).toBe(
         'my-scope%20my-other-scope',
       );
+    });
+
+    it('should return invalid callback redirect destinations to the app before authentication', async () => {
+      const app = wrapInApp(
+        createOAuthRouteHandlers({
+          ...baseConfig,
+          isOriginAllowed: origin => origin === 'http://127.0.0.1',
+        }),
+      );
+
+      for (const redirectUrl of [
+        undefined,
+        '',
+        'invalid-url',
+        '//untrusted.example/path',
+        'https://untrusted.example/path',
+        'http://127.0.0.1@untrusted.example/path',
+        // eslint-disable-next-line no-script-url
+        'javascript:alert(1)',
+      ]) {
+        for (const cookie of ['', 'my-provider-nonce=123']) {
+          const res = await request(app)
+            .get('/my-provider/handler/frame')
+            .set('Cookie', cookie)
+            .query({
+              state: encodeOAuthState({
+                env: 'development',
+                nonce: '123',
+                flow: 'redirect',
+                redirectUrl,
+              }),
+            });
+
+          expect(res.status).toBe(302);
+          const errorUrl = new URL(res.get('Location'));
+          expect(errorUrl.origin).toBe('http://127.0.0.1');
+          expect(errorUrl.pathname).toBe('/');
+          expect([...errorUrl.searchParams.keys()]).toEqual(['error']);
+          expect(errorUrl.searchParams.get('error')).toMatch(
+            /^(No redirectUrl provided|Redirect URL is invalid|Redirect URL is not an allowed origin)/,
+          );
+          expect(res.get('Set-Cookie')).toBeUndefined();
+        }
+      }
+      expect(mockAuthenticator.authenticate).not.toHaveBeenCalled();
     });
 
     it('should require a valid origin', async () => {
@@ -1393,32 +1525,53 @@ describe('createOAuthRouteHandlers', () => {
       expect(res.body).toEqual({});
     });
 
-    it('should set error search param and redirect on caught error', async () => {
-      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
-      const res = await request(app)
-        .get('/my-provider/handler/frame')
-        .query({
-          state: encodeOAuthState({
-            env: 'development',
-            nonce: '123',
-            flow: 'redirect',
-            redirectUrl: 'http://localhost:3000',
-          }),
-        });
+    it('should return callback errors to the configured app URL instead of the return URL', async () => {
+      const app = wrapInApp(
+        createOAuthRouteHandlers({
+          ...baseConfig,
+          appUrl: 'http://127.0.0.1/backstage',
+          isOriginAllowed: origin => origin === 'http://localhost:3000',
+        }),
+      );
+      mockAuthenticator.authenticate.mockRejectedValueOnce(
+        new Error('Authentication failed'),
+      );
 
-      // Check if it redirects on error
-      expect(res.status).toBe(302);
+      for (const { cookie, origin, error } of [
+        { cookie: '', error: 'Auth response is missing cookie nonce' },
+        { cookie: 'my-provider-nonce=wrong', error: 'Invalid nonce' },
+        {
+          cookie: '',
+          origin: 'invalid-origin',
+          error: 'App origin is invalid, failed to parse',
+        },
+        {
+          cookie: 'my-provider-nonce=123',
+          error: 'Authentication failed',
+        },
+      ]) {
+        const res = await request(app)
+          .get('/my-provider/handler/frame')
+          .set('Cookie', cookie)
+          .query({
+            state: encodeOAuthState({
+              env: 'development',
+              nonce: '123',
+              origin,
+              flow: 'redirect',
+              redirectUrl:
+                'http://localhost:3000/some/path?keep=value#fragment',
+            }),
+          });
 
-      // Extract the redirect URL from the location header
-      const redirectLocation = res.header.location;
-      expect(redirectLocation).toBeDefined();
-
-      // Create a URL object from the redirect location
-      const redirectUrl = new URL(redirectLocation);
-
-      // Verify that the 'error' search param is set with the encoded error message
-      const errorMessage = redirectUrl.searchParams.get('error');
-      expect(errorMessage).toBe('Auth response is missing cookie nonce');
+        expect(res.status).toBe(302);
+        const errorUrl = new URL(res.get('Location'));
+        expect(errorUrl.origin).toBe('http://127.0.0.1');
+        expect(errorUrl.pathname).toBe('/backstage');
+        expect([...errorUrl.searchParams]).toEqual([['error', error]]);
+        expect(errorUrl.hash).toBe('');
+      }
+      expect(mockAuthenticator.authenticate).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -26,6 +26,8 @@ auth:
     cfaccess:
       # You can find the team name in the Cloudflare Zero Trust dashboard.
       teamName: <Team Name>
+      # The Application Audience (AUD) Tag for the Backstage application.
+      audience: <Application Audience Tag>
       # This service tokens section is optional -- you only need it if you have
       # some Cloudflare Service Tokens that you want to be able to log in to your
       # Backstage instance.
@@ -49,6 +51,10 @@ auth:
 
 This config section must be in place for the provider to load at all.
 
+You can find the Application Audience (AUD) Tag in the Cloudflare Zero Trust
+dashboard by opening **Access controls > Applications**, selecting the
+Backstage application, and copying the value from **Additional settings**.
+
 ### Optional
 
 - `sessionDuration`: Lifespan of the user session.
@@ -60,7 +66,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found, it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order but will only be skipped if they throw a `NotFoundError`.
 
@@ -91,4 +97,4 @@ backend.add(
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page and also make it work smoothly for local development. You'll use `cfaccess` as the provider name.
 
-If you [provide a custom sign-in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.
+If you [provide a custom sign-in resolver](../identity-resolver.md#building-custom-resolvers), you can skip the `signIn` block entirely.

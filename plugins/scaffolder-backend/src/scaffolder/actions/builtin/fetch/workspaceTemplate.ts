@@ -22,7 +22,10 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './template.examples';
-import { createTemplateActionHandler } from './templateActionHandler';
+import {
+  collectActionTemplateCapabilities,
+  createTemplateActionHandler,
+} from './templateActionHandler';
 
 /**
  * Templates variables into file and directory names and content of 'sourcePath' in the action context workspace.
@@ -35,6 +38,8 @@ export function createWorkspaceTemplateAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
+  const templateCapabilities = collectActionTemplateCapabilities(options);
+
   return createTemplateAction({
     id: 'workspace:template',
     description:
@@ -96,6 +101,7 @@ export function createWorkspaceTemplateAction(options: {
         resolveTemplate: async () =>
           resolveSafeChildPath(ctx.workspacePath, ctx.input.sourcePath),
         ...options,
+        templateCapabilities,
       }),
   });
 }

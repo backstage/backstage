@@ -22,10 +22,8 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
-import {
-  CatalogUnprocessedEntitiesClient,
-  catalogUnprocessedEntitiesApiRef,
-} from './api';
+import { catalogUnprocessedEntitiesApiRef } from './api';
+import { CatalogUnprocessedEntitiesClient } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 /**
  * Plugin entry point

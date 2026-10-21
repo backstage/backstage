@@ -226,10 +226,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     }
 
     for (const matcher of matchers) {
-      if (
-        entity.kind?.toLocaleLowerCase('en-US') !==
-        matcher.kind.toLocaleLowerCase('en-US')
-      ) {
+      if (entity.kind?.toLowerCase() !== matcher.kind.toLowerCase()) {
         continue;
       }
 
@@ -238,8 +235,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
           continue;
         }
         if (
-          matcher['spec.type'].toLocaleLowerCase('en-US') !==
-          entity.spec.type.toLocaleLowerCase('en-US')
+          matcher['spec.type'].toLowerCase() !== entity.spec.type.toLowerCase()
         ) {
           continue;
         }

@@ -60,14 +60,6 @@ function willExpireSoon(expiresAt: Date) {
   return Date.now() + FIVE_MINUTES_MS > expiresAt.getTime();
 }
 
-const credentialsSymbol = Symbol('backstage-credentials');
-const limitedCredentialsSymbol = Symbol('backstage-limited-credentials');
-
-type RequestWithCredentials = Request & {
-  [credentialsSymbol]?: Promise<BackstageCredentials>;
-  [limitedCredentialsSymbol]?: Promise<BackstageCredentials>;
-};
-
 /**
  * @public
  * Options for creating a DefaultHttpAuthService.
@@ -87,6 +79,14 @@ export interface DefaultHttpAuthServiceOptions {
  * DefaultHttpAuthService is the default implementation of the HttpAuthService
  */
 export class DefaultHttpAuthService implements HttpAuthService {
+  readonly #credentialsCache = new WeakMap<
+    Request,
+    Promise<BackstageCredentials>
+  >();
+  readonly #limitedCredentialsCache = new WeakMap<
+    Request,
+    Promise<BackstageCredentials>
+  >();
   readonly #auth: AuthService;
   readonly #discovery: DiscoveryService;
   readonly #pluginId: string;
@@ -142,14 +142,22 @@ export class DefaultHttpAuthService implements HttpAuthService {
     return await this.#auth.getNoneCredentials();
   }
 
-  async #getCredentials(req: RequestWithCredentials) {
-    return (req[credentialsSymbol] ??=
-      this.#extractCredentialsFromRequest(req));
+  async #getCredentials(req: Request) {
+    let credentials = this.#credentialsCache.get(req);
+    if (!credentials) {
+      credentials = this.#extractCredentialsFromRequest(req);
+      this.#credentialsCache.set(req, credentials);
+    }
+    return credentials;
   }
 
-  async #getLimitedCredentials(req: RequestWithCredentials) {
-    return (req[limitedCredentialsSymbol] ??=
-      this.#extractLimitedCredentialsFromRequest(req));
+  async #getLimitedCredentials(req: Request) {
+    let credentials = this.#limitedCredentialsCache.get(req);
+    if (!credentials) {
+      credentials = this.#extractLimitedCredentialsFromRequest(req);
+      this.#limitedCredentialsCache.set(req, credentials);
+    }
+    return credentials;
   }
 
   async credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(

@@ -54,20 +54,6 @@ module.exports = {
     'no-restricted-syntax': [
       'error',
       {
-        message:
-          "Avoid using .toLowerCase(), use .toLocaleLowerCase('en-US') instead. " +
-          'This rule can sometimes be ignored when converting text to be displayed to the user.',
-        selector:
-          "CallExpression[arguments.length=0] > MemberExpression[property.name='toLowerCase']",
-      },
-      {
-        message:
-          "Avoid using .toUpperCase(), use .toLocaleUpperCase('en-US') instead. " +
-          'This rule can sometimes be ignored when converting text to be displayed to the user.',
-        selector:
-          "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
-      },
-      {
         message: "React default imports are deprecated. Follow the x migration guide for details.",
         selector:
           "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",

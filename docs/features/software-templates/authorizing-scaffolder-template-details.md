@@ -12,6 +12,53 @@ To better understand the following examples make sure to review the [Writing a p
 
 :::
 
+## Authorizing inline template dry runs
+
+The `templateDryRunPermission` permission controls who can submit inline
+Software Template dry runs. It applies to both the `/v2/dry-run` endpoint and
+the `scaffolder:dry-run-template` backend action.
+
+Use this permission when only selected users or services should be able to
+submit inline templates. Direct dry-run requests also require
+`taskCreatePermission`, and the backend action calls the same endpoint with the
+caller's credentials. The `actionExecutePermission` permission still
+authorizes each action that a dry run executes.
+
+For example, the following policy allows only the user `alice` to submit
+inline template dry runs:
+
+```ts title="packages/backend/src/plugins/permission.ts"
+import { templateDryRunPermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  AuthorizeResult,
+  isPermission,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, templateDryRunPermission)) {
+      return {
+        result:
+          user?.info.userEntityRef === 'user:default/alice'
+            ? AuthorizeResult.ALLOW
+            : AuthorizeResult.DENY,
+      };
+    }
+
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
 ## Authorizing parameters and steps
 
 To mark specific parameters or steps as requiring permission, add the `backstage:permissions` property to the parameter or step with one or more tags. For example:

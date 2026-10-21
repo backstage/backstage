@@ -127,6 +127,11 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+
+  /**
+   * Trigger refresh of entities and entity totals.
+   */
+  refresh?: () => void;
 };
 
 // This context has support for multiple concurrent versions of this package.
@@ -234,6 +239,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>();
+  const [refreshToken, setRefreshToken] = useState(0);
 
   // Tracks the params of the last API call so identical requests are
   // skipped even when requestedFilters changes (e.g. a label change
@@ -246,7 +252,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // Adjusted filters remove the owners filter for user/group kinds,
   // since ownership is not meaningful for those entity types.
   const adjustedFilters = useMemo(() => {
-    const kindValue = requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
+    const kindValue = requestedFilters.kind?.value?.toLowerCase();
     return kindValue === 'user' || kindValue === 'group'
       ? { ...requestedFilters, owners: undefined }
       : requestedFilters;
@@ -256,7 +262,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     const compacted = compact(Object.values(adjustedFilters));
 
     let fetchParams: unknown;
-    let doFetch: () => Promise<BackendState>;
+    let doFetch: (isStale: () => boolean) => Promise<BackendState>;
 
     if (paginationMode !== 'none') {
       if (cursor) {
@@ -289,15 +295,23 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         };
       }
     } else {
-      const backendFilter = reduceBackendCatalogFilters(compacted);
+      const constraints = reduceBackendCatalogFilters(compacted);
       const { orderFields } = reduceCatalogFilters(compacted);
-      fetchParams = { filter: backendFilter, order: orderFields };
-      doFetch = async () => {
-        const response = await catalogApi.getEntities({
-          filter: backendFilter,
-          order: orderFields,
-        });
-        return { backendEntities: response.items };
+      fetchParams = { ...constraints, orderFields };
+      doFetch = async isStale => {
+        const backendEntities: Entity[] = [];
+        for await (const page of catalogApi.streamEntities({
+          ...constraints,
+          orderFields,
+          totalItems: 'exclude',
+        })) {
+          // Stop traversing the catalog once a newer request supersedes this one
+          if (isStale()) {
+            break;
+          }
+          backendEntities.push(...page);
+        }
+        return { backendEntities };
       };
     }
 
@@ -324,7 +338,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     setError(undefined);
 
     try {
-      const result = await doFetch();
+      const result = await doFetch(() => gen !== fetchGenRef.current);
       if (gen === fetchGenRef.current) {
         setBackendState(result);
       }
@@ -345,7 +359,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
   // Slight debounce on the refresh, since (especially on page load)
   // several filters will be calling updateFilters in rapid succession.
-  useDebounce(refresh, 10, [adjustedFilters, cursor, limit, offset]);
+  useDebounce(refresh, 10, [
+    adjustedFilters,
+    cursor,
+    limit,
+    offset,
+    refreshToken,
+  ]);
 
   // Fetch the total count separately, only when filters change. This is
   // decoupled from the main list fetch so that page navigation doesn't
@@ -372,7 +392,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       }
     }, [catalogApi, paginationMode, adjustedFilters]);
 
-  useDebounce(refreshCount, 10, [adjustedFilters]);
+  useDebounce(refreshCount, 10, [adjustedFilters, refreshToken]);
 
   // Frontend filtering — synchronous, no debounce needed. Updates
   // instantly when requestedFilters or backendEntities change.
@@ -414,7 +434,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       { addQueryPrefix: true, arrayFormat: 'repeat' },
     );
     const newUrl = `${window.location.pathname}${newParams}`;
-    window.history?.replaceState(null, document.title, newUrl);
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    // Only rewrite the URL when it actually changes. Some filters (e.g. the
+    // user filter with `?filters[user]=all`) produce a new requestedFilters
+    // object on every render while serializing to the same URL; without this
+    // guard replaceState is called repeatedly, which crashes Safari with a
+    // SecurityError once it exceeds its replaceState rate limit.
+    if (newUrl !== currentUrl) {
+      window.history?.replaceState(null, document.title, newUrl);
+    }
   }, [
     cursor,
     isMounted,
@@ -451,6 +479,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [paginationMode],
   );
 
+  const triggerRefresh = useCallback(() => {
+    // Clear the ref to allow refetching with the same params.
+    lastFetchParamsRef.current = undefined;
+    setRefreshToken(t => t + 1);
+  }, []);
+
   const pageInfo = useMemo(() => {
     if (paginationMode !== 'cursor') {
       return undefined;
@@ -484,6 +518,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       setLimit,
       setOffset,
       paginationMode,
+      refresh: triggerRefresh,
     }),
     [
       requestedFilters,
@@ -501,6 +536,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       offset,
       setLimit,
       setOffset,
+      triggerRefresh,
     ],
   );
 

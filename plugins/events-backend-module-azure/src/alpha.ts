@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { eventsModuleAzureDevOpsEventRouter as feature } from './service/eventsModuleAzureDevOpsEventRouter';
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import eventsModuleAzureDevOpsEventRouter from './service/eventsModuleAzureDevOpsEventRouter';
 
 /** @alpha */
-const _feature = feature;
+const _feature = createBackendFeatureLoader({
+  loader() {
+    return [
+      import('./service/eventsModuleAzureDevOpsEventRouter'),
+      import('./service/eventsModuleAzureDevOpsWebhook'),
+    ];
+  },
+});
 export default _feature;
+
 /** @alpha */
-export const eventsModuleAzureDevOpsEventRouter = _feature;
+export { eventsModuleAzureDevOpsEventRouter };

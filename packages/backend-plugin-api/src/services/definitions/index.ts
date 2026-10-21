@@ -89,4 +89,8 @@ export type {
   RootInstanceMetadataService,
   RootInstanceMetadataServicePluginInfo,
 } from './RootInstanceMetadataService';
+export type {
+  RootSystemMetadataService,
+  RootSystemMetadataServicePluginInfo,
+} from './RootSystemMetadataService';
 export { coreServices } from './coreServices';

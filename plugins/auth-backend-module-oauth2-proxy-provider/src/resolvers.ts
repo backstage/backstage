@@ -53,4 +53,39 @@ export namespace oauth2ProxySignInResolvers {
         };
       },
     });
+
+  /**
+   * A sign-in resolver that looks up the user using the 'x-forwarded-preferred-username' header.
+   *
+   * @public
+   */
+  export const forwardedPreferredUsernameMatchingUserEntityName =
+    createSignInResolverFactory({
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
+        return async (info: SignInInfo<OAuth2ProxyResult>, ctx) => {
+          const preferredUsername = info.result.getHeader(
+            'x-forwarded-preferred-username',
+          );
+          if (!preferredUsername) {
+            throw new Error('Request did not contain a preferred username');
+          }
+          return ctx.signInWithCatalogUser(
+            {
+              entityRef: { name: preferredUsername },
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: preferredUsername } }
+                  : undefined,
+            },
+          );
+        };
+      },
+    });
 }

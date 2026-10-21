@@ -14,71 +14,57 @@
  * limitations under the License.
  */
 import chalk from 'chalk';
+import type { ExecException } from 'node:child_process';
+import { relative as relativePath, sep, posix } from 'node:path';
 import { exec } from '../../../../lib/exec';
+import { DEFAULT_BASE_REF } from '../../../../lib/openapi/constants';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
-import { targetPaths } from '@backstage/cli-common';
+import { ensureOasdiffInstalled } from '../../../util';
 import { OptionValues } from 'commander';
-import { env } from 'node:process';
-import { readFile, rm } from 'node:fs/promises';
-import { resolve } from 'node:path';
-
-const reduceOpticOutput = (output: string) => {
-  return output
-    .split('\n')
-    .filter(e => !e.startsWith('Rerun') && e.trim())
-    .join('\n');
-};
+import { targetPaths } from '@backstage/cli-common';
 
 async function check(opts: OptionValues) {
+  await ensureOasdiffInstalled();
+
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
+  const relativeSpecPath = relativePath(
+    targetPaths.rootDir,
+    resolvedOpenapiPath,
+  )
+    .split(sep)
+    .join(posix.sep);
 
   let baseRef = opts.since;
   if (!baseRef) {
     const { stdout: branch } = await exec(
-      'git merge-base --fork-point origin/master',
+      `git merge-base --fork-point ${DEFAULT_BASE_REF}`,
     );
     baseRef = branch.toString().trim();
   }
 
-  let failed = false;
+  const baseSpec = `${baseRef}:${relativeSpecPath}`;
+  const subcommand = opts.json ? 'changelog' : 'breaking';
+  const formatArgs = opts.json ? ['--format', 'json'] : [];
+  const failArgs = !opts.ignore && !opts.json ? ['--fail-on', 'ERR'] : [];
+
   let output = '';
+  let failed = false;
   try {
     const { stdout } = await exec(
-      'yarn optic diff',
-      [
-        resolvedOpenapiPath,
-        '--check',
-        opts.json ? '--json' : '',
-        '--base',
-        baseRef,
-      ],
-      {
-        cwd: targetPaths.rootDir,
-        env: { CI: opts.json ? '1' : undefined, ...env },
-      },
+      'oasdiff',
+      [subcommand, baseSpec, relativeSpecPath, ...formatArgs, ...failArgs],
+      { cwd: targetPaths.rootDir },
     );
     output = stdout.toString();
   } catch (err) {
-    output = err.stdout;
+    output = (err as ExecException).stdout ?? '';
     failed = true;
   }
 
-  if (opts.json) {
-    const file = (
-      await readFile(resolve(targetPaths.rootDir, 'ci-run-details.json'))
-    ).toString();
-    const results = JSON.parse(file);
-    console.log(file);
-    if (!opts.ignore && results.failed) {
-      throw new Error('Some checks failed');
-    }
+  console.log(output);
 
-    await rm(resolve(targetPaths.rootDir, 'ci-run-details.json'));
-  } else {
-    console.log(reduceOpticOutput(output));
-    if (!opts.ignore && failed) {
-      throw new Error('Some checks failed');
-    }
+  if (failed && !opts.ignore) {
+    throw new Error('Breaking changes found');
   }
 }
 

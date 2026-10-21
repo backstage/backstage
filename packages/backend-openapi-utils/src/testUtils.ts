@@ -24,7 +24,7 @@ const proxiesToCleanup: Set<Proxy> = new Set();
  * Setup a server with a custom OpenAPI proxy. This proxy will capture all requests and responses and make sure they
  *  conform to the spec.
  * @param app - express server, needed to ensure we have the correct ports for the proxy.
- * @returns - a configured HTTP server that should be used with supertest.
+ * @returns - a configured HTTP server whose address points to the validation proxy, for use with supertest.
  * @public
  */
 export async function wrapServer(app: Express): Promise<Server> {
@@ -35,7 +35,18 @@ export async function wrapServer(app: Express): Promise<Server> {
   const server = app.listen(proxy.forwardTo.port);
   await proxy.initialize(`http://localhost:${proxy.forwardTo.port}`, server);
 
-  return { ...server, address: () => new URL(proxy.url) } as any;
+  return {
+    ...server,
+    address: () => {
+      const url = new URL(proxy.url);
+      const address = url.hostname.replace(/^\[(.*)\]$/, '$1');
+      return {
+        address,
+        family: address.includes(':') ? 'IPv6' : 'IPv4',
+        port: Number(url.port),
+      };
+    },
+  } as any;
 }
 
 let registered = false;
@@ -58,22 +69,3 @@ function registerHooks() {
 }
 
 registerHooks();
-
-/**
- * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
- * Running against supertest, we need some way to hit the optic proxy. This ensures that
- *  that happens at runtime when in the context of a `yarn optic capture` command.
- * @param app - Express router that would be passed to supertest's `request`.
- * @returns A wrapper around the express router (or the router untouched) that still works with supertest.
- * @public
- */
-export const wrapInOpenApiTestServer = (app: Express): Server | Express => {
-  if (process.env.OPTIC_PROXY) {
-    const server = app.listen(+process.env.PORT!);
-    return {
-      ...server,
-      address: () => new URL(process.env.OPTIC_PROXY!),
-    } as any;
-  }
-  return app;
-};

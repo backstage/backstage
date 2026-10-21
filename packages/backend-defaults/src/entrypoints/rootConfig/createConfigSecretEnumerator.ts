@@ -31,6 +31,7 @@ export async function createConfigSecretEnumerator(options: {
     options.schema ??
     (await loadConfigSchema({
       dependencies: packages.map(p => p.packageJson.name),
+      onSchemaError: error => logger.warn(error.message),
     }));
 
   return (config: Config) => {

@@ -66,7 +66,7 @@ function createConfig(dir, extraConfig = {}) {
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', 'unused-imports', 'deprecation', ...(plugins ?? [])],
+    plugins: ['import', 'unused-imports', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -84,7 +84,6 @@ function createConfig(dir, extraConfig = {}) {
       ...(ignorePatterns ?? []),
     ],
     rules: {
-      'deprecation/deprecation': 'off',
       'no-shadow': 'off',
       'no-redeclare': 'off',
       '@typescript-eslint/no-shadow': 'error',
@@ -183,6 +182,20 @@ function createConfig(dir, extraConfig = {}) {
           ],
         },
       },
+      {
+        // The unused variable checks above are disabled for TypeScript files
+        // and instead delegated to the TypeScript compiler. The compiler does
+        // not however report unused declarations in declaration files, leaving
+        // the published config schema declaration unchecked. A stray import in
+        // this file resolves fine within the monorepo but breaks config schema
+        // extraction in consuming apps, since only the declaration itself is
+        // published. We therefore catch unused imports here explicitly.
+        files: ['**/config.d.ts'],
+        rules: {
+          'no-unused-vars': 'off',
+          'unused-imports/no-unused-imports': 'error',
+        },
+      },
       ...(overrides ?? []),
     ],
   };
@@ -195,7 +208,28 @@ function createConfig(dir, extraConfig = {}) {
 function createConfigForRole(dir, role, extraConfig = {}) {
   switch (role) {
     case 'common-library':
-      return createConfig(dir, extraConfig);
+      return createConfig(dir, {
+        ...extraConfig,
+        restrictedSrcSyntax: [
+          {
+            // Common libraries are published with an ESM build that Node.js
+            // loads natively, and Node.js can't resolve named imports from
+            // CommonJS modules such as lodash. Type-only imports are erased
+            // during compilation and are therefore fine.
+            message:
+              "Named imports from 'lodash' break ESM consumers of common libraries, use `import lodash from 'lodash'` instead.",
+            selector:
+              "ImportDeclaration[source.value='lodash'][importKind!='type'] > ImportSpecifier[importKind!='type']",
+          },
+          {
+            message:
+              "Named re-exports from 'lodash' break ESM consumers of common libraries, use `import lodash from 'lodash'` instead.",
+            selector:
+              "ExportNamedDeclaration[source.value='lodash'][exportKind!='type'] > ExportSpecifier[exportKind!='type']",
+          },
+          ...(extraConfig.restrictedSrcSyntax ?? []),
+        ],
+      });
 
     case 'web-library':
     case 'frontend':

@@ -21,7 +21,11 @@ import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityOwnerFilter, EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
-import { CatalogFilters, reduceCatalogFilters } from '../../utils/filters';
+import {
+  CatalogFilters,
+  combinePredicates,
+  reduceCatalogFilters,
+} from '../../utils/filters';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDeepCompareEffect from 'react-use/esm/useDeepCompareEffect';
 
@@ -60,14 +64,12 @@ export function useOwnedEntitiesCount() {
           return 0;
         }
 
-        const { ['metadata.name']: metadata, ...filter } = req.filter.filter;
-
         const { totalItems } = await catalogApi.queryEntities({
           ...req.filter,
-          filter: {
-            ...filter,
-            'relations.ownedBy': ownedClaims,
-          },
+          query: combinePredicates([
+            req.filter.query,
+            EntityUserFilter.owned(ownedClaims).getCatalogQuery(),
+          ]),
           limit: 0,
         });
         return totalItems;
@@ -78,7 +80,7 @@ export function useOwnedEntitiesCount() {
 
   useDeepCompareEffect(() => {
     // context contains no filter, wait
-    if (Object.keys(catalogFilters.filter).length === 0) {
+    if (!catalogFilters.filter && !catalogFilters.query) {
       return;
     }
     // ownershipEntityRefs is loading, wait
@@ -109,7 +111,7 @@ function getOwnedCountClaims(
   owners: EntityOwnerFilter | undefined,
   ownershipEntityRefs: string[] | undefined,
 ) {
-  if (ownershipEntityRefs === undefined) {
+  if (!ownershipEntityRefs?.length) {
     return undefined;
   }
   const ownersRefs = owners?.values ?? [];

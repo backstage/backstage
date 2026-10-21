@@ -1,0 +1,10 @@
+---
+title: Team Leave Tracker
+author: CodeVerse-GP
+authorUrl: https://github.com/CodeVerse-GP
+category: Productivity
+description: This plugin helps teams keep track of who is away and when, by adding a Leave Tracker tab.
+documentation: https://github.com/CodeVerse-GP/leave-tracker/blob/main/plugins/team-leave-tracker/README.md
+npmPackageName: '@codeverse-gp/plugin-team-leave-tracker'
+addedDate: '2026-07-19'
+status: active

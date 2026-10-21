@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './templateFile.examples';
 import { createTemplateFileActionHandler } from './templateFileActionHandler';
+import { collectActionTemplateCapabilities } from './templateActionHandler';
 
 /**
  * Templates variables into a single workspace file, placing the result into another location in the workspace.
@@ -33,6 +34,8 @@ export function createWorkspaceTemplateFileAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
+  const templateCapabilities = collectActionTemplateCapabilities(options);
+
   return createTemplateAction({
     id: 'workspace:template:file',
     description:
@@ -71,6 +74,7 @@ export function createWorkspaceTemplateFileAction(options: {
         resolveTemplateFile: async () =>
           resolveSafeChildPath(ctx.workspacePath, ctx.input.sourcePath),
         ...options,
+        templateCapabilities,
       }),
   });
 }

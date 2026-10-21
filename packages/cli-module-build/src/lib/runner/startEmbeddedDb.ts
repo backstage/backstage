@@ -20,6 +20,7 @@ import {
   isAbsolute as isAbsolutePath,
   resolve as resolvePath,
 } from 'node:path';
+import { z } from 'zod';
 import { getPortPromise } from 'portfinder';
 import { ForwardedError } from '@backstage/errors';
 import { ConfigSources } from '@backstage/config-loader';
@@ -62,7 +63,24 @@ export interface EmbeddedDbConnectionConfig {
   port?: number;
   user?: string;
   password?: string;
+  flags?: {
+    postgres?: string[];
+    initdb?: string[];
+  };
 }
+
+const connectionSchema: z.ZodType<EmbeddedDbConnectionConfig> = z.object({
+  host: z.string().optional(),
+  port: z.number().optional(),
+  user: z.string().optional(),
+  password: z.string().optional(),
+  flags: z
+    .object({
+      postgres: z.array(z.string()).optional(),
+      initdb: z.array(z.string()).optional(),
+    })
+    .optional(),
+});
 
 export interface StartEmbeddedDbOptions {
   configPaths?: string[];
@@ -127,6 +145,12 @@ async function startEmbeddedDbInternal(
     password,
     port,
     persistent: false,
+    ...(userConfig?.flags?.postgres
+      ? { postgresFlags: userConfig.flags.postgres }
+      : {}),
+    ...(userConfig?.flags?.initdb
+      ? { initdbFlags: userConfig.flags.initdb }
+      : {}),
     onError(messageOrError) {
       console.error(`[embedded-postgres]`, messageOrError);
     },
@@ -200,27 +224,14 @@ async function readDatabaseConfig(
       return undefined;
     }
 
-    // Only read structured connection config if the value is an object;
-    // it can also be a plain string (e.g. ':memory:' for better-sqlite3).
+    // Parse the raw connection value with zod rather than reading sub-keys
+    // through the config reader, because the config reader's fallback chain
+    // throws when a lower-priority config file has connection as a string.
     const rawConnection = config.getOptional('backend.database.connection');
-    if (typeof rawConnection === 'string' || rawConnection === undefined) {
-      return { client };
-    }
-
-    const host = config.getOptionalString('backend.database.connection.host');
-    const port = config.getOptionalNumber('backend.database.connection.port');
-    const user = config.getOptionalString('backend.database.connection.user');
-    const password = config.getOptionalString(
-      'backend.database.connection.password',
-    );
-
-    const connection =
-      host !== undefined ||
-      port !== undefined ||
-      user !== undefined ||
-      password !== undefined
-        ? { host, port, user, password }
-        : undefined;
+    const connectionResult = connectionSchema.safeParse(rawConnection);
+    const connection = connectionResult.success
+      ? connectionResult.data
+      : undefined;
 
     return { client, connection };
   } finally {

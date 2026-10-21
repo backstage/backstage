@@ -1,6 +1,6 @@
 {
   "name": "@backstage/ui",
-  "version": "0.15.1-next.0",
+  "version": "0.19.0-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -53,15 +53,16 @@
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "marked": "^15.0.12",
-    "react-aria": "~3.48.0",
-    "react-aria-components": "~1.17.0",
-    "react-stately": "~3.46.0",
+    "react-aria": "~3.53.0",
+    "react-aria-components": "~1.22.0",
+    "react-stately": "~3.51.0",
     "use-sync-external-store": "^1.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@storybook/react-vite": "^10.4.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

@@ -67,7 +67,7 @@ When you see `dir:.`, you can translate it to mean:
 
 The directory tree of the entity would look something like this:
 
-```
+```text
 ├── catalog-info.yaml
 ├── mkdocs.yml
 └── docs
@@ -78,7 +78,7 @@ If, for example, you wanted to keep a lean root directory, you could place your
 `mkdocs.yml` file in a subdirectory and update the `backstage.io/techdocs-ref`
 annotation value accordingly, e.g. to `dir:./sub-folder`:
 
-```
+```text
 ├── catalog-info.yaml
 └── sub-folder
     ├── mkdocs.yml
@@ -170,7 +170,7 @@ on extension overrides and the different override patterns available, see the
 ## How to customize the TechDocs reader page?
 
 The TechDocs reader page can be configured through `app-config.yaml`. For
-example, you can disable the in-context search or the header:
+example, you can disable the in-context search, the header, or the feedback link:
 
 ```yaml title="app-config.yaml"
 app:
@@ -188,84 +188,26 @@ app:
           withoutHeader: true
 ```
 
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:techdocs/reader:
+        config:
+          withoutFeedbackLink: true
+```
+
+The `withoutFeedbackLink` option is also available on the entity content page:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - entity-content:techdocs:
+        config:
+          withoutFeedbackLink: true
+```
+
 For more advanced customization of the reader page, you can override the page
 extension. See the [extension overrides](../../frontend-system/architecture/25-extension-overrides.md) documentation for details.
-
-## How to migrate from TechDocs Alpha to Beta
-
-> This guide only applies to the "recommended" TechDocs deployment method (where
-> an external storage provider and external CI/CD is used). If you use the
-> "basic" or "out-of-the-box" setup, you can stop here! No action needed.
-
-For the purposes of this guide, TechDocs Beta version is defined as:
-
-- **TechDocs Plugin**: At least `v0.11.0`
-- **TechDocs Backend Plugin**: At least `v0.10.0`
-- **TechDocs CLI**: At least `v0.7.0`
-
-The beta version of TechDocs made a breaking change to the way TechDocs content
-was accessed and stored, allowing pages to be accessed with case-insensitive
-entity triplet paths (e.g. `/docs/namespace/kind/name` whereas in prior
-versions, they could only be accessed at `/docs/namespace/Kind/name`). In order
-to enable this change, documentation has to be stored in an external storage
-provider using an object key whose entity triplet is lower-cased.
-
-New installations of TechDocs since the beta version will work fine with no
-action, but for those who were running TechDocs prior to this version, a
-migration will need to be performed so that all existing content in your storage
-bucket matches this lower-case entity triplet expectation.
-
-1. **Ensure you have the right permissions on your storage provider**: In order
-   to migrate files in your storage provider, the `techdocs-cli` needs to be
-   able to read/copy/rename/move/delete files. The exact instructions vary by
-   storage provider, but check the [using cloud storage][using-cloud-storage]
-   page for details.
-
-2. **Run a non-destructive migration of files**: Ensure you have the latest
-   version of `techdocs-cli` installed. Then run the following command, using
-   the details relevant for your provider / configuration. This will copy all
-   files from, e.g. `namespace/Kind/name/index.html` to
-   `namespace/kind/name/index.html`, without removing the original files.
-
-```sh
-techdocs-cli migrate --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --verbose
-```
-
-3. **Deploy the updated versions of the TechDocs plugins**: Once the migration
-   above has been run, you can deploy the beta versions of the TechDocs backend
-   and frontend plugins to your Backstage instance.
-
-4. **Verify that your TechDocs sites are still loading/accessible**: Try
-   accessing a TechDocs site using different entity-triplet case variants, e.g.
-   `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`. Your TechDocs
-   site should load regardless of the URL path casing you use.
-
-5. **Clean up the old objects from storage**: Once you've verified that your
-   TechDocs site is accessible, you can clean up your storage bucket by
-   re-running the `migrate` command on the TechDocs CLI, but with an additional
-   `removeOriginal` flag passed:
-
-```sh
-techdocs-cli migrate --publisher-type <awsS3|googleGcs|azureBlobStorage> --storage-name <bucket/container name> --removeOriginal --verbose
-```
-
-6. **Update your CI/CD pipelines to use the beta version of the TechDocs CLI**:
-   Finally, you can update all of your CI/CD pipelines to use at least v0.x.y of
-   the TechDocs CLI, ensuring that all sites are published to the new,
-   lower-cased entity triplet paths going forward.
-
-If you encounter problems running this migration, please [report the
-issue][beta-migrate-bug]. You can temporarily revert to pre-beta storage
-expectations with a configuration change:
-
-```yaml
-techdocs:
-  legacyUseCaseSensitiveTripletPaths: true
-```
-
-[beta-migrate-bug]:
-https://github.com/backstage/backstage/issues/new?assignees=&labels=bug&template=bug_template.md&title=[TechDocs]%20Unable%20to%20run%20beta%20migration
-[using-cloud-storage]: ./using-cloud-storage.md
 
 ## How to implement your own TechDocs APIs
 
@@ -364,7 +306,7 @@ Start writing your documentation by adding more markdown (.md) files to this
 folder (/docs) or replace the content in this file.
 ```
 
-:::note Note
+:::note
 
 The values of `site_name`, `component_id` and `site_description` depends
 on how you have configured your `template.yaml`.
@@ -562,7 +504,7 @@ plugins:
   - kroki
 ```
 
-:::note Note
+:::note
 
 You will very likely want to set a `kroki` `ServerURL` configuration in your
 `mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
@@ -744,7 +686,7 @@ backend.add(techdocsCustomBuildStrategy);
 backend.start();
 ```
 
-:::note Note
+:::note
 
 You may need to add the `@backstage/plugin-techdocs-node` package to your backend `package.json` if it's not been imported already.
 
@@ -777,7 +719,11 @@ Then publish the image and use it in your config under the `techdocs.generator.d
 
 To use the plugin, it has to be listed in the `mkdocs.yaml` file. You can either add the plugin to your applicable files, or specify defaults.
 
-To make a mkdocs plugin available for all your TechDocs components you can either list it in the `techdocs.generator.mkdocs.defaultPlugins` [config](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/config.d.ts#L64C14-L64C14), or use the `--defaultPlugin` [cli option](https://backstage.io/docs/features/techdocs/cli#generate-techdocs-site-from-a-documentation-project) depending on your setup.
+TechDocs validates MkDocs plugin declarations and permits a small built-in set by default. If your plugin is not in that set, explicitly allow it using `techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins` in your app-config.
+
+To also make the plugin available by default for all your TechDocs components, add it to `techdocs.generator.mkdocs.defaultPlugins` or use the `--defaultPlugin` CLI option. Plugins listed in `defaultPlugins` are automatically permitted, so you do not need to list them in both places.
+
+See the [Permitted MkDocs Plugins](./configuration.md#permitted-mkdocs-plugins) configuration reference for more details.
 
 ## Reference another components TechDocs
 
@@ -848,7 +794,7 @@ You may want to make files available for download by your users such as PDF
 documents, images, or code templates. Download links for files included in your
 docs directory can be made by adding `{: download }` after a markdown link.
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download }
 ```
 
@@ -858,6 +804,6 @@ clicked.
 Specify a file name to control the name the file will be given when it is
 downloaded:
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```

@@ -1,0 +1,23 @@
+@media (min-width: 640px) {
+  .dialog {
+    width: 400px;
+  }
+}
+
+@media (min-width: 768px) {
+  .dialog {
+    width: 600px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dialog {
+    width: 800px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .dialog {
+    width: 60%;
+  }
+}

@@ -5,15 +5,15 @@
 ### `backstage-cli-module-migrate`
 
 ```
-Usage: @backstage/cli-module-migrate [options] [command]
+Usage: @backstage/cli-module-migrate [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  migrate [command]
+  help
+  migrate
   versions:bump
   versions:migrate
 ```
@@ -21,13 +21,14 @@ Commands:
 ### `backstage-cli-module-migrate migrate`
 
 ```
-Usage: @backstage/cli-module-migrate migrate [options] [command] [command]
+Usage: @backstage/cli-module-migrate migrate [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   package-exports
   package-lint-configs
   package-roles
@@ -38,7 +39,7 @@ Commands:
 ### `backstage-cli-module-migrate migrate package-exports`
 
 ```
-Usage: @backstage/cli-module-migrate migrate package-exports
+Usage: @backstage/cli-module-migrate migrate package-exports [flags...]
 
 Options:
   -h, --help
@@ -47,7 +48,7 @@ Options:
 ### `backstage-cli-module-migrate migrate package-lint-configs`
 
 ```
-Usage: @backstage/cli-module-migrate migrate package-lint-configs
+Usage: @backstage/cli-module-migrate migrate package-lint-configs [flags...]
 
 Options:
   -h, --help
@@ -56,7 +57,7 @@ Options:
 ### `backstage-cli-module-migrate migrate package-roles`
 
 ```
-Usage: @backstage/cli-module-migrate migrate package-roles
+Usage: @backstage/cli-module-migrate migrate package-roles [flags...]
 
 Options:
   -h, --help
@@ -65,7 +66,7 @@ Options:
 ### `backstage-cli-module-migrate migrate package-scripts`
 
 ```
-Usage: @backstage/cli-module-migrate migrate package-scripts
+Usage: @backstage/cli-module-migrate migrate package-scripts [flags...]
 
 Options:
   -h, --help
@@ -74,7 +75,7 @@ Options:
 ### `backstage-cli-module-migrate migrate react-router-deps`
 
 ```
-Usage: @backstage/cli-module-migrate migrate react-router-deps
+Usage: @backstage/cli-module-migrate migrate react-router-deps [flags...]
 
 Options:
   -h, --help
@@ -83,7 +84,7 @@ Options:
 ### `backstage-cli-module-migrate versions:bump`
 
 ```
-Usage: @backstage/cli-module-migrate versions:bump
+Usage: @backstage/cli-module-migrate versions:bump [flags...]
 
 Options:
   --pattern <string>
@@ -96,7 +97,7 @@ Options:
 ### `backstage-cli-module-migrate versions:migrate`
 
 ```
-Usage: @backstage/cli-module-migrate versions:migrate
+Usage: @backstage/cli-module-migrate versions:migrate [flags...]
 
 Options:
   --pattern <string>

@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import { CommandGraph } from './CommandGraph';
-import {
-  OpaqueCliModule,
-  OpaqueCommandTreeNode,
-  OpaqueCommandLeafNode,
-  isCommandNodeHidden,
-} from '@internal/cli';
+import { OpaqueCliModule } from '@internal/cli';
+import { runCli } from '@backstage/cli-node';
 import type { CliModule } from '@backstage/cli-node';
-import { Command } from 'commander';
 import { version } from './version';
-import chalk from 'chalk';
-import { exitWithError } from './errors';
-import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'node:util/types';
 
 type UninitializedFeature =
@@ -46,7 +37,6 @@ interface TaggedFeature {
 }
 
 export class CliInitializer {
-  private graph = new CommandGraph();
   #uninitiazedFeatures: Promise<TaggedFeature[]>[] = [];
 
   add(feature: UninitializedFeature) {
@@ -71,18 +61,7 @@ export class CliInitializer {
     }
   }
 
-  async #register(feature: CliModule) {
-    if (OpaqueCliModule.isType(feature)) {
-      for (const command of await OpaqueCliModule.toInternal(feature)
-        .commands) {
-        this.graph.add(command, feature);
-      }
-    } else {
-      throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
-    }
-  }
-
-  async #doInit() {
+  async #doInit(): Promise<CliModule[]> {
     const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
     const allFeatures = resolvedGroups.flat();
 
@@ -97,124 +76,30 @@ export class CliInitializer {
       }
     }
 
+    const modules: CliModule[] = [];
     for (const { feature, fromArray } of allFeatures) {
-      if (fromArray && OpaqueCliModule.isType(feature)) {
+      if (!OpaqueCliModule.isType(feature)) {
+        throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
+      }
+
+      if (fromArray) {
         const cmds = await OpaqueCliModule.toInternal(feature).commands;
         if (cmds.some(cmd => individualPaths.has(cmd.path.join(' ')))) {
           continue;
         }
       }
-      await this.#register(feature);
+      modules.push(feature);
     }
+
+    return modules;
   }
 
   /**
    * Actually parse argv and pass it to the command.
    */
   async run() {
-    await this.#doInit();
-
-    const programName = 'backstage-cli';
-
-    const program = new Command();
-    program
-      .name(programName)
-      .version(version)
-      .allowUnknownOption(true)
-      .allowExcessArguments(true);
-
-    const queue = this.graph.atDepth(0).map(node => ({
-      node,
-      argParser: program,
-    }));
-    while (queue.length) {
-      const { node, argParser } = queue.shift()!;
-      if (OpaqueCommandTreeNode.isType(node)) {
-        const internal = OpaqueCommandTreeNode.toInternal(node);
-        const treeParser = argParser
-          .command(`${internal.name} [command]`, {
-            hidden: isCommandNodeHidden(node),
-          })
-          .description(internal.name);
-
-        queue.push(
-          ...internal.children.map(child => ({
-            node: child,
-            argParser: treeParser,
-          })),
-        );
-      } else {
-        const internal = OpaqueCommandLeafNode.toInternal(node);
-        argParser
-          .command(internal.name, {
-            hidden:
-              !!internal.command.deprecated || !!internal.command.experimental,
-          })
-          .description(internal.command.description)
-          .helpOption(false)
-          .allowUnknownOption(true)
-          .allowExcessArguments(true)
-          .action(async () => {
-            try {
-              const args = program.parseOptions(process.argv);
-
-              const nonProcessArgs = args.operands.slice(2);
-              const positionalArgs = [];
-              let index = 0;
-              for (
-                let argIndex = 0;
-                argIndex < nonProcessArgs.length;
-                argIndex++
-              ) {
-                // Skip the command name
-                if (
-                  argIndex === index &&
-                  internal.command.path[argIndex] === nonProcessArgs[argIndex]
-                ) {
-                  index += 1;
-                  continue;
-                }
-                positionalArgs.push(nonProcessArgs[argIndex]);
-              }
-              const context = {
-                args: [...positionalArgs, ...args.unknown],
-                info: {
-                  usage: [programName, ...internal.command.path].join(' '),
-                  name: internal.command.path.join(' '),
-                },
-              };
-
-              if (typeof internal.command.execute === 'function') {
-                await internal.command.execute(context);
-              } else {
-                const mod = await internal.command.execute.loader();
-                // Handle CJS double-wrapping of default exports
-                const fn =
-                  typeof mod.default === 'function'
-                    ? mod.default
-                    : (mod.default as any).default;
-                await fn(context);
-              }
-              process.exit(0);
-            } catch (error: unknown) {
-              exitWithError(error);
-            }
-          });
-      }
-    }
-    program.on('command:*', () => {
-      console.log();
-      console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
-      console.log();
-      program.outputHelp();
-      process.exit(1);
-    });
-
-    process.on('unhandledRejection', rejection => {
-      exitWithError(new ForwardedError('Unhandled rejection', rejection));
-    });
-
-    await program.parseAsync(process.argv);
+    const modules = await this.#doInit();
+    await runCli({ modules, name: 'backstage-cli', version });
   }
 }
 

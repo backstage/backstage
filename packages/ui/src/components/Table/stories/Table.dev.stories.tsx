@@ -528,7 +528,7 @@ export const CustomRowRender: Story = {
             style={{
               background:
                 item.lifecycle === 'experimental'
-                  ? 'var(--bui-bg-warning)'
+                  ? 'var(--bui-warning-bg-subdued)'
                   : undefined,
               borderLeft:
                 item.lifecycle === 'experimental'

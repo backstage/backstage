@@ -19,26 +19,32 @@ import knexFactory, { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import yn from 'yn';
 import { waitForReady } from '../util/waitForReady';
-import { Engine, LARGER_POOL_CONFIG, TestDatabaseProperties } from './types';
+import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
+import { DROP_DATABASE_CONCURRENCY, dropDatabases } from './dropDatabases';
 
 async function waitForMysqlReady(
   connection: Knex.MySqlConnectionConfig,
 ): Promise<void> {
-  await waitForReady(async () => {
-    const knex = knexFactory({
-      client: 'mysql2',
-      connection: {
-        // make a copy because the driver mutates this
-        ...connection,
+  const knex = knexFactory({
+    client: 'mysql2',
+    connection: {
+      ...connection,
+      connectTimeout: 5_000,
+    },
+    pool: { min: 0, max: 1 },
+  });
+  try {
+    await waitForReady(
+      async () => {
+        const result = await knex.select(knex.raw('version() AS version'));
+        return Array.isArray(result) && Boolean(result[0]?.version);
       },
-    });
-    try {
-      const result = await knex.select(knex.raw('version() AS version'));
-      return Array.isArray(result) && Boolean(result[0]?.version);
-    } finally {
-      await knex.destroy();
-    }
-  }, 'the database');
+      'the database',
+      60_000,
+    );
+  } finally {
+    await knex.destroy();
+  }
 }
 
 export async function startMysqlContainer(image: string): Promise<{
@@ -52,13 +58,20 @@ export async function startMysqlContainer(image: string): Promise<{
   const { GenericContainer } =
     require('testcontainers') as typeof import('testcontainers');
 
+  // Note: testcontainers supports .withReuse() to share a single container
+  // across parallel Jest workers, which would reduce memory from ~640 MB per
+  // worker to one shared instance. We intentionally don't enable it because
+  // reused containers bypass ryuk cleanup and linger indefinitely until
+  // manually stopped. See https://github.com/backstage/backstage/pull/34653
+  // for the exploration and tradeoffs.
   const container = await new GenericContainer(image)
     .withExposedPorts(3306)
     .withEnvironment({ MYSQL_ROOT_PASSWORD: password })
     .withTmpFs({ '/var/lib/mysql': 'rw' })
     .withCommand([
-      '--default-authentication-plugin=mysql_native_password',
       '--skip-log-bin',
+      '--max-connections=1000',
+      '--mysql-native-password=ON',
     ])
     .start();
 
@@ -180,9 +193,9 @@ export class MysqlEngine implements Engine {
         connection: {
           ...this.#connection,
           database: databaseName,
-          connectTimeout: 30_000,
+          connectTimeout: 10_000,
         },
-        ...LARGER_POOL_CONFIG,
+        ...TEST_POOL_CONFIG,
       });
       this.#knexInstances.push(knexInstance);
 
@@ -194,35 +207,46 @@ export class MysqlEngine implements Engine {
 
   async shutdown(): Promise<void> {
     for (const instance of this.#knexInstances) {
-      await instance.destroy();
-    }
-
-    const adminConnection = this.#connectAdmin();
-    try {
-      for (const databaseName of this.#databaseNames) {
-        await adminConnection.raw('DROP DATABASE ??', [databaseName]);
+      try {
+        await instance.destroy();
+      } catch {
+        // Best-effort — the connection may already be dead
       }
-    } finally {
-      await adminConnection.destroy();
     }
 
-    await this.#stopContainer?.();
+    let adminConnection: Knex | undefined;
+    try {
+      adminConnection = this.#connectAdmin(DROP_DATABASE_CONCURRENCY);
+      await dropDatabases(adminConnection, this.#databaseNames);
+    } catch {
+      // Best-effort — the container may already be stopped
+    } finally {
+      await adminConnection?.destroy().catch(() => {});
+    }
+
+    try {
+      await this.#stopContainer?.();
+    } catch {
+      // Best-effort
+    }
   }
 
-  #connectAdmin(): Knex {
+  #connectAdmin(maxPoolSize = 1): Knex {
     const connection = {
       ...this.#connection,
       database: null as unknown as string,
+      connectTimeout: 10_000,
     };
     return knexFactory({
       client: this.#properties.driver,
       connection,
       pool: {
         min: 0,
-        max: 1,
-        acquireTimeoutMillis: 20_000,
-        createTimeoutMillis: 20_000,
+        max: maxPoolSize,
+        acquireTimeoutMillis: 30_000,
+        createTimeoutMillis: 30_000,
         createRetryIntervalMillis: 1_000,
+        destroyTimeoutMillis: 5_000,
       },
     });
   }

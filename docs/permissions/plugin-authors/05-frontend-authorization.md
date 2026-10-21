@@ -8,7 +8,7 @@ In the previous sections, we learned how to protect our plugin's backend API rou
 
 Take, for example, the "Add" button in our todo list application. When a user clicks this button, the frontend makes a `POST` request to the `/todos` route of our backend. If a user tries to add a todo but is not authorized, they will have no way of knowing this until they perform the action and are faced with an error. This is a poor user experience. We can do better by disabling the add button.
 
-:::note Note
+:::note
 
 Placing frontend components behind authorization cannot take the place of placing your backend routes behind authorization. Authorization checks on the frontend should be used in _addition_ to the corresponding backend authorization, as an improvement to the user experience. If you do not place your backend route behind authorization, a malicious actor can still send a request to the route even if you disabled the corresponding frontend component.
 
@@ -81,9 +81,9 @@ function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
 
 Here we are using the [`usePermission` hook](https://backstage.io/api/stable/functions/_backstage_plugin-permission-react.usePermission.html) to communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
 
-It's really that simple! Let's change our policy to test the disabled button:
+It's really that simple! Let's change our policy to test the disabled button. Update the `CustomPolicy` class in the permission policy module created during the [Getting Started](../getting-started.md) steps:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts
 if (isPermission(request.permission, todoListCreatePermission)) {
   return {
     /* highlight-remove-next-line */

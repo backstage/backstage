@@ -135,6 +135,46 @@ describe('MockActionsRegistry', () => {
       },
       action: async ({ input }) => ({ output: { name: input.name } }),
     });
+    registry.register({
+      name: 'explicit-non-destructive-action',
+      title: 'Explicitly Non-Destructive',
+      description: 'Explicitly Non-Destructive',
+      attributes: {
+        destructive: false,
+      },
+      schema: {
+        input: z => z.object({}),
+        output: z => z.object({}),
+      },
+      action: async () => ({ output: {} }),
+    });
+    registry.register({
+      name: 'read-only-action',
+      title: 'Read Only',
+      description: 'Read Only',
+      attributes: {
+        readOnly: true,
+      },
+      schema: {
+        input: z => z.object({}),
+        output: z => z.object({}),
+      },
+      action: async () => ({ output: {} }),
+    });
+    registry.register({
+      name: 'explicit-destructive-read-only-action',
+      title: 'Explicitly Destructive Read Only',
+      description: 'Explicitly Destructive Read Only',
+      attributes: {
+        destructive: true,
+        readOnly: true,
+      },
+      schema: {
+        input: z => z.object({}),
+        output: z => z.object({}),
+      },
+      action: async () => ({ output: {} }),
+    });
 
     const result = await registry.list();
 
@@ -163,6 +203,33 @@ describe('MockActionsRegistry', () => {
                 name: { type: 'string' },
               },
             },
+          },
+        },
+        {
+          id: 'test:explicit-non-destructive-action',
+          name: 'explicit-non-destructive-action',
+          attributes: {
+            destructive: false,
+            idempotent: false,
+            readOnly: false,
+          },
+        },
+        {
+          id: 'test:read-only-action',
+          name: 'read-only-action',
+          attributes: {
+            destructive: false,
+            idempotent: false,
+            readOnly: true,
+          },
+        },
+        {
+          id: 'test:explicit-destructive-read-only-action',
+          name: 'explicit-destructive-read-only-action',
+          attributes: {
+            destructive: true,
+            idempotent: false,
+            readOnly: true,
           },
         },
       ],

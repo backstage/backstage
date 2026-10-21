@@ -32,7 +32,7 @@ export const defaultResourceTransformer: ResourceTransformer = async (
   node,
   _config,
 ): Promise<ResourceEntity | undefined> => {
-  const certName = node.certname.toLocaleLowerCase('en-US');
+  const certName = node.certname.toLowerCase();
   const type = node.facts?.data?.find(e => e.name === 'is_virtual')?.value
     ? 'virtual-machine'
     : 'physical-server';
@@ -52,8 +52,8 @@ export const defaultResourceTransformer: ResourceTransformer = async (
         ?.find(e => e.name === 'ipaddress')
         ?.value?.toString(),
       tags: [
-        kernel?.toString().toLocaleLowerCase('en-US'),
-        latest_report_status?.toString().toLocaleLowerCase('en-US'),
+        kernel?.toString().toLowerCase(),
+        latest_report_status?.toString().toLowerCase(),
       ].filter((tag): tag is string => Boolean(tag)),
     },
     spec: {

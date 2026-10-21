@@ -216,10 +216,10 @@
 
     /* Neutral background colors */
     --bui-bg-app: #333333;
-    --bui-bg-neutral-1: #1a1a1a;
-    --bui-bg-neutral-2: #282828;
-    --bui-bg-neutral-3: #393939;
-    --bui-bg-neutral-4: #474747;
+    --bui-bg-neutral-1: #424141;
+    --bui-bg-neutral-2: #504f4f;
+    --bui-bg-neutral-3: #5c5c5c;
+    --bui-bg-neutral-4: #676767;
 
     /* Foreground colors */
     --bui-fg-primary: var(--bui-white);
@@ -328,5 +328,17 @@
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
     --bui-shadow: none;
+  }
+
+  /*
+   * Follows `color-scheme` until a theme mode is set, so the app background
+   * matches the theme while the app loads. Browsers without light-dark()
+   * support use the light value above. The values must match the light and
+   * dark --bui-bg-app tokens above.
+   */
+  @supports (color: light-dark(#000, #fff)) {
+    :root {
+      --bui-bg-app: light-dark(#f5f5f5, #333333);
+    }
   }
 }

@@ -500,7 +500,7 @@ export default async ({
     flags: { publish, check },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         publish: {

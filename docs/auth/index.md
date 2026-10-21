@@ -10,9 +10,9 @@ This documentation is written for [the new frontend system](../frontend-system/i
 
 The authentication system in Backstage serves two distinct purposes: sign-in and identification of users, as well as delegating access to third-party resources. It is possible to configure Backstage to have any number of authentication providers, but only one of these will typically be used for sign-in, with the rest being used to provide access to external resources.
 
-:::note Note
+:::note
 
-Identity management and the Sign-In page in Backstage will only block external access when using the new backend system, without setting `backend.auth.dangerouslyDisableDefaultAuthPolicy` in configuration. Even so, the frontend bundle is not protected from external access, protecting it requires the use of the [experimental public entry point](https://backstage.io/docs/tutorials/enable-public-entry/). You can learn more about this in the [Threat Model](../overview/threat-model.md#operator-responsibilities).
+Identity management and the Sign-In page in Backstage will only block external access when using the new backend system, without setting `backend.auth.dangerouslyDisableDefaultAuthPolicy` in configuration. Even so, the frontend bundle is not protected from external access, protecting it requires the use of the [experimental public entry point](../tutorials/enable-public-entry.md). You can learn more about this in the [Threat Model](../overview/threat-model.md#operator-responsibilities).
 
 :::
 
@@ -31,6 +31,7 @@ Backstage comes with many common authentication providers in the core library:
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
 - [Google IAP](google/gcp-iap-auth.md)
+- [Keycloak](keycloak/provider.md) (community-maintained)
 - [Okta](okta/provider.md)
 - [OAuth 2 Custom Proxy](oauth2-proxy/provider.md)
 - [OneLogin](onelogin/provider.md)
@@ -110,7 +111,7 @@ export default createApp({
 });
 ```
 
-:::note Note
+:::note
 
 You can configure sign-in to use a redirect flow with no pop-up by adding `enableExperimentalRedirectFlow: true` to the root of your `app-config.yaml`
 

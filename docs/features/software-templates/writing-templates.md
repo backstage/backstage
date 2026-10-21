@@ -713,7 +713,7 @@ template. These follow the same standard format:
       name: ${{ parameters.name }}
 ```
 
-:::warning Action ID Naming
+:::warning[Action ID Naming]
 
 When using custom actions, **use camelCase for action IDs** to avoid issues with template expressions. Action IDs with dashes will cause expressions like `${{ steps.my-action.output.value }}` to return `NaN` instead of the expected value.
 
@@ -725,7 +725,8 @@ By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
 [create your own custom actions](./writing-custom-actions.md).
 
-When `each` is provided, the current iteration value is available in the `${{ each }}` input.
+The `each` value must resolve to an array or object. The current iteration value
+is available in the `${{ each }}` input.
 
 Examples:
 
@@ -913,8 +914,10 @@ spec:
 ```
 
 Afterwards, if you are using the builtin templating action, you can start using
-the variables in your code. You can use also any other templating functions from
-[Nunjucks](https://mozilla.github.io/nunjucks/templating.html#tags) as well.
+the variables in your code. You can also use the template tags and functions
+supported by [Nunjitsu](https://github.com/Rugvip/nunjitsu). Check the
+[Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
+before using syntax from the Nunjucks documentation.
 
 ```bash
 #!/bin/bash
@@ -934,9 +937,29 @@ code part of the `JSONSchema`, or you can read more about our
 ### More about expressions
 
 The `${{ }}` constructs in your template are evaluated using the
-powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
-To learn more about basic Nunjucks templating please see
-[templating documentation](https://mozilla.github.io/nunjucks/templating.html).
+[Nunjitsu template engine](https://github.com/Rugvip/nunjitsu), which supports a
+focused subset of Nunjucks syntax. Use the
+[Nunjucks templating documentation](https://mozilla.github.io/nunjucks/templating.html)
+as a general syntax reference, and check the
+[Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
+for the supported features.
+
+#### How step values are typed
+
+The type of a templated value in `spec.steps` depends on how you write it:
+
+- **A single `${{ }}` expression** keeps the type of its result. For example, `${{ parameters.enabledDB }}` passes a boolean, and `${{ parameters.tags }}` passes an array.
+- **A single `{% %}` block** passes a boolean, number, `null`, array or object if it outputs one, and a string otherwise. For example, the following `if` gets the boolean `true` or `false`, so the step is skipped as expected:
+
+  ```yaml
+  if: "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}"
+  ```
+
+  Expressions inside the block keep the type of their result, so `{% if parameters.enabled %}${{ parameters.count }}{% endif %}` passes a number. If the block outputs nothing, the value is left out, as if it wasn't set.
+
+- **Anything else**, such as text combined with an expression (`v${{ parameters.version }}`), or whitespace around a block, passes a string.
+
+A `{% %}` block that outputs a number doesn't keep its formatting, so `1.10` becomes `1.1`. To pass a value such as a version number as a string, use a `${{ }}` expression instead.
 
 Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at

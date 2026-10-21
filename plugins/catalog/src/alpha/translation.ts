@@ -110,7 +110,7 @@ export const catalogTranslationRef = createTranslationRef({
       inspectMenuTitle: 'Inspect entity',
       copyURLMenuTitle: 'Copy entity URL',
       unregisterMenuTitle: 'Unregister entity',
-      moreButtonAriaLabel: 'more',
+      moreButtonAriaLabel: 'More actions',
     },
     entityLabelsCard: {
       title: 'Labels',
@@ -124,6 +124,9 @@ export const catalogTranslationRef = createTranslationRef({
       warningPanelTitle: 'Entity not found',
       ownerLabel: 'Owner',
       lifecycleLabel: 'Lifecycle',
+      systemLabel: 'System',
+      domainLabel: 'Domain',
+      partOfLabel: 'Part of',
     },
     entityLinksCard: {
       title: 'Links',

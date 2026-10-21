@@ -37,6 +37,7 @@ import {
   AuthService,
   DiscoveryService,
   LoggerService,
+  RootSystemMetadataService,
   SchedulerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
@@ -175,18 +176,21 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
   public readonly discovery: DiscoveryService;
   public readonly logger: LoggerService;
   public readonly auth: AuthService;
+  public readonly rootSystemMetadata: RootSystemMetadataService;
 
   constructor(
     config: Config,
     discovery: DiscoveryService,
     logger: LoggerService,
     auth: AuthService,
+    rootSystemMetadata: RootSystemMetadataService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.config = config;
     this.discovery = discovery;
     this.logger = logger;
     this.auth = auth;
+    this.rootSystemMetadata = rootSystemMetadata;
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
@@ -197,6 +201,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       logger: LoggerService;
       schedule: SchedulerService;
       auth: AuthService;
+      rootSystemMetadata: RootSystemMetadataService;
     },
   ) {
     const taskRunner = options.schedule.createScheduledTaskRunner({
@@ -212,6 +217,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       options.discovery,
       options.logger,
       options.auth,
+      options.rootSystemMetadata,
       taskRunner,
     );
   }
@@ -247,8 +253,16 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService) {
-    const pluginsToMerge = this.config.getStringArray(
+    const explicitPlugins = this.config.getOptionalStringArray(
       'catalog.providers.backstageOpenapi.plugins',
+    );
+    const pluginsToMerge = Array.from(
+      new Set(
+        explicitPlugins ??
+          (await this.rootSystemMetadata.getInstalledPlugins()).map(
+            p => p.pluginId,
+          ),
+      ),
     );
     const configToMerge = this.config.getOptional(
       'catalog.providers.backstageOpenapi.entityOverrides',

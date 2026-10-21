@@ -499,7 +499,7 @@ export interface TaskBroker {
   // (undocumented)
   cancel(taskId: string): Promise<void>;
   // (undocumented)
-  claim(): Promise<TaskContext>;
+  claim(options?: { signal?: AbortSignal }): Promise<TaskContext>;
   // (undocumented)
   dispatch(
     options: TaskBrokerDispatchOptions,
@@ -594,6 +594,14 @@ export interface TaskContext {
   taskId?: string;
   // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+  // (undocumented)
+  updateStepState?(options: {
+    stepId: string;
+    status: 'completed';
+    output: {
+      [name: string]: JsonValue;
+    };
+  }): Promise<void>;
 }
 
 // @public @deprecated

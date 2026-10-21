@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { BitbucketServerIntegrationConfig } from './config';
@@ -100,6 +100,35 @@ describe('bitbucketServer core', () => {
         'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw/path/to/c.yaml?at=',
       );
     });
+
+    it('encodes branch refs containing special characters in the at query parameter', () => {
+      const config: BitbucketServerIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const base = 'https://bitbucket.mycompany.net/projects/a/repos/b/browse';
+      const apiBase =
+        'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw';
+
+      // An ampersand must not open a second query parameter, and a plus must
+      // not be decoded as a space by the server.
+      expect(
+        getBitbucketServerFileFetchUrl(`${base}/c.yaml?at=foo%26bar`, config),
+      ).toEqual(`${apiBase}/c.yaml?at=foo%26bar`);
+      expect(
+        getBitbucketServerFileFetchUrl(`${base}/c.yaml?at=foo%2Bbar`, config),
+      ).toEqual(`${apiBase}/c.yaml?at=foo%2Bbar`);
+      expect(
+        getBitbucketServerFileFetchUrl(`${base}/c.yaml?at=my%20branch`, config),
+      ).toEqual(`${apiBase}/c.yaml?at=my+branch`);
+      // A slash-bearing ref is normalized rather than double-encoded.
+      expect(
+        getBitbucketServerFileFetchUrl(
+          `${base}/c.yaml?at=release%2Fv1`,
+          config,
+        ),
+      ).toEqual(`${apiBase}/c.yaml?at=release%2Fv1`);
+    });
   });
 
   describe('getBitbucketServerDownloadUrl', () => {
@@ -108,14 +137,9 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
 
@@ -151,14 +175,9 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {
@@ -188,6 +207,38 @@ describe('bitbucketServer core', () => {
         'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=some-branch&prefix=backstage-mock&path=docs',
       );
     });
+
+    it('encodes branch refs containing special characters in the at query parameter', async () => {
+      const config: BitbucketServerIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const base =
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs';
+      const apiBase =
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive';
+
+      await expect(
+        getBitbucketServerDownloadUrl(`${base}?at=foo%26bar`, config),
+      ).resolves.toEqual(
+        `${apiBase}?format=tgz&at=foo%26bar&prefix=backstage-mock&path=docs`,
+      );
+      await expect(
+        getBitbucketServerDownloadUrl(`${base}?at=foo%2Bbar`, config),
+      ).resolves.toEqual(
+        `${apiBase}?format=tgz&at=foo%2Bbar&prefix=backstage-mock&path=docs`,
+      );
+      await expect(
+        getBitbucketServerDownloadUrl(`${base}?at=my%20branch`, config),
+      ).resolves.toEqual(
+        `${apiBase}?format=tgz&at=my+branch&prefix=backstage-mock&path=docs`,
+      );
+      await expect(
+        getBitbucketServerDownloadUrl(`${base}?at=release%2Fv1`, config),
+      ).resolves.toEqual(
+        `${apiBase}?format=tgz&at=release%2Fv1&prefix=backstage-mock&path=docs`,
+      );
+    });
   });
 
   describe('getBitbucketServerDefaultBranch', () => {
@@ -196,14 +247,9 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {
@@ -222,23 +268,16 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(404),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 404,
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {

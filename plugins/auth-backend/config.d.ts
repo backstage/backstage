@@ -153,6 +153,7 @@ export interface Config {
 
     /**
      * Configuration for dynamic client registration
+     * @deprecated Use `auth.clientIdMetadataDocuments` instead.
      */
     experimentalDynamicClientRegistration?: {
       /**
@@ -164,7 +165,16 @@ export interface Config {
       /**
        * A list of allowed URI patterns to use for redirect URIs during
        * dynamic client registration.
+       *
+       * Patterns are matched per URL component: a `*` in the hostname or
+       * path only matches within that component, and a `:*` port matches
+       * any port. Patterns must include an explicit protocol and only
+       * match the path they list, e.g. `http://localhost:*\/*` allows any
+       * port and any path on localhost.
+       *
        * Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
+       *
+       * @example ['http://localhost:*\/*', 'https://*.example.com/callback']
        */
       allowedRedirectUriPatterns?: string[];
     };
@@ -174,7 +184,7 @@ export interface Config {
      *
      * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
      */
-    experimentalClientIdMetadataDocuments?: {
+    clientIdMetadataDocuments?: {
       /**
        * Whether to enable Client ID Metadata Documents support
        * Defaults to false
@@ -184,8 +194,12 @@ export interface Config {
       /**
        * A list of allowed URI patterns for client_id URLs.
        * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', 'https://chatgpt.com/oauth/codex/*\/client.json', '{baseUrl}/.well-known/oauth-client/cli.json']`
        * where `{baseUrl}` is the auth backend's base URL.
+       *
+       * Setting this replaces the Claude, VS Code, and ChatGPT Codex defaults.
+       * The built-in CLI client is always allowed, since this backend serves
+       * its metadata document itself.
        *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */
@@ -197,6 +211,51 @@ export interface Config {
        * Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
        *
        * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
+       */
+      allowedRedirectUriPatterns?: string[];
+    };
+
+    /**
+     * Configuration for Client ID Metadata Documents (CIMD)
+     * @deprecated This is no longer experimental; use `auth.clientIdMetadataDocuments` instead.
+     */
+    experimentalClientIdMetadataDocuments?: {
+      /**
+       * Whether to enable Client ID Metadata Documents support
+       * Defaults to false
+       */
+      enabled?: boolean;
+
+      /**
+       * A list of allowed URI patterns for client_id URLs.
+       *
+       * Patterns are matched per URL component: a `*` in the hostname or
+       * path only matches within that component, and a `:*` port matches
+       * any port. Patterns must include an explicit protocol.
+       *
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', 'https://chatgpt.com/oauth/codex/*\/client.json', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * where `{baseUrl}` is the auth backend's base URL.
+       *
+       * Setting this replaces the Claude, VS Code, and ChatGPT Codex defaults.
+       * The built-in CLI client is always allowed, since this backend serves
+       * its metadata document itself.
+       *
+       * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
+       */
+      allowedClientIdPatterns?: string[];
+
+      /**
+       * A list of allowed URI patterns for redirect URIs.
+       *
+       * Patterns are matched per URL component: a `*` in the hostname or
+       * path only matches within that component, and a `:*` port matches
+       * any port. Patterns must include an explicit protocol and only
+       * match the path they list, e.g. `http://localhost:*\/*` allows any
+       * port and any path on localhost.
+       *
+       * Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
+       *
+       * @example ['http://localhost:*\/*', 'http://127.0.0.1:*\/callback']
        */
       allowedRedirectUriPatterns?: string[];
     };

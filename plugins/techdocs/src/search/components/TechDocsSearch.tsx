@@ -21,6 +21,8 @@ import {
 } from '@backstage/plugin-search-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../translation';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 import {
   useTechDocsSearch,
@@ -54,6 +56,7 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
   } = props;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const { results, term, loading } = useTechDocsSearch(entityId);
 
   const handleSelection = (
@@ -85,7 +88,7 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
       }}
       onChange={handleSelection}
       blurOnSelect
-      noOptionsText="No results found"
+      noOptionsText={t('search.noResults')}
       value={null}
       options={results}
       renderOption={({ document, highlight }) => (
@@ -100,7 +103,9 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
       )}
       loading={loading}
       inputDebounceTime={debounceTime}
-      inputPlaceholder={`Search ${entityTitle || entityId.name} docs`}
+      inputPlaceholder={t('search.placeholder', {
+        entityTitle: entityTitle || entityId.name,
+      })}
       freeSolo={false}
     />
   );

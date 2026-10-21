@@ -21,7 +21,7 @@ import { pluginSourcesSchema } from '../lib/pluginSources';
 export default async ({ args, info }: CliCommandContext) => {
   const parsed = cli(
     {
-      help: info,
+      name: info.usage,
       parameters: ['<plugin-ids...>'],
     },
     undefined,

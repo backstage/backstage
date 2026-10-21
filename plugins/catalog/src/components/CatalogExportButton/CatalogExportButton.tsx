@@ -20,6 +20,7 @@ import { useTranslationRef, toastApiRef } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from '../../alpha/translation';
 import {
   Button,
+  ButtonIcon,
   Checkbox,
   Dialog,
   DialogBody,
@@ -29,10 +30,13 @@ import {
   Select,
   Text,
 } from '@backstage/ui';
-import { useStreamingExport } from './file-download';
+import { useStreamingExport } from './file-download/useStreamingExport';
 import type { CatalogExportSettingsColumn } from './file-download/serializeEntities';
 import { getColumnTitle } from './file-download/serializeEntities';
 import type { CatalogExporter } from './file-download/useStreamingExport';
+import { CatalogExportType } from './CatalogExportType';
+
+export { CatalogExportType } from './CatalogExportType';
 
 /**
  * Custom exporter configuration for a catalog export format.
@@ -91,17 +95,6 @@ export interface CatalogExportSettings {
 }
 
 /**
- * The available export formats for the catalog export.
- * Currently supports CSV and JSON.
- *
- * @public
- */
-export enum CatalogExportType {
-  CSV = 'csv',
-  JSON = 'json',
-}
-
-/**
  * The available default export columns for the catalog export.
  * These can be overridden by providing custom columns in the export button options.
  *
@@ -122,8 +115,10 @@ const DEFAULT_EXPORT_COLUMNS = [
  */
 export const CatalogExportButton = ({
   settings,
+  iconOnly = false,
 }: {
   settings?: CatalogExportSettings;
+  iconOnly?: boolean;
 }) => {
   const { t } = useTranslationRef(catalogTranslationRef);
   const { exportStream, loading, error } = useStreamingExport();
@@ -221,13 +216,22 @@ export const CatalogExportButton = ({
 
   return (
     <>
-      <Button
-        variant="secondary"
-        iconStart={<RiDownloadLine />}
-        onPress={handleOpenDialog}
-      >
-        {t('catalogExportButton.triggerButtonTitle')}
-      </Button>
+      {iconOnly ? (
+        <ButtonIcon
+          variant="secondary"
+          icon={<RiDownloadLine />}
+          aria-label={t('catalogExportButton.triggerButtonTitle')}
+          onPress={handleOpenDialog}
+        />
+      ) : (
+        <Button
+          variant="secondary"
+          iconStart={<RiDownloadLine />}
+          onPress={handleOpenDialog}
+        >
+          {t('catalogExportButton.triggerButtonTitle')}
+        </Button>
+      )}
 
       <Dialog isOpen={open} onOpenChange={isOpen => !isOpen && setOpen(false)}>
         <DialogHeader>{t('catalogExportButton.dialogTitle')}</DialogHeader>

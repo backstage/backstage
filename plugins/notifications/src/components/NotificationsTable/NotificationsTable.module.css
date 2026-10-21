@@ -33,4 +33,13 @@
   .notificationInfoRow:not(:first-child) {
     margin-left: var(--bui-space-1);
   }
+
+  .highlightedNotification {
+    background-color: var(--bui-color-bg-surface-hover, rgba(0, 0, 0, 0.04));
+    border-radius: var(--bui-radius-2, 4px);
+    padding: var(--bui-space-2, 8px);
+    margin: calc(var(--bui-space-2, 8px) * -1);
+    outline: 2px solid var(--bui-color-border-primary, #1f5493);
+    outline-offset: var(--bui-space-1, 4px);
+  }
 }

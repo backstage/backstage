@@ -1,0 +1,8 @@
+name: catalog-processor-module
+role: backend-plugin-module
+description: A Processor module for the Software Catalog
+values:
+  pluginId: catalog
+  fullModuleId: '{{ moduleId }}-processor'
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
+  processorClass: '{{ upperFirst ( camelCase moduleId ) }}Processor'

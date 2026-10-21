@@ -52,7 +52,7 @@ function showGenericHelp(
 ): void {
   cli(
     {
-      help: info,
+      name: info.usage,
       parameters: ['<action-id>'],
       flags: {
         instance: {
@@ -140,7 +140,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const { flags } = cli(
     {
-      help: info,
+      name: info.usage,
       flags: {
         ...schemaFlags,
         instance: {

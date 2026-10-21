@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-@layer tokens, base, components, utilities;
+@layer tokens, base, components, theme, utilities;
 
 @layer components {
   .bui-Skeleton {
     animation: var(--bui-animate-pulse);
     background-color: var(--bui-bg-neutral-2);
     border-radius: var(--bui-radius-2);
+
+    &[data-on-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-4);
+    }
   }
 
   .bui-Skeleton[data-rounded='true'] {

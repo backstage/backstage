@@ -120,10 +120,10 @@ function headerProps(
       namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
     }`,
     headerType: (() => {
-      let t = kind.toLocaleLowerCase('en-US');
+      let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {
         t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
+        t += (entity.spec as { type: string }).type.toLowerCase();
       }
       return t;
     })(),

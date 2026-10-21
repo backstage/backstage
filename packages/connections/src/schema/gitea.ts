@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const GiteaConnectionType = createConnectionType({
   type: 'gitea',
+  title: 'Gitea',
   configSchema: z.object({
     host: z.string(),
     baseUrl: z.string().optional(),
@@ -26,10 +27,12 @@ export const GiteaConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'basic',
+      title: 'Basic',
       configSchema: z.object({
         username: z.string(),
         password: z.string(),

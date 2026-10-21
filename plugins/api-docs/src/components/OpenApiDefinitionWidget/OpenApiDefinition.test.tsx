@@ -37,19 +37,17 @@ servers:
 paths:
   /artists:
     get:
+      tags:
+        - artists
+      operationId: get_artists
       summary: List all artists
       responses:
         "200":
           description: Success
     `;
 
-    const requestInterceptor = (req: any) => req;
-
     const { getByText } = await renderInTestApp(
-      <OpenApiDefinition
-        definition={definition}
-        requestInterceptor={requestInterceptor}
-      />,
+      <OpenApiDefinition definition={definition} />,
     );
 
     // swagger-ui loads the documentation asynchronously
@@ -95,13 +93,11 @@ paths:
           description: Success
     `;
 
-    const requestInterceptor = (req: any) => req;
     const supportedSubmitMethods = ['get', 'post', 'put', 'delete'] as const;
 
     const { findByRole, getByRole, getByLabelText } = await renderInTestApp(
       <OpenApiDefinition
         definition={definition}
-        requestInterceptor={requestInterceptor}
         supportedSubmitMethods={supportedSubmitMethods as any}
       />,
     );
@@ -146,5 +142,51 @@ paths:
       <OpenApiDefinition definition="" />,
     );
     expect(getByText(/No API definition provided/i)).toBeInTheDocument();
+  });
+
+  it('scrolls to deepLink on page load', async () => {
+    const definition = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Artist API
+  license:
+    name: MIT
+servers:
+  - url: http://artist.spotify.net/v1
+paths:
+  /artists:
+    get:
+      tags:
+        - artists
+      operationId: listArtists
+      summary: List all artists
+      responses:
+        "200":
+          description: Success
+    `;
+
+    window.location.hash = '#/artists/listArtists';
+
+    const scrollIntoViewMock = jest.fn();
+
+    const getElementByIdSpy = jest
+      .spyOn(document, 'getElementById')
+      .mockImplementation(id => {
+        if (id === 'operations-artists-listArtists') {
+          return {
+            scrollIntoView: scrollIntoViewMock,
+          } as any;
+        }
+        return null;
+      });
+
+    try {
+      await renderInTestApp(<OpenApiDefinition definition={definition} />);
+      expect(scrollIntoViewMock).toHaveBeenCalled();
+    } finally {
+      window.location.hash = '';
+      getElementByIdSpy.mockRestore();
+    }
   });
 });

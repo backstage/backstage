@@ -34,7 +34,11 @@ export function SelectTrigger(props: SelectTriggerProps) {
   return (
     <Button className={classes.root} {...dataAttributes}>
       {icon}
-      <SelectValue className={classes.value} />
+      <SelectValue className={classes.value}>
+        {({ isPlaceholder, selectedText, defaultChildren }) =>
+          isPlaceholder ? defaultChildren : selectedText
+        }
+      </SelectValue>
       <div className={classes.chevron}>
         <RiArrowDownSLine aria-hidden="true" />
       </div>

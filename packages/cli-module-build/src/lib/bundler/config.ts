@@ -37,6 +37,7 @@ import yn from 'yn';
 import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
 import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
+import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
 
 export function resolveBaseUrl(
   config: Config,
@@ -334,6 +335,7 @@ export async function createConfig(
       findOwnPaths(__dirname).resolve('config/webpack-public-path'),
       ...(options.additionalEntryPoints ?? []),
       paths.targetEntry,
+      ...(options.deferredEntryPoints ?? []),
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
@@ -372,10 +374,12 @@ export async function createConfig(
       uniqueName: options.moduleFederationRemote?.name,
       path: paths.targetDist,
       publicPath: options.moduleFederationRemote ? 'auto' : `${publicPath}/`,
-      filename: isDev ? '[name].js' : 'static/[name].[contenthash:8].js',
+      filename: isDev
+        ? '[name].js'
+        : `static/[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].js`,
       chunkFilename: isDev
         ? '[name].chunk.js'
-        : 'static/[name].[contenthash:8].chunk.js',
+        : `static/[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].chunk.js`,
       ...(isDev
         ? {
             devtoolModuleFilenameTemplate: (info: any) =>

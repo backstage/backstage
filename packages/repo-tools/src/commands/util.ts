@@ -19,6 +19,7 @@ import { randomUUID } from 'node:crypto';
 import { openSync, closeSync, readFileSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import commandExists from 'command-exists';
 
 // Matches ANSI SGR escape sequences (e.g. bold, color, reset)
 const ansiPattern = new RegExp(`${String.fromCharCode(0x1b)}\\[[0-9;]*m`, 'g');
@@ -37,9 +38,12 @@ export function createBinRunner(cwd: string, path: string) {
       const outPath = join(tmpdir(), `backstage-cli-out-${randomUUID()}.txt`);
       const outFd = openSync(outPath, 'w');
 
+      // FORCE_COLOR is removed since Node.js warns on stderr when it's set
+      // together with NO_COLOR, which would be treated as a failure below
+      const { FORCE_COLOR: _, ...env } = process.env;
       const child = spawn('node', args, {
         cwd,
-        env: { ...process.env, NO_COLOR: '1' },
+        env: { ...env, NO_COLOR: '1' },
         stdio: ['ignore', outFd, 'pipe'],
       });
 
@@ -85,4 +89,14 @@ export function createBinRunner(cwd: string, path: string) {
       });
     });
   };
+}
+
+export async function ensureOasdiffInstalled() {
+  try {
+    await commandExists('oasdiff');
+  } catch {
+    throw new Error(
+      `oasdiff is not installed. Please install it to use this command: https://github.com/oasdiff/oasdiff#installation`,
+    );
+  }
 }

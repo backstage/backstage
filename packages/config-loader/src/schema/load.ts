@@ -26,6 +26,7 @@ import {
   CONFIG_VISIBILITIES,
 } from './types';
 import { normalizeAjvPath } from './utils';
+import type { ConfigSchemaError } from './ConfigSchemaError';
 
 /**
  * Options that control the loading of configuration schema files in the backend.
@@ -37,6 +38,21 @@ export type LoadConfigSchemaOptions =
       | {
           dependencies: string[];
           packagePaths?: string[];
+          /**
+           * Whether to exclude schemas from package dependencies.
+           *
+           * Defaults to `false`.
+           */
+          excludePackageDependencies?: boolean;
+          /**
+           * Receives `ConfigSchemaError` instances and allows TypeScript schema
+           * loading to continue. Unresolved types are treated as unconstrained
+           * values, while schemas that cannot be generated are omitted.
+           *
+           * Without this callback, TypeScript configuration schema errors are
+           * thrown.
+           */
+          onSchemaError?: (error: ConfigSchemaError) => void;
         }
       | {
           serialized: JsonObject;
@@ -73,6 +89,10 @@ export async function loadConfigSchema(
     schemas = await collectConfigSchemas(
       options.dependencies,
       options.packagePaths ?? [],
+      {
+        excludePackageDependencies: options.excludePackageDependencies,
+        onSchemaError: options.onSchemaError,
+      },
     );
   } else {
     const { serialized } = options;

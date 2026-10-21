@@ -6,7 +6,7 @@ description: How to keep your Backstage App updated
 
 Audience: Developers and Admins
 
-:::note Note
+:::note
 To better understand the concepts in this section, it's recommended to have an understanding of [Monorepos](https://semaphoreci.com/blog/what-is-monorepo), [Semantic Versioning](https://semver.org) and [CHANGELOGs](https://keepachangelog.com).
 :::
 
@@ -21,7 +21,7 @@ starting point that's meant to be evolved.
 
 The Backstage CLI has a command to bump all `@backstage` packages and
 dependencies you're using to the latest versions:
-[versions:bump](../tooling/cli/03-commands.md#versionsbump).
+[versions:bump](../tooling/cli/module-migrate.md#versionsbump).
 
 ```bash
 yarn backstage-cli versions:bump
@@ -76,6 +76,13 @@ for any applicable updates when upgrading packages. As an alternative, the
 [Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/) provides
 a consolidated view of all the changes between two versions of Backstage. You
 can find the current version of your Backstage installation in `backstage.json`.
+
+## Applying automated codemods
+
+After package bumps and create-app / Upgrade Helper diffs, run _versioned_
+Codemod Registry recipes for that release. For larger work such as Material-UI
+to Backstage UI, use a _misc_ recipe when you are ready. Commands and details
+are in [Codemods](../tooling/codemods.md).
 
 ## Managing package versions with the Backstage yarn plugin
 

@@ -68,6 +68,7 @@ jest.mock('./versions', () => ({
     '@backstage/integration-react': '1.0.0',
     '@backstage/plugin-api-docs': '1.0.0',
     '@backstage/plugin-app-backend': '1.0.0',
+    '@backstage/plugin-app-module-user-settings': '1.0.0',
     '@backstage/plugin-app-react': '1.0.0',
     '@backstage/plugin-app-visualizer': '1.0.0',
     '@backstage/plugin-auth': '1.0.0',
@@ -75,6 +76,8 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-auth-backend-module-github-provider': '1.0.0',
     '@backstage/plugin-auth-backend-module-guest-provider': '1.0.0',
     '@backstage/plugin-auth-node': '1.0.0',
+    '@backstage/plugin-home': '1.0.0',
+    '@backstage/plugin-home-react': '1.0.0',
     '@backstage/plugin-catalog': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
     '@backstage/plugin-catalog-backend-module-logs': '1.0.0',
@@ -108,11 +111,13 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-search-react': '1.0.0',
     '@backstage/plugin-signals': '1.0.0',
     '@backstage/plugin-signals-backend': '1.0.0',
+    '@backstage/plugin-signals-react': '1.0.0',
     '@backstage/plugin-techdocs': '1.0.0',
     '@backstage/plugin-techdocs-backend': '1.0.0',
     '@backstage/plugin-techdocs-module-addons-contrib': '1.0.0',
     '@backstage/plugin-techdocs-react': '1.0.0',
     '@backstage/plugin-user-settings': '1.0.0',
+    '@backstage/plugin-user-settings-backend': '1.0.0',
     '@backstage/test-utils': '1.0.0',
     '@backstage/theme': '1.0.0',
     '@backstage/ui': '1.0.0',
@@ -305,6 +310,30 @@ describe('tasks', () => {
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
       ).resolves.toContain('sqlite3"');
     });
+
+    it.each(['default-app', 'legacy-app'])(
+      'should include required Yarn resolutions in the %s template',
+      async templateName => {
+        const templateDir = resolvePath(
+          __dirname,
+          `../../templates/${templateName}`,
+        );
+        const destinationDir = `templated-${templateName}`;
+
+        await templatingTask(templateDir, destinationDir, {
+          name: 'SuperCoolBackstageInstance',
+          dbTypeSqlite: true,
+        });
+
+        await expect(
+          fs.readJson(`${destinationDir}/package.json`),
+        ).resolves.toMatchObject({
+          resolutions: {
+            '@yarnpkg/core': '4.9.1',
+          },
+        });
+      },
+    );
   });
 
   describe('readGitConfig', () => {

@@ -27,6 +27,7 @@ export type FilterRule = {
 export type McpServerConfig = {
   name: string;
   description?: string;
+  instructions?: string;
   includeRules: FilterRule[];
   excludeRules: FilterRule[];
 };
@@ -88,6 +89,7 @@ export function parseServerConfigs(
     servers.set(key, {
       name: serverConfig.getString('name'),
       description: serverConfig.getOptionalString('description'),
+      instructions: serverConfig.getOptionalString('instructions'),
       includeRules,
       excludeRules,
     });

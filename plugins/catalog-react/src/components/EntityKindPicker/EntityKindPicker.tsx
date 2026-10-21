@@ -132,7 +132,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
       <Select
         label={t('entityKindPicker.title')}
         items={items}
-        selected={selectedKind.toLocaleLowerCase('en-US')}
+        selected={selectedKind.toLowerCase()}
         onChange={value => setSelectedKind(String(value))}
       />
     </Box>

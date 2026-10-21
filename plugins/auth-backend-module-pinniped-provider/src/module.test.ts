@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { Server } from 'node:http';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
-import { rest } from 'msw';
+import { http, HttpResponse, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { authModulePinnipedProvider } from './module';
@@ -83,53 +83,42 @@ describe('authModulePinnipedProvider', () => {
     jest.clearAllMocks();
 
     mswServer.use(
-      rest.get(
+      http.get(
         'https://federationDomain.test/.well-known/openid-configuration',
-        (_req, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(issuerMetadata),
-          ),
+        () => HttpResponse.json(issuerMetadata),
       ),
-      rest.get(
+      http.get(
         'https://pinniped.test/oauth2/authorize',
-        async (req, res, ctx) => {
-          const callbackUrl = new URL(
-            req.url.searchParams.get('redirect_uri')!,
-          );
+        async ({ request: httpRequest }) => {
+          const url = new URL(httpRequest.url);
+          const callbackUrl = new URL(url.searchParams.get('redirect_uri')!);
           callbackUrl.searchParams.set('code', 'authorization_code');
-          callbackUrl.searchParams.set(
-            'state',
-            req.url.searchParams.get('state')!,
-          );
+          callbackUrl.searchParams.set('state', url.searchParams.get('state')!);
           callbackUrl.searchParams.set('scope', 'test-scope');
-          return res(
-            ctx.status(302),
-            ctx.set('Location', callbackUrl.toString()),
-          );
+          return HttpResponse.redirect(callbackUrl.toString(), 302);
         },
       ),
-      rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
+      http.get('https://pinniped.test/jwks.json', async () =>
+        HttpResponse.json({ keys: [{ ...publicKey }] }),
       ),
-      rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) => {
-        const formBody = new URLSearchParams(await req.text());
-        const isGrantTypeTokenExchange =
-          formBody.get('grant_type') ===
-          'urn:ietf:params:oauth:grant-type:token-exchange';
-        const hasValidTokenExchangeParams =
-          formBody.get('subject_token') === 'accessToken' &&
-          formBody.get('audience') === 'test_cluster' &&
-          formBody.get('subject_token_type') ===
-            'urn:ietf:params:oauth:token-type:access_token' &&
-          formBody.get('requested_token_type') ===
-            'urn:ietf:params:oauth:token-type:jwt';
+      http.post(
+        'https://pinniped.test/oauth2/token',
+        async ({ request: httpRequest }) => {
+          const formBody = new URLSearchParams(await httpRequest.text());
+          const isGrantTypeTokenExchange =
+            formBody.get('grant_type') ===
+            'urn:ietf:params:oauth:grant-type:token-exchange';
+          const hasValidTokenExchangeParams =
+            formBody.get('subject_token') === 'accessToken' &&
+            formBody.get('audience') === 'test_cluster' &&
+            formBody.get('subject_token_type') ===
+              'urn:ietf:params:oauth:token-type:access_token' &&
+            formBody.get('requested_token_type') ===
+              'urn:ietf:params:oauth:token-type:jwt';
 
-        return res(
-          req.headers.get('Authorization') &&
+          return httpRequest.headers.get('Authorization') &&
             (!isGrantTypeTokenExchange || hasValidTokenExchangeParams)
-            ? ctx.json({
+            ? HttpResponse.json({
                 access_token: isGrantTypeTokenExchange
                   ? clusterScopedIdToken
                   : 'accessToken',
@@ -137,9 +126,9 @@ describe('authModulePinnipedProvider', () => {
                 ...(!isGrantTypeTokenExchange && { id_token: idToken }),
                 scope: 'testScope',
               })
-            : ctx.status(401),
-        );
-      }),
+            : new HttpResponse(null, { status: 401 });
+        },
+      ),
     );
 
     const backend = await startTestBackend({
@@ -169,7 +158,7 @@ describe('authModulePinnipedProvider', () => {
     server = backend.server;
     port = backend.server.port();
 
-    mswServer.use(rest.all(`http://*:${port}/*`, req => req.passthrough()));
+    mswServer.use(http.all(`http://*:${port}/*`, passthrough));
   });
 
   it('should start', async () => {

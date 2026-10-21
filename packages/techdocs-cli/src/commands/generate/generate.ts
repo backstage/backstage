@@ -14,20 +14,37 @@
  * limitations under the License.
  */
 
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+import JSON5 from 'json5';
 import {
-  TechdocsGenerator,
+  Generators,
   ParsedLocationAnnotation,
   getMkdocsYml,
+  TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY,
 } from '@backstage/plugin-techdocs-node';
 import { ConfigReader } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
 import {
   convertTechDocsRefToLocationAnnotation,
   createLogger,
   getLogStream,
 } from '../../lib/utility';
+import { computeDirectoryEtag } from '../../lib/etag';
+import { getEngineConfig } from '../../lib/engineConfig';
+import { resolveEngine } from '../../lib/catalogEntity';
+
+const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
+const GENERATED_SITE_ETAG_EXCLUDED_FILES = [
+  TECHDOCS_METADATA_FILE,
+  // The compressed sitemap can include gzip metadata that changes between
+  // otherwise identical generated sites; sitemap.xml still captures content.
+  'sitemap.xml.gz',
+  // mkdocs writes build-date lastmod entries into sitemap.xml, so the hash
+  // changes daily even when the documentation content is identical.
+  'sitemap.xml',
+];
 
 export default async function generate(opts: OptionValues) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
@@ -35,8 +52,16 @@ export default async function generate(opts: OptionValues) {
   // will run on the CI pipeline containing the documentation files.
 
   const logger = createLogger({ verbose: opts.verbose });
-
   const sourceDir = resolve(opts.sourceDir);
+
+  const {
+    engine,
+    source: engineSource,
+    entity: catalogEntity,
+  } = await resolveEngine(sourceDir, opts.engine, logger);
+
+  const engineConfig = getEngineConfig(engine, engineSource);
+  logger.info(`Using engine: ${engine} (binary: ${engineConfig.binary})`);
   const outputDir = resolve(opts.outputDir);
   const omitTechdocsCorePlugin = opts.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = opts.dockerImage;
@@ -44,6 +69,7 @@ export default async function generate(opts: OptionValues) {
   const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
   const disableExternalFonts = opts.disableExternalFonts;
   const defaultPlugins = opts.defaultPlugin;
+  const dangerouslyAllowAdditionalKeys = opts.dangerouslyAllowAdditionalKeys;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -62,11 +88,13 @@ export default async function generate(opts: OptionValues) {
         runIn: opts.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
+        defaultEngine: engine,
         mkdocs: {
           legacyCopyReadmeMdToIndexMd,
           omitTechdocsCorePlugin,
           disableExternalFonts,
           defaultPlugins,
+          dangerouslyAllowAdditionalKeys,
         },
       },
     },
@@ -83,14 +111,36 @@ export default async function generate(opts: OptionValues) {
     }
   }
 
+  const hasExplicitEtag = opts.etag !== undefined;
+  const etag = hasExplicitEtag ? opts.etag : undefined;
+
   // Generate docs using @backstage/plugin-techdocs-node
-  const techdocsGenerator = await TechdocsGenerator.fromConfig(config, {
+  const generators = await Generators.fromConfig(config, {
     logger,
   });
 
+  // Stamp the resolved engine onto the entity so that an explicit --engine
+  // flag takes precedence over the catalog annotation in generators.get().
+  const baseEntity: Entity = catalogEntity ?? {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name: 'local' },
+  };
+  const entity: Entity = {
+    ...baseEntity,
+    metadata: {
+      ...baseEntity.metadata,
+      annotations: {
+        ...baseEntity.metadata.annotations,
+        [TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY]: engine,
+      },
+    },
+  };
+  const generator = generators.get(entity);
+
   logger.info('Generating documentation...');
 
-  await techdocsGenerator.run({
+  await generator.run({
     inputDir: sourceDir,
     outputDir,
     ...(opts.techdocsRef
@@ -99,11 +149,25 @@ export default async function generate(opts: OptionValues) {
         }
       : {}),
     logger,
-    etag: opts.etag,
+    etag,
     logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
     runAsDefaultUser: opts.runAsDefaultUser,
   });
+
+  if (!hasExplicitEtag) {
+    const generatedSiteEtag = await computeDirectoryEtag(outputDir, {
+      exclude: GENERATED_SITE_ETAG_EXCLUDED_FILES,
+    });
+    const metadataPath = join(outputDir, TECHDOCS_METADATA_FILE);
+    const metadata = JSON5.parse(await fs.readFile(metadataPath, 'utf8'));
+    await fs.writeJson(
+      metadataPath,
+      { ...metadata, etag: generatedSiteEtag },
+      { spaces: 2 },
+    );
+    logger.info(`Computed generated site content hash: ${generatedSiteEtag}`);
+  }
 
   if (configIsTemporary) {
     process.on('exit', async () => {

@@ -23,6 +23,7 @@ import git, {
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { isError } from '@backstage/errors';
 // @ts-ignore
 import { pgp } from '@isomorphic-git/pgp-plugin';
 
@@ -289,25 +290,35 @@ export class Git {
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
     try {
-      return await git.push({
-        fs,
-        dir,
-        http,
-        onProgress: this.onProgressHandler(),
-        remoteRef,
-        force,
-        headers: this.headers,
-        remote,
-        url,
-        onAuth: this.onAuth,
-        corsProxy: '',
+      return await this.retryOnTransientError({
+        name: 'Git push',
+        fn: () =>
+          git.push({
+            fs,
+            dir,
+            http,
+            onProgress: this.onProgressHandler(),
+            remoteRef,
+            force,
+            headers: this.headers,
+            remote,
+            url,
+            onAuth: this.onAuth,
+            corsProxy: '',
+          }),
       });
     } catch (ex) {
       this.config.logger?.error(
         `Failed to push to repo {dir=${dir}, remote=${remote}}`,
       );
-      if (ex.data) {
-        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      if (isError(ex) && 'data' in ex) {
+        let serializedData: string;
+        try {
+          serializedData = JSON.stringify(ex.data);
+        } catch {
+          serializedData = '[unserializable data]';
+        }
+        throw new Error(`${ex.message} {data=${serializedData}}`);
       }
       throw ex;
     }
@@ -351,6 +362,63 @@ export class Git {
   }
 
   private onAuth: AuthCallback;
+
+  private static readonly nonTransientPatterns = [
+    /auth/i,
+    /permission/i,
+    /forbidden/i,
+    /401/,
+    /403/,
+  ];
+
+  private async retryOnTransientError<T>(operation: {
+    /** The name of the operation */
+    name: string;
+    /** The operation to be executed */
+    fn: () => Promise<T>;
+  }): Promise<T> {
+    const maxRetries = 5;
+    const baseDelayMs = 2000;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation.fn();
+      } catch (ex) {
+        const errorMsg = isError(ex) ? ex.message : String(ex);
+        let errorData = '';
+        if (isError(ex) && 'data' in ex) {
+          try {
+            errorData = JSON.stringify(ex.data);
+          } catch {
+            errorData = '[unserializable data]';
+          }
+        }
+        const fullError = `${errorMsg} ${errorData}`;
+        const isNonTransient = Git.nonTransientPatterns.some(p =>
+          p.test(fullError),
+        );
+
+        if (isNonTransient || attempt >= maxRetries) {
+          throw ex;
+        }
+
+        const delayMs = baseDelayMs * Math.pow(2, attempt);
+        const jitterMs = Math.floor(
+          Math.random() * Math.max(1, Math.floor(delayMs * 0.1)),
+        );
+        this.config.logger?.warn(
+          `${operation.name} failed (attempt ${attempt + 1}/${
+            maxRetries + 1
+          }), retrying in ${delayMs + jitterMs}ms: ${errorMsg}`,
+        );
+        await new Promise(resolve => setTimeout(resolve, delayMs + jitterMs));
+      }
+    }
+
+    throw new Error(
+      `${operation.name} failed after ${maxRetries + 1} attempts`,
+    );
+  }
 
   private onProgressHandler = (): ProgressCallback => {
     let currentPhase = '';

@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
-import { useApi, alertApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 /**
- * Shows an example alert.
+ * Shows an example toast.
  *
  * @public
  */
 export function useExample() {
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   useEffect(() => {
-    alertApi.post({ message: 'Hello World!' });
-  }, [alertApi]);
+    toastApi.post({ title: 'Hello World!' });
+  }, [toastApi]);
 }

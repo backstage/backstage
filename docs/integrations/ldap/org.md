@@ -85,7 +85,7 @@ catalog:
 
 These config blocks have a lot of options in them, so we will describe each "root" key within the block separately.
 
-:::note Note
+:::note
 
 If you want to import users and groups from different LDAP servers, you can define multiple providers with different names.
 If they should come from the same server, you can define multiple users and groups blocks within the same provider using an array of users / groups.
@@ -333,7 +333,7 @@ vendor:
 
 ## Customize the Provider
 
-In case you want to customize the ingested entities, the provider allows to pass
+In case you want to customize the ingested entities, the provider allows you to pass
 transformers for users and groups.
 
 Transformers can be configured by extending `ldapOrgEntityProviderTransformsExtensionPoint`. Here is an example:

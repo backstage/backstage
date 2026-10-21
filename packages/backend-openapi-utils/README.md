@@ -82,7 +82,7 @@ This can happen when you have a `charset` defined in your `response.content` sec
 Router() as ApiRouter<typeof spec>
 
 // Not an interface like this,
-Router() as ApiRouter<DeepWriteable<typeof spec>>
+Router() as ApiRouter<DeepWritable<typeof spec>>
 ...
 ```
 

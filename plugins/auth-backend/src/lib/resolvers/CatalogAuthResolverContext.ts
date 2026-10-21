@@ -142,11 +142,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       result = res.items;
     } else if ('filter' in query) {
       const filter = [query.filter].flat().map(value => {
-        if (
-          !Object.keys(value).some(
-            key => key.toLocaleLowerCase('en-US') === 'kind',
-          )
-        ) {
+        if (!Object.keys(value).some(key => key.toLowerCase() === 'kind')) {
           return {
             ...value,
             kind: 'user',

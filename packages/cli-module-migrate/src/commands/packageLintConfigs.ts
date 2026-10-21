@@ -24,7 +24,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info, booleanFlagNegation: true }, undefined, args);
+  cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   const oldConfigs = [

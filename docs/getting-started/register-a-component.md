@@ -6,7 +6,7 @@ description: Start populating your Backstage app with your data.
 
 Audience: Developers
 
-:::note Note
+:::note
 Entity files are stored in YAML format, if you are not familiar with YAML, you can learn more about it [here](https://yaml.org).
 
 [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information on the format of the YAML entity files.
@@ -22,7 +22,7 @@ When registering a component, you can:
 
 - Link to a repository: All `catalog-info.yaml` files are discovered in the repository and their defined entities are added to the Scaffolded Backstage App Catalog. For example, `https://github.com/backstage/backstage`.
 
-  :::note Note
+  :::note
   If no entities are found, a Pull Request is created that adds an example `catalog-info.yaml` file to the repository. When the Pull Request is merged, the Scaffolded Backstage App Catalog loads all of the defined entities.
 
   :::

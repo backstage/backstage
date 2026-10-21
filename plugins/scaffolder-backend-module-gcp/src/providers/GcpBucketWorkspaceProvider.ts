@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
 import getRawBody from 'raw-body';
@@ -68,11 +69,10 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
       await fileCloud.save(workspace, {
         contentType: 'application/x-tar',
       });
-    } catch (err) {
-      this.logger.error(
-        `An error occurred during uploading the workspace of task ${
-          options.taskId
-        } into GCP bucket ${this.getGcpBucketName()}`,
+    } catch (error) {
+      throw new ForwardedError(
+        `Failed to upload workspace for task '${options.taskId}' to GCS`,
+        error,
       );
     }
     this.logger.info(
@@ -94,12 +94,17 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
   }
 
   private getGcpBucketName(): string {
-    const bucketName = this.config?.getOptionalString(
-      'scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName',
-    );
+    // New config path with fallback to old experimental flag
+    const bucketName =
+      this.config?.getOptionalString(
+        'scaffolder.taskRecovery.gcsBucket.name',
+      ) ??
+      this.config?.getOptionalString(
+        'scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName',
+      );
     if (!bucketName) {
       throw new Error(
-        `You've missed to configure scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName in app-config.yaml file`,
+        `Missing GCS bucket configuration. Set scaffolder.taskRecovery.gcsBucket.name in app-config.yaml`,
       );
     }
     return bucketName;

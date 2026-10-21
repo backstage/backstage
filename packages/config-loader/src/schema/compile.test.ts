@@ -460,3 +460,210 @@ describe('deepVisibility', () => {
     );
   });
 });
+
+describe('noUndeclaredProperties', () => {
+  it('should add additionalProperties: false to objects', () => {
+    const validate = compileConfigSchemas(
+      [
+        {
+          path: 'a1',
+          packageName: 'a1',
+          value: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'object',
+                properties: {
+                  a: { type: 'string' },
+                },
+              },
+              b: { type: 'string' },
+              d: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    a: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+      { noUndeclaredProperties: true },
+    );
+    expect(
+      validate([
+        {
+          data: {
+            bonus: 'nope',
+            a: {
+              bonus: 'nope',
+            },
+            d: [{ bonus: 'nope' }],
+          },
+          context: 'test',
+        },
+      ]),
+    ).toEqual({
+      errors: [
+        {
+          instancePath: '',
+          keyword: 'additionalProperties',
+          message: 'must NOT have additional properties',
+          params: {
+            additionalProperty: 'bonus',
+          },
+          schemaPath: '#/additionalProperties',
+        },
+        {
+          instancePath: '/a',
+          keyword: 'additionalProperties',
+          message: 'must NOT have additional properties',
+          params: {
+            additionalProperty: 'bonus',
+          },
+          schemaPath: '#/properties/a/additionalProperties',
+        },
+        {
+          instancePath: '/d/0',
+          keyword: 'additionalProperties',
+          message: 'must NOT have additional properties',
+          params: {
+            additionalProperty: 'bonus',
+          },
+          schemaPath: '#/properties/d/items/additionalProperties',
+        },
+      ],
+      visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
+    });
+  });
+
+  it('should preserve existing additionalProperties', () => {
+    const validate = compileConfigSchemas(
+      [
+        {
+          path: 'a1',
+          packageName: 'a1',
+          value: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'object',
+                properties: {
+                  a: { type: 'string' },
+                },
+                additionalProperties: true,
+              },
+              b: { type: 'string' },
+              d: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    a: { type: 'string' },
+                  },
+                  additionalProperties: { type: 'string' },
+                },
+              },
+            },
+            additionalProperties: {},
+          },
+        },
+      ],
+      { noUndeclaredProperties: true },
+    );
+    expect(
+      validate([
+        {
+          data: {
+            bonus: 'nope',
+            a: {
+              bonus: 'nope',
+            },
+            d: [{ bonus: 'nope' }],
+          },
+          context: 'test',
+        },
+      ]),
+    ).toEqual({
+      visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
+    });
+  });
+
+  it('should skip objects with no properties', () => {
+    const validate = compileConfigSchemas(
+      [
+        {
+          path: 'a1',
+          packageName: 'a1',
+          value: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'object',
+                properties: {
+                  a: { type: 'string' },
+                },
+              },
+              b: {
+                type: 'object',
+                patternProperties: {
+                  a: { type: 'string' },
+                },
+              },
+              c: {
+                type: 'object',
+              },
+            },
+          },
+        },
+      ],
+      { noUndeclaredProperties: true },
+    );
+    expect(
+      validate([
+        {
+          data: {
+            a: { bonus: 'nope' },
+            b: { bonus: 'nope' },
+            c: { bonus: 'nope' },
+          },
+          context: 'test',
+        },
+      ]),
+    ).toEqual({
+      errors: [
+        {
+          instancePath: '/a',
+          keyword: 'additionalProperties',
+          message: 'must NOT have additional properties',
+          params: {
+            additionalProperty: 'bonus',
+          },
+          schemaPath: '#/properties/a/additionalProperties',
+        },
+        {
+          instancePath: '/b',
+          keyword: 'additionalProperties',
+          message: 'must NOT have additional properties',
+          params: {
+            additionalProperty: 'bonus',
+          },
+          schemaPath: '#/properties/b/additionalProperties',
+        },
+      ],
+      visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
+    });
+  });
+});

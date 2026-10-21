@@ -19,16 +19,19 @@ import { z } from 'zod/v4';
 /** @public */
 export const GoogleGcsConnectionType = createConnectionType({
   type: 'google-gcs',
+  title: 'Google Cloud Storage',
   configSchema: z.object({
     host: z.string(),
   }),
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'serviceAccount',
+      title: 'Service Account',
       configSchema: z.object({
         clientEmail: z.string(),
         privateKey: z.string(),

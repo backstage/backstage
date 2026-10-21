@@ -16,6 +16,7 @@
 
 export { mergeConfigSchemas } from './compile';
 export { loadConfigSchema } from './load';
+export { ConfigSchemaError } from './ConfigSchemaError';
 export type { LoadConfigSchemaOptions } from './load';
 export type {
   ConfigSchema,

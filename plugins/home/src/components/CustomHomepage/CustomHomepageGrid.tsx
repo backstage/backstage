@@ -95,6 +95,15 @@ const useStyles = makeStyles((theme: Theme) =>
         cursor: 'move',
       },
     },
+    layoutLabel: {
+      position: 'absolute',
+      bottom: 4,
+      left: 8,
+      fontSize: '0.7rem',
+      color: theme.palette.text.disabled,
+      pointerEvents: 'none',
+      zIndex: 1,
+    },
   }),
 );
 
@@ -230,6 +239,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     useHomeStorage(defaultLayout);
   const [widgets, setWidgets] = useState(storedWidgets);
 
+  const preventDuplicateWidgets = props.preventDuplicateWidgets ?? false;
+
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
@@ -246,6 +257,16 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     return key.split('__')[0];
   };
   const { t } = useTranslationRef(homeTranslationRef);
+
+  const getAvailableWidgets = () => {
+    if (!preventDuplicateWidgets) {
+      return availableWidgets;
+    }
+    const usedWidgetNames = new Set(
+      widgets.map(w => getWidgetNameFromKey(w.id)),
+    );
+    return availableWidgets.filter(widget => !usedWidgetNames.has(widget.name));
+  };
 
   const handleAdd = (widget: Widget) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
@@ -375,7 +396,13 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         open={addWidgetDialogOpen}
         onClose={() => setAddWidgetDialogOpen(false)}
       >
-        <AddWidgetDialog widgets={availableWidgets} handleAdd={handleAdd} />
+        {/* Only mount when open so the list does not update (e.g. remove the added widget) before the modal closes */}
+        {addWidgetDialogOpen && (
+          <AddWidgetDialog
+            widgets={getAvailableWidgets()}
+            handleAdd={handleAdd}
+          />
+        )}
       </Dialog>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
@@ -428,14 +455,19 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
                 <widget.component.type {...widgetProps} />
               </ErrorBoundary>
               {editMode && (
-                <WidgetSettingsOverlay
-                  id={l.i}
-                  widget={widget}
-                  handleRemove={handleRemove}
-                  handleSettingsSave={handleSettingsSave}
-                  settings={w.settings}
-                  deletable={w.deletable}
-                />
+                <>
+                  <Typography variant="caption" className={styles.layoutLabel}>
+                    column: {l.x}, row: {l.y}, width: {l.w}, height: {l.h}
+                  </Typography>
+                  <WidgetSettingsOverlay
+                    id={l.i}
+                    widget={widget}
+                    handleRemove={handleRemove}
+                    handleSettingsSave={handleSettingsSave}
+                    settings={w.settings}
+                    deletable={w.deletable}
+                  />
+                </>
               )}
             </div>
           );

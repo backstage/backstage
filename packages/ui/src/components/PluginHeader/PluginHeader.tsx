@@ -25,6 +25,8 @@ import { Box } from '../Box';
 import { Link } from '../Link';
 import { RiShapesLine } from '@remixicon/react';
 import { Text } from '../Text';
+import { VisuallyHidden } from '../VisuallyHidden';
+import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -47,11 +49,13 @@ export const PluginHeader = (props: PluginHeaderProps) => {
     icon,
     title,
     titleLink,
+    breadcrumbs,
     customActions,
     onTabSelectionChange,
   } = ownProps;
 
   const hasTabs = tabs && tabs.length > 0;
+  const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0;
   const rootRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const lastAppliedHeightRef = useRef<number | undefined>(undefined);
@@ -87,16 +91,22 @@ export const PluginHeader = (props: PluginHeaderProps) => {
       );
     };
 
+    const getHeight = () => {
+      const marginBottom =
+        parseFloat(window.getComputedStyle(el).marginBottom) || 0;
+      return el.offsetHeight + marginBottom;
+    };
+
     const scheduleHeightUpdate = () => {
       cancelScheduledUpdate();
       animationFrameRef.current = requestAnimationFrame(() => {
         animationFrameRef.current = undefined;
-        applyHeight(el.offsetHeight);
+        applyHeight(getHeight());
       });
     };
 
     // Set height once immediately so the initial layout is correct.
-    applyHeight(el.offsetHeight);
+    applyHeight(getHeight());
 
     // Observe for resize changes if ResizeObserver is available
     // (not present in Jest/jsdom by default)
@@ -130,17 +140,30 @@ export const PluginHeader = (props: PluginHeaderProps) => {
           <Box bg="neutral" className={classes.toolbarIcon} aria-hidden="true">
             {icon || <RiShapesLine />}
           </Box>
-          <h1 className={classes.toolbarName}>
-            {titleLink ? (
-              <Link href={titleLink} standalone variant="body-medium">
-                {titleText}
-              </Link>
-            ) : (
-              <Text as="span" variant="body-medium">
-                {titleText}
-              </Text>
-            )}
-          </h1>
+          {hasBreadcrumbs ? (
+            <div className={classes.toolbarName}>
+              <VisuallyHidden>
+                <h1>{titleText}</h1>
+              </VisuallyHidden>
+              <PluginHeaderBreadcrumbs
+                entries={breadcrumbs}
+                className={classes.breadcrumbs}
+                ellipsisClassName={classes.breadcrumbsEllipsis}
+              />
+            </div>
+          ) : (
+            <h1 className={classes.toolbarName}>
+              {titleLink ? (
+                <Link href={titleLink} standalone variant="body-medium">
+                  {titleText}
+                </Link>
+              ) : (
+                <Text as="span" variant="body-medium">
+                  {titleText}
+                </Text>
+              )}
+            </h1>
+          )}
         </div>
         <div className={classes.toolbarControls}>{actionChildren}</div>
       </div>

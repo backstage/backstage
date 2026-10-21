@@ -102,4 +102,10 @@ export interface NotificationsProcessingExtensionPoint {
 
 // @public (undocumented)
 export const notificationsProcessingExtensionPoint: ExtensionPoint<NotificationsProcessingExtensionPoint>;
+
+// @public
+export function resolveNotificationLink(
+  link: string | undefined,
+  baseUrl: string,
+): string | undefined;
 ```

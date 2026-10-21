@@ -16,7 +16,7 @@
 import { CodeSnippet } from '@backstage/core-components';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import jsyaml from 'js-yaml';
+import * as jsyaml from 'js-yaml';
 import { useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { kubernetesReactTranslationRef } from '../../translation';
@@ -30,8 +30,26 @@ export interface ManifestYamlProps {
   object: object;
 }
 
+function removeManagedFields(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(removeManagedFields);
+  }
+  if (value && typeof value === 'object') {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype === Object.prototype || prototype === null) {
+      return Object.fromEntries(
+        Object.entries(value)
+          .filter(([key]) => key !== 'managedFields')
+          .map(([key, entry]) => [key, removeManagedFields(entry)]),
+      );
+    }
+  }
+  return value;
+}
+
 /**
- * Renders a Kubernetes object as a YAML code snippet
+ * Renders a Kubernetes object as a YAML code snippet, hiding managed fields by
+ * default while allowing them to be shown with a toggle.
  *
  * @public
  */
@@ -57,17 +75,7 @@ export const ManifestYaml = ({ object }: ManifestYamlProps) => {
       />
       <CodeSnippet
         language="yaml"
-        text={jsyaml.dump(object, {
-          // NOTE: this will remove any field called `managedFields`
-          // not just the metadata one
-          // TODO: @mclarke make this only remove the `metadata.managedFields`
-          replacer: (key: string, value: string): any => {
-            if (!managedFields) {
-              return key === 'managedFields' ? undefined : value;
-            }
-            return value;
-          },
-        })}
+        text={jsyaml.dump(managedFields ? object : removeManagedFields(object))}
       />
     </>
   );

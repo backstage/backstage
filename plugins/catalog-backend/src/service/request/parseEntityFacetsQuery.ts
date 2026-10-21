@@ -27,7 +27,7 @@ const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
 
 export interface ParsedEntityFacetsQuery {
   facets: string[];
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
 }
 
 export function parseEntityFacetsQuery(
@@ -52,5 +52,5 @@ export function parseEntityFacetsQuery(
     query = result.data;
   }
 
-  return { facets, query };
+  return { facets, filter: query };
 }

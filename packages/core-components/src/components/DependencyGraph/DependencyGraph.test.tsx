@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { waitFor } from '@testing-library/react';
 import { DependencyGraph } from './DependencyGraph';
 import { DependencyGraphTypes as Types } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID, NODE_TEST_ID } from './constants';
@@ -124,5 +125,51 @@ describe('<DependencyGraph />', () => {
     expect(node).toBeInTheDocument();
     expect(container.querySelector('circle')).toBeInTheDocument();
     expect(getByText(labeledEdge[0].label)).toBeInTheDocument();
+  });
+
+  it('settles graph layout so nodes are visible after initial render', async () => {
+    const { container, findAllByTestId } = await renderInTestApp(
+      <DependencyGraph nodes={nodes} edges={edges} />,
+    );
+    await findAllByTestId(NODE_TEST_ID);
+
+    const outerSvg = container.querySelector('#dependency-graph')!;
+    const containerDiv = outerSvg.parentElement!;
+    await waitFor(() => {
+      expect(containerDiv).toHaveStyle({ visibility: 'visible' });
+      expect(outerSvg.querySelector('style')).toBeNull();
+    });
+  });
+
+  it('settles graph layout even when measurements return zero dimensions', async () => {
+    const originalGetBBox = Object.getOwnPropertyDescriptor(
+      window.SVGElement.prototype,
+      'getBBox',
+    )!;
+
+    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
+      value: () => ({ width: 0, height: 0, x: 0, y: 0 }),
+      configurable: true,
+    });
+
+    try {
+      const { container, findAllByTestId } = await renderInTestApp(
+        <DependencyGraph nodes={nodes} edges={edges} />,
+      );
+      await findAllByTestId(NODE_TEST_ID);
+
+      const outerSvg = container.querySelector('#dependency-graph')!;
+      const containerDiv = outerSvg.parentElement!;
+      await waitFor(() => {
+        expect(containerDiv).toHaveStyle({ visibility: 'visible' });
+        expect(outerSvg.querySelector('style')).toBeNull();
+      });
+    } finally {
+      Object.defineProperty(
+        window.SVGElement.prototype,
+        'getBBox',
+        originalGetBBox,
+      );
+    }
   });
 });

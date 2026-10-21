@@ -26,6 +26,10 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
+import {
+  BreadcrumbEntry,
+  useBreadcrumbEntries,
+} from '@backstage/frontend-plugin-api';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
@@ -98,21 +102,37 @@ export const PageLayout = SwappableComponentBlueprint.make({
           [tabs, parentPath],
         );
 
+        const { items: breadcrumbs } = useBreadcrumbEntries();
+
         if (noHeader) {
           return <>{children}</>;
         }
 
-        return (
+        const content = (
           <>
             <PluginHeader
               title={title}
               icon={icon}
               titleLink={titleLink}
+              breadcrumbs={breadcrumbs}
               tabs={resolvedTabs}
               customActions={headerActions}
             />
             {children}
           </>
+        );
+
+        // in practice title is always provided by PageBlueprint (falls back to pluginId).
+        if (!title) {
+          return content;
+        }
+
+        return (
+          <BreadcrumbEntry
+            entry={{ label: title, href: titleLink ?? (parentPath || '/') }}
+          >
+            {content}
+          </BreadcrumbEntry>
         );
       },
     }),

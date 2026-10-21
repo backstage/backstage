@@ -27,6 +27,7 @@ export const SkeletonDefinition = defineComponent<SkeletonOwnProps>()({
   classNames: {
     root: 'bui-Skeleton',
   },
+  bg: 'consumer',
   propDefs: {
     width: { default: 80 },
     height: { default: 24 },

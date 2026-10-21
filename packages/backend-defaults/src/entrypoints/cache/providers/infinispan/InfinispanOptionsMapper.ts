@@ -15,10 +15,8 @@
  */
 
 import {
-  LoggerService,
-  RootConfigService,
-} from '@backstage/backend-plugin-api';
-import {
+  CacheStoreConfiguration,
+  CacheStoreDeps,
   DataFormatOptions,
   InfinispanAuthOptions,
   InfinispanCacheStoreOptions,
@@ -33,17 +31,15 @@ export class InfinispanOptionsMapper {
   /**
    * Parses Infinispan options from the provided configuration path.
    *
-   * @param storeConfigPath - The configuration path for the Infinispan store.
-   * @param config - The root configuration service to retrieve the Infinispan configuration.
-   * @param logger - An optional logger service for logging errors and warnings.
+   * @param config - The store configuration.
+   * @param deps - Service dependencies.
    * @returns Parsed Infinispan cache store options.
    */
   public static parseInfinispanOptions(
-    storeConfigPath: string,
-    config: RootConfigService,
-    logger?: LoggerService,
+    config: CacheStoreConfiguration,
+    deps: CacheStoreDeps,
   ): InfinispanCacheStoreOptions {
-    const infinispanConfig = config.getConfig(storeConfigPath);
+    const infinispanConfig = deps.config.getConfig(config.storeConfigPath);
     const parsedOptions: Partial<InfinispanCacheStoreOptions> = {
       type: 'infinispan',
     };
@@ -67,12 +63,12 @@ export class InfinispanOptionsMapper {
         } as InfinispanServerConfig;
       } else {
         throw new Error(
-          `Infinispan 'servers' configuration at ${storeConfigPath} is invalid, must be an object or an array.`,
+          `Infinispan 'servers' configuration at ${config.storeConfigPath} is invalid, must be an object or an array.`,
         );
       }
     } else {
-      logger?.warn(
-        `Infinispan configuration at ${storeConfigPath} is missing the 'servers' definition, will use client defaults.`,
+      deps.logger?.warn(
+        `Infinispan configuration at ${config.storeConfigPath} is missing the 'servers' definition, will use client defaults.`,
       );
     }
 
@@ -103,8 +99,8 @@ export class InfinispanOptionsMapper {
     ) {
       behaviorOptions.version = clientVersion;
     } else if (clientVersion !== null && clientVersion !== undefined) {
-      logger?.warn(
-        `Invalid Infinispan client version "${clientVersion}" in config at ${storeConfigPath}.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
+      deps.logger?.warn(
+        `Invalid Infinispan client version "${clientVersion}" in config at ${config.storeConfigPath}.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
       );
     }
 
@@ -115,8 +111,8 @@ export class InfinispanOptionsMapper {
     if (mediaType === 'text/plain' || mediaType === 'application/json') {
       behaviorOptions.mediaType = mediaType;
     } else if (mediaType !== null && mediaType !== undefined) {
-      logger?.warn(
-        `Invalid Infinispan mediaType "${mediaType}" in config at ${storeConfigPath}.mediaType. Must be "text/plain" | "application/json". It will be ignored, and the client may use a default or fail.`,
+      deps.logger?.warn(
+        `Invalid Infinispan mediaType "${mediaType}" in config at ${config.storeConfigPath}.mediaType. Must be "text/plain" | "application/json". It will be ignored, and the client may use a default or fail.`,
       );
     }
 
@@ -178,25 +174,25 @@ export class InfinispanOptionsMapper {
     if (keyType === 'text/plain' || keyType === 'application/json') {
       dataFormatOpts.keyType = keyType;
     } else if (keyType !== null && keyType !== undefined) {
-      logger?.warn(
-        `Invalid Infinispan dataFormat.keyType "${keyType}" in config at ${storeConfigPath}.dataFormat.keyType. Must be "text/plain" | "application/json". Not mapped, client will use default 'text/plain'.`,
+      deps.logger?.warn(
+        `Invalid Infinispan dataFormat.keyType "${keyType}" in config at ${config.storeConfigPath}.dataFormat.keyType. Must be "text/plain" | "application/json". Not mapped, client will use default 'text/plain'.`,
       );
     }
 
     if (valueType === 'text/plain' || valueType === 'application/json') {
       dataFormatOpts.valueType = valueType;
     } else if (valueType !== null && valueType !== undefined) {
-      logger?.warn(
-        `Invalid Infinispan dataFormat.valueType "${valueType}" in config at ${storeConfigPath}.dataFormat.valueType. Must be "text/plain" | "application/json". Not mapped, client will use default 'text/plain'.`,
+      deps.logger?.warn(
+        `Invalid Infinispan dataFormat.valueType "${valueType}" in config at ${config.storeConfigPath}.dataFormat.valueType. Must be "text/plain" | "application/json". Not mapped, client will use default 'text/plain'.`,
       );
     }
     behaviorOptions.dataFormat = dataFormatOpts as DataFormatOptions;
     parsedOptions.options = behaviorOptions as InfinispanClientBehaviorOptions;
 
-    logger?.debug(
-      `Parsed Infinispan options from config at ${storeConfigPath}: ${JSON.stringify(
-        parsedOptions,
-      )}`,
+    deps.logger?.debug(
+      `Parsed Infinispan options from config at ${
+        config.storeConfigPath
+      }: ${JSON.stringify(parsedOptions)}`,
     );
     return parsedOptions as InfinispanCacheStoreOptions;
   }

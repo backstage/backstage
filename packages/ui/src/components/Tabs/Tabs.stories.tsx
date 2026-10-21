@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useState, useEffect } from 'react';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
@@ -527,6 +528,51 @@ export const HrefWithQueryParams = meta.story({
         </Box>
       </BUIProvider>
     </MemoryRouter>
+  ),
+});
+
+const cyclingTitles = [
+  'Short',
+  'A Medium Length Title',
+  'An Extremely Long Tab Title Here',
+];
+
+function CyclingTab() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(
+      () => setIndex(i => (i + 1) % cyclingTitles.length),
+      1000,
+    );
+    return () => clearInterval(id);
+  }, []);
+  return <>{cyclingTitles[index]}</>;
+}
+
+export const DynamicTabWidth = meta.story({
+  args: {
+    children: '',
+  },
+  decorators: [withRouter],
+  render: () => (
+    <Tabs>
+      <TabList>
+        <Tab id="tab1">First</Tab>
+        <Tab id="tab2">
+          <CyclingTab />
+        </Tab>
+        <Tab id="tab3">Last</Tab>
+      </TabList>
+      <TabPanel id="tab1">
+        <Text>First tab content</Text>
+      </TabPanel>
+      <TabPanel id="tab2">
+        <Text>Middle tab content — its title cycles every second</Text>
+      </TabPanel>
+      <TabPanel id="tab3">
+        <Text>Last tab content</Text>
+      </TabPanel>
+    </Tabs>
   ),
 });
 

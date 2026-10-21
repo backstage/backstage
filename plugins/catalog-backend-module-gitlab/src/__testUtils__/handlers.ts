@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { graphql, rest } from 'msw';
+import { http, HttpResponse, graphql } from 'msw';
 import {
   all_groups_response,
   all_projects_response,
@@ -42,28 +42,29 @@ const httpHandlers = [
    */
 
   // fetch all projects in an instance handling archived ones
-  rest.get(`${apiBaseUrl}/projects`, (req, res, ctx) => {
-    const archived = req.url.searchParams.get('archived');
+  http.get(`${apiBaseUrl}/projects`, ({ request }) => {
+    const archived = new URL(request.url).searchParams.get('archived');
 
-    return res(
-      ctx.set('x-next-page', ''),
-      ctx.json(
-        all_projects_response.filter(p =>
-          archived === 'false' ? !p.archived : true,
-        ),
+    return HttpResponse.json(
+      all_projects_response.filter(p =>
+        archived === 'false' ? !p.archived : true,
       ),
+      { headers: { 'x-next-page': '' } },
     );
   }),
 
-  rest.get(`${apiBaseUrl}/projects/42`, (_, res, ctx) => {
-    return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
+  http.get(`${apiBaseUrl}/projects/42`, () => {
+    return HttpResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
   }),
 
   // testing non existing file
-  rest.get(
+  http.get(
     `${apiBaseUrl}/projects/test-group%2Ftest-repo1/repository/files/catalog-info.yaml`,
-    (_, res, ctx) => {
-      return res(ctx.status(400), ctx.json({ error: 'Not found' }));
+    () => {
+      return HttpResponse.json({ error: 'Not found' }, { status: 400 });
     },
   ),
 
@@ -71,74 +72,82 @@ const httpHandlers = [
    * Group REST endpoint mocks
    */
 
-  rest.get(`${apiBaseUrl}/groups`, (_req, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(all_groups_response));
+  http.get(`${apiBaseUrl}/groups`, () => {
+    return HttpResponse.json(all_groups_response, {
+      headers: { 'x-next-page': '' },
+    });
   }),
 
-  rest.get(`${apiBaseUrl}/groups/group-with-subgroup`, (_, res, ctx) => {
-    return res(
-      ctx.set('x-next-page', ''),
-      ctx.json(group_with_subgroups_response),
+  http.get(`${apiBaseUrl}/groups/group-with-subgroup`, () => {
+    return HttpResponse.json(group_with_subgroups_response, {
+      headers: { 'x-next-page': '' },
+    });
+  }),
+
+  http.get(`${apiBaseUrl}/groups/group1`, () => {
+    return HttpResponse.json(
+      all_groups_response.find(g => g.full_path === 'group1'),
+      { headers: { 'x-next-page': '' } },
     );
   }),
 
-  rest.get(`${apiBaseUrl}/groups/group1`, (_, res, ctx) => {
-    return res(
-      ctx.set('x-next-page', ''),
-      ctx.json(all_groups_response.find(g => g.full_path === 'group1')),
+  http.get(`${apiBaseUrl}/groups/42`, () => {
+    return HttpResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
     );
   }),
-
-  rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
-    return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
-  }),
-  rest.get(`${apiBaseUrl}/groups/group1/members/all`, (_req, res, ctx) => {
-    return res(ctx.json(all_self_hosted_group1_members));
+  http.get(`${apiBaseUrl}/groups/group1/members/all`, () => {
+    return HttpResponse.json(all_self_hosted_group1_members);
   }),
 
-  rest.get(`${apiBaseUrlSaas}/groups/group1/members/all`, (_req, res, ctx) => {
-    return res(ctx.json(all_saas_users_response));
+  http.get(`${apiBaseUrlSaas}/groups/group1/members/all`, () => {
+    return HttpResponse.json(all_saas_users_response);
   }),
 
-  rest.get(
-    `${apiBaseUrlSaas}/groups/group1%2Fsubgroup1/members/all`,
-    (_req, res, ctx) => {
-      return res(ctx.json(subgroup_saas_users_response)); // To-DO change
-    },
-  ),
-
-  rest.get(`${apiBaseUrlSaas}/groups/456/members/all`, (_req, res, ctx) => {
-    return res(ctx.json(all_saas_users_response));
+  http.get(`${apiBaseUrlSaas}/groups/group1%2Fsubgroup1/members/all`, () => {
+    return HttpResponse.json(subgroup_saas_users_response); // To-DO change
   }),
 
-  rest.get(`${apiBaseUrlSaas}/groups/1/members/all`, (_req, res, ctx) => {
-    return res(ctx.json(all_saas_users_response));
+  http.get(`${apiBaseUrlSaas}/groups/456/members/all`, () => {
+    return HttpResponse.json(all_saas_users_response);
+  }),
+
+  http.get(`${apiBaseUrlSaas}/groups/1/members/all`, () => {
+    return HttpResponse.json(all_saas_users_response);
   }),
 
   // Subgroup 1 members id=6
-  rest.get(`${apiBaseUrlSaas}/groups/6/members/all`, (_req, res, ctx) => {
-    return res(ctx.json(all_saas_subgroup_1_members));
+  http.get(`${apiBaseUrlSaas}/groups/6/members/all`, () => {
+    return HttpResponse.json(all_saas_subgroup_1_members);
   }),
 
   // Subgroup 2 members id=7
-  rest.get(`${apiBaseUrlSaas}/groups/7/members/all`, (_req, res, ctx) => {
-    return res(ctx.json(all_saas_subgroup_2_members));
+  http.get(`${apiBaseUrlSaas}/groups/7/members/all`, () => {
+    return HttpResponse.json(all_saas_subgroup_2_members);
   }),
 
   /**
    * Users REST endpoint mocks
    */
 
-  rest.get(`${apiBaseUrl}/users`, (_req, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(all_users_response));
+  http.get(`${apiBaseUrl}/users`, () => {
+    return HttpResponse.json(all_users_response, {
+      headers: { 'x-next-page': '' },
+    });
   }),
 
-  rest.get(`${apiBaseUrl}/users/${userID}`, (_, res, ctx) => {
-    return res(ctx.json(all_users_response.find(user => user.id === userID)));
+  http.get(`${apiBaseUrl}/users/${userID}`, () => {
+    return HttpResponse.json(
+      all_users_response.find(user => user.id === userID),
+    );
   }),
 
-  rest.get(`${apiBaseUrl}/users/42`, (_, res, ctx) => {
-    return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
+  http.get(`${apiBaseUrl}/users/42`, () => {
+    return HttpResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
   }),
 
   /**
@@ -146,27 +155,25 @@ const httpHandlers = [
    */
 
   // mock a 4 page response
-  rest.get(`${apiBaseUrl}${paged_endpoint}`, (req, res, ctx) => {
-    const page = req.url.searchParams.get('page');
+  http.get(`${apiBaseUrl}${paged_endpoint}`, ({ request }) => {
+    const page = new URL(request.url).searchParams.get('page');
     const currentPage = page ? Number(page) : 1;
     const fakePageCount = 4;
 
-    return res(
-      // set next page number header if page requested is less than count
-      ctx.set(
-        'x-next-page',
-        currentPage < fakePageCount ? String(currentPage + 1) : '',
-      ),
-      ctx.json([{ someContentOfPage: currentPage }]),
-    );
+    return HttpResponse.json([{ someContentOfPage: currentPage }], {
+      headers: {
+        'x-next-page':
+          currentPage < fakePageCount ? String(currentPage + 1) : '',
+      },
+    });
   }),
 
-  rest.get(`${apiBaseUrl}${unhealthy_endpoint}`, (_, res, ctx) => {
-    return res(ctx.status(400), ctx.json({ error: 'some error' }));
+  http.get(`${apiBaseUrl}${unhealthy_endpoint}`, () => {
+    return HttpResponse.json({ error: 'some error' }, { status: 400 });
   }),
 
-  rest.get(`${apiBaseUrl}${some_endpoint}`, (req, res, ctx) => {
-    return res(ctx.json([{ endpoint: req.url.toString() }]));
+  http.get(`${apiBaseUrl}${some_endpoint}`, ({ request }) => {
+    return HttpResponse.json([{ endpoint: request.url }]);
   }),
 ];
 
@@ -175,37 +182,33 @@ const httpHandlers = [
 // https://docs.gitlab.com/ee/api/groups.html#list-group-details supports encoded path and id
 const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
   // Handler for apiBaseUrl
-  rest.get(
+  http.get(
     `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}`,
-    (_, res, ctx) => {
-      return res(
-        ctx.json(
-          all_groups_response.find(g => g.full_path === group.full_path),
-        ),
+    () => {
+      return HttpResponse.json(
+        all_groups_response.find(g => g.full_path === group.full_path),
       );
     },
   ),
   // Handler for apiSaaSBaseUrl
-  rest.get(
+  http.get(
     `${apiBaseUrlSaas}/groups/${encodeURIComponent(group.full_path)}`,
-    (_, res, ctx) => {
-      return res(
-        ctx.json(
-          all_groups_response.find(g => g.full_path === group.full_path),
-        ),
+    () => {
+      return HttpResponse.json(
+        all_groups_response.find(g => g.full_path === group.full_path),
       );
     },
   ),
 ]);
 
 const httpSearchFilesInGroupDynamic = all_groups_response.map(group => {
-  return rest.get(
+  return http.get(
     `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}/search`,
-    (req, res, ctx) => {
-      const scope = req.url.searchParams.get('scope');
+    ({ request }) => {
+      const scope = new URL(request.url).searchParams.get('scope');
 
       if (scope !== 'blobs') {
-        return res(ctx.status(400), ctx.text('400 Bad Request'));
+        return new HttpResponse('400 Bad Request', { status: 400 });
       }
 
       const searchResults = projects_with_catalog_info_yaml
@@ -225,22 +228,22 @@ const httpSearchFilesInGroupDynamic = all_groups_response.map(group => {
           };
         });
 
-      return res(ctx.json(searchResults));
+      return HttpResponse.json(searchResults);
     },
   );
 });
 
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {
-  return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
-    return res(ctx.json(all_groups_response.find(g => g.id === group.id)));
+  return http.get(`${apiBaseUrl}/groups/${group.id}`, () => {
+    return HttpResponse.json(all_groups_response.find(g => g.id === group.id));
   });
 });
 
 const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
-  return rest.get(
+  return http.get(
     `${apiBaseUrl}/groups/${group.id}/projects`,
-    (req, res, ctx) => {
-      const archived = req.url.searchParams.get('archived');
+    ({ request }) => {
+      const archived = new URL(request.url).searchParams.get('archived');
 
       const projectsInGroup = all_projects_response.filter(
         p =>
@@ -248,16 +251,16 @@ const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
           (archived === 'false' ? !p.archived : true),
       );
 
-      return res(ctx.json(projectsInGroup));
+      return HttpResponse.json(projectsInGroup);
     },
   );
 });
 
 const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
-  return rest.get(
+  return http.get(
     `${apiBaseUrl}/groups/${group.name}/projects`,
-    (req, res, ctx) => {
-      const archived = req.url.searchParams.get('archived');
+    ({ request }) => {
+      const archived = new URL(request.url).searchParams.get('archived');
 
       const projectsInGroup = all_projects_response.filter(
         p =>
@@ -265,17 +268,17 @@ const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
           (archived === 'false' ? !p.archived : true),
       );
 
-      return res(ctx.json(projectsInGroup));
+      return HttpResponse.json(projectsInGroup);
     },
   );
 });
 
 const httpGroupListDescendantProjectsByFullPath = all_groups_response.map(
   group => {
-    return rest.get(
+    return http.get(
       `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}/projects`,
-      (req, res, ctx) => {
-        const archived = req.url.searchParams.get('archived');
+      ({ request }) => {
+        const archived = new URL(request.url).searchParams.get('archived');
 
         const projectsInGroup = all_projects_response.filter(
           p =>
@@ -283,20 +286,24 @@ const httpGroupListDescendantProjectsByFullPath = all_groups_response.map(
             (archived === 'false' ? !p.archived : true),
         );
 
-        return res(ctx.json(projectsInGroup));
+        return HttpResponse.json(projectsInGroup);
       },
     );
   },
 );
 
 const httpGroupFindByNameDynamic = all_groups_response.map(group => {
-  return rest.get(`${apiBaseUrl}/groups/${group.name}`, (_, res, ctx) => {
-    return res(ctx.json(all_groups_response.find(g => g.name === group.name)));
+  return http.get(`${apiBaseUrl}/groups/${group.name}`, () => {
+    return HttpResponse.json(
+      all_groups_response.find(g => g.name === group.name),
+    );
   });
 });
 const httpProjectFindByIdDynamic = all_projects_response.map(project => {
-  return rest.get(`${apiBaseUrl}/projects/${project.id}`, (_, res, ctx) => {
-    return res(ctx.json(all_projects_response.find(p => p.id === project.id)));
+  return http.get(`${apiBaseUrl}/projects/${project.id}`, () => {
+    return HttpResponse.json(
+      all_projects_response.find(p => p.id === project.id),
+    );
   });
 });
 
@@ -304,18 +311,18 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
  * See https://docs.gitlab.com/api/repository_files/#get-file-from-repository
  */
 const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
-  return rest.head(
+  return http.head(
     `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
-    (req, res, ctx) => {
-      const branch = req.url.searchParams.get('ref');
+    ({ request }) => {
+      const branch = new URL(request.url).searchParams.get('ref');
       if (
         branch === project.default_branch ||
         branch === 'main' ||
         branch === 'develop'
       ) {
-        return res(ctx.status(200));
+        return new HttpResponse(null, { status: 200 });
       }
-      return res(ctx.status(404, 'Not Found'));
+      return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
     },
   );
 });
@@ -325,221 +332,222 @@ const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
  */
 
 const graphqlHandlers = [
+  graphql.link(graphQlBaseUrl).query('getGroupMembers', ({ variables }) => {
+    const { group, relations, endCursor } = variables as {
+      group: string;
+      relations: string[];
+      endCursor?: string;
+    };
+    // group is actually full_path
+    if (group === 'group1/subgroup1' && relations.includes('DIRECT')) {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: [
+                {
+                  user: {
+                    id: 'gid://gitlab/User/1',
+                    username: 'user1',
+                    publicEmail: 'user1@example.com',
+                    name: 'user1',
+                    state: 'active',
+                    webUrl: 'user1.com',
+                    avatarUrl: 'user1',
+                  },
+                },
+              ],
+              pageInfo: {
+                endCursor: 'end',
+                hasNextPage: false,
+              },
+            },
+          },
+        },
+      });
+    }
+    if (group === 'group1' && relations.includes('DIRECT')) {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: [
+                {
+                  user: {
+                    id: 'gid://gitlab/User/1',
+                    username: 'user1',
+                    publicEmail: 'user1@example.com',
+                    name: 'user1',
+                    state: 'active',
+                    webUrl: 'user1.com',
+                    avatarUrl: 'user1',
+                  },
+                },
+              ],
+              pageInfo: {
+                endCursor: 'end',
+                hasNextPage: false,
+              },
+            },
+          },
+        },
+      });
+    }
+    // group with no associated members
+    if (group === 'group3' && relations.includes('DIRECT')) {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: [{}],
+              pageInfo: {
+                endCursor: 'end',
+                hasNextPage: false,
+              },
+            },
+          },
+        },
+      });
+    }
+    if (group === 'saas-multi-user-group') {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: [
+                {
+                  user: {
+                    id: 'gid://gitlab/User/1',
+                    username: 'user1',
+                    publicEmail: 'user1@example.com',
+                    name: 'user1',
+                    state: 'active',
+                    webUrl: 'user1.com',
+                    avatarUrl: 'user1',
+                  },
+                },
+                {
+                  user: {
+                    id: 'gid://gitlab/User/2',
+                    username: 'user2',
+                    publicEmail: 'user2@example.com',
+                    name: 'user2',
+                    state: 'active',
+                    webUrl: 'user2.com',
+                    avatarUrl: 'user2',
+                  },
+                },
+              ],
+              pageInfo: {
+                endCursor: 'end',
+                hasNextPage: false,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (group === 'non-existing-group' || group === '') {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              pageInfo: {
+                endCursor: 'end',
+                hasNextPage: false,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (group === 'multi-page' && relations.includes('DIRECT')) {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: endCursor
+                ? [{ user: { id: 'gid://gitlab/User/2' } }]
+                : [{ user: { id: 'gid://gitlab/User/1' } }],
+              pageInfo: {
+                endCursor: endCursor ? 'end' : 'next',
+                hasNextPage: !endCursor,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (group === 'multi-page-saas') {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: endCursor
+                ? [
+                    {
+                      user: {
+                        id: 'gid://gitlab/User/1',
+                        username: 'user1',
+                        publicEmail: 'user1@example.com',
+                        name: 'user1',
+                        state: 'active',
+                        webUrl: 'user1.com',
+                        avatarUrl: 'user1',
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      user: {
+                        id: 'gid://gitlab/User/2',
+                        username: 'user2',
+                        publicEmail: 'user2@example.com',
+                        name: 'user2',
+                        state: 'active',
+                        webUrl: 'user2.com',
+                        avatarUrl: 'user2',
+                      },
+                    },
+                  ],
+              pageInfo: {
+                endCursor: endCursor ? 'end' : 'next',
+                hasNextPage: !endCursor,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (group === 'error-group') {
+      return HttpResponse.json({
+        errors: [{ message: 'Unexpected end of document', locations: [] }],
+      });
+    }
+
+    return new HttpResponse(null, { status: 200 });
+  }),
+
   graphql
     .link(graphQlBaseUrl)
-    .query('getGroupMembers', async (req, res, ctx) => {
-      const { group, relations } = req.variables;
-      // group is actually full_path
-      if (group === 'group1/subgroup1' && relations.includes('DIRECT')) {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: [
-                  {
-                    user: {
-                      id: 'gid://gitlab/User/1',
-                      username: 'user1',
-                      publicEmail: 'user1@example.com',
-                      name: 'user1',
-                      state: 'active',
-                      webUrl: 'user1.com',
-                      avatarUrl: 'user1',
-                    },
-                  },
-                ],
-                pageInfo: {
-                  endCursor: 'end',
-                  hasNextPage: false,
-                },
-              },
-            },
-          }),
-        );
-      }
-      if (group === 'group1' && relations.includes('DIRECT')) {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: [
-                  {
-                    user: {
-                      id: 'gid://gitlab/User/1',
-                      username: 'user1',
-                      publicEmail: 'user1@example.com',
-                      name: 'user1',
-                      state: 'active',
-                      webUrl: 'user1.com',
-                      avatarUrl: 'user1',
-                    },
-                  },
-                ],
-                pageInfo: {
-                  endCursor: 'end',
-                  hasNextPage: false,
-                },
-              },
-            },
-          }),
-        );
-      }
-      // group with no associated members
-      if (group === 'group3' && relations.includes('DIRECT')) {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: [{}],
-                pageInfo: {
-                  endCursor: 'end',
-                  hasNextPage: false,
-                },
-              },
-            },
-          }),
-        );
-      }
-      if (group === 'saas-multi-user-group') {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: [
-                  {
-                    user: {
-                      id: 'gid://gitlab/User/1',
-                      username: 'user1',
-                      publicEmail: 'user1@example.com',
-                      name: 'user1',
-                      state: 'active',
-                      webUrl: 'user1.com',
-                      avatarUrl: 'user1',
-                    },
-                  },
-                  {
-                    user: {
-                      id: 'gid://gitlab/User/2',
-                      username: 'user2',
-                      publicEmail: 'user2@example.com',
-                      name: 'user2',
-                      state: 'active',
-                      webUrl: 'user2.com',
-                      avatarUrl: 'user2',
-                    },
-                  },
-                ],
-                pageInfo: {
-                  endCursor: 'end',
-                  hasNextPage: false,
-                },
-              },
-            },
-          }),
-        );
-      }
-
-      if (group === 'non-existing-group' || group === '') {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                pageInfo: {
-                  endCursor: 'end',
-                  hasNextPage: false,
-                },
-              },
-            },
-          }),
-        );
-      }
-
-      if (group === 'multi-page' && relations.includes('DIRECT')) {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: req.variables.endCursor
-                  ? [{ user: { id: 'gid://gitlab/User/2' } }]
-                  : [{ user: { id: 'gid://gitlab/User/1' } }],
-                pageInfo: {
-                  endCursor: req.variables.endCursor ? 'end' : 'next',
-                  hasNextPage: !req.variables.endCursor,
-                },
-              },
-            },
-          }),
-        );
-      }
-
-      if (group === 'multi-page-saas') {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: req.variables.endCursor
-                  ? [
-                      {
-                        user: {
-                          id: 'gid://gitlab/User/1',
-                          username: 'user1',
-                          publicEmail: 'user1@example.com',
-                          name: 'user1',
-                          state: 'active',
-                          webUrl: 'user1.com',
-                          avatarUrl: 'user1',
-                        },
-                      },
-                    ]
-                  : [
-                      {
-                        user: {
-                          id: 'gid://gitlab/User/2',
-                          username: 'user2',
-                          publicEmail: 'user2@example.com',
-                          name: 'user2',
-                          state: 'active',
-                          webUrl: 'user2.com',
-                          avatarUrl: 'user2',
-                        },
-                      },
-                    ],
-                pageInfo: {
-                  endCursor: req.variables.endCursor ? 'end' : 'next',
-                  hasNextPage: !req.variables.endCursor,
-                },
-              },
-            },
-          }),
-        );
-      }
+    .query('listDescendantGroups', ({ variables }) => {
+      const { group, endCursor } = variables as {
+        group: string;
+        endCursor?: string;
+      };
 
       if (group === 'error-group') {
-        return res(
-          ctx.errors([
-            { message: 'Unexpected end of document', locations: [] },
-          ]),
-        );
-      }
-
-      return res(ctx.status(200));
-    }),
-
-  graphql
-    .link(graphQlBaseUrl)
-    .query('listDescendantGroups', async (req, res, ctx) => {
-      const { group } = req.variables;
-
-      if (group === 'error-group') {
-        return res(
-          ctx.errors([
-            { message: 'Unexpected end of document', locations: [] },
-          ]),
-        );
+        return HttpResponse.json({
+          errors: [{ message: 'Unexpected end of document', locations: [] }],
+        });
       }
       if (group === 'group1') {
-        return res(
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             group: {
               descendantGroups: {
                 nodes: [
@@ -559,12 +567,12 @@ const graphqlHandlers = [
                 },
               },
             },
-          }),
-        );
+          },
+        });
       }
       if (group === 'group-with-parent') {
-        return res(
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             group: {
               descendantGroups: {
                 nodes: [
@@ -584,15 +592,15 @@ const graphqlHandlers = [
                 },
               },
             },
-          }),
-        );
+          },
+        });
       }
       if (group === 'root') {
-        return res(
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             group: {
               descendantGroups: {
-                nodes: req.variables.endCursor
+                nodes: endCursor
                   ? [
                       {
                         id: 'gid://gitlab/Group/1',
@@ -616,95 +624,94 @@ const graphqlHandlers = [
                       },
                     ],
                 pageInfo: {
-                  endCursor: req.variables.endCursor ? 'end' : 'next',
-                  hasNextPage: !req.variables.endCursor,
+                  endCursor: endCursor ? 'end' : 'next',
+                  hasNextPage: !endCursor,
                 },
               },
             },
-          }),
-        );
+          },
+        });
       }
 
       if (group === 'non-existing-group') {
-        return res(
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             group: {},
-          }),
-        );
+          },
+        });
       }
-      return res(ctx.status(200));
+      return new HttpResponse(null, { status: 200 });
     }),
 
-  graphql
-    .link(saasGraphQlBaseUrl)
-    .query('getGroupMembers', async (req, res, ctx) => {
-      const { group } = req.variables;
+  graphql.link(saasGraphQlBaseUrl).query('getGroupMembers', ({ variables }) => {
+    const { group } = variables as { group: string };
 
-      if (group === 'saas-multi-user-group') {
-        return res(
-          ctx.data({
-            group: {
-              groupMembers: {
-                nodes: [
-                  {
-                    user: {
-                      id: 'gid://gitlab/User/1',
-                      username: 'user1',
-                      publicEmail: 'user1@example.com',
-                      name: 'user1',
-                      state: 'active',
-                      webUrl: 'user1.com',
-                      avatarUrl: 'user1',
-                    },
+    if (group === 'saas-multi-user-group') {
+      return HttpResponse.json({
+        data: {
+          group: {
+            groupMembers: {
+              nodes: [
+                {
+                  user: {
+                    id: 'gid://gitlab/User/1',
+                    username: 'user1',
+                    publicEmail: 'user1@example.com',
+                    name: 'user1',
+                    state: 'active',
+                    webUrl: 'user1.com',
+                    avatarUrl: 'user1',
                   },
-                  {
-                    user: {
-                      id: 'gid://gitlab/User/2',
-                      username: 'user2',
-                      publicEmail: 'user2@example.com',
-                      name: 'user2',
-                      state: 'active',
-                      webUrl: 'user2.com',
-                      avatarUrl: 'user2',
-                    },
-                  },
-                ],
-                pageInfo: {
-                  endCursor: 'end',
-                  hasNextPage: false,
                 },
+                {
+                  user: {
+                    id: 'gid://gitlab/User/2',
+                    username: 'user2',
+                    publicEmail: 'user2@example.com',
+                    name: 'user2',
+                    state: 'active',
+                    webUrl: 'user2.com',
+                    avatarUrl: 'user2',
+                  },
+                },
+              ],
+              pageInfo: {
+                endCursor: 'end',
+                hasNextPage: false,
               },
             },
-          }),
-        );
-      }
+          },
+        },
+      });
+    }
 
-      if (group === '') {
-        return res(ctx.data({}));
-      }
+    if (group === '') {
+      return HttpResponse.json({ data: {} });
+    }
 
-      if (group === 'error-group') {
-        return res(
-          ctx.errors([
-            { message: 'Unexpected end of document', locations: [] },
-          ]),
-        );
-      }
+    if (group === 'error-group') {
+      return HttpResponse.json({
+        errors: [{ message: 'Unexpected end of document', locations: [] }],
+      });
+    }
 
-      return res(ctx.status(200));
-    }),
+    return new HttpResponse(null, { status: 200 });
+  }),
 
   graphql
     .link(saasGraphQlBaseUrl)
-    .query('listDescendantGroups', async (req, res, ctx) => {
-      const { group } = req.variables;
+    .query('listDescendantGroups', ({ variables }) => {
+      const { group, endCursor } = variables as {
+        group: string;
+        endCursor?: string;
+      };
 
       if (group === 'group1') {
-        return res(
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             group: {
               descendantGroups: {
-                nodes: req.variables.endCursor
+                nodes: endCursor
                   ? [
                       {
                         id: 'gid://gitlab/Group/6',
@@ -728,17 +735,17 @@ const graphqlHandlers = [
                       },
                     ],
                 pageInfo: {
-                  endCursor: req.variables.endCursor ? 'end' : 'next',
-                  hasNextPage: !req.variables.endCursor,
+                  endCursor: endCursor ? 'end' : 'next',
+                  hasNextPage: !endCursor,
                 },
               },
             },
-          }),
-        );
+          },
+        });
       }
 
-      return res(
-        ctx.data({
+      return HttpResponse.json({
+        data: {
           group: {
             descendantGroups: {
               nodes: [
@@ -758,8 +765,8 @@ const graphqlHandlers = [
               },
             },
           },
-        }),
-      );
+        },
+      });
     }),
 ];
 

@@ -76,6 +76,9 @@ export function TablePagination(props: TablePaginationProps) {
   );
 
   const effectivePageSize = useMemo(() => {
+    if (pageSizeOptions.length === 0) {
+      return pageSize;
+    }
     const isValid = pageSizeOptions.some(
       opt => getOptionValue(opt) === pageSize,
     );
@@ -105,7 +108,7 @@ export function TablePagination(props: TablePaginationProps) {
   return (
     <div className={classes.root}>
       <div className={classes.left}>
-        {showPageSizeOptions && (
+        {showPageSizeOptions && normalizedOptions.length > 0 && (
           <Select
             name="pageSize"
             size="small"
@@ -114,7 +117,7 @@ export function TablePagination(props: TablePaginationProps) {
               label: opt.label,
               value: String(opt.value),
             }))}
-            defaultValue={effectivePageSize.toString()}
+            value={effectivePageSize.toString()}
             onChange={value => {
               const newPageSize = Number(value);
               onPageSizeChange?.(newPageSize);

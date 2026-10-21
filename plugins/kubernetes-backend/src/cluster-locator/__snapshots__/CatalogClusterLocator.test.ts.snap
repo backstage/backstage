@@ -42,7 +42,7 @@ exports[`CatalogClusterLocator returns the cluster details provided by annotatio
   "dashboardUrl": "my-url",
   "name": "owned",
   "skipMetricsLookup": true,
-  "skipTLSVerify": true,
+  "skipTLSVerify": false,
   "title": "title",
   "url": "https://apiserver.com",
 }

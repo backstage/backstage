@@ -52,28 +52,39 @@ describe('OidcService', () => {
   const databases = TestDatabases.create();
 
   interface CreateOidcServiceOptions {
-    databaseId: TestDatabaseId;
+    databaseId?: TestDatabaseId;
     config?: JsonObject;
     offlineAccess?: OfflineAccessService;
+    baseUrl?: string;
   }
 
   async function createOidcService(options: CreateOidcServiceOptions) {
-    const { databaseId, config: configData = {}, offlineAccess } = options;
+    const {
+      databaseId,
+      config: configData = {},
+      offlineAccess,
+      baseUrl = 'http://mock-base-url',
+    } = options;
 
-    const knex = await databases.init(databaseId);
+    let oidcDatabase: OidcDatabase;
+    if (databaseId) {
+      const knex = await databases.init(databaseId);
 
-    await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
-    });
+      await knex.migrate.latest({
+        directory: resolvePackagePath(
+          '@backstage/plugin-auth-backend',
+          'migrations',
+        ),
+      });
 
-    const oidcDatabase = await OidcDatabase.create({
-      database: AuthDatabase.create({
-        getClient: async () => knex,
-      }),
-    });
+      oidcDatabase = await OidcDatabase.create({
+        database: AuthDatabase.create({
+          getClient: async () => knex,
+        }),
+      });
+    } else {
+      oidcDatabase = {} as OidcDatabase;
+    }
 
     const mockAuth = mockServices.auth.mock();
     const mockTokenIssuer = {
@@ -92,7 +103,7 @@ describe('OidcService', () => {
       service: OidcService.create({
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
-        baseUrl: 'http://mock-base-url',
+        baseUrl,
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
@@ -107,117 +118,170 @@ describe('OidcService', () => {
     };
   }
 
-  describe.each(databases.eachSupportedId())('%p', databaseId => {
-    describe('getConfiguration', () => {
-      it('should return OIDC configuration', async () => {
-        const { service } = await createOidcService({ databaseId });
+  describe('getConfiguration', () => {
+    it('should return OIDC configuration', async () => {
+      const { service } = await createOidcService({});
 
-        const config = service.getConfiguration();
+      const config = service.getConfiguration();
 
-        expect(config).toEqual({
-          issuer: 'http://mock-base-url',
-          token_endpoint: 'http://mock-base-url/v1/token',
-          userinfo_endpoint: 'http://mock-base-url/v1/userinfo',
-          jwks_uri: 'http://mock-base-url/.well-known/jwks.json',
-          response_types_supported: ['code', 'id_token'],
-          subject_types_supported: ['public'],
-          id_token_signing_alg_values_supported: [
-            'RS256',
-            'RS384',
-            'RS512',
-            'ES256',
-            'ES384',
-            'ES512',
-            'PS256',
-            'PS384',
-            'PS512',
-            'EdDSA',
-          ],
-          scopes_supported: ['openid'],
-          token_endpoint_auth_methods_supported: [
-            'client_secret_basic',
-            'client_secret_post',
-          ],
-          claims_supported: ['sub', 'ent'],
-          grant_types_supported: ['authorization_code'],
-          authorization_endpoint: 'http://mock-base-url/v1/authorize',
-          code_challenge_methods_supported: ['S256', 'plain'],
-        });
+      expect(config).toEqual({
+        issuer: 'http://mock-base-url',
+        token_endpoint: 'http://mock-base-url/v1/token',
+        userinfo_endpoint: 'http://mock-base-url/v1/userinfo',
+        jwks_uri: 'http://mock-base-url/.well-known/jwks.json',
+        response_types_supported: ['code', 'id_token'],
+        subject_types_supported: ['public'],
+        id_token_signing_alg_values_supported: [
+          'RS256',
+          'RS384',
+          'RS512',
+          'ES256',
+          'ES384',
+          'ES512',
+          'PS256',
+          'PS384',
+          'PS512',
+          'EdDSA',
+        ],
+        scopes_supported: ['openid'],
+        token_endpoint_auth_methods_supported: [
+          'client_secret_basic',
+          'client_secret_post',
+        ],
+        claims_supported: ['sub', 'ent'],
+        grant_types_supported: ['authorization_code'],
+        authorization_endpoint: 'http://mock-base-url/v1/authorize',
+        code_challenge_methods_supported: ['S256', 'plain'],
       });
     });
+  });
 
-    describe('listPublicKeys', () => {
-      it('should return public keys from token issuer', async () => {
-        const { service, mocks } = await createOidcService({ databaseId });
-        const mockKeys = [{ kid: 'key-1', use: 'sig' }] as AnyJWK[];
-        mocks.tokenIssuer.listPublicKeys.mockResolvedValue({ keys: mockKeys });
+  describe('listPublicKeys', () => {
+    it('should return public keys from token issuer', async () => {
+      const { service, mocks } = await createOidcService({});
+      const mockKeys = [{ kid: 'key-1', use: 'sig' }] as AnyJWK[];
+      mocks.tokenIssuer.listPublicKeys.mockResolvedValue({ keys: mockKeys });
 
-        const { keys } = await service.listPublicKeys();
+      const { keys } = await service.listPublicKeys();
 
-        expect(keys).toEqual(mockKeys);
-        expect(mocks.tokenIssuer.listPublicKeys).toHaveBeenCalledTimes(1);
+      expect(keys).toEqual(mockKeys);
+      expect(mocks.tokenIssuer.listPublicKeys).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getUserInfo', () => {
+    it('should return user info for valid token', async () => {
+      const { service, mocks } = await createOidcService({});
+      const mockCredentials: BackstageCredentials<BackstageUserPrincipal> = {
+        principal: {
+          type: 'user',
+          userEntityRef: 'user:default/test',
+        },
+        $$type: '@backstage/BackstageCredentials',
+      };
+      const mockUserInfo = { sub: 'user:default/test', name: 'Test User' };
+
+      mocks.auth.authenticate.mockResolvedValue(mockCredentials);
+      mocks.auth.isPrincipal.mockReturnValue(true);
+      mocks.userInfo.getUserInfo.mockResolvedValue({
+        claims: mockUserInfo,
       });
+
+      const mockToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
+
+      const userInfo = await service.getUserInfo({ token: mockToken });
+
+      expect(userInfo).toEqual({
+        claims: mockUserInfo,
+      });
+
+      expect(mocks.auth.authenticate).toHaveBeenCalledWith(mockToken, {
+        allowLimitedAccess: true,
+      });
+
+      expect(mocks.userInfo.getUserInfo).toHaveBeenCalledWith(
+        'user:default/test',
+      );
     });
 
-    describe('getUserInfo', () => {
-      it('should return user info for valid token', async () => {
-        const { service, mocks } = await createOidcService({ databaseId });
-        const mockCredentials: BackstageCredentials<BackstageUserPrincipal> = {
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        };
-        const mockUserInfo = { sub: 'user:default/test', name: 'Test User' };
+    it('should throw error for non-user principal', async () => {
+      const { service, mocks } = await createOidcService({});
+      const mockCredentials: BackstageCredentials<BackstageServicePrincipal> = {
+        principal: {
+          type: 'service',
+          subject: 'test-service',
+        },
+        $$type: '@backstage/BackstageCredentials',
+      };
 
-        mocks.auth.authenticate.mockResolvedValue(mockCredentials);
-        mocks.auth.isPrincipal.mockReturnValue(true);
-        mocks.userInfo.getUserInfo.mockResolvedValue({
-          claims: mockUserInfo,
-        });
+      mocks.auth.authenticate.mockResolvedValue(mockCredentials);
+      mocks.auth.isPrincipal.mockReturnValue(false);
 
-        const mockToken =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
+      const mockToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
 
-        const userInfo = await service.getUserInfo({ token: mockToken });
+      await expect(service.getUserInfo({ token: mockToken })).rejects.toThrow(
+        'Userinfo endpoint must be called with a token that represents a user principal',
+      );
+    });
+  });
 
-        expect(userInfo).toEqual({
-          claims: mockUserInfo,
-        });
-
-        expect(mocks.auth.authenticate).toHaveBeenCalledWith(mockToken, {
-          allowLimitedAccess: true,
-        });
-
-        expect(mocks.userInfo.getUserInfo).toHaveBeenCalledWith(
-          'user:default/test',
-        );
-      });
-
-      it('should throw error for non-user principal', async () => {
-        const { service, mocks } = await createOidcService({ databaseId });
-        const mockCredentials: BackstageCredentials<BackstageServicePrincipal> =
-          {
-            principal: {
-              type: 'service',
-              subject: 'test-service',
+  describe('getConfiguration with CIMD', () => {
+    it('should include client_id_metadata_document_supported when CIMD is enabled', async () => {
+      const { service } = await createOidcService({
+        config: {
+          auth: {
+            clientIdMetadataDocuments: {
+              enabled: true,
+              allowedClientIdPatterns: ['*'],
+              allowedRedirectUriPatterns: ['*'],
             },
-            $$type: '@backstage/BackstageCredentials',
-          };
-
-        mocks.auth.authenticate.mockResolvedValue(mockCredentials);
-        mocks.auth.isPrincipal.mockReturnValue(false);
-
-        const mockToken =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvdGVzdCJ9.signature';
-
-        await expect(service.getUserInfo({ token: mockToken })).rejects.toThrow(
-          'Userinfo endpoint must be called with a token that represents a user principal',
-        );
+          },
+        },
       });
+
+      const config = service.getConfiguration();
+
+      expect(config.client_id_metadata_document_supported).toBe(true);
+      expect(config.revocation_endpoint).toBe('http://mock-base-url/v1/revoke');
+      expect(config).not.toHaveProperty('registration_endpoint');
     });
 
+    it('should support the deprecated experimental CIMD configuration', async () => {
+      const { service } = await createOidcService({
+        config: {
+          auth: {
+            experimentalClientIdMetadataDocuments: {
+              enabled: true,
+            },
+          },
+        },
+      });
+
+      const config = service.getConfiguration();
+
+      expect(config.client_id_metadata_document_supported).toBe(true);
+    });
+
+    it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
+      const { service } = await createOidcService({
+        config: {
+          auth: {
+            clientIdMetadataDocuments: { enabled: false },
+          },
+        },
+      });
+
+      const config = service.getConfiguration();
+
+      expect(config).not.toHaveProperty(
+        'client_id_metadata_document_supported',
+      );
+      expect(config).not.toHaveProperty('revocation_endpoint');
+    });
+  });
+  describe.each(databases.eachSupportedId())('%p', databaseId => {
     describe('registerClient', () => {
       it('should create a new client with generated credentials', async () => {
         const { service } = await createOidcService({ databaseId });
@@ -287,6 +351,107 @@ describe('OidcService', () => {
         );
       });
 
+      it('should match redirect URIs against allowed patterns by URL component', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: [
+                  'https://*.spotify.com/*',
+                  'http://localhost:*/callback',
+                ],
+              },
+            },
+          },
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: [
+            'https://app.spotify.com/oauth/cb',
+            'http://localhost:9000/callback',
+          ],
+        });
+        expect(client).toEqual(
+          expect.objectContaining({
+            redirectUris: [
+              'https://app.spotify.com/oauth/cb',
+              'http://localhost:9000/callback',
+            ],
+          }),
+        );
+
+        for (const redirectUri of [
+          // A wildcard only matches within a single URL component
+          'https://example.org/.spotify.com/cb',
+          'https://example.net/x/.spotify.com/cb',
+          // Scheme must match exactly
+          'http://app.spotify.com/oauth/cb',
+          // Port must match exactly unless the pattern uses ':*'
+          'https://app.spotify.com:8443/oauth/cb',
+          // A wildcard port does not wildcard an explicit path
+          'http://localhost:9000/other',
+        ]) {
+          await expect(
+            service.registerClient({
+              clientName: 'Other Client',
+              redirectUris: [redirectUri],
+            }),
+          ).rejects.toThrow('Invalid redirect_uri');
+        }
+      });
+
+      it('should not treat a wildcard port as a wildcard path', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['http://localhost:*'],
+              },
+            },
+          },
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:7007/'],
+        });
+        expect(client).toEqual(
+          expect.objectContaining({ redirectUris: ['http://localhost:7007/'] }),
+        );
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:7007/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
+      it('should reject allowlist patterns without an explicit protocol', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['*.spotify.com/*'],
+              },
+            },
+          },
+        });
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['https://app.spotify.com/oauth/cb'],
+          }),
+        ).rejects.toThrow(
+          "Invalid URL pattern '*.spotify.com/*', an explicit protocol is required",
+        );
+      });
+
       it('should accept IPv6 loopback redirect URI', async () => {
         const { service } = await createOidcService({
           databaseId,
@@ -294,7 +459,7 @@ describe('OidcService', () => {
             auth: {
               experimentalDynamicClientRegistration: {
                 allowedRedirectUriPatterns: [
-                  'http://[::1]:*',
+                  'http://[::1]:*/*',
                   'http://[::1]/*',
                 ],
               },
@@ -361,7 +526,7 @@ describe('OidcService', () => {
           config: {
             auth: {
               experimentalDynamicClientRegistration: {
-                allowedRedirectUriPatterns: ['http://localhost:*'],
+                allowedRedirectUriPatterns: ['http://localhost:*/*'],
               },
             },
           },
@@ -369,15 +534,22 @@ describe('OidcService', () => {
 
         await expect(
           service.registerClient({
-            clientName: 'Evil Client',
-            redirectUris: ['http://localhost:3000@attacker.example/callback'],
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:3000@example.org/callback'],
           }),
         ).rejects.toThrow('Invalid redirect_uri');
 
         await expect(
           service.registerClient({
-            clientName: 'Evil Client',
+            clientName: 'Test Client',
             redirectUris: ['http://user:pass@example.com/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://user:pass@localhost:3000/callback'],
           }),
         ).rejects.toThrow('Invalid redirect_uri');
       });
@@ -983,51 +1155,115 @@ describe('OidcService', () => {
         codeChallengeMethod: 'S256' as const,
       };
 
-      describe('getConfiguration', () => {
-        it('should include client_id_metadata_document_supported when CIMD is enabled', async () => {
+      describe('verifyRevocationClient', () => {
+        it('should verify CIMD clients by client ID and DCR clients by secret', async () => {
           const { service } = await createOidcService({
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
-                  allowedClientIdPatterns: ['*'],
+                  allowedClientIdPatterns: ['https://example.com/*'],
                   allowedRedirectUriPatterns: ['*'],
                 },
               },
             },
           });
 
-          const config = service.getConfiguration();
+          // CIMD clients are public clients and do not need a secret
+          await expect(
+            service.verifyRevocationClient({ clientId: cimdClientId }),
+          ).resolves.toBe(true);
 
-          expect(config.client_id_metadata_document_supported).toBe(true);
+          // CIMD clients outside the allowed patterns are rejected
+          await expect(
+            service.verifyRevocationClient({
+              clientId: 'https://evil.example.net/oauth-metadata.json',
+            }),
+          ).resolves.toBe(false);
+
+          // Client IDs that match the full URL string but not the hostname
+          // component are rejected
+          await expect(
+            service.verifyRevocationClient({
+              clientId: 'https://other.com/.example.com/client.json',
+            }),
+          ).resolves.toBe(false);
+
+          // DCR clients must present a valid client secret
+          const client = await service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:8080/callback'],
+          });
+          await expect(
+            service.verifyRevocationClient({ clientId: client.clientId }),
+          ).resolves.toBe(false);
+          await expect(
+            service.verifyRevocationClient({
+              clientId: client.clientId,
+              clientSecret: 'wrong-secret',
+            }),
+          ).resolves.toBe(false);
+          await expect(
+            service.verifyRevocationClient({
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            }),
+          ).resolves.toBe(true);
         });
 
-        it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
+        it('should reject CIMD client IDs when CIMD is disabled', async () => {
           const { service } = await createOidcService({
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: { enabled: false },
+                clientIdMetadataDocuments: { enabled: false },
               },
             },
           });
 
-          const config = service.getConfiguration();
-
-          expect(config).not.toHaveProperty(
-            'client_id_metadata_document_supported',
-          );
+          await expect(
+            service.verifyRevocationClient({ clientId: cimdClientId }),
+          ).resolves.toBe(false);
         });
       });
 
       describe('createAuthorizationSession with CIMD', () => {
+        it('should accept ChatGPT Codex client IDs with default CIMD patterns', async () => {
+          const codexClientId =
+            'https://chatgpt.com/oauth/codex/backstage/client.json';
+          mockFetchCimdMetadata.mockResolvedValueOnce({
+            ...cimdMetadata,
+            clientId: codexClientId,
+          });
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: codexClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+              scope: 'openid',
+              ...pkceParams,
+            }),
+          ).resolves.toEqual(
+            expect.objectContaining({ clientName: 'CIMD Test Client' }),
+          );
+        });
+
         it('should accept loopback redirect URIs with default CIMD patterns', async () => {
           const { service } = await createOidcService({
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                 },
@@ -1056,7 +1292,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                 },
@@ -1079,7 +1315,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1105,6 +1341,36 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
+            skipSsrfCheck: false,
+          });
+        });
+
+        it('should skip SSRF check for exact (non-wildcard) client_id patterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: [cimdClientId],
+                  allowedRedirectUriPatterns: ['*'],
+                },
+              },
+            },
+          });
+
+          await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
+            clientId: cimdClientId,
+            validatedUrl: expect.any(URL),
+            skipSsrfCheck: true,
           });
         });
 
@@ -1113,7 +1379,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: { enabled: false },
+                clientIdMetadataDocuments: { enabled: false },
               },
             },
           });
@@ -1132,21 +1398,27 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
-                  allowedClientIdPatterns: ['https://trusted.com/*'],
+                  allowedClientIdPatterns: ['https://*.trusted.com/*'],
                 },
               },
             },
           });
 
-          await expect(
-            service.createAuthorizationSession({
-              clientId: cimdClientId, // https://example.com/oauth-metadata.json
-              redirectUri: 'http://localhost:8080/callback',
-              responseType: 'code',
-            }),
-          ).rejects.toThrow('Invalid client_id');
+          for (const clientId of [
+            cimdClientId, // https://example.com/oauth-metadata.json
+            'https://example.org/.trusted.com/oauth-metadata.json',
+            'https://sub.trusted.com:8443/oauth-metadata.json',
+          ]) {
+            await expect(
+              service.createAuthorizationSession({
+                clientId,
+                redirectUri: 'http://localhost:8080/callback',
+                responseType: 'code',
+              }),
+            ).rejects.toThrow('Invalid client_id');
+          }
         });
 
         it('should accept client_id matching allowedClientIdPatterns', async () => {
@@ -1154,7 +1426,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['https://example.com/*'],
                 },
@@ -1177,12 +1449,52 @@ describe('OidcService', () => {
           );
         });
 
+        it('should allow the built-in CLI client_id when allowedClientIdPatterns is set', async () => {
+          const authBaseUrl = 'https://backstage.example.com/api/auth';
+          const cliClientId = `${authBaseUrl}/.well-known/oauth-client/cli.json`;
+
+          const { service } = await createOidcService({
+            databaseId,
+            baseUrl: authBaseUrl,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://*.trusted.com/*'],
+                },
+              },
+            },
+          });
+
+          mockFetchCimdMetadata.mockResolvedValue({
+            clientId: cliClientId,
+            clientName: 'Backstage CLI',
+            redirectUris: ['http://127.0.0.1:8055/callback'],
+            responseTypes: ['code'],
+            grantTypes: ['authorization_code'],
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cliClientId,
+            redirectUri: 'http://127.0.0.1:8055/callback',
+            responseType: 'code',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              clientName: 'Backstage CLI',
+            }),
+          );
+        });
+
         it('should throw error for redirect_uri not in CIMD metadata', async () => {
           const { service } = await createOidcService({
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1205,7 +1517,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['https://*.example.com/*'],
@@ -1221,6 +1533,23 @@ describe('OidcService', () => {
               responseType: 'code',
             }),
           ).rejects.toThrow('Invalid redirect_uri');
+
+          for (const redirectUri of [
+            'https://example.org/.example.com/cb',
+            'https://example.net/x/.example.com/cb',
+          ]) {
+            mockFetchCimdMetadata.mockResolvedValue({
+              ...cimdMetadata,
+              redirectUris: [redirectUri],
+            });
+            await expect(
+              service.createAuthorizationSession({
+                clientId: cimdClientId,
+                redirectUri,
+                responseType: 'code',
+              }),
+            ).rejects.toThrow('Invalid redirect_uri');
+          }
         });
 
         it('should accept loopback redirect_uri with a different port per RFC 8252', async () => {
@@ -1233,7 +1562,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1268,7 +1597,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1297,11 +1626,11 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: [
-                    'http://[::1]:*',
+                    'http://[::1]:*/*',
                     'http://[::1]/*',
                   ],
                 },
@@ -1335,11 +1664,11 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: [
-                    'http://127.0.0.1:*',
+                    'http://127.0.0.1:*/*',
                     'http://127.0.0.1/*',
                   ],
                 },
@@ -1373,10 +1702,10 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
-                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                  allowedRedirectUriPatterns: ['http://localhost:*/*'],
                 },
               },
             },
@@ -1397,10 +1726,10 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
-                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                  allowedRedirectUriPatterns: ['http://localhost:*/*'],
                 },
               },
             },
@@ -1421,7 +1750,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1446,7 +1775,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1487,7 +1816,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1539,7 +1868,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1592,7 +1921,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1627,7 +1956,7 @@ describe('OidcService', () => {
             databaseId,
             config: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: ['*'],
@@ -1651,6 +1980,7 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
+            skipSsrfCheck: false,
           });
         });
       });

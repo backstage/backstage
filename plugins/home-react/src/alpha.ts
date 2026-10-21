@@ -43,5 +43,6 @@ export {
   type HomePageWidgetData,
   homePageLayoutComponentDataRef,
   type HomePageLayoutProps,
+  type HomePageDefaultConfigItem,
 } from './alpha/dataRefs';
 export type { ComponentParts, CardLayout, CardSettings } from './extensions';

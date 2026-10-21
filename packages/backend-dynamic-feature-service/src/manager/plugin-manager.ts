@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
+import { toError } from '@backstage/errors';
 import {
   DynamicPluginProvider,
   BackendDynamicPlugin,
@@ -25,6 +26,7 @@ import { ScannedPluginPackage } from '../scanner';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { ModuleLoader } from '../loader';
 import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
+import path from 'node:path';
 import * as url from 'node:url';
 import {
   BackendFeature,
@@ -168,14 +170,6 @@ export class DynamicPluginManager implements DynamicPluginProvider {
   private async loadBackendPlugin(
     plugin: ScannedPluginPackage,
   ): Promise<BackendDynamicPlugin> {
-    const usedPluginManifest =
-      plugin.alphaManifest?.main ?? plugin.manifest.main;
-    const usedPluginLocation = plugin.alphaManifest?.main
-      ? `${plugin.location}/alpha`
-      : plugin.location;
-    const packagePath = url.fileURLToPath(
-      `${usedPluginLocation}/${usedPluginManifest}`,
-    );
     const dynamicPlugin: BackendDynamicPlugin = {
       name: plugin.manifest.name,
       version: plugin.manifest.version,
@@ -183,47 +177,52 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       role: plugin.manifest.backstage.role,
     };
 
-    try {
-      const pluginModule = await this.moduleLoader.load(packagePath);
+    let loadResult: BackendPluginEntryLoadResult;
 
-      if (isBackendFeature(pluginModule.default)) {
-        dynamicPlugin.installer = {
-          kind: 'new',
-          install: () => pluginModule.default,
-        };
-      } else if (isBackendFeatureFactory(pluginModule.default)) {
-        dynamicPlugin.installer = {
-          kind: 'new',
-          install: pluginModule.default,
-        };
-      } else if (
-        isBackendDynamicPluginInstaller(pluginModule.dynamicPluginInstaller)
-      ) {
-        dynamicPlugin.installer = pluginModule.dynamicPluginInstaller;
-      }
-      if (dynamicPlugin.installer) {
-        this.logger.info(
-          `loaded dynamic backend plugin '${plugin.manifest.name}' from '${usedPluginLocation}'`,
-        );
-      } else {
-        dynamicPlugin.failure = `the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`;
-        this.logger.error(
-          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${usedPluginLocation}': ${dynamicPlugin.failure}`,
+    if (plugin.alphaManifest?.main) {
+      loadResult = await tryLoadBackendPluginEntry(
+        this.moduleLoader,
+        new URL('alpha', `${plugin.location}/`),
+        plugin.alphaManifest.main,
+      );
+
+      if (loadResult.kind === 'no-entrypoint') {
+        loadResult = await tryLoadBackendPluginEntry(
+          this.moduleLoader,
+          plugin.location,
+          plugin.manifest.main,
         );
       }
-      return dynamicPlugin;
-    } catch (error) {
-      const typedError =
-        typeof error === 'object' && 'message' in error && 'name' in error
-          ? error
-          : new Error(error);
-      dynamicPlugin.failure = `${typedError.name}: ${typedError.message}`;
-      this.logger.error(
-        `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${usedPluginLocation}'`,
-        typedError,
+    } else {
+      loadResult = await tryLoadBackendPluginEntry(
+        this.moduleLoader,
+        plugin.location,
+        plugin.manifest.main,
+      );
+    }
+
+    if (loadResult.kind === 'success') {
+      dynamicPlugin.installer = loadResult.installer;
+      this.logger.info(
+        `loaded dynamic backend plugin '${plugin.manifest.name}' from '${loadResult.location}'`,
       );
       return dynamicPlugin;
     }
+
+    if (loadResult.kind === 'error') {
+      dynamicPlugin.failure = `${loadResult.error.name}: ${loadResult.error.message}`;
+      this.logger.error(
+        `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${loadResult.location}'`,
+        loadResult.error,
+      );
+      return dynamicPlugin;
+    }
+
+    dynamicPlugin.failure = `the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`;
+    this.logger.error(
+      `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${loadResult.location}': ${dynamicPlugin.failure}`,
+    );
+    return dynamicPlugin;
   }
 
   backendPlugins(options?: {
@@ -351,6 +350,54 @@ export const dynamicPluginsFeatureDiscoveryLoader = createBackendFeatureLoader({
     return features;
   },
 });
+
+type BackendPluginEntryLoadResult =
+  | {
+      kind: 'success';
+      location: URL;
+      installer: NonNullable<BackendDynamicPlugin['installer']>;
+    }
+  | { kind: 'error'; location: URL; error: Error }
+  | { kind: 'no-entrypoint'; location: URL };
+
+async function tryLoadBackendPluginEntry(
+  moduleLoader: ModuleLoader,
+  location: URL,
+  manifest: string,
+): Promise<BackendPluginEntryLoadResult> {
+  try {
+    const packagePath = path.resolve(url.fileURLToPath(location), manifest);
+    const pluginModule = await moduleLoader.load(packagePath);
+    const installer = resolveInstallerFromModule(pluginModule);
+    if (installer) {
+      return { kind: 'success', location, installer };
+    }
+    return { kind: 'no-entrypoint', location };
+  } catch (error) {
+    return { kind: 'error', location, error: toError(error) };
+  }
+}
+
+function resolveInstallerFromModule(
+  pluginModule: Record<string, unknown>,
+): BackendDynamicPlugin['installer'] | undefined {
+  if (isBackendFeature(pluginModule.default)) {
+    return {
+      kind: 'new',
+      install: () => pluginModule.default as BackendFeature,
+    };
+  }
+  if (isBackendFeatureFactory(pluginModule.default)) {
+    return {
+      kind: 'new',
+      install: pluginModule.default as () => BackendFeature,
+    };
+  }
+  if (isBackendDynamicPluginInstaller(pluginModule.dynamicPluginInstaller)) {
+    return pluginModule.dynamicPluginInstaller;
+  }
+  return undefined;
+}
 
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (

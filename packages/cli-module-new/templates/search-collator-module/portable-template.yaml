@@ -1,0 +1,8 @@
+name: search-collator-module
+role: backend-plugin-module
+description: A Search Collator module for Backstage Search
+values:
+  pluginId: search
+  fullModuleId: '{{ moduleId }}-collator'
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
+  collatorClass: '{{ upperFirst ( camelCase moduleId ) }}CollatorFactory'

@@ -102,8 +102,9 @@ const createRepository = async (opts: {
 export function createPublishBitbucketCloudAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, config } = options;
+  const { integrations, config, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'publish:bitbucketCloud',
@@ -216,8 +217,16 @@ export function createPublishBitbucketCloudAction(options: {
         );
       }
 
+      if (requireScmUserCredentials && !ctx.input.token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+
       const authorization = await getAuthorizationHeader(
-        ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
+        ctx.input.token || requireScmUserCredentials
+          ? { token: ctx.input.token }
+          : integrationConfig.config,
       );
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;

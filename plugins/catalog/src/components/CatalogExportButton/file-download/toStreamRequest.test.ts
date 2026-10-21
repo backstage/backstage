@@ -16,6 +16,7 @@
 import { toStreamRequest } from './toStreamRequest';
 import {
   DefaultEntityFilters,
+  EntityKindFilter,
   EntityTextFilter,
   EntityOrderFilter,
 } from '@backstage/plugin-catalog-react';
@@ -27,6 +28,39 @@ describe('toStreamRequest', () => {
       const result = toStreamRequest(filters);
 
       expect(result).toBeUndefined();
+    });
+
+    it('does not crash when filters contain undefined values', () => {
+      const filters: DefaultEntityFilters = {
+        kind: undefined,
+        type: undefined,
+        text: undefined,
+        order: undefined,
+      };
+      expect(() => toStreamRequest(filters)).not.toThrow();
+      expect(toStreamRequest(filters)).toBeUndefined();
+    });
+
+    it('handles mix of undefined and valid filters', () => {
+      const textFilter = new EntityTextFilter('search term');
+      const filters: DefaultEntityFilters = {
+        kind: undefined,
+        text: textFilter,
+        order: undefined,
+      };
+      const result = toStreamRequest(filters);
+      expect(result).toEqual({
+        fullTextFilter: {
+          term: 'search term',
+          fields: [
+            'metadata.name',
+            'metadata.title',
+            'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
+          ],
+        },
+      });
     });
   });
 
@@ -247,6 +281,8 @@ describe('toStreamRequest', () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -289,6 +325,29 @@ describe('toStreamRequest', () => {
     });
   });
 
+  describe('with undefined filter values', () => {
+    it('does not throw when a filter entry is undefined', () => {
+      const mockBackendFilter = {
+        getCatalogFilters: () => ({
+          kind: ['Component'],
+        }),
+      };
+
+      const filters: DefaultEntityFilters = {
+        kind: mockBackendFilter as any,
+        text: undefined,
+      };
+
+      const result = toStreamRequest(filters);
+
+      expect(result).toEqual({
+        filter: {
+          kind: ['Component'],
+        },
+      });
+    });
+  });
+
   describe('with combined filters', () => {
     it('combines backend, text, and order filters', () => {
       const mockBackendFilter = {
@@ -318,9 +377,38 @@ describe('toStreamRequest', () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+  });
+
+  describe('with predicate filters', () => {
+    it('passes predicates as a query alongside legacy filters', () => {
+      const filters = {
+        kind: new EntityKindFilter('component', 'Component'),
+        legacy: {
+          getCatalogFilters: () => ({ 'spec.type': 'service' }),
+        },
+        both: {
+          getCatalogFilters: () => ({ 'spec.lifecycle': 'ignored' }),
+          getCatalogQuery: () => ({
+            $not: { 'spec.lifecycle': 'experimental' },
+          }),
+        },
+      } as DefaultEntityFilters;
+
+      expect(toStreamRequest(filters)).toEqual({
+        filter: { 'spec.type': 'service' },
+        query: {
+          $all: [
+            { kind: 'component' },
+            { $not: { 'spec.lifecycle': 'experimental' } },
+          ],
+        },
       });
     });
   });

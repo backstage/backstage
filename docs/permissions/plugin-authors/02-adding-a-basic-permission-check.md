@@ -37,7 +37,7 @@ export const todoListPermissions = [todoListCreatePermission];
 
 For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`).
 
-:::note Note
+:::note
 
 We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/tooling/cli/build-system#package-roles). This allows Backstage integrators to reference them in frontend components as well as permission policies.
 
@@ -47,7 +47,7 @@ We use a separate `todo-list-common` package since all permissions authorized by
 
 Install the following module:
 
-```
+```shell
 $ yarn workspace @internal/plugin-todo-list-backend \
   add @backstage/plugin-permission-common @backstage/plugin-permission-node @internal/plugin-todo-list-common
 ```
@@ -172,63 +172,41 @@ That's it! Now your plugin is fully configured. Let's try to test the logic by d
 
 ## Test the authorized create endpoint
 
-Before running this step, please make sure you followed the steps described in [Getting started](../getting-started.md) section.
+To test the logic above, the integrators of your Backstage instance need to change their permission policy to return `DENY` for the newly-created permission. Update the `CustomPolicy` class in the permission policy module created during the [Getting Started](../getting-started.md) steps:
 
-In order to test the logic above, the integrators of your backstage instance need to change their permission policy to return `DENY` for our newly-created permission:
-
-```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
-import { createBackendModule } from '@backstage/backend-plugin-api';
+```ts
 import {
   PolicyDecision,
-  /* highlight-add-start */
+  /* highlight-add-next-line */
   isPermission,
-  /* highlight-add-end */
   AuthorizeResult,
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
-  /* highlight-add-start */
   PolicyQuery,
   PolicyQueryUser,
-  /* highlight-add-end */
 } from '@backstage/plugin-permission-node';
-/* highlight-add-start */
+/* highlight-add-next-line */
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
-/* highlight-add-end */
-import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 
-class TestPermissionPolicy implements PermissionPolicy {
-  /* highlight-remove-next-line */
-  async handle(): Promise<PolicyDecision> {
-  /* highlight-add-start */
+export class CustomPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     _user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
+    /* highlight-add-start */
     if (isPermission(request.permission, todoListCreatePermission)) {
       return {
         result: AuthorizeResult.DENY,
       };
     }
-  /* highlight-add-end */
+    /* highlight-add-end */
 
     return {
       result: AuthorizeResult.ALLOW,
     };
+  }
 }
-
-export default createBackendModule({
-  pluginId: 'permission',
-  moduleId: 'permission-policy',
-  register(reg) {
-    reg.registerInit({
-      deps: { policy: policyExtensionPoint },
-      async init({ policy }) {
-        policy.setPolicy(new TestPermissionPolicy());
-      },
-    });
-  },
-});
 ```
 
 Now the frontend should show an error whenever you try to create a new Todo item.

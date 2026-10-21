@@ -31,9 +31,34 @@ export const hasLabel = createPermissionRule({
     label: z.string().describe('Name of the label to match on'),
     value: z.string().optional().describe('Value of the label to match on'),
   }),
-  apply: (resource, { label, value }) =>
-    !!resource.metadata.labels?.hasOwnProperty(label) &&
-    (value === undefined ? true : resource.metadata.labels?.[label] === value),
+  apply: (resource, { label, value }) => {
+    if (!resource.metadata.labels) return false;
+
+    // exact key match
+    const isExactKeyMatch =
+      !!resource.metadata.labels?.hasOwnProperty(label) &&
+      (value === undefined
+        ? true
+        : resource.metadata.labels?.[label] === value);
+
+    if (isExactKeyMatch) return true;
+
+    // case-insensitive matching if exact match is not found
+    const normalizedLabel = label.toLowerCase();
+    const normalizedValue = value?.toLowerCase();
+
+    for (const [key, val] of Object.entries(resource.metadata.labels)) {
+      if (key.toLowerCase() === normalizedLabel) {
+        if (
+          normalizedValue === undefined ||
+          val.toLowerCase() === normalizedValue
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
   toQuery: ({ label, value }) =>
     value === undefined
       ? {

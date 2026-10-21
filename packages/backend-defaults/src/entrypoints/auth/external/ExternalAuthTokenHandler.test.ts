@@ -26,7 +26,7 @@ import { randomBytes } from 'node:crypto';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { DateTime } from 'luxon';
 import { randomUUID as uuid } from 'node:crypto';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
@@ -132,7 +132,7 @@ describe('ExternalTokenHandler', () => {
       },
     ]);
 
-    await expect(plugin1.verifyToken('token')).resolves.toEqual({
+    await expect(plugin1.verifyToken('token')).resolves.toMatchObject({
       subject: 'sub',
       accessRestrictions: { permissionNames: ['do.it'] },
     });
@@ -152,13 +152,10 @@ describe('ExternalTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'https://example.com/.well-known/jwks.json',
-        async (_, res, ctx) => {
-          const keys = await factory.listPublicKeys();
-          return res(ctx.json(keys));
-        },
-      ),
+      http.get('https://example.com/.well-known/jwks.json', async () => {
+        const keys = await factory.listPublicKeys();
+        return HttpResponse.json(keys);
+      }),
     );
 
     const handler = ExternalAuthTokenHandler.create({
@@ -216,12 +213,12 @@ describe('ExternalTokenHandler', () => {
       .setProtectedHeader({ alg: 'HS256' })
       .sign(legacyKey);
 
-    await expect(handler.verifyToken(legacyToken)).resolves.toEqual({
+    await expect(handler.verifyToken(legacyToken)).resolves.toMatchObject({
       subject: 'legacy-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
 
-    await expect(handler.verifyToken('defdefdef')).resolves.toEqual({
+    await expect(handler.verifyToken('defdefdef')).resolves.toMatchObject({
       subject: 'static-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
@@ -229,7 +226,7 @@ describe('ExternalTokenHandler', () => {
     const jwksToken = await factory.issueToken({
       claims: { sub: 'jwks-subject' },
     });
-    await expect(handler.verifyToken(jwksToken)).resolves.toEqual({
+    await expect(handler.verifyToken(jwksToken)).resolves.toMatchObject({
       subject: 'external:custom-prefix:jwks-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
@@ -242,13 +239,10 @@ describe('ExternalTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'https://example.com/.well-known/jwks.json',
-        async (_, res, ctx) => {
-          const keys = await factory.listPublicKeys();
-          return res(ctx.json(keys));
-        },
-      ),
+      http.get('https://example.com/.well-known/jwks.json', async () => {
+        const keys = await factory.listPublicKeys();
+        return HttpResponse.json(keys);
+      }),
     );
 
     const logger = mockServices.logger.mock();
@@ -292,13 +286,10 @@ describe('ExternalTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'https://example.com/.well-known/jwks.json',
-        async (_, res, ctx) => {
-          const keys = await factory.listPublicKeys();
-          return res(ctx.json(keys));
-        },
-      ),
+      http.get('https://example.com/.well-known/jwks.json', async () => {
+        const keys = await factory.listPublicKeys();
+        return HttpResponse.json(keys);
+      }),
     );
 
     const verifyMock = jest.fn().mockResolvedValue({});

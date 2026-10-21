@@ -23,7 +23,7 @@ as `import { default as localName } from 'the-module';`.
 However, there are numerous reasons to avoid default exports, as documented by
 others before:
 
-- https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/
+- <https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/>
 
 A summary:
 

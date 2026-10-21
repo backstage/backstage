@@ -16,6 +16,8 @@
 
 import { AzureUrl } from './AzureUrl';
 
+export { isVisualStudioDomain } from './isVisualStudioDomain';
+
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
  * for fetching the contents of the data.
@@ -23,8 +25,11 @@ import { AzureUrl } from './AzureUrl';
  * @remarks
  *
  * Converts
- * - from: `https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents`
- * - to:   `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&version={commitOrBranch}`
+ * - from: `https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{branch}&_a=contents`
+ * - to:   `https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&versionDescriptor.version={branch}&versionDescriptor.versionType=branch`
+ *
+ * Branch (`GB`) and tag (`GT`) references retain their name and type in the
+ * download URL. URLs without a reference use the default branch.
  *
  * @param url - A URL pointing to a file
  * @public
@@ -37,6 +42,9 @@ export function getAzureFileFetchUrl(url: string): string {
  * Given a URL pointing to a path on a provider, returns a URL that is suitable
  * for downloading the subtree.
  *
+ * Branch (`GB`) and tag (`GT`) references retain their name and type in the
+ * download URL. URLs without a reference use the default branch.
+ *
  * @param url - A URL pointing to a path
  * @public
  */
@@ -45,22 +53,11 @@ export function getAzureDownloadUrl(url: string): string {
 }
 
 /**
- * Given a URL, return the API URL to fetch commits on the branch.
+ * Given a URL, return the API URL to fetch commits from the selected branch or tag.
  *
  * @param url - A URL pointing to a repository or a sub-path
  * @public
  */
 export function getAzureCommitsUrl(url: string): string {
   return AzureUrl.fromRepoUrl(url).toCommitsUrl();
-}
-
-/**
- * Given a URL, return true if it contains `.visualstudio.com` and false if it does not
- * URLs can be in these two formats: `dev.azure.com/{org}` or the legacy `{org}.visualstudio.com`
- *
- * @param origin - A URL origin string pointing to an Azure DevOps instance
- * @public
- */
-export function isVisualStudioDomain(origin: string): boolean {
-  return origin.endsWith('.visualstudio.com');
 }

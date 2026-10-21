@@ -1,0 +1,11 @@
+---
+title: AWS Controller
+author: AWS Forge Contributors
+authorUrl: https://github.com/refaelb
+category: Services
+description: Bring AWS S3, RDS and EC2 visibility into Backstage Catalog entities.
+documentation: https://github.com/refaelb/backstage-plugin-aws-controller#readme
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@aws-forge/backstage-plugin-aws-controller'
+addedDate: '2026-05-24'
+status: active

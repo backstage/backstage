@@ -22,7 +22,7 @@ import {
 import { AwsIamStrategy } from './AwsIamStrategy';
 
 const credsManager = {
-  getCredentialProvider: async () => ({
+  getCredentialProvider: jest.fn().mockResolvedValue({
     sdkCredentialProvider: {
       AccessKeyId: 'asdf',
     },
@@ -56,6 +56,15 @@ jest.mock('@aws-sdk/credential-providers', () => ({
 
 describe('AwsIamStrategy#getCredential', () => {
   const config = new ConfigReader({});
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    credsManager.getCredentialProvider.mockResolvedValue({
+      sdkCredentialProvider: {
+        AccessKeyId: 'asdf',
+      },
+    });
+  });
 
   it('returns a presigned url', async () => {
     const strategy = new AwsIamStrategy({ config });
@@ -101,8 +110,19 @@ describe('AwsIamStrategy#getCredential', () => {
     );
   });
 
-  it('returns a presigned url for AWS credentials with assumed role', async () => {
+  it('returns a presigned url for AWS credentials with assumed role when no account config exists', async () => {
     const strategy = new AwsIamStrategy({ config });
+
+    credsManager.getCredentialProvider.mockImplementation(
+      async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error(
+            'There is no AWS integration that matches the account',
+          );
+        }
+        return { sdkCredentialProvider: { AccessKeyId: 'asdf' } };
+      },
+    );
 
     const credential = await strategy.getCredential({
       name: 'test-cluster',
@@ -130,8 +150,63 @@ describe('AwsIamStrategy#getCredential', () => {
     });
   });
 
+  it('uses account-specific credentials as master credentials when account config exists for the assume role ARN', async () => {
+    const strategy = new AwsIamStrategy({ config });
+
+    const accountCreds = { AccessKeyId: 'account-specific' };
+    credsManager.getCredentialProvider.mockImplementation(
+      async (opts?: any) => {
+        if (opts?.arn) {
+          return {
+            accountId: '123456789012',
+            sdkCredentialProvider: accountCreds,
+          };
+        }
+        return { sdkCredentialProvider: { AccessKeyId: 'asdf' } };
+      },
+    );
+
+    const credential = await strategy.getCredential({
+      name: 'test-cluster',
+      url: '',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]:
+          'arn:aws:iam::123456789012:role/MyRole',
+      },
+    });
+
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
+    expect(credsManager.getCredentialProvider).toHaveBeenCalledWith({
+      arn: 'arn:aws:iam::123456789012:role/MyRole',
+    });
+    expect(fromTemporaryCredentials).toHaveBeenCalledWith({
+      clientConfig: {
+        region: 'us-east-1',
+      },
+      masterCredentials: accountCreds,
+      params: {
+        ExternalId: undefined,
+        RoleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      },
+    });
+  });
+
   it('returns a presigned url for AWS credentials and passes the external id', async () => {
     const strategy = new AwsIamStrategy({ config });
+
+    credsManager.getCredentialProvider.mockImplementation(
+      async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error(
+            'There is no AWS integration that matches the account',
+          );
+        }
+        return { sdkCredentialProvider: { AccessKeyId: 'asdf' } };
+      },
+    );
 
     const credential = await strategy.getCredential({
       name: 'test-cluster',

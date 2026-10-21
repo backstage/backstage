@@ -26,7 +26,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { config, lax, frontend, withSecrets, format, package: pkg },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         package: { type: String, description: 'Package to print config for' },

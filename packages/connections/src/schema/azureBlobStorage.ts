@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const AzureBlobStorageConnectionType = createConnectionType({
   type: 'azure-blob-storage',
+  title: 'Azure Blob Storage',
   configSchema: z.object({
     host: z.string(),
     accountName: z.string().optional(),
@@ -28,28 +29,33 @@ export const AzureBlobStorageConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'accountKey',
+      title: 'Account Key',
       configSchema: z.object({
         accountKey: z.string(),
       }),
     },
     {
       method: 'sasToken',
+      title: 'SAS Token',
       configSchema: z.object({
         sasToken: z.string(),
       }),
     },
     {
       method: 'connectionString',
+      title: 'Connection String',
       configSchema: z.object({
         connectionString: z.string(),
       }),
     },
     {
       method: 'aadCredential',
+      title: 'AAD Credential',
       configSchema: z.object({
         clientId: z.string(),
         tenantId: z.string(),

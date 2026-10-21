@@ -4,10 +4,13 @@
 
 ```ts
 import { AnyZodObject } from 'zod/v3';
+import type { BackendModuleRegistrationPoints } from '@backstage/backend-plugin-api';
+import type { BackendPluginRegistrationPoints } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { ConnectionsService } from '@backstage/connections';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import type { Request as Request_2 } from 'express';
@@ -152,6 +155,19 @@ export interface ConnectionRegistration {
 }
 
 // @alpha
+export const connectionsServiceRef: ServiceRef<
+  ConnectionsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export function declareConnection(
+  reg: BackendPluginRegistrationPoints | BackendModuleRegistrationPoints,
+  registration: ConnectionRegistration,
+): void;
+
+// @alpha
 export interface MetricAdvice {
   explicitBucketBoundaries?: number[];
 }
@@ -294,27 +310,6 @@ export interface MetricsServiceUpDownCounter<
   // (undocumented)
   add(value: number, attributes?: TAttributes): void;
 }
-
-// @public (undocumented)
-export interface RootSystemMetadataService {
-  // (undocumented)
-  getInstalledPlugins: () => Promise<
-    ReadonlyArray<RootSystemMetadataServicePluginInfo>
-  >;
-}
-
-// @public (undocumented)
-export interface RootSystemMetadataServicePluginInfo {
-  // (undocumented)
-  readonly pluginId: string;
-}
-
-// @alpha
-export const rootSystemMetadataServiceRef: ServiceRef<
-  RootSystemMetadataService,
-  'root',
-  'singleton'
->;
 
 // @alpha
 export interface TracingService {

@@ -18,6 +18,8 @@ import { ReactNode, FC } from 'react';
 
 import { PageWithHeader } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../translation';
 
 /**
  * Props for {@link TechDocsPageWrapper}
@@ -37,9 +39,10 @@ export type TechDocsPageWrapperProps = {
 export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
   const { children, CustomPageWrapper } = props;
   const configApi = useApi(configApiRef);
-  const generatedSubtitle = `Documentation available in ${
-    configApi.getOptionalString('organization.name') ?? 'Backstage'
-  }`;
+  const { t } = useTranslationRef(techdocsTranslationRef);
+  const orgName =
+    configApi.getOptionalString('organization.name') ?? 'Backstage';
+  const generatedSubtitle = t('pageWrapper.subtitle', { orgName });
 
   return (
     <>
@@ -47,7 +50,7 @@ export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
         <CustomPageWrapper>{children}</CustomPageWrapper>
       ) : (
         <PageWithHeader
-          title="Documentation"
+          title={t('pageWrapper.title')}
           subtitle={generatedSubtitle}
           themeId="documentation"
         >

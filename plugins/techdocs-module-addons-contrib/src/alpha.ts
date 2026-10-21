@@ -19,7 +19,10 @@ import { TextSizeAddon } from './TextSize';
 import { ReportIssueAddon } from './ReportIssue';
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { LightBoxAddon } from './LightBox';
-import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendFeatureLoader,
+  createFrontendModule,
+} from '@backstage/frontend-plugin-api';
 
 /** @alpha */
 const techDocsExpandableNavigationAddon = AddonBlueprint.make({
@@ -83,4 +86,14 @@ const techDocsLightBoxAddon = AddonBlueprint.make({
 export const techDocsLightBoxAddonModule = createFrontendModule({
   pluginId: 'techdocs',
   extensions: [techDocsLightBoxAddon],
+});
+
+/** @alpha */
+export default createFrontendFeatureLoader({
+  async *loader() {
+    yield techDocsExpandableNavigationAddonModule;
+    yield techDocsReportIssueAddonModule;
+    yield techDocsTextSizeAddonModule;
+    yield techDocsLightBoxAddonModule;
+  },
 });

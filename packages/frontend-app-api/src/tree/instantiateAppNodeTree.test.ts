@@ -40,9 +40,10 @@ import {
   resolveExtensionDefinition,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { createDeprecatedConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
+import { createConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
 import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
 import { createErrorCollector } from '../wiring/createErrorCollector';
+import { z } from 'zod/v4';
 
 const testApis = TestApiRegistry.from();
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
@@ -181,9 +182,9 @@ describe('instantiateAppNodeTree', () => {
         test: testDataRef,
         other: otherDataRef.optional(),
       },
-      configSchema: createDeprecatedConfigSchema({
-        output: z => z.string().default('test'),
-        other: z => z.number().optional(),
+      configSchema: createConfigSchema({
+        output: z.string().default('test'),
+        other: z.number().optional(),
       }),
       factory({ config }) {
         return { test: config.output, other: config.other };
@@ -494,7 +495,7 @@ describe('instantiateAppNodeTree', () => {
           {
             code: 'EXTENSION_CONFIGURATION_INVALID',
             message:
-              "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+              "Invalid configuration for extension 'app/test'; caused by Error: Invalid input: expected number, received string at 'other'",
             context: { node },
           },
         ]);
@@ -848,11 +849,9 @@ describe('instantiateAppNodeTree', () => {
         name: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: [testDataRef, otherDataRef.optional()],
-        config: {
-          schema: {
-            output: z => z.string().default('test'),
-            other: z => z.number().optional(),
-          },
+        configSchema: {
+          output: z.string().default('test'),
+          other: z.number().optional(),
         },
         factory({ config }) {
           return [
@@ -1120,7 +1119,7 @@ describe('instantiateAppNodeTree', () => {
           {
             code: 'EXTENSION_CONFIGURATION_INVALID',
             message:
-              "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+              "Invalid configuration for extension 'app/test'; caused by Error: Invalid input: expected number, received string at 'other'",
             context: { node },
           },
         ]);

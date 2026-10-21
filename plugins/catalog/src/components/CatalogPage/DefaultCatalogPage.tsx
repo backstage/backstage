@@ -24,7 +24,8 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { HeaderPage } from '@backstage/ui';
+import { ButtonLink, Container, Header } from '@backstage/ui';
+import { RiAddLine } from '@remixicon/react';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -35,15 +36,19 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
-import { CatalogTable, CatalogTableRow } from '../CatalogTable';
+import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+import {
+  CatalogTableColumnsFunc,
+  CatalogTableRow,
+} from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { CatalogExportButton } from '../CatalogExportButton/CatalogExportButton';
 import type { CatalogExportSettings } from '../CatalogExportButton';
 import Box from '@material-ui/core/Box';
+import styles from './DefaultCatalogPage.module.css';
 
 /** @internal */
 export type BaseCatalogPageProps = {
@@ -103,11 +108,13 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   );
 }
 
-function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
+/** @internal */
+export function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   const { pagination, exportSettings } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
+  const createComponentHref = createComponentLink?.();
   const { t } = useTranslationRef(catalogTranslationRef);
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
@@ -115,28 +122,33 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
 
   return (
     <EntityListProvider pagination={pagination}>
-      <HeaderPage
+      <Header
         title={t('indexPage.title', { orgName })}
         customActions={
           <>
-            {allowed && (
-              <CreateButton
-                title={t('indexPage.createButtonTitle')}
-                to={createComponentLink && createComponentLink()}
-              />
+            {allowed && createComponentHref && (
+              <ButtonLink
+                variant="primary"
+                href={createComponentHref}
+                iconStart={<RiAddLine />}
+              >
+                {t('indexPage.createButtonTitle')}
+              </ButtonLink>
             )}
             {exportSettings?.enabled && (
-              <Box ml={2}>
-                <CatalogExportButton settings={exportSettings} />
-              </Box>
+              <CatalogExportButton settings={exportSettings} iconOnly />
             )}
-            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+            <div className={styles.supportButton}>
+              <SupportButton>
+                {t('indexPage.supportButtonContent')}
+              </SupportButton>
+            </div>
           </>
         }
       />
-      <Content>
+      <Container>
         <CatalogPageContent {...props} />
-      </Content>
+      </Container>
     </EntityListProvider>
   );
 }

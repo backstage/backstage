@@ -1,0 +1,24 @@
+site_name: Test
+plugins:
+  - search
+  - privacy
+  - material/privacy:
+      enabled: true
+  - table-reader:
+      data_path: /etc/passwd
+  - !ENV [MKDOCS_PLUGIN, privacy]
+  - custom-plugin:
+      option: value
+  - 42
+  - group:
+      plugins:
+        - redirects
+        - projects
+  - material/group:
+      plugins:
+        search:
+        material/privacy:
+          enabled: true
+  - redirects:
+      redirect_maps:
+        old.md: new.md

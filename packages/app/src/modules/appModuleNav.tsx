@@ -15,7 +15,6 @@
  */
 
 import {
-  Link,
   Sidebar,
   sidebarConfig,
   SidebarDivider,
@@ -25,6 +24,7 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
@@ -46,6 +46,7 @@ const useSidebarLogoStyles = makeStyles({
   link: {
     width: sidebarConfig.drawerWidthClosed,
     marginLeft: 24,
+    textDecoration: 'none',
   },
 });
 
@@ -55,7 +56,7 @@ const SidebarLogo = () => {
 
   return (
     <div className={classes.root}>
-      <Link to="/" underline="none" className={classes.link} aria-label="Home">
+      <Link to="/" className={classes.link} aria-label="Home">
         {isOpen ? (
           <svg
             style={{
@@ -107,8 +108,7 @@ export const appModuleNav = createFrontendModule({
               text={item.title}
             />
           ));
-          // Consume without rendering — these are handled by dedicated sidebar groups
-          nav.take('page:home');
+          // Consume without rendering — handled by the search modal
           nav.take('page:search');
           return (
             <Sidebar>
@@ -118,6 +118,7 @@ export const appModuleNav = createFrontendModule({
               </SidebarGroup>
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
+                {nav.take('page:home')}
                 {nav.take('page:catalog')}
                 {nav.take('page:scaffolder')}
                 <SidebarDivider />

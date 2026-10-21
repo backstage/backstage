@@ -30,13 +30,14 @@ import {
 export async function insertUnprocessedEntity(options: {
   tx: Knex | Knex.Transaction;
   entity: Entity;
+  entityRef?: string;
   hash: string;
   locationKey?: string;
   logger: LoggerService;
 }): Promise<boolean> {
   const { tx, entity, hash, logger, locationKey } = options;
 
-  const entityRef = stringifyEntityRef(entity);
+  const entityRef = options.entityRef ?? stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
   try {

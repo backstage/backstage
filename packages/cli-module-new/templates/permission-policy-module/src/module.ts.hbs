@@ -1,0 +1,19 @@
+import { coreServices, createBackendModule } from '@backstage/backend-plugin-api';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+import { {{policyClass}} } from './policy/{{policyClass}}';
+
+export const {{moduleVar}} = createBackendModule({
+  pluginId: '{{pluginId}}',
+  moduleId: '{{moduleId}}',
+  register({ registerInit }) {
+    registerInit({
+      deps: {
+        policy: policyExtensionPoint,
+        userInfo: coreServices.userInfo,
+      },
+      async init({ policy, userInfo }) {
+        policy.setPolicy(new {{policyClass}}(userInfo));
+      },
+    });
+  },
+});

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { TaskSpec, TaskStep } from './TaskSpec';
 import type {
   TemplateEntityV1beta3,

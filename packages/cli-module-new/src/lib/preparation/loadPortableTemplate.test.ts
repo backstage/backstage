@@ -104,7 +104,7 @@ describe('loadTemplate', () => {
     ).rejects.toThrow(
       `Invalid template definition at '${mockDir.resolve(
         'path/to/template1.yaml',
-      )}'; caused by Validation error: Invalid enum value`,
+      )}'; caused by Validation error: Invalid option`,
     );
   });
 });

@@ -31,167 +31,228 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
   const state = useContext(TabListStateContext);
   const prevSelectedKey = useRef<string | null>(null);
 
-  const updateCSSVariables = useCallback(() => {
-    // When rendered inside CollectionBuilder's hidden tree (for collection
-    // building), there is no TabListStateContext provider, so state is null.
-    // Bail out to avoid overwriting CSS variables on the shared tabsRef DOM
-    // element that the real instance also writes to.
-    if (state == null) return;
+  const updateCSSVariables = useCallback(
+    (animate = true) => {
+      // When rendered inside CollectionBuilder's hidden tree (for collection
+      // building), there is no TabListStateContext provider, so state is null.
+      // Bail out to avoid overwriting CSS variables on the shared tabsRef DOM
+      // element that the real instance also writes to.
+      if (state == null) return;
 
-    if (!tabsRef.current) return;
+      if (!tabsRef.current) return;
 
-    const tabsRect = tabsRef.current.getBoundingClientRect();
+      const tabsRect = tabsRef.current.getBoundingClientRect();
 
-    // Set active tab variables
-    if (state?.selectedKey != null && state.selectedKey !== '') {
-      const activeTab = tabRefs.current.get(state.selectedKey.toString());
+      // Set active tab variables
+      if (state?.selectedKey != null && state.selectedKey !== '') {
+        const activeTab = tabRefs.current.get(state.selectedKey.toString());
 
-      if (activeTab) {
-        const activeRect = activeTab.getBoundingClientRect();
-        const relativeLeft = activeRect.left - tabsRect.left;
-        const relativeTop = activeRect.top - tabsRect.top;
+        if (activeTab) {
+          const activeRect = activeTab.getBoundingClientRect();
+          const relativeLeft = activeRect.left - tabsRect.left;
+          const relativeTop = activeRect.top - tabsRect.top;
 
-        // Control transition timing based on whether this is the first time setting active tab
-        const isFirstActiveTab = prevSelectedKey.current === null;
+          // Control transition timing based on whether this is the first time setting active tab
+          const isFirstActiveTab = prevSelectedKey.current === null;
 
-        if (isFirstActiveTab) {
-          // First time setting active tab: no transitions for position
-          tabsRef.current.style.setProperty(
-            '--active-transition-duration',
-            '0s',
-          );
-          // Enable transitions on next frame for future tab switches
-          requestAnimationFrame(() => {
-            if (tabsRef.current) {
-              tabsRef.current.style.setProperty(
-                '--active-transition-duration',
-                '0.25s',
-              );
+          if (isFirstActiveTab || !animate) {
+            // First time setting active tab or non-animated reposition (e.g.
+            // tab resize): no transitions for position
+            tabsRef.current.style.setProperty(
+              '--active-transition-duration',
+              '0s',
+            );
+            // Enable transitions on next frame for future tab switches, unless
+            // more non-animated updates may follow (e.g. a resize in progress)
+            if (animate) {
+              requestAnimationFrame(() => {
+                if (tabsRef.current) {
+                  tabsRef.current.style.setProperty(
+                    '--active-transition-duration',
+                    '0.25s',
+                  );
+                }
+              });
             }
-          });
-        } else {
-          // Switching between tabs: full transitions
+          } else {
+            // Switching between tabs: full transitions
+            tabsRef.current.style.setProperty(
+              '--active-transition-duration',
+              '0.25s',
+            );
+          }
+
+          // Update previous selected key for next time
+          prevSelectedKey.current = state.selectedKey.toString();
+
           tabsRef.current.style.setProperty(
-            '--active-transition-duration',
-            '0.25s',
+            '--active-tab-left',
+            `${relativeLeft}px`,
           );
+          tabsRef.current.style.setProperty(
+            '--active-tab-right',
+            `${relativeLeft + activeRect.width}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--active-tab-top',
+            `${relativeTop}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--active-tab-bottom',
+            `${relativeTop + activeRect.height}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--active-tab-width',
+            `${activeRect.width}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--active-tab-height',
+            `${activeRect.height}px`,
+          );
+          tabsRef.current.style.setProperty('--active-tab-opacity', '1');
         }
-
-        // Update previous selected key for next time
-        prevSelectedKey.current = state.selectedKey.toString();
-
-        tabsRef.current.style.setProperty(
-          '--active-tab-left',
-          `${relativeLeft}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-right',
-          `${relativeLeft + activeRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-top',
-          `${relativeTop}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-bottom',
-          `${relativeTop + activeRect.height}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-width',
-          `${activeRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-height',
-          `${activeRect.height}px`,
-        );
-        tabsRef.current.style.setProperty('--active-tab-opacity', '1');
+      } else {
+        tabsRef.current.style.setProperty('--active-tab-opacity', '0');
+        prevSelectedKey.current = null;
       }
-    } else {
-      tabsRef.current.style.setProperty('--active-tab-opacity', '0');
-      prevSelectedKey.current = null;
-    }
 
-    // Set hovered tab variables
-    if (hoveredKey) {
-      const hoveredTab = tabRefs.current.get(hoveredKey);
-      if (hoveredTab) {
-        const hoveredRect = hoveredTab.getBoundingClientRect();
-        const relativeLeft = hoveredRect.left - tabsRect.left;
-        const relativeTop = hoveredRect.top - tabsRect.top;
+      // Set hovered tab variables
+      if (hoveredKey) {
+        const hoveredTab = tabRefs.current.get(hoveredKey);
+        if (hoveredTab) {
+          const hoveredRect = hoveredTab.getBoundingClientRect();
+          const relativeLeft = hoveredRect.left - tabsRect.left;
+          const relativeTop = hoveredRect.top - tabsRect.top;
 
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-left',
-          `${relativeLeft}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-right',
-          `${relativeLeft + hoveredRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-top',
-          `${relativeTop}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-bottom',
-          `${relativeTop + hoveredRect.height}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-width',
-          `${hoveredRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-height',
-          `${hoveredRect.height}px`,
-        );
-        // Control transition timing based on whether this is a new hover session
-        const isNewHoverSession = prevHoveredKey.current === null;
-
-        if (isNewHoverSession) {
-          // Starting new hover session: no transitions for position
           tabsRef.current.style.setProperty(
-            '--hovered-transition-duration',
-            '0s',
+            '--hovered-tab-left',
+            `${relativeLeft}px`,
           );
-          // Enable transitions on next frame for future tab switches
-          requestAnimationFrame(() => {
-            if (tabsRef.current) {
-              tabsRef.current.style.setProperty(
-                '--hovered-transition-duration',
-                '0.2s',
-              );
+          tabsRef.current.style.setProperty(
+            '--hovered-tab-right',
+            `${relativeLeft + hoveredRect.width}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--hovered-tab-top',
+            `${relativeTop}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--hovered-tab-bottom',
+            `${relativeTop + hoveredRect.height}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--hovered-tab-width',
+            `${hoveredRect.width}px`,
+          );
+          tabsRef.current.style.setProperty(
+            '--hovered-tab-height',
+            `${hoveredRect.height}px`,
+          );
+          // Control transition timing based on whether this is a new hover session
+          const isNewHoverSession = prevHoveredKey.current === null;
+
+          if (isNewHoverSession || !animate) {
+            // Starting new hover session or non-animated reposition (e.g. tab
+            // resize): no transitions for position
+            tabsRef.current.style.setProperty(
+              '--hovered-transition-duration',
+              '0s',
+            );
+            // Enable transitions on next frame for future tab switches, unless
+            // more non-animated updates may follow (e.g. a resize in progress)
+            if (animate) {
+              requestAnimationFrame(() => {
+                if (tabsRef.current) {
+                  tabsRef.current.style.setProperty(
+                    '--hovered-transition-duration',
+                    '0.2s',
+                  );
+                }
+              });
             }
-          });
-        } else {
-          // Moving between tabs in same session: full transitions
-          tabsRef.current.style.setProperty(
-            '--hovered-transition-duration',
-            '0.2s',
-          );
+          } else {
+            // Moving between tabs in same session: full transitions
+            tabsRef.current.style.setProperty(
+              '--hovered-transition-duration',
+              '0.2s',
+            );
+          }
+
+          // Update previous hover key for next time
+          prevHoveredKey.current = hoveredKey;
+
+          tabsRef.current.style.setProperty('--hovered-tab-opacity', '1');
         }
+      } else {
+        // When not hovering, hide with opacity and reset for next hover session
+        tabsRef.current.style.setProperty('--hovered-tab-opacity', '0');
 
-        // Update previous hover key for next time
-        prevHoveredKey.current = hoveredKey;
-
-        tabsRef.current.style.setProperty('--hovered-tab-opacity', '1');
+        // Reset previous hover key so next hover is treated as new session
+        prevHoveredKey.current = null;
       }
-    } else {
-      // When not hovering, hide with opacity and reset for next hover session
-      tabsRef.current.style.setProperty('--hovered-tab-opacity', '0');
-
-      // Reset previous hover key so next hover is treated as new session
-      prevHoveredKey.current = null;
-    }
-  }, [state?.selectedKey, hoveredKey, tabRefs.current]);
+    },
+    [state?.selectedKey, hoveredKey, tabRefs.current],
+  );
 
   useEffect(() => {
     updateCSSVariables();
   }, [updateCSSVariables, tabRefs.current.size]);
 
   useEffect(() => {
-    const handleResize = () => updateCSSVariables();
+    const handleResize = () => updateCSSVariables(false);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [updateCSSVariables]);
+
+  useEffect(() => {
+    // ResizeObserver is not available in some environments (e.g. Jest/jsdom)
+    if (typeof ResizeObserver === 'undefined') {
+      return undefined;
+    }
+
+    let frame: number | null = null;
+    const scheduleUpdate = () => {
+      if (frame !== null) {
+        return;
+      }
+
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        updateCSSVariables(false);
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    const observeTabs = () => {
+      resizeObserver.disconnect();
+      for (const tab of tabRefs.current.values()) {
+        resizeObserver.observe(tab);
+      }
+    };
+    observeTabs();
+
+    // Tab elements can be added, removed, or replaced without this component
+    // re-rendering, so watch the DOM to keep the observed set in sync.
+    const mutationObserver = new MutationObserver(() => {
+      observeTabs();
+      scheduleUpdate();
+    });
+
+    if (tabsRef.current) {
+      mutationObserver.observe(tabsRef.current, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    return () => {
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+      }
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [updateCSSVariables, tabRefs, tabsRef]);
 
   return (
     <>

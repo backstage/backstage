@@ -4,7 +4,7 @@ title: Internationalization
 description: Documentation on adding internationalization to plugins and apps
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. For the new frontend system version, see [Internationalization](../frontend-system/building-plugins/07-internationalization.md). The i18n APIs (`createTranslationRef`, `useTranslationRef`) work the same way in both the old and new frontend systems.
 
@@ -412,4 +412,4 @@ The exported JSON files are standard key-value pairs compatible with most extern
 3. Download the translated files back into the translations directory
 4. Run `translations import` to regenerate the wiring code
 
-For full command reference, see the [CLI commands documentation](../tooling/cli/03-commands.md#translations-export).
+For full command reference, see the [CLI commands documentation](../tooling/cli/module-translations.md#translations-export).

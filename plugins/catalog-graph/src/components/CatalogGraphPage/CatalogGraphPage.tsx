@@ -164,8 +164,8 @@ export const CatalogGraphPage = (
 
       if (event.shiftKey) {
         const path = catalogEntityRoute({
-          kind: nodeEntityName.kind.toLocaleLowerCase('en-US'),
-          namespace: nodeEntityName.namespace.toLocaleLowerCase('en-US'),
+          kind: nodeEntityName.kind.toLowerCase(),
+          namespace: nodeEntityName.namespace.toLowerCase(),
           name: nodeEntityName.name,
         });
 

@@ -56,6 +56,16 @@ in combination with suitable event subscribers.
 
 However, it is not limited to these use cases.
 
+## Database event retention
+
+The database-backed event bus uses PostgreSQL. Events are retained for at least
+10 minutes. Beyond that window, cleanup aims to keep the newest 10,000 events;
+events older than one day are eligible for deletion regardless of count.
+Cleanup runs every minute in batches, so bursts and backlogs can temporarily
+leave more than 10,000 events. Subscriptions that have fallen behind the
+retained events are also removed; consumers should be ready to recreate their
+subscriptions if they have been inactive for too long.
+
 ## Use Cases
 
 ### Request Validator

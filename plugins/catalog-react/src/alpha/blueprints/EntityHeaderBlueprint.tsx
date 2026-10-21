@@ -30,7 +30,12 @@ import {
   entityFilterFunctionDataRef,
 } from './extensionData';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use {@link EntityHeaderLayoutBlueprint} instead. This legacy
+ * blueprint renders an opaque header element through the temporary Catalog
+ * entity-page fallback.
+ */
 export const EntityHeaderBlueprint = createExtensionBlueprint({
   kind: 'entity-header',
   attachTo: { id: 'page:catalog/entity', input: 'headers' },

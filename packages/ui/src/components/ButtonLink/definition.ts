@@ -30,6 +30,7 @@ export const ButtonLinkDefinition = defineComponent<ButtonLinkOwnProps>()({
   },
   bg: 'consumer',
   analytics: true,
+  navigation: { type: 'anchor' },
   propDefs: {
     noTrack: {},
     size: { dataAttribute: true, default: 'small' },

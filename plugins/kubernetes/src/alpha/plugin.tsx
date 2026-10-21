@@ -15,7 +15,6 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { kubernetesPage } from './pages';
 import { entityKubernetesContent } from './entityContents';
 import { rootCatalogKubernetesRouteRef } from '../plugin';
 import {
@@ -44,7 +43,6 @@ export default createFrontendPlugin({
   icon: <KubernetesIcon />,
   info: { packageJson: () => import('../../package.json') },
   extensions: [
-    kubernetesPage,
     entityKubernetesContent,
     kubernetesApi,
     kubernetesProxyApi,

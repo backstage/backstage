@@ -19,16 +19,19 @@ import { z } from 'zod/v4';
 /** @public */
 export const AzureConnectionType = createConnectionType({
   type: 'azure',
+  title: 'Azure DevOps',
   configSchema: z.object({
     host: z.string(),
   }),
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'pat',
+      title: 'Personal Access Token',
       configSchema: z.object({
         personalAccessToken: z.string(),
         orgs: z.array(z.string()).optional(),
@@ -36,6 +39,7 @@ export const AzureConnectionType = createConnectionType({
     },
     {
       method: 'clientCredentials',
+      title: 'Client Credentials',
       configSchema: z.object({
         clientId: z.string(),
         clientSecret: z.string(),
@@ -45,6 +49,7 @@ export const AzureConnectionType = createConnectionType({
     },
     {
       method: 'managedIdentity',
+      title: 'Managed Identity',
       configSchema: z.object({
         clientId: z.string(),
         tenantId: z.string().optional(),

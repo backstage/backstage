@@ -13,7 +13,7 @@ This documentation shows common examples that may be useful when deploying
 Backstage for the first time, or for those without established deployment
 practices.
 
-:::note Note
+:::note
 
 The _easiest_ way to explore Backstage is to visit the
 [live demo site](https://demo.backstage.io).

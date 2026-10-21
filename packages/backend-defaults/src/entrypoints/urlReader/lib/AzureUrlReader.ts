@@ -135,6 +135,13 @@ export class AzureUrlReader implements UrlReaderService {
 
     const commitsAzureResponse = await fetch(getAzureCommitsUrl(url), {
       headers: credentials?.headers,
+      // TODO(freben): The signal cast is there because pre-3.x versions of
+      // node-fetch have a very slightly deviating AbortSignal type signature.
+      // The difference does not affect us in practice however. The cast can be
+      // removed after we support ESM for CLI dependencies and migrate to
+      // version 3 of node-fetch.
+      // https://github.com/backstage/backstage/issues/8242
+      ...(signal && { signal: signal as any }),
     });
     if (!commitsAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;

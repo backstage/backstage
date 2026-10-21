@@ -42,5 +42,12 @@ export namespace oauth2ProxySignInResolvers {
         }
       | undefined
     >;
+  const forwardedPreferredUsernameMatchingUserEntityName: SignInResolverFactory<
+    OAuth2ProxyResult,
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
+  >;
 }
 ```

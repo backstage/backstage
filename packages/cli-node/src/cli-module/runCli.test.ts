@@ -1,0 +1,542 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { stripVTControlCharacters } from 'node:util';
+import { createCliModule } from './createCliModule';
+import { runCli } from './runCli';
+
+const originalArgv = process.argv;
+const originalUnhandledRejectionListeners = new Set(
+  process.listeners('unhandledRejection'),
+);
+
+describe('runCli', () => {
+  beforeEach(() => {
+    jest.spyOn(process, 'exit').mockImplementation((() => undefined) as never);
+  });
+
+  afterEach(() => {
+    process.argv = originalArgv;
+    for (const listener of process.listeners('unhandledRejection')) {
+      if (!originalUnhandledRejectionListeners.has(listener)) {
+        process.removeListener('unhandledRejection', listener);
+      }
+    }
+    jest.restoreAllMocks();
+  });
+
+  it('runs commands from a collection of modules', async () => {
+    expect.assertions(4);
+    process.argv = ['node', 'cli', 'repo', 'test', 'src', '--verbose'];
+
+    const buildModule = createCliModule({
+      packageJson: { name: '@example/build' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'build'],
+          description: 'Build the repository',
+          execute: async () => {},
+        });
+      },
+    });
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'Test the repository',
+          execute: async context => {
+            expect(context.args).toEqual(['src', '--verbose']);
+            expect(context.info).toEqual({
+              name: 'repo test',
+              usage: 'example-cli repo test',
+            });
+          },
+        });
+      },
+    });
+
+    await runCli({
+      modules: [buildModule, testModule],
+      name: 'example-cli',
+      version: '1.2.3',
+    });
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalledTimes(1);
+  });
+
+  it('waits for stdout and stderr to flush before exiting', async () => {
+    process.argv = ['node', 'cli', 'print'];
+
+    const pendingFlushes: Array<() => void> = [];
+    let onAllFlushesPending: () => void = () => {};
+    const allFlushesPending = new Promise<void>(resolve => {
+      onAllFlushesPending = resolve;
+    });
+    const holdWrite = (_chunk: unknown, callback?: unknown) => {
+      if (typeof callback === 'function') {
+        pendingFlushes.push(callback as () => void);
+        if (pendingFlushes.length === 2) {
+          onAllFlushesPending();
+        }
+      }
+      return true;
+    };
+    jest.spyOn(process.stdout, 'write').mockImplementation(holdWrite as never);
+    jest.spyOn(process.stderr, 'write').mockImplementation(holdWrite as never);
+
+    const printModule = createCliModule({
+      packageJson: { name: '@example/print' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['print'],
+          description: 'Print a lot of output',
+          execute: async () => {
+            process.stdout.write('output');
+          },
+        });
+      },
+    });
+
+    const done = runCli({ modules: [printModule], name: 'example-cli' });
+
+    await allFlushesPending;
+    expect(process.exit).not.toHaveBeenCalled();
+
+    pendingFlushes.forEach(flush => flush());
+    await done;
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
+  it('forwards help flags to leaf commands', async () => {
+    expect.assertions(2);
+    process.argv = ['node', 'cli', 'test', '--help'];
+
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['test'],
+          description: 'Test the repository',
+          execute: async ({ args }) => {
+            expect(args).toEqual(['--help']);
+          },
+        });
+      },
+    });
+
+    await runCli({
+      modules: [testModule],
+      name: 'example-cli',
+    });
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
+  it('renders help for nested command groups', async () => {
+    process.argv = ['node', 'cli', 'help', 'repo'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'Test the repository',
+          execute: async () => {},
+        });
+        reg.addCommand({
+          path: ['repo', 'secret'],
+          description: 'Hidden command',
+          experimental: true,
+          execute: async () => {},
+        });
+      },
+    });
+
+    await runCli({
+      modules: [testModule],
+      name: 'example-cli',
+    });
+
+    const helpOutput = logSpy.mock.calls.flat().join('\n');
+    expect(helpOutput).toContain('example-cli repo');
+    expect(helpOutput).toContain('test');
+    expect(helpOutput).not.toContain('secret');
+    expect(process.exit).toHaveBeenCalledWith(0);
+    logSpy.mockRestore();
+  });
+
+  it.each([
+    { commandPath: [] },
+    { commandPath: ['repo'] },
+    { commandPath: ['repo', 'example'] },
+  ])(
+    'renders current-level help without a subcommand for %j',
+    async ({ commandPath }) => {
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const execute = jest.fn(async () => {});
+      const loader = jest.fn(async () => ({ default: execute }));
+      const testModule = createCliModule({
+        packageJson: { name: '@example/test' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['repo', 'example', 'list'],
+            description: 'List examples',
+            execute: { loader },
+          });
+        },
+      });
+      const options = { modules: [testModule], name: 'example-cli' };
+
+      process.argv = ['node', 'cli', ...commandPath];
+      await runCli(options);
+      const output = stripVTControlCharacters(
+        logSpy.mock.calls.flat().join('\n'),
+      );
+      expect(output).toContain(['example-cli', ...commandPath].join(' '));
+      expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
+      expect(output).toContain(
+        ['example list', 'list', 'List examples'][commandPath.length],
+      );
+      expect(output).not.toContain('Invalid command');
+      expect(process.exit).not.toHaveBeenCalled();
+
+      logSpy.mockClear();
+      process.argv = ['node', 'cli', ...commandPath, '--help'];
+      await runCli(options);
+      expect(
+        stripVTControlCharacters(logSpy.mock.calls.flat().join('\n')),
+      ).toBe(output);
+      expect(process.exit).toHaveBeenCalledWith(0);
+      expect(loader).not.toHaveBeenCalled();
+      expect(execute).not.toHaveBeenCalled();
+    },
+  );
+
+  it('separates and sorts groups and commands with visible child previews', async () => {
+    process.argv = ['node', 'cli'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['zulu'],
+          ['repo', 'test'],
+          ['repo', 'start'],
+          ['repo', 'lint'],
+          ['repo', 'fix'],
+          ['repo', 'clean'],
+          ['repo', 'build'],
+          ['package', 'example', 'list'],
+          ['alpha'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: `Run ${path.join(' ')}`,
+            execute: async () => {},
+          });
+        }
+        for (const path of [
+          ['repo', 'hidden'],
+          ['hidden', 'test'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Hidden command',
+            experimental: true,
+            execute: async () => {},
+          });
+        }
+      },
+    });
+    await runCli({ modules: [testModule], name: 'example-cli' });
+    const output = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    const groups = output.split(/groups:/i)[1].split(/commands:/i)[0];
+    const commands = output.split(/commands:/i)[1].split(/flags:/i)[0];
+    expect(
+      groups
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'package example list',
+      'repo build, clean, fix, lint, start, test',
+    ]);
+    expect(
+      commands
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'alpha Run alpha',
+      'help Display help for command',
+      'zulu Run zulu',
+    ]);
+    expect(output).not.toContain('hidden');
+  });
+
+  it('fits previews to terminal width and expands groups breadth-first', async () => {
+    const columnsDescriptor = Object.getOwnPropertyDescriptor(
+      process.stdout,
+      'columns',
+    );
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const loader = jest.fn();
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['repo', 'a', 'x', 'one'],
+          ['repo', 'a', 'x', 'two'],
+          ['repo', 'b', 'one'],
+          ['repo', 'b', 'two'],
+          ['repo', 'z'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Example command',
+            execute: { loader },
+          });
+        }
+      },
+    });
+    try {
+      for (const [width, expected] of [
+        [1, '…'],
+        [8, 'a/, …'],
+        [9, 'a/, b/, z'],
+        [11, 'a x/, b/, z'],
+        [24, 'a x/, b one, b two, z'],
+        [33, 'a x one, a x two, b one, b two, z'],
+        [undefined, 'a x one, a x two, b one, b two, z'],
+      ] as const) {
+        Object.defineProperty(process.stdout, 'columns', {
+          configurable: true,
+          value: width === undefined ? undefined : width + 14,
+        });
+        process.argv = ['node', 'cli'];
+        logSpy.mockClear();
+        await runCli({ modules: [testModule], name: 'example-cli' });
+        const output = stripVTControlCharacters(
+          logSpy.mock.calls.flat().join('\n'),
+        );
+        expect(
+          output
+            .split(/groups:/i)[1]
+            .split(/commands:/i)[0]
+            .trim(),
+        ).toBe(`repo        ${expected}`);
+      }
+      expect(loader).not.toHaveBeenCalled();
+    } finally {
+      if (columnsDescriptor) {
+        Object.defineProperty(process.stdout, 'columns', columnsDescriptor);
+      } else {
+        Reflect.deleteProperty(process.stdout, 'columns');
+      }
+    }
+  });
+
+  it('supports the short version flag', async () => {
+    process.argv = ['node', 'cli', '-V'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await runCli({
+      modules: [],
+      name: 'example-cli',
+      version: '1.2.3',
+    });
+
+    expect(logSpy).toHaveBeenCalledWith('1.2.3');
+    expect(process.exit).toHaveBeenCalledWith(0);
+    logSpy.mockRestore();
+  });
+
+  it('supports the short version flag after a nested leaf command', async () => {
+    process.argv = ['node', 'cli', 'repo', 'test', '-V'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'Test the repository',
+          execute: async () => {
+            throw new Error('Command should not be executed');
+          },
+        });
+      },
+    });
+
+    await runCli({
+      modules: [testModule],
+      name: 'example-cli',
+      version: '1.2.3',
+    });
+
+    expect(logSpy).toHaveBeenCalledWith('1.2.3');
+    expect(process.exit).toHaveBeenCalledWith(0);
+    logSpy.mockRestore();
+  });
+
+  it('allows modules to define the help command', async () => {
+    expect.assertions(2);
+    process.argv = ['node', 'cli', 'help'];
+
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['help'],
+          description: 'Custom help command',
+          execute: async ({ args }) => {
+            expect(args).toEqual([]);
+          },
+        });
+      },
+    });
+
+    await runCli({
+      modules: [testModule],
+      name: 'example-cli',
+    });
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
+  it('reports invalid nested commands', async () => {
+    process.argv = ['node', 'cli', 'repo', 'missing'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'Test the repository',
+          execute: async () => {},
+        });
+      },
+    });
+
+    await runCli({
+      modules: [testModule],
+      name: 'example-cli',
+    });
+
+    expect(logSpy.mock.calls.flat().join('\n')).toContain(
+      'Invalid command: repo missing',
+    );
+    expect(process.exit).toHaveBeenCalledWith(1);
+    logSpy.mockRestore();
+  });
+
+  it('reports conflicts between modules', async () => {
+    const firstModule = createCliModule({
+      packageJson: { name: '@example/first' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'First test command',
+          execute: async () => {},
+        });
+      },
+    });
+    const secondModule = createCliModule({
+      packageJson: { name: '@example/second' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'Second test command',
+          execute: async () => {},
+        });
+      },
+    });
+
+    await expect(
+      runCli({
+        modules: [firstModule, secondModule],
+        name: 'example-cli',
+      }),
+    ).rejects.toThrow(
+      'Command "repo test" from "@example/second" conflicts with an existing command from "@example/first"',
+    );
+  });
+
+  it('reports conflicts between parent and nested commands', async () => {
+    const nestedModule = createCliModule({
+      packageJson: { name: '@example/nested' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'test'],
+          description: 'Nested command',
+          execute: async () => {},
+        });
+      },
+    });
+    const parentModule = createCliModule({
+      packageJson: { name: '@example/parent' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo'],
+          description: 'Parent command',
+          execute: async () => {},
+        });
+      },
+    });
+
+    await expect(
+      runCli({
+        modules: [nestedModule, parentModule],
+        name: 'example-cli',
+      }),
+    ).rejects.toThrow(
+      'Command "repo" from "@example/parent" conflicts with an existing command from "@example/nested"',
+    );
+
+    await expect(
+      runCli({
+        modules: [parentModule, nestedModule],
+        name: 'example-cli',
+      }),
+    ).rejects.toThrow(
+      'Command "repo test" from "@example/nested" conflicts with an existing command from "@example/parent"',
+    );
+  });
+
+  it('registers the unhandled rejection handler once', async () => {
+    process.argv = ['node', 'cli'];
+
+    await runCli({
+      modules: [],
+      name: 'example-cli',
+    });
+    const listenerCount = process.listenerCount('unhandledRejection');
+
+    await runCli({
+      modules: [],
+      name: 'example-cli',
+    });
+
+    expect(process.listenerCount('unhandledRejection')).toBe(listenerCount);
+  });
+});

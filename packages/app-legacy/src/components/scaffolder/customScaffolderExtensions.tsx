@@ -54,7 +54,7 @@ export const LowerCaseValuePickerFieldExtension = scaffolderPlugin.provide(
     name: 'LowerCaseValuePicker',
     component: TextValuePicker,
     validation: (value: string, validation: FieldValidation) => {
-      if (value.toLocaleLowerCase('en-US') !== value) {
+      if (value.toLowerCase() !== value) {
         validation.addError('Only lowercase values are allowed.');
       }
     },

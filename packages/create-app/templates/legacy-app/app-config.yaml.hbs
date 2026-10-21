@@ -73,16 +73,9 @@ auth:
   providers:
     # See https://backstage.io/docs/auth/guest/provider
     guest: {}
-  # see https://backstage.io/docs/ai/mcp-actions#dynamic-client-registration
-  # to learn more about dynamic client registration
-  experimentalDynamicClientRegistration:
-    enabled: false
-    # Optional: limit valid callback URLs for added security
-    # allowedRedirectUriPatterns:
-    #   - cursor://*
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents
   # to learn more about client id metadata documents
-  experimentalClientIdMetadataDocuments:
+  clientIdMetadataDocuments:
     enabled: true
     # Optional: restrict which `client_id` URLs are allowed (defaults to ['*'])
     # allowedClientIdPatterns:

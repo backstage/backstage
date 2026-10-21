@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-auth",
-  "version": "0.1.2",
+  "version": "0.1.5-next.0",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -35,13 +35,13 @@
   "dependencies": {
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
     "glob": "^13.0.0",
     "inquirer": "^8.2.0",
     "proper-lockfile": "^4.1.2",
     "yaml": "^2.0.0",
-    "zod": "^3.25.76"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

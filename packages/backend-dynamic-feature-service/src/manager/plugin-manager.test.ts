@@ -217,6 +217,60 @@ describe('backend-dynamic-feature-service', () => {
         },
       },
       {
+        name: 'should fall back to main export when alpha does not provide a plugin entrypoint',
+        packageManifest: {
+          name: 'backend-dynamic-plugin-test',
+          version: '0.0.0',
+          backstage: {
+            role: 'backend-plugin',
+          },
+          main: 'dist/index.cjs.js',
+        },
+        indexFile: {
+          relativePath: ['dist', 'index.cjs.js'],
+          content: `const plugin = { $$type: '@backstage/BackendFeature' }; exports["default"] = plugin;`,
+        },
+        alpha: {
+          packageManifest: {
+            name: 'backend-dynamic-plugin-test',
+            version: '0.0.0',
+            main: '../dist/alpha.cjs.js',
+          },
+          indexFile: {
+            relativePath: ['dist', 'alpha.cjs.js'],
+            content: `exports.supplementaryExport = {};`,
+          },
+        },
+        expectedLogs(location) {
+          return {
+            infos: [
+              {
+                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+              },
+            ],
+          };
+        },
+        checkLoadedPlugins(plugins) {
+          expect(plugins).toMatchObject([
+            {
+              name: 'backend-dynamic-plugin-test',
+              version: '0.0.0',
+              role: 'backend-plugin',
+              platform: 'node',
+              installer: {
+                kind: 'new',
+              },
+            },
+          ]);
+          const installer: NewBackendPluginInstaller = (
+            plugins[0] as BackendDynamicPlugin
+          ).installer as NewBackendPluginInstaller;
+          expect((installer.install() as BackendFeature).$$type).toEqual(
+            '@backstage/BackendFeature',
+          );
+        },
+      },
+      {
         name: 'should successfully load a new backend plugin by the default BackendFeatureFactory',
         packageManifest: {
           name: 'backend-dynamic-plugin-test',

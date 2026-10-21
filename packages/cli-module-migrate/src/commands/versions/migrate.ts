@@ -44,7 +44,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { pattern, skipCodeChanges },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         pattern: {

@@ -472,6 +472,81 @@ repoUrl:
 
 The supported `additionalScopes` values are `gerrit`, `github`, `gitlab`, `bitbucket`, and `azure`.
 
+### `ownerLabel`
+
+Custom label for the owner/namespace field. Overrides the default label for the given SCM provider picker.
+
+- Show `GitLab Namespace` instead of the default `Owner` label
+
+```yaml
+repoUrl:
+  title: Repository Location
+  type: string
+  ui:field: RepoUrlPicker
+  ui:options:
+    ownerLabel: GitLab Namespace
+```
+
+### `ownerDescription`
+
+Custom description for the owner/namespace field. Overrides the default helper text.
+
+- Show custom guidance for the owner field
+
+```yaml
+repoUrl:
+  title: Repository Location
+  type: string
+  ui:field: RepoUrlPicker
+  ui:options:
+    ownerDescription: Your username or group path where the repository will be created
+```
+
+### `repoLabel`
+
+Custom label for the repository name field. Overrides the default `Repository` label.
+
+- Show `New Repository Name` instead of the default label
+
+```yaml
+repoUrl:
+  title: Repository Location
+  type: string
+  ui:field: RepoUrlPicker
+  ui:options:
+    repoLabel: New Repository Name
+```
+
+### `repoDescription`
+
+Custom description for the repository name field. Overrides the default helper text.
+
+- Show custom guidance for the repository name field
+
+```yaml
+repoUrl:
+  title: Repository Location
+  type: string
+  ui:field: RepoUrlPicker
+  ui:options:
+    repoDescription: Type a new repository name
+```
+
+### `disableRepoAutocomplete`
+
+If true, renders a plain text input instead of an autocomplete dropdown for the repository name.
+
+- Disable the repository autocomplete dropdown
+
+```yaml
+repoUrl:
+  title: Repository Location
+  type: string
+  ui:field: RepoUrlPicker
+  ui:options:
+    disableRepoAutocomplete: true
+```
+
 ## RepoBranchPicker
 
 The input props that can be specified under `ui:options` for the `RepoBranchPicker` field extension.

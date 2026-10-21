@@ -69,7 +69,14 @@ describe('github:environment:create examples', () => {
   const mockContext = createMockActionContext();
   const mockCatalogService = catalogServiceMock.mock();
 
+  async function runAction(context: Parameters<typeof action.handler>[0]) {
+    const result = action.handler(context);
+    await jest.advanceTimersByTimeAsync(2_000);
+    await result;
+  }
+
   beforeEach(() => {
+    jest.useFakeTimers();
     mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({
       data: {
         key: publicKey,
@@ -116,12 +123,15 @@ describe('github:environment:create examples', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.resetAllMocks();
+  });
 
   it('Create a GitHub Environment (No Policies, No Variables, No Secrets)', async () => {
     const input = yaml.parse(examples[0].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -154,7 +164,7 @@ describe('github:environment:create examples', () => {
   it('Create a GitHub Environment with Protected Branch Policy', async () => {
     const input = yaml.parse(examples[1].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -191,7 +201,7 @@ describe('github:environment:create examples', () => {
   it('Create a GitHub Environment with Custom Branch Policies', async () => {
     const input = yaml.parse(examples[2].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -243,7 +253,7 @@ describe('github:environment:create examples', () => {
   it('Create a GitHub Environment with Environment Variables and Secrets', async () => {
     const input = yaml.parse(examples[3].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -318,7 +328,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[4].description}`, async () => {
     const input = yaml.parse(examples[4].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -369,7 +379,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[5].description}`, async () => {
     const input = yaml.parse(examples[5].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -423,7 +433,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[6].description}`, async () => {
     const input = yaml.parse(examples[6].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -520,7 +530,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[7].description}`, async () => {
     const input = yaml.parse(examples[7].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -553,7 +563,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[8].description}`, async () => {
     const input = yaml.parse(examples[8].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -586,7 +596,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[9].description}`, async () => {
     const input = yaml.parse(examples[9].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -649,7 +659,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[10].description}`, async () => {
     const input = yaml.parse(examples[10].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -702,7 +712,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[11].description}`, async () => {
     const input = yaml.parse(examples[11].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -756,7 +766,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[12].description}`, async () => {
     const input = yaml.parse(examples[12].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -791,7 +801,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[13].description}`, async () => {
     const input = yaml.parse(examples[13].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -866,7 +876,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[14].description}`, async () => {
     const input = yaml.parse(examples[14].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -899,7 +909,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[15].description}`, async () => {
     const input = yaml.parse(examples[15].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });
@@ -932,7 +942,7 @@ describe('github:environment:create examples', () => {
   it(`should ${examples[16].description}`, async () => {
     const input = yaml.parse(examples[16].example).steps[0].input;
 
-    await action.handler({
+    await runAction({
       ...mockContext,
       input,
     });

@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ReactNode, ReactElement } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 
-import {
-  attachComponentData,
-  useElementFilter,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+import { useRouteRefParams } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   Content,
@@ -31,7 +27,6 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { Entity } from '@backstage/catalog-model';
 import {
   entityRouteRef,
   useAsyncEntity,
@@ -41,31 +36,16 @@ import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityLayoutRoute,
+  filterEntityLayoutRoutes,
+} from './entityLayoutRoutes';
 
-export type EntityLayoutRouteProps = {
-  path: string;
-  title: string;
-  group?: string;
-  icon?: string | ReactElement;
-  children: JSX.Element;
-  if?: (entity: Entity) => boolean;
-};
-
-const dataKey = 'plugin.catalog.entityLayoutRoute';
-const Route: (props: EntityLayoutRouteProps) => null = () => null;
-attachComponentData(Route, dataKey, true);
-attachComponentData(Route, 'core.gatherMountPoints', true); // This causes all mount points that are discovered within this route to use the path of the route itself
-
-/** @public */
-export interface EntityLayoutProps {
-  UNSTABLE_contextMenuOptions?: ComponentProps<
-    typeof EntityHeader
-  >['UNSTABLE_contextMenuOptions'];
+interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ComponentProps<
     typeof EntityHeader
   >['UNSTABLE_extraContextMenuItems'];
   contextMenuItems?: ComponentProps<typeof EntityHeader>['contextMenuItems'];
-  children?: ReactNode;
   header?: JSX.Element;
   NotFoundComponent?: ReactNode;
   /**
@@ -82,70 +62,25 @@ export interface EntityLayoutProps {
   groupDefinitions: EntityContentGroupDefinitions;
   defaultContentOrder?: 'title' | 'natural';
   showNavItemIcons?: boolean;
+  routes: EntityLayoutRoute[];
 }
 
-/**
- * EntityLayout is a compound component, which allows you to define a layout for
- * entities using a sub-navigation mechanism.
- *
- * Consists of two parts: EntityLayout and EntityLayout.Route
- *
- * @example
- * ```jsx
- * <EntityLayout>
- *   <EntityLayout.Route path="/example" title="Example tab">
- *     <div>This is rendered under /example/anything-here route</div>
- *   </EntityLayout.Route>
- * </EntityLayout>
- * ```
- *
- * @public
- */
-export const EntityLayout = (props: EntityLayoutProps) => {
+export function EntityLayout(props: EntityLayoutProps) {
   const {
     UNSTABLE_extraContextMenuItems,
-    UNSTABLE_contextMenuOptions,
     contextMenuItems,
-    children,
     header,
     NotFoundComponent,
     parentEntityRelations,
     groupDefinitions,
     defaultContentOrder,
     showNavItemIcons,
+    routes,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
 
-  const routes = useElementFilter(
-    children,
-    elements =>
-      elements
-        .selectByComponentData({
-          key: dataKey,
-          withStrictError:
-            'Child of EntityLayout must be an EntityLayout.Route',
-        })
-        .getElements<EntityLayoutRouteProps>() // all nodes, element data, maintain structure or not?
-        .flatMap(({ props: elementProps }) => {
-          if (!entity) {
-            return [];
-          }
-          if (elementProps.if && !elementProps.if(entity)) {
-            return [];
-          }
-          return [
-            {
-              path: elementProps.path,
-              title: elementProps.title,
-              group: elementProps.group,
-              children: elementProps.children,
-              icon: elementProps.icon,
-            },
-          ];
-        }),
-    [entity],
-  );
+  const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
 
   const { t } = useTranslationRef(catalogTranslationRef);
 
@@ -154,7 +89,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
       {header ?? (
         <EntityHeader
           parentEntityRelations={parentEntityRelations}
-          UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
           UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
           contextMenuItems={contextMenuItems}
         />
@@ -164,7 +98,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {entity && (
         <EntityTabs
-          routes={routes}
+          routes={visibleRoutes}
           groupDefinitions={groupDefinitions}
           defaultContentOrder={defaultContentOrder}
           showIcons={showNavItemIcons}
@@ -197,6 +131,4 @@ export const EntityLayout = (props: EntityLayoutProps) => {
       )}
     </Page>
   );
-};
-
-EntityLayout.Route = Route;
+}

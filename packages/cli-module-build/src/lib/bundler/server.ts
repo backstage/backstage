@@ -150,10 +150,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const config = await createConfig(paths, {
     ...commonConfigOptions,
-    additionalEntryPoints: [
-      ...detectedModulesEntryPoint,
-      ...moduleFederationSharedDependenciesEntryPoint,
-    ],
+    additionalEntryPoints: [...moduleFederationSharedDependenciesEntryPoint],
+    deferredEntryPoints: [...detectedModulesEntryPoint],
     moduleFederationRemote: options.moduleFederationRemote,
   });
 

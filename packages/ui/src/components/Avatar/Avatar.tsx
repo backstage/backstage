@@ -55,7 +55,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
     .split(' ')
     .map(word => word[0])
     .join('')
-    .toLocaleUpperCase('en-US')
+    .toUpperCase()
     .slice(0, initialsCount);
 
   return (

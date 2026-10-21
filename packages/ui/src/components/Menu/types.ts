@@ -98,7 +98,7 @@ export type MenuItemOwnProps = {
 /** @public */
 export interface MenuItemProps
   extends MenuItemOwnProps,
-    Omit<RAMenuItemProps, keyof MenuItemOwnProps> {}
+    Omit<RAMenuItemProps, keyof MenuItemOwnProps | 'render'> {}
 
 /** @public */
 export type MenuListBoxItemOwnProps = {
@@ -109,7 +109,7 @@ export type MenuListBoxItemOwnProps = {
 /** @public */
 export interface MenuListBoxItemProps
   extends MenuListBoxItemOwnProps,
-    Omit<RAListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+    Omit<RAListBoxItemProps, keyof MenuListBoxItemOwnProps | 'render'> {}
 
 /** @public */
 export type MenuSectionOwnProps = {
@@ -118,7 +118,12 @@ export type MenuSectionOwnProps = {
   className?: string;
 };
 
-/** @public */
+/**
+ * Props for a section within a menu. Disable items using `disabledKeys` on
+ * {@link MenuProps} or `isDisabled` on {@link MenuItemProps}.
+ *
+ * @public
+ */
 export interface MenuSectionProps<T>
   extends MenuSectionOwnProps,
     Omit<RAMenuSectionProps<T>, keyof MenuSectionOwnProps> {}

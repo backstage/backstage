@@ -96,9 +96,13 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const { value: entities, loading } = useAsync(async () => {
-    const { items } = await catalogApi.getEntities(
-      catalogFilter ? { filter: catalogFilter } : undefined,
-    );
+    const streamRequest = catalogFilter
+      ? { query: {}, filter: catalogFilter }
+      : {};
+    const items: Entity[] = [];
+    for await (const batch of catalogApi.streamEntities(streamRequest)) {
+      items.push(...batch);
+    }
     const entityRefToPresentation = new Map<
       string,
       EntityRefPresentationSnapshot

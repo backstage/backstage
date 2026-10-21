@@ -22,6 +22,7 @@ export const microsoftAuthenticator: OAuthAuthenticator<
   {
     helper: PassportOAuthAuthenticatorHelper;
     domainHint: string | undefined;
+    skipUserProfile: boolean;
   },
   PassportProfile
 >;

@@ -75,8 +75,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     await expect(knex('backstage_backend_tasks__tasks')).rejects.toEqual(
       expect.anything(),
     );
-
-    await knex.destroy();
   });
 
   it('20240712211735_nullable_next_run.js', async () => {
@@ -111,7 +109,5 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         next_run_start_at: knex.raw('null'),
       }),
     ).rejects.toEqual(expect.anything());
-
-    await knex.destroy();
   });
 });

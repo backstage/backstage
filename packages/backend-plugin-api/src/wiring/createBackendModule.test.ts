@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { declareConnection } from '../alpha';
 import { createServiceRef } from '../services';
 import { ID_PATTERN } from './constants';
 import { createBackendModule } from './createBackendModule';
@@ -21,6 +22,43 @@ import { createExtensionPoint } from './createExtensionPoint';
 import { InternalBackendRegistrations } from './types';
 
 describe('createBackendModule', () => {
+  it('captures connection declarations and rejects duplicate or late declarations', () => {
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'connections',
+      register(env) {
+        declareConnection(env, {
+          type: 'github',
+          required: true,
+          description: 'Reads repository metadata',
+        });
+        declareConnection(env, { type: 'gitlab' });
+        expect(() => declareConnection(env, { type: 'github' })).toThrow(
+          /Duplicate connection registration for type 'github'/,
+        );
+        env.registerInit({ deps: {}, async init() {} });
+        expect(() => declareConnection(env, { type: 'azure' })).toThrow(
+          /registerConnection called after registerInit/,
+        );
+      },
+    });
+
+    expect((module as InternalBackendRegistrations).getRegistrations()).toEqual(
+      [
+        expect.objectContaining({
+          connections: [
+            {
+              type: 'github',
+              required: true,
+              description: 'Reads repository metadata',
+            },
+            { type: 'gitlab' },
+          ],
+        }),
+      ],
+    );
+  });
+
   it('should create a BackendModule', () => {
     const result = createBackendModule({
       pluginId: 'x',

@@ -38,8 +38,10 @@ import { examples } from './githubRepoCreate.examples';
 export function createGithubRepoCreateAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:repo:create',
@@ -47,7 +49,32 @@ export function createGithubRepoCreateAction(options: {
     examples,
     schema: {
       input: {
-        ...inputProps,
+        access: inputProps.access,
+        allowAutoMerge: inputProps.allowAutoMerge,
+        allowMergeCommit: inputProps.allowMergeCommit,
+        allowRebaseMerge: inputProps.allowRebaseMerge,
+        allowSquashMerge: inputProps.allowSquashMerge,
+        allowUpdateBranch: inputProps.allowUpdateBranch,
+        autoInit: inputProps.autoInit,
+        collaborators: inputProps.collaborators,
+        customProperties: inputProps.customProperties,
+        deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
+        description: inputProps.description,
+        hasIssues: inputProps.hasIssues,
+        hasProjects: inputProps.hasProjects,
+        hasWiki: inputProps.hasWiki,
+        homepage: inputProps.homepage,
+        oidcCustomization: inputProps.oidcCustomization,
+        repoUrl: inputProps.repoUrl,
+        repoVariables: inputProps.repoVariables,
+        repoVisibility: inputProps.repoVisibility,
+        secrets: inputProps.secrets,
+        squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
+        squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+        subscribe: inputProps.subscribe,
+        token: inputProps.token,
+        topics: inputProps.topics,
+        workflowAccess: inputProps.workflowAccess,
       },
       output: {
         remoteUrl: outputProps.remoteUrl,
@@ -92,6 +119,7 @@ export function createGithubRepoCreateAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
         host,

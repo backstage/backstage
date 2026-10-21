@@ -17,6 +17,7 @@
 import { toError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
+import { DEFAULT_BASE_REF } from '../lib/openapi/constants';
 
 function registerPackageCommand(program: Command) {
   const command = program
@@ -32,15 +33,6 @@ function registerPackageCommand(program: Command) {
   const openApiCommand = schemaCommand
     .command('openapi [command]')
     .description('Tooling for OpenAPI schema');
-
-  openApiCommand
-    .command('init')
-    .description(
-      'Initialize any required files to use the OpenAPI tooling for this package.',
-    )
-    .action(
-      lazy(() => import('./package/schema/openapi/init'), 'singleCommand'),
-    );
 
   openApiCommand
     .command('generate')
@@ -65,6 +57,13 @@ function registerPackageCommand(program: Command) {
       'Watch the OpenAPI spec for changes and regenerate on save.',
     )
     .action(lazy(() => import('./package/schema/openapi/generate'), 'command'));
+
+  openApiCommand
+    .command('validate')
+    .description(
+      'Validate that the OpenAPI spec is a valid OpenAPI 3.x document.',
+    )
+    .action(lazy(() => import('./package/schema/openapi/validate'), 'command'));
 
   openApiCommand
     .command('fuzz')
@@ -105,11 +104,24 @@ function registerRepoCommand(program: Command) {
     .description('Tooling for OpenApi schema');
 
   openApiCommand
-    .command('verify [paths...]')
+    .command('validate [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and set up correctly.',
+      'Validate that all OpenAPI schemas are valid and set up correctly.',
     )
-    .action(lazy(() => import('./repo/schema/openapi/verify'), 'bulkCommand'));
+    .action(
+      lazy(() => import('./repo/schema/openapi/validate'), 'bulkCommand'),
+    );
+
+  openApiCommand
+    .command('verify', { hidden: true })
+    .description('Deprecated: use validate instead.')
+    .action(async () => {
+      exitWithError(
+        new Error(
+          `This command has been removed, use 'repo schema openapi validate' instead`,
+        ),
+      );
+    });
 
   openApiCommand
     .command('lint [paths...]')
@@ -119,12 +131,6 @@ function registerRepoCommand(program: Command) {
       'Fail on any linting severity messages, not just errors.',
     )
     .action(lazy(() => import('./repo/schema/openapi/lint'), 'bulkCommand'));
-
-  openApiCommand
-    .command('test [paths...]')
-    .description('Test OpenAPI schemas against written tests')
-    .option('--update', 'Update the spec on failure.')
-    .action(lazy(() => import('./repo/schema/openapi/test'), 'bulkCommand'));
 
   openApiCommand
     .command('fuzz')
@@ -138,12 +144,12 @@ function registerRepoCommand(program: Command) {
   openApiCommand
     .command('diff')
     .description(
-      'Diff the repository against a specific ref, will run all package `diff` scripts.',
+      'Diff all OpenAPI specs in the repository against a specific ref.',
     )
     .option(
       '--since <ref>',
       'Diff the API against a specific ref',
-      'origin/master',
+      DEFAULT_BASE_REF,
     )
     .action(lazy(() => import('./repo/schema/openapi/diff'), 'command'));
 }

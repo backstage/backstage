@@ -40,7 +40,10 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
+import {
+  GithubAppCredentialsMux,
+  SingleInstanceGithubCredentialsProvider,
+} from './SingleInstanceGithubCredentialsProvider';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
@@ -351,7 +354,7 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       github.getCredentials({
         url: 'https://github.com/backstage',
       }),
-    ).rejects.toEqual({ status: 404, message: 'NotFound' });
+    ).rejects.toMatchObject({ status: 404, message: 'NotFound' });
   });
 
   it('should return the default token if no app is configured', async () => {
@@ -570,10 +573,314 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     await github.getCredentials({ url: 'https://github.com/backstage' });
     await github.getCredentials({ url: 'https://github.com/backstage' });
 
-    expect(octokit.apps.listInstallations.mock.calls.length).toBe(2);
+    // The installations cache is independent of the token cache, and stays
+    // fresh across token refreshes.
+    expect(octokit.apps.listInstallations.mock.calls.length).toBe(1);
     expect(octokit.apps.createInstallationAccessToken.mock.calls.length).toBe(
       2,
     );
+  });
+
+  it('should cache the installations list across requests for different owners', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'org-a' },
+        },
+        {
+          id: 2,
+          repository_selection: 'all',
+          account: { login: 'org-b' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValue({
+      data: {
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        token: 'secret_token',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    await github.getCredentials({ url: 'https://github.com/org-a' });
+    await github.getCredentials({ url: 'https://github.com/org-b' });
+
+    expect(octokit.apps.listInstallations.mock.calls.length).toBe(1);
+  });
+
+  it('should not expose cached installation data to mutation', async () => {
+    const mux = new GithubAppCredentialsMux({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+        },
+      ],
+    });
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    const first = await mux.getAllInstallations();
+    (first[0].account as { login: string }).login = 'changed';
+
+    const second = await mux.getAllInstallations();
+    expect(second[0].account).toMatchObject({ login: 'backstage' });
+    expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(1);
+  });
+
+  it('should de-duplicate concurrent installation lookups', async () => {
+    let resolveListInstallations!: (value: unknown) => void;
+    octokit.apps.listInstallations.mockReturnValue(
+      new Promise(resolve => {
+        resolveListInstallations = resolve;
+      }),
+    );
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValue({
+      data: {
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        token: 'secret_token',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    const first = github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+    const second = github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+
+    resolveListInstallations({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'backstage' },
+        },
+      ],
+    });
+
+    await Promise.all([first, second]);
+
+    expect(octokit.apps.listInstallations.mock.calls.length).toBe(1);
+  });
+
+  it('should not cache a failed installation lookup', async () => {
+    octokit.apps.listInstallations
+      .mockRejectedValueOnce({ status: 500, message: 'Boom' })
+      .mockResolvedValueOnce({
+        headers: { etag: '123' },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: { login: 'backstage' },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValue({
+      data: {
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        token: 'secret_token',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    await expect(
+      github.getCredentials({ url: 'https://github.com/backstage' }),
+    ).rejects.toMatchObject({ status: 500, message: 'Boom' });
+
+    const { token } = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+    expect(token).toEqual('secret_token');
+    expect(octokit.apps.listInstallations.mock.calls.length).toBe(2);
+  });
+
+  it('should refresh the installations cache when a lookup misses the cached list', async () => {
+    jest.useFakeTimers({ now: new Date('2024-01-01T12:00:00Z') });
+    try {
+      octokit.apps.listInstallations
+        .mockResolvedValueOnce({
+          headers: { etag: '1' },
+          data: [],
+        } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response'])
+        .mockResolvedValueOnce({
+          headers: { etag: '2' },
+          data: [
+            {
+              id: 1,
+              repository_selection: 'all',
+              account: { login: 'backstage' },
+            },
+          ],
+        } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValue({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'secret_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      // Prime the cache with an empty installations list.
+      const first = await github.getCredentials({
+        url: 'https://github.com/backstage',
+      });
+      expect(first.type).toEqual('token');
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(1);
+
+      // Advance past the refresh throttle before the second lookup so the
+      // miss is allowed to trigger a refresh.
+      jest.setSystemTime(new Date('2024-01-01T12:02:00Z'));
+
+      const { token } = await github.getCredentials({
+        url: 'https://github.com/backstage',
+      });
+      expect(token).toEqual('secret_token');
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('should throttle on-miss refreshes of the installations cache', async () => {
+    jest.useFakeTimers({ now: new Date('2024-01-01T12:00:00Z') });
+    try {
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: { etag: '1' },
+        data: [],
+      } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      // Prime the cache with an empty list.
+      await github.getCredentials({ url: 'https://github.com/x' });
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(1);
+
+      // Past the throttle window — miss triggers a single refresh.
+      jest.setSystemTime(new Date('2024-01-01T12:02:00Z'));
+      await github.getCredentials({ url: 'https://github.com/y' });
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+
+      // Inside the throttle window — subsequent misses reuse the cache.
+      jest.setSystemTime(new Date('2024-01-01T12:02:30Z'));
+      await github.getCredentials({ url: 'https://github.com/z' });
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('should throttle failed on-miss refreshes of the installations cache', async () => {
+    jest.useFakeTimers({ now: new Date('2024-01-01T12:00:00Z') });
+    try {
+      octokit.apps.listInstallations
+        .mockResolvedValueOnce({
+          headers: { etag: '1' },
+          data: [],
+        } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response'])
+        .mockRejectedValueOnce({ status: 500, message: 'Boom' });
+
+      await github.getCredentials({ url: 'https://github.com/x' });
+      jest.setSystemTime(new Date('2024-01-01T12:02:00Z'));
+
+      await expect(
+        github.getCredentials({ url: 'https://github.com/y' }),
+      ).rejects.toMatchObject({ status: 500, message: 'Boom' });
+
+      jest.setSystemTime(new Date('2024-01-01T12:02:30Z'));
+      await github.getCredentials({ url: 'https://github.com/z' });
+
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('should drop the installations cache when the installation is no longer valid', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '1' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken
+      .mockRejectedValueOnce(
+        Object.assign(new Error('Gone'), { status: 410, name: 'HttpError' }),
+      )
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'secret_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    await expect(
+      github.getCredentials({ url: 'https://github.com/backstage' }),
+    ).rejects.toMatchObject({ status: 410 });
+
+    const { token } = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+    expect(token).toEqual('secret_token');
+    // First call fetched installations, the error dropped the cache, so the
+    // second call re-fetches before succeeding.
+    expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+  });
+
+  it('should refresh the installations cache after the TTL expires', async () => {
+    jest.useFakeTimers({ now: new Date('2024-01-01T12:00:00Z') });
+    try {
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: { etag: '123' },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: { login: 'backstage' },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValue({
+        data: {
+          expires_at: DateTime.local().plus({ minutes: 9 }).toString(),
+          token: 'secret_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      await github.getCredentials({ url: 'https://github.com/backstage' });
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(1);
+
+      jest.setSystemTime(new Date('2024-01-01T12:15:00Z'));
+
+      await github.getCredentials({ url: 'https://github.com/backstage' });
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   describe('public access', () => {
@@ -844,6 +1151,62 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
         1,
       );
+    });
+
+    it('should drop the installations cache when a public access installation is no longer valid', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['installed-org'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: { etag: '1' },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: { login: 'installed-org' },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken
+        .mockRejectedValueOnce(
+          Object.assign(new Error('Gone'), { status: 410, name: 'HttpError' }),
+        )
+        .mockResolvedValueOnce({
+          data: {
+            expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+            token: 'public_access_token',
+          },
+        } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      // First call: stale public installation triggers 410.
+      const firstResult = await githubProvider.getCredentials({
+        url: 'https://github.com/some-public-org/some-repo',
+      });
+      // The 410 is not surfaced — the mux falls through and returns the
+      // default (undefined) token, so type is 'token'.
+      expect(firstResult.type).toEqual('token');
+
+      // Second call should succeed after the installations cache was dropped
+      // and re-fetched.
+      const secondResult = await githubProvider.getCredentials({
+        url: 'https://github.com/some-public-org/some-repo',
+      });
+      expect(secondResult.type).toEqual('app');
+      expect(secondResult.token).toEqual('public_access_token');
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
     });
 
     it('should use public access with multiple apps when only one has publicAccess enabled', async () => {

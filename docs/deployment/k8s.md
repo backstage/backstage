@@ -107,7 +107,7 @@ $ echo -n "backstage" | base64
 YmFja3N0YWdl
 ```
 
-:::note Note
+:::note
 
 Secrets are base64-encoded, but not encrypted. Be sure to enable
 [Encryption at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)

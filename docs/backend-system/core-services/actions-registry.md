@@ -168,6 +168,17 @@ When accessed via the Actions Service or the `/.backstage/actions/v1/...` HTTP e
 
 Permissions declared on actions are automatically registered with the `PermissionsRegistryService` so they appear in the permission policy system.
 
+### Discovering action capability
+
+Backend services can determine whether a plugin has registered actions by
+requesting `GET /.backstage/actions/v1/status` from that plugin with service
+credentials. The response contains a `hasActions` boolean.
+
+The status reflects whether the plugin has registered any actions. It does not
+depend on `backend.actions.pluginSources`, `backend.actions.filter`, or
+caller-specific visibility permissions and does not expose action metadata.
+Only service principals can access this endpoint.
+
 ### Adding a Permission to an Action
 
 ```typescript
@@ -263,12 +274,47 @@ The secrets schema is included in the action metadata returned by the list endpo
 - **Avoid Redundancy:** Don't include plugin names in action names since the plugin context is separate
 - **Use Verbs:** Start action names with verbs that describe the operation (e.g., `fetch`, `create`, `delete`, `update`)
 
+## Error Handling
+
+Use error classes from `@backstage/errors` when an action encounters a problem. These errors are recognized by the Actions Service and by consumers such as the [MCP Actions Backend](../../ai/mcp-actions.md), which surface the error message to callers. Unrecognized error types may result in a generic `500 Server Error`.
+
+```ts
+import { NotFoundError, NotAllowedError } from '@backstage/errors';
+
+actionsRegistry.register({
+  name: 'update-resource',
+  title: 'Update Resource',
+  description: 'Updates a resource by ID',
+  schema: {
+    input: z => z.object({ id: z.string() }),
+    output: z => z.object({ updated: z.boolean() }),
+  },
+  attributes: { destructive: false, readOnly: false, idempotent: true },
+  action: async ({ input, credentials }) => {
+    const resource = await getResource(input.id);
+
+    if (!resource) {
+      throw new NotFoundError(`Resource ${input.id} not found`);
+    }
+
+    if (!hasPermission(credentials, resource)) {
+      throw new NotAllowedError(
+        `Insufficient permissions for resource ${input.id}`,
+      );
+    }
+
+    await updateResource(resource);
+    return { output: { updated: true } };
+  },
+});
+```
+
 ## Action Attributes Reference
 
-| Attribute     | Type    | Default | Description                                                         |
-| ------------- | ------- | ------- | ------------------------------------------------------------------- |
-| `destructive` | boolean | `true`  | Indicates the action modifies or deletes data. Use with caution.    |
-| `idempotent`  | boolean | `false` | Indicates the action can be run multiple times with the same result |
-| `readOnly`    | boolean | `false` | Indicates the action only reads data without making modifications   |
+| Attribute     | Type    | Default                                | Description                                                         |
+| ------------- | ------- | -------------------------------------- | ------------------------------------------------------------------- |
+| `destructive` | boolean | `false` if read-only, otherwise `true` | Indicates the action modifies or deletes data. Use with caution.    |
+| `idempotent`  | boolean | `false`                                | Indicates the action can be run multiple times with the same result |
+| `readOnly`    | boolean | `false`                                | Indicates the action only reads data without making modifications   |
 
 These attributes help consumers of actions understand their behavior and implement appropriate safeguards, retries, or optimizations based on the action's characteristics.

@@ -88,6 +88,57 @@ describe('authModuleAuth0Provider', () => {
     });
   });
 
+  it('should configure the authorization prompt', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    prompt: 'login',
+                  },
+                  production: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    prompt: 'auto',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const explicitPromptResponse = await agent.get(
+      '/api/auth/auth0/start?env=development',
+    );
+    const explicitPromptUrl = new URL(explicitPromptResponse.get('location'));
+    expect(explicitPromptUrl.searchParams.get('prompt')).toBe('login');
+
+    const automaticPromptResponse = await agent.get(
+      '/api/auth/auth0/start?env=production',
+    );
+    const automaticPromptUrl = new URL(automaticPromptResponse.get('location'));
+    expect(automaticPromptUrl.searchParams.has('prompt')).toBe(false);
+  });
+
   it('should pass through organization and invitation parameters to the authorization URL', async () => {
     const { server } = await startTestBackend({
       features: [

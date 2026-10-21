@@ -50,7 +50,7 @@ export class Auth0Strategy extends Auth0InternalStrategy {
   }
 
   authenticate(req: express.Request, options: Record<string, any>): void {
-    const { organization, invitation } = req.query;
+    const { organization, invitation, screen_hint, login_hint } = req.query;
 
     // Throw an error if the organization in the request does not match the organization configured in the strategy
     if (
@@ -67,6 +67,8 @@ export class Auth0Strategy extends Auth0InternalStrategy {
       ...options,
       ...(organization ? { organization } : {}),
       ...(invitation ? { invitation } : {}),
+      ...(screen_hint ? { screen_hint } : {}),
+      ...(login_hint ? { login_hint } : {}),
     });
   }
 
@@ -79,6 +81,14 @@ export class Auth0Strategy extends Auth0InternalStrategy {
 
     if (options.invitation) {
       params.invitation = options.invitation;
+    }
+
+    if (options.screen_hint) {
+      params.screen_hint = options.screen_hint;
+    }
+
+    if (options.login_hint) {
+      params.login_hint = options.login_hint;
     }
 
     return params;

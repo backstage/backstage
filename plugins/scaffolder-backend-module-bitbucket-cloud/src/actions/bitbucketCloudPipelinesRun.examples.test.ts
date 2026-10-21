@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
 import yaml from 'yaml';
@@ -57,22 +57,18 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a pipeline for a branch', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(await request.json()).toEqual({
             target: {
               ref_type: 'branch',
               type: 'pipeline_ref_target',
               ref_name: 'master',
             },
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseJson),
-          );
+          return HttpResponse.json(responseJson, { status: 201 });
         },
       ),
     );
@@ -85,11 +81,11 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a pipeline for a commit on a branch', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(await request.json()).toEqual({
             target: {
               commit: {
                 type: 'commit',
@@ -100,11 +96,7 @@ describe('bitbucket:pipelines:run', () => {
               ref_name: 'master',
             },
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseJson),
-          );
+          return HttpResponse.json(responseJson, { status: 201 });
         },
       ),
     );
@@ -117,11 +109,11 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a specific pipeline definition for a commit', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(await request.json()).toEqual({
             target: {
               commit: {
                 type: 'commit',
@@ -134,11 +126,7 @@ describe('bitbucket:pipelines:run', () => {
               type: 'pipeline_commit_target',
             },
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseJson),
-          );
+          return HttpResponse.json(responseJson, { status: 201 });
         },
       ),
     );
@@ -151,11 +139,11 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a specific pipeline definition for a commit on a branch or tag', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(await request.json()).toEqual({
             target: {
               commit: {
                 type: 'commit',
@@ -170,11 +158,7 @@ describe('bitbucket:pipelines:run', () => {
               ref_type: 'branch',
             },
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseJson),
-          );
+          return HttpResponse.json(responseJson, { status: 201 });
         },
       ),
     );
@@ -187,11 +171,11 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a custom pipeline with variables', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(await request.json()).toEqual({
             target: {
               type: 'pipeline_ref_target',
               ref_name: 'master',
@@ -209,11 +193,7 @@ describe('bitbucket:pipelines:run', () => {
               },
             ],
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseJson),
-          );
+          return HttpResponse.json(responseJson, { status: 201 });
         },
       ),
     );
@@ -226,11 +206,11 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a pull request pipeline', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(await request.json()).toEqual({
             target: {
               type: 'pipeline_pullrequest_target',
               source: 'pull-request-branch',
@@ -250,11 +230,7 @@ describe('bitbucket:pipelines:run', () => {
               },
             },
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseJson),
-          );
+          return HttpResponse.json(responseJson, { status: 201 });
         },
       ),
     );

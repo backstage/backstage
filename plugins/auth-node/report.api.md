@@ -403,7 +403,6 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
 export interface OAuthRouteHandlersOptions<TProfile> {
   // (undocumented)
   additionalScopes?: string[];
-  // (undocumented)
   appUrl: string;
   // (undocumented)
   authenticator: OAuthAuthenticator<any, TProfile>;
@@ -413,7 +412,6 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   config: Config;
   // (undocumented)
   cookieConfigurer?: CookieConfigurer;
-  // (undocumented)
   isOriginAllowed: (origin: string) => boolean;
   // (undocumented)
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;

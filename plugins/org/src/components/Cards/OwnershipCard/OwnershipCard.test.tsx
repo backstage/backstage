@@ -191,6 +191,50 @@ describe('OwnershipCard', () => {
     ).toBeInTheDocument();
   });
 
+  it('uses unique keys for matching types of different kinds', async () => {
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'my-service' },
+          spec: { type: 'service' },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Resource',
+          metadata: { name: 'service-resource' },
+          spec: { type: 'service' },
+        },
+      ],
+    });
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    try {
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <OwnershipCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      await expect(screen.findAllByText('SERVICE')).resolves.toHaveLength(2);
+      expect(consoleError.mock.calls.flat().join(' ')).not.toContain(
+        'Encountered two children with the same key',
+      );
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
+
   it('applies CustomFilterDefinition', async () => {
     const catalogApi = catalogApiMock({ entities: items });
 
@@ -244,7 +288,7 @@ describe('OwnershipCard', () => {
     // This env does not support URLSearchParams
     const queryParams = decodeURIComponent(href);
 
-    expect(queryParams).toContain('filters[owners]=my-team');
+    expect(queryParams).toContain('filters[owners]=group:default/my-team');
   });
 
   it('links to the catalog with the user and groups filters from an user profile', async () => {
@@ -267,7 +311,7 @@ describe('OwnershipCard', () => {
     // This env does not support URLSearchParams
     const queryParams = decodeURIComponent(href);
     expect(queryParams).toMatch(
-      /filters\[owners\]=custom\/some\-team.*filters\[owners\]=user:the-user/,
+      /filters\[owners\]=group:custom\/some\-team.*filters\[owners\]=user:default\/the-user/,
     );
   });
 

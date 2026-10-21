@@ -165,7 +165,7 @@ Notice that this guide assumes that you already installed the [Kubernetes Plugin
 
 To create the Backend module, run `yarn new`, select `backend-module`. Then fill out:
 
-```
+```text
 ? What do you want to create? backend-module - A new backend module
 ? Enter the ID of the plugin [required] kubernetes
 ? Enter the ID of the module [required] pinniped

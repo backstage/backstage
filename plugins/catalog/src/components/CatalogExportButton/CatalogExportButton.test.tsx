@@ -36,6 +36,7 @@ const mockExportStream = jest.fn();
 
 const renderComponent = (
   settings?: Parameters<typeof CatalogExportButton>[0]['settings'],
+  iconOnly?: Parameters<typeof CatalogExportButton>[0]['iconOnly'],
 ) =>
   renderInTestApp(
     <TestApiProvider
@@ -45,7 +46,7 @@ const renderComponent = (
       ]}
     >
       <EntityListProvider>
-        <CatalogExportButton settings={settings} />
+        <CatalogExportButton settings={settings} iconOnly={iconOnly} />
       </EntityListProvider>
     </TestApiProvider>,
   );
@@ -68,6 +69,14 @@ describe('CatalogExportButton', () => {
     expect(
       screen.getByRole('button', { name: /Export selection/i }),
     ).toBeInTheDocument();
+  });
+
+  it('renders an accessible icon-only export button', async () => {
+    await renderComponent(undefined, true);
+
+    const button = screen.getByRole('button', { name: /Export selection/i });
+    expect(button).toHaveClass('bui-ButtonIcon');
+    expect(button).not.toHaveTextContent('Export selection');
   });
 
   it('opens and closes the dialog', async () => {
