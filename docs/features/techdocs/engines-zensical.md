@@ -61,16 +61,18 @@ techdocs:
   generator:
     runIn: docker # or 'local'
     zensical:
-      dockerImage: ghcr.io/backstage/techdocs-zensical
+      dockerImage: ghcr.io/backstage/techdocs-zensical:<tag>
 ```
 
 ### Docker image
 
 `techdocs.generator.zensical.dockerImage`
 
-(Optional) The image used when `runIn` is `docker`. Defaults to
-`ghcr.io/backstage/techdocs-zensical`. TechDocs always runs the `zensical`
-command in the container, regardless of the image's entrypoint.
+(Optional) The image used when `runIn` is `docker`. Defaults to a pinned
+release of `ghcr.io/backstage/techdocs-zensical`. If you set it, pin a release
+tag rather than `latest`, so builds don't change when a new image is
+published. TechDocs always runs the `zensical` command in the container,
+regardless of the image's entrypoint.
 
 Zensical builds ignore `techdocs.generator.dockerImage`, because that setting
 is for the MkDocs image. If you use a custom MkDocs image, set
@@ -114,7 +116,9 @@ copy of `mkdocs.yml` for each build and removes it afterwards.
 
 - TechDocs adds the Markdown extensions `techdocs-core` would have enabled,
   such as admonitions, tabs, snippets and PlantUML. If you configure one of
-  them yourself, your options win.
+  them yourself, your options win, except for `pymdownx.snippets`: TechDocs
+  ignores your snippets options and always sets `restrict_base_path: true`,
+  so snippets can't include files from outside the project.
 - TechDocs sets the theme to Material and keeps your other `theme` settings,
   except `palette` and `custom_dir`, which it removes so the TechDocs frontend
   can control light and dark mode. It keeps your `theme.features` and adds
