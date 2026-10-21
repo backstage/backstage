@@ -56,7 +56,10 @@ export function groupNotifications({
   const invalidNotifications: ChangeNotification[] = [];
 
   for (const notification of changeNotifications) {
-    const normalizedChangeType = notification.changeType?.toLowerCase();
+    const normalizedChangeType =
+      typeof notification?.changeType === 'string'
+        ? notification.changeType.toLowerCase()
+        : undefined;
 
     if (normalizedChangeType === CHANGE_UPDATED) {
       // User and group creations and updates are both notified as 'updated' changeType
