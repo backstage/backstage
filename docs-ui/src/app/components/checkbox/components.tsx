@@ -13,9 +13,20 @@ export const AllVariants = () => {
     <Flex direction="column" gap="2">
       <Checkbox>Unchecked</Checkbox>
       <Checkbox isSelected>Checked</Checkbox>
+      <Checkbox isIndeterminate>Indeterminate</Checkbox>
       <Checkbox isDisabled>Disabled</Checkbox>
       <Checkbox isSelected isDisabled>
         Checked & Disabled
+      </Checkbox>
+      <Checkbox isIndeterminate isDisabled>
+        Indeterminate & Disabled
+      </Checkbox>
+      <Checkbox isInvalid>Invalid</Checkbox>
+      <Checkbox isInvalid isSelected>
+        Invalid & Checked
+      </Checkbox>
+      <Checkbox isInvalid isIndeterminate>
+        Invalid & Indeterminate
       </Checkbox>
     </Flex>
   );
