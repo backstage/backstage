@@ -33,3 +33,27 @@ export async function checkIfDockerIsOperational(
   );
   return false;
 }
+
+/**
+ * Picks the value of a renamed flag, warning whenever the deprecated name is
+ * used and noting when it is ignored because the new name is also set.
+ */
+export function resolveDeprecatedOption(
+  logger: { warn(message: string): void },
+  options: {
+    value: string | undefined;
+    flag: string;
+    deprecatedValue: string | undefined;
+    deprecatedFlag: string;
+  },
+): string | undefined {
+  const { value, flag, deprecatedValue, deprecatedFlag } = options;
+  if (deprecatedValue !== undefined) {
+    const ignored =
+      value !== undefined ? ` Ignoring it because ${flag} is also set.` : '';
+    logger.warn(
+      `${deprecatedFlag} is deprecated and will be removed in a future release. Use ${flag} instead.${ignored}`,
+    );
+  }
+  return value ?? deprecatedValue;
+}

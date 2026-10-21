@@ -22,11 +22,17 @@ import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
-import { getEngineConfig } from '../../lib/engineConfig';
+import { getEngineConfig } from '../../lib/engines';
 import { resolveEngine } from '../../lib/catalogEntity';
+import { prepareServeConfig } from '../../lib/prepareServeConfig';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
+  if (opts.deprecatedCommandAlias) {
+    logger.warn(
+      `${opts.deprecatedCommandAlias} is deprecated and will be removed in a future release. Use serve:raw instead.`,
+    );
+  }
 
   const { engine, source: engineSource } = await resolveEngine(
     process.cwd(),
@@ -49,6 +55,12 @@ export default async function serveMkdocs(opts: OptionValues) {
     opts.siteName,
   );
 
+  const serveConfigPath = await prepareServeConfig(
+    engineConfig,
+    mkdocsYmlPath,
+    logger,
+  );
+
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 
@@ -67,7 +79,7 @@ export default async function serveMkdocs(opts: OptionValues) {
       // When the server has started, open a new browser tab for the user.
       if (
         !boolOpenBrowserTriggered &&
-        line.includes(`${engineConfig.startupLogPattern}`)
+        engineConfig.startupLogPattern.test(line)
       ) {
         // Always open the local address, since 0.0.0.0 belongs to docker
         logger.info(`\nStarting ${engine} server on ${localAddr}\n`);
@@ -81,7 +93,7 @@ export default async function serveMkdocs(opts: OptionValues) {
 
   const childProcess = runEngineServer({
     port: opts.port,
-    dockerImage: opts.dockerImage,
+    dockerImage: opts.dockerImage ?? engineConfig.defaultImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
@@ -89,7 +101,7 @@ export default async function serveMkdocs(opts: OptionValues) {
     onStderr: logFunc,
     engineBinary: engineConfig.binary,
     engineServeArgs: engineConfig.serveArgs(opts.port, {
-      configFile: mkdocsYmlPath,
+      configFile: serveConfigPath,
       useDocker: opts.docker,
     }),
   });
