@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.54.9",
+  "version": "1.54.10",
   "backstage": {
     "cli": {
       "new": {
