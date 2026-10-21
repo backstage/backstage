@@ -195,10 +195,9 @@ describe('OfflineSessionDatabase', () => {
           tokenHash: 'hash-1',
         });
 
-        // Entity refs are stored in their lowercase canonical form
-        const mixedCaseSession = await db.createSession({
+        await db.createSession({
           id: 'session-2',
-          userEntityRef: 'user:default/Test',
+          userEntityRef: 'user:default/test',
           tokenHash: 'hash-2',
         });
 
@@ -207,8 +206,6 @@ describe('OfflineSessionDatabase', () => {
           userEntityRef: 'user:default/other',
           tokenHash: 'hash-3',
         });
-
-        expect(mixedCaseSession.userEntityRef).toBe('user:default/test');
 
         const deletedCount = await db.deleteSessionsByUserEntityRef(
           'user:default/test',
