@@ -195,9 +195,10 @@ describe('OfflineSessionDatabase', () => {
           tokenHash: 'hash-1',
         });
 
+        // Entity refs are matched case insensitively
         await db.createSession({
           id: 'session-2',
-          userEntityRef: 'user:default/test',
+          userEntityRef: 'user:default/Test',
           tokenHash: 'hash-2',
         });
 

@@ -211,8 +211,9 @@ export class OfflineSessionDatabase {
    * Delete all sessions for a user entity ref
    */
   async deleteSessionsByUserEntityRef(userEntityRef: string): Promise<number> {
+    // Entity refs are case insensitive, but sessions store the ref as issued
     return await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
-      .where('user_entity_ref', userEntityRef)
+      .whereRaw('LOWER(user_entity_ref) = ?', [userEntityRef.toLowerCase()])
       .delete();
   }
 
