@@ -93,14 +93,21 @@ describe('CatalogAuthResolverContext', () => {
       claims: expectedClaims,
     });
 
-    // Explicit ownership claims are left as provided
+    // Explicit ownership claims are canonicalized and deduplicated
     await context.issueToken({
-      claims: { sub: 'user:default/Jane.Doe', ent: ['group:default/Team'] },
+      claims: {
+        sub: 'user:default/Jane.Doe',
+        ent: [
+          'User:default/Jane.Doe',
+          'group:default/Team',
+          'Group:Default/team',
+        ],
+      },
     });
     expect(tokenIssuer.issueToken).toHaveBeenLastCalledWith({
       claims: {
         sub: 'user:default/jane.doe',
-        ent: ['group:default/Team'],
+        ent: ['user:default/jane.doe', 'group:default/team'],
       },
     });
   });
