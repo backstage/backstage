@@ -37,11 +37,14 @@ export function assertYarnPackagesAvailable(
   });
   if (missing.length > 0) {
     throw new Error(
-      'The verify-patches command is temporarily unavailable. Its Yarn ' +
-        'dependencies have been made optional because @yarnpkg/core@4.9.2 ' +
-        'was published with a broken dependency that fails installation. ' +
-        'The command will be restored in a future release once this is ' +
-        `fixed upstream. Missing packages: ${missing.join(', ')}`,
+      `The verify-patches command requires these packages to be installed: ${missing.join(
+        ', ',
+      )}. They are temporarily optional because @yarnpkg/core@4.9.2 was ` +
+        'published with a broken dependency on got that makes installation ' +
+        'fail. To use this command until that is fixed upstream, add ' +
+        `${OPTIONAL_YARN_PACKAGES.join(', ')} as devDependencies in your ` +
+        'root package.json, together with the resolution ' +
+        '"@yarnpkg/core/got": "npm:^11.8.6".',
     );
   }
 }

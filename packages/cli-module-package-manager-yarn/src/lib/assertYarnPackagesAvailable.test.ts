@@ -30,7 +30,7 @@ describe('assertYarnPackagesAvailable', () => {
         return name;
       }),
     ).toThrow(
-      /verify-patches command is temporarily unavailable.*Missing packages: @yarnpkg\/core$/,
+      /requires these packages to be installed: @yarnpkg\/core\..*"@yarnpkg\/core\/got": "npm:\^11\.8\.6"/,
     );
   });
 });
