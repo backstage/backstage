@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { isEqual } from 'lodash';
 import { join } from 'node:path';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'node:path';
+import { relative as relativePath } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 import { runner } from '../../../../lib/runner';
 import {
@@ -30,6 +30,7 @@ import {
   getPathToOpenApiSpec,
   loadAndValidateOpenApiYaml,
 } from '../../../../lib/openapi/helpers';
+import { readGeneratedOpenApiSpec } from '../../../../lib/openapi/readGeneratedSpec';
 
 async function validate(directoryPath: string) {
   let openapiPath = '';
@@ -54,12 +55,12 @@ async function validate(directoryPath: string) {
     schemaPath = join(directoryPath, OLD_SCHEMA_PATH);
   }
 
-  const { default: schema } = await import(resolvePath(schemaPath));
+  const spec = await readGeneratedOpenApiSpec(schemaPath);
 
-  if (!schema.spec) {
+  if (!spec) {
     throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a 'spec' export.`);
   }
-  if (!isEqual(schema.spec, yaml)) {
+  if (!isEqual(spec, yaml)) {
     const path = relativePath(targetPaths.rootDir, directoryPath);
     throw new Error(
       `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`,
