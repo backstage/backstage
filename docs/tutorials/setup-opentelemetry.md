@@ -187,6 +187,34 @@ The following metrics are available:
 - `backend_tasks.task.runs.started`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last started
 - `backend_tasks.task.runs.completed`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last completed
 
+### Histogram bucket boundaries
+
+The duration and delay metrics above are histograms that record values in
+seconds. OpenTelemetry's default bucket boundaries are `0`, `5`, `10`, `25`,
+`50`, `75`, `100`, `250`, `500`, `750`, `1000`, `2500`, `5000`, `7500` and
+`10000`. Most values fall below `5`, so percentiles such as p95 and p99 were
+not accurate with these defaults.
+
+The following histograms therefore declare explicit boundaries:
+
+- `catalog.processing.duration`
+- `catalog.processors.duration`
+- `catalog.processing.queue.delay`
+- `catalog.stitching.duration`
+- `catalog.stitching.queue.delay`
+- `scaffolder.task.duration`
+- `scaffolder.step.duration`
+- `backend_tasks.task.runs.duration`
+
+They all use these boundaries, in seconds: `0`, `0.01`, `0.05`, `0.1`, `0.25`,
+`0.5`, `1`, `2.5`, `5`, `10`, `25`, `50`, `75`, `100`, `250`, `500`, `750` and
+`1000`.
+
+The default boundaries up to `1000` stay the same, so dashboards and alerts
+that use an `le` label such as `le="25"` continue to work. The boundaries
+`2500`, `5000`, `7500` and `10000` are removed. Values above `1000` seconds go
+into the `+Inf` bucket.
+
 ## References
 
 - [Getting started with OpenTelemetry Node.js](https://opentelemetry.io/docs/instrumentation/js/getting-started/nodejs/)
