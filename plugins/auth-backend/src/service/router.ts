@@ -55,7 +55,7 @@ const revokeOfflineSessionsRequestSchema = z.object({
     .transform((ref, ctx) => {
       try {
         const entityRef = parseEntityRef(ref, { defaultKind: 'user' });
-        if (entityRef.kind.toLocaleLowerCase('en-US') === 'user') {
+        if (entityRef.kind.toLowerCase() === 'user') {
           return stringifyEntityRef(entityRef);
         }
         ctx.addIssue({
