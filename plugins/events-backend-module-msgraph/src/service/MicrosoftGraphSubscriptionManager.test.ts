@@ -200,6 +200,118 @@ describe('MicrosoftGraphSubscriptionManager', () => {
         other,
       );
     });
+
+    it('retries obsolete-subscription cleanup until it succeeds', async () => {
+      target.cleanupObsoleteSubscriptions = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('cleanup failed'))
+        .mockResolvedValueOnce(false)
+        .mockResolvedValueOnce(true);
+      target.ensureActiveSubscriptions = jest.fn();
+      const schedule = { run: jest.fn() };
+      await target.schedule({ schedule });
+      const { fn } = schedule.run.mock.calls[0][0];
+
+      await fn();
+      await fn();
+      await fn();
+      await fn();
+
+      expect(target.cleanupObsoleteSubscriptions).toHaveBeenCalledTimes(3);
+      expect(target.ensureActiveSubscriptions).toHaveBeenCalledTimes(4);
+      expect(logger.warn).toHaveBeenCalledWith(
+        'MS Graph subscription cleanup failed, will retry on next run.',
+        expect.any(Error),
+      );
+    });
+  });
+
+  describe('cleanupObsoleteSubscriptions', () => {
+    beforeEach(async () => {
+      config = mockServices.rootConfig({
+        data: {
+          events: {
+            modules: {
+              msgraph: {
+                notificationUrl: 'https://example.com/notifications',
+                subscriptionResources: ['users'],
+              },
+            },
+          },
+        },
+      });
+      target = await MicrosoftGraphSubscriptionManager.fromConfig(config, {
+        logger,
+        databaseClient,
+        msGraphClient,
+      });
+    });
+
+    it('deletes subscriptions for resources that are no longer configured', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue({
+        id: 'groups-subscription',
+        expires_at: DateTime.now().plus({ minutes: 20 }).toJSDate(),
+      });
+
+      await expect(target.cleanupObsoleteSubscriptions()).resolves.toBe(true);
+
+      expect(databaseClient.findByResource).toHaveBeenCalledWith('groups');
+      expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith(
+        'groups-subscription',
+      );
+      expect(databaseClient.deleteById).toHaveBeenCalledWith(
+        'groups-subscription',
+      );
+    });
+
+    it('deletes the database record when Graph no longer has the subscription', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue({
+        id: 'groups-subscription',
+        expires_at: DateTime.now().plus({ minutes: 20 }).toJSDate(),
+      });
+      msGraphClient.deleteSubscription.mockRejectedValue(
+        new NotFoundError('missing'),
+      );
+
+      await expect(target.cleanupObsoleteSubscriptions()).resolves.toBe(true);
+
+      expect(databaseClient.deleteById).toHaveBeenCalledWith(
+        'groups-subscription',
+      );
+    });
+
+    it('keeps the database record and reports failure when Graph deletion fails', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue({
+        id: 'groups-subscription',
+        expires_at: DateTime.now().plus({ minutes: 20 }).toJSDate(),
+      });
+      const error = new Error('Graph unavailable');
+      msGraphClient.deleteSubscription.mockRejectedValue(error);
+
+      await expect(target.cleanupObsoleteSubscriptions()).resolves.toBe(false);
+
+      expect(databaseClient.deleteById).not.toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Failed to delete subscription groups-subscription for resource groups from MS Graph.',
+        error,
+      );
+    });
+
+    it('reports failure when deleting the database record fails', async () => {
+      databaseClient.findByResource = jest.fn().mockResolvedValue({
+        id: 'groups-subscription',
+        expires_at: DateTime.now().plus({ minutes: 20 }).toJSDate(),
+      });
+      const error = new Error('database unavailable');
+      databaseClient.deleteById.mockRejectedValue(error);
+
+      await expect(target.cleanupObsoleteSubscriptions()).resolves.toBe(false);
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Failed to delete subscription record for resource groups from DB.',
+        error,
+      );
+    });
   });
 
   describe('ensureActiveSubscriptions', () => {

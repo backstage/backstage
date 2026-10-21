@@ -29,6 +29,7 @@ import type {
 import type { MicrosoftGraphClient } from './MicrosoftGraphClient';
 import { newValidationToken } from './validationToken';
 import { Subscription } from '@microsoft/microsoft-graph-types';
+import { difference } from 'lodash';
 
 const SUPPORTED_RESOURCES = ['users', 'groups'];
 
@@ -139,12 +140,26 @@ export class MicrosoftGraphSubscriptionManager {
       schedule ??
       scheduler!.createScheduledTaskRunner(subscriptionRefreshSchedule);
 
-    // Ensuring active subscriptions must always happen under global scheduler lock,
-    // to avoid multiple instances of the plugin creating subscriptions for the same resource at the same time.
+    let configBasedCleanupDone = false;
 
     await taskRunner.run({
       id: TASK_ID,
       fn: async () => {
+        // Cleanup obsolete subscriptions based on configuration changes.
+        if (!configBasedCleanupDone) {
+          // If any cleanup fails, we will retry on the next run. This is a best-effort cleanup, and we don't want to block subscription refreshes due to cleanup failures.
+          try {
+            configBasedCleanupDone = await this.cleanupObsoleteSubscriptions();
+          } catch (error) {
+            this.logger.warn(
+              'MS Graph subscription cleanup failed, will retry on next run.',
+              isError(error) ? error : undefined,
+            );
+          }
+        }
+
+        // Ensuring active subscriptions must always happen under global scheduler lock,
+        // to avoid multiple instances of the plugin creating subscriptions for the same resource at the same time.
         try {
           await this.ensureActiveSubscriptions();
         } catch (error) {
@@ -180,6 +195,60 @@ export class MicrosoftGraphSubscriptionManager {
     }
   }
 
+  /**
+   * Cleans up any subscriptions for resources that are no longer configured.
+   */
+  async cleanupObsoleteSubscriptions(): Promise<boolean> {
+    // make a best-effort attempt to clean up any subscriptions for resources that are no longer configured
+    const nonConfiguredResources = difference(
+      SUPPORTED_RESOURCES,
+      this.resources,
+    );
+
+    let noErrors = true;
+
+    await this.database.transaction(async trx => {
+      for (const resource of nonConfiguredResources) {
+        // MySQL does not support RETURNING in DELETE queries, so we need to first find the subscription and then delete it
+        const existingSubscription = await trx.findByResource(resource);
+        if (!existingSubscription) {
+          continue;
+        }
+
+        const id = existingSubscription.id;
+        try {
+          await this.msGraphClient.deleteSubscription(id);
+        } catch (error) {
+          if (!(error instanceof NotFoundError)) {
+            noErrors = false;
+            this.logger.warn(
+              `Failed to delete subscription ${id} for resource ${resource} from MS Graph.`,
+              isError(error) ? error : undefined,
+            );
+
+            // Indecisive - better to keep the DB record to be able to retry later
+            continue;
+          }
+        }
+
+        try {
+          await trx.deleteById(id);
+        } catch (error) {
+          noErrors = false;
+          this.logger.warn(
+            `Failed to delete subscription record for resource ${resource} from DB.`,
+            isError(error) ? error : undefined,
+          );
+        }
+      }
+    });
+
+    return noErrors;
+  }
+
+  /**
+   * Ensures that all configured resources have an active subscription in MS Graph and in the database.
+   */
   async ensureActiveSubscriptions() {
     await Promise.all(
       this.resources.map(resource =>
