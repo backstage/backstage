@@ -70,15 +70,41 @@ export const createOpenApiRouter = async (
     expect(Object.keys(spec)).toContain('__proto__');
   });
 
+  it('follows local exports and references to other constants', async () => {
+    mockDir.setContent({
+      'named.ts': `const info = { title: 'test' } as const;\nconst spec = { openapi: '3.0.3', info, copy: info };\nexport { spec };\n`,
+      'aliased.ts': `const document = { openapi: '3.0.3' };\nexport { document as spec };\n`,
+    });
+
+    await expect(
+      readGeneratedOpenApiSpec(mockDir.resolve('named.ts')),
+    ).resolves.toEqual({
+      openapi: '3.0.3',
+      info: { title: 'test' },
+      copy: { title: 'test' },
+    });
+    await expect(
+      readGeneratedOpenApiSpec(mockDir.resolve('aliased.ts')),
+    ).resolves.toEqual({ openapi: '3.0.3' });
+  });
+
   it('returns undefined without a spec export and rejects non-literal values', async () => {
     mockDir.setContent({
       'empty.ts': `const spec = { openapi: '3.0.3' };\nexport const other = 1;\n`,
       'computed.ts': `const base = {};\nexport const spec = {\n  ...base,\n};\n`,
+      'unknown.ts': `export const spec = {\n  info: getInfo(),\n};\n`,
+      'cyclic.ts': `const a = { b };\nconst b = { a };\nexport const spec = a;\n`,
     });
 
     await expect(
       readGeneratedOpenApiSpec(mockDir.resolve('empty.ts')),
     ).resolves.toBeUndefined();
+    await expect(
+      readGeneratedOpenApiSpec(mockDir.resolve('unknown.ts')),
+    ).rejects.toThrow(`${mockDir.resolve('unknown.ts')}:2`);
+    await expect(
+      readGeneratedOpenApiSpec(mockDir.resolve('cyclic.ts')),
+    ).rejects.toThrow(`${mockDir.resolve('cyclic.ts')}:2`);
     await expect(
       readGeneratedOpenApiSpec(mockDir.resolve('computed.ts')),
     ).rejects.toThrow(
