@@ -34,6 +34,6 @@ export const entityRefFilterAndSearch = (
 ): boolean => {
   if (!query) return true;
   return String(row?.entity_ref ?? '')
-    .toUpperCase()
-    .includes(String(query).toUpperCase());
+    .toLocaleUpperCase('en-US')
+    .includes(String(query).toLocaleUpperCase('en-US'));
 };
