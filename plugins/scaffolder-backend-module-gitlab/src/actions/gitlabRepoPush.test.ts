@@ -39,6 +39,12 @@ const mockGitlabClient = {
       id: 'bb6bce457ed069a38ef8d16ef38602972c7735c5',
     })),
   },
+  Repositories: {
+    allRepositoryTrees: jest.fn(async () => []),
+  },
+  RepositoryFiles: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -343,6 +349,13 @@ describe('createGitLabCommit', () => {
           },
         },
       });
+      mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce({
+        cause: {
+          response: {
+            status: 404,
+          },
+        },
+      });
       const input = {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         commitMessage: 'Create my new commit',
@@ -375,6 +388,7 @@ describe('createGitLabCommit', () => {
           },
         ],
       );
+      expect(mockGitlabClient.RepositoryFiles.show).not.toHaveBeenCalled();
       expect(ctx.output).toHaveBeenCalledWith(
         'commitHash',
         'bb6bce457ed069a38ef8d16ef38602972c7735c5',
