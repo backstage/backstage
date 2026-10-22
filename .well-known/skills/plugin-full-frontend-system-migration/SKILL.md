@@ -138,6 +138,8 @@ export { default } from './plugin';
 export { rootRouteRef } from './routes';
 ```
 
+The default export is what feature discovery installs. A named export alone is skipped without a warning. Before adding `exports`, check for deep imports of the package from other packages, since `exports` blocks them. Read `references/plugin-packaging.md` in the `frontend-plugin-development` skill for these and the other `package.json` requirements, unique extension names, and declaring feature flags with `featureFlags` instead of registering them imperatively.
+
 ## Step 3: Migrate API Factories to `ApiBlueprint`
 
 ```typescript
@@ -271,6 +273,10 @@ export const myPage = PageBlueprint.make({
   },
 });
 ```
+
+### Entity Page Content
+
+If the plugin provides tabs for the catalog entity page, convert each one to an `EntityContentBlueprint` from `@backstage/plugin-catalog-react/alpha` instead of exporting a component for the app to place. Keep the tab on the same entities by matching the old predicate exactly in `filter`. Read `references/entity-content.md` in the `frontend-plugin-development` skill for filters, groups, multiple tabs, and removing the legacy entity page JSX.
 
 ## Step 5: Replace Internal Routing with Sub-Pages
 
@@ -456,6 +462,16 @@ Key page-level changes:
 - Replace `ContentHeader` with `Header`'s `customActions` prop
 - Replace `HeaderTabs` with `SubPageBlueprint` (tabs are rendered by the framework)
 
+## Step 9: Migrate the Dev App and Tests
+
+1. Move `dev/index.tsx` to `createDevApp` from `@backstage/frontend-dev-utils`, and replace `@backstage/dev-utils` with it in `devDependencies`. Port every `.registerApi(...)` call to an `ApiBlueprint` in a dev-only module. Dropping one compiles but throws `NotImplementedError` when the component that uses the API mounts. Read `references/dev-app.md` in the `frontend-plugin-development` skill.
+2. Replace `@backstage/test-utils` with `@backstage/frontend-test-utils` in `devDependencies` and test imports. Provide APIs to components through `renderInTestApp({ apis })` and to hooks through `TestApiProvider`.
+3. Add a smoke test that installs the plugin in a test app, opens its main page, and asserts on the page's content. Read `references/testing.md` in the `frontend-plugin-development` skill.
+
+## Step 10: Remove the Old Wiring from the App
+
+If the plugin is installed in an app in the same repository, remove its legacy wiring in the same change: legacy `<Route>` elements and entity page JSX for its tabs and cards. Move redirect routes to the `app/routes` config, and check `app-config` before deleting JSX that an extension now replaces. Read `references/app-integration.md` in the `frontend-plugin-development` skill. The `app-frontend-system-migration` skill covers migrating the app itself.
+
 ## Real Example: Auth Plugin (Fully Migrated)
 
 The `@backstage/plugin-auth` plugin is a fully migrated example with no `@backstage/core-plugin-api` dependency:
@@ -539,15 +555,23 @@ export const tasksSubPage = SubPageBlueprint.make({
 12. [ ] Remove `src/alpha.tsx` if it existed (merge into main entry)
 13. [ ] Remove `@backstage/core-plugin-api` from `package.json` dependencies
 14. [ ] Remove `@backstage/core-compat-api` from `package.json` dependencies
-15. [ ] Update `package.json` exports (remove `./alpha` if merged into main)
-16. [ ] Run `yarn tsc` to check for type errors
-17. [ ] Run `yarn lint` to check for missing dependencies
-18. [ ] Run `yarn build:api-reports` to update API reports (if the project uses API reports)
-19. [ ] Test in a new-system app (`packages/app`)
+15. [ ] Update `package.json` exports (remove `./alpha` if merged into main), keeping `"./package.json"` exported
+16. [ ] Make sure the plugin is the package's default export and `backstage.pluginId` matches its `pluginId`
+17. [ ] Give every extension of the same kind a unique `name`
+18. [ ] Convert entity page tabs to `EntityContentBlueprint`, keeping the same filter
+19. [ ] Migrate `dev/index.tsx` to `@backstage/frontend-dev-utils`, porting every registered API
+20. [ ] Migrate tests to `@backstage/frontend-test-utils` and add a smoke test that renders the main page
+21. [ ] Remove the plugin's legacy wiring from the app, move its redirects to config, and check `app-config` for disabled or filtered extensions
+22. [ ] Run `yarn tsc` to check for type errors
+23. [ ] Run `yarn lint` to check for missing dependencies
+24. [ ] Run `yarn build:api-reports` to update API reports (if the project uses API reports)
+25. [ ] Start the dev app and check the page renders and the browser console has no `App startup encountered warnings` block
+26. [ ] Test in a new-system app (`packages/app`)
 
 ## Reference
 
 - [Plugin migration guide](https://backstage.io/docs/frontend-system/building-plugins/migrating)
 - [Extension blueprints](https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints)
 - [Utility APIs](https://backstage.io/docs/frontend-system/utility-apis/creating)
+- Packaging, entity content, dev app, testing, app wiring, and troubleshooting: `frontend-plugin-development` skill
 - MUI to BUI migration: `mui-to-bui-migration` skill
