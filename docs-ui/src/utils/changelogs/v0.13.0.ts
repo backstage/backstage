@@ -34,6 +34,7 @@ export const changelog_0_13_0: ChangelogProps[] = [
     components: ['popover', 'tooltip', 'menu', 'dialog'],
     version: '0.13.0',
     prs: ['32979'],
+    tokens: true,
     description: `**BREAKING**: Removed \`--bui-bg-popover\` CSS token. Popover, Tooltip, Menu, and Dialog now use \`--bui-bg-app\` for their outer shell and \`Box bg="neutral-1"\` for content areas, providing better theme consistency and eliminating a redundant token.`,
     migration: `Replace any usage of \`--bui-bg-popover\` with \`--bui-bg-neutral-1\` (for content surfaces) or \`--bui-bg-app\` (for outer shells):
 

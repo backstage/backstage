@@ -127,6 +127,7 @@ export const changelog_0_11_0: ChangelogProps[] = [
     components: [],
     version: '0.11.0',
     prs: ['32313'],
+    tokens: true,
     description: `Added new Popover component for Backstage UI with automatic overflow handling, and full placement support. Also introduced \`--bui-shadow\` token for consistent elevation styling across overlay components (Popover, Tooltip, Menu).`,
 
     commitSha: '133d5c6',

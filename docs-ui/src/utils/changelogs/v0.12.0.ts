@@ -254,6 +254,7 @@ Remove any references to \`--bui-border-hover\`, \`--bui-border-pressed\`, and \
     components: ['link'],
     version: '0.12.0',
     prs: ['32608'],
+    tokens: true,
     description: `**BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
 
   The following color tokens have been removed:
@@ -417,6 +418,7 @@ If you're using status foreground colors on colored backgrounds, update to the n
     components: ['alert'],
     version: '0.12.0',
     prs: ['32520'],
+    tokens: true,
     description: `Added new \`Alert\` component with support for status variants (info, success, warning, danger), icons, loading states, and custom actions.
 
   Updated status color tokens for improved contrast and consistency across light and dark themes:
