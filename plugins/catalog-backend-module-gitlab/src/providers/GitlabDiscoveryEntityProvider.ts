@@ -29,7 +29,10 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import type { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
+import type {
+  WebhookProjectSchema,
+  WebhookPushEventSchema,
+} from '@gitbeaker/rest';
 import { randomUUID } from 'node:crypto';
 import {
   GitLabClient,
