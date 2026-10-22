@@ -1,5 +1,19 @@
 # @backstage/plugin-app-backend
 
+## 0.5.19
+
+### Patch Changes
+
+- a18df8f: Added optional `app.publicConfig` allowlists for config key paths and extension IDs exposed to unauthenticated users of protected apps. Authenticated users retain access to all frontend-visible configuration, and existing behavior is unchanged unless filtering is enabled.
+- c55505e: Fix protected app sign-in returning a 404 when an authenticated browser repeats the sign-in handoff for the same user.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/plugin-app-node@0.1.50
+
 ## 0.5.19-next.2
 
 ### Patch Changes

@@ -7843,12 +7843,12 @@ __metadata:
   linkType: hard
 
 "follow-redirects@npm:^1.0.0":
-  version: 1.16.0
-  resolution: "follow-redirects@npm:1.16.0"
+  version: 1.16.1
+  resolution: "follow-redirects@npm:1.16.1"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 10/3fbe3d80b3b544c22705d837aa5d4a0d07a740d913534a2620b0a004c610af4148e3b58723536dd099aaa1c9d3a155964bde9665d6e5cb331460809a1fc572fd
+  checksum: 10/269c9f38e4bb413d7ab224fb5aa733118288a18e84d4d0a22821a850574624a55d45f2c6735fc09fc1cceedb6343a5539daf6d2dd70bce8980c8336d230a2f50
   languageName: node
   linkType: hard
 
@@ -10194,12 +10194,12 @@ __metadata:
   linkType: hard
 
 "launch-editor@npm:^2.14.1, launch-editor@npm:^2.6.1":
-  version: 2.14.1
-  resolution: "launch-editor@npm:2.14.1"
+  version: 2.14.2
+  resolution: "launch-editor@npm:2.14.2"
   dependencies:
     picocolors: "npm:^1.1.1"
-    shell-quote: "npm:^1.8.4"
-  checksum: 10/335d12ca437280e77070657531c251b6c91c62bc653f70ab66ddd2a6e50131b1b043480411c5b93d54955a0a6eb8ec01e9a5b5cfe2d887341d878d19394a126b
+    shell-quote: "npm:^1.10.0"
+  checksum: 10/8a3a82314ed6705d8f6795c409ea31ed2a106d0f0bc0528a60f8b53ec972cce1db9088bb4647987b2ef4bb16b804fcc85e54529acaa26aae22f39eaba704401b
   languageName: node
   linkType: hard
 
@@ -13312,7 +13312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.7.3, shell-quote@npm:^1.8.4, shell-quote@npm:^1.9.0":
+"shell-quote@npm:^1.10.0, shell-quote@npm:^1.7.3, shell-quote@npm:^1.9.0":
   version: 1.12.0
   resolution: "shell-quote@npm:1.12.0"
   checksum: 10/18b3e382272804e79fd3187c18877cfd4e736b5afb576bf1ab66a561b0a0e26eada4b7c8eb45473d1f17268ffcf12d0aaa90b9235132123eb673df5d0a5df943

@@ -1,6 +1,6 @@
 {
   "name": "@internal/backend",
-  "version": "0.0.5-next.1",
+  "version": "0.0.5",
   "backstage": {
     "role": "node-library",
     "inline": true

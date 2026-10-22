@@ -269,7 +269,7 @@ async function runCommandLevel(options: {
               programName,
             );
             await flushStdio();
-            process.exit(0);
+            process.exit(process.exitCode ?? 0);
           }
         } catch (error: unknown) {
           exitWithError(error);
@@ -364,6 +364,11 @@ function hasVersionFlag(args: string[]): boolean {
  * are listed separately in alphabetical order. Group previews fit the terminal width
  * (80 columns when unavailable), expanding nested groups breadth-first when space
  * permits. Unexpanded groups have a trailing slash; truncated previews end in an ellipsis.
+ *
+ * When a command completes without throwing, the process exits with
+ * `process.exitCode`, or `0` if it is not set. Commands can set
+ * `process.exitCode` to report a failure, such as invalid input, without
+ * throwing an error.
  *
  * @example
  * ```ts

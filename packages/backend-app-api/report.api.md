@@ -71,6 +71,7 @@ export interface ExtensionPointFactoryMiddleware {
 
 // @public
 export interface ModuleStartupResult {
+  beginAt?: Date;
   failure?: {
     error: Error;
     allowed: boolean;
@@ -81,6 +82,7 @@ export interface ModuleStartupResult {
 
 // @public
 export interface PluginStartupResult {
+  beginAt?: Date;
   failure?: {
     error: Error;
     allowed: boolean;

@@ -572,6 +572,7 @@ ungrouped
 unicode
 unmanaged
 unmount
+unparseable
 unregister
 unregistering
 unregisters
@@ -624,3 +625,5 @@ zod
 Zolotusky
 zoomable
 zsh
+Zensical
+zensical

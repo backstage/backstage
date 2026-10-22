@@ -1,5 +1,20 @@
 # @backstage/backend-app-api
 
+## 1.8.0
+
+### Minor Changes
+
+- e956084: Added an `instanceId` option to `createSpecializedBackend`. Each backend instance uses a random UUID by default.
+
+### Patch Changes
+
+- f6054ac: Updated undeclared-connection errors to direct plugin authors to `declareConnection` from `@backstage/backend-plugin-api/alpha`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+
 ## 1.8.0-next.2
 
 ### Patch Changes

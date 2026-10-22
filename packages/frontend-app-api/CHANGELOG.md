@@ -1,5 +1,21 @@
 # @backstage/frontend-app-api
 
+## 0.16.9
+
+### Patch Changes
+
+- 0caa896: Provided an implementation of `AppLifecycleApi` and updated the app preparation and finalization process to utilize this API.
+- 5b67e11: The permission check for extension `if` predicates during app startup now retries network failures and 5xx responses, for up to about 15 seconds, instead of failing the whole app on the first error. This helps when the frontend comes up before the permission backend, and when a request is dropped during sign-in.
+- d810cc9: Improved link resolution performance by reusing route matches for recently visited locations.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/frontend-defaults@0.5.7
+
 ## 0.16.9-next.1
 
 ### Patch Changes

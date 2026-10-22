@@ -45,6 +45,17 @@ function getDefaultOwnershipEntityRefs(entity: Entity) {
   return Array.from(new Set([stringifyEntityRef(entity), ...membershipRefs]));
 }
 
+// Entity refs in claims are stored and matched exactly throughout the auth
+// backend, so make sure that they are always in their canonical form. Invalid
+// refs are passed through as-is, and rejected by the token issuer.
+function canonicalizeEntityRef(ref: string): string {
+  try {
+    return stringifyEntityRef(parseEntityRef(ref));
+  } catch {
+    return ref;
+  }
+}
+
 export class CatalogAuthResolverContext implements AuthResolverContext {
   static create(options: {
     logger: LoggerService;
@@ -97,7 +108,11 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   }
 
   async issueToken(params: TokenParams) {
-    const { sub, ent = [sub], ...additionalClaims } = params.claims;
+    const { sub: rawSub, ent: rawEnt, ...additionalClaims } = params.claims;
+    const sub = canonicalizeEntityRef(rawSub);
+    const ent = rawEnt
+      ? Array.from(new Set(rawEnt.map(canonicalizeEntityRef)))
+      : [sub];
     const claims = {
       sub,
       ent,
