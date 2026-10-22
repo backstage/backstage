@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import { AppError, AppErrorTypes } from '@backstage/frontend-app-api';
+import { AppError } from '@backstage/frontend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { DEFAULT_WARNING_CODES } from '../../../frontend-defaults/src/defaultWarningCodes';
 
-// Keep in sync with DEFAULT_WARNING_CODES in maybeCreateErrorPage from
-// @backstage/frontend-defaults. A real app only logs these, so tests ignore them.
-const WARNING_CODES = new Set<keyof AppErrorTypes>([
-  'EXTENSION_IGNORED',
-  'INVALID_EXTENSION_CONFIG_KEY',
-  'EXTENSION_INPUT_DATA_IGNORED',
-  'EXTENSION_INPUT_INTERNAL_IGNORED',
-  'EXTENSION_OUTPUT_IGNORED',
-  'EXTENSION_BOOTSTRAP_PREDICATE_IGNORED',
-  'EXTENSION_BOOTSTRAP_API_UNAVAILABLE',
-  'FEATURE_FLAG_INVALID',
-]);
+// Uses the same list as `createApp`, so a test fails exactly when the app
+// would show its error page.
+const WARNING_CODES = new Set(DEFAULT_WARNING_CODES);
 
 /**
  * Throws for app errors that would replace a real app with its error page,
