@@ -21,6 +21,7 @@ import {
 } from '@backstage/core-components';
 import { Alert, Text } from '@backstage/ui';
 
+import { entityRefFilterAndSearch } from './filterEntities';
 import { EntityDialog } from './EntityDialog';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
@@ -47,17 +48,17 @@ export const PendingEntities = () => {
       title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
-      customFilterAndSearch: (query, row: any) =>
-        row.entity_ref.toUpperCase().includes(query.toUpperCase()),
+      customFilterAndSearch: (query, row) =>
+        entityRefFilterAndSearch(query, row),
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).entity_ref,
+        (rowData as UnprocessedEntity).entity_ref || '-',
     },
     {
       title: <Text>Kind</Text>,
       sorting: true,
-      field: 'kind',
+      field: 'unprocessed_entity.kind',
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).unprocessed_entity.kind,
+        (rowData as UnprocessedEntity).unprocessed_entity.kind || '-',
     },
     {
       title: <Text>Owner</Text>,
