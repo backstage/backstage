@@ -2,9 +2,9 @@
 title: Gated Scaffolder Workflows
 status: provisional
 authors:
-  - "@spiffaz"
+  - '@spiffaz'
 owners:
-  - "@backstage/scaffolder-maintainers"
+  - '@backstage/scaffolder-maintainers'
 project-areas:
   - scaffolder
 creation-date: 2026-07-22
@@ -107,21 +107,21 @@ The task table gains the `waiting` status, and suspensions live in their own tab
 
 `scaffolder_task_suspensions`
 
-| column | notes |
-| --- | --- |
-| `id` | primary key |
-| `task_id` | foreign key to `tasks.id`, cascade delete |
-| `key` | caller-owned, unique within a task |
-| `reason` | free-form, surfaced in events and UI |
+| column           | notes                                                                            |
+| ---------------- | -------------------------------------------------------------------------------- |
+| `id`             | primary key                                                                      |
+| `task_id`        | foreign key to `tasks.id`, cascade delete                                        |
+| `key`            | caller-owned, unique within a task                                               |
+| `reason`         | free-form, surfaced in events and UI                                             |
 | `policy_context` | JSON, plugin data; core never evaluates it (see Resume endpoint and permissions) |
-| `created_at` | |
-| `expires_at` | nullable; null means no timeout |
-| `consumed_at` | nullable; null means live |
-| `outcome` | nullable: `resumed`, `timed_out` or `cancelled` |
-| `payload` | nullable JSON, the resume payload |
-| `resumed_by` | nullable, the authenticated caller recorded server-side |
+| `created_at`     |                                                                                  |
+| `expires_at`     | nullable; null means no timeout                                                  |
+| `consumed_at`    | nullable; null means live                                                        |
+| `outcome`        | nullable: `resumed`, `timed_out` or `cancelled`                                  |
+| `payload`        | nullable JSON, the resume payload                                                |
+| `resumed_by`     | nullable, the authenticated caller recorded server-side                          |
 
-`UNIQUE (task_id, key)` is the row concurrent resumers contend on, and a composite `(consumed_at, expires_at)` index serves the timeout sweep; composite rather than partial, because partial indexes are not portable across the database connectors `backend-defaults` ships. A child table `scaffolder_task_suspension_principals (suspension_id, entity_ref)` holds the entity refs a suspending action declares as able to resume, so permission rules can filter with a plain `IN` rather than a JSON path.
+`UNIQUE (task_id, key)` is the row that concurrent resume calls contend on, and a composite `(consumed_at, expires_at)` index serves the timeout sweep; composite rather than partial, because partial indexes are not portable across the database connectors `backend-defaults` ships. A child table `scaffolder_task_suspension_principals (suspension_id, entity_ref)` holds the entity refs a suspending action declares as able to resume, so permission rules can filter with a plain `IN` rather than a JSON path.
 
 Nothing prunes task rows today, so suspensions live as long as their tasks. `payload` is cleared when the task reaches a terminal state, alongside the existing task-secrets wipe, leaving metadata-sized rows that grow at the same rate as `tasks` and `task_events`.
 
@@ -138,7 +138,7 @@ There is no coroutine mechanism in the workflow runner. Resume builds on the ste
 
 This is the same replay-and-skip model task recovery uses after a crash, which is why it composes instead of adding a second execution model.
 
-Because resume replays under whatever is deployed at resume time, a task parked for days is exposed to code and template drift. A `waiting` task pins its serialized task spec and inputs (per BEP-0004's workspace serialization), but not the action *code*, and templates load live from git in many installs. The stance: the task binds to its serialized spec, and resume re-executes the current action implementation; if the action id no longer exists (removed or renamed on a redeploy), resume fails cleanly with a clear error rather than hanging. This is strictly more exposed than a checkpoint-continuation model would be, and it is an accepted trade for reusing the existing replay machinery. Operators who cannot tolerate it should keep waits short.
+Because resume replays under whatever is deployed at resume time, a task parked for days is exposed to code and template drift. A `waiting` task pins its serialized task spec and inputs (per BEP-0004's workspace serialization), but not the action _code_, and templates load live from git in many installs. The stance: the task binds to its serialized spec, and resume re-executes the current action implementation; if the action id no longer exists (removed or renamed on a redeploy), resume fails cleanly with a clear error rather than hanging. This is strictly more exposed than a checkpoint-continuation model would be, and it is an accepted trade for reusing the existing replay machinery. Operators who cannot tolerate it should keep waits short.
 
 ### Releasing the worker
 
@@ -146,7 +146,7 @@ This is the headline of the design, because "do not hold a worker to wait" is th
 
 `TaskWorker` runs tasks on a bounded `PQueue`; `runOneTask` awaits `workflowRunner.execute(task)` to completion before freeing the slot. Nothing today lets an action yield, and an earlier proposal for a non-blocking worker (#13799) was closed as not planned. So freeing the slot is a real runner change, not additive. `ctx.suspend` records the requested park in memory and unwinds by throwing a dedicated suspend control-signal. Nothing durable happens inside the handler. The runner does the park at its boundary, once the handler has exited by any path. It serializes the workspace, then inserts the suspension row and flips the task `processing -> waiting` in one transaction. Only then does it resolve `execute()`/`runOneTask` and free the `PQueue` slot. This BEP effectively revives #13799's yield, now made durable by persisting `waiting` state rather than holding a slot. If the slot were instead held open for the wait, this would degrade into the rejected poll-a-flag alternative.
 
-Note the scope boundary against #13799: that RFC was rejected for restructuring task *consumption* from async-poll `claim()` into an event-push model (Rugvip: async polling handles back-pressure and multi-node scaling better). This BEP does not touch consumption at all - task pickup stays `claim()`/poll exactly as today. The only event-driven surface is the inbound resume signal, which is what the maintainers explicitly proposed. This distinction is deliberate: the design leaves the claim/poll consumption model that #13799 was closed to protect entirely untouched.
+Note the scope boundary against #13799: that RFC was rejected for restructuring task _consumption_ from async-poll `claim()` into an event-push model (Rugvip: async polling handles back-pressure and multi-node scaling better). This BEP does not touch consumption at all - task pickup stays `claim()`/poll exactly as today. The only event-driven surface is the inbound resume signal, which is what the maintainers explicitly proposed. This distinction is deliberate: the design leaves the claim/poll consumption model that #13799 was closed to protect entirely untouched.
 
 `runOneTask` completes the task in both directions today: `task.complete('completed', ...)` on a normal return from `workflowRunner.execute`, and `task.complete('failed', ...)` from a blanket `catch`. A suspend signal that escapes `execute` therefore marks the task failed, and one that returns normally marks it completed - the task goes terminal either way and the wait never happens. The runner catches the signal above its step loop and hands back a distinct `WorkflowResponse` variant that `runOneTask` branches on before completing anything, and the suspend path must not run the success-path teardown (`markSuccessful`, workspace cleanup).
 
@@ -162,9 +162,9 @@ Two sweeps act on stale tasks, and both filter `status = 'processing'`: `listSta
 
 The design targets multiple replicas and restarts, so the following must be explicit:
 
-- Resume, consume and re-queue are one transaction holding two guarded compare-and-sets, not a single statement, because the suspension lives in its own table. First `UPDATE scaffolder_task_suspensions SET consumed_at = now(), outcome = 'resumed', payload = ?, resumed_by = ? WHERE task_id = ? AND key = ? AND consumed_at IS NULL`; zero rows rolls the transaction back, and the caller gets 404 for an unknown key or 409 for one already consumed. Then `UPDATE tasks SET status = 'open', last_heartbeat_at = now() WHERE id = ? AND status = 'waiting'`, mirroring `retryTask`; zero rows there means the task was cancelled or swept, and the rollback undoes the consume with it, so the two tables cannot disagree. Nothing is enqueued in memory: the existing `claim()` poll picks the task up because it is `open`.
+- Resume, consume and re-queue are one transaction holding two guarded compare-and-sets, not a single statement, because the suspension lives in its own table. First `UPDATE scaffolder_task_suspensions SET consumed_at = now(), outcome = 'resumed', payload = ?, resumed_by = ? WHERE task_id = ? AND key = ? AND consumed_at IS NULL`; zero rows rolls the transaction back, and the caller gets 404 for an unknown key or 409 for one already consumed. Then `UPDATE tasks SET status = 'open', last_heartbeat_at = now() WHERE id = ? AND status = 'waiting'`, mirroring `retryTask`; zero rows there means the task was cancelled or swept, and the rollback undoes the consume with it, so the two tables cannot disagree. Nothing is queued in memory: the existing `claim()` poll picks the task up because it is `open`.
 - Both statements are compare-and-sets rather than read-then-write, so read committed is sufficient and no explicit row locking is required. PostgreSQL and MySQL serialise contenders on the `(task_id, key)` unique key, and the loser matches zero rows once the winner commits; SQLite serialises writers at the database level.
-- Timeout is the mirror image of the same transaction, with `expires_at IS NOT NULL AND expires_at <= now() AND consumed_at IS NULL` on the first statement and `outcome = 'timed_out'`. Resume and timeout therefore compete for the same row and exactly one transaction commits. The sweep also selects only suspensions whose task is still `waiting`. A live row that the cancel transaction missed is then ignored, so it cannot be retried every tick and starve real expiries.
+- Timeout is the mirror image of the same transaction, with `expires_at IS NOT NULL AND expires_at <= now() AND consumed_at IS NULL` on the first statement and `outcome = 'timed_out'`. Resume and timeout therefore compete for the same row and exactly one transaction commits. The sweep also selects only suspensions whose task is still `waiting`. A live row that the cancel transaction missed is then ignored, so it cannot be retried every tick and crowd out real timeouts.
 - Ordering contract: the runner serializes the workspace before the transaction that inserts the suspension and flips the task to `waiting`. A resume handled by another replica therefore cannot restore a partial workspace. A resume that arrives before that transaction commits finds nothing to consume and returns 404, and the caller retries.
 
 ### Resume endpoint and permissions
@@ -193,7 +193,7 @@ Because an action author could ignore `timedOut` and continue provisioning after
 
 ### Secrets across a long wait
 
-With task recovery enabled, which gated tasks require, #35224 keeps task secrets in the database until the task reaches a terminal state instead of nulling them at claim. A task parked in `waiting` for hours or days therefore holds its secrets for the whole wait, and the tokens they carry may be dead by the time approval lands. This BEP does not solve secret longevity, but it must not pretend the problem away. The stance: secrets captured before a suspend must not be assumed valid after resume; a gated action should re-acquire credentials on resume (the replay model already re-runs the handler, so re-auth fits naturally) rather than rely on a secret captured before the wait. Where re-auth is impossible, the limitation is documented and the timeout should be set below the shortest relevant credential lifetime.
+With task recovery enabled, which gated tasks require, #35224 keeps task secrets in the database until the task reaches a terminal state instead of clearing them at claim. A task parked in `waiting` for hours or days therefore holds its secrets for the whole wait, and the tokens they carry may be dead by the time approval lands. This BEP does not solve secret longevity, but it must not pretend the problem away. The stance: secrets captured before a suspend must not be assumed valid after resume; a gated action should re-acquire credentials on resume (the replay model already re-runs the handler, so re-auth fits naturally) rather than rely on a secret captured before the wait. Where re-auth is impossible, the limitation is documented and the timeout should be set below the shortest relevant credential lifetime.
 
 ### Observability
 
@@ -232,7 +232,7 @@ Downgrade is the operationally important case, because this feature deliberately
 - `resumedBy` is derived from the authenticated caller, and a `by` field in the request payload is ignored.
 - A timed-out replay cannot finish green: an action that ignores `timedOut` and returns normally still leaves the step failed, and the template's `${{ failure() }}` and `${{ always() }}` steps then run.
 - A gate on a `${{ failure() }}` step resumes with the run still failing, and steps that were being skipped stay skipped.
-- The workspace survives a park: a resumed task rehydrates the files its earlier steps wrote.
+- The workspace survives a park: a resumed task restores the files its earlier steps wrote.
 - Cancelling a `waiting` task moves it to `cancelled` through the status-guarded path, with no worker involved, and consumes its suspension so the timeout sweep never selects it.
 - A handler that swallows the suspend signal and throws its own error fails the step with no suspension written, and the task is never `waiting`.
 - A timed-out replay that notifies again and parks on a new key waits normally and is not forced to fail.
