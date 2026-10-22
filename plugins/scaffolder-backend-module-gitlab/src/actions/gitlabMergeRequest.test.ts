@@ -1455,6 +1455,45 @@ describe('createGitLabMergeRequest', () => {
         expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       });
     });
+
+    it('creates all files when the repository tree listing returns 404', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'auto',
+        targetPath: 'source',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'auto.txt': 'File exist', 'foo.txt': 'Hello there!' },
+        },
+      });
+      mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce(
+        new Error('Not Found', { cause: { response: { status: 404 } } }),
+      );
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        expect.arrayContaining([
+          expect.objectContaining({
+            action: 'create',
+            filePath: 'source/auto.txt',
+          }),
+          expect.objectContaining({
+            action: 'create',
+            filePath: 'source/foo.txt',
+          }),
+        ]),
+      );
+      expect(mockGitlabClient.RepositoryFiles.show).not.toHaveBeenCalled();
+    });
   });
 
   describe('with sourcePath', () => {

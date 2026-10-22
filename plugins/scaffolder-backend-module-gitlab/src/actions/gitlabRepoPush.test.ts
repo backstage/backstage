@@ -239,6 +239,79 @@ describe('createGitLabCommit', () => {
     });
   });
 
+  describe('when the repository tree listing fails', () => {
+    afterEach(() => {
+      mockGitlabClient.RepositoryFiles.show.mockReset();
+    });
+
+    it('checks files on the target branch under targetPath', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Update files',
+        branchName: 'feature-branch',
+        targetPath: 'target',
+        commitAction: 'auto',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'existing.txt': 'Updated content',
+          'missing.txt': 'New content',
+        },
+      });
+
+      mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce(
+        new Error('Query timeout was reached'),
+      );
+      const showFile = async (_repoID: string | number, filePath: string) => {
+        if (filePath === 'target/existing.txt') {
+          return { content_sha256: '0'.repeat(64) };
+        }
+        if (filePath === 'target/missing.txt') {
+          throw new Error('Not Found', {
+            cause: { response: { status: 404 } },
+          });
+        }
+        throw new Error(`Unexpected file path ${filePath}`);
+      };
+      mockGitlabClient.RepositoryFiles.show.mockImplementation(showFile);
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+        'owner/repo',
+        'target/existing.txt',
+        'feature-branch',
+      );
+      expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+        'owner/repo',
+        'target/missing.txt',
+        'feature-branch',
+      );
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'feature-branch',
+        'Update files',
+        expect.arrayContaining([
+          {
+            action: 'update',
+            filePath: 'target/existing.txt',
+            content: 'VXBkYXRlZCBjb250ZW50',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+          {
+            action: 'create',
+            filePath: 'target/missing.txt',
+            content: 'TmV3IGNvbnRlbnQ=',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ]),
+      );
+    });
+  });
+
   describe('with sourcePath', () => {
     it('creates a commit with only relevant files', async () => {
       const input = {
