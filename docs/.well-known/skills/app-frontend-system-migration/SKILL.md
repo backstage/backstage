@@ -488,6 +488,8 @@ const routes = (
 );
 ```
 
+Do not delete redirect routes (`<Route path="/old" element={<Navigate to="/new" />} />`) along with the plugin routes. Move them to the `redirects` config of the `app/routes` extension, which supports named params (`:id`) and `*` in the target. Read `references/app-integration.md` in the `frontend-plugin-development` skill.
+
 If you are **not** using feature discovery, you need to manually import and install the new plugin version:
 
 ```typescript
@@ -561,6 +563,8 @@ Once the catalog plugin itself is migrated, you can gradually remove legacy enti
 
 If you see **duplicate cards** after removing routes but before removing entity page JSX, that's expected — the new plugin is auto-providing cards while the legacy JSX still renders them. Remove the legacy JSX to resolve the duplication.
 
+Before deleting legacy JSX, check that the replacing extension renders in this app. An `app-config` entry can disable it (`- entity-card:my-plugin/info: false`) or give it a narrower `filter`, and then the legacy JSX was the only thing showing the card. Search the app's config for the extension ID and fix it in the same change. Read `references/app-integration.md` in the `frontend-plugin-development` skill.
+
 #### Migrating entity page tabs
 
 Tabs in entity pages (the `EntityLayout.Route` entries) are provided by `EntityContentBlueprint` extensions in the new system. As you remove legacy entity content JSX, the tabs are automatically sourced from the new-system extensions. The order and grouping of tabs can be configured via `app-config.yaml`:
@@ -628,10 +632,10 @@ app:
 5. [ ] Convert translations to `TranslationBlueprint`
 6. [ ] Migrate sidebar to `NavContentBlueprint`
 7. [ ] Remove built-in root elements (`AlertDisplay`, `OAuthRequestDialog`, etc.)
-8. [ ] Migrate routes from `FlatRoutes` to plugin features (one plugin at a time, removing all routes + entity content for each plugin together)
+8. [ ] Migrate routes from `FlatRoutes` to plugin features (one plugin at a time, removing all routes + entity content for each plugin together), moving redirect routes to the `app/routes` config
 9. [ ] Set up entity page migration with `convertLegacyAppRoot(routes, { entityPage })`
 10. [ ] Migrate catalog plugin: remove catalog routes from `FlatRoutes`, install `catalogPlugin` as a feature
-11. [ ] Gradually remove legacy entity card/content JSX as each contributing plugin is migrated
+11. [ ] Gradually remove legacy entity card/content JSX as each contributing plugin is migrated, after checking `app-config` does not disable or narrow the replacing extension
 12. [ ] Remove `entityPage` option and legacy entity page component files
 13. [ ] Remove `convertLegacyAppRoot` and `convertLegacyAppOptions` calls
 14. [ ] Remove `@backstage/app-defaults`, `@backstage/core-app-api` dependencies
@@ -642,6 +646,7 @@ app:
 - Install `@backstage/plugin-app-visualizer` to inspect the extension tree at `/visualizer`
 - Duplicate entity cards: remove legacy card JSX from entity pages — plugins auto-provide them
 - `Invalid element inside FlatRoutes`: push `FeatureFlagged`/`RequirePermissions` wrappers into plugin code instead of the route table
+- Check the browser console for an `App startup encountered warnings:` block. Warnings such as `EXTENSION_IGNORED` and `FEATURE_FLAG_INVALID` do not stop the app, so something can be missing with no visible error. See `references/troubleshooting.md` in the `frontend-plugin-development` skill for these and other startup messages.
 
 ## Reference
 
@@ -649,3 +654,4 @@ app:
 - [Architecture overview](https://backstage.io/docs/frontend-system/architecture/index)
 - [Extension blueprints](https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints)
 - [Installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins)
+- Plugin packaging, entity content, app wiring, and troubleshooting: `frontend-plugin-development` skill
