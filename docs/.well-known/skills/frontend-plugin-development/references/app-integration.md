@@ -6,22 +6,14 @@ Read when installing a plugin in an app, removing legacy wiring for a plugin tha
 
 With `app.packages: all` (the default for new apps), adding the plugin package to the app package's `dependencies` installs it. See [Plugin packaging](plugin-packaging.md) for what the package needs so discovery finds it.
 
-A plugin listed in `createApp({ features: [...] })` that is also discovered is deduplicated, so an explicit entry is redundant but harmless. When cleaning up, remove it if all of these hold:
-
-- The package is in the app package's `dependencies`, and `app.packages` does not exclude it (or does include it, when an `include` list is used).
-- Its default export is the plugin or module.
-- The import is not used for anything else, such as `bindRoutes` referencing `myPlugin.externalRoutes`. If it is, keep the import and remove only the `features` entry.
-
-Keep explicit entries for features that are not packages, such as modules defined inside the app package, because discovery only reads `dependencies`.
+A plugin that is both listed in `createApp({ features: [...] })` and discovered is deduplicated. Keep explicit entries for features that are not packages, such as modules defined inside the app package, because discovery only reads `dependencies`.
 
 ## Remove legacy wiring in the same change
 
-When a plugin moves to the new frontend system, its legacy wiring in the app must go in the same change, or the app renders the plugin twice or keeps importing code that no longer exists:
+When a plugin moves to the new frontend system, remove its legacy wiring from the app in the same change. A legacy route shadows the new plugin, and legacy entity page JSX renders next to the new extensions. The `app-frontend-system-migration` skill explains both.
 
 - Legacy `<Route>` elements for the plugin's pages.
 - Entity page JSX for the plugin's tabs and cards, in every entity kind's page, not only the first one you find. See [Entity content](entity-content.md).
-- Manual API factories for the plugin's APIs in the app's `apis` list, if the plugin now provides them with `ApiBlueprint`.
-- Explicit `features` entries that discovery now covers.
 
 Then search the app for the plugin package and make sure each remaining match is intentional:
 
@@ -66,6 +58,6 @@ grep -rn "entity-card:<plugin-id>\|entity-content:<plugin-id>\|page:<plugin-id>"
 | ----------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | No entry                                                          | The extension uses its defaults from code              | Check that the extension is not `disabled: true` by default in the plugin's code |
 | `- entity-card:my-plugin/info: false`                             | Disabled; deleting the JSX removes the card everywhere | Enable it (remove the entry or set it to `true`)                                 |
-| An entry with `config.filter` that is narrower than the old JSX's | The card disappears for entities the filter excludes   | Widen the filter, or keep the old behavior another way                           |
+| An entry with `config.filter` that is narrower than the old JSX's | The card disappears for entities the filter excludes   | Widen or remove the `filter` override                                            |
 
 See [Configuring extensions](https://backstage.io/docs/frontend-system/building-apps/configuring-extensions) for the config format.

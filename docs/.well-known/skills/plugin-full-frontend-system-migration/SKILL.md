@@ -465,12 +465,12 @@ Key page-level changes:
 ## Step 9: Migrate the Dev App and Tests
 
 1. Move `dev/index.tsx` to `createDevApp` from `@backstage/frontend-dev-utils`, and replace `@backstage/dev-utils` with it in `devDependencies`. Port every `.registerApi(...)` call to an `ApiBlueprint` in a dev-only module. Dropping one compiles but throws `NotImplementedError` when the component that uses the API mounts. Read `references/dev-app.md` in the `frontend-plugin-development` skill.
-2. Replace `@backstage/test-utils` with `@backstage/frontend-test-utils` in `devDependencies` and test imports. Provide APIs through `renderInTestApp({ apis })` or `TestApiProvider` instead of mocking `@backstage/frontend-plugin-api`.
+2. Replace `@backstage/test-utils` with `@backstage/frontend-test-utils` in `devDependencies` and test imports. Provide APIs to components through `renderInTestApp({ apis })` and to hooks through `TestApiProvider`.
 3. Add a smoke test that installs the plugin in a test app, opens its main page, and asserts on the page's content. Read `references/testing.md` in the `frontend-plugin-development` skill.
 
 ## Step 10: Remove the Old Wiring from the App
 
-If the plugin is installed in an app in the same repository, remove its legacy wiring in the same change: legacy `<Route>` elements, entity page JSX for its tabs and cards, and manual API factories for its APIs. Move redirect routes to the `app/routes` config, and check `app-config` before deleting JSX that an extension now replaces. Read `references/app-integration.md` in the `frontend-plugin-development` skill. The `app-frontend-system-migration` skill covers migrating the app itself.
+If the plugin is installed in an app in the same repository, remove its legacy wiring in the same change: legacy `<Route>` elements and entity page JSX for its tabs and cards. Move redirect routes to the `app/routes` config, and check `app-config` before deleting JSX that an extension now replaces. Read `references/app-integration.md` in the `frontend-plugin-development` skill. The `app-frontend-system-migration` skill covers migrating the app itself.
 
 ## Real Example: Auth Plugin (Fully Migrated)
 

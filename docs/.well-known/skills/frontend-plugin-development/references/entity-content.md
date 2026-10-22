@@ -22,26 +22,7 @@ The extension is added to the plugin's `extensions`. It does not need `mountPoin
 
 `filter` decides which entities show the tab. It accepts an [entity predicate query](https://backstage.io/docs/features/software-catalog/catalog-customization#entity-predicate-queries) object, a function `(entity: Entity) => boolean`, or a filter expression string.
 
-- Prefer the predicate object when the check only compares entity fields. App integrators can then override it in `app-config` without code.
-- Match the original check exactly. If the old check only looked at `spec.type`, do not add a `kind` condition. That changes which entities show the tab.
-- Use `$in` for several allowed values instead of combining functions:
-
-  ```ts
-  filter: { kind: 'component', 'spec.type': { $in: ['service', 'website'] } }
-  ```
-
-- Use a function only for logic the predicate language cannot express.
-
-Rewriting a simple predicate function as an object:
-
-```ts
-// Before
-export const isMcpServer = (entity: Entity) =>
-  entity.spec?.type === 'mcp-server';
-
-// After, in the blueprint
-filter: { 'spec.type': 'mcp-server' },
-```
+Match the original check exactly. If the old check only looked at `spec.type`, do not add a `kind` condition: that changes which entities show the tab.
 
 ## Group
 
@@ -55,31 +36,7 @@ See [entity page groups](https://backstage.io/docs/features/software-catalog/cat
 
 ## Several tabs from one plugin
 
-Each `EntityContentBlueprint` in a plugin needs a unique `name`, or the plugin throws `provided duplicate extensions` when it is created. Use separate blueprints when a tab needs a different title, group, or filter for different kinds of entities:
-
-```tsx
-const componentTab = EntityContentBlueprint.make({
-  name: 'component',
-  params: {
-    path: '/my-plugin',
-    title: 'My Plugin',
-    group: 'development',
-    filter: { kind: 'component' },
-    loader,
-  },
-});
-
-const systemTab = EntityContentBlueprint.make({
-  name: 'system',
-  params: {
-    path: '/my-plugin',
-    title: 'My Plugin',
-    group: 'operation',
-    filter: { kind: 'system' },
-    loader,
-  },
-});
-```
+Each `EntityContentBlueprint` in a plugin needs a unique `name`, or the plugin throws `provided duplicate extensions` when it is created.
 
 ## Moving a tab from legacy entity page JSX
 
@@ -92,7 +49,6 @@ In an app that still has legacy entity page JSX, the legacy route and the new ex
    ```
 
 2. Remove each legacy route and its import.
-3. Remove the legacy content component from the plugin's public exports if nothing else uses it.
-4. Before deleting JSX in favour of an extension, check that the extension is enabled in `app-config`. See [App integration](app-integration.md#check-app-config-before-deleting-legacy-jsx).
+3. Before deleting JSX in favour of an extension, check that the extension is enabled in `app-config`. See [App integration](app-integration.md#check-app-config-before-deleting-legacy-jsx).
 
 Test entity content with `createExtensionTester`. See [Testing entity extensions](https://backstage.io/docs/frontend-system/building-plugins/testing#testing-entity-extensions).

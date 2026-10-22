@@ -20,28 +20,14 @@ It is a reference, not a procedure. Read only the reference that matches the tas
 | [Testing](references/testing.md)                   | Adding a plugin smoke test, or providing APIs to components and hooks in tests                                                           |
 | [Troubleshooting](references/troubleshooting.md)   | An error message or symptom at startup or runtime: missing plugin, missing page or tab, duplicate tab, API errors, ignored feature flags |
 
-## Verify a plugin change
+## Check the dev app after a change
 
-From the repository root:
+`yarn tsc`, lint, and unit tests do not catch most of the problems in these references. After changing a plugin, start its dev app (`yarn start` from the plugin directory) and check that:
 
-```bash
-yarn tsc
-yarn prettier --check <plugin-dir>
-```
+- The page renders the plugin's content, not an error page or an error panel.
+- The browser console has no `App startup encountered warnings:` block.
 
-From each plugin directory you changed, and from any shared package you touched:
-
-```bash
-yarn lint
-yarn test --watchAll=false
-```
-
-Then start the plugin's dev app (`yarn start` from the plugin directory) and check that:
-
-- The page renders the plugin's content, not an error page.
-- The browser console has no `App startup encountered warnings` block, `NotImplementedError`, or `API_FACTORY_CONFLICT`.
-
-The tests and type checks cannot catch the second list. See [Troubleshooting](references/troubleshooting.md) for what each one means.
+See [Troubleshooting](references/troubleshooting.md) for what each message means.
 
 ## Reference
 

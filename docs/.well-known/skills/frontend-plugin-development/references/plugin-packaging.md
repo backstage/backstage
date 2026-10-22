@@ -45,7 +45,7 @@ Discovery only looks at packages that meet all of these:
 }
 ```
 
-Set `backstage.pluginId` to the exact `pluginId` passed to `createFrontendPlugin`. `yarn backstage-cli repo fix` fills it in when it is missing, but it guesses the ID from the package name, so check the result when the package name and the runtime ID differ. For `frontend-plugin-module` packages, `pluginId` is the ID of the plugin the module extends.
+Set `backstage.pluginId` to the exact `pluginId` passed to `createFrontendPlugin`. `yarn backstage-cli repo fix --publish` can set it, but it guesses the ID from a `plugin-<id>` package name, so check the result when the package name and the runtime ID differ. For `frontend-plugin-module` packages, `pluginId` is the ID of the plugin the module extends.
 
 ## The `exports` field blocks deep imports
 
@@ -92,6 +92,6 @@ export default createFrontendPlugin({
 });
 ```
 
-Names must start with a lowercase letter, contain only lowercase letters, numbers, and hyphens, and be at most 150 characters. An invalid name, such as `myPlugin/beta` or `my_plugin_beta`, does not fail the app. The flag is not registered, and the app logs a `FEATURE_FLAG_INVALID` warning. Renaming a flag resets it for every user who had turned it on, so mention the rename in the change description.
+Names must start with a lowercase letter, contain only lowercase letters, numbers, and hyphens, and be at most 150 characters. An invalid name, such as `myPlugin/beta` or `my_plugin_beta`, does not fail the app. The flag is not registered, and the app logs a `FEATURE_FLAG_INVALID` warning. Renaming a flag turns it off for every user who had turned it on.
 
 See [Feature flags](https://backstage.io/docs/frontend-system/building-plugins/feature-flags) for using flags in extensions.

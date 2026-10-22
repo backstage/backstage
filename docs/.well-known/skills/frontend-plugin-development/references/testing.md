@@ -36,34 +36,6 @@ describe('my-plugin', () => {
 
 To test a single extension in isolation instead of the whole plugin, use `createExtensionTester`.
 
-## Provide APIs instead of mocking modules
+## Provide APIs to components and hooks
 
-Give components and hooks the APIs they need through the API context, rather than replacing `useApi` with `jest.mock('@backstage/frontend-plugin-api', ...)`. Mocking the module replaces every export of a package that also defines extensions and blueprints, and the test stops exercising the real API lookup.
-
-For components, pass `apis` to `renderInTestApp`:
-
-```tsx
-import { renderInTestApp } from '@backstage/frontend-test-utils';
-
-await renderInTestApp(<MyComponent />, {
-  apis: [[myApiRef, { getItems: jest.fn().mockResolvedValue([]) }]],
-});
-```
-
-For hooks, wrap `renderHook` with `TestApiProvider`:
-
-```tsx
-import { PropsWithChildren } from 'react';
-import { TestApiProvider } from '@backstage/frontend-test-utils';
-import { renderHook } from '@testing-library/react';
-
-const myApi = { getItems: jest.fn() };
-const wrapper = ({ children }: PropsWithChildren<{}>) => (
-  <TestApiProvider apis={[[myApiRef, myApi]]}>{children}</TestApiProvider>
-);
-
-renderHook(() => useItems(), { wrapper });
-expect(myApi.getItems).toHaveBeenCalled();
-```
-
-For core APIs, use the `mockApis` helpers from `@backstage/frontend-test-utils`. To test analytics events, see the `plugin-analytics-instrumentation` skill.
+Pass fakes with the `apis` option of `renderInTestApp`, or wrap hooks in `TestApiProvider`. Use the `mockApis` helpers for core APIs. See [Testing with utility APIs](https://backstage.io/docs/frontend-system/utility-apis/testing). To test analytics events, see the `plugin-analytics-instrumentation` skill.
