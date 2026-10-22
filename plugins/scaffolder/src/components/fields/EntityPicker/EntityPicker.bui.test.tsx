@@ -20,7 +20,8 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
@@ -57,7 +58,7 @@ describe('<EntityPicker /> with BUI theme', () => {
   let props: FieldProps<string>;
 
   const catalogApi = catalogApiMock.mock({
-    streamEntities: jest.fn(async function* () {
+    streamEntities: jest.fn(async function* streamEntities() {
       yield entities;
     }),
   });
@@ -65,6 +66,11 @@ describe('<EntityPicker /> with BUI theme', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    catalogApi.streamEntities.mockImplementation(
+      async function* streamEntities() {
+        yield entities;
+      },
+    );
     uiSchema = { 'ui:options': { allowArbitraryValues: true } };
     props = {
       onChange,
@@ -99,13 +105,34 @@ describe('<EntityPicker /> with BUI theme', () => {
       </Wrapper>,
     );
 
-    const input = await screen.findByRole('combobox');
     // The input shows the presentation title of the committed selection
-    await waitFor(() => expect(input).toHaveValue('Team A'));
+    const input = await screen.findByDisplayValue('Team A');
 
     fireEvent.blur(input);
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('shows the label of an option the user selects and preserves it on blur', async () => {
+    await renderInTestApp(
+      <Wrapper>
+        <EntityPicker {...props} />
+      </Wrapper>,
+    );
+
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+    const option = await screen.findByRole('option', { name: 'Squad B' });
+    await userEvent.click(option);
+
+    expect(input).toHaveValue('Squad B');
+    expect(onChange).toHaveBeenCalledWith('group:default/squad-b');
+    onChange.mockClear();
+
+    fireEvent.blur(input);
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveValue('Squad B');
   });
 
   it('still commits free-form values on blur', async () => {

@@ -202,12 +202,16 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
+  const inputValueRef = useRef(inputValue);
 
   useEffect(() => {
     if (formData) {
       const opt = buiOptions.find(o => o.value === formData);
-      setInputValue(opt?.label || formData);
+      const label = opt?.label || formData;
+      inputValueRef.current = label;
+      setInputValue(label);
     } else {
+      inputValueRef.current = '';
       setInputValue('');
     }
   }, [formData, buiOptions]);
@@ -221,17 +225,27 @@ export const EntityPicker = (props: EntityPickerProps) => {
     lastCommittedRef.current = formData;
   }, [formData]);
 
+  const handleInputChange = useCallback((value: string) => {
+    inputValueRef.current = value;
+    setInputValue(value);
+  }, []);
+
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
       if (key !== null) {
         const value = String(key);
         lastCommittedRef.current = value;
+        const opt = buiOptions.find(o => o.value === value);
+        const label = opt?.label || value;
+        inputValueRef.current = label;
+        setInputValue(label);
         onChange(value);
-      } else if (allowArbitraryValues && inputValue) {
-        let entityRef = inputValue;
+      } else if (allowArbitraryValues && inputValueRef.current) {
+        const currentInput = inputValueRef.current;
+        let entityRef = currentInput;
         try {
           entityRef = stringifyEntityRef(
-            parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
+            parseEntityRef(currentInput, { defaultKind, defaultNamespace }),
           );
         } catch {
           // If the input isn't a valid entity ref, use it as-is
@@ -243,26 +257,29 @@ export const EntityPicker = (props: EntityPickerProps) => {
         onChange(undefined);
       }
     },
-    [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
+    [onChange, allowArbitraryValues, defaultKind, defaultNamespace, buiOptions],
   );
 
   const handleBlur = useCallback(() => {
-    if (allowArbitraryValues && inputValue) {
-      // When the input is showing the display label of the currently
+    const currentInput = inputValueRef.current;
+    if (allowArbitraryValues && currentInput) {
+      // When the input is showing the display label or the entityRef of the currently
       // committed selection, blurring must not re-commit that label as the
       // value, which would corrupt a valid selection.
-      const isShowingCommittedLabel = buiOptions.some(
-        option =>
-          option.value === lastCommittedRef.current &&
-          option.label === inputValue,
-      );
-      if (isShowingCommittedLabel) {
+      const isCommittedSelection =
+        currentInput === lastCommittedRef.current ||
+        buiOptions.some(
+          option =>
+            option.value === lastCommittedRef.current &&
+            option.label === currentInput,
+        );
+      if (isCommittedSelection) {
         return;
       }
-      let entityRef = inputValue;
+      let entityRef = currentInput;
       try {
         entityRef = stringifyEntityRef(
-          parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
+          parseEntityRef(currentInput, { defaultKind, defaultNamespace }),
         );
       } catch {
         // If the input isn't a valid entity ref, use it as-is
@@ -274,7 +291,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
     }
   }, [
     allowArbitraryValues,
-    inputValue,
     buiOptions,
     defaultKind,
     defaultNamespace,
@@ -333,7 +349,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
           inputValue={inputValue}
-          onInputChange={setInputValue}
+          onInputChange={handleInputChange}
           onSelectionChange={handleSelectionChange}
           onBlur={handleBlur}
           isLoading={loading}

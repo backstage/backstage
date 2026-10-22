@@ -60,6 +60,9 @@ describe('<EntityPicker />', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    catalogApi.streamEntities.mockImplementation(async function* () {
+      yield entities;
+    });
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -75,7 +78,7 @@ describe('<EntityPicker />', () => {
     );
   });
 
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => jest.resetAllMocks());
 
   describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {
