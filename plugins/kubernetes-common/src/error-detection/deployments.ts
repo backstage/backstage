@@ -15,7 +15,7 @@
  */
 
 import { DetectedError, ErrorMapper } from './types';
-import { Deployment } from 'kubernetes-models/apps/v1';
+import type { Deployment } from 'kubernetes-models/apps/v1';
 import { detectErrorsInObjects } from './common';
 
 const deploymentErrorMappers: ErrorMapper<Deployment>[] = [
