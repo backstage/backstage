@@ -85,6 +85,8 @@ Apps import the new plugin as:
 import myPlugin from '@backstage/plugin-my-plugin/alpha';
 ```
 
+Feature discovery also reads the `./alpha` entry when `exports` declares it, and installs its default export. Keep `"./package.json"` in `exports`, or discovery cannot read the package's role and skips it without a warning. Read `references/plugin-packaging.md` in the `frontend-plugin-development` skill for the full discovery requirements.
+
 ## Step 3: Implement the Dual Header Pattern
 
 The critical difference between old and new system page components is the **page shell**. In the old system, each page renders its own `Page` + `Header` (or `PageWithHeader`) wrapper. In the new system, the framework's `PageLayout` provides the header via `PluginHeader` automatically — so the NFS page component must **not** include its own page shell.
@@ -425,3 +427,4 @@ The same applies to other refs like API refs and route refs: keep them exported 
 - [Plugin migration guide](https://backstage.io/docs/frontend-system/building-plugins/migrating)
 - [Extension blueprints](https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints)
 - [Utility APIs](https://backstage.io/docs/frontend-system/utility-apis/creating)
+- Packaging, entity content, dev app, testing, and troubleshooting: `frontend-plugin-development` skill
