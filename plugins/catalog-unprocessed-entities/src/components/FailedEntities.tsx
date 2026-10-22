@@ -48,8 +48,8 @@ const RenderErrorContext = ({
       <>
         <Text className={styles.errorText}>Tags</Text>
         <ul>
-          {rowData.unprocessed_entity.metadata.tags?.map(t => (
-            <li key={t}>{t}</li>
+          {rowData.unprocessed_entity.metadata.tags?.map((t, idx) => (
+            <li key={`${t}-${idx}`}>{t}</li>
           ))}
         </ul>
       </>
@@ -141,7 +141,9 @@ export const FailedEntities = () => {
       }
     } catch (e) {
       toastApi.post({
-        title: `Failed to delete entity ${selectedEntityRef}`,
+        title: `Failed to delete entity ${
+          selectedEntityRef ?? selectedEntityId ?? 'unknown'
+        }`,
         status: 'danger',
       });
     }
@@ -184,19 +186,19 @@ export const FailedEntities = () => {
       title: <Text>Last Discovery At</Text>,
       sorting: true,
       field: 'last_discovery_at',
-      render: (rowData: UnprocessedEntity | {}) =>
-        convertTimeToLocalTimezone(
-          (rowData as UnprocessedEntity).last_discovery_at,
-        ) || '-',
+      render: (rowData: UnprocessedEntity | {}) => {
+        const value = (rowData as UnprocessedEntity).last_discovery_at;
+        return value ? convertTimeToLocalTimezone(value) : '-';
+      },
     },
     {
       title: <Text>Next Refresh At</Text>,
       sorting: true,
       field: 'next_update_at',
-      render: (rowData: UnprocessedEntity | {}) =>
-        convertTimeToLocalTimezone(
-          (rowData as UnprocessedEntity).next_update_at,
-        ) || '-',
+      render: (rowData: UnprocessedEntity | {}) => {
+        const value = (rowData as UnprocessedEntity).next_update_at;
+        return value ? convertTimeToLocalTimezone(value) : '-';
+      },
     },
     {
       title: <Text>Raw Entity Definition</Text>,
