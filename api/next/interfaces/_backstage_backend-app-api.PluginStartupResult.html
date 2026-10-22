@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">PluginStartupResult</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#beginat">beginAt</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#failure">failure</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">allowed</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">error</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#modules">modules</a><span class="tsd-signature-symbol">:</span> <a href="_backstage_backend-app-api.ModuleStartupResult.html" class="tsd-signature-type tsd-kind-interface">ModuleStartupResult</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#pluginid">pluginId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#resultat">resultAt</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/22f47872f26bed89a3072a56662683d34605be9c/packages/backend-app-api/src/wiring/types.ts#L126">packages/backend-app-api/src/wiring/types.ts:126</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/10a4660379d2a241d931580bbf2fbeb70963896b/packages/backend-app-api/src/wiring/types.ts#L126">packages/backend-app-api/src/wiring/types.ts:126</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -41,7 +41,7 @@ dependencies had been resolved. This is not defined if the plugin failed
 before reaching initialization, or if no init function was registered.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/22f47872f26bed89a3072a56662683d34605be9c/packages/backend-app-api/src/wiring/types.ts#L137">packages/backend-app-api/src/wiring/types.ts:137</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/10a4660379d2a241d931580bbf2fbeb70963896b/packages/backend-app-api/src/wiring/types.ts#L137">packages/backend-app-api/src/wiring/types.ts:137</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="failure"><code class="tsd-tag">Optional</code><span>failure</span><a href="#failure" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">failure</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">allowed</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">error</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span> <span class="tsd-signature-symbol">}</span></div>
@@ -59,28 +59,28 @@ before reaching initialization, or if no init function was registered.</p>
 <div class="tsd-comment tsd-typography"><p>The error that occurred during startup, if any.</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/22f47872f26bed89a3072a56662683d34605be9c/packages/backend-app-api/src/wiring/types.ts#L142">packages/backend-app-api/src/wiring/types.ts:142</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/10a4660379d2a241d931580bbf2fbeb70963896b/packages/backend-app-api/src/wiring/types.ts#L142">packages/backend-app-api/src/wiring/types.ts:142</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="modules"><span>modules</span><a href="#modules" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">modules</span><span class="tsd-signature-symbol">:</span> <a href="_backstage_backend-app-api.ModuleStartupResult.html" class="tsd-signature-type tsd-kind-interface">ModuleStartupResult</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>Results for all modules belonging to this plugin.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/22f47872f26bed89a3072a56662683d34605be9c/packages/backend-app-api/src/wiring/types.ts#L159">packages/backend-app-api/src/wiring/types.ts:159</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/10a4660379d2a241d931580bbf2fbeb70963896b/packages/backend-app-api/src/wiring/types.ts#L159">packages/backend-app-api/src/wiring/types.ts:159</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pluginid"><span>plugin<wbr/>Id</span><a href="#pluginid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pluginId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The ID of the plugin.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/22f47872f26bed89a3072a56662683d34605be9c/packages/backend-app-api/src/wiring/types.ts#L155">packages/backend-app-api/src/wiring/types.ts:155</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/10a4660379d2a241d931580bbf2fbeb70963896b/packages/backend-app-api/src/wiring/types.ts#L155">packages/backend-app-api/src/wiring/types.ts:155</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resultat"><span>result<wbr/>At</span><a href="#resultat" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resultAt</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 <div class="tsd-comment tsd-typography"><p>The time the plugin startup was completed.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/22f47872f26bed89a3072a56662683d34605be9c/packages/backend-app-api/src/wiring/types.ts#L130">packages/backend-app-api/src/wiring/types.ts:130</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/10a4660379d2a241d931580bbf2fbeb70963896b/packages/backend-app-api/src/wiring/types.ts#L130">packages/backend-app-api/src/wiring/types.ts:130</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
