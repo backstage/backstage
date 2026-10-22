@@ -46,25 +46,45 @@ export default function SelectWidget<
 }: WidgetProps<T, S, F>) {
   const { enumOptions, emptyValue } = options;
 
-  const handleChange = (newValue: string) => {
+  const handleSingleChange = (newValue: string) => {
     const actualIndex = newValue === '' ? '' : newValue;
     onFieldChange(
       enumOptionsValueForIndex<S>(actualIndex, enumOptions, emptyValue),
     );
   };
 
-  const handleBlur = () =>
+  const handleMultiChange = (keys: Set<string> | string[]) => {
+    const selectedIndices = Array.from(keys);
+    const selectedValues = selectedIndices.map(idx =>
+      enumOptionsValueForIndex<S>(idx, enumOptions, emptyValue),
+    );
+    onFieldChange(selectedValues as unknown as T);
+  };
+
+  const handleBlur = () => {
+    const selectedIndex = enumOptionsIndexForValue<S>(value, enumOptions);
     onFieldBlur(
       id,
-      enumOptionsValueForIndex<S>(value, enumOptions, emptyValue),
+      enumOptionsValueForIndex<S>(
+        selectedIndex !== undefined ? String(selectedIndex) : '',
+        enumOptions,
+        emptyValue,
+      ),
     );
-  const handleFocus = () =>
+  };
+
+  const handleFocus = () => {
+    const selectedIndex = enumOptionsIndexForValue<S>(value, enumOptions);
     onFieldFocus(
       id,
-      enumOptionsValueForIndex<S>(value, enumOptions, emptyValue),
+      enumOptionsValueForIndex<S>(
+        selectedIndex !== undefined ? String(selectedIndex) : '',
+        enumOptions,
+        emptyValue,
+      ),
     );
+  };
 
-  const selectedIndex = enumOptionsIndexForValue<S>(value, enumOptions);
   const hasError = rawErrors.length > 0;
 
   const selectOptions =
@@ -80,6 +100,41 @@ export default function SelectWidget<
     });
   }
 
+  if (multiple) {
+    const selectedIndices = Array.isArray(value)
+      ? value
+          .map(v => {
+            const idx = enumOptions?.findIndex(opt => opt.value === v);
+            return idx !== undefined && idx >= 0 ? String(idx) : undefined;
+          })
+          .filter((v): v is string => v !== undefined)
+      : [];
+
+    return (
+      <Select
+        className={overrides.select}
+        id={id}
+        name={id}
+        label={label || schema.title}
+        secondaryLabel={required ? 'Required' : undefined}
+        options={selectOptions}
+        selectionMode="multiple"
+        selectedKeys={new Set(selectedIndices)}
+        onSelectionChange={keys => {
+          handleMultiChange(keys as Set<string>);
+        }}
+        isRequired={required}
+        isDisabled={disabled || readonly}
+        isInvalid={hasError}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        aria-describedby={ariaDescribedByIds<T>(id)}
+      />
+    );
+  }
+
+  const selectedIndex = enumOptionsIndexForValue<S>(value, enumOptions);
+
   return (
     <Select
       className={overrides.select}
@@ -91,7 +146,7 @@ export default function SelectWidget<
       selectedKey={selectedIndex !== undefined ? String(selectedIndex) : ''}
       onSelectionChange={key => {
         const selected = key ? String(key) : '';
-        handleChange(selected);
+        handleSingleChange(selected);
       }}
       isRequired={required}
       isDisabled={disabled || readonly}
