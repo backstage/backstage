@@ -34,6 +34,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
+import { CachedPermissionLoader } from './CachedPermissionLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
 import {
@@ -47,8 +48,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { durationToMilliseconds } from '@backstage/types';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
 import path from 'node:path';
 
 /**
@@ -116,35 +115,6 @@ function isOutOfTheBoxOption(
 }
 
 /**
- * Helper function to authorize TechDocs read access for an entity.
- * Throws NotAllowedError if access is denied.
- *
- * @internal
- */
-async function authorizeTechDocsReadPermission(options: {
-  permissions: PermissionsService;
-  credentials: BackstageCredentials;
-  entityRef: string;
-}): Promise<void> {
-  const { permissions, credentials, entityRef } = options;
-  const decision = await permissions.authorize(
-    [
-      {
-        permission: techDocsEntityReadPermission,
-        resourceRef: entityRef,
-      },
-    ],
-    { credentials },
-  );
-
-  if (decision[0].result !== AuthorizeResult.ALLOW) {
-    throw new NotAllowedError(
-      `Access to TechDocs for '${entityRef}' is not permitted`,
-    );
-  }
-}
-
-/**
  * Creates a techdocs router.
  *
  * @internal
@@ -201,11 +171,14 @@ export async function createRouter(
     );
   }
 
-  // Entities are cached to optimize the /static/docs request path, which can be
-  // called many times when loading a single techdocs page. Permission decisions
-  // are not cached.
+  // Entities and permission decisions are cached to optimize the /static/docs
+  // request path, which can be called many times when loading a single techdocs page.
   const entityLoader = new CachedEntityLoader({
     catalog,
+    cache: options.cache,
+  });
+  const permissionLoader = new CachedPermissionLoader({
+    permissions,
     cache: options.cache,
   });
 
@@ -222,11 +195,12 @@ export async function createRouter(
       return;
     }
 
-    await authorizeTechDocsReadPermission({
-      permissions,
-      credentials,
-      entityRef: stringifyEntityRef(entityName),
-    });
+    const entityRef = stringifyEntityRef(entityName);
+    if (!(await permissionLoader.isAllowed(credentials, entityRef))) {
+      throw new NotAllowedError(
+        `Access to TechDocs for '${entityRef}' is not permitted`,
+      );
+    }
   };
 
   // Loads an entity for routes that use its content, authorizing read access
@@ -406,8 +380,12 @@ export async function createRouter(
   // publishers still resolve to an entity cannot skip the check by not matching it.
   if (permissionFrameworkEnabled) {
     router.use('/static/docs', async (req, _res, next) => {
-      // Publishers fully decode the path, so encoded separators have to be resolved
-      // here too rather than validating a different path than the one served.
+      // Publishers disagree on whether an encoded separator splits the path
+      // (decodeURIComponent vs decodeURI), so there is no single safe reading of it.
+      if (/%2f|%5c/i.test(req.path)) {
+        throw new NotFoundError('Content not found');
+      }
+
       let decodedPath: string;
       try {
         decodedPath = decodeURIComponent(req.path);

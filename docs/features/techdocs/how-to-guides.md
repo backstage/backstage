@@ -940,5 +940,7 @@ switch the flag.
 
 ### Performance
 
-Entity lookups are cached, but permission decisions are not, so every
-documentation asset request is authorized individually.
+Loading a single documentation page triggers many asset requests. To avoid
+authorizing each of them, both entity lookups and `techdocs.entity.read`
+decisions are cached for each user and entity for a few seconds, so a change to
+your permission policy can take up to that long to apply.

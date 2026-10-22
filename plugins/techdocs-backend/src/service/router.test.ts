@@ -567,6 +567,11 @@ data: {"updated":true}
         '/static/docs/default/component/test/%2e%2e%2fprivate/index.html',
         '/static/docs/default/component/test/%2E%2E%2Fprivate/index.html',
         '/static/docs/default/component/test/%2fbad%ff',
+        // S3 and GCS keep %2f through decodeURI, so `sub%2fsub/../..` would
+        // escape to `private` there while looking contained to a full decode.
+        '/static/docs/default/component/test/sub%2fsub/../../private/index.html',
+        '/static/docs/default/component/test/sub%2Fsub/../../private/index.html',
+        '/static/docs/default/component/test/sub%5csub/../../private/index.html',
       ]) {
         expect(await requestRawPath(app, rawPath)).toBe(404);
       }
