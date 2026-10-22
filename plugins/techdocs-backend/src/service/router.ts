@@ -409,7 +409,7 @@ export async function createRouter(
 
       const entityName = { kind, namespace, name };
 
-      const entityRoot = '/entity';
+      const entityRoot = path.posix.resolve('/', namespace, kind, name);
       const contentPath = path.posix.resolve(entityRoot, `./${rest.join('/')}`);
       const relativePath = path.posix.relative(entityRoot, contentPath);
       if (relativePath === '..' || relativePath.startsWith('../')) {

@@ -548,6 +548,40 @@ data: {"updated":true}
       expect(status).toBe(404);
     });
 
+    it('should not serve another entity whose name matches the containment root', async () => {
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const permissions = mockServices.permissions.mock({
+        authorize: jest.fn(async ([{ resourceRef }]) => [
+          {
+            result:
+              resourceRef === 'component:default/public'
+                ? AuthorizeResult.ALLOW
+                : AuthorizeResult.DENY,
+          },
+        ]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: techDocsPermissionsConfig,
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      for (const rawPath of [
+        '/static/docs/default/component/public/%2e%2e/entity/index.html',
+        '/static/docs/default/component/public/../entity/index.html',
+        '/static/docs/default/component/public/../../component/entity/index.html',
+      ]) {
+        expect(await requestRawPath(app, rawPath)).toBe(404);
+      }
+
+      expect(docsRouter).not.toHaveBeenCalled();
+    });
+
     it('should reject encoded separators that the publisher would decode', async () => {
       const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
