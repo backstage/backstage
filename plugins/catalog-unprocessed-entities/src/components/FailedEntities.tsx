@@ -132,7 +132,9 @@ export const FailedEntities = () => {
       if (selectedEntityId) {
         await unprocessedApi.delete(selectedEntityId);
         toastApi.post({
-          title: `Entity ${selectedEntityRef} has been deleted`,
+          title: `Entity ${
+            selectedEntityRef ?? selectedEntityId ?? 'unknown'
+          } has been deleted`,
           status: 'success',
         });
         retry();
