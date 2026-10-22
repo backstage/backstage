@@ -64,9 +64,10 @@ async handler(ctx) {
 
   // First execution: parks the task as `waiting` and unwinds. After resume the
   // handler re-runs from the top; this call returns the resume payload.
-  const { payload, timedOut } = await ctx.suspend({
+  const { payload, timedOut, resumedBy } = await ctx.suspend({
     token: requestId,          // caller-owned, unique within the task
     reason: 'awaiting-approval',
+    principals: ['group:default/platform-approvers'], // optional; who may resume
     timeout: { hours: 72 },    // optional; omit for no timeout
   });
 
@@ -80,10 +81,10 @@ An external actor resumes the task through a new scaffolder endpoint:
 
 ```
 POST /api/scaffolder/v2/tasks/:taskId/resume
-{ "token": "<resume token>", "payload": { "decision": "approved", "by": "user:default/nadia" } }
+{ "token": "<resume token>", "payload": { "decision": "approved" } }
 ```
 
-The call is authenticated and gated by a new resource permission (`scaffolderTaskResumePermission`), so "who may resume this task" is a policy decision; the suspending action supplies the context the policy needs (see Resume endpoint and permissions for how core and plugin split this). On a valid, unconsumed token the engine stores the payload, moves the task to `open`, and a worker re-claims it; the suspended action replays and its `suspend` call returns the payload.
+The call is authenticated and gated by a new resource permission (`taskResumePermission`), so "who may resume this task" is a policy decision; the suspending action supplies the context the policy needs (see Resume endpoint and permissions for how core and plugin split this). On a valid, unconsumed token the engine stores the payload, moves the task to `open`, and a worker re-claims it; the suspended action replays and its `suspend` call returns the payload.
 
 Approval is then an ecosystem module: a `wait-for-approval` action that files a record, notifies approvers, and suspends; the approve/decline UI calls the resume endpoint. Core owns the primitive; the plugin owns everything human-facing.
 
@@ -95,24 +96,47 @@ Add `waiting` to `TaskStatus`. Transitions:
 
 - `processing -> waiting` on `ctx.suspend`.
 - `waiting -> open` on a valid resume signal (see below for why `open`, not `processing`).
-- `waiting -> failed` on timeout.
+- `waiting -> open` on timeout, carrying a `timed_out` outcome on the same record. Timeout is a resume with a different outcome rather than a separate terminal transition, so the action replays and can close whatever it opened before the wait.
 - `waiting -> cancelled` on task cancellation.
 
-A `waiting` task holds no worker, so cancellation cannot use the existing in-process worker signal. Both `waiting -> failed` (timeout) and `waiting -> cancelled` are delivered as status-guarded DB updates (`WHERE status = 'waiting'`) plus an emitted event, mirroring the timeout sweep, not the in-process cancel path.
+A `waiting` task holds no worker, so cancellation cannot use the existing in-process worker signal. This needs two changes to existing behaviour: `cancelTask` today only inserts a `cancelled` event and leaves the status alone, relying on the running worker to observe it, and `completeTask` accepts only `processing` as the prior status. Cancelling a parked task therefore becomes a status-guarded update from `waiting`, with `completeTask` accepting `waiting` for the `cancelled` transition. Cancellation is delivered as a status-guarded DB update (`WHERE status = 'waiting'`) plus an emitted event, mirroring the timeout sweep rather than the in-process cancel path.
 
 `TaskStatus` is an exported public union in `@backstage/plugin-scaffolder-node` (currently `cancelled | completed | failed | open | processing | skipped`; note `skipped` is a step-level status). Adding `waiting` widens a public type, which is breaking for exhaustive `switch` consumers and requires a changeset and an API-report update. This is not "purely additive" at the type level, only at runtime.
 
-The task table gains the `waiting` status plus a resume-record store (a companion table or a serialized entry consistent with the BEP-0004 context store): `task_id`, `token`, `reason`, `created_at`, `expires_at`, `consumed_at`, `resume_payload`, and `policy_context` (an opaque `JsonObject` the suspending action populates, e.g. declared approvers). `policy_context` is what makes resume authorization meaningful at the core layer - see Resume endpoint and permissions.
+The task table gains the `waiting` status, and suspensions live in their own table rather than inline on the task row, so a task keeps a history of what it waited on:
+
+`scaffolder_task_suspensions`
+
+| column | notes |
+| --- | --- |
+| `id` | primary key |
+| `task_id` | foreign key to `tasks.id`, cascade delete |
+| `token` | caller-owned, unique within a task |
+| `reason` | free-form, surfaced in events and UI |
+| `policy_context` | JSON, plugin data; core never evaluates it (see Resume endpoint and permissions) |
+| `created_at` | |
+| `expires_at` | nullable; null means no timeout |
+| `consumed_at` | nullable; null means live |
+| `outcome` | nullable: `resumed` or `timed_out` |
+| `payload` | nullable JSON, the resume payload |
+| `resumed_by` | nullable, the authenticated caller recorded server-side |
+
+`UNIQUE (task_id, token)` is the row concurrent resumers contend on, and a composite `(consumed_at, expires_at)` index serves the timeout sweep; composite rather than partial, because partial indexes are not portable across the database connectors `backend-defaults` ships. A child table `scaffolder_task_suspension_principals (suspension_id, entity_ref)` holds the entity refs a suspending action declares as able to resume, so permission rules can filter with a plain `IN` rather than a JSON path.
+
+Nothing prunes task rows today, so suspensions live as long as their tasks. `payload` is cleared when the task reaches a terminal state, alongside the existing task-secrets wipe, leaving metadata-sized rows that grow at the same rate as `tasks` and `task_events`.
 
 ### Resume is replay, not continuation
 
-There is no coroutine mechanism in the workflow runner. Completed steps are not re-run (their outputs are persisted in task state); on resume the runner skips them and re-enters the suspended step, whose handler executes from the top. Therefore:
+There is no coroutine mechanism in the workflow runner. Resume builds on the step-state persistence added in #35224: when `scaffolder.taskRecovery` is enabled, the runner records each completed step's output in task state, and on a rerun it restores those outputs, skips the completed steps and re-enters the first unfinished one. A gated task needs that skip, so `ctx.suspend` requires task recovery to be enabled and throws a configuration error when it is not; a task parked without it would replay every step on resume. On resume the suspended step's handler executes from the top. Therefore:
 
 - `ctx.suspend` is itself a checkpoint: first execution parks the task; the replay after resume returns the stored payload.
 - All side-effecting work before `suspend` must be wrapped in `ctx.checkpoint` (or be naturally idempotent), because it re-runs on replay. The idempotency discipline applies to code before the suspend point, not after it.
 - The action author sees a normal `await` that returns a payload; the framework hides the park-and-replay.
+- The park serializes the workspace itself. #35224 serializes after each successful step and a park happens mid-step, so without this the files the suspended step has written would be lost when `execute` removes the working directory on the way out.
+- Skipping is per step. An action that suspends inside an `each` replays that step's earlier iterations on resume, so its token must be derived from the iteration; a constant token is rejected, because the next iteration would otherwise find it consumed and receive the previous outcome.
+- A step recorded as failed is not skipped, so it re-runs on resume and the run fails again. Where the original failure was transient, the replay can succeed instead, the run is no longer failing, and a gate behind `${{ failure() }}` is left with a consumed suspension that nothing reads. Gates behind `failure()` suit permanent failures.
 
-This is the same replay-and-skip model BEP-0004 already uses for crash recovery, which is why it composes instead of adding a second execution model.
+This is the same replay-and-skip model task recovery uses after a crash, which is why it composes instead of adding a second execution model.
 
 Because resume replays under whatever is deployed at resume time, a task parked for days is exposed to code and template drift. A `waiting` task pins its serialized task spec and inputs (per BEP-0004's workspace serialization), but not the action *code*, and templates load live from git in many installs. The stance: the task binds to its serialized spec, and resume re-executes the current action implementation; if the action id no longer exists (removed or renamed on a redeploy), resume fails cleanly with a clear error rather than hanging. This is strictly more exposed than a checkpoint-continuation model would be, and it is an accepted trade for reusing the existing replay machinery. Operators who cannot tolerate it should keep waits short.
 
@@ -123,6 +147,8 @@ This is the headline of the design, because "do not hold a worker to wait" is th
 `TaskWorker` runs tasks on a bounded `PQueue`; `runOneTask` awaits `workflowRunner.execute(task)` to completion before freeing the slot. Nothing today lets an action yield, and an earlier proposal for a non-blocking worker (#13799) was closed as not planned. So freeing the slot is a real runner change, not additive: `ctx.suspend` persists state and then unwinds by throwing a dedicated suspend control-signal that the workflow runner catches above its step loop, resolving `execute()`/`runOneTask` cleanly and freeing the `PQueue` slot. This BEP effectively revives #13799's yield, now made durable by persisting `waiting` state rather than holding a slot. If the slot were instead held open for the wait, this would degrade into the rejected poll-a-flag alternative.
 
 Note the scope boundary against #13799: that RFC was rejected for restructuring task *consumption* from async-poll `claim()` into an event-push model (Rugvip: async polling handles back-pressure and multi-node scaling better). This BEP does not touch consumption at all - task pickup stays `claim()`/poll exactly as today. The only event-driven surface is the inbound resume signal, which is what the maintainers explicitly proposed. This distinction is deliberate: the design leaves the claim/poll consumption model that #13799 was closed to protect entirely untouched.
+
+`runOneTask` completes the task in both directions today: `task.complete('completed', ...)` on a normal return from `workflowRunner.execute`, and `task.complete('failed', ...)` from a blanket `catch`. A suspend signal that escapes `execute` therefore marks the task failed, and one that returns normally marks it completed - the task goes terminal either way and the wait never happens. The runner catches the signal above its step loop and hands back a distinct `WorkflowResponse` variant that `runOneTask` branches on before completing anything, and the suspend path must not run the success-path teardown (`markSuccessful`, workspace cleanup).
 
 The suspend control-signal must not be a plain `Error`, or an action author's `try { await ctx.suspend(...) } catch { }` would swallow it and defeat the park (the same footgun React Suspense has). It is a dedicated non-`Error` sentinel that the runner recognises and re-throws; handlers must not blanket-catch across a `suspend` call, and the runner should detect a swallowed signal (the handler returning normally when a park was requested) and fail loudly rather than silently continue.
 
@@ -136,26 +162,40 @@ Two sweeps act on stale tasks, and both filter `status = 'processing'`: `listSta
 
 The design targets multiple replicas and restarts, so the following must be explicit:
 
-- Resume, consume, and re-queue are one atomic conditional update guarded on both token and status: `UPDATE ... SET consumed_at = now(), status = 'open' WHERE task_id = ? AND token = ? AND consumed_at IS NULL AND status = 'waiting'`. (The token is unique only within a task, so the row is keyed by `task_id` + `token`, which the `/tasks/:taskId/resume` route provides.) The enqueue happens only if that update affects exactly one row. Guarding on `status = 'waiting'` (not just `consumed_at IS NULL`) is what makes resume and timeout genuinely mutually exclusive: whichever flips the row out of `waiting` first wins, and the loser's conditional update matches zero rows. A second resume with the same token matches zero rows and returns 409. Timeout is the same shape (`... SET status = 'failed' WHERE token = ? AND status = 'waiting'`), so the two compete on the one row.
-- Ordering contract: `suspend` must commit the `waiting` record before any resume is accepted. A resume that arrives before the record exists finds nothing to authorize or consume and returns 404; the caller (the webhook-owning plugin, out of core) retries. This keeps core from carrying pre-commit-resume complexity for a case core does not own, at the cost of requiring the external caller to retry - an acceptable trade because the resume is inherently a plugin/webhook concern.
+- Resume, consume and re-queue are one transaction holding two guarded compare-and-sets, not a single statement, because the suspension lives in its own table. First `UPDATE scaffolder_task_suspensions SET consumed_at = now(), outcome = 'resumed', payload = ?, resumed_by = ? WHERE task_id = ? AND token = ? AND consumed_at IS NULL`; zero rows rolls the transaction back, and the caller gets 404 for an unknown token or 409 for one already consumed. Then `UPDATE tasks SET status = 'open', last_heartbeat_at = now() WHERE id = ? AND status = 'waiting'`, mirroring `retryTask`; zero rows there means the task was cancelled or swept, and the rollback undoes the consume with it, so the two tables cannot disagree. Nothing is enqueued in memory: the existing `claim()` poll picks the task up because it is `open`.
+- Both statements are compare-and-sets rather than read-then-write, so read committed is sufficient and no explicit row locking is required. PostgreSQL and MySQL serialise contenders on the `(task_id, token)` unique key, and the loser matches zero rows once the winner commits; SQLite serialises writers at the database level.
+- Timeout is the mirror image of the same transaction, with `expires_at IS NOT NULL AND expires_at <= now() AND consumed_at IS NULL` on the first statement and `outcome = 'timed_out'`. Resume and timeout therefore compete for the same row and exactly one transaction commits.
+- Ordering contract: `suspend` must commit the suspension record before any resume is accepted. A resume that arrives first finds nothing to authorize or consume and returns 404; the caller, which is a plugin or webhook outside core, retries.
 
 ### Resume endpoint and permissions
 
-New route `POST /v2/tasks/:taskId/resume` on the scaffolder backend, plus `scaffolderTaskResumePermission` registered as a resource permission. The handler loads the resume record first, then authorizes, then performs the atomic consume-and-requeue from the Concurrency section, then emits `scaffolder.task.resumed` on the events backend. To be clear about the maintainer's "events-backend HTTP ingress" phrasing: resume is a permission-gated scaffolder route that emits and consumes through the events backend for observability and decoupling; it is not the generic events-backend topic webhook (`/api/events/http/:topic`), which is unauthenticated per-topic and cannot carry the per-resource permission check and atomic token consume this needs. The events backend is how the transition is observed, not how the route is authenticated.
+New route `POST /v2/tasks/:taskId/resume` on the scaffolder backend. The handler loads the suspension record, authorizes, performs the atomic consume-and-requeue from the Concurrency section, then emits a resumed event on the events backend. To be clear about the maintainer's "events-backend HTTP ingress" phrasing: resume is a permission-gated scaffolder route that emits and observes through the events backend; it is not the generic events-backend topic webhook (`/api/events/http/:topic`), which is unauthenticated per topic and cannot carry the per-resource permission check and atomic token consume this needs.
 
-Resume authorization is split by layer, which resolves what core can actually enforce. Core stores no domain concepts like approvers; it stores the opaque `policy_context` the suspending action wrote. So core enforces a coarse `scaffolderTaskResumePermission` and passes `policy_context` (and task metadata) to the `PermissionPolicy` as conditional resource context. The consuming plugin's policy is what interprets `policy_context.approvers` and decides. This is honest about the boundary: core provides the gated route and the context channel; the plugin owns the meaning of "who may approve this."
+Authorization is expressed the way the permission framework expects, with a resource permission plus registered rules. `taskResumePermission` is a resource permission on the existing `scaffolder-task` resource type, checked together with `taskReadPermission` exactly as cancel is, so no new resource type is introduced. Because rules are evaluated against whatever the resource ref's `getResources` returns, the task loader is extended to hydrate the live suspension onto the task it returns.
+
+A suspending action may declare `principals`: entity refs allowed to resume, stored in the principals child table. Core registers rules over that data - `SUSPENSION_HAS_PRINCIPAL`, whose `apply` tests membership against the caller's ownership refs and whose `toQuery` filters through the principals table, and `SUSPENSION_HAS_REASON` for routing by gate type - and `IS_TASK_OWNER` is reused unchanged. Core therefore understands only which refs were declared able to resume a given suspension, which is a generic entity-ref concept it already handles; approvers, decisions and workflow meaning stay with the plugin, and `policy_context` remains plugin data that core never evaluates.
+
+`principals` is deliberately optional. Requiring it would put approver routing in core, which this BEP exists to avoid. Omitted, the route enforces only the coarse permission and a consuming plugin authorizes the human decision in its own layer before calling resume; supplied, core can answer whether a caller may resume a particular suspension without the plugin fronting every call. The trade is documented rather than hidden: a suspension with no principals can be resumed by anything holding `taskResumePermission`, so integrators either declare principals or scope that permission to their plugin's service identity. Note also that the scaffolder has no permission-rules extension point today, so a module cannot contribute gate-specific rules without new API; core ships generic rules and a gate expresses its specifics through their params.
+
+Caller identity is server-derived. The route resolves the authenticated principal the same way task creation sets `createdBy` and records it as `resumed_by`; the request payload is opaque plugin data and is never authoritative for identity. Where the decision arrives out of band - Slack, email, a webhook - the calling plugin holds no Backstage credentials for the human it authenticated, so core records the service principal and the plugin's own record holds its verified actor. `resumedBy` is carried on the resumed event and returned to the replayed action alongside the payload.
 
 An inbound third-party webhook is deliberately out of core; a plugin can authenticate an external system and call this route, keeping core authenticated-only.
 
 ### Timeout
 
-Timeout is enforced by a scheduled sweep that periodically fails waiting tasks whose `expires_at` has passed. It is restart-safe because it is a pure DB predicate with no in-memory timers. Rather than a parallel subsystem, this extends the existing heartbeat/recovery sweep machinery (the same infrastructure behind `EXPERIMENTAL_recoverTasks` / `EXPERIMENTAL_recoverTasksTimeout`), adding an `expires_at` predicate for `waiting` rows alongside the existing stale-`processing` predicates.
+Timeout is enforced by a scheduled sweep that consumes waiting suspensions whose `expires_at` has passed, records a `timed_out` outcome and returns the task to `open`. It is restart-safe because it is a pure DB predicate with no in-memory timers, and it extends the existing heartbeat/recovery sweep machinery rather than adding a parallel subsystem. The sweep processes a bounded batch per tick, so a mass expiry after an outage cannot queue every parked task at once and head-of-line block ordinary work.
+
+Timeout and resume share one mechanism, and the action observes which one happened: `ctx.suspend` returns `{ timedOut: true }` on a replay that follows a timeout. A consumed suspension always returns its stored outcome on replay rather than parking again, which is what stops a timed-out replay re-parking on the same token; parking again requires a new token.
+
+Because an action author could ignore `timedOut` and continue provisioning after a wait nobody answered, core does not rely on the author here: a replay carrying a timeout outcome forces the suspended step to fail once its handler returns, whatever it returned. Silence therefore cannot approve. Forcing the step rather than the task is what makes compensation ordinary: `taskState.failed` flips, and any step whose `if` invokes `${{ failure() }}` or `${{ always() }}` runs, so cleaning up an abandoned gate is template-level work rather than something every gated action must implement.
 
 ### Secrets across a long wait
 
-BEP-0004 already flags that task secrets are persisted in the DB and wiped on completion, and that they can expire. A task parked in `waiting` for hours or days makes this concrete: the token a later provisioning step needs may be dead by the time approval lands. This BEP does not solve secret longevity, but it must not pretend the problem away. The stance: secrets captured before a suspend must not be assumed valid after resume; a gated action should re-acquire credentials on resume (the replay model already re-runs the handler, so re-auth fits naturally) rather than rely on a secret captured before the wait. Where re-auth is impossible, the limitation is documented and the timeout should be set below the shortest relevant credential lifetime.
+With task recovery enabled, which gated tasks require, #35224 keeps task secrets in the database until the task reaches a terminal state instead of nulling them at claim. A task parked in `waiting` for hours or days therefore holds its secrets for the whole wait, and the tokens they carry may be dead by the time approval lands. This BEP does not solve secret longevity, but it must not pretend the problem away. The stance: secrets captured before a suspend must not be assumed valid after resume; a gated action should re-acquire credentials on resume (the replay model already re-runs the handler, so re-auth fits naturally) rather than rely on a secret captured before the wait. Where re-auth is impossible, the limitation is documented and the timeout should be set below the shortest relevant credential lifetime.
 
 ### Observability
+
+Resume emits its own event type rather than reusing `recovered`: `retryTask` inserts `recovered` to tell the frontend to reset, and `trimEventsTillLastRecovery` trims the log at that marker, so reusing it would discard a resumed task's pre-suspend log. Suspension is also not a failure - the suspend path records a `waiting` result on the step tracker and no terminal outcome on the task counter, so a parked task emits no failed-step event and increments no failure metric.
 
 Emit events (`scaffolder.task.waiting`, `scaffolder.task.resumed`, `scaffolder.task.wait-timed-out`) on the events backend so telemetry and notifiers subscribe rather than poll, and emit a signal on the task channel so an open task page live-updates when the decision lands. These are the same primitives adopters already use for provisioning actions.
 
@@ -173,7 +213,7 @@ Downgrade is the operationally important case, because this feature deliberately
 
 ### Test plan
 
-- DB migration up/down, including the resume-record store.
+- DB migration up/down, including the suspensions table and its principals child table.
 - Restart recovery: a `waiting` task survives a backend restart and is not re-run or swept.
 - Replay correctness: pre-suspend checkpointed work runs once across suspend/resume.
 - Single-consumption: concurrent double-resume yields exactly one enqueue + one 409.
@@ -182,6 +222,18 @@ Downgrade is the operationally important case, because this feature deliberately
 - Permission enforcement on the resume endpoint (allow/deny/conditional).
 - Worker-release: a suspended task frees its `PQueue` slot (a second task runs while the first waits).
 - Secrets: a gated action re-acquires credentials on resume rather than reusing a pre-suspend secret; a task resumed after its captured secret expired still succeeds.
+- Multiple suspension points in one action: two sequential suspends with distinct tokens each park and resume once, and the second park does not consume the first record.
+- Suspension inside an `each` iteration: iteration-derived tokens park and resume independently, checkpoint keys do not collide across iterations, and a constant token is rejected rather than silently handing the next iteration the previous outcome.
+- Replay after the deployed action code changes between suspend and resume, and a clean failure with a clear error when the action id no longer exists.
+- Resume payload size limits are enforced with an explicit rejection rather than a database error, covering anything else written to the task state store.
+- Suspension is neither a completion nor a failure: a parked task is not completed or failed by the worker, emits no failed-step event, and records no terminal result on the task and step counters.
+- `resumedBy` is derived from the authenticated caller, and a `by` field in the request payload is ignored.
+- A timed-out replay cannot finish green: an action that ignores `timedOut` and returns normally still leaves the step failed, and the template's `${{ failure() }}` and `${{ always() }}` steps then run.
+- A gate on a `${{ failure() }}` step resumes with the run still failing, and steps that were being skipped stay skipped.
+- The workspace survives a park: a resumed task rehydrates the files its earlier steps wrote.
+- Cancelling a `waiting` task moves it to `cancelled` through the status-guarded path, with no worker involved.
+- A resumed task keeps its pre-suspend log: resume does not emit the event type that trims the frontend view.
+- With task recovery disabled, `ctx.suspend` throws a configuration error and the task does not park.
 
 ## Release Plan
 
@@ -189,8 +241,8 @@ Downgrade is the operationally important case, because this feature deliberately
 
 Staged behind a feature flag, smallest useful first:
 
-- A0. Land this BEP as `provisional`, socialise in the scaffolder SIG / Discord, secure a maintainer co-owner, converge the API shape, and reconcile against #13809, #16622, #23967 and BEP-0004. The SIG must make one explicit sequencing decision here (see Dependencies): either (a) A1 lands behind an experimental flag and cannot graduate until BEP-0004's recovery + serialization are GA - accepting an indefinitely-alpha primitive - or (b) the minimal 0004 surface this actually needs is identified and stabilised first. This is the most likely "not yet"; put the decision to the SIG rather than defer it. Move to `implementable`.
-- A1. The primitive: `waiting` status, `ctx.suspend` with worker-release (control-signal unwind), the atomic `processing -> waiting` + heartbeat teardown, the resume route + resource permission, resume-record store + migration, and a reference `debug:suspend-until-signalled` action (this also addresses the spirit of the 30s `debug:wait` cap, #24846). Concurrency guarantees from Design Details included here, since they are correctness, not polish. `ctx.suspend` accepts `timeout` in A1 but does not enforce it until A2, so an A1 gate can wait indefinitely; the reference action documents this.
+- A0. Land this BEP as `provisional`, socialise in the scaffolder SIG / Discord, secure a maintainer co-owner, converge the API shape, and reconcile against #13809, #16622, #23967 and BEP-0004. The step-state persistence and skip this depends on landed in #35224, so the remaining question for the SIG is narrower: whether requiring `scaffolder.taskRecovery` for gated tasks is acceptable, or whether resume from a suspension should trigger the skip with recovery off. Move to `implementable`.
+- A1. The primitive: `waiting` status, `ctx.suspend` with worker-release (control-signal unwind), the atomic `processing -> waiting` + heartbeat teardown, the resume route + resource permission, the suspensions table + migration, and a reference `debug:suspend-until-signalled` action (this also addresses the spirit of the 30s `debug:wait` cap, #24846). Concurrency guarantees from Design Details included here, since they are correctness, not polish. `ctx.suspend` accepts `timeout` in A1 but does not enforce it until A2, so an A1 gate can wait indefinitely; the reference action documents this.
 - A2. Timeout enforcement (scheduled sweep + declared outcomes) and events + signals wiring.
 - A3. Docs (authoring gated actions, the replay/checkpoint discipline, downgrade path) and frontend rendering of the `waiting` state. Graduate out of alpha once the test plan passes and the flag is removed.
 
@@ -200,17 +252,18 @@ Buildable today against public extension points and the pragmatic answer for ado
 
 ## Dependencies
 
-- BEP-0004 task idempotency (checkpoints, workspace serialization, recover-on-restart) is the substrate. It is itself still `provisional` and its recovery lives behind an experimental flag; this design must be co-reviewed with the 0004 owners and should not graduate until 0004's recovery + serialization are GA and their `status = 'processing'` sweep semantics are stable, since the `waiting` safety property depends on them.
-- Permission framework (resource permission for resume authorization).
-- Events backend, Notifications plugin, Signals plugin for the human-facing/observability integration (soft dependencies; the core primitive works without them).
+- Persisted step outputs and completed-step skipping, plus `scaffolder.taskRecovery` as stable configuration, landed in #35224, and gated tasks require task recovery to be enabled (see Resume is replay, not continuation). This BEP depends on that capability, not on BEP-0004 reaching a particular status: 0004 remains `provisional` while its implementation graduates from experimental, so gating this design on the document would block it on a process step nobody is waiting on.
+- BEP-0004's checkpoints and workspace serialization remain the substrate for idempotency and for restoring a parked task's files, and this design must be co-reviewed with the 0004 owners, since the `waiting` safety property depends on the `status = 'processing'` sweep semantics staying stable.
+- Permission framework (resource permission plus registered rules for resume authorization).
+- Events backend, Notifications plugin, Signals plugin for the human-facing and observability integration (soft dependencies; the core primitive works without them).
 
 ## Drawbacks
 
 - A permanently supported new public surface: a task state, `ctx.suspend`, a REST route, a resource permission, and a DB table, all maintained indefinitely.
-- A task can sit in `waiting` unbounded (mitigated by optional timeout); the resume-record table grows and needs retention.
+- A task can sit in `waiting` unbounded (mitigated by optional timeout). Suspensions live as long as their tasks, since nothing prunes task rows today; clearing `payload` at terminal state keeps the growth metadata-sized.
 - The worker-release unwind touches the runner/worker lifecycle, historically sensitive code (#13799 was closed rather than merged).
 - The resume endpoint is a new authenticated attack surface guarding sensitive actions; token handling and authorization must be right.
-- Coupling to BEP-0004's not-yet-GA internals is a real sequencing risk.
+- Gated tasks require `scaffolder.taskRecovery`, so an adopter who keeps recovery off for other reasons has to turn it on to use gates.
 - Secrets captured before a wait may expire before resume; gated actions must re-acquire credentials, which not every action can do.
 
 ## Alternatives
