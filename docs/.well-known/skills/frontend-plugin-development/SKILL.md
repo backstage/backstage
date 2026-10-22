@@ -29,7 +29,7 @@ It is a reference, not a procedure. Read only the reference that matches the tas
 
 See [Troubleshooting](references/troubleshooting.md) for what each message means.
 
-## Reference
+## Further reading
 
 - [Building frontend plugins](https://backstage.io/docs/frontend-system/building-plugins/)
 - [Testing frontend plugins](https://backstage.io/docs/frontend-system/building-plugins/testing)
