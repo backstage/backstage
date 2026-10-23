@@ -8,11 +8,16 @@ import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { HttpRouterServiceAuthPolicy } from '@backstage/backend-plugin-api';
+import type { HttpRouterServiceWebSocketContext } from '@backstage/backend-plugin-api';
+import type { HttpRouterServiceWebSocketHandler } from '@backstage/backend-plugin-api';
+import type { IncomingMessage } from 'node:http';
 import { LifecycleService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { default as WebSocket_2 } from 'ws';
 
 // @public (undocumented)
 export function createAuthIntegrationRouter(options: {
@@ -46,6 +51,11 @@ export const createRateLimitMiddleware: (options: {
 }) => RequestHandler;
 
 // @public
+export function createWebSocketHandler(
+  options: WebSocketHandlerOptions,
+): HttpRouterServiceWebSocketHandler;
+
+// @public
 export const httpRouterServiceFactory: ServiceFactory<
   HttpRouterService,
   'plugin',
@@ -58,6 +68,22 @@ export interface LifecycleMiddlewareOptions {
   config: RootConfigService;
   // (undocumented)
   lifecycle: LifecycleService;
+}
+
+// @public
+export interface WebSocketHandlerOptions {
+  lifecycle: LifecycleService;
+  logger: LoggerService;
+  onConnection(
+    connection: WebSocket_2,
+    request: IncomingMessage,
+    context: HttpRouterServiceWebSocketContext,
+  ): void | Promise<void>;
+  protocols?: readonly string[];
+  verifyClient(
+    request: IncomingMessage,
+    context: HttpRouterServiceWebSocketContext,
+  ): void | Promise<void>;
 }
 
 // (No @packageDocumentation comment for this package)

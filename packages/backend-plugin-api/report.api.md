@@ -6,10 +6,12 @@
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
+import type { Duplex } from 'node:stream';
 import { Duration } from 'luxon';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import type { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
+import type { IncomingMessage } from 'node:http';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -435,6 +437,7 @@ export interface HttpAuthService {
 // @public
 export interface HttpRouterService {
   addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
+  addWebSocketHandler(options: HttpRouterServiceWebSocketOptions): void;
   use(handler: Handler): void;
 }
 
@@ -443,6 +446,29 @@ export interface HttpRouterServiceAuthPolicy {
   // (undocumented)
   allow: 'unauthenticated' | 'user-cookie';
   // (undocumented)
+  path: string;
+}
+
+// @public
+export interface HttpRouterServiceWebSocketContext {
+  authProtocol?: string;
+  // (undocumented)
+  credentials: BackstageCredentials;
+}
+
+// @public
+export type HttpRouterServiceWebSocketHandler = (
+  request: IncomingMessage,
+  socket: Duplex,
+  head: Buffer,
+  context: HttpRouterServiceWebSocketContext,
+) => void | Promise<void>;
+
+// @public
+export interface HttpRouterServiceWebSocketOptions {
+  authPolicy?: 'authenticated' | 'user' | 'user-cookie' | 'unauthenticated';
+  // (undocumented)
+  handler: HttpRouterServiceWebSocketHandler;
   path: string;
 }
 
@@ -605,7 +631,20 @@ export interface RootHealthService {
 
 // @public
 export interface RootHttpRouterService {
+  addWebSocketHandler(options: RootHttpRouterServiceWebSocketOptions): void;
   use(path: string, handler: Handler): void;
+}
+
+// @public
+export interface RootHttpRouterServiceWebSocketOptions {
+  // (undocumented)
+  handler(
+    request: IncomingMessage,
+    socket: Duplex,
+    head: Buffer,
+  ): void | Promise<void>;
+  // (undocumented)
+  path: string;
 }
 
 // @public (undocumented)

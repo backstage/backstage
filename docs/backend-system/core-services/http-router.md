@@ -68,6 +68,146 @@ For those routes you will also have to specify `allowLimitedAccess: true` when
 using the [`auth`](./auth.md) and [`httpAuth`](./http-auth.md) services to
 access the incoming credentials.
 
+## WebSocket upgrades
+
+Register an upgrade handler with an options object during plugin initialization.
+The path is relative to `/api/<plugin-id>`. Use `/` to register at the plugin base
+URL itself. Other paths match exactly and are case-sensitive. Query strings are
+ignored when matching; trailing slashes are significant. Path patterns are not
+supported. The first request can be a WebSocket upgrade.
+
+The handler receives Node's upgrade request, a raw `Duplex` socket, buffered
+`head`, and an authentication context. Use a WebSocket library of your choice
+to complete the handshake, or forward the upgrade upstream. For example, with
+`ws`:
+
+```ts
+const server = new WebSocketServer({ noServer: true });
+
+http.addWebSocketHandler({
+  path: '/events',
+  handler(request, socket, head, context) {
+    server.handleUpgrade(request, socket, head, connection => {
+      server.emit('connection', connection, request);
+    });
+  },
+});
+```
+
+`WebSocketServer` comes from `ws`. The core router has no dependency on your
+WebSocket library. Your handler owns the handshake and protocol selection.
+`context.credentials` contains verified Backstage credentials, and
+`context.authProtocol` contains the offered protocol value that authenticated
+the caller, when authentication used that header. The router does not select
+or echo a protocol on your behalf.
+
+For forwarding, pass the same upgrade arguments to your WebSocket proxy:
+
+```ts
+http.addWebSocketHandler({
+  path: '/proxy',
+  handler(request, socket, head) {
+    proxy.ws(request, socket, head);
+  },
+});
+```
+
+`proxy` represents your WebSocket proxy. Preserve `head` to avoid losing buffered
+data. The handler must accept, forward, or close the socket before returning.
+Thrown errors and rejected promises close the socket. The request retains its
+full URL, including `/api/<plugin-id>` and the query string.
+
+### Authentication policies
+
+WebSocket routes require authentication by default. The framework first checks a
+Bearer token in the `Authorization` header, then tries each comma-separated
+`Sec-WebSocket-Protocol` value in order until one authenticates. Tokens need not
+have a particular format. Browser clients cannot set `Authorization`, so pass the
+bearer token as the first protocol value, followed by any application protocols:
+
+```ts
+const connection = new WebSocket(url, [token, 'events.v1']);
+```
+
+Each route can set `authPolicy`:
+
+- `authenticated` (default): accepts full user or service credentials.
+- `user`: accepts only full user credentials, continuing past service tokens to
+  find a user token among the offered protocols.
+- `user-cookie`: also accepts limited user tokens and the `backstage-auth`
+  cookie. Cookie authentication requires an `Origin` matching the app base URL
+  or a configured `backend.cors.origin` pattern.
+- `unauthenticated`: skips token authentication and supplies none credentials.
+
+For example, register a public route with
+`http.addWebSocketHandler({ path: '/public', authPolicy: 'unauthenticated', handler })`.
+Missing or invalid credentials receive HTTP 401 before the handler runs.
+A disallowed cookie origin receives HTTP 403.
+
+`backend.auth.dangerouslyDisableDefaultAuthPolicy` also disables the default
+WebSocket policy. Explicit `user` and `user-cookie` policies still apply.
+`addAuthPolicy` remains specific to Express HTTP routes and does not change
+WebSocket policies.
+
+### Optional `ws` adapter
+
+`@backstage/backend-defaults/httpRouter` exports `createWebSocketHandler` for
+plugins that want a managed `ws` handshake. It returns a raw handler for the same
+router API:
+
+```ts
+import { createWebSocketHandler } from '@backstage/backend-defaults/httpRouter';
+
+http.addWebSocketHandler({
+  path: '/events',
+  handler: createWebSocketHandler({
+    lifecycle,
+    logger,
+    protocols: ['events.v1'],
+    verifyClient(request, context) {
+      checkOrigin(request);
+    },
+    onConnection(connection, request, context) {
+      connection.on('message', (data, isBinary) => {
+        connection.send(data, { binary: isBinary });
+      });
+    },
+  }),
+});
+```
+
+Pass your plugin's `coreServices.lifecycle` and `coreServices.logger` instances.
+`checkOrigin` represents your plugin's origin policy. The adapter validates and
+completes the handshake and delivers a connected `ws` socket to `onConnection`.
+It selects the first configured protocol that the client offers. If the client
+offers protocols and none match, the upgrade is rejected with HTTP 400.
+With no configured protocols, clients must omit `Sec-WebSocket-Protocol`.
+Offered values are never automatically selected by the adapter.
+
+`verifyClient` is required and runs before acceptance. Throw or reject to close
+the connection. Thrown errors and rejected promises in `onConnection` terminate
+the accepted connection. The adapter handles connection errors and terminates
+accepted connections when the plugin shuts down.
+
+### Routing and lifecycle
+
+Upgrades bypass Express middleware, including rate limiting and CORS. Apart from
+the cookie-origin check, origin policy remains the handler's responsibility.
+Root-level WebSocket registrations use the same `{ path, handler }` shape but
+have no plugin authentication policy; root handlers must authenticate callers.
+
+Registering the first route installs one server-level upgrade listener. Duplicate
+paths are rejected, and unmatched upgrades receive a 404 response. When no routes
+are registered, existing server-level listeners are unaffected. Mixing these
+routes with direct server-level upgrade listeners is unsupported; registration
+fails if a listener already exists. Migrate those listeners to registered routes
+before using this API, and do not add direct listeners afterwards.
+
+The router destroys tracked sockets during server shutdown. Plugins remain
+responsible for closing upstream proxy connections and resources they create.
+This initial API does not supply handshake timeouts or graceful WebSocket close
+frames.
+
 ## Rate limiting
 
 Rate limiting allows you to limit the amount of requests users can send to you backend.
