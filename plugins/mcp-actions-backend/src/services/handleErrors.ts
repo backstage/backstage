@@ -21,7 +21,7 @@ import {
   serializeError,
 } from '@backstage/errors';
 
-import { CallToolResult } from '@modelcontextprotocol/server';
+import type { CallToolResult } from '@modelcontextprotocol/server';
 
 const knownErrors = new Set([
   'InputError',

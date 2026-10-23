@@ -41,7 +41,7 @@ import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
 import { FilterRule, McpServerConfig } from '../config';
 
-function describeIssues(issues: ReadonlyArray<StandardSchemaV1.Issue>): string {
+function describeIssues(issues: readonly StandardSchemaV1.Issue[]): string {
   return issues
     .map(issue => {
       const path = (issue.path ?? [])
@@ -217,7 +217,7 @@ export class McpService {
           // Validate each tool against the MCP Tool schema so that a single
           // malformed action (e.g. an inputSchema that isn't a JSON Schema
           // object at the root) doesn't poison the whole tools/list response.
-          const parsed = await specTypeSchemas.Tool['~standard'].validate(tool);
+          const parsed = specTypeSchemas.Tool['~standard'].validate(tool);
           if (parsed.issues) {
             if (!this.warnedSkippedActionIds.has(action.id)) {
               this.warnedSkippedActionIds.add(action.id);
