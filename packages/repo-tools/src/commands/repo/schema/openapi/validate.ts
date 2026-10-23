@@ -30,7 +30,10 @@ import {
   getPathToOpenApiSpec,
   loadAndValidateOpenApiYaml,
 } from '../../../../lib/openapi/helpers';
-import { readGeneratedOpenApiSpec } from '../../../../lib/openapi/readGeneratedSpec';
+import {
+  GeneratedSpecSyntaxError,
+  readGeneratedOpenApiSpec,
+} from '../../../../lib/openapi/readGeneratedSpec';
 
 export async function validate(directoryPath: string) {
   let openapiPath = '';
@@ -42,39 +45,50 @@ export async function validate(directoryPath: string) {
   }
   const yaml = await loadAndValidateOpenApiYaml(openapiPath);
 
-  let schemaFile = TS_SCHEMA_PATH;
+  const hasOldSchema = await fs.pathExists(
+    join(directoryPath, OLD_SCHEMA_PATH),
+  );
   if (
-    !(await fs.pathExists(join(directoryPath, TS_SCHEMA_PATH))) &&
-    !(await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH)))
+    !hasOldSchema &&
+    !(await fs.pathExists(join(directoryPath, TS_SCHEMA_PATH)))
   ) {
     throw new Error(`No \`${TS_SCHEMA_PATH}\` file found.`);
-  } else if (await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH))) {
+  }
+  if (hasOldSchema) {
     console.warn(
       `\`${OLD_SCHEMA_PATH}\` is deprecated. Please re-run \`yarn backstage-repo-tools package schema openapi generate\` to update it.`,
     );
-    schemaFile = OLD_SCHEMA_PATH;
   }
+  const schemaFile = hasOldSchema ? OLD_SCHEMA_PATH : TS_SCHEMA_PATH;
 
-  const path = relativePath(targetPaths.rootDir, directoryPath);
-  const regenerateHint = `Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`;
+  const regenerateHint = () =>
+    `Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${relativePath(
+      targetPaths.rootDir,
+      directoryPath,
+    )}' to regenerate \`${TS_SCHEMA_PATH}\`.`;
 
   let spec: unknown;
   try {
     spec = await readGeneratedOpenApiSpec(join(directoryPath, schemaFile));
   } catch (error) {
-    throw new Error(`${error.message}. ${regenerateHint}`);
+    if (error instanceof GeneratedSpecSyntaxError) {
+      throw new Error(
+        `\`${schemaFile}\`: ${error.message}. ${regenerateHint()}`,
+      );
+    }
+    throw error;
   }
 
   if (!spec) {
     throw new Error(
-      `\`${schemaFile}\` needs to have a 'spec' export. ${regenerateHint}`,
+      `\`${schemaFile}\` needs to have a 'spec' export. ${regenerateHint()}`,
     );
   }
   // The spec is generated with JSON.stringify, so compare against the YAML as
   // it would be serialized, for example with `.nan` turned into `null`
   if (!isEqual(spec, JSON.parse(JSON.stringify(yaml)))) {
     throw new Error(
-      `\`${YAML_SCHEMA_PATH}\` and \`${schemaFile}\` do not match. ${regenerateHint}`,
+      `\`${YAML_SCHEMA_PATH}\` and \`${schemaFile}\` do not match. ${regenerateHint()}`,
     );
   }
 }

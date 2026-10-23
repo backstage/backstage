@@ -15,7 +15,10 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { readGeneratedOpenApiSpec } from './readGeneratedSpec';
+import {
+  GeneratedSpecSyntaxError,
+  readGeneratedOpenApiSpec,
+} from './readGeneratedSpec';
 
 describe('readGeneratedOpenApiSpec', () => {
   const mockDir = createMockDirectory();
@@ -39,6 +42,7 @@ export const spec = {
   },
   'x-numbers': [0, 1.5, -2, 1e3],
   'x-flags': [true, false, null],
+  'x-keys': { 0x1f: 'hex', 1.50: 'decimal' },
   '__proto__': { polluted: true },
 } as const;
 export const createOpenApiRouter = async (
@@ -64,6 +68,7 @@ export const createOpenApiRouter = async (
       },
       'x-numbers': [0, 1.5, -2, 1000],
       'x-flags': [true, false, null],
+      'x-keys': { '31': 'hex', '1.5': 'decimal' },
       ['__proto__']: { polluted: true },
     });
     expect(Object.getPrototypeOf(spec)).toBe(Object.prototype);
@@ -88,9 +93,11 @@ export const createOpenApiRouter = async (
     ).resolves.toEqual({ openapi: '3.0.3' });
   });
 
-  it('returns undefined without a spec export and rejects non-literal values', async () => {
+  it('returns undefined without a spec export and rejects unreadable files', async () => {
     mockDir.setContent({
       'empty.ts': `const spec = { openapi: '3.0.3' };\nexport const other = 1;\n`,
+      'mutable.ts': `let spec = { openapi: '3.0.3' };\nexport { spec };\n`,
+      'conflict.ts': `export const spec = {\n<<<<<<< HEAD\n  openapi: '3.0.3',\n=======\n  openapi: '3.1.0',\n>>>>>>> branch\n};\n`,
       'computed.ts': `const base = {};\nexport const spec = {\n  ...base,\n};\n`,
       'unknown.ts': `export const spec = {\n  info: getInfo(),\n};\n`,
       'cyclic.ts': `const a = { b };\nconst b = { a };\nexport const spec = a;\n`,
@@ -101,16 +108,20 @@ export const createOpenApiRouter = async (
     ).resolves.toBeUndefined();
     await expect(
       readGeneratedOpenApiSpec(mockDir.resolve('unknown.ts')),
-    ).rejects.toThrow(`${mockDir.resolve('unknown.ts')}:2`);
+    ).rejects.toThrow(GeneratedSpecSyntaxError);
     await expect(
       readGeneratedOpenApiSpec(mockDir.resolve('cyclic.ts')),
-    ).rejects.toThrow(`${mockDir.resolve('cyclic.ts')}:2`);
+    ).rejects.toThrow("'spec' export on line 2,");
     await expect(
       readGeneratedOpenApiSpec(mockDir.resolve('computed.ts')),
     ).rejects.toThrow(
-      `Unsupported syntax in the 'spec' export at ${mockDir.resolve(
-        'computed.ts',
-      )}:3, only plain JSON values are supported`,
+      "Unsupported syntax in the 'spec' export on line 3, only plain JSON values are supported",
     );
+    await expect(
+      readGeneratedOpenApiSpec(mockDir.resolve('mutable.ts')),
+    ).rejects.toThrow("Unsupported syntax in the 'spec' export on line 2");
+    await expect(
+      readGeneratedOpenApiSpec(mockDir.resolve('conflict.ts')),
+    ).rejects.toThrow('Syntax error on line 2: Merge conflict marker');
   });
 });
