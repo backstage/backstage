@@ -6970,6 +6970,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-techdocs-backend-module-zensical@workspace:^, @backstage/plugin-techdocs-backend-module-zensical@workspace:plugins/techdocs-backend-module-zensical":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-techdocs-backend-module-zensical@workspace:plugins/techdocs-backend-module-zensical"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-techdocs-node": "workspace:^"
+    entities: "npm:^4.5.0"
+    fs-extra: "npm:^11.0.0"
+    js-yaml: "npm:^5.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-techdocs-backend@workspace:^, @backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend"
@@ -10013,6 +10028,23 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     zod: "npm:^3.25.76 || ^4.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@internal/techdocs-zensical@workspace:plugins/techdocs-zensical-internal":
+  version: 0.0.0-use.local
+  resolution: "@internal/techdocs-zensical@workspace:plugins/techdocs-zensical-internal"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-techdocs-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    entities: "npm:^4.5.0"
+    fs-extra: "npm:^11.0.0"
+    js-yaml: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -18219,17 +18251,21 @@ __metadata:
   resolution: "@techdocs/cli@workspace:packages/techdocs-cli"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
     "@types/http-proxy": "npm:^1.17.4"
     "@types/node": "npm:^22.13.14"
     "@types/serve-handler": "npm:^6.1.0"
     "@types/webpack-env": "npm:^1.15.3"
+    "@types/ws": "npm:^8.0.0"
     commander: "npm:^14.0.3"
+    entities: "npm:^4.5.0"
     find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
     http-proxy: "npm:^1.18.1"
@@ -18240,6 +18276,7 @@ __metadata:
     serve-handler: "npm:^6.1.3"
     techdocs-cli-embedded-app: "link:../techdocs-cli-embedded-app"
     winston: "npm:^3.2.1"
+    ws: "npm:^8.0.0"
   bin:
     techdocs-cli: bin/techdocs-cli
   languageName: unknown
@@ -20153,7 +20190,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:*, @types/ws@npm:^8.18.2, @types/ws@npm:^8.5.10":
+"@types/ws@npm:*, @types/ws@npm:^8.0.0, @types/ws@npm:^8.18.2, @types/ws@npm:^8.5.10":
   version: 8.18.2
   resolution: "@types/ws@npm:8.18.2"
   dependencies:
@@ -27833,6 +27870,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@backstage/plugin-techdocs-backend-module-zensical": "workspace:^"
     "@backstage/plugin-user-settings-backend": "workspace:^"
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.80.0"
@@ -46269,7 +46307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:*, ws@npm:^8.18.0, ws@npm:^8.18.2, ws@npm:^8.18.3, ws@npm:^8.20.1, ws@npm:^8.21.0, ws@npm:^8.21.3, ws@npm:^8.8.0":
+"ws@npm:*, ws@npm:^8.0.0, ws@npm:^8.18.0, ws@npm:^8.18.2, ws@npm:^8.18.3, ws@npm:^8.20.1, ws@npm:^8.21.0, ws@npm:^8.21.3, ws@npm:^8.8.0":
   version: 8.22.0
   resolution: "ws@npm:8.22.0"
   peerDependencies:
