@@ -140,22 +140,18 @@ export class MicrosoftGraphSubscriptionManager {
       schedule ??
       scheduler!.createScheduledTaskRunner(subscriptionRefreshSchedule);
 
-    let configBasedCleanupDone = false;
-
     await taskRunner.run({
       id: TASK_ID,
       fn: async () => {
-        // Cleanup obsolete subscriptions based on configuration changes.
-        if (!configBasedCleanupDone) {
-          // If any cleanup fails, we will retry on the next run. This is a best-effort cleanup, and we don't want to block subscription refreshes due to cleanup failures.
-          try {
-            configBasedCleanupDone = await this.cleanupObsoleteSubscriptions();
-          } catch (error) {
-            this.logger.warn(
-              'MS Graph subscription cleanup failed, will retry on next run.',
-              isError(error) ? error : undefined,
-            );
-          }
+        // Reconcile obsolete subscriptions on every refresh, including after rolling configuration changes.
+        // Cleanup is best effort and must not block subscription refreshes.
+        try {
+          await this.cleanupObsoleteSubscriptions();
+        } catch (error) {
+          this.logger.warn(
+            'MS Graph subscription cleanup failed, will retry on next run.',
+            isError(error) ? error : undefined,
+          );
         }
 
         // Ensuring active subscriptions must always happen under global scheduler lock,
