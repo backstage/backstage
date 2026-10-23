@@ -85,7 +85,8 @@ export function createWebSocketHandler(
     server.close();
   });
 
-  return async (request, socket, head, context) => {
+  return async context => {
+    const { request, socket, head } = context;
     if (stopped || socket.destroyed) {
       socket.destroy();
       return;

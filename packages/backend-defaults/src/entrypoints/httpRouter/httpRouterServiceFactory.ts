@@ -98,7 +98,7 @@ export const httpRouterServiceFactory = createServiceFactory({
         }
         rootHttpRouter.addWebSocketHandler({
           path: `/api/${plugin.getId()}${path === '/' ? '' : path}`,
-          async handler(request, socket, head) {
+          async handler({ request, socket, head }) {
             let context;
             try {
               context = await authenticateWebSocket({
@@ -119,7 +119,7 @@ export const httpRouterServiceFactory = createServiceFactory({
               return;
             }
             if (!socket.destroyed) {
-              await handler(request, socket, head, context);
+              await handler({ request, socket, head, ...context });
             }
           },
         });
