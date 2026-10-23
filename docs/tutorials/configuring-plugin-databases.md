@@ -185,6 +185,8 @@ deployment situations. Good luck!
 
 If you want to read more about the database configuration, here are some helpful links:
 
+- [Database](../database/index.md) for how Backstage uses a database and which database systems you can choose from.
+- [Database maintenance](../database/maintenance.md) for backups, restores, upgrades, and connection tuning.
 - [Manual Knex Rollback](./manual-knex-rollback.md)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
 - [Install `pgAdmin` 4](https://www.pgadmin.org/), a helpful tool for querying your database.
