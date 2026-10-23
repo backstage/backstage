@@ -36,6 +36,7 @@ type UpdateData = Partial<DbSubscriptionsRow> & {
  */
 export interface MicrosoftGraphSubscriptionsDatabaseOperations {
   getAll: () => Promise<DbSubscriptionsRow[]>;
+  getById: (id: string) => Promise<DbSubscriptionsRow | undefined>;
   findByResource: (resource: string) => Promise<DbSubscriptionsRow | undefined>;
   deleteById: (id: string) => Promise<void>;
   insert: (row: DbSubscriptionsRow) => Promise<void>;
