@@ -83,7 +83,7 @@ describe('httpRouterFactory', () => {
               async init({ http }) {
                 http.addWebSocketHandler({
                   path: '/events',
-                  handler: async (req, socket, head) => {
+                  handler: async ({ request: req, socket, head }) => {
                     handlers[index](
                       req.url,
                       req.headers['sec-websocket-protocol'],
@@ -357,8 +357,9 @@ describe('httpRouterFactory', () => {
               async init({ http }) {
                 http.addWebSocketHandler({
                   path: '/',
-                  handler: (_req, socket, _head, context) => {
+                  handler: context => {
                     handler(context);
+                    const { socket } = context;
                     socket.write(
                       'HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: websocket\r\n\r\n',
                     );
@@ -376,6 +377,9 @@ describe('httpRouterFactory', () => {
       'sec-websocket-protocol': `application, ${mockCredentials.user.token()}`,
     });
     expect(handler).toHaveBeenCalledWith({
+      request: expect.objectContaining({ url: '/api/secure' }),
+      socket: expect.any(Duplex),
+      head: Buffer.alloc(0),
       credentials: mockCredentials.user(),
       authProtocol: mockCredentials.user.token(),
     });
