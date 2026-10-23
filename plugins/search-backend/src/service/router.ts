@@ -131,7 +131,21 @@ export async function createRouter(
         credentials,
       });
 
-      res.json(filterResultSet(toSearchResults(resultSet), logger));
+      const response = filterResultSet(toSearchResults(resultSet), logger);
+      logger.info("Search request completed", {
+        term: query.term,
+        filters: query.filters,
+        types: query.types,
+        pageCursor: query.pageCursor,
+        returnedCount: response.results.length,
+        numberOfResults: response.numberOfResults,
+        results: response.results.map(({ type, document }) => ({
+          type,
+          title: document.title,
+          location: document.location
+        }))
+      });
+      res.json(response);
     } catch (error) {
       // Log the error message here, but don't expose it to the user in the response
       logger.error(
