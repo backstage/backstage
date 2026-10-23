@@ -21,10 +21,12 @@ import {
 import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
+import {
+  Client,
+  StreamableHTTPClientTransport,
+} from '@modelcontextprotocol/client';
 import request from 'supertest';
+import waitForExpect from 'wait-for-expect';
 
 describe('Mcp Backend', () => {
   const mockPluginWithActions = createBackendPlugin({
@@ -51,11 +53,12 @@ describe('Mcp Backend', () => {
   });
 
   const getContext = async (instructions?: string) => {
+    const metrics = metricsServiceMock.mock();
     const { server } = await startTestBackend({
       features: [
         mcpPlugin,
         mockPluginWithActions,
-        metricsServiceMock.mock().factory,
+        metrics.factory,
         tracingServiceMock.mock().factory,
         mockServices.rootConfig.factory({
           data: {
@@ -82,6 +85,7 @@ describe('Mcp Backend', () => {
 
     return {
       client,
+      metrics,
       serverAddress: `http://localhost:${address.port}`,
     };
   };
@@ -94,12 +98,9 @@ describe('Mcp Backend', () => {
 
     await client.connect(transport);
 
-    const result = await client.request(
-      {
-        method: 'tools/list',
-      },
-      ListToolsResultSchema,
-    );
+    const result = await client.request({
+      method: 'tools/list',
+    });
 
     expect(result.tools).toEqual([
       {
@@ -142,6 +143,125 @@ describe('Mcp Backend', () => {
     await client.connect(transport);
 
     expect(client.getInstructions()).toBe(instructions);
+  });
+
+  it('should only accept POST requests', async () => {
+    const { serverAddress } = await getContext();
+
+    const getResponse = await request(serverAddress).get('/api/mcp-actions/v1');
+    const deleteResponse = await request(serverAddress).delete(
+      '/api/mcp-actions/v1',
+    );
+
+    expect(getResponse.status).toBe(405);
+    expect(deleteResponse.status).toBe(405);
+  });
+
+  describe('protocol versions', () => {
+    const readJsonRpcMessage = (response: request.Response) => {
+      if (response.type === 'text/event-stream') {
+        const data = response.text
+          .split('\n')
+          .find(line => line.startsWith('data: '));
+        return JSON.parse(data!.slice('data: '.length));
+      }
+      return response.body;
+    };
+
+    it.each(['2024-11-05', '2025-03-26', '2025-06-18', '2025-11-25'])(
+      'should answer the initialize handshake of a %s client',
+      async protocolVersion => {
+        const { serverAddress } = await getContext();
+
+        const response = await request(serverAddress)
+          .post('/api/mcp-actions/v1')
+          .set('Accept', 'application/json, text/event-stream')
+          .send({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'initialize',
+            params: {
+              protocolVersion,
+              capabilities: {},
+              clientInfo: { name: 'test client', version: '1.0' },
+            },
+          });
+
+        expect(response.status).toBe(200);
+        expect(readJsonRpcMessage(response).result).toEqual(
+          expect.objectContaining({
+            protocolVersion,
+            capabilities: { tools: {} },
+            serverInfo: expect.objectContaining({ name: 'backstage' }),
+          }),
+        );
+      },
+    );
+
+    const sessionDurationOf = (
+      metrics: ReturnType<typeof metricsServiceMock.mock>,
+    ) => {
+      const index = metrics.createHistogram.mock.calls.findIndex(
+        ([name]) => name === 'mcp.server.session.duration',
+      );
+      return metrics.createHistogram.mock.results[index].value;
+    };
+
+    it('should serve a 2026-07-28 client through server/discover', async () => {
+      const instructions = 'Use catalog tools before scaffolder tools.';
+      const { serverAddress, metrics } = await getContext(instructions);
+      const client = new Client(
+        { name: 'test client', version: '1.0' },
+        { versionNegotiation: { mode: { pin: '2026-07-28' } } },
+      );
+
+      await client.connect(
+        new StreamableHTTPClientTransport(
+          new URL(`${serverAddress}/api/mcp-actions/v1`),
+        ),
+      );
+
+      expect(client.getProtocolEra()).toBe('modern');
+      expect(client.getServerVersion()?.name).toBe('backstage');
+      expect(client.getInstructions()).toBe(instructions);
+
+      const { tools } = await client.request({ method: 'tools/list' });
+      expect(tools.map(tool => tool.name)).toEqual(['local.make-greeting']);
+
+      const result = await client.request({
+        method: 'tools/call',
+        params: { name: 'local.make-greeting', arguments: { name: 'Ada' } },
+      });
+      expect(result.structuredContent).toEqual({ greeting: 'Hello Ada!' });
+
+      await client.close();
+      // The duration is recorded when the response closes, which can happen
+      // after the client already holds the result.
+      await waitForExpect(() => {
+        expect(sessionDurationOf(metrics).record).toHaveBeenCalledWith(
+          expect.any(Number),
+          expect.objectContaining({ 'mcp.protocol.version': '2026-07-28' }),
+        );
+      });
+    });
+
+    it('should not record an unknown protocol version on the session duration', async () => {
+      const { serverAddress, metrics } = await getContext();
+
+      await request(serverAddress)
+        .post('/api/mcp-actions/v1')
+        .set('Accept', 'application/json, text/event-stream')
+        .set('MCP-Protocol-Version', 'not-a-version')
+        .send({ jsonrpc: '2.0', id: 1, method: 'ping' });
+
+      await waitForExpect(() => {
+        expect(sessionDurationOf(metrics).record).toHaveBeenCalled();
+      });
+      expect(sessionDurationOf(metrics).record).not.toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ 'mcp.protocol.version': expect.anything() }),
+      );
+    });
   });
 
   describe('multi-server routing', () => {
@@ -243,10 +363,9 @@ describe('Mcp Backend', () => {
       expect(catalogClient.getInstructions()).toBe(
         'Use this server to inspect the catalog.',
       );
-      const catalogResult = await catalogClient.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const catalogResult = await catalogClient.request({
+        method: 'tools/list',
+      });
       expect(catalogResult.tools).toHaveLength(1);
       expect(catalogResult.tools[0].name).toBe('catalog-actions.get-entity');
 
@@ -258,10 +377,9 @@ describe('Mcp Backend', () => {
       expect(scaffolderClient.getInstructions()).toBe(
         'Use this server to create components.',
       );
-      const scaffolderResult = await scaffolderClient.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const scaffolderResult = await scaffolderClient.request({
+        method: 'tools/list',
+      });
       expect(scaffolderResult.tools).toHaveLength(1);
       expect(scaffolderResult.tools[0].name).toBe(
         'scaffolder-actions.create-app',
@@ -309,10 +427,7 @@ describe('Mcp Backend', () => {
         await client.connect(
           new StreamableHTTPClientTransport(new URL(serverAddress + path)),
         );
-        const result = await client.request(
-          { method: 'tools/list' },
-          ListToolsResultSchema,
-        );
+        const result = await client.request({ method: 'tools/list' });
         return result.tools.map(tool => tool.name);
       };
 
