@@ -29,6 +29,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 import {
   devToolsConfigReadPermission,
+  devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
 import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
@@ -150,6 +151,31 @@ export const devToolsScheduledTasksPage = SubPageBlueprint.make({
 });
 
 /** @alpha */
+export const devToolsExternalDependenciesPage = SubPageBlueprint.make({
+  name: 'external-dependencies',
+  params: {
+    path: 'external-dependencies',
+    title: 'External Dependencies',
+    loader: async () => {
+      const [m, { Content }, { RequirePermission }] = await Promise.all([
+        import('../components/Content'),
+        import('@backstage/core-components'),
+        import('@backstage/plugin-permission-react'),
+      ]);
+      return (
+        <Content>
+          <RequirePermission
+            permission={devToolsExternalDependenciesReadPermission}
+          >
+            <m.ExternalDependenciesContent />
+          </RequirePermission>
+        </Content>
+      );
+    },
+  },
+});
+
+/** @alpha */
 export default createFrontendPlugin({
   pluginId: 'devtools',
   title: 'DevTools',
@@ -164,5 +190,6 @@ export default createFrontendPlugin({
     devToolsInfoPage,
     devToolsConfigPage,
     devToolsScheduledTasksPage,
+    devToolsExternalDependenciesPage,
   ],
 });
