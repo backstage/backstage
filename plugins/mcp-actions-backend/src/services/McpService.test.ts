@@ -21,12 +21,7 @@ import {
   metricsServiceMock,
   tracingServiceMock,
 } from '@backstage/backend-test-utils/alpha';
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import {
-  CallToolResultSchema,
-  ListToolsResultSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { McpServerConfig, parseFilterRules } from '../config';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
@@ -72,12 +67,9 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    const result = await client.request(
-      {
-        method: 'tools/list',
-      },
-      ListToolsResultSchema,
-    );
+    const result = await client.request({
+      method: 'tools/list',
+    });
 
     expect(result.tools).toEqual([
       {
@@ -154,9 +146,7 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    await expect(
-      client.request({ method: 'tools/list' }, ListToolsResultSchema),
-    ).rejects.toThrow();
+    await expect(client.request({ method: 'tools/list' })).rejects.toThrow();
 
     const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
     expect(histogram.record).toHaveBeenCalledTimes(1);
@@ -245,20 +235,14 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    const first = await client.request(
-      { method: 'tools/list' },
-      ListToolsResultSchema,
-    );
-    const second = await client.request(
-      { method: 'tools/list' },
-      ListToolsResultSchema,
-    );
+    const first = await client.request({ method: 'tools/list' });
+    const second = await client.request({ method: 'tools/list' });
 
     expect(first.tools).toHaveLength(1);
     expect(first.tools[0].name).toBe('plugin.valid');
     expect(second.tools).toHaveLength(1);
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('plugin:bad-type'),
+      expect.stringMatching(/plugin:bad-type.*inputSchema\.type: /),
     );
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('plugin:bad-required'),
@@ -308,13 +292,10 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    const result = await client.request(
-      {
-        method: 'tools/call',
-        params: { name: 'test.mock-action', arguments: { input: 'test' } },
-      },
-      CallToolResultSchema,
-    );
+    const result = await client.request({
+      method: 'tools/call',
+      params: { name: 'test.mock-action', arguments: { input: 'test' } },
+    });
 
     expect(mockAction).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -389,13 +370,10 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    const result = await client.request(
-      {
-        method: 'tools/call',
-        params: { name: 'nonexistent-action', arguments: { input: 'test' } },
-      },
-      CallToolResultSchema,
-    );
+    const result = await client.request({
+      method: 'tools/call',
+      params: { name: 'nonexistent-action', arguments: { input: 'test' } },
+    });
     await expect(result).toEqual({
       content: [
         {
@@ -461,13 +439,10 @@ describe('McpService', () => {
     ]);
 
     await expect(
-      client.request(
-        {
-          method: 'tools/call',
-          params: { name: 'test.failing-action', arguments: {} },
-        },
-        CallToolResultSchema,
-      ),
+      client.request({
+        method: 'tools/call',
+        params: { name: 'test.failing-action', arguments: {} },
+      }),
     ).rejects.toThrow('Action failed');
 
     const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
@@ -534,13 +509,10 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    const result = await client.request(
-      {
-        method: 'tools/call',
-        params: { name: 'test.failing-action', arguments: { value: 'test' } },
-      },
-      CallToolResultSchema,
-    );
+    const result = await client.request({
+      method: 'tools/call',
+      params: { name: 'test.failing-action', arguments: { value: 'test' } },
+    });
 
     expect(result).toEqual({
       content: [
@@ -592,13 +564,10 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    const result = await client.request(
-      {
-        method: 'tools/call',
-        params: { name: 'test.not-found-action', arguments: { id: 'abc' } },
-      },
-      CallToolResultSchema,
-    );
+    const result = await client.request({
+      method: 'tools/call',
+      params: { name: 'test.not-found-action', arguments: { id: 'abc' } },
+    });
 
     expect(result).toEqual({
       content: [
@@ -683,10 +652,7 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const result = await client.request({ method: 'tools/list' });
 
       expect(result.tools).toHaveLength(3);
     });
@@ -722,10 +688,7 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const result = await client.request({ method: 'tools/list' });
 
       expect(result.tools).toHaveLength(2);
       expect(result.tools.map(t => t.name)).toEqual([
@@ -765,10 +728,7 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const result = await client.request({ method: 'tools/list' });
 
       expect(result.tools).toHaveLength(1);
       expect(result.tools[0].name).toBe('catalog.get-entity');
@@ -805,10 +765,7 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const result = await client.request({ method: 'tools/list' });
 
       expect(result.tools).toHaveLength(1);
       expect(result.tools[0].name).toBe('catalog.get-entity');
@@ -845,13 +802,10 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        {
-          method: 'tools/call',
-          params: { name: 'catalog.get-entity', arguments: {} },
-        },
-        CallToolResultSchema,
-      );
+      const result = await client.request({
+        method: 'tools/call',
+        params: { name: 'catalog.get-entity', arguments: {} },
+      });
 
       expect(result).toEqual({
         content: [
@@ -891,6 +845,29 @@ describe('McpService', () => {
       const serverInfo = client.getServerVersion();
       expect(serverInfo?.name).toBe('backstage');
       expect(serverInfo?.description).toBeUndefined();
+    });
+
+    it('should not advertise tool list change notifications', async () => {
+      const mcpService = await McpService.create({
+        actions: actionsRegistryServiceMock(),
+        metrics: metricsServiceMock.mock(),
+        tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      expect(client.getServerCapabilities()).toEqual({ tools: {} });
     });
 
     it('should use name, description, and instructions from server config', async () => {
@@ -992,10 +969,7 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const result = await client.request({ method: 'tools/list' });
 
       expect(result.tools[0].name).toBe('test.mock-action');
     });
@@ -1033,10 +1007,7 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
+      const result = await client.request({ method: 'tools/list' });
 
       expect(result.tools[0].name).toBe('mock-action');
     });
@@ -1073,13 +1044,10 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        {
-          method: 'tools/call',
-          params: { name: 'test.mock-action', arguments: {} },
-        },
-        CallToolResultSchema,
-      );
+      const result = await client.request({
+        method: 'tools/call',
+        params: { name: 'test.mock-action', arguments: {} },
+      });
 
       expect(result.isError).toBeUndefined();
     });
@@ -1125,13 +1093,10 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      return client.request(
-        {
-          method: 'tools/call',
-          params: { name: 'test.mock-action', arguments: { input: 'val' } },
-        },
-        CallToolResultSchema,
-      );
+      return client.request({
+        method: 'tools/call',
+        params: { name: 'test.mock-action', arguments: { input: 'val' } },
+      });
     }
 
     it('starts a tools/call span with spec attributes, server kind, and the request credentials', async () => {
@@ -1299,16 +1264,13 @@ describe('McpService', () => {
         server.connect(serverTransport),
       ]);
 
-      const result = await client.request(
-        {
-          method: 'tools/call',
-          params: {
-            name: 'test.failing-action',
-            arguments: { value: 'test' },
-          },
+      const result = await client.request({
+        method: 'tools/call',
+        params: {
+          name: 'test.failing-action',
+          arguments: { value: 'test' },
         },
-        CallToolResultSchema,
-      );
+      });
       expect(result.isError).toBe(true);
 
       const span = tracing.spans[0];

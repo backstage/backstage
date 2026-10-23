@@ -254,7 +254,7 @@ auth:
 
 ## Configuring MCP Clients
 
-The MCP server uses the **Streamable HTTP** protocol.
+The MCP server uses the **Streamable HTTP** protocol. It supports the MCP protocol versions `2024-10-07`, `2024-11-05`, `2025-03-26`, `2025-06-18`, `2025-11-25` and `2026-07-28`.
 
 ### Endpoints
 
