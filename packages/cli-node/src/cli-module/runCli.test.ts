@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { stripVTControlCharacters } from 'node:util';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
+import type { CliRunTargetOptions } from './types';
 
 const originalArgv = process.argv;
 const originalUnhandledRejectionListeners = new Set(
@@ -550,6 +552,143 @@ describe('runCli', () => {
     );
   });
 
+  it('selects toggleable package commands based on the current package', async () => {
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      vitest: {
+        'package.json': JSON.stringify({ name: 'vitest-pkg', version: '0' }),
+        src: {},
+      },
+      plain: {
+        'package.json': JSON.stringify({ name: 'plain-pkg', version: '0' }),
+      },
+    });
+    const calls: string[] = [];
+    const usesVitest = ({ packageJson }: { packageJson: { name: string } }) =>
+      packageJson.name.startsWith('vitest');
+    const modules = [
+      createCliModule({
+        packageJson: { name: '@example/jest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Jest',
+            execute: async ({ args }) => {
+              calls.push(`jest ${args.join(' ')}`);
+            },
+          });
+        },
+      }),
+      createCliModule({
+        packageJson: { name: '@example/vitest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Vitest',
+            isEnabled: usesVitest,
+            execute: async ({ args }) => {
+              calls.push(`vitest ${args.join(' ')}`);
+            },
+          });
+        },
+      }),
+    ];
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    process.argv = ['node', 'cli', 'package', 'test', '--watch'];
+
+    cwdSpy.mockReturnValue(mockDir.resolve('vitest/src'));
+    await runCli({ modules, name: 'example-cli' });
+    cwdSpy.mockReturnValue(mockDir.resolve('plain'));
+    await runCli({ modules, name: 'example-cli' });
+
+    expect(calls).toEqual(['vitest --watch', 'jest --watch']);
+    expect(process.exit).toHaveBeenCalledTimes(2);
+    expect(process.exit).toHaveBeenNthCalledWith(1, 0);
+    expect(process.exit).toHaveBeenNthCalledWith(2, 0);
+
+    // Help shows the description of the first registered variant
+    process.argv = ['node', 'cli', 'package'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    await runCli({ modules, name: 'example-cli' });
+    const helpOutput = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    expect(helpOutput).toContain('Test with Jest');
+    expect(helpOutput).not.toContain('Test with Vitest');
+  });
+
+  it('describes a toggleable command by its fallback variant in group help', async () => {
+    const modules = [
+      createCliModule({
+        packageJson: { name: '@example/vitest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Vitest',
+            isEnabled: () => true,
+            execute: async () => {},
+          });
+        },
+      }),
+      createCliModule({
+        packageJson: { name: '@example/jest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Jest',
+            execute: async () => {},
+          });
+        },
+      }),
+    ];
+    process.argv = ['node', 'cli', 'package'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await runCli({ modules, name: 'example-cli' });
+
+    const helpOutput = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    expect(helpOutput).toContain('Test with Jest');
+    expect(helpOutput).not.toContain('Test with Vitest');
+  });
+
+  it('exits with an error when no toggleable variant is enabled', async () => {
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'some-pkg', version: '0' }),
+    });
+    jest.spyOn(process, 'cwd').mockReturnValue(mockDir.path);
+    const stderrSpy = jest
+      .spyOn(process.stderr, 'write')
+      .mockImplementation(() => true);
+    const execute = jest.fn(async () => {});
+    process.argv = ['node', 'cli', 'package', 'test'];
+
+    await runCli({
+      modules: [
+        createCliModule({
+          packageJson: { name: '@example/vitest' },
+          init: async reg => {
+            reg.addCommand({
+              path: ['package', 'test'],
+              description: 'Test with Vitest',
+              isEnabled: () => false,
+              execute,
+            });
+          },
+        }),
+      ],
+      name: 'example-cli',
+    });
+
+    expect(execute).not.toHaveBeenCalled();
+    expect(process.exit).toHaveBeenCalledWith(127);
+    expect(stderrSpy.mock.calls.flat().join('')).toContain(
+      'Command "package test" is not enabled for package "some-pkg". Candidate modules: "@example/vitest"',
+    );
+  });
+
   it('registers the unhandled rejection handler once', async () => {
     process.argv = ['node', 'cli'];
 
@@ -565,5 +704,64 @@ describe('runCli', () => {
     });
 
     expect(process.listenerCount('unhandledRejection')).toBe(listenerCount);
+  });
+
+  it('registers repo run only when a module provides run targets', async () => {
+    const target = {
+      description: 'Run tests',
+      packageCommand: ['package', 'test'],
+    };
+    const module = (name: string, options: CliRunTargetOptions = target) =>
+      createCliModule({
+        packageJson: { name },
+        init: async reg => reg.addRunTarget('test', options),
+      });
+    const writes = new Array<string>();
+    jest.spyOn(process.stdout, 'write').mockImplementation(((
+      chunk: unknown,
+      cb?: () => void,
+    ) => {
+      writes.push(String(chunk));
+      cb?.();
+      return true;
+    }) as never);
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    process.argv = ['node', 'cli', 'repo', 'run', '--help'];
+    await runCli({
+      modules: [module('@example/one'), module('@example/two')],
+      name: 'example-cli',
+    });
+    expect(writes.join('')).toContain('test  Run tests');
+
+    await expect(
+      runCli({
+        modules: [
+          module('@example/one'),
+          module('@example/two', { ...target, packageArgs: ['--x'] }),
+        ],
+        name: 'example-cli',
+      }),
+    ).rejects.toThrow(
+      'Conflicting run target "test" registered by "@example/one" and "@example/two"',
+    );
+
+    writes.length = 0;
+    process.argv = ['node', 'cli', 'repo'];
+    await runCli({
+      modules: [
+        createCliModule({
+          packageJson: { name: '@example/none' },
+          init: async reg =>
+            reg.addCommand({
+              path: ['repo', 'build'],
+              description: 'Build',
+              execute: async () => {},
+            }),
+        }),
+      ],
+      name: 'example-cli',
+    });
+    expect(writes.join('')).not.toContain('run');
   });
 });

@@ -15,7 +15,7 @@
  */
 
 import { OpaqueCliModule } from '@internal/cli';
-import { CliCommand, CliModule } from './types';
+import { CliCommand, CliModule, CliRunTargetOptions } from './types';
 
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
@@ -53,6 +53,12 @@ export function createCliModule(options: {
   init: (registry: {
     /** Registers a new command with the CLI. */
     addCommand: (command: CliCommand) => void;
+    /**
+     * Registers a target for `repo run <name>`, which runs the given
+     * `package` command in every package of the workspace, with support for
+     * `--since`, `--include-dependents` and `--watch`.
+     */
+    addRunTarget: (name: string, options: CliRunTargetOptions) => void;
   }) => Promise<void>;
 }): CliModule {
   if (!options.packageJson.name) {
@@ -62,12 +68,55 @@ export function createCliModule(options: {
   }
 
   const commands: CliCommand[] = [];
-  const commandsPromise = Promise.resolve()
-    .then(() => options.init({ addCommand: command => commands.push(command) }))
-    .then(() => commands);
+  const addCommand = (command: CliCommand) => {
+    if (command.isEnabled && command.path[0] !== 'package') {
+      throw new Error(
+        `Command "${command.path.join(' ')}" from "${
+          options.packageJson.name
+        }" sets isEnabled, which is only supported for commands under "package"`,
+      );
+    }
+    commands.push(command);
+  };
+  const runTargets: Array<{ name: string; options: CliRunTargetOptions }> = [];
+  const addRunTarget = (name: string, runTarget: CliRunTargetOptions) => {
+    if (!name || /\s/.test(name)) {
+      throw new Error(
+        `Run target "${name}" from "${options.packageJson.name}" must have a non-empty name without whitespace`,
+      );
+    }
+    if (
+      runTarget.packageCommand[0] !== 'package' ||
+      runTarget.packageCommand.length < 2
+    ) {
+      throw new Error(
+        `Run target "${name}" from "${
+          options.packageJson.name
+        }" must target a package command, got "${runTarget.packageCommand.join(
+          ' ',
+        )}"`,
+      );
+    }
+    if (runTargets.some(target => target.name === name)) {
+      throw new Error(
+        `Run target "${name}" is registered more than once by "${options.packageJson.name}"`,
+      );
+    }
+    runTargets.push({ name, options: runTarget });
+  };
+  const initPromise = Promise.resolve().then(() =>
+    options.init({ addCommand, addRunTarget }),
+  );
+  const commandsPromise = initPromise.then(() => commands);
+  const runTargetsPromise = initPromise.then(() => runTargets);
+  // Failures are reported to whoever awaits each promise, this only prevents
+  // an unhandled rejection when just one of them is awaited.
+  commandsPromise.catch(() => {});
+  runTargetsPromise.catch(() => {});
 
   return OpaqueCliModule.createInstance('v1', {
     packageName: options.packageJson.name,
     commands: commandsPromise,
+    runTargets: runTargetsPromise,
   });
 }
