@@ -30,7 +30,9 @@ export async function authenticateWebSocket(options: {
   config: RootConfigService;
   request: IncomingMessage;
   authPolicy: NonNullable<HttpRouterServiceWebSocketOptions['authPolicy']>;
-}): Promise<HttpRouterServiceWebSocketContext> {
+}): Promise<
+  Pick<HttpRouterServiceWebSocketContext, 'credentials' | 'authProtocol'>
+> {
   const { auth, config, request, authPolicy } = options;
   if (authPolicy === 'unauthenticated') {
     return { credentials: await auth.getNoneCredentials() };

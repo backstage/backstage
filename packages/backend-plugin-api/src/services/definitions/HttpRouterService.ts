@@ -29,18 +29,18 @@ import type { BackstageCredentials } from './AuthService';
  * @public
  */
 export type HttpRouterServiceWebSocketHandler = (
-  request: IncomingMessage,
-  socket: Duplex,
-  head: Buffer,
   context: HttpRouterServiceWebSocketContext,
 ) => void | Promise<void>;
 
 /**
- * Credentials available to a WebSocket upgrade handler.
+ * Request, transport, and credentials available to a WebSocket upgrade handler.
  *
  * @public
  */
 export interface HttpRouterServiceWebSocketContext {
+  request: IncomingMessage;
+  socket: Duplex;
+  head: Buffer;
   credentials: BackstageCredentials;
   /** The offered protocol value that authenticated the caller, if any. */
   authProtocol?: string;

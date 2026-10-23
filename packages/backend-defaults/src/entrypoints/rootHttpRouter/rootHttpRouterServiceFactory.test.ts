@@ -89,7 +89,11 @@ describe('rootHttpRouterServiceFactory', () => {
     req.headers.upgrade = 'websocket';
     server!.emit('upgrade', req, socket, Buffer.alloc(0));
     await Promise.resolve();
-    expect(handler).toHaveBeenCalledWith(req, socket, Buffer.alloc(0));
+    expect(handler).toHaveBeenCalledWith({
+      request: req,
+      socket,
+      head: Buffer.alloc(0),
+    });
     expect(socket.destroyed).toBe(false);
     await lifecycle.startup();
     await lifecycle.beforeShutdown();

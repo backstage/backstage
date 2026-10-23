@@ -76,8 +76,8 @@ URL itself. Other paths match exactly and are case-sensitive. Query strings are
 ignored when matching; trailing slashes are significant. Path patterns are not
 supported. The first request can be a WebSocket upgrade.
 
-The handler receives Node's upgrade request, a raw `Duplex` socket, buffered
-`head`, and an authentication context. Use a WebSocket library of your choice
+The handler receives one object containing Node's upgrade `request`, a raw
+`Duplex` `socket`, buffered `head`, and authentication metadata. Use a WebSocket library of your choice
 to complete the handshake, or forward the upgrade upstream. For example, with
 `ws`:
 
@@ -86,7 +86,7 @@ const server = new WebSocketServer({ noServer: true });
 
 http.addWebSocketHandler({
   path: '/events',
-  handler(request, socket, head, context) {
+  handler({ request, socket, head, credentials, authProtocol }) {
     server.handleUpgrade(request, socket, head, connection => {
       server.emit('connection', connection, request);
     });
@@ -96,8 +96,8 @@ http.addWebSocketHandler({
 
 `WebSocketServer` comes from `ws`. The core router has no dependency on your
 WebSocket library. Your handler owns the handshake and protocol selection.
-`context.credentials` contains verified Backstage credentials, and
-`context.authProtocol` contains the offered protocol value that authenticated
+`credentials` contains verified Backstage credentials, and
+`authProtocol` contains the offered protocol value that authenticated
 the caller, when authentication used that header. The router does not select
 or echo a protocol on your behalf.
 
@@ -106,7 +106,7 @@ For forwarding, pass the same upgrade arguments to your WebSocket proxy:
 ```ts
 http.addWebSocketHandler({
   path: '/proxy',
-  handler(request, socket, head) {
+  handler({ request, socket, head }) {
     proxy.ws(request, socket, head);
   },
 });
@@ -194,7 +194,8 @@ accepted connections when the plugin shuts down.
 Upgrades bypass Express middleware, including rate limiting and CORS. Apart from
 the cookie-origin check, origin policy remains the handler's responsibility.
 Root-level WebSocket registrations use the same `{ path, handler }` shape but
-have no plugin authentication policy; root handlers must authenticate callers.
+have no plugin authentication policy; their handler object contains only
+`request`, `socket`, and `head`. Root handlers must authenticate callers.
 
 Registering the first route installs one server-level upgrade listener. Duplicate
 paths are rejected, and unmatched upgrades receive a 404 response. When no routes

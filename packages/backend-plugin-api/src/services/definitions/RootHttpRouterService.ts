@@ -26,11 +26,11 @@ import type { Duplex } from 'node:stream';
  */
 export interface RootHttpRouterServiceWebSocketOptions {
   path: string;
-  handler(
-    request: IncomingMessage,
-    socket: Duplex,
-    head: Buffer,
-  ): void | Promise<void>;
+  handler(context: {
+    request: IncomingMessage;
+    socket: Duplex;
+    head: Buffer;
+  }): void | Promise<void>;
 }
 
 /**

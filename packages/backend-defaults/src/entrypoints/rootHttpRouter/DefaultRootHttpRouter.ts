@@ -167,7 +167,7 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
           return;
         }
         Promise.resolve()
-          .then(() => matchedHandler(request, socket, head))
+          .then(() => matchedHandler({ request, socket, head }))
           .catch(onError);
       });
     }
