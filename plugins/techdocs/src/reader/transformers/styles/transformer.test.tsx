@@ -18,6 +18,7 @@ import { renderHook } from '@testing-library/react';
 import { useStylesTransformer } from './transformer';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
+import postcss from 'postcss';
 
 describe('Transformers > Styles', () => {
   it('should return a function that injects all styles into a given dom element', () => {
@@ -50,6 +51,24 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent(
       '/*================== Palette ==================*/',
     );
+  });
+
+  it('should not emit CSS a parser would silently drop', () => {
+    const { result } = renderHook(() => useStylesTransformer());
+    const dom = document.createElement('html');
+    dom.innerHTML = '<head></head>';
+    result.current(dom);
+
+    const style = dom.querySelector('head > style');
+    const stray = postcss
+      .parse(style!.textContent!)
+      .nodes.filter(node => node.type === 'decl')
+      .map(
+        node =>
+          `${node.prop} at line ${node.source?.start?.line} of the generated stylesheet`,
+      );
+
+    expect(stray).toEqual([]);
   });
 
   it('should use headers relative font-size value as the factor for the md-typeset variable', () => {
