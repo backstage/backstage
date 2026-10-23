@@ -77,25 +77,51 @@ ignored when matching; trailing slashes are significant. Path patterns are not
 supported. The first request can be a WebSocket upgrade.
 
 The handler receives one object containing Node's upgrade `request`, a raw
-`Duplex` `socket`, buffered `head`, and authentication metadata. Use a WebSocket library of your choice
-to complete the handshake, or forward the upgrade upstream. For example, with
+`Duplex` `socket`, buffered `head`, and authentication metadata. Use a WebSocket
+library of your choice to complete the handshake, or forward the upgrade upstream. For example, with
 `ws`:
 
 ```ts
-const server = new WebSocketServer({ noServer: true });
+import { WebSocketServer } from 'ws';
+
+// Inside plugin initialization, with http, lifecycle, and logger services.
+const server = new WebSocketServer({
+  noServer: true,
+  handleProtocols: protocols =>
+    protocols.has('events.v1') ? 'events.v1' : false,
+});
 
 http.addWebSocketHandler({
   path: '/events',
-  handler({ request, socket, head, credentials, authProtocol }) {
+  handler({ request, socket, head }) {
     server.handleUpgrade(request, socket, head, connection => {
-      server.emit('connection', connection, request);
+      connection.on('error', error => {
+        logger.warn('WebSocket connection failed', error);
+        connection.terminate();
+      });
+      connection.on('message', (data, isBinary) => {
+        connection.send(data, { binary: isBinary });
+      });
     });
   },
 });
+
+lifecycle.addShutdownHook(() => {
+  for (const connection of server.clients) {
+    connection.terminate();
+  }
+  server.close();
+});
 ```
 
-`WebSocketServer` comes from `ws`. The core router has no dependency on your
-WebSocket library. Your handler owns the handshake and protocol selection.
+Add your chosen WebSocket library to your plugin's dependencies. In this example,
+`http`, `lifecycle`, and `logger` come from `coreServices.httpRouter`,
+`coreServices.lifecycle`, and `coreServices.logger`. The plugin owns its WebSocket
+server, connection callbacks, protocol selection, and cleanup. The router only
+dispatches authenticated upgrades and owns the underlying transport lifetime.
+The example selects `events.v1` when offered; define protocol requirements for
+your own plugin.
+
 `credentials` contains verified Backstage credentials, and
 `authProtocol` contains the offered protocol value that authenticated
 the caller, when authentication used that header. The router does not select
@@ -148,46 +174,6 @@ A disallowed cookie origin receives HTTP 403.
 WebSocket policy. Explicit `user` and `user-cookie` policies still apply.
 `addAuthPolicy` remains specific to Express HTTP routes and does not change
 WebSocket policies.
-
-### Optional `ws` adapter
-
-`@backstage/backend-defaults/httpRouter` exports `createWebSocketHandler` for
-plugins that want a managed `ws` handshake. It returns a raw handler for the same
-router API:
-
-```ts
-import { createWebSocketHandler } from '@backstage/backend-defaults/httpRouter';
-
-http.addWebSocketHandler({
-  path: '/events',
-  handler: createWebSocketHandler({
-    lifecycle,
-    logger,
-    protocols: ['events.v1'],
-    verifyClient(request, context) {
-      checkOrigin(request);
-    },
-    onConnection(connection, request, context) {
-      connection.on('message', (data, isBinary) => {
-        connection.send(data, { binary: isBinary });
-      });
-    },
-  }),
-});
-```
-
-Pass your plugin's `coreServices.lifecycle` and `coreServices.logger` instances.
-`checkOrigin` represents your plugin's origin policy. The adapter validates and
-completes the handshake and delivers a connected `ws` socket to `onConnection`.
-It selects the first configured protocol that the client offers. If the client
-offers protocols and none match, the upgrade is rejected with HTTP 400.
-With no configured protocols, clients must omit `Sec-WebSocket-Protocol`.
-Offered values are never automatically selected by the adapter.
-
-`verifyClient` is required and runs before acceptance. Throw or reject to close
-the connection. Thrown errors and rejected promises in `onConnection` terminate
-the accepted connection. The adapter handles connection errors and terminates
-accepted connections when the plugin shuts down.
 
 ### Routing and lifecycle
 

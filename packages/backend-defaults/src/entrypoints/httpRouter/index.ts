@@ -16,7 +16,3 @@
 
 export { httpRouterServiceFactory } from './httpRouterServiceFactory';
 export * from './http';
-export {
-  createWebSocketHandler,
-  type WebSocketHandlerOptions,
-} from './createWebSocketHandler';
