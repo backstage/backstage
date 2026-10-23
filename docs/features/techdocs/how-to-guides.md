@@ -489,7 +489,7 @@ Once the docker image is ready, push it to DockerHub.
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker' # Alternatives - 'local'
+    runIn: 'docker' # Alternatives - 'local', 'kubernetes'
     dockerImage: dockerHub_Username/repositoryName:tagName
     pullImage: true
   publisher:
@@ -691,6 +691,102 @@ backend.start();
 You may need to add the `@backstage/plugin-techdocs-node` package to your backend `package.json` if it's not been imported already.
 
 :::
+
+## How to run TechDocs builds as Kubernetes Jobs
+
+When Backstage runs in Kubernetes, the `'docker'` generator needs a Docker daemon in the Backstage pod, and the `'local'` generator needs MkDocs installed in the Backstage image. With `techdocs.generator.runIn` set to `'kubernetes'`, each build instead runs the techdocs-container image as a Kubernetes Job.
+
+Backstage and the build Jobs share a PersistentVolumeClaim. Backstage prepares the documentation source under `backend.workingDirectory` on that volume, the Job mounts the same directories and runs MkDocs, and Backstage streams the Job's logs and publishes the generated site as usual.
+
+:::tip
+
+If you deploy Backstage with the [Backstage Helm chart](https://github.com/backstage/charts/tree/main/charts/backstage), set `techdocs.kubernetesRunner.enabled` instead of following these steps. The chart creates the volume and permissions, and configures Backstage for you.
+
+:::
+
+To run TechDocs builds as Kubernetes Jobs:
+
+1. Create a PersistentVolumeClaim in the namespace the build Jobs will run in, usually the Backstage namespace. Its access mode decides where build Jobs can run:
+
+   - `ReadWriteMany`, such as Amazon EFS, Google Filestore, Azure Files or NFS: build Jobs can run on any node.
+   - `ReadWriteOnce` with node-local storage, such as local-path: Kubernetes schedules Backstage and the build Jobs on the volume's node.
+   - `ReadWriteOnce` with network block storage, such as Amazon EBS: set `nodeAffinity` to `'required'` in step 4, and run a single Backstage replica.
+
+   The Backstage process must be able to create directories on the volume. Block storage volumes start out owned by `root`, so set the Backstage pod's `securityContext.fsGroup` to the group of the Backstage user. NFS servers ignore `fsGroup`, so the export itself must be writable by that user, which `root_squash` exports often aren't.
+
+2. Mount the PersistentVolumeClaim in the Backstage container, and set `backend.workingDirectory` to the mount path. Expose the node name to Backstage so build Jobs can be scheduled next to it:
+
+   ```yaml
+   containers:
+     - name: backstage
+       env:
+         - name: NODE_NAME
+           valueFrom:
+             fieldRef:
+               fieldPath: spec.nodeName
+       volumeMounts:
+         - name: techdocs-work
+           mountPath: /var/backstage/work
+   volumes:
+     - name: techdocs-work
+       persistentVolumeClaim:
+         claimName: techdocs-work
+   ```
+
+3. Allow the Backstage service account to manage Jobs and read their logs in that namespace:
+
+   ```yaml
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: Role
+   metadata:
+     name: backstage-techdocs-runner
+   rules:
+     - apiGroups: ['batch']
+       resources: ['jobs']
+       verbs: ['create', 'get', 'delete']
+     - apiGroups: ['']
+       resources: ['pods']
+       verbs: ['list']
+     - apiGroups: ['']
+       resources: ['pods/log']
+       verbs: ['get']
+   ```
+
+   Bind the Role to the service account with a RoleBinding. Before its first build, Backstage checks these permissions and lists any that are missing.
+
+   Kubernetes RBAC can't limit these permissions to TechDocs Jobs, so Backstage can create and delete any Job in the namespace. Backstage only deletes Jobs it created.
+
+4. Configure TechDocs in your `app-config.yaml` file:
+
+   ```yaml
+   backend:
+     workingDirectory: /var/backstage/work
+   techdocs:
+     builder: 'local'
+     generator:
+       runIn: 'kubernetes'
+       kubernetes:
+         namespace: backstage
+         volumeClaimName: techdocs-work
+         workRoot: /var/backstage/work
+         nodeName: ${NODE_NAME}
+   ```
+
+   For the other options, such as build timeouts, resources and image pull Secrets, see the [Kubernetes configuration reference](./configuration.md#kubernetes).
+
+Build pods don't receive a service account token, use the `RuntimeDefault` seccomp profile, can't escalate privileges, and drop all Linux capabilities. They run as the same user and group as the Backstage process, so Backstage can read and clean up the generated files. These settings meet the `restricted` [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/), unless Backstage runs as `root` or the build runs as the image's default user. In those cases, a namespace that enforces the `restricted` standard rejects the build pod.
+
+Kubernetes deletes finished build Jobs after `ttlSecondsAfterFinished`. Failed Jobs are kept until then too, so you can inspect them with `kubectl describe`. Jobs that Backstage stops itself, for example after an image pull error, are deleted right away. If Backstage stops during a build, for example because its node failed, the build directory stays on the shared volume. Backstage removes such directories once they are older than twice `activeDeadlineSeconds`, or one hour, whichever is longer.
+
+If a build fails, the error shown in TechDocs usually points to the cause:
+
+| Error                                                                 | Cause                                                                                                                                                                                                                                                                                                              |
+| :-------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Missing Kubernetes permissions in namespace ...`                     | The Role from step 3 is missing, or isn't bound to the Backstage service account in that namespace.                                                                                                                                                                                                                |
+| `... is not on the shared volume mounted at ...`                      | `backend.workingDirectory` isn't under `workRoot`.                                                                                                                                                                                                                                                                 |
+| `Kubernetes job ... could not start: ImagePullBackOff`                | The build image can't be pulled. Check `techdocs.generator.dockerImage` and `imagePullSecrets`.                                                                                                                                                                                                                    |
+| `Kubernetes job ... failed: DeadlineExceeded`                         | The build took longer than `activeDeadlineSeconds`. If the error says the pod never started, it includes the scheduling reason. For other causes, such as a `Multi-Attach` volume error, check the pod's events. If no pod was created, check the Job's events for Pod Security Admission or ResourceQuota errors. |
+| `Missing required config value at 'techdocs.generator.kubernetes...'` | A required option is missing. Backstage checks the `techdocs.generator.kubernetes` options at startup.                                                                                                                                                                                                             |
 
 ## How to use other mkdocs plugins?
 

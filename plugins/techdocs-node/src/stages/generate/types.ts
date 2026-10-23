@@ -24,7 +24,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  * Determines where the generator will be run. `'docker'` is a shorthand for running the generator in a container.
  * If no {@link GeneratorOptions.containerRunner} is specified, the internal `DockerContainerRunner` will be used.
  */
-export type GeneratorRunInType = 'docker' | 'local';
+export type GeneratorRunInType = 'docker' | 'local' | 'kubernetes';
 
 /**
  * Options for building generators
@@ -52,6 +52,52 @@ export type ContainerRunnerPullOptions = {
   [key: string]: unknown;
 };
 
+export type KubernetesOptions = {
+  /**
+   * the namespace in which the job is run (typically "backstage")
+   */
+  namespace?: string;
+  /**
+   * Name of the shared PVC claim between Backstage and K8s
+   */
+  volumeClaimName: string;
+  /**
+   * must match where the PVC is mounted in the Backstage pod, which is normally backend.workingDirectory.
+   */
+  workRoot: string;
+  /**
+   * Name of the node Backstage runs on, used to schedule build Jobs next to it.
+   */
+  nodeName?: string;
+  /**
+   * How strongly build Jobs are scheduled onto `nodeName`. Defaults to "preferred", and has no effect without `nodeName`.
+   */
+  nodeAffinity?: 'preferred' | 'required' | 'none';
+  /**
+   * Names of Secrets used to pull the build image from a private registry. `pullOptions` is not used by this runner.
+   */
+  imagePullSecrets?: string[];
+  /**
+   * Maximum duration of a build before it is stopped. Defaults to 600.
+   */
+  activeDeadlineSeconds?: number;
+  /**
+   * How long finished build Jobs are kept before Kubernetes deletes them. Defaults to 300.
+   */
+  ttlSecondsAfterFinished?: number;
+  /**
+   * Minimum time between checks for build directories left on the shared volume by interrupted builds. Defaults to 600.
+   */
+  cleanupIntervalSeconds?: number;
+  /**
+   * Resource requests and limits for the build container, e.g. `{ requests: { cpu: '250m', memory: '512Mi' } }`.
+   */
+  resources?: {
+    requests?: Record<string, string>;
+    limits?: Record<string, string>;
+  };
+};
+
 /**
  * The techdocs generator configurations options.
  */
@@ -59,6 +105,7 @@ export type GeneratorConfig = {
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
+  kubernetes?: KubernetesOptions;
   pullOptions?: ContainerRunnerPullOptions;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
