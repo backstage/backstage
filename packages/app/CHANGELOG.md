@@ -1,5 +1,12 @@
 # example-app
 
+## 0.0.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.36.8-next.0
+
 ## 0.0.40
 
 ### Patch Changes
