@@ -42,6 +42,30 @@ export interface Config {
      */
     namespacedToolNames?: boolean;
 
+    /**
+     * Protection against DNS rebinding attacks on the MCP endpoints.
+     *
+     * Requests that carry an `Origin` header are rejected unless the origin
+     * is the origin of `app.baseUrl` or `backend.baseUrl`, or is listed in
+     * `allowedOrigins`. Requests without an `Origin` header, which
+     * non-browser MCP clients send, are not affected.
+     */
+    dnsRebindingProtection?: {
+      /**
+       * Additional origins that may call the MCP endpoints, for example a
+       * browser-based MCP client, such as "https://mcp-client.example.com".
+       */
+      allowedOrigins?: string[];
+
+      /**
+       * When set, requests are rejected unless the hostname in their `Host`
+       * header is in this list. Ports are ignored. Only set this if you know
+       * every host name that the backend is reached through, including
+       * internal ones behind a proxy or load balancer.
+       */
+      allowedHosts?: string[];
+    };
+
     tracing?: {
       capture?: {
         /**

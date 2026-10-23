@@ -254,6 +254,29 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
+## DNS Rebinding Protection
+
+The [MCP specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#security-warning) requires servers to validate the `Origin` header to prevent DNS rebinding attacks. A request that carries an `Origin` header is rejected with `403 Forbidden` unless it comes from the origin of `app.baseUrl` or `backend.baseUrl`. Requests without an `Origin` header are not affected, which covers CLI and IDE MCP clients since they don't send one.
+
+If you use a browser-based MCP client served from another origin, add that origin to the allow list:
+
+```yaml title="app-config.yaml"
+mcpActions:
+  dnsRebindingProtection:
+    allowedOrigins:
+      - https://mcp-client.example.com
+```
+
+You can also reject requests whose `Host` header isn't one of the host names you list. Ports are ignored. This check is off by default because a backend behind a proxy or load balancer often receives an internal host name, so list every host name that the backend is reached through:
+
+```yaml title="app-config.yaml"
+mcpActions:
+  dnsRebindingProtection:
+    allowedHosts:
+      - backstage.example.com
+      - backstage-backend.internal
+```
+
 ## Configuring MCP Clients
 
 The MCP server uses the **Streamable HTTP** protocol.
