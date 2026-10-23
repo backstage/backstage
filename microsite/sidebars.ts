@@ -396,6 +396,12 @@ export default {
             'features/techdocs/concepts',
             'features/techdocs/addons',
             'features/techdocs/architecture',
+            {
+              type: 'category',
+              label: 'Engines',
+              link: { type: 'doc', id: 'features/techdocs/engines' },
+              items: ['features/techdocs/engines-zensical'],
+            },
             'features/techdocs/extensions',
             'features/techdocs/creating-and-publishing',
             'features/techdocs/configuration',
