@@ -20,6 +20,7 @@ export const changelog_0_12_0: ChangelogProps[] = [
     components: [],
     version: '0.12.0',
     prs: ['32723'],
+    tokens: true,
     description: `**BREAKING**: Removed gray scale tokens and renamed background surface tokens to neutral tokens
 
   The \`--bui-gray-1\` through \`--bui-gray-8\` tokens have been removed. The \`--bui-bg-surface-*\` and \`--bui-bg-neutral-on-surface-*\` tokens have been replaced by a unified \`--bui-bg-neutral-*\` scale.`,
@@ -151,6 +152,7 @@ Note: Provider components use \`data-bg\` (values: \`neutral-1\` through \`neutr
     components: [],
     version: '0.12.0',
     prs: ['32837'],
+    tokens: true,
     description: `**BREAKING:** Renamed, added, and removed CSS tokens.
 
   - Renamed \`--bui-bg-neutral-0\` to \`--bui-bg-app\`.
@@ -252,6 +254,7 @@ Remove any references to \`--bui-border-hover\`, \`--bui-border-pressed\`, and \
     components: ['link'],
     version: '0.12.0',
     prs: ['32608'],
+    tokens: true,
     description: `**BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
 
   The following color tokens have been removed:
@@ -324,6 +327,7 @@ If you're using status foreground colors on colored backgrounds, update to the n
     components: [],
     version: '0.12.0',
     prs: ['32825'],
+    tokens: true,
     description: `Fixed dark theme \`--bui-fg-secondary\` and \`--bui-fg-disabled\` tokens using black-based \`oklch(0% ...)\` instead of white-based \`oklch(100% ...)\`, making secondary and disabled text visible on dark backgrounds.`,
 
     commitSha: '44877e4',
@@ -414,6 +418,7 @@ If you're using status foreground colors on colored backgrounds, update to the n
     components: ['alert'],
     version: '0.12.0',
     prs: ['32520'],
+    tokens: true,
     description: `Added new \`Alert\` component with support for status variants (info, success, warning, danger), icons, loading states, and custom actions.
 
   Updated status color tokens for improved contrast and consistency across light and dark themes:

@@ -1,0 +1,1 @@
+export { ColorTokenTable } from './ColorTokenTable';
