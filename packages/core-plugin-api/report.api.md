@@ -69,6 +69,7 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/frontend-plugin-api';
 import { SessionState } from '@backstage/frontend-plugin-api';
+import { SignOutOptions } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/frontend-plugin-api';
 import { storageApiRef } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/frontend-plugin-api';
@@ -528,6 +529,8 @@ export { SessionState };
 export type SignInPageProps = PropsWithChildren<{
   onSignInSuccess(identityApi: IdentityApi_2): void;
 }>;
+
+export { SignOutOptions };
 
 export { StorageApi };
 
