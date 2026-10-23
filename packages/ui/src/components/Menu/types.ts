@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type {
   MenuTriggerProps as RAMenuTriggerProps,
   MenuItemProps as RAMenuItemProps,
@@ -98,7 +99,10 @@ export type MenuItemOwnProps = {
 /** @public */
 export interface MenuItemProps
   extends MenuItemOwnProps,
-    Omit<RAMenuItemProps, keyof MenuItemOwnProps | 'render'> {}
+    Omit<RAMenuItemProps, keyof MenuItemOwnProps | 'render' | 'routerOptions'> {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUINavigationOptions;
+}
 
 /** @public */
 export type MenuListBoxItemOwnProps = {
@@ -109,7 +113,13 @@ export type MenuListBoxItemOwnProps = {
 /** @public */
 export interface MenuListBoxItemProps
   extends MenuListBoxItemOwnProps,
-    Omit<RAListBoxItemProps, keyof MenuListBoxItemOwnProps | 'render'> {}
+    Omit<
+      RAListBoxItemProps,
+      keyof MenuListBoxItemOwnProps | 'render' | 'routerOptions'
+    > {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUINavigationOptions;
+}
 
 /** @public */
 export type MenuSectionOwnProps = {

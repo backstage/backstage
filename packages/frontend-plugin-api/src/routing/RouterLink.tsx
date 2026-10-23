@@ -1,0 +1,93 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { AnchorHTMLAttributes, forwardRef } from 'react';
+import { isExternalTarget } from '@internal/frontend';
+import { useHasNavigationProvider, useNavigation } from './NavigationProvider';
+import { appHistoryApiRef } from './AppHistoryApi';
+import { useApiHolder } from '../apis/system';
+import type { AppNavigateOptions } from './AppLocation';
+
+/**
+ * Props for {@link RouterLink}.
+ *
+ * @public
+ */
+export interface RouterLinkProps
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
+    AppNavigateOptions {
+  /** Authored target; relative paths use the nearest routing adapter. */
+  href: string;
+}
+
+/**
+ * An unstyled anchor for composing routing into UI components.
+ *
+ * Use the Backstage UI Link for standard UI links. This primitive forwards
+ * anchor props and refs, and can be supplied through React Aria's render prop.
+ * Uses contextual navigation, including relative targets inside adapters.
+ * Outside adapters, paths must start with `/`, excluding the deployment basename.
+ * Empty/query/hash targets and external URLs are supported. Framework hooks
+ * such as useAppNavigate remain strict regardless of surrounding adapters.
+ * External URLs, modified clicks, downloads, and other targets retain native
+ * browser behavior.
+ *
+ * @public
+ */
+export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  function RouterLinkComponent(props, ref) {
+    const { href: to, replace, state, onClick, children, ...rest } = props;
+    const { createHref, navigate } = useNavigation();
+    const hasNavigationProvider = useHasNavigationProvider();
+    const appHistory = useApiHolder().get(appHistoryApiRef);
+    const href = createHref(to);
+
+    return (
+      <a
+        {...rest}
+        ref={ref}
+        href={href}
+        onClick={event => {
+          onClick?.(event);
+          if (
+            event.defaultPrevented ||
+            (!appHistory && !hasNavigationProvider) ||
+            isExternalTarget(to) ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            (event.currentTarget.target &&
+              event.currentTarget.target.toLowerCase() !== '_self') ||
+            event.currentTarget.hasAttribute('download')
+          ) {
+            return;
+          }
+          event.preventDefault();
+          navigate(
+            to,
+            replace !== undefined || state !== undefined
+              ? { replace, state }
+              : undefined,
+          );
+        }}
+      >
+        {children}
+      </a>
+    );
+  },
+);

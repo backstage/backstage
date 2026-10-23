@@ -38,7 +38,6 @@ export type RouteInfo = {
 export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   caseSensitive: false,
   path: '*',
-  element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
 };
 
@@ -51,8 +50,7 @@ export function extractRouteInfoFromAppNode(
   // This tracks the parents of each route ref. To find the full path of any route ref you traverse
   // upwards in this tree and substitute each route ref for its route path along then way.
   const routeParents = new Map<RouteRef, RouteRef | undefined>();
-  // This route object tree is passed to react-router in order to be able to look up the current route
-  // ref or extension/source based on our current location.
+  // One route tree supplies matching, route refs and extension mount ancestry.
   const routeObjects = new Array<BackstageRouteObject>();
   // This tracks all resolved route aliases. By storing and re-using the resolutions here we make sure that it's not
   // possible to pass an aliased route ref directly to the resolver, e.g. `useRouteRef(createRouteRef({ aliasFor: 'example.root' }))`
@@ -89,10 +87,12 @@ export function extractRouteInfoFromAppNode(
     if (routePath !== undefined) {
       currentObj = {
         path: routePath,
-        element: 'mounted',
         routeRefs: new Set<RouteRef>(),
         caseSensitive: false,
-        children: [MATCH_ALL_ROUTE],
+        children:
+          current.instance?.getData(coreExtensionData.routePath) === '/'
+            ? []
+            : [MATCH_ALL_ROUTE],
         appNode: current,
       };
       parentChildren.push(currentObj);

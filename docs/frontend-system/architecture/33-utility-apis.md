@@ -17,7 +17,7 @@ The following diagram shows a hypothetical application, which depends on two plu
 
 ## Extension structure
 
-All utility APIs implement the `createApiExtension.factoryDataRef` output data type, and must attach exclusively to the `core` extension's `apis` input no matter who provided them. These defaults are provided out of the box by the `createApiExtension` framework function.
+All utility APIs implement the `ApiBlueprint.dataRefs.factory` output data type. They must attach exclusively to the `core` extension's `apis` input, no matter who provided them. The framework's `ApiBlueprint` sets both defaults out of the box.
 
 Since utility APIs are extensions, they can also have inputs in advanced use cases. This is occasionally useful for complex APIs that can themselves be extended with additional programmatic functionality by adopters.
 
