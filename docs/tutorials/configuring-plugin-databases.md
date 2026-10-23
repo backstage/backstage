@@ -117,6 +117,45 @@ backend:
     prefix: 'example_prefix_'
 ```
 
+### PostgreSQL Schema Division Per Plugin
+
+PostgreSQL can use `pluginDivisionMode: schema` to keep plugin tables in
+separate schemas in a shared database. A plugin can override the global division
+mode when it needs to use a separate database with an existing schema layout.
+
+In this example, most plugins use schemas in the shared `backstage` database.
+The `external-data` plugin uses its separately managed `external_data` database
+without a plugin schema search path.
+
+```yaml
+backend:
+  database:
+    client: pg
+    pluginDivisionMode: schema
+    connection:
+      host: some.example-pg-instance.tld
+      user: postgres
+      password: password
+      database: backstage
+    plugin:
+      external-data:
+        pluginDivisionMode: database
+        ensureExists: false
+        connection:
+          host: external.example-pg-instance.tld
+          database: external_data
+```
+
+The plugin-level `pluginDivisionMode` takes precedence over the global setting.
+If a plugin uses schema mode, its connection must include a database name.
+
+:::caution
+Setting `ensureExists: false` is recommended for separately managed databases.
+Otherwise, Backstage attempts to create the plugin database using the base
+database connection rather than the plugin connection. Changing the division
+mode does not migrate data or modify existing database schemas.
+:::
+
 ### Connection Configuration Per Plugin
 
 Both `auth` and `catalog` use connection configuration with different
