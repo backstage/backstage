@@ -73,7 +73,7 @@ jobs:
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.22.1' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
         uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
