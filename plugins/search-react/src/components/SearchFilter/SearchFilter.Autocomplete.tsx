@@ -66,12 +66,13 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
-  const filterValueWithLabel = ensureFilterValueWithLabel(
-    filters[name] as string | string[] | undefined,
-  );
+  const rawFilterValue = filters[name] as string | string[] | undefined;
+  // Memoize on the raw context value: MUI resets the input of a multi-select
+  // Autocomplete whenever `value` changes identity, so building a new array on
+  // every render would wipe each keystroke once a value is selected.
   const filterValue = useMemo(
-    () => filterValueWithLabel || (multiple ? [] : null),
-    [filterValueWithLabel, multiple],
+    () => ensureFilterValueWithLabel(rawFilterValue) || (multiple ? [] : null),
+    [rawFilterValue, multiple],
   );
 
   // Set new filter values on input change.
