@@ -1,0 +1,74 @@
+{
+  "name": "@backstage/cli-module-oxlint",
+  "version": "0.1.0",
+  "description": "CLI module for oxlint integration in Backstage CLI",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs.js"
+      },
+      "./oxlint-factory": "./config/oxlint-factory.cjs",
+      "./package.json": "./package.json"
+    }
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-oxlint"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0 <23.0.0-0 || >=24.0.0 <25.0.0-0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./oxlint-factory": "./config/oxlint-factory.cjs",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "bin": "bin/backstage-cli-module-oxlint",
+  "files": [
+    "bin",
+    "dist",
+    "config"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "node bin/backstage-cli-module-oxlint package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@manypkg/get-packages": "^3.1.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "cleye": "^2.7.0",
+    "fast-xml-parser": "^5.11.2",
+    "minimatch": "^10.2.6",
+    "oxlint": "^1.87.0",
+    "oxlint-tsgolint": "^7.0.2004"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  },
+  "peerDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

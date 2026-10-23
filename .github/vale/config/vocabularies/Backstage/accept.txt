@@ -5,6 +5,8 @@ ACLs
 addon
 addons
 ADRs
+agentic
+Agentic
 airbrake
 Airbrake
 Airbrakes
@@ -59,6 +61,7 @@ camelCase
 CDNs
 Chai
 Chainguard
+Checkstyle
 changeset
 changesets
 chanwit
@@ -231,6 +234,7 @@ JaCoCo
 JavaScript
 jenkins
 Jira
+JUnit
 jq
 js
 json
@@ -424,6 +428,7 @@ requestors
 rerender
 rerenders
 resizable
+restaging
 resourcequotas
 retryable
 reusability
@@ -627,3 +632,4 @@ zoomable
 zsh
 Zensical
 zensical
+oxlint
