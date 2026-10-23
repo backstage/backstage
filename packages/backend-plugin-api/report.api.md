@@ -447,13 +447,16 @@ export interface HttpRouterServiceWebSocketContext {
   authProtocol?: string;
   // (undocumented)
   credentials: BackstageCredentials;
+  // (undocumented)
+  head: Buffer;
+  // (undocumented)
+  request: IncomingMessage;
+  // (undocumented)
+  socket: Duplex;
 }
 
 // @public
 export type HttpRouterServiceWebSocketHandler = (
-  request: IncomingMessage,
-  socket: Duplex,
-  head: Buffer,
   context: HttpRouterServiceWebSocketContext,
 ) => void | Promise<void>;
 
@@ -631,11 +634,11 @@ export interface RootHttpRouterService {
 // @public
 export interface RootHttpRouterServiceWebSocketOptions {
   // (undocumented)
-  handler(
-    request: IncomingMessage,
-    socket: Duplex,
-    head: Buffer,
-  ): void | Promise<void>;
+  handler(context: {
+    request: IncomingMessage;
+    socket: Duplex;
+    head: Buffer;
+  }): void | Promise<void>;
   // (undocumented)
   path: string;
 }
