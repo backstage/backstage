@@ -234,7 +234,7 @@ The scaffolder plugin also exposes permissions that can restrict access to tasks
 Backend modules can add custom rules for the `scaffolder-task` resource through
 `coreServices.permissionsRegistry.addPermissionRules`. These rules are evaluated
 for individual task access and task list filtering. Registering a rule does not
-grant access: the permission policy must return a condition using that rule.
+grant access - the permission policy must return a condition using that rule.
 Read and cancellation permissions remain separate.
 
 The following is a simple example of how to do this:
