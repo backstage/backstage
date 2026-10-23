@@ -263,9 +263,13 @@ export async function executeOxlint(
     .filter(group => !group.configPath)
     .flatMap(group => group.directories);
   if (unconfigured.length) {
+    // Cap the list so large repositories get a readable message
+    const shown = unconfigured.slice(0, 5).join(', ');
+    const remaining = unconfigured.length - Math.min(unconfigured.length, 5);
     throw new Error(
-      `No Oxlint config file found for ${unconfigured.join(', ')}; ` +
-        'add a .oxlintrc.js beside the package.json, as described in the @backstage/cli-module-oxlint README',
+      `No Oxlint config file found for ${unconfigured.length} target(s): ${shown}` +
+        (remaining > 0 ? ` (and ${remaining} more)` : '') +
+        '; add a .oxlintrc.js beside the package.json, as described in the @backstage/cli-module-oxlint README',
     );
   }
   if (groups.length > 1 && XML_FORMATS.has(options.format)) {

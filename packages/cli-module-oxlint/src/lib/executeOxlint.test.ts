@@ -270,12 +270,39 @@ describe('Oxlint through runCli subprocess', () => {
 
       expect(result.status).toBe(1);
       expect(result.stderr).toContain(
-        `No Oxlint config file found for ${unconfigured}`,
+        `No Oxlint config file found for 1 target(s): ${unconfigured}`,
       );
+      expect(result.stderr).not.toContain('(and ');
       expect(result.stdout).toBe('');
     } finally {
       rmSync(workspace.dir, { recursive: true, force: true });
       rmSync(unconfigured, { recursive: true, force: true });
+    }
+  });
+
+  it('caps the unconfigured target list in the error message', () => {
+    const workspace = createWorkspace();
+    const root = mkdtempSync(join(tmpdir(), 'oxlint-unconfigured-many-'));
+    try {
+      const dirs = Array.from({ length: 6 }, (_, index) =>
+        join(root, `pkg-${index}`),
+      );
+      for (const dir of dirs) {
+        mkdirSync(dir, { recursive: true });
+      }
+      const result = runDispatcher(workspace, {
+        targets: dirs.map(dir => ({ configDir: dir, directories: [dir] })),
+      });
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(
+        'No Oxlint config file found for 6 target(s):',
+      );
+      expect(result.stderr).toContain('(and 1 more)');
+      expect(result.stderr).not.toContain('pkg-5');
+    } finally {
+      rmSync(workspace.dir, { recursive: true, force: true });
+      rmSync(root, { recursive: true, force: true });
     }
   });
 
