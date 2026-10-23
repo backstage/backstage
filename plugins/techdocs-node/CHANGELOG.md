@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-node
 
+## 2.2.0
+
+### Minor Changes
+
+- 8fd70e3: Added a new `@backstage/plugin-techdocs-node/alpha` entry point with building blocks for implementing additional documentation engines in separate modules: `createDockerContainerRunner`, `createOrUpdateMetadata`, `storeEtagMetadata`, `runCommand`, `validateInputDirectory`, `patchIndexPreBuild`, and the `mkdocs.yml` helpers `MKDOCS_SCHEMA`, `validateMkdocsYaml` and `sanitizeMkdocsYml`. These are alpha and may change in minor releases.
+
 ## 2.1.0
 
 ### Minor Changes
