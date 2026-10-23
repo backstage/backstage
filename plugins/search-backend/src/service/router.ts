@@ -132,7 +132,7 @@ export async function createRouter(
       });
 
       const response = filterResultSet(toSearchResults(resultSet), logger);
-      logger.info("Search request completed", {
+      logger.info('Search request completed', {
         term: query.term,
         filters: query.filters,
         types: query.types,
@@ -142,8 +142,8 @@ export async function createRouter(
         results: response.results.map(({ type, document }) => ({
           type,
           title: document.title,
-          location: document.location
-        }))
+          location: document.location,
+        })),
       });
       res.json(response);
     } catch (error) {
