@@ -85,12 +85,53 @@ Here are some signals that indicate you should consider scaling:
   `catalog.processing.duration` metric).
 - Scaffolder tasks are queuing for longer than expected.
 - Users report slow page loads.
+- NodeJS metrics like event loop lag or garbage collection time are significantly worsening.
 
 Start with horizontal scaling (more replicas) before considering backend
 splitting. It is simpler and handles most growth scenarios.
 
-## Further reading
+## Next steps
 
-For more details on scaling strategies, see the
-[Scaling Backstage Deployments](../../deployment/scaling.md) reference
-documentation.
+You have reached the end of the Deployment Golden Path. Your Backstage instance
+is containerized, backed by a production database, protected by a real
+authentication provider, deployed, monitored, and ready to grow with your
+organization. Here is where to go from here.
+
+### Continue the Golden Path
+
+Running in production is where adoption work begins. The Adoption Golden Path
+picks up from here:
+
+- [Operate after launch](../adoption/007-operate-after-launch.md) sets up a
+  rhythm for feedback, measurement, and prioritization.
+- [Govern ownership](../adoption/008-govern-ownership.md) decides who maintains
+  plugins, entities, and the instance itself.
+- [Scale the catalog](../adoption/009-scale-catalog.md) grows catalog coverage
+  without losing accuracy.
+
+If you plan to build your own functionality on top of your deployment, the
+[Plugins Golden Path](../plugins/index.md) walks through creating a full-stack
+plugin.
+
+### Go deeper on scaling
+
+- [Scaling Backstage Deployments](../../deployment/scaling.md) is the reference
+  documentation for the strategies covered on this page.
+- [Split into multiple backends](../../backend-system/building-backends/01-index.md#split-into-multiple-backends)
+  explains how to run different plugins in separate deployments.
+- [Life of an entity](../../features/software-catalog/life-of-an-entity.md)
+  describes the catalog processing pipeline, which is usually the heaviest
+  workload in a Backstage backend.
+- [Search engines](../../features/search/search-engines.md) covers moving off
+  the default in-memory search engine, which does not share its index between
+  replicas.
+- The [cache](../../backend-system/core-services/cache.md) and
+  [database](../../backend-system/core-services/database.md) core services
+  describe how plugins share state across instances.
+
+### Keep your deployment healthy
+
+- [Keeping Backstage updated](../../getting-started/keeping-backstage-updated.md)
+  explains how to stay current with releases.
+- The [Backstage threat model](../../overview/threat-model.md) describes the
+  security considerations for operators of a production instance.
