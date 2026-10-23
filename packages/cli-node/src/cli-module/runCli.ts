@@ -166,7 +166,9 @@ function createHelpOptions(options: {
       groupRows.push([name, createGroupPreview(children, previewWidth)]);
     } else {
       const { name, variants } = OpaqueCommandLeafNode.toInternal(node);
-      commandRows.push([name, variants[0].command.description]);
+      // The fallback is the default implementation, so it describes the command
+      const described = variants.find(v => !v.command.isEnabled) ?? variants[0];
+      commandRows.push([name, described.command.description]);
     }
   }
   if (includeHelpCommand) {

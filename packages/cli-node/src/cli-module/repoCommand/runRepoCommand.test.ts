@@ -19,6 +19,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { ExitCodeError, run } from '@backstage/cli-common';
 import { Lockfile, PackageGraph } from '../../monorepo';
+import { SuccessCache } from '../../cache';
 import { createPackageHasher } from './packageHash';
 import { runRepoCommand } from './runRepoCommand';
 import { RunInterrupt } from './interrupt';
@@ -339,5 +340,35 @@ describe('runRepoCommand', () => {
     expect(process.stdout.write).toHaveBeenCalledWith(
       expect.stringContaining('1 package(s) failed:\n  a'),
     );
+  });
+
+  it('keeps a package as passed and runs the others when the cache write fails', async () => {
+    jest.spyOn(Lockfile, 'load').mockResolvedValue({} as any);
+    jest
+      .mocked(createPackageHasher)
+      .mockImplementation(() => async (item: any) => item.pkg.packageJson.name);
+    jest
+      .spyOn(SuccessCache.prototype, 'write')
+      .mockRejectedValue(new Error('disk full'));
+    runMock.mockImplementation(() => ({ waitForExit: async () => {} }));
+    jest.mocked(process.stdout.write).mockClear();
+
+    await runRepoCommand(
+      options,
+      { ...context, args: ['--success-cache', '--concurrency', '1'] },
+      new RunInterrupt(jest.fn()),
+    );
+
+    expect(runMock.mock.calls.map(c => c[1].cwd)).toEqual([
+      '/repo/a',
+      '/repo/b',
+    ]);
+    const output = jest
+      .mocked(process.stdout.write)
+      .mock.calls.map(c => String(c[0]))
+      .join('');
+    expect(output).toContain('a: Failed to write to the success cache');
+    expect(output).toContain('b: Failed to write to the success cache');
+    expect(output).not.toContain('package(s) failed');
   });
 });

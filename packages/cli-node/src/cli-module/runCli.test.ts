@@ -617,6 +617,42 @@ describe('runCli', () => {
     expect(helpOutput).not.toContain('Test with Vitest');
   });
 
+  it('describes a toggleable command by its fallback variant in group help', async () => {
+    const modules = [
+      createCliModule({
+        packageJson: { name: '@example/vitest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Vitest',
+            isEnabled: () => true,
+            execute: async () => {},
+          });
+        },
+      }),
+      createCliModule({
+        packageJson: { name: '@example/jest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Jest',
+            execute: async () => {},
+          });
+        },
+      }),
+    ];
+    process.argv = ['node', 'cli', 'package'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await runCli({ modules, name: 'example-cli' });
+
+    const helpOutput = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    expect(helpOutput).toContain('Test with Jest');
+    expect(helpOutput).not.toContain('Test with Vitest');
+  });
+
   it('exits with an error when no toggleable variant is enabled', async () => {
     const mockDir = createMockDirectory();
     mockDir.setContent({

@@ -160,7 +160,15 @@ async function runPackages(
     untrack();
     // Written right away so that progress is kept if the run is interrupted
     if (hash && status === 'PASS') {
-      await cacheSettings?.cache.write([hash]);
+      try {
+        await cacheSettings?.cache.write([hash]);
+      } catch (cacheError) {
+        // The package passed, so a cache failure must not abort the other
+        // packages that are still running
+        reporter.message(
+          `${name}: Failed to write to the success cache, ${cacheError}`,
+        );
+      }
     }
   };
 
