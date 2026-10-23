@@ -117,6 +117,26 @@ describe('MicrosoftGraphClient', () => {
     });
   });
 
+  describe('listSubscriptions', () => {
+    it('follows paging links and returns all subscriptions', async () => {
+      apiClientMock.get
+        .mockResolvedValueOnce({
+          value: [{ id: 'a' }],
+          '@odata.nextLink': 'https://graph.microsoft.com/v1.0/next',
+        })
+        .mockResolvedValueOnce({ value: [{ id: 'b' }] });
+
+      await expect(client.listSubscriptions()).resolves.toEqual([
+        { id: 'a' },
+        { id: 'b' },
+      ]);
+      expect(apiClientMock.api.mock.calls).toEqual([
+        ['/subscriptions'],
+        ['https://graph.microsoft.com/v1.0/next'],
+      ]);
+    });
+  });
+
   describe('createSubscription', () => {
     it('calls MS Graph API with correct params and returns subscription', async () => {
       const fakeSub = { id: 'subid', expirationDateTime: undefined };
@@ -124,6 +144,7 @@ describe('MicrosoftGraphClient', () => {
       const result = await client.createSubscription({
         resource: 'users',
         validationToken: 'token',
+        changeType: 'updated,deleted',
         notificationUrl: 'http://localhost:7007/api/events/http/msgraph',
         expirationDateTime: new Date('2025-01-01T00:00:00.000Z'),
       });

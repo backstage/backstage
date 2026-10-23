@@ -91,20 +91,42 @@ export class MicrosoftGraphClient {
     return subscription;
   }
 
+  /**
+   * Lists all subscriptions visible to the application. With application
+   * permissions, Microsoft Graph only returns subscriptions created by the
+   * calling application.
+   */
+  async listSubscriptions(): Promise<Subscription[]> {
+    const subscriptions: Subscription[] = [];
+    let nextLink: string | undefined = '/subscriptions';
+
+    while (nextLink) {
+      const path: string = nextLink;
+      const page: { value?: Subscription[]; '@odata.nextLink'?: string } =
+        await this.clientCall(ms => ms.api(path).get());
+      subscriptions.push(...(page?.value ?? []));
+      nextLink = page?.['@odata.nextLink'];
+    }
+
+    return subscriptions;
+  }
+
   async createSubscription({
     resource,
     validationToken,
+    changeType,
     notificationUrl,
     expirationDateTime,
   }: {
     resource: string;
+    changeType: string;
     validationToken: string;
     notificationUrl: string;
     expirationDateTime: Date;
   }) {
     const subscription: Subscription = await this.clientCall(ms =>
       ms.api('/subscriptions').post({
-        changeType: 'updated,deleted',
+        changeType,
         notificationUrl,
         resource,
         expirationDateTime: expirationDateTime.toISOString(),

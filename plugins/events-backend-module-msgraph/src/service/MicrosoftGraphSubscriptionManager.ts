@@ -26,12 +26,20 @@ import type {
   MicrosoftGraphSubscriptionsDatabaseClient,
   MicrosoftGraphSubscriptionsDatabaseOperations,
 } from '../database/databaseClient';
-import type { MicrosoftGraphClient } from './MicrosoftGraphClient';
+import { type MicrosoftGraphClient } from './MicrosoftGraphClient';
 import { newValidationToken } from './validationToken';
 import { Subscription } from '@microsoft/microsoft-graph-types';
 import { difference } from 'lodash';
 
 const SUPPORTED_RESOURCES = ['users', 'groups'];
+
+/**
+ * The change types requested for every subscription managed by this module.
+ * Newly created users and groups are notified with the 'updated' change type.
+ *
+ * @internal
+ */
+export const SUBSCRIPTION_CHANGE_TYPE = 'updated,deleted';
 
 /**
  * 29 days is the maximum subscription duration according to
@@ -319,6 +327,7 @@ export class MicrosoftGraphSubscriptionManager {
             await this.msGraphClient.createSubscription({
               resource,
               validationToken,
+              changeType: SUBSCRIPTION_CHANGE_TYPE,
               expirationDateTime: newExpirationDateTime(),
               notificationUrl: this.getNotificationUrl(),
             });
