@@ -72,8 +72,16 @@ describe('validate', () => {
       'src/schema/openapi/generated/router.ts': `export const spec = { ...other };\n`,
     });
     await expect(validate(mockDir.path)).rejects.toThrow(
-      /only plain JSON values are supported. Please run/,
+      /`src\/schema\/openapi\/generated\/router.ts`: Unsupported syntax in the 'spec' export on line 1, only plain JSON values are supported. Please run/,
     );
+
+    mockDir.setContent({
+      'src/schema/openapi.yaml': yaml,
+      'src/schema/openapi/generated/router.ts': {},
+    });
+    const readError = validate(mockDir.path);
+    await expect(readError).rejects.toMatchObject({ code: 'EISDIR' });
+    await expect(readError).rejects.not.toThrow(/Please run/);
 
     mockDir.setContent({ 'src/schema/openapi.yaml': yaml });
     await expect(validate(mockDir.path)).rejects.toThrow(

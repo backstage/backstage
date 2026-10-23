@@ -18,6 +18,14 @@ import fs from 'fs-extra';
 import { ts } from 'ts-morph';
 
 /**
+ * Thrown when the generated file can't be read statically, for example
+ * because it has syntax errors or the `spec` export isn't a plain literal.
+ */
+export class GeneratedSpecSyntaxError extends Error {
+  name = 'GeneratedSpecSyntaxError';
+}
+
+/**
  * Reads the `spec` export from a generated OpenAPI router file without
  * executing it.
  *
@@ -29,9 +37,34 @@ import { ts } from 'ts-morph';
  * @returns The value of the `spec` export, or `undefined` if there is none.
  */
 export async function readGeneratedOpenApiSpec(path: string): Promise<unknown> {
+  const source = await fs.readFile(path, 'utf8');
+
+  // The parser recovers from syntax errors, so check for them separately to
+  // avoid reading a value from a file that wouldn't compile
+  const [diagnostic] =
+    ts.transpileModule(source, {
+      fileName: path,
+      reportDiagnostics: true,
+    }).diagnostics ?? [];
+  if (diagnostic) {
+    const line =
+      diagnostic.file && diagnostic.start !== undefined
+        ? ` on line ${
+            diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
+              .line + 1
+          }`
+        : '';
+    throw new GeneratedSpecSyntaxError(
+      `Syntax error${line}: ${ts.flattenDiagnosticMessageText(
+        diagnostic.messageText,
+        ' ',
+      )}`,
+    );
+  }
+
   const sourceFile = ts.createSourceFile(
     path,
-    await fs.readFile(path, 'utf8'),
+    source,
     ts.ScriptTarget.Latest,
     true,
     ts.ScriptKind.TS,
@@ -39,21 +72,26 @@ export async function readGeneratedOpenApiSpec(path: string): Promise<unknown> {
 
   const constants = new Map<string, ts.Expression>();
   let specName: string | undefined;
+  let specNode: ts.Node | undefined;
 
   for (const statement of sourceFile.statements) {
-    if (
-      ts.isVariableStatement(statement) &&
-      statement.declarationList.flags & ts.NodeFlags.Const
-    ) {
+    if (ts.isVariableStatement(statement)) {
+      const isConst = Boolean(
+        statement.declarationList.flags & ts.NodeFlags.Const,
+      );
       const isExported = statement.modifiers?.some(
         m => m.kind === ts.SyntaxKind.ExportKeyword,
       );
       for (const declaration of statement.declarationList.declarations) {
-        if (ts.isIdentifier(declaration.name) && declaration.initializer) {
+        if (!ts.isIdentifier(declaration.name)) {
+          continue;
+        }
+        if (isConst && declaration.initializer) {
           constants.set(declaration.name.text, declaration.initializer);
-          if (isExported && declaration.name.text === 'spec') {
-            specName = 'spec';
-          }
+        }
+        if (isExported && declaration.name.text === 'spec') {
+          specName = 'spec';
+          specNode = declaration;
         }
       }
     } else if (
@@ -65,17 +103,19 @@ export async function readGeneratedOpenApiSpec(path: string): Promise<unknown> {
       for (const element of statement.exportClause.elements) {
         if (element.name.text === 'spec') {
           specName = (element.propertyName ?? element.name).text;
+          specNode = element;
         }
       }
     }
   }
 
-  if (!specName) {
+  if (!specName || !specNode) {
     return undefined;
   }
   const initializer = constants.get(specName);
   if (!initializer) {
-    return undefined;
+    // The export exists but isn't a `const` with a value in this file
+    throw unsupportedSyntax(specNode);
   }
   return toValue(initializer, { constants, resolving: new Set([specName]) });
 }
@@ -154,21 +194,22 @@ function toValue(node: ts.Expression, context: Context): unknown {
 }
 
 function toPropertyName(name: ts.PropertyName): string {
-  if (
-    ts.isIdentifier(name) ||
-    ts.isStringLiteral(name) ||
-    ts.isNumericLiteral(name)
-  ) {
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name)) {
     return name.text;
+  }
+  if (ts.isNumericLiteral(name)) {
+    // Numeric keys are converted to their canonical string form at runtime
+    return String(Number(name.text));
   }
   throw unsupportedSyntax(name);
 }
 
 function unsupportedSyntax(node: ts.Node) {
-  const sourceFile = node.getSourceFile();
-  const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
-  return new Error(
-    `Unsupported syntax in the 'spec' export at ${sourceFile.fileName}:${
+  const { line } = node
+    .getSourceFile()
+    .getLineAndCharacterOfPosition(node.getStart());
+  return new GeneratedSpecSyntaxError(
+    `Unsupported syntax in the 'spec' export on line ${
       line + 1
     }, only plain JSON values are supported`,
   );
