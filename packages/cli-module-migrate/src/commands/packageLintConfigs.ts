@@ -16,9 +16,10 @@
 
 import { cli } from 'cleye';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runOutput } from '@backstage/cli-common';
+import { runOutput, targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
@@ -77,16 +78,66 @@ export default async ({ args, info }: CliCommandContext) => {
     }),
   );
 
-  // If prettier is present, then we run that too
-  let hasPrettier = false;
-  try {
-    require.resolve('prettier');
-    hasPrettier = true;
-  } catch {
-    /* ignore */
+  // Formatters format the working directory when no paths are given
+  if (configPaths.length === 0) {
+    return;
   }
 
-  if (hasPrettier) {
-    await runOutput(['prettier', '--write', ...configPaths]);
+  // If the project root depends on a formatter, then we run that too,
+  // preferring oxfmt if it's configured or the only formatter installed.
+  const oxfmtBin = await resolveBin('oxfmt');
+  const prettierBin = await resolveBin('prettier');
+  // The formatter runs in the project root, since Prettier only reads the
+  // ignore file of its working directory.
+  if (oxfmtBin && (!prettierBin || hasOxfmtConfig())) {
+    await runOutput(
+      [
+        process.execPath,
+        oxfmtBin,
+        '--write',
+        '--no-error-on-unmatched-pattern',
+        ...configPaths,
+      ],
+      { cwd: targetPaths.rootDir },
+    );
+  } else if (prettierBin) {
+    await runOutput(
+      [process.execPath, prettierBin, '--write', ...configPaths],
+      {
+        cwd: targetPaths.rootDir,
+      },
+    );
+  } else {
+    console.log(
+      'Skipping formatting, the root package.json lists neither oxfmt nor prettier',
+    );
   }
 };
+
+// Resolves the CLI entry point of a package that the project root declares as
+// a dependency, using Node.js module resolution so that it works with any
+// package manager
+async function resolveBin(name: string): Promise<string | undefined> {
+  try {
+    const rootPkgPath = targetPaths.resolveRoot('package.json');
+    const { dependencies, devDependencies } = await fs.readJson(rootPkgPath);
+    if (!dependencies?.[name] && !devDependencies?.[name]) {
+      return undefined;
+    }
+    const pkgPath = createRequire(rootPkgPath).resolve(`${name}/package.json`);
+    const { bin } = await fs.readJson(pkgPath);
+    const binPath = typeof bin === 'string' ? bin : bin?.[name];
+    return binPath ? join(dirname(pkgPath), binPath) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function hasOxfmtConfig(): boolean {
+  return [
+    '.oxfmtrc.json',
+    '.oxfmtrc.jsonc',
+    'oxfmt.config.ts',
+    'oxfmt.config.mts',
+  ].some(file => fs.pathExistsSync(targetPaths.resolveRoot(file)));
+}
