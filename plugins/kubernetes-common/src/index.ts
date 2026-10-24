@@ -28,6 +28,8 @@ export {
   kubernetesClustersReadPermission,
   kubernetesResourcesReadPermission,
   kubernetesPermissions,
+  RESOURCE_TYPE_KUBERNETES_PROXY,
 } from './permissions';
+export type { KubernetesProxyPermission } from './permissions';
 export * from './error-detection';
 export * from './util';
