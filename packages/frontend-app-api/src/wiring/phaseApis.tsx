@@ -116,11 +116,14 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
   #delegate: RouteResolutionApi | undefined;
   #routeObjects: BackstageRouteObject[] | undefined;
 
-  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly routeBindings: Map<
+    ExternalRouteRef,
+    RouteRef | SubRouteRef | undefined
+  >;
   private readonly appBasePath: string;
 
   constructor(
-    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>,
     appBasePath: string,
   ) {
     this.routeBindings = routeBindings;
@@ -229,7 +232,7 @@ export function createPhaseApis(options: {
   fallbackApis?: ApiHolder;
   includeConfigApi: boolean;
   appBasePath: string;
-  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>;
   staticFactories: AnyApiFactory[];
 }) {
   const appTreeApi = new AppTreeApiProxy(options.tree, options.appBasePath);
