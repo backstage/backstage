@@ -165,6 +165,7 @@ export type Permission = BasicPermission | ResourcePermission;
 // @public
 export type PermissionAttributes = {
   action?: 'create' | 'read' | 'update' | 'delete';
+  accessLevel?: string;
 };
 
 // @public @deprecated
