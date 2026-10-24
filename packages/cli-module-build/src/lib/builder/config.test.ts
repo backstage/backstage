@@ -14,11 +14,53 @@
  * limitations under the License.
  */
 
-import { ExternalOption } from 'rollup';
+import { ExternalOption, OutputOptions, rollup } from 'rollup';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { makeRollupConfigs } from './config';
 import { Output } from './types';
 
 describe('makeRollupConfigs', () => {
+  it.each([
+    { main: 'src/index.tsx' },
+    { main: 'src/plugin.tsx' },
+    { module: 'src/plugin.tsx', main: 'src/unused.ts' },
+  ])(
+    'should build declared entries %j with index output names',
+    async entries => {
+      const entry = entries.module ?? entries.main;
+      const mockDir = createMockDirectory();
+      mockDir.setContent({ [entry]: 'export const value: number = 1;' });
+      const [config] = await makeRollupConfigs({
+        targetDir: mockDir.path,
+        outputs: new Set([Output.cjs, Output.esm]),
+        packageJson: {
+          name: 'test-package',
+          version: '1.0.0',
+          ...entries,
+          types: entry,
+        },
+        workspacePackages: [],
+      });
+      expect(config.input).toEqual({ index: mockDir.resolve(entry) });
+      const bundle = await rollup(config);
+      try {
+        const filenames = [];
+        for (const output of config.output as OutputOptions[]) {
+          const result = await bundle.generate(output);
+          filenames.push(...result.output.map(file => file.fileName));
+        }
+        expect(filenames).toEqual([
+          'index.cjs.js',
+          'index.cjs.js.map',
+          'index.esm.js',
+          'index.esm.js.map',
+        ]);
+      } finally {
+        await bundle.close();
+      }
+    },
+  );
+
   it('should mark external modules correctly', async () => {
     const importerPath = '/some/path.ts'; // when specified we don't care about the path
 
