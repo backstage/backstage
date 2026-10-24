@@ -134,14 +134,12 @@ With this setup you can add or remove the tabs as you'd like or add your own sim
 
 ### Adding Tabs From Other Plugins
 
-You can also add tabs to show content from other plugins that fit well with the other DevTools content. New tabs can be added by attaching SubPagePluprints to the `page:devtools` extension.
-
-#### Catalog Unprocessed Entities Tab
+You can also add tabs to show content from other plugins that fit well with the other DevTools content. New tabs can be added by attaching `SubPagePluprints` to the `page:devtools` extension.
 
 Create an extension and/or load a 3rd party extension to add additional tabs.
 
 ```shell
-yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react
+yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react @backstage/frontend-plugin-api
 ```
 
 ```tsx
@@ -153,15 +151,8 @@ export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
     path: 'unprocessed-entities',
     title: 'Unprocessed Entities',
     loader: async () => {
-      const [m, { Container }] = await Promise.all([
-        import('../components/UnprocessedEntities'),
-        import('@backstage/ui'),
-      ]);
-      return (
-        <Container>
-          <m.UnprocessedEntitiesContent />
-        </Container>
-      );
+      const m = await import('../components/UnprocessedEntities');
+      return <m.UnprocessedEntitiesContent />;
     },
   },
 });
