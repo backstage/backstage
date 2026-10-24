@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import { jwtVerify, createRemoteJWKSet, JWTVerifyGetKey } from 'jose';
+import {
+  evaluateFilterPredicate,
+  FilterPredicate,
+  readOptionalFilterPredicateFromConfig,
+} from '@backstage/filter-predicates';
+import {
+  jwtVerify,
+  createRemoteJWKSet,
+  JWTPayload,
+  JWTVerifyGetKey,
+} from 'jose';
 import {
   createExternalTokenHandler,
   readAccessRestrictionsFromConfig,
@@ -30,6 +40,21 @@ type JWKSTokenContext = {
   url: URL;
   jwks: JWTVerifyGetKey;
   allAccessRestrictions?: AccessRestrictionsMap;
+  claims?: FilterPredicate;
+};
+
+// Prepares a verified JWT payload for evaluation against the `claims` filter
+// predicate.
+//
+// `scope` is the only claim the OAuth2/JWT RFCs (RFC 6749 §3.3, RFC 8693 §4.2,
+// RFC 9068 §2.2.3) define as a space-delimited string, so it is split into an
+// array to allow matching individual scopes using `$contains`.
+const toClaimsFilterValue = (payload: JWTPayload): JWTPayload => {
+  const { scope } = payload;
+  if (typeof scope !== 'string') {
+    return payload;
+  }
+  return { ...payload, scope: scope.split(' ').filter(Boolean) };
 };
 
 export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
@@ -48,6 +73,11 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
     const url = new URL(options.getString('url'));
     const jwks = createRemoteJWKSet(url);
     const allAccessRestrictions = readAccessRestrictionsFromConfig(options);
+
+    const claims = readOptionalFilterPredicateFromConfig(options, {
+      key: 'claims',
+    });
+
     return {
       algorithms,
       audiences,
@@ -56,20 +86,27 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
       subjectPrefix,
       url,
       allAccessRestrictions,
+      claims,
     };
   },
 
   async verifyToken(token: string, context: JWKSTokenContext) {
     try {
-      const {
-        payload: { sub },
-      } = await jwtVerify(token, context.jwks, {
+      const { payload } = await jwtVerify(token, context.jwks, {
         algorithms: context.algorithms,
         issuer: context.issuers,
         audience: context.audiences,
       });
 
+      const { sub } = payload;
       if (sub) {
+        if (
+          context.claims &&
+          !evaluateFilterPredicate(context.claims, toClaimsFilterValue(payload))
+        ) {
+          return undefined;
+        }
+
         const prefix = context.subjectPrefix
           ? `external:${context.subjectPrefix}:`
           : 'external:';
@@ -80,6 +117,7 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
     } catch {
       return undefined;
     }
+
     return undefined;
   },
 });
