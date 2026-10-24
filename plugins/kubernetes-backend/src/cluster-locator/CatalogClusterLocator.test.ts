@@ -19,6 +19,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
 } from '@backstage/plugin-kubernetes-common';
 import type { LookupAddress } from 'node:dns';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
@@ -79,6 +80,26 @@ const entities: Entity[] = [
       type: 'kubernetes-cluster',
     },
   },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Resource',
+    metadata: {
+      annotations: {
+        'kubernetes.io/api-server': 'https://apiserver.com',
+        'kubernetes.io/api-server-certificate-authority': 'caData',
+        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'microsoft',
+        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+          'some-custom-microsoft-entra-id-scope/user.role',
+        'kubernetes.io/dashboard-url': 'my-url',
+        'kubernetes.io/dashboard-app': 'my-app',
+      },
+      name: 'owned',
+      namespace: 'default',
+    },
+    spec: {
+      type: 'kubernetes-cluster',
+    },
+  },
 ];
 
 const catalogLocatorConfig = mockServices
@@ -123,7 +144,7 @@ describe('CatalogClusterLocator', () => {
     const { clusterSupplier } = createLocator();
 
     const result = await clusterSupplier.getClusters({ credentials });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
     expect(result[0]).toMatchSnapshot();
     expect(result[0].authMetadata.serviceAccountToken).toBeUndefined();
   });
@@ -133,8 +154,17 @@ describe('CatalogClusterLocator', () => {
     const { clusterSupplier } = createLocator();
 
     const result = await clusterSupplier.getClusters({ credentials });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
     expect(result[1]).toMatchSnapshot();
+  });
+
+  it('returns the microsoft authenticated cluster details provided by annotations', async () => {
+    const credentials = mockCredentials.user();
+    const { clusterSupplier } = createLocator();
+
+    const result = await clusterSupplier.getClusters({ credentials });
+    expect(result).toHaveLength(3);
+    expect(result[2]).toMatchSnapshot();
   });
 
   it('ignores clusters with private API server URLs', async () => {
@@ -152,7 +182,6 @@ describe('CatalogClusterLocator', () => {
         },
       },
     ]);
-
     const warn = jest.spyOn(logger, 'warn');
     const result = await clusterSupplier.getClusters({ credentials });
     expect(result).toHaveLength(0);
@@ -196,7 +225,6 @@ describe('CatalogClusterLocator', () => {
       config.getConfigArray('kubernetes.clusterLocatorMethods')[0],
       logger,
     );
-
     const result = await clusterSupplier.getClusters({ credentials });
     expect(result).toHaveLength(1);
     expect(result[0].url).toBe('http://127.0.0.1:6443');
@@ -217,7 +245,6 @@ describe('CatalogClusterLocator', () => {
         },
       },
     ]);
-
     const warn = jest.spyOn(logger, 'warn');
     const result = await clusterSupplier.getClusters({ credentials });
     expect(result).toHaveLength(0);
@@ -247,7 +274,6 @@ describe('CatalogClusterLocator', () => {
       config.getConfigArray('kubernetes.clusterLocatorMethods')[0],
       logger,
     );
-
     const result = await clusterSupplier.getClusters({ credentials });
     expect(result).toHaveLength(1);
     expect(result[0].skipTLSVerify).toBe(true);
