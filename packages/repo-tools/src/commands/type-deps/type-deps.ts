@@ -22,15 +22,27 @@ import chalk from 'chalk';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
 
-export default async () => {
+type TypeDepsOptions = {
+  allowEmpty?: boolean;
+};
+
+export default async (opts: TypeDepsOptions = {}) => {
   const { packages } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
+  let checkedAny = false;
+  const unbuilt: string[] = [];
 
   for (const pkg of packages) {
-    if (!shouldCheckTypes(pkg)) {
+    if (!hasPublishedTypes(pkg)) {
       continue;
     }
+    if (!fs.existsSync(resolvePath(pkg.dir, 'dist/index.d.ts'))) {
+      unbuilt.push(pkg.packageJson.name);
+      continue;
+    }
+
+    checkedAny = true;
     const { errors } = await checkTypes(pkg);
     if (errors.length) {
       hadErrors = true;
@@ -55,10 +67,29 @@ export default async () => {
     }
   }
 
+  if (unbuilt.length) {
+    const shown = unbuilt.slice(0, 10).join(', ');
+    const rest = unbuilt.length > 10 ? ` and ${unbuilt.length - 10} more` : '';
+    console.error(
+      `Skipped ${unbuilt.length} package(s) with no type declarations in dist: ${shown}${rest}`,
+    );
+  }
+
   if (hadErrors) {
     console.error();
     console.error(
       chalk.red('At least one package had incorrect type dependencies'),
+    );
+
+    process.exit(2);
+  }
+
+  if (!checkedAny && !opts.allowEmpty) {
+    console.error();
+    console.error(
+      chalk.red(
+        'No packages were checked for type dependencies. Build the packages first, or pass --allow-empty if there is nothing to check.',
+      ),
     );
 
     process.exit(2);
@@ -70,12 +101,8 @@ type PackageJsonWithTypes = {
     types?: string;
   };
 };
-function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
-  return (
-    !pkg.packageJson.private &&
-    pkg.packageJson.types &&
-    fs.existsSync(resolvePath(pkg.dir, 'dist/index.d.ts'))
-  );
+function hasPublishedTypes(pkg: Package & PackageJsonWithTypes) {
+  return !pkg.packageJson.private && !!pkg.packageJson.types;
 }
 
 /**
