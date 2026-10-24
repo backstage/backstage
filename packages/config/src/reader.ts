@@ -179,7 +179,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.get} */
   get<T = JsonValue>(key?: string): T {
-    const value = this.getOptional(key);
+    const value = this.readOptional<T>(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key ?? ''), this.context));
     }
@@ -188,8 +188,17 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptional} */
   getOptional<T = JsonValue>(key?: string): T | undefined {
-    const value = cloneDeep(this.readValue(key));
-    const fallbackValue = this.fallback?.getOptional(key);
+    return this.readOptional<T>(key, true);
+  }
+
+  private readOptional<T = JsonValue>(
+    key?: string,
+    optional?: boolean,
+    hasObjectPrefix: boolean = false,
+  ): T | undefined {
+    const prefixObj = hasObjectPrefix || this.hasObjectAlongPath(key);
+    const value = cloneDeep(this.readValue(key, optional, hasObjectPrefix));
+    const fallbackValue = this.fallback?.readOptional(key, optional, prefixObj);
 
     if (value === null) {
       return undefined;
@@ -221,7 +230,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getConfig} */
   getConfig(key: string): ConfigReader {
-    const value = this.getOptionalConfig(key);
+    const value = this.readOptionalConfig(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key), this.context));
     }
@@ -230,8 +239,21 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalConfig} */
   getOptionalConfig(key: string): ConfigReader | undefined {
-    const value = this.readValue(key);
-    const fallbackConfig = this.fallback?.getOptionalConfig(key);
+    return this.readOptionalConfig(key, true);
+  }
+
+  private readOptionalConfig(
+    key: string,
+    optional?: boolean,
+    hasObjectPrefix: boolean = false,
+  ): ConfigReader | undefined {
+    const prefixObj = hasObjectPrefix || this.hasObjectAlongPath(key);
+    const value = this.readValue(key, optional, hasObjectPrefix);
+    const fallbackConfig = this.fallback?.readOptionalConfig(
+      key,
+      optional,
+      prefixObj,
+    );
 
     if (isObject(value)) {
       return this.copy(value, key, fallbackConfig);
@@ -249,7 +271,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getConfigArray} */
   getConfigArray(key: string): ConfigReader[] {
-    const value = this.getOptionalConfigArray(key);
+    const value = this.readOptionalConfigArray(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key), this.context));
     }
@@ -258,18 +280,33 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalConfigArray} */
   getOptionalConfigArray(key: string): ConfigReader[] | undefined {
-    const configs = this.readConfigValue<JsonObject[]>(key, values => {
-      if (!Array.isArray(values)) {
-        return { expected: 'object-array' };
-      }
+    return this.readOptionalConfigArray(key, true);
+  }
 
-      for (const [index, value] of values.entries()) {
-        if (!isObject(value)) {
-          return { expected: 'object-array', value, key: `${key}[${index}]` };
+  private readOptionalConfigArray(
+    key: string,
+    optional?: boolean,
+  ): ConfigReader[] | undefined {
+    const configs = this.readConfigValue<JsonObject[]>(
+      key,
+      values => {
+        if (!Array.isArray(values)) {
+          return { expected: 'object-array' };
         }
-      }
-      return true;
-    });
+
+        for (const [index, value] of values.entries()) {
+          if (!isObject(value)) {
+            return {
+              expected: 'object-array',
+              value,
+              key: `${key}[${index}]`,
+            };
+          }
+        }
+        return true;
+      },
+      optional,
+    );
 
     if (!configs) {
       if (process.env.NODE_ENV === 'development') {
@@ -294,7 +331,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getNumber} */
   getNumber(key: string): number {
-    const value = this.getOptionalNumber(key);
+    const value = this.readOptionalNumber(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key), this.context));
     }
@@ -303,11 +340,19 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalNumber} */
   getOptionalNumber(key: string): number | undefined {
+    return this.readOptionalNumber(key, true);
+  }
+
+  private readOptionalNumber(
+    key: string,
+    optional?: boolean,
+  ): number | undefined {
     const value = this.readConfigValue<string | number>(
       key,
       val =>
         typeof val === 'number' ||
         typeof val === 'string' || { expected: 'number' },
+      optional,
     );
     if (typeof value === 'number' || value === undefined) {
       return value;
@@ -329,7 +374,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getBoolean} */
   getBoolean(key: string): boolean {
-    const value = this.getOptionalBoolean(key);
+    const value = this.readOptionalBoolean(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key), this.context));
     }
@@ -338,12 +383,20 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalBoolean} */
   getOptionalBoolean(key: string): boolean | undefined {
+    return this.readOptionalBoolean(key, true);
+  }
+
+  private readOptionalBoolean(
+    key: string,
+    optional?: boolean,
+  ): boolean | undefined {
     const value = this.readConfigValue<string | number | boolean>(
       key,
       val =>
         typeof val === 'boolean' ||
         typeof val === 'number' ||
         typeof val === 'string' || { expected: 'boolean' },
+      optional,
     );
     if (typeof value === 'boolean' || value === undefined) {
       return value;
@@ -361,7 +414,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getString} */
   getString(key: string): string {
-    const value = this.getOptionalString(key);
+    const value = this.readOptionalString(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key), this.context));
     }
@@ -370,16 +423,24 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalString} */
   getOptionalString(key: string): string | undefined {
+    return this.readOptionalString(key, true);
+  }
+
+  private readOptionalString(
+    key: string,
+    optional?: boolean,
+  ): string | undefined {
     return this.readConfigValue(
       key,
       value =>
         (typeof value === 'string' && value !== '') || { expected: 'string' },
+      optional,
     );
   }
 
   /** {@inheritdoc Config.getStringArray} */
   getStringArray(key: string): string[] {
-    const value = this.getOptionalStringArray(key);
+    const value = this.readOptionalStringArray(key, false);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key), this.context));
     }
@@ -388,17 +449,32 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalStringArray} */
   getOptionalStringArray(key: string): string[] | undefined {
-    return this.readConfigValue(key, values => {
-      if (!Array.isArray(values)) {
-        return { expected: 'string-array' };
-      }
-      for (const [index, value] of values.entries()) {
-        if (typeof value !== 'string' || value === '') {
-          return { expected: 'string-array', value, key: `${key}[${index}]` };
+    return this.readOptionalStringArray(key, true);
+  }
+
+  private readOptionalStringArray(
+    key: string,
+    optional?: boolean,
+  ): string[] | undefined {
+    return this.readConfigValue(
+      key,
+      values => {
+        if (!Array.isArray(values)) {
+          return { expected: 'string-array' };
         }
-      }
-      return true;
-    });
+        for (const [index, value] of values.entries()) {
+          if (typeof value !== 'string' || value === '') {
+            return {
+              expected: 'string-array',
+              value,
+              key: `${key}[${index}]`,
+            };
+          }
+        }
+        return true;
+      },
+      optional,
+    );
   }
 
   private fullKey(key: string): string {
@@ -421,8 +497,11 @@ export class ConfigReader implements Config {
     validate: (
       value: JsonValue,
     ) => { expected: string; value?: JsonValue; key?: string } | true,
+    optional?: boolean,
+    hasObjectPrefix: boolean = false,
   ): T | undefined {
-    const value = this.readValue(key);
+    const prefixObj = hasObjectPrefix || this.hasObjectAlongPath(key);
+    const value = this.readValue(key, optional, hasObjectPrefix);
 
     if (value === undefined) {
       if (process.env.NODE_ENV === 'development') {
@@ -440,7 +519,7 @@ export class ConfigReader implements Config {
         }
       }
 
-      return this.fallback?.readConfigValue(key, validate);
+      return this.fallback?.readConfigValue(key, validate, optional, prefixObj);
     }
     if (value === null) {
       return undefined;
@@ -461,7 +540,34 @@ export class ConfigReader implements Config {
     return value as T;
   }
 
-  private readValue(key?: string): JsonValue | undefined {
+  private hasObjectAlongPath(key?: string): boolean {
+    if (!key || !this.data) {
+      return false;
+    }
+    const parts = key.split('.');
+    let current: JsonValue | undefined = this.data;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (
+        isObject(current) &&
+        parts[i] in current &&
+        isObject(current[parts[i]])
+      ) {
+        return true;
+      }
+      if (isObject(current)) {
+        current = current[parts[i]];
+      } else {
+        break;
+      }
+    }
+    return false;
+  }
+
+  private readValue(
+    key?: string,
+    optional?: boolean,
+    allowSkipPrimitive: boolean = false,
+  ): JsonValue | undefined {
     const parts = key ? key.split('.') : [];
     for (const part of parts) {
       if (!CONFIG_KEY_PART_PATTERN.test(part)) {
@@ -478,6 +584,9 @@ export class ConfigReader implements Config {
       if (isObject(value)) {
         value = value[part];
       } else if (value !== undefined && value !== null) {
+        if (allowSkipPrimitive && optional) {
+          return undefined;
+        }
         const badKey = this.fullKey(parts.slice(0, index).join('.'));
         throw new TypeError(
           errors.type(badKey, this.context, typeOf(value), 'object'),
