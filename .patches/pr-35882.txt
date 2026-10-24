@@ -1,0 +1,1 @@
+Fix @backstage/integration failing to import from ESM projects due to named imports from the CommonJS lodash dependency.
