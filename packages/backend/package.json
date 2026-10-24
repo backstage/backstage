@@ -75,7 +75,8 @@
     "@opentelemetry/core": "^2.0.0",
     "@opentelemetry/exporter-prometheus": "^0.222.0",
     "@opentelemetry/sdk-node": "^0.222.0",
-    "example-app": "link:../app"
+    "example-app": "link:../app",
+    "hono": "^4.13.11"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
