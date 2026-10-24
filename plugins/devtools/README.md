@@ -134,32 +134,28 @@ With this setup you can add or remove the tabs as you'd like or add your own sim
 
 ### Adding Tabs From Other Plugins
 
-You can also add tabs to show content from other plugins that fit well with the other DevTools content.
-
-#### Catalog Unprocessed Entities Tab
+You can also add tabs to show content from other plugins that fit well with the other DevTools content. New tabs can be added by attaching `SubPagePluprints` to the `page:devtools` extension.
 
 Create an extension and/or load a 3rd party extension to add additional tabs.
 
 ```shell
-yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react
+yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react @backstage/frontend-plugin-api
 ```
 
 ```tsx
-import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
+import { SubPageBlueprint } from '@backstage/frontend-plugin-api';
 
-export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
-  {
-    disabled: true,
-    params: {
-      path: 'unprocessed-entities',
-      title: 'Unprocessed Entities',
-      loader: () =>
-        import('../components/UnprocessedEntities').then(m => (
-          <m.UnprocessedEntitiesContent />
-        )),
+export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
+  attachTo: { id: 'page:devtools', input: 'pages' },
+  params: {
+    path: 'unprocessed-entities',
+    title: 'Unprocessed Entities',
+    loader: async () => {
+      const m = await import('../components/UnprocessedEntities');
+      return <m.UnprocessedEntitiesContent />;
     },
   },
-);
+});
 
 const appFeature = createFrontendModule({
   pluginId: 'catalog-unprocessed-entities',
