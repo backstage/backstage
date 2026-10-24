@@ -238,7 +238,9 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       ? selectedFile.content
       : undefined;
 
-  if (!directoryEditor) {
+  // The directory editor exists during the initial load (loading: true), so
+  // treat "loading with no file selected" like a missing editor.
+  if (!directoryEditor || (directoryEditor.loading && !selectedFile)) {
     return null;
   }
 
