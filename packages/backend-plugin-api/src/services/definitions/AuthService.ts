@@ -18,6 +18,28 @@ import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 /**
+ * Verified identity attributes that apply to a user request.
+ *
+ * @remarks
+ *
+ * The issuer defines the namespace and meaning of the attributes. Consumers must
+ * verify the issuer and all attributes that affect an authorization decision.
+ *
+ * @public
+ */
+export type BackstageUserIdentityContext = {
+  /**
+   * The authority that issued the identity attributes.
+   */
+  readonly issuer: string;
+
+  /**
+   * Issuer-defined attributes that apply to the user request.
+   */
+  readonly attributes: Readonly<Record<string, string>>;
+};
+
+/**
  * Represents a user principal (for example when a user Backstage token issued
  * by the auth backend was given to a request).
  *
@@ -35,6 +57,16 @@ export type BackstageUserPrincipal = {
    * The entity ref of the user entity that this principal represents.
    */
   userEntityRef: string;
+
+  /**
+   * Verified identity attributes that apply to this request, if issued.
+   *
+   * @remarks
+   *
+   * This context is bound to the user token proof and is preserved across
+   * on-behalf-of plugin calls. Its absence does not imply default attributes.
+   */
+  identityContext?: BackstageUserIdentityContext;
 
   /**
    * The service principal that issued the token on behalf of the user.

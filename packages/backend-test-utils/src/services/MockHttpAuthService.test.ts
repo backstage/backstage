@@ -255,4 +255,31 @@ describe('MockHttpAuthService', () => {
       mockCredentials.limitedUser.cookie('user:default/other'),
     );
   });
+
+  it('should preserve identity context in user cookies', async () => {
+    const setHeader = jest.fn();
+    const identityContext = {
+      issuer: 'https://portal.example.com/',
+      attributes: { profile: 'organization', profileId: 'org_a' },
+    } as const;
+
+    await httpAuth.issueUserCookie(
+      {
+        req: makeAuthReq(mockCredentials.user.header()),
+        setHeader,
+      } as any,
+      {
+        credentials: mockCredentials.user('user:default/other', {
+          identityContext,
+        }),
+      },
+    );
+
+    expect(setHeader).toHaveBeenCalledWith(
+      'Set-Cookie',
+      mockCredentials.limitedUser.cookie('user:default/other', {
+        identityContext,
+      }),
+    );
+  });
 });

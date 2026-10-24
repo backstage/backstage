@@ -25,6 +25,7 @@ import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { mockServices } from '@backstage/backend-test-utils';
+import { BackstageUserIdentityContext } from '@backstage/backend-plugin-api';
 
 const logger = mockServices.logger.mock();
 
@@ -164,6 +165,119 @@ describe('TokenFactory', () => {
         }),
       ],
     });
+  });
+
+  it.each([
+    {
+      issuer: 'https://portal.example.com/',
+      attributes: {
+        profile: 'organization',
+        profileId: 'org_a',
+        region: 'eu',
+      },
+    },
+    {
+      issuer: 'https://portal.example.com/',
+      attributes: {
+        profile: 'personal',
+        profileId: 'auth0|user-a',
+        region: 'personal',
+      },
+    },
+  ] satisfies BackstageUserIdentityContext[])(
+    'should bind identity context case %# to the limited user proof',
+    async identityContext => {
+      const keyDurationSeconds = 5;
+      const factory = new TokenFactory({
+        issuer: 'my-issuer',
+        keyStore: new MemoryKeyStore(),
+        keyDurationSeconds,
+        logger,
+      });
+
+      const { token } = await factory.issueToken({
+        claims: {
+          sub: entityRef,
+          ent: [entityRef],
+          [tokenTypes.user.identityContextClaim]: {
+            issuer: 'https://untrusted.example.com/',
+            attributes: { profileId: 'untrusted' },
+          },
+        },
+        identityContext,
+      });
+      const { keys } = await factory.listPublicKeys();
+      const keyStore = createLocalJWKSet({ keys });
+      const verifyResult = await jwtVerify(token, keyStore);
+
+      expect(verifyResult.payload).toMatchObject({
+        [tokenTypes.user.identityContextClaim]: identityContext,
+        uip: expect.any(String),
+      });
+      const limitedUserToken = [
+        base64url.encode(
+          JSON.stringify({
+            typ: tokenTypes.limitedUser.typParam,
+            alg: verifyResult.protectedHeader.alg,
+            kid: verifyResult.protectedHeader.kid!,
+          }),
+        ),
+        base64url.encode(
+          JSON.stringify({
+            sub: verifyResult.payload.sub,
+            iat: verifyResult.payload.iat,
+            exp: verifyResult.payload.exp,
+            [tokenTypes.user.identityContextClaim]: identityContext,
+          }),
+        ),
+        String(verifyResult.payload.uip),
+      ].join('.');
+
+      await expect(
+        jwtVerify(limitedUserToken, keyStore),
+      ).resolves.toMatchObject({
+        payload: {
+          sub: entityRef,
+          [tokenTypes.user.identityContextClaim]: identityContext,
+        },
+      });
+    },
+  );
+
+  it('should reject oversized or omitted identity context', async () => {
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds: 5,
+      logger,
+    });
+
+    await expect(
+      factory.issueToken({
+        claims: { sub: entityRef, ent: [entityRef] },
+        identityContext: {
+          issuer: 'https://portal.example.com/',
+          attributes: { profileId: 'a'.repeat(2048) },
+        },
+      }),
+    ).rejects.toThrow('Identity context is excessively large');
+
+    const omittingFactory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds: 5,
+      logger,
+      omitClaimsFromToken: [tokenTypes.user.identityContextClaim],
+    });
+    await expect(
+      omittingFactory.issueToken({
+        claims: { sub: entityRef, ent: [entityRef] },
+        identityContext: {
+          issuer: 'https://portal.example.com/',
+          attributes: { profileId: 'org_a' },
+        },
+      }),
+    ).rejects.toThrow('Identity context and its proof cannot be omitted');
   });
 
   it('should throw an error with a non entityRef sub claim', async () => {

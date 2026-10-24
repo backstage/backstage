@@ -174,6 +174,12 @@ export type BackstageServicePrincipal = {
 };
 
 // @public
+export type BackstageUserIdentityContext = {
+  readonly issuer: string;
+  readonly attributes: Readonly<Record<string, string>>;
+};
+
+// @public
 export interface BackstageUserInfo {
   // (undocumented)
   ownershipEntityRefs: string[];
@@ -185,6 +191,7 @@ export interface BackstageUserInfo {
 export type BackstageUserPrincipal = {
   type: 'user';
   userEntityRef: string;
+  identityContext?: BackstageUserIdentityContext;
   actor?: BackstageServicePrincipal;
 };
 

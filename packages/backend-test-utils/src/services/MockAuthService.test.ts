@@ -23,6 +23,11 @@ import {
   mockCredentials,
 } from './mockCredentials';
 
+const identityContext = {
+  issuer: 'https://portal.example.com/',
+  attributes: { profile: 'organization', profileId: 'org_a' },
+} as const;
+
 describe('MockAuthService', () => {
   const auth = new MockAuthService({
     pluginId: 'test',
@@ -70,6 +75,14 @@ describe('MockAuthService', () => {
     await expect(
       auth.authenticate(mockCredentials.user.invalidToken()),
     ).rejects.toThrow('User token is invalid');
+
+    await expect(
+      auth.authenticate(
+        mockCredentials.user.token('user:default/other', { identityContext }),
+      ),
+    ).resolves.toEqual(
+      mockCredentials.user('user:default/other', { identityContext }),
+    );
   });
 
   it('should authenticate mock limited user tokens', async () => {
@@ -108,6 +121,17 @@ describe('MockAuthService', () => {
     await expect(
       auth.authenticate(mockCredentials.limitedUser.invalidToken()),
     ).rejects.toThrow('Limited user token is invalid');
+
+    await expect(
+      auth.authenticate(
+        mockCredentials.limitedUser.token('user:default/other', {
+          identityContext,
+        }),
+        { allowLimitedAccess: true },
+      ),
+    ).resolves.toEqual(
+      mockCredentials.user('user:default/other', { identityContext }),
+    );
   });
 
   it('should authenticate mock service tokens', async () => {
@@ -203,6 +227,20 @@ describe('MockAuthService', () => {
         targetPluginId: 'test',
       }),
     });
+
+    const identityContextCredentials = mockCredentials.user(
+      'user:default/other',
+      {
+        identityContext,
+      },
+    );
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: identityContextCredentials,
+      targetPluginId: 'test',
+    });
+    await expect(auth.authenticate(token)).resolves.toEqual(
+      identityContextCredentials,
+    );
 
     await expect(
       auth.getPluginRequestToken({

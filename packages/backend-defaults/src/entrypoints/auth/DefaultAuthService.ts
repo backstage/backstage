@@ -83,6 +83,7 @@ export class DefaultAuthService implements AuthService {
           pluginResult.limitedUserToken,
           this.#getJwtExpiration(pluginResult.limitedUserToken),
           pluginResult.subject,
+          userResult.identityContext,
         );
       }
       return createCredentialsWithServicePrincipal(pluginResult.subject);
@@ -101,6 +102,8 @@ export class DefaultAuthService implements AuthService {
         userResult.userEntityRef,
         token,
         this.#getJwtExpiration(token),
+        undefined,
+        userResult.identityContext,
       );
     }
 
