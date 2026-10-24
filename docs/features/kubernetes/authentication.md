@@ -99,6 +99,13 @@ used to look up matching `accounts` or `accountDefaults` configuration. If
 found, those credentials are used as the source credentials for assuming the
 role specified in the annotation.
 
+To use credentials configured for an AWS account directly, set
+`kubernetes.io/aws-account-id` to that account's ID. This also works with web
+identity token file credentials and does not make a second `AssumeRole` request.
+When both annotations are set, the account ID selects the source credentials
+and `kubernetes.io/aws-assume-role` specifies a separate role to assume for the
+cluster.
+
 Either of these sections needs to be present for the Kubernetes configuration to
 use the `aws` `authProvider`. The Kubernetes configuration looks like this:
 
@@ -114,8 +121,25 @@ kubernetes:
           authProvider: 'aws'
           caData: ${EKS_CA_DATA}
           authMetadata:
-            kubernetes.io/aws-assume-role: ${ROLE_ARN_TO_ASSUME}
-            kubernetes.io/aws-external-id: ${ID_FROM_AWS_ADMIN}
+            kubernetes.io/aws-assume-role: ${AWS_IAM_ROLE_ARN}
+            kubernetes.io/x-k8s-aws-id: ${CLUSTER_NAME_IN_AWS_CONSOLE}
+```
+
+To use the selected account's credentials directly, use the account-ID variant:
+
+```yaml
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: https://<unique-identifier>.<region>.eks.amazonaws.com
+          name: ${CLUSTER_NAME_TO_DISPLAY}
+          authProvider: 'aws'
+          caData: ${EKS_CA_DATA}
+          authMetadata:
+            kubernetes.io/aws-account-id: ${AWS_ACCOUNT_ID}
             kubernetes.io/x-k8s-aws-id: ${CLUSTER_NAME_IN_AWS_CONSOLE}
 ```
 
@@ -124,9 +148,10 @@ You get both the cluster URL and CA directly from the AWS console by going to
 server endpoint' and 'Certificate authority' respectively.
 
 If Backstage needs to assume a role when authenticating with EKS clusters, the
-`kubernetes.io/aws-assume-role` parameter can be set to the ARN of the desired
-role. The `kubernetes.io/aws-external-id` parameter in the config corresponds to
-the `ExternalId` parameter of the [`AssumeRole` API in STS][8].
+`kubernetes.io/aws-assume-role` parameter can be added to `authMetadata` with
+the ARN of the desired role. The optional `kubernetes.io/aws-external-id`
+parameter corresponds to the `ExternalId` parameter of the
+[`AssumeRole` API in STS][8].
 
 ### Azure
 
