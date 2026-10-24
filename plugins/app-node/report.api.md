@@ -21,12 +21,6 @@ export function loadCompiledConfigSchema(
 ): Promise<ConfigSchema | undefined>;
 
 // @public
-export function resolveAppPackagePath(
-  appPackageName: string,
-  ...paths: string[]
-): string;
-
-// @public
 export interface StaticFallbackHandlerExtensionPoint {
   setStaticFallbackHandler(handler: Handler): void;
 }

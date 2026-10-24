@@ -17,12 +17,12 @@
 import {
   coreServices,
   createBackendModule,
+  resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { dynamicPluginsSchemasServiceRef } from './schemas';
 import {
   configSchemaExtensionPoint,
   loadCompiledConfigSchema,
-  resolveAppPackagePath,
 } from '@backstage/plugin-app-node';
 
 /**
@@ -42,7 +42,7 @@ export const dynamicPluginsFrontendSchemas = createBackendModule({
       async init({ config, schemas, configSchemaExtension }) {
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
-        const appDistDir = resolveAppPackagePath(appPackageName, 'dist');
+        const appDistDir = resolvePackagePath(appPackageName, 'dist');
         const compiledConfigSchema = await loadCompiledConfigSchema(appDistDir);
         // TODO(davidfestal): Add dynamic pliugin config schemas even if the compiled schemas are empty.
         if (compiledConfigSchema) {
