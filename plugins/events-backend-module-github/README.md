@@ -64,6 +64,10 @@ Add the signature validator for the topic `github`:
 
 ## Configuration
 
+Webhook authentication is secure by default. Requests to `/api/events/http/*` (such as `/api/events/http/github`) without a configured `webhookSecret` return an HTTP 403 Forbidden status.
+
+Add the following to your `app-config.yaml`:
+
 ```yaml
 events:
   modules:
@@ -71,5 +75,18 @@ events:
       webhookSecret: your-secret-token
 ```
 
-Configuration at GitHub:
-https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks
+For more details on securing webhooks on GitHub, see the [GitHub documentation](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
+
+### Development and testing
+
+For development or testing environments where a webhook secret cannot be configured, you can set `dangerouslyAllowUnauthenticatedEvents: true` as an explicit escape hatch under the module configuration:
+
+```yaml
+events:
+  modules:
+    github:
+      dangerouslyAllowUnauthenticatedEvents: true
+```
+
+> [!WARNING]
+> Only use `dangerouslyAllowUnauthenticatedEvents: true` for development or testing. Never enable this option in production environments.
