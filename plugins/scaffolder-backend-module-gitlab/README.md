@@ -141,3 +141,20 @@ spec:
       - title: Link to new issue
         url: ${{ steps['gitlabIssue'].output.issueUrl }}
 ```
+
+## Merge request squash settings
+
+The `publish:gitlab:merge-request` action accepts an optional `squash` input.
+Omit it to use the GitLab project's squash setting. Set it to `true` to request
+squashing commits on merge, or `false` to request merging without squashing.
+GitLab project policies can override an explicit value.
+
+```yaml
+- id: createMergeRequest
+  action: publish:gitlab:merge-request
+  input:
+    repoUrl: gitlab.com?repo=repo&owner=owner
+    title: Update service configuration
+    branchName: update-service-configuration
+    squash: true
+```
