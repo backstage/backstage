@@ -35,6 +35,19 @@ export type LinkOwnProps = {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   standalone?: boolean;
+  /**
+   * Controls whether the link is treated as leading outside of the
+   * application. External links show an external link icon after the link
+   * text and always open in a new tab with `rel="noopener noreferrer"`,
+   * regardless of any `target` passed.
+   *
+   * - `'auto'` (default): external when `href` starts with `http://` or
+   *   `https://`. Other schemes such as `mailto:` are not treated as external,
+   *   since they usually open in another application.
+   * - `'always'` or `true`: always external.
+   * - `'no'` or `false`: never external.
+   */
+  external?: boolean | 'auto' | 'always' | 'no';
   title?: string;
   children?: ReactNode;
   className?: string;
