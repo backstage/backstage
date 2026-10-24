@@ -46,17 +46,38 @@ describe('CommonJSModuleLoader', () => {
   it('searches the root node_modules and the global folders before the host for dynamic plugins', async () => {
     const backstageRoot = path.resolve(__dirname, '../../../..');
     // The host is found through the main module, the script path, the
-    // working directory, and the location of the loader itself
-    main.filename = path.join(backstageRoot, 'packages/backend/src/index.ts');
-    process.argv = [argv[0], path.join(backstageRoot, 'packages/app')];
-    jest
-      .spyOn(process, 'cwd')
-      .mockReturnValue(path.join(backstageRoot, 'plugins/app-node/src'));
+    // working directory, and the location of the loader itself. An entry
+    // point in an installed package, such as a process manager that starts
+    // the backend, is not the backend package.
+    const wrapperEntry = path.join(
+      backstageRoot,
+      'node_modules/typescript/lib/tsc.js',
+    );
+    const backendEntry = path.join(
+      backstageRoot,
+      'packages/backend/src/index.ts',
+    );
+    const workingDir = path.join(
+      backstageRoot,
+      'packages/backend-dynamic-feature-service/src/scanner',
+    );
+    for (const startPath of [wrapperEntry, backendEntry, workingDir]) {
+      expect(fs.existsSync(startPath)).toBe(true);
+    }
+    main.filename = wrapperEntry;
+    process.argv = [argv[0], backendEntry];
+    jest.spyOn(process, 'cwd').mockReturnValue(workingDir);
     const hostNodeModules = [
       path.join(backstageRoot, 'packages/backend/src/node_modules'),
-      path.join(backstageRoot, 'packages/app/node_modules'),
-      path.join(backstageRoot, 'plugins/app-node/src/node_modules'),
+      path.join(
+        backstageRoot,
+        'packages/backend-dynamic-feature-service/src/scanner/node_modules',
+      ),
       path.join(__dirname, 'node_modules'),
+    ];
+    const wrapperNodeModules = [
+      path.join(backstageRoot, 'node_modules/typescript/lib/node_modules'),
+      path.join(backstageRoot, 'node_modules/typescript/node_modules'),
     ];
     const rootNodeModules = path.join(backstageRoot, 'node_modules');
     const customNodeModules = path.resolve(
@@ -103,6 +124,9 @@ describe('CommonJSModuleLoader', () => {
     ]);
     for (const paths of [pluginPaths, outsidePluginPaths]) {
       expect(paths).toEqual(expect.arrayContaining(hostNodeModules));
+      for (const wrapperPath of wrapperNodeModules) {
+        expect(paths).not.toContain(wrapperPath);
+      }
       expect(paths.filter(p => p === rootNodeModules)).toHaveLength(1);
       expect(paths.slice(3).every(p => p.startsWith(backstageRoot))).toBe(true);
     }
@@ -110,6 +134,55 @@ describe('CommonJSModuleLoader', () => {
     // Modules outside of the dynamic plugins keep the regular search paths
     expect(nodeModule._nodeModulePaths(hostDir)).toEqual(
       originalNodeModulePaths(hostDir),
+    );
+  });
+
+  it('uses the main module as the backend package and searches the root after the global folders', async () => {
+    const backstageRoot = path.resolve(__dirname, '../../../..');
+    // A process manager can set the script path to its own entry point, which
+    // leaves the main module as the only way to find the backend package
+    const backendEntry = path.join(
+      backstageRoot,
+      'packages/backend/src/index.ts',
+    );
+    const wrapperEntry = path.join(
+      backstageRoot,
+      'node_modules/typescript/lib/tsc.js',
+    );
+    for (const startPath of [backendEntry, wrapperEntry]) {
+      expect(fs.existsSync(startPath)).toBe(true);
+    }
+    main.filename = backendEntry;
+    process.argv = [argv[0], wrapperEntry];
+    jest.spyOn(process, 'cwd').mockReturnValue(backstageRoot);
+    const rootNodeModules = path.join(backstageRoot, 'node_modules');
+    const customNodeModules = path.resolve(
+      backstageRoot,
+      '../custom/node_modules',
+    );
+    const outsidePluginDir = path.resolve(
+      backstageRoot,
+      '../outside-dynamic-plugins/my-plugin',
+    );
+    // NODE_PATH does not include the root
+    nodeModule.globalPaths = [customNodeModules];
+
+    const loader = new CommonJSModuleLoader({
+      logger: mockServices.logger.mock(),
+    });
+    await loader.bootstrap(backstageRoot, [outsidePluginDir], new Map());
+
+    const paths: string[] = nodeModule._nodeModulePaths(
+      path.resolve(outsidePluginDir, 'dist'),
+    );
+    expect(paths.slice(0, 4)).toEqual([
+      path.resolve(outsidePluginDir, 'node_modules'),
+      customNodeModules,
+      rootNodeModules,
+      path.join(backstageRoot, 'packages/backend/src/node_modules'),
+    ]);
+    expect(paths).not.toContain(
+      path.join(backstageRoot, 'node_modules/typescript/lib/node_modules'),
     );
   });
 
@@ -125,6 +198,15 @@ describe('CommonJSModuleLoader', () => {
         'project/dynamic-plugins-root/plugin/index.js': pluginSource,
         'outside/plugin/index.js': pluginSource,
         'custom/node_modules/test-shared/index.js': '',
+        // A dynamic plugin with its own copy of @backstage/backend-plugin-api,
+        // and a static copy of the same plugin in the backend package
+        'project/dynamic-plugins-root/test-plugin-dynamic/package.json':
+          JSON.stringify({ name: 'test-plugin-dynamic' }),
+        'project/dynamic-plugins-root/test-plugin-dynamic/node_modules/@backstage/backend-plugin-api/index.js':
+          'exports.resolvePackageJson = name => require.resolve(`${name}/package.json`);',
+        'project/packages/backend/node_modules/test-plugin/package.json': '{}',
+        'project/packages/backend/node_modules/test-backend-only/package.json':
+          '{}',
       },
     });
     const baseDir = fs.realpathSync(mockDir.path);
@@ -137,6 +219,10 @@ describe('CommonJSModuleLoader', () => {
     const customNodeModules = path.join(baseDir, 'custom/node_modules');
     const pluginDir = path.join(backstageRoot, 'dynamic-plugins-root/plugin');
     const outsidePluginDir = path.join(baseDir, 'outside/plugin');
+    const testPluginDir = path.join(
+      backstageRoot,
+      'dynamic-plugins-root/test-plugin-dynamic',
+    );
 
     jest
       .spyOn(process, 'cwd')
@@ -155,11 +241,14 @@ describe('CommonJSModuleLoader', () => {
       realNodeModule.globalPaths = [customNodeModules, rootNodeModules];
       await loader.bootstrap(
         backstageRoot,
-        [pluginDir, outsidePluginDir],
-        new Map(),
+        [pluginDir, outsidePluginDir, testPluginDir],
+        new Map([[testPluginDir, { name: 'test-plugin-dynamic' } as any]]),
       );
       const plugin = await loader.load(pluginDir);
       const outsidePlugin = await loader.load(outsidePluginDir);
+      const bundledBackendPluginApi = await loader.load(
+        path.join(testPluginDir, 'node_modules/@backstage/backend-plugin-api'),
+      );
 
       // The root comes first, then the global folders, and the backend
       // package last
@@ -180,6 +269,18 @@ describe('CommonJSModuleLoader', () => {
           expect.objectContaining({ code: 'MODULE_NOT_FOUND' }),
         );
       }
+
+      // A bundled copy of @backstage/backend-plugin-api finds the dynamic
+      // plugin package before the host, and only then the host
+      expect(bundledBackendPluginApi.resolvePackageJson('test-plugin')).toBe(
+        path.join(testPluginDir, 'package.json'),
+      );
+      expect(
+        bundledBackendPluginApi.resolvePackageJson('test-backend-only'),
+      ).toBe(path.join(backendNodeModules, 'test-backend-only/package.json'));
+      expect(() =>
+        bundledBackendPluginApi.resolvePackageJson('test-missing'),
+      ).toThrow(expect.objectContaining({ code: 'MODULE_NOT_FOUND' }));
     } finally {
       realNodeModule._nodeModulePaths = realNodeModulePaths;
       realNodeModule._resolveFilename = realResolveFilename;

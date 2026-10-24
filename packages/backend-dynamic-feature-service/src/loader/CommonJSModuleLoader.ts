@@ -72,6 +72,9 @@ export class CommonJSModuleLoader implements ModuleLoader {
       backstageRoot,
       oldNodeModulePaths,
     );
+    // The paths that were searched before the host was added, for each list
+    // of search paths returned below
+    const previousSearchPaths = new WeakMap<string[], string[]>();
     this.module._nodeModulePaths = (from: string): string[] => {
       const result: string[] = oldNodeModulePaths(from);
       if (!dynamicPluginsPaths.some(p => from.startsWith(p))) {
@@ -84,7 +87,9 @@ export class CommonJSModuleLoader implements ModuleLoader {
         );
       });
       // The host comes after everything that was searched before, so that a
-      // module that was found before is still found in the same place.
+      // module that was found before is still found in the same place. Node.js
+      // appends its global folders again after these paths, so a module that
+      // is missing everywhere is looked for in them twice.
       const searchPaths = Array.from(
         new Set([
           ...filtered,
@@ -93,6 +98,7 @@ export class CommonJSModuleLoader implements ModuleLoader {
           ...hostNodeModulesPaths,
         ]),
       );
+      previousSearchPaths.set(searchPaths, filtered);
       this.options.logger.debug(
         `Overriding node_modules search path for dynamic plugin ${from} to: ${searchPaths}`,
       );
@@ -117,17 +123,6 @@ export class CommonJSModuleLoader implements ModuleLoader {
       _: boolean,
       options: any,
     ): any => {
-      let errorToThrow: any;
-      try {
-        return oldResolveFileName(request, mod, _, options);
-      } catch (e) {
-        errorToThrow = e;
-        this.options.logger.debug(
-          `Could not resolve '${request}' inside the Core backstage backend application`,
-          e instanceof Error ? e : undefined,
-        );
-      }
-
       // Is this a `resolvePackagePath` call from `@backstage/backend-plugin-api`?
       // This covers both the host application's copy and a bundled copy living
       // inside a dynamic plugin's own node_modules.
@@ -141,6 +136,36 @@ export class CommonJSModuleLoader implements ModuleLoader {
         /[/\\](?:@backstage|packages)[/\\]backend-plugin-api(?:[/\\]|$)/.test(
           mod?.path ?? '',
         );
+
+      // A bundled copy of `@backstage/backend-plugin-api` in a dynamic plugin
+      // searches the host last, after the dynamic plugin packages below, so
+      // that it finds the same package as before the host was added. This
+      // covers calls without explicit paths, which is how
+      // `resolvePackagePath` resolves.
+      const previousPaths =
+        resolvingPackageJsonViaResolvePackagePath && !options?.paths
+          ? mod?.paths && previousSearchPaths.get(mod.paths)
+          : undefined;
+
+      let errorToThrow: any;
+      try {
+        if (previousPaths) {
+          const searchPaths = mod.paths;
+          mod.paths = previousPaths;
+          try {
+            return oldResolveFileName(request, mod, _, options);
+          } finally {
+            mod.paths = searchPaths;
+          }
+        }
+        return oldResolveFileName(request, mod, _, options);
+      } catch (e) {
+        errorToThrow = e;
+        this.options.logger.debug(
+          `Could not resolve '${request}' inside the Core backstage backend application`,
+          e instanceof Error ? e : undefined,
+        );
+      }
 
       if (!resolvingPackageJsonViaResolvePackagePath) {
         throw errorToThrow;
@@ -182,6 +207,19 @@ export class CommonJSModuleLoader implements ModuleLoader {
           return resolvedPath;
         }
       }
+
+      // Last, the host
+      if (previousPaths) {
+        try {
+          const resolvedPath = oldResolveFileName(request, mod, _, options);
+          this.options.logger.info(
+            `Resolved '${request}' at ${resolvedPath} in the host backend`,
+          );
+          return resolvedPath;
+        } catch {
+          // The error from the first attempt is the one to report
+        }
+      }
       throw errorToThrow;
     };
   }
@@ -196,7 +234,9 @@ export class CommonJSModuleLoader implements ModuleLoader {
  * from, limited to those within the Backstage root. These are the lookup
  * chains of the backend package, found through the entry point of the process
  * and the working directory, and of this package, which reaches the packages
- * that a package manager keeps out of the root node_modules.
+ * that a package manager keeps out of the root node_modules. An entry point in
+ * an installed package, such as a process manager that starts the backend, is
+ * not the backend package, so its lookup chain is not used.
  */
 function getHostNodeModulesPaths(
   backstageRoot: string,
@@ -211,7 +251,7 @@ function getHostNodeModulesPaths(
     process.cwd(),
   ]) {
     const dir = startPath && getDirectory(path.resolve(startPath));
-    if (dir) {
+    if (dir && !isInInstalledPackage(backstageRoot, dir)) {
       dirs.push(dir);
     }
   }
@@ -241,5 +281,20 @@ function getDirectory(p: string): string | undefined {
     return stats.isDirectory() ? p : path.dirname(p);
   } catch {
     return undefined;
+  }
+}
+
+// Whether the directory is inside a node_modules directory of the Backstage
+// root, or cannot be read. Workspace packages, such as the backend package,
+// are never inside node_modules.
+function isInInstalledPackage(backstageRoot: string, dir: string): boolean {
+  try {
+    const relativeDir = path.relative(
+      fs.realpathSync(backstageRoot),
+      fs.realpathSync(dir),
+    );
+    return relativeDir.split(path.sep).includes('node_modules');
+  } catch {
+    return true;
   }
 }
