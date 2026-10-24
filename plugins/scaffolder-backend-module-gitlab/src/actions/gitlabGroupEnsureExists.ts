@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { GroupSchema, CreateGroupOptions } from '@gitbeaker/rest';
@@ -21,7 +22,10 @@ import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
 /**
- * Creates an `gitlab:group:ensureExists` Scaffolder action.
+ * Creates a `gitlab:group:ensureExists` Scaffolder action.
+ *
+ * Reuses an existing user namespace when it is the only entry in the path.
+ * User namespaces cannot contain subgroups.
  *
  * @public
  */
@@ -74,7 +78,8 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         groupId: z =>
           z
             .number({
-              description: 'The id of the innermost sub-group',
+              description:
+                'The ID of the innermost subgroup or existing user namespace',
             })
             .optional(),
       },
@@ -112,6 +117,24 @@ export const createGitlabGroupEnsureExistsAction = (options: {
           // Any other error should be thrown
           if (error.cause?.response?.status !== 404) {
             throw error;
+          }
+        }
+        if (!subGroup && i === 0) {
+          try {
+            const namespace = await api.Namespaces.show(fullPath);
+            if (namespace.kind === 'user') {
+              if (pathParts.length > 1) {
+                throw new InputError(
+                  `Cannot create subgroups under user namespace "${fullPath}"`,
+                );
+              }
+              ctx.output('groupId', namespace.id);
+              return;
+            }
+          } catch (error: any) {
+            if (error.cause?.response?.status !== 404) {
+              throw error;
+            }
           }
         }
         if (!subGroup) {
