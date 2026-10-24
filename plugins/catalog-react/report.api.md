@@ -15,6 +15,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityOrderQuery } from '@backstage/catalog-client';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -381,6 +382,7 @@ export type EntityFilter = {
     string,
     string | symbol | (string | symbol)[]
   >;
+  getCatalogQuery?: () => FilterPredicate | undefined;
   filterEntity?: (entity: Entity) => boolean;
   toQueryValue?: () => string | string[];
 };
@@ -405,8 +407,10 @@ export interface EntityInfoCardProps {
 // @public
 export class EntityKindFilter implements EntityFilter {
   constructor(value: string, label: string);
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate;
   // (undocumented)
   readonly label: string;
   // (undocumented)
@@ -434,8 +438,10 @@ export class EntityLifecycleFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate;
   // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
@@ -517,8 +523,10 @@ export class EntityNamespaceFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate;
   // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
@@ -552,8 +560,10 @@ export class EntityOrphanFilter implements EntityFilter {
   constructor(value: boolean);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate | undefined;
   // (undocumented)
   readonly value: boolean;
 }
@@ -563,8 +573,10 @@ export class EntityOwnerFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate;
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
@@ -754,8 +766,10 @@ export class EntityTagFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate | undefined;
   // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
@@ -791,8 +805,10 @@ export class EntityTextFilter implements EntityFilter {
 // @public
 export class EntityTypeFilter implements EntityFilter {
   constructor(value: string | string[]);
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate | undefined;
   // (undocumented)
   getTypes(): string[];
   // (undocumented)
@@ -820,8 +836,10 @@ export class EntityUserFilter implements EntityFilter {
   static all(): EntityUserFilter;
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
+  // @deprecated (undocumented)
   getCatalogFilters(): Record<string, string[]>;
+  // (undocumented)
+  getCatalogQuery(): FilterPredicate | undefined;
   // (undocumented)
   static owned(ownershipEntityRefs: string[]): EntityUserFilter;
   // (undocumented)

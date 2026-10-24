@@ -22,7 +22,7 @@ import {
   serializeEntityToJsonRow,
   CatalogExportSettingsColumn,
 } from './serializeEntities';
-import { CatalogExportType } from '../CatalogExportButton';
+import { CatalogExportType } from '../CatalogExportType';
 import type {
   CatalogApi,
   StreamEntitiesRequest,

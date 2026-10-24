@@ -49,7 +49,6 @@ export const TagDefinition = defineComponent<TagOwnProps>()({
     noTrack: {},
     icon: {},
     size: { dataAttribute: true, default: 'small' },
-    href: {},
     children: {},
     className: {},
   },

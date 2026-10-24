@@ -108,12 +108,7 @@ describe('CatalogTable component', () => {
                 () => false,
                 () => false,
               ),
-              kind: {
-                value: 'component',
-                label: 'Component',
-                getCatalogFilters: () => ({ kind: 'component' }),
-                toQueryValue: () => 'component',
-              },
+              kind: new EntityKindFilter('component', 'Component'),
             },
           }}
         >
@@ -306,7 +301,7 @@ describe('CatalogTable component', () => {
               entities: kindEntities,
               filters: {
                 kind: kind
-                  ? new EntityKindFilter(kind.toLocaleLowerCase('en-US'), kind)
+                  ? new EntityKindFilter(kind.toLowerCase(), kind)
                   : undefined,
               },
             }}
@@ -425,12 +420,7 @@ describe('CatalogTable component', () => {
           value={{
             entities: [entity],
             filters: {
-              kind: {
-                value: 'api',
-                label: 'API',
-                getCatalogFilters: () => ({ kind: 'api' }),
-                toQueryValue: () => 'api',
-              },
+              kind: new EntityKindFilter('api', 'API'),
             },
           }}
         >

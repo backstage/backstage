@@ -116,10 +116,13 @@ describe('gitlab:repo:push', () => {
   describe('Push changes to gitlab repository with a specific source and target path', () => {
     it(`Should ${examples[1].description}`, async () => {
       const input = yaml.parse(examples[1].example).steps[0].input;
+      // Example uses sourcePath: 'src' and targetPath: 'dest', so the
+      // workspace fixture must place the file inside `src/` for it to be
+      // picked up by the action.
       mockDir.setContent({
         [workspacePath]: {
           'abcd.txt': 'Test message',
-          source: {
+          src: {
             'abcd.txt': 'Test message',
           },
         },
@@ -135,7 +138,7 @@ describe('gitlab:repo:push', () => {
         [
           {
             action: 'create',
-            filePath: 'abcd.txt',
+            filePath: 'dest/abcd.txt',
             content: 'VGVzdCBtZXNzYWdl',
             encoding: 'base64',
             execute_filemode: false,

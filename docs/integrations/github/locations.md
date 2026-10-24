@@ -28,7 +28,7 @@ integrations:
       token: ${GHE_TOKEN}
 ```
 
-:::note Note
+:::note
 
 A public GitHub provider is added automatically at startup for convenience, so you only need to list it if you want to supply a [token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 

@@ -214,18 +214,7 @@ const config: Config = {
     ],
   ],
   markdown: {
-    preprocessor({ fileContent }) {
-      // Replace all HTML comments with empty strings as these are not supported by MDXv2.
-      function removeHtmlComments(input) {
-        let previous;
-        do {
-          previous = input;
-          input = input.replace(/<!--.*?-->/gs, '');
-        } while (input !== previous);
-        return input;
-      }
-      return removeHtmlComments(fileContent);
-    },
+    mermaid: true,
     format: 'detect',
     hooks: {
       onBrokenMarkdownLinks: 'log',
@@ -456,7 +445,7 @@ const config: Config = {
       },
     ],
   ],
-  themes: ['docusaurus-theme-openapi-docs'],
+  themes: ['docusaurus-theme-openapi-docs', '@docusaurus/theme-mermaid'],
   themeConfig: {
     metadata: [
       {
@@ -690,7 +679,7 @@ const config: Config = {
       theme: backstageTheme,
       // Supported languages: https://prismjs.com/#supported-languages
       // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
-      additionalLanguages: ['docker', 'bash'],
+      additionalLanguages: ['docker', 'bash', 'log', 'shell-session'],
       magicComments: [
         // Extend the default highlight class name
         {

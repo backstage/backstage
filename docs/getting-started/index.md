@@ -7,7 +7,7 @@ description: How to create and run a Standalone Backstage.
 
 Audience: Developers and Admins
 
-:::note Note
+:::note
 It is not required, although recommended to have a basic understanding of [Yarn](https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js) and [npm](https://docs.npmjs.com/about-npm) before starting this guide.
 :::
 
@@ -17,7 +17,7 @@ This guide walks through how to create your own Backstage customizable app. This
 
 By the end of this guide, you will have a standalone Backstage installation running locally with an in-memory `SQLite` database and demo content. To be clear, this is not a production-ready installation, and it does not contain information specific to your organization until you set up integrations with your specific data sources!
 
-:::note Contributors
+:::note[Contributors]
 
 If you are planning to contribute a new feature or bug fix to the Backstage project, we advise you to follow the [Contributors](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#get-started) guide instead to do a repository-based installation.
 
@@ -34,7 +34,7 @@ needed for you to run your app.
 
 Below is a simplified layout of the files and folders generated when creating an app.
 
-```
+```text
 app
 ├── app-config.yaml
 ├── catalog-info.yaml
@@ -106,7 +106,7 @@ To create the application:
 
 2. If this is the first time that you are installing a Backstage application on this device, the following question is displayed. Enter `y` and select `Enter` to proceed with the installation.
 
-   ```console
+   ```text
    Need to install the following packages:
    @backstage/create-app@<version>
    ok to proceed? (y)
@@ -114,7 +114,7 @@ To create the application:
 
 3. Enter the name for your application and select `Enter`. This is the root directory of your application. In this example, the name is set to `my-backstage-app`.
 
-   ```console
+   ```text
    ? Enter a name for the app [required] my-backstage-app
 
    Creating the app...
@@ -159,7 +159,7 @@ To run the application:
 
 As the frontend and backend are starting, you will see output similar to the following. The output shows that the app and backend are starting up with the configuration coming from `app-config.yaml`. You will see the plugins being initialized, and authorization and permissions being setup. In addition you will see a series of REST API calls for those plugins that use a service backend, such as the service catalog.
 
-```
+```log
 Starting app, backend
 Loaded config from app-config.yaml
 .
@@ -180,7 +180,7 @@ Rspack compiled successfully
 
 Once the Backstage UI is displayed, you can start exploring the demo immediately.
 
-:::tip Browser window didn't open with yarn start
+:::tip[Browser window didn't open with yarn start]
 
 When you see the message `Rspack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
 

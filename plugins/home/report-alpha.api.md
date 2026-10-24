@@ -53,6 +53,15 @@ const _default: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
+    'home-page-widget:home/most-visited': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'most-visited';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
     'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
       name: 'random-joke';
@@ -101,15 +110,6 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       kind: 'home-page-widget';
       name: 'toolkit';
-      params: HomePageWidgetBlueprintParams;
-    }>;
-    'home-page-widget:home/top-visited': OverridableExtensionDefinition<{
-      kind: 'home-page-widget';
-      name: 'top-visited';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
-      inputs: {};
       params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/world-clock': OverridableExtensionDefinition<{

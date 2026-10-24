@@ -1,5 +1,50 @@
 # @backstage/filter-predicates
 
+## 0.2.0
+
+### Minor Changes
+
+- 11f608b: **BREAKING**: The `FilterPredicate` type, the zod schemas and `parseFilterPredicate` now only accept objects at the root of a predicate. Primitive values such as `"component"` or `true` were previously accepted at the root, but no API that accepts filter predicates could match them in a meaningful way. Primitive values are still allowed as values to match against properties, and as the operand of `$contains` to match arrays of primitive values, for example `{ "metadata.tags": { "$contains": "java" } }`.
+
+  A new `AnyFilterPredicate` type describes predicates that may also be primitive values at the root, which is equivalent to the previous `FilterPredicate` type. It is used for the operand of `$contains`, and is accepted by `evaluateFilterPredicate`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 603e704: The JSON Schema exported for filter predicates can now be compiled by validators built on RE2 (for example Go's `regexp`, used by Amazon Bedrock AgentCore Gateway), which previously rejected the predicate key pattern and failed every call to tools such as `query-catalog-entities`. Accepted keys are unchanged, except that a key whose first character is U+2028 or U+2029 is no longer rejected.
+- 6dcb08a: Reduced the frontend bundle size by letting bundlers tree-shake zod, which previously pulled every zod locale into the bundle. Takes effect on zod 4.5.0 and newer.
+- Updated dependencies
+  - @backstage/config@1.3.9
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 6dcb08a: Reduced the frontend bundle size by letting bundlers tree-shake zod, which previously pulled every zod locale into the bundle. Takes effect on zod 4.5.0 and newer.
+
 ## 0.1.4
 
 ### Patch Changes

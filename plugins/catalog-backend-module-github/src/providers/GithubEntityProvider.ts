@@ -363,10 +363,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private async onPush(event: PushEvent) {
     const configOrganizations = (await this.getOrganizations()).map(org =>
-      org.toLocaleLowerCase('en-US'),
+      org.toLowerCase(),
     );
-    const eventOrganization =
-      event.organization?.login.toLocaleLowerCase('en-US');
+    const eventOrganization = event.organization?.login.toLowerCase();
 
     if (
       !eventOrganization ||
@@ -455,10 +454,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private async onRepoChange(event: RepositoryEvent) {
     const configOrganizations = (await this.getOrganizations()).map(org =>
-      org.toLocaleLowerCase('en-US'),
+      org.toLowerCase(),
     );
-    const eventOrganization =
-      event.organization?.login.toLocaleLowerCase('en-US');
+    const eventOrganization = event.organization?.login.toLowerCase();
 
     if (
       !eventOrganization ||

@@ -94,7 +94,6 @@ export type UnknownFilterPredicateOperator = {
  */
 export type FilterPredicate =
   | FilterPredicateExpression
-  | FilterPredicatePrimitive
   | {
       /**
        * Asserts that all of the given predicates must be true.
@@ -114,6 +113,49 @@ export type FilterPredicate =
       $not: FilterPredicate;
     }
   | UnknownFilterPredicateOperator;
+
+/**
+ * A filter predicate that can also be a primitive value at the root.
+ *
+ * @remarks
+ *
+ * This is the type of the operand of the `$contains` value matcher, where the
+ * array elements being matched may be primitive values rather than objects.
+ *
+ * Example that matches entities that have either a `java` or a `go` tag:
+ *
+ * ```json
+ * {
+ *   "metadata.tags": { "$contains": { "$any": ["java", "go"] } }
+ * }
+ * ```
+ *
+ * APIs that accept filters for structured values should use
+ * {@link FilterPredicate} instead.
+ *
+ * @public
+ */
+export type AnyFilterPredicate =
+  | FilterPredicate
+  | FilterPredicatePrimitive
+  | {
+      /**
+       * Asserts that all of the given predicates must be true.
+       */
+      $all: AnyFilterPredicate[];
+    }
+  | {
+      /**
+       * Asserts that at least one of the given predicates must be true.
+       */
+      $any: AnyFilterPredicate[];
+    }
+  | {
+      /**
+       * Asserts that the given predicate must not be true.
+       */
+      $not: AnyFilterPredicate;
+    };
 
 /**
  * A filter predicate expression that matches against one or more object
@@ -182,7 +224,7 @@ export type FilterPredicateValue =
        * Asserts that the property value is an array, and that at least one of
        * its elements matches the given predicate.
        */
-      $contains: FilterPredicate;
+      $contains: AnyFilterPredicate;
     }
   | {
       /**

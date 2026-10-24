@@ -2,8 +2,13 @@
   "skills": [
     {
       "name": "mui-to-bui-migration",
-      "description": "Migrate Backstage plugins from Material-UI (MUI) to Backstage UI (BUI). Use this skill when migrating components, updating imports, replacing styling patterns, or converting MUI components to their BUI equivalents.",
-      "files": ["SKILL.md"]
+      "description": "Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use when migrating MUI components and styles, running @backstage/mui4-to-bui-migration-recipe, or resolving TODO(backstage-codemod) after a BUI migration.",
+      "files": [
+        "SKILL.md",
+        "references/standalone-migration.md",
+        "references/out-of-scope.md",
+        "references/leftover-cleanup.md"
+      ]
     },
     {
       "name": "app-frontend-system-migration",
@@ -19,6 +24,19 @@
       "name": "plugin-full-frontend-system-migration",
       "description": "Fully migrate a Backstage plugin to the new frontend system, dropping all old system support. Use this skill for internal plugins that only need to run in a single app, or when you are ready to remove backward compatibility entirely.",
       "files": ["SKILL.md"]
+    },
+    {
+      "name": "frontend-plugin-development",
+      "description": "Reference for building, wiring, running, and testing Backstage frontend plugins on the new frontend system. Use this skill when writing or changing a plugin built with `createFrontendPlugin`, adding entity page content, setting up a plugin's dev app or tests, wiring a plugin into an app, or debugging why a plugin, page, tab, API, or feature flag does not show up or fails at startup.",
+      "files": [
+        "SKILL.md",
+        "references/plugin-packaging.md",
+        "references/app-integration.md",
+        "references/entity-content.md",
+        "references/dev-app.md",
+        "references/testing.md",
+        "references/troubleshooting.md"
+      ]
     },
     {
       "name": "plugin-analytics-instrumentation",

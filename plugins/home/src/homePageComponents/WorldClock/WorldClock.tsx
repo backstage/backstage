@@ -40,8 +40,8 @@ export const WorldClock = (props: {
 }) => {
   const { clockConfigs, customTimeFormat } = props;
   const classes = useStyles();
-  const [clocks, setClocks] = useState(
-    getTimes(clockConfigs ?? [], customTimeFormat),
+  const [clocks, setClocks] = useState(() =>
+    getTimes(clockConfigs, customTimeFormat),
   );
 
   useEffect(() => {

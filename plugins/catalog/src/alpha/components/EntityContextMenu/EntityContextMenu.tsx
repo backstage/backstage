@@ -75,7 +75,7 @@ function EntityContextMenuItem(props: {
   item: EntityContextMenuItemDataWithNode;
 }) {
   return (
-    <ExtensionBoundary node={props.item.node}>
+    <ExtensionBoundary node={props.item.node} errorPresentation="error-api">
       <EntityContextMenuItemContent data={props.item.data} />
     </ExtensionBoundary>
   );

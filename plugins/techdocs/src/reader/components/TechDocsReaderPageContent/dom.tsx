@@ -80,8 +80,10 @@ export const useInitialRedirect = (defaultPath?: string) => {
  */
 export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
-  defaultPath?: string,
+  options?: { defaultPath?: string; withFeedbackLink?: boolean },
 ): Element | null => {
+  const { defaultPath, withFeedbackLink = true } = options ?? {};
+
   const navigate = useNavigateUrl();
   const theme = useTheme();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
@@ -198,7 +200,7 @@ export const useTechDocsReaderDom = (
         addSidebarToggle(),
         removeMkdocsHeader(),
         simplifyMkdocsFooter(),
-        addGitFeedbackLink(scmIntegrationsApi),
+        ...(withFeedbackLink ? [addGitFeedbackLink(scmIntegrationsApi)] : []),
         stylesTransformer,
       ]),
     [
@@ -208,6 +210,7 @@ export const useTechDocsReaderDom = (
       techdocsStorageApi,
       sanitizerTransformer,
       stylesTransformer,
+      withFeedbackLink,
     ],
   );
 

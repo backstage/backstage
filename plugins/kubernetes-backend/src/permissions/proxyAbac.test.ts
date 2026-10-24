@@ -22,7 +22,7 @@ import { NotAllowedError, serializeError } from '@backstage/errors';
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { rest } from 'msw';
+import { http, HttpResponse, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 
@@ -126,15 +126,15 @@ describe('Kubernetes Proxy ABAC enforcement', () => {
     ] as ClusterDetails[]);
 
     worker.use(
-      rest.get('https://k8s.example.com/*', (_req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ kind: 'Pod', metadata: {} }));
-      }),
-      rest.delete('https://k8s.example.com/*', (_req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ status: 'deleted' }));
-      }),
-      rest.post('https://k8s.example.com/*', (_req, res, ctx) => {
-        return res(ctx.status(201), ctx.json({ kind: 'Pod', metadata: {} }));
-      }),
+      http.get('https://k8s.example.com/*', () =>
+        HttpResponse.json({ kind: 'Pod', metadata: {} }),
+      ),
+      http.delete('https://k8s.example.com/*', () =>
+        HttpResponse.json({ status: 'deleted' }),
+      ),
+      http.post('https://k8s.example.com/*', () =>
+        HttpResponse.json({ kind: 'Pod', metadata: {} }, { status: 201 }),
+      ),
     );
   });
 
@@ -173,7 +173,9 @@ describe('Kubernetes Proxy ABAC enforcement', () => {
         requestPromise.set(headerName, headerValue);
       }
     }
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+    worker.use(
+      http.all(/^http:\/\/127\.0\.0\.1:\d+\/proxy\//, () => passthrough()),
+    );
     return requestPromise;
   }
 

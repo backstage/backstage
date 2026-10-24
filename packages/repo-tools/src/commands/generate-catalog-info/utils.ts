@@ -59,9 +59,6 @@ export const safeEntityName = (packageName: string): string => {
   return packageName
     .replace(/^[^\w\s]|[^a-z0-9]$/g, '')
     .replace(/[^A-Za-z0-9_\-.]+/g, '-')
-    .replace(
-      /([a-z])([A-Z])/g,
-      (_, a, b) => `${a}-${b.toLocaleLowerCase('en-US')}`,
-    )
-    .replace(/^(.)/, (_, a) => a.toLocaleLowerCase('en-US'));
+    .replace(/([a-z])([A-Z])/g, (_, a, b) => `${a}-${b.toLowerCase()}`)
+    .replace(/^(.)/, (_, a) => a.toLowerCase());
 };

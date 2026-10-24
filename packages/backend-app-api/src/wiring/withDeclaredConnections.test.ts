@@ -46,7 +46,7 @@ describe('withDeclaredConnections', () => {
 
     const connection = await wrapped.find({
       type: 'github',
-      url: 'https://github.com/my-org/my-repo',
+      query: { url: 'https://github.com/my-org/my-repo' },
       authMethods: ['token'],
     });
 
@@ -67,7 +67,7 @@ describe('withDeclaredConnections', () => {
     await expect(
       wrapped.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(
@@ -92,7 +92,7 @@ describe('withDeclaredConnections', () => {
     await expect(
       moduleA.find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        query: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).resolves.toMatchObject({ host: 'github.com' });
@@ -100,7 +100,7 @@ describe('withDeclaredConnections', () => {
     await expect(
       moduleA.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(/undeclared connection of type "gitlab"/);
@@ -108,7 +108,7 @@ describe('withDeclaredConnections', () => {
     await expect(
       moduleB.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).resolves.toMatchObject({ host: 'gitlab.com' });
@@ -116,7 +116,7 @@ describe('withDeclaredConnections', () => {
     await expect(
       moduleB.find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        query: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(/undeclared connection of type "github"/);

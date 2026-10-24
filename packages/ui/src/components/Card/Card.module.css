@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@layer tokens, base, components, utilities;
+@layer tokens, base, components, theme, utilities;
 
 @layer components {
   .bui-Card {
@@ -22,6 +22,7 @@
     flex-direction: column;
     border-radius: var(--bui-radius-3);
     color: var(--bui-fg-primary);
+    line-height: 1.15;
     overflow: auto;
     min-height: 0;
     width: 100%;

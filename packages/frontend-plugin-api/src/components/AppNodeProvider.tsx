@@ -19,7 +19,7 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import { AppNode } from '../apis';
+import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { ReactNode } from 'react';
 
 const CONTEXT_KEY = 'app-node-context';

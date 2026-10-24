@@ -298,7 +298,7 @@ catalog:
 
 This provider supports multiple organizations and apps via unique provider IDs.
 
-:::note Note
+:::note
 
 It is possible but certainly not recommended to skip the provider ID level.
 If you do so, `default` will be used as provider ID.

@@ -46,7 +46,7 @@ const getIcon = ({ type }: Repository) => {
 };
 
 const getName = ({ type }: Repository) => {
-  return type.charAt(0).toLocaleUpperCase('en-US') + type.slice(1);
+  return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
 const getUrl = (repository: Repository, template: ReportIssueTemplate) => {

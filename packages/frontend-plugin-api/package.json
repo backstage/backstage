@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.18.0-next.0",
+  "version": "0.18.2",
   "backstage": {
     "role": "web-library"
   },
@@ -49,16 +49,19 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@standard-schema/spec": "^1.1.0"
+    "@standard-schema/spec": "^1.1.0",
+    "use-sync-external-store": "^1.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
+    "@types/use-sync-external-store": "^1.0.0",
     "history": "^5.3.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

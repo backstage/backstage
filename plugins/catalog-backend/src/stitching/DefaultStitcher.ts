@@ -56,9 +56,7 @@ export class DefaultStitcher {
       knex: options.knex,
       logger: options.logger,
       metrics: options.metrics,
-      strategy: stitchingStrategyFromConfig(config, {
-        logger: options.logger,
-      }),
+      strategy: stitchingStrategyFromConfig(config),
     });
   }
 
@@ -97,6 +95,7 @@ export class DefaultStitcher {
           entityRef: item.entityRef,
           stitchTicket: item.stitchTicket,
           stitchRequestedAt: item.stitchRequestedAt,
+          stitchLeaseExpiresAt: item.stitchLeaseExpiresAt,
         });
       },
     });
@@ -130,6 +129,7 @@ export class DefaultStitcher {
     entityRef: string;
     stitchTicket: string;
     stitchRequestedAt?: DateTime;
+    stitchLeaseExpiresAt: DeferredStitchItem['stitchLeaseExpiresAt'];
   }) {
     const track = this.tracker.stitchStart({
       entityRef: options.entityRef,
@@ -142,6 +142,7 @@ export class DefaultStitcher {
         logger: this.logger,
         entityRef: options.entityRef,
         stitchTicket: options.stitchTicket,
+        stitchLeaseExpiresAt: options.stitchLeaseExpiresAt,
       });
       track.markComplete(result);
     } catch (error) {

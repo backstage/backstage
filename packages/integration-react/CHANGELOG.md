@@ -1,5 +1,57 @@
 # @backstage/integration-react
 
+## 1.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/config@1.3.10
+  - @backstage/core-plugin-api@1.12.11
+
+## 1.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+
+## 1.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/config@1.3.9
+  - @backstage/core-plugin-api@1.12.10
+
+## 1.2.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 1.2.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 1.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/integration@2.1.0
+
 ## 1.2.21-next.1
 
 ### Patch Changes

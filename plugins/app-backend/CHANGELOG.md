@@ -1,5 +1,87 @@
 # @backstage/plugin-app-backend
 
+## 0.5.19
+
+### Patch Changes
+
+- a18df8f: Added optional `app.publicConfig` allowlists for config key paths and extension IDs exposed to unauthenticated users of protected apps. Authenticated users retain access to all frontend-visible configuration, and existing behavior is unchanged unless filtering is enabled.
+- c55505e: Fix protected app sign-in returning a 404 when an authenticated browser repeats the sign-in handoff for the same user.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/plugin-app-node@0.1.50
+
+## 0.5.19-next.2
+
+### Patch Changes
+
+- c55505e: Fix protected app sign-in returning a 404 when an authenticated browser repeats the sign-in handoff for the same user.
+
+## 0.5.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-app-node@0.1.50-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+
+## 0.5.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-app-node@0.1.50-next.0
+
+## 0.5.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/config-loader@1.11.3
+  - @backstage/plugin-app-node@0.1.49
+
+## 0.5.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-app-node@0.1.49-next.1
+
+## 0.5.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-app-node@0.1.49-next.0
+
+## 0.5.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-app-node@0.1.48
+
 ## 0.5.17-next.1
 
 ### Patch Changes

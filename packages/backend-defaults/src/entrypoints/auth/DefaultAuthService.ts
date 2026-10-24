@@ -22,7 +22,7 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
 import { ExternalAuthTokenHandler } from './external/ExternalAuthTokenHandler';
@@ -110,6 +110,7 @@ export class DefaultAuthService implements AuthService {
         externalResult.subject,
         undefined,
         externalResult.accessRestrictions,
+        externalResult.allAccessRestrictions,
       );
     }
 
@@ -168,11 +169,31 @@ export class DefaultAuthService implements AuthService {
     // by checking the public keys endpoint existence.
     switch (type) {
       // TODO: Check whether the principal is ourselves
-      case 'service':
+      case 'service': {
+        const servicePrincipal =
+          internalForward.principal as BackstageServicePrincipal;
+        if (servicePrincipal.accessRestrictions) {
+          const targetRestrictions =
+            internalForward.allAccessRestrictions?.get(targetPluginId);
+          if (!targetRestrictions) {
+            throw new NotAllowedError(
+              `Access to target plugin '${targetPluginId}' is not included in token's access restrictions`,
+            );
+          }
+          if (
+            targetRestrictions.permissionNames?.length ||
+            targetRestrictions.permissionAttributes
+          ) {
+            throw new NotAllowedError(
+              `Access to target plugin '${targetPluginId}' is restricted and cannot be delegated`,
+            );
+          }
+        }
         return this.pluginTokenHandler.issueToken({
           pluginId: this.pluginId,
           targetPluginId,
         });
+      }
       case 'user': {
         const { token } = internalForward;
         if (!token) {

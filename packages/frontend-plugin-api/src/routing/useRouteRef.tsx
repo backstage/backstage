@@ -15,12 +15,25 @@
  */
 
 import { useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
-import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+import {
+  AppLifecycleApi,
+  appLifecycleApiRef,
+  RouteFunc,
+  routeResolutionApiRef,
+  useApi,
+  useApiHolder,
+} from '../apis';
+
+const appLifecycleApiFallback: AppLifecycleApi = {
+  isFinalized: () => true,
+  subscribe: () => () => {},
+};
 
 /**
  * React hook for constructing URLs to routes.
@@ -41,10 +54,18 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined {
   const { pathname } = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
+  const appLifecycleApi =
+    useApiHolder().get(appLifecycleApiRef) ?? appLifecycleApiFallback;
+  const isFinalized = useSyncExternalStore(
+    appLifecycleApi.subscribe,
+    appLifecycleApi.isFinalized,
+  );
 
   const routeFunc = useMemo(
     () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
-    [routeResolutionApi, routeRef, pathname],
+    // Resolve before app is finalized and re-evaluate again after
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [routeResolutionApi, routeRef, pathname, isFinalized],
   );
 
   return routeFunc;

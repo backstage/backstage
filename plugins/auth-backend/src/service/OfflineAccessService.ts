@@ -307,14 +307,17 @@ export class OfflineAccessService {
 
   /**
    * Revoke all refresh tokens for a user
+   *
+   * @returns The number of revoked refresh tokens
    */
   async revokeRefreshTokensByUserEntityRef(
     userEntityRef: string,
-  ): Promise<void> {
+  ): Promise<number> {
     const deletedCount =
       await this.#offlineSessionDb.deleteSessionsByUserEntityRef(userEntityRef);
     this.#logger.debug(
       `Revoked ${deletedCount} refresh tokens for user ${userEntityRef}`,
     );
+    return deletedCount;
   }
 }

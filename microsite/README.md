@@ -45,7 +45,7 @@ This command generates static content into the `build` directory, which is what 
 
 Your project file structure should look something like this
 
-```
+```text
 my-docusaurus/
   docs/
     doc-1.md

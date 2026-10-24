@@ -37,6 +37,9 @@ export const GithubRepoPicker = (
   props: BaseRepoUrlPickerProps<{
     allowedOwners?: string[];
     accessToken?: string;
+    ownerLabel?: string;
+    ownerDescription?: string;
+    disableRepoAutocomplete?: boolean;
   }>,
 ) => {
   const theme = useScaffolderTheme();
@@ -47,6 +50,9 @@ export const GithubRepoPicker = (
     onChange,
     accessToken,
     isDisabled,
+    ownerLabel,
+    ownerDescription,
+    disableRepoAutocomplete,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -57,7 +63,6 @@ export const GithubRepoPicker = (
   const [availableRepositoriesWithOwner, setAvailableRepositoriesWithOwner] =
     useState<{ owner: string; name: string }[]>([]);
 
-  // Update available repositories with owner when client is available
   const updateAvailableRepositoriesWithOwner = useCallback(() => {
     if (!scaffolderApi.autocomplete || !accessToken || !host) {
       setAvailableRepositoriesWithOwner([]);
@@ -96,12 +101,24 @@ export const GithubRepoPicker = (
 
   // Update available repositories when available repositories with owner change or when owner changes
   const updateAvailableRepositories = useCallback(() => {
+    // Only surface repository suggestions when repo autocomplete is enabled.
+    // Owner suggestions are still derived from the fetch above.
+    if (disableRepoAutocomplete) {
+      onChange({ availableRepos: [] });
+      return;
+    }
+
     const availableRepos = availableRepositoriesWithOwner.flatMap(r =>
       r.owner === owner ? [{ name: r.name }] : [],
     );
 
     onChange({ availableRepos });
-  }, [availableRepositoriesWithOwner, owner, onChange]);
+  }, [
+    disableRepoAutocomplete,
+    availableRepositoriesWithOwner,
+    owner,
+    onChange,
+  ]);
 
   useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 
@@ -112,8 +129,10 @@ export const GithubRepoPicker = (
       return (
         <BuiSelect
           className={overrides.select}
-          label={t('fields.githubRepoPicker.owner.title')}
-          description={t('fields.githubRepoPicker.owner.description')}
+          label={ownerLabel ?? t('fields.githubRepoPicker.owner.title')}
+          description={
+            ownerDescription ?? t('fields.githubRepoPicker.owner.description')
+          }
           isDisabled={isDisabled || allowedOwners.length === 1}
           isInvalid={rawErrors?.length > 0 && !owner}
           selectedKey={owner ?? null}
@@ -130,8 +149,10 @@ export const GithubRepoPicker = (
 
     return (
       <BuiAutocomplete
-        label={t('fields.githubRepoPicker.owner.inputTitle')}
-        description={t('fields.githubRepoPicker.owner.description')}
+        label={ownerLabel ?? t('fields.githubRepoPicker.owner.inputTitle')}
+        description={
+          ownerDescription ?? t('fields.githubRepoPicker.owner.description')
+        }
         inputValue={owner ?? ''}
         onInputChange={value => onChange({ owner: value })}
         onSelectionChange={(key: Key | null) => {
@@ -162,7 +183,7 @@ export const GithubRepoPicker = (
           <>
             <MuiSelect
               native
-              label={t('fields.githubRepoPicker.owner.title')}
+              label={ownerLabel ?? t('fields.githubRepoPicker.owner.title')}
               onChange={s =>
                 onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
               }
@@ -181,7 +202,9 @@ export const GithubRepoPicker = (
             renderInput={params => (
               <MuiTextField
                 {...params}
-                label={t('fields.githubRepoPicker.owner.inputTitle')}
+                label={
+                  ownerLabel ?? t('fields.githubRepoPicker.owner.inputTitle')
+                }
                 disabled={isDisabled}
                 required
               />
@@ -192,7 +215,7 @@ export const GithubRepoPicker = (
           />
         )}
         <FormHelperText>
-          {t('fields.githubRepoPicker.owner.description')}
+          {ownerDescription ?? t('fields.githubRepoPicker.owner.description')}
         </FormHelperText>
       </FormControl>
     </>

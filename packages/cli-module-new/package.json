@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-new",
-  "version": "0.1.6-next.0",
+  "version": "0.1.8",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -47,7 +47,7 @@
     "recursive-readdir": "^2.2.2",
     "semver": "^7.5.3",
     "yaml": "^2.0.0",
-    "zod": "^3.25.76",
+    "zod": "^4.0.0",
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {

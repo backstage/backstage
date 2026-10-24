@@ -1,0 +1,311 @@
+---
+id: consuming-connections
+title: Consume connections
+description: Declare and look up connections from a Backstage backend plugin or module
+---
+
+A backend plugin or module consumes a connection by adding a
+[connection declaration](./01-concepts.md#connection-declaration), requesting the
+plugin-scoped [connection service](./01-concepts.md#connection-service), and
+calling `ConnectionsService.find` with a
+[lookup query](./01-concepts.md#lookup-queries) and the
+[authentication methods](./01-concepts.md#authentication-method) it understands.
+
+:::caution[Experimental service]
+The public `@backstage/connections` package contains the shared service
+contract, connection types, and type helpers. Import the experimental service
+reference and `declareConnection` helper from
+`@backstage/backend-plugin-api/alpha`. Both APIs are experimental. The service
+implementation remains internal; plugins should not depend on
+`@backstage/connections-node`.
+:::
+
+Backends created with `createBackend` from `@backstage/backend-defaults` include
+the default connections service. Tests using `startTestBackend` also include
+it. Custom backends using `createSpecializedBackend` can install
+`connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
+
+## Get started with a backend plugin
+
+Configure a GitHub connection in `app-config.yaml` and supply `GITHUB_TOKEN`
+through your backend's environment:
+
+```yaml title="app-config.yaml"
+connections:
+  - type: github
+    host: github.com
+    auth:
+      - method: token
+        token: ${GITHUB_TOKEN}
+```
+
+### Declare and resolve the connection
+
+Plugins and modules declare each type during `register`, before
+calling `registerInit`. See the
+[connection declaration concept](./01-concepts.md#connection-declaration) for why
+the declaration is separate from lookup:
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/backend-plugin-api/alpha';
+
+export const examplePlugin = createBackendPlugin({
+  pluginId: 'example',
+  register(reg) {
+    declareConnection(reg, {
+      type: 'github',
+      description: 'Reads repository metadata from GitHub',
+    });
+
+    reg.registerInit({
+      deps: {
+        connections: connectionsServiceRef,
+        logger: coreServices.logger,
+      },
+      async init({ connections, logger }) {
+        const connection = await connections.find({
+          type: 'github',
+          query: { url: 'https://github.com/backstage/backstage' },
+          authMethods: ['app', 'token'],
+        });
+        logger.info(`Resolved GitHub connection for ${connection.host}`);
+      },
+    });
+  },
+});
+```
+
+Add the exported plugin to a backend created with `createBackend`:
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { examplePlugin } from './examplePlugin';
+
+const backend = createBackend();
+backend.add(examplePlugin);
+backend.start();
+```
+
+Save the plugin example as `examplePlugin.ts` alongside the backend entry point.
+On startup, the plugin resolves the configured connection and logs only its
+host, not its authentication values. No separate connections service installation
+is needed for this backend. Resolving a connection does not contact GitHub or
+verify that the token works.
+
+A declaration applies to one plugin or module registration. If a module uses
+GitHub and its parent plugin also uses GitHub, both registrations declare the
+`github` type.
+
+The runtime rejects undeclared lookups. This keeps connection use visible in
+plugin metadata and prevents a plugin from asking for arbitrary configured
+credential types.
+
+## Look up a host-based connection
+
+Host-based types accept a query containing a URL. The service parses the URL
+and selects the connection with a matching `host`:
+
+```ts
+const connection = await connections.find({
+  type: 'github',
+  query: {
+    url: 'https://github.com/backstage/backstage',
+  },
+  authMethods: ['app', 'token'],
+});
+
+connection.host; // string
+connection.auth.method; // 'app' | 'token'
+```
+
+The literal `type` and `authMethods` values drive TypeScript inference. In this
+example, the result is a GitHub connection and `connection.auth` can contain
+either app or token authentication. Narrow it using `connection.auth.method`
+before accessing method-specific fields.
+
+:::caution[Authentication values can expire]
+`ConnectionsService.find` returns static configuration or bootstrap material.
+It does not check whether a returned token remains valid, track expiration, or
+refresh it. Use a separate credential provider when the authentication method
+has a dynamic lifecycle. See the connection service
+[limitations](./01-concepts.md#limitations).
+:::
+
+`authMethods` is a non-empty list of
+[authentication methods](./01-concepts.md#authentication-method) the consumer is
+implemented to handle. It is not a fallback preference list. The connection
+type selects an [authentication entry](./01-concepts.md#authentication-entry)
+first, and the service then verifies that the selected method is supported by
+the consumer.
+
+## Handle more than one authentication method
+
+We recommend supporting all authentication methods for a connection type unless
+your use case requires excluding a method. This lets adopters choose how to
+authenticate without changing your plugin. Implement handling for each method
+you list in `authMethods`; listing a method does not implement its credential
+exchange or refresh for you.
+
+The GitHub examples accept both `app` and `token` authentication. GitHub also
+supports `none` for unauthenticated access; include it when your use case allows
+unauthenticated requests.
+
+List every method the code can process, then narrow the returned discriminated
+union using `connection.auth.method`:
+
+```ts
+const connection = await connections.find({
+  type: 'github',
+  query: { url: repositoryUrl },
+  authMethods: ['app', 'token'],
+});
+
+switch (connection.auth.method) {
+  case 'token':
+    return createClientWithToken({
+      host: connection.host,
+      token: connection.auth.token,
+    });
+  case 'app':
+    return createClientWithGitHubApp({
+      host: connection.host,
+      appId: connection.auth.appId,
+      privateKey: connection.auth.privateKey,
+      clientId: connection.auth.clientId,
+      clientSecret: connection.auth.clientSecret,
+    });
+}
+```
+
+The application fields are static credentials, not an installation token. The
+`createClientWithGitHubApp` layer is separate from the connection service and
+is responsible for token exchange and caching.
+
+## Look up an AWS account
+
+The `aws` type accepts an account number, an ARN, or both:
+
+```ts
+const connection = await connections.find({
+  type: 'aws',
+  query: {
+    arn: 'arn:aws:iam::123456789012:role/BackstageReadRole',
+  },
+  authMethods: ['account'],
+});
+
+connection.auth.method; // 'account'
+connection.auth.accountId; // string | undefined
+connection.auth.roleName; // string | undefined
+```
+
+The AWS connection type derives the account number from the ARN and selects an
+exact account entry when one exists. Otherwise, it returns the entry marked
+`mainAccount`, when configured.
+
+## Type functions that accept connections
+
+Use the public contracts from `@backstage/connections` when a helper, client
+factory, or credential provider accepts the service or a resolved connection:
+
+```ts
+import type { Connection, ConnectionsService } from '@backstage/connections';
+
+export async function findGitHubToken(
+  connections: ConnectionsService,
+  repositoryUrl: string,
+): Promise<Connection<'github', 'token'>> {
+  return connections.find({
+    type: 'github',
+    query: { url: repositoryUrl },
+    authMethods: ['token'],
+  });
+}
+```
+
+Useful public helpers include:
+
+| Type                               | Purpose                                                                                    |
+| ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| `ConnectionsService`               | Types the plugin-scoped lookup service.                                                    |
+| `Connection<TType, TAuthMethod>`   | Types a resolved connection and optionally narrows its selected authentication method.     |
+| `ConnectionTypeKey`                | Union of built-in type keys.                                                               |
+| `ConnectionAuthMethodKey<TType>`   | Union of authentication methods for one type.                                              |
+| `LookupConnectionType<T>`          | Resolves a type key to its connection type descriptor.                                     |
+| `ConnectionAuthValue<TAuthConfig>` | Adds the framework-provided authentication title to an authentication configuration shape. |
+
+Prefer these shared types over copying provider-specific connection shapes
+into plugin packages.
+
+## Handle lookup errors
+
+`find` rejects when it cannot return a usable connection. Handle only the
+outcomes your plugin can recover from:
+
+```ts
+import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
+
+try {
+  const connection = await connections.find({
+    type: 'gitlab',
+    query: { url: repositoryUrl },
+    authMethods: ['token'],
+  });
+  return createGitLabClient(connection);
+} catch (error) {
+  if (error instanceof NotFoundError) {
+    logger.info(`No GitLab connection matches ${repositoryUrl}`);
+    return undefined;
+  }
+  if (error instanceof NotAllowedError) {
+    throw new InputError(
+      'The GitLab connection does not provide an authentication method this plugin supports',
+    );
+  }
+  throw error;
+}
+```
+
+Do not catch an undeclared-connection error as a normal absence. Add the
+missing declaration to the plugin or module registration.
+
+## Keep connection data on the backend
+
+Resolved connections can contain secrets. Treat the returned object as
+sensitive, even when the selected method is `none`:
+
+- Do not log complete connections or authentication values.
+- Do not return connection objects through backend HTTP routes.
+- Do not expose the service directly to frontend plugins.
+- Pass only the minimum fields required by a client or credential provider.
+- Let the external system enforce the permissions attached to each credential.
+
+## Known credential providers
+
+Some authentication methods return bootstrap material that a credential
+provider must exchange for a usable, short-lived credential. The table below
+lists the built-in methods that require this step and what the provider is
+responsible for.
+
+| Provider                            | Connection type                                                                                       | Auth method                               | What the provider does                                                                                 |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| GitHub App                          | [`github`](./types/github.md)                                                                         | `app`                                     | Exchanges the application ID and private key for an installation token and caches it for its lifetime. |
+| AWS STS                             | [`aws`](./types/aws.md), [`aws-codecommit`](./types/aws-codecommit.md), [`aws-s3`](./types/aws-s3.md) | `account` (with `roleName`), `assumeRole` | Assumes a role via STS to obtain temporary session credentials and refreshes them before expiry.       |
+| Azure / Entra ID client credentials | [`azure`](./types/azure.md), [`azure-blob-storage`](./types/azure-blob-storage.md)                    | `clientCredentials`, `aadCredential`      | Performs an OAuth 2.0 client-credentials token exchange against Entra ID.                              |
+| Azure managed identity              | [`azure`](./types/azure.md)                                                                           | `managedIdentity`                         | Acquires a token from the managed identity endpoint available to the running host.                     |
+| Bitbucket Cloud OAuth               | [`bitbucket-cloud`](./types/bitbucket-cloud.md)                                                       | `oauth`                                   | Exchanges a client ID and secret for an OAuth 2.0 access token.                                        |
+| Google Cloud service account        | [`google-gcs`](./types/google-gcs.md)                                                                 | `serviceAccount`                          | Signs a JWT from the service account key and exchanges it for a Google access token.                   |
+
+Authentication methods not listed here, such as `token`, `basic`, `pat`,
+`accessKey`, and `accountKey`, return credentials that are directly usable
+without an intermediate exchange step.
+
+For configuration and scoping examples, see
+[Configure and manage connections](./02-configuring-connections.md).

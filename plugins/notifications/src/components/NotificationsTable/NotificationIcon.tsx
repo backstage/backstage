@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 import { Notification } from '@backstage/plugin-notifications-common';
-import { useApp } from '@backstage/core-plugin-api';
+import { iconsApiRef, useApi } from '@backstage/frontend-plugin-api';
 import { SeverityIcon } from './SeverityIcon';
+
+function NotificationIconWithCustomIcon({
+  notification,
+}: {
+  notification: Notification;
+}) {
+  const iconsApi = useApi(iconsApiRef);
+  const Icon = iconsApi.getIcon(notification.payload.icon!);
+  if (Icon) {
+    return <Icon />;
+  }
+  return <SeverityIcon severity={notification.payload.severity} />;
+}
 
 export const NotificationIcon = ({
   notification,
 }: {
   notification: Notification;
 }) => {
-  const app = useApp();
-
-  if (notification.payload.icon) {
-    const Icon = app.getSystemIcon(notification.payload.icon);
-    if (Icon) {
-      return <Icon />;
-    }
+  if (!notification.payload.icon) {
+    return <SeverityIcon severity={notification.payload.severity} />;
   }
-  return <SeverityIcon severity={notification.payload.severity} />;
+
+  return <NotificationIconWithCustomIcon notification={notification} />;
 };

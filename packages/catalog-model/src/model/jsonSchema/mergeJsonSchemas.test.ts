@@ -17,6 +17,93 @@
 import { mergeJsonSchemas } from './mergeJsonSchemas';
 
 describe('mergeJsonSchemas', () => {
+  it('preserves literal JSON values inside const and default keywords', () => {
+    expect(
+      mergeJsonSchemas(
+        { const: 'previous', default: 'previous' },
+        { const: null, default: null },
+      ),
+    ).toEqual({ const: null, default: null });
+    expect(
+      mergeJsonSchemas(
+        { const: { type: 'old', name: 'old' } },
+        { const: { type: 'new', nested: null } },
+      ),
+    ).toEqual({ const: { type: 'new', nested: null } });
+    expect(
+      mergeJsonSchemas({}, { properties: { nothing: { const: null } } }),
+    ).toEqual({ properties: { nothing: { const: null } } });
+    expect(
+      mergeJsonSchemas(
+        {},
+        { default: { config: { type: 'data', nullable: null } } },
+      ),
+    ).toEqual({ default: { config: { type: 'data', nullable: null } } });
+  });
+
+  it('preserves sibling schemas when updating a property named type', () => {
+    for (const keyword of [
+      'properties',
+      'patternProperties',
+      'definitions',
+      '$defs',
+    ]) {
+      expect(
+        mergeJsonSchemas(
+          {
+            [keyword]: {
+              type: { type: 'string', minLength: 1 },
+              owner: { type: 'string' },
+            },
+          },
+          { [keyword]: { type: { enum: ['service'] } } },
+        ),
+      ).toEqual({
+        [keyword]: {
+          type: { type: 'string', minLength: 1, enum: ['service'] },
+          owner: { type: 'string' },
+        },
+      });
+    }
+  });
+
+  it('compares union types by value and retains constraints when adding a type', () => {
+    expect(
+      mergeJsonSchemas(
+        { type: ['string', 'null'], minLength: 1 },
+        { type: ['string', 'null'], description: 'updated' },
+      ),
+    ).toEqual({
+      type: ['string', 'null'],
+      minLength: 1,
+      description: 'updated',
+    });
+    expect(
+      mergeJsonSchemas(
+        { properties: { name: { type: 'string' } } },
+        { type: 'object' },
+      ),
+    ).toEqual({ type: 'object', properties: { name: { type: 'string' } } });
+  });
+
+  it('applies deletions inside newly added schemas', () => {
+    expect(
+      mergeJsonSchemas(
+        {},
+        { properties: { spec: { type: 'object', description: null } } },
+      ),
+    ).toEqual({ properties: { spec: { type: 'object' } } });
+  });
+
+  it('retains constraints when equivalent type unions are reordered', () => {
+    expect(
+      mergeJsonSchemas(
+        { type: ['string', 'null'], minLength: 1 },
+        { type: ['null', 'string'] },
+      ),
+    ).toEqual({ type: ['null', 'string'], minLength: 1 });
+  });
+
   it('should merge scalar properties from source into target', () => {
     const result = mergeJsonSchemas(
       { type: 'object', description: 'old' },

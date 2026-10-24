@@ -73,9 +73,7 @@ const customIndexTemplate = {
 
 const advanceTimersByNTimes = async (n = 1, time = 1000) => {
   for (let i = 0; i < n; i++) {
-    await Promise.resolve();
-    jest.advanceTimersByTime(time);
-    await Promise.resolve();
+    await jest.advanceTimersByTimeAsync(time);
   }
 };
 
@@ -123,7 +121,7 @@ describe('ElasticSearchSearchEngine', () => {
       mock.add(
         {
           method: 'POST',
-          path: '/*__search/_search',
+          path: '/:index/_search',
         },
         () => ({
           hits: {
@@ -522,7 +520,7 @@ describe('ElasticSearchSearchEngine', () => {
       mock.add(
         {
           method: 'POST',
-          path: '/*__search/_search',
+          path: '/:index/_search',
         },
         () => ({
           hits: {
@@ -552,12 +550,12 @@ describe('ElasticSearchSearchEngine', () => {
     it('should perform search query with less results than one page', async () => {
       mock.clear({
         method: 'POST',
-        path: '/*__search/_search',
+        path: '/:index/_search',
       });
       mock.add(
         {
           method: 'POST',
-          path: '/*__search/_search',
+          path: '/:index/_search',
         },
         () => {
           return {
@@ -597,12 +595,12 @@ describe('ElasticSearchSearchEngine', () => {
     it('should perform search query with more results than one page', async () => {
       mock.clear({
         method: 'POST',
-        path: '/*__search/_search',
+        path: '/:index/_search',
       });
       mock.add(
         {
           method: 'POST',
-          path: '/*__search/_search',
+          path: '/:index/_search',
         },
         () => {
           return {
@@ -643,12 +641,12 @@ describe('ElasticSearchSearchEngine', () => {
     it('should perform search query for second page', async () => {
       mock.clear({
         method: 'POST',
-        path: '/*__search/_search',
+        path: '/:index/_search',
       });
       mock.add(
         {
           method: 'POST',
-          path: '/*__search/_search',
+          path: '/:index/_search',
         },
         () => {
           return {
@@ -692,12 +690,12 @@ describe('ElasticSearchSearchEngine', () => {
     it('should handle parsing highlights in search query results', async () => {
       mock.clear({
         method: 'POST',
-        path: '/*__search/_search',
+        path: '/:index/_search',
       });
       mock.add(
         {
           method: 'POST',
-          path: '/*__search/_search',
+          path: '/:index/_search',
         },
         () => {
           return {
@@ -858,6 +856,26 @@ describe('ElasticSearchSearchEngine', () => {
       elasticSearchQuerySpy.mockClear();
     });
 
+    it('should return empty results without querying when types is an empty array', async () => {
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
+
+      const result = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+        types: [],
+      });
+
+      expect(result).toEqual({
+        results: [],
+        nextPageCursor: undefined,
+        previousPageCursor: undefined,
+        numberOfResults: undefined,
+      });
+      expect(elasticSearchQuerySpy).not.toHaveBeenCalled();
+
+      elasticSearchQuerySpy.mockClear();
+    });
+
     it('should throws missing index error', async () => {
       jest.spyOn(clientWrapper, 'search').mockRejectedValue({
         meta: {
@@ -879,6 +897,52 @@ describe('ElasticSearchSearchEngine', () => {
       ).rejects.toThrow(
         'Missing index for unknown__search. This means there are no documents to search through.',
       );
+    });
+
+    it('should throw missing index error when nested in a search phase failure', async () => {
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue({
+        meta: {
+          body: {
+            error: {
+              type: 'search_phase_execution_exception',
+              phase: 'fetch',
+              caused_by: {
+                type: 'index_not_found_exception',
+                reason: 'no such index [techdocs-index__123]',
+              },
+            },
+            status: 404,
+          },
+        },
+      });
+
+      await expect(
+        testSearchEngine.query({
+          term: 'testTerm',
+          types: ['techdocs'],
+          filters: {},
+        }),
+      ).rejects.toMatchObject({
+        name: 'MissingIndexError',
+        message: expect.stringContaining('Missing index for techdocs__search'),
+      });
+    });
+
+    it('should reject with a descriptive error for other query failures', async () => {
+      const cause = new Error('search_phase_execution_exception: boom');
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue(cause);
+
+      await expect(
+        testSearchEngine.query({
+          term: 'testTerm',
+          types: ['techdocs'],
+          filters: {},
+        }),
+      ).rejects.toMatchObject({
+        message:
+          'Failed to query documents for indices techdocs__search: search_phase_execution_exception: boom',
+        cause,
+      });
     });
   });
 

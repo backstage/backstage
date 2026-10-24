@@ -325,8 +325,8 @@ export type ComboboxListBoxOwnProps<T extends CollectionItem> = {
   options?: ReadonlyArray<Option | OptionSection>;
   items?: Iterable<T>;
   children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);
+  hiddenKey?: Key;
   dependencies?: ReadonlyArray<unknown>;
-  search?: ComboboxSearch<T> | ComboboxAsyncSearch<T> | ComboboxStaticSearch;
   loading?: LoadingConfig;
   isStale?: boolean;
   getItemTextValue?: (item: T) => string;
@@ -346,7 +346,7 @@ export type ComboboxItemOwnProps = {
 /** @public */
 export type ComboboxItemProps<T extends object = object> =
   ComboboxItemOwnProps &
-    Omit<AriaListBoxItemProps<T>, keyof ComboboxItemOwnProps>;
+    Omit<AriaListBoxItemProps<T>, keyof ComboboxItemOwnProps | 'render'>;
 
 /** @public */
 export type ComboboxItemTextOwnProps = {

@@ -1,5 +1,22 @@
 # @backstage/cli-module-actions
 
+## 0.1.4
+
+### Patch Changes
+
+- d73df15: The `actions list` command now returns partial results when some plugin sources fail, instead of failing entirely. Failed sources are reported as warnings.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/errors@1.3.2
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+
 ## 0.1.3
 
 ### Patch Changes

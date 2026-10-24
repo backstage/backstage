@@ -21,7 +21,7 @@ import {
   DbRefreshStateRow,
   DbSearchRow,
 } from '../../database/tables';
-import { Knex } from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -31,6 +31,50 @@ import { buildEntitySearch } from '../../database/operations/stitcher/buildEntit
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
+
+describe('PostgreSQL query generation', () => {
+  function compile(filter: FilterPredicate) {
+    const knex = knexFactory({ client: 'pg' });
+    const query = knex('final_entities').select('*');
+
+    applyEntityFilterToQuery({
+      filter,
+      targetQuery: query,
+      onEntityIdField: 'final_entities.entity_id',
+      knex,
+    });
+
+    return query.toSQL();
+  }
+
+  it('uses one array binding for $in', () => {
+    const query = compile({
+      'spec.type': { $in: ['Service', 'Website'] },
+    });
+
+    expect(query.sql).toContain('"search_flt"."value" = ANY(?::text[])');
+    expect(query.bindings).toEqual(['spec.type', ['service', 'website']]);
+  });
+
+  it('uses one array binding for relation targetRef $in', () => {
+    const query = compile({
+      relations: {
+        $contains: {
+          type: 'OwnedBy',
+          targetRef: {
+            $in: ['Group:Default/Team-A', 'Group:Default/Team-B'],
+          },
+        },
+      },
+    });
+
+    expect(query.sql).toContain('"search_flt"."value" = ANY(?::text[])');
+    expect(query.bindings).toEqual([
+      'relations.ownedby',
+      ['group:default/team-a', 'group:default/team-b'],
+    ]);
+  });
+});
 
 describe.each(databases.eachSupportedId())(
   'applyEntityFilterToQuery with predicate queries, %p',

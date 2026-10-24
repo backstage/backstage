@@ -27,7 +27,8 @@ import { ErrorDisplayBoundary } from './ErrorDisplayBoundary';
 import { ErrorApiBoundary } from './ErrorApiBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNode, ErrorApi, errorApiRef, useApi } from '../apis';
+import { ErrorApi, errorApiRef, useApi } from '../apis';
+import type { AppNode } from '../apis/definitions/AppTreeApi';
 import {
   PluginWrapperApi,
   pluginWrapperApiRef,

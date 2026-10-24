@@ -66,7 +66,7 @@ function createConfig(dir, extraConfig = {}) {
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', 'unused-imports', 'deprecation', ...(plugins ?? [])],
+    plugins: ['import', 'unused-imports', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -84,7 +84,6 @@ function createConfig(dir, extraConfig = {}) {
       ...(ignorePatterns ?? []),
     ],
     rules: {
-      'deprecation/deprecation': 'off',
       'no-shadow': 'off',
       'no-redeclare': 'off',
       '@typescript-eslint/no-shadow': 'error',
@@ -209,7 +208,28 @@ function createConfig(dir, extraConfig = {}) {
 function createConfigForRole(dir, role, extraConfig = {}) {
   switch (role) {
     case 'common-library':
-      return createConfig(dir, extraConfig);
+      return createConfig(dir, {
+        ...extraConfig,
+        restrictedSrcSyntax: [
+          {
+            // Common libraries are published with an ESM build that Node.js
+            // loads natively, and Node.js can't resolve named imports from
+            // CommonJS modules such as lodash. Type-only imports are erased
+            // during compilation and are therefore fine.
+            message:
+              "Named imports from 'lodash' break ESM consumers of common libraries, use `import lodash from 'lodash'` instead.",
+            selector:
+              "ImportDeclaration[source.value='lodash'][importKind!='type'] > ImportSpecifier[importKind!='type']",
+          },
+          {
+            message:
+              "Named re-exports from 'lodash' break ESM consumers of common libraries, use `import lodash from 'lodash'` instead.",
+            selector:
+              "ExportNamedDeclaration[source.value='lodash'][exportKind!='type'] > ExportSpecifier[exportKind!='type']",
+          },
+          ...(extraConfig.restrictedSrcSyntax ?? []),
+        ],
+      });
 
     case 'web-library':
     case 'frontend':

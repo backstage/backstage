@@ -14,47 +14,18 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import { z } from 'zod/v4';
 
-import {
-  CatalogIcon,
-  Content,
-  useSidebarPinState,
-} from '@backstage/core-components';
-import {
-  useApi,
-  discoveryApiRef,
-  fetchApiRef,
-} from '@backstage/core-plugin-api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 import {
   createFrontendPlugin,
   ApiBlueprint,
   createExtensionInput,
   PageBlueprint,
-  configApiRef,
 } from '@backstage/frontend-plugin-api';
 
-import {
-  catalogApiRef,
-  CATALOG_FILTER_EXISTS,
-} from '@backstage/plugin-catalog-react';
-
-import {
-  DefaultResultListItem,
-  SearchBar,
-  SearchFilter,
-  SearchPagination,
-  SearchResult as SearchResults,
-  SearchResultPager,
-  useSearch,
-  SearchContextProvider,
-} from '@backstage/plugin-search-react';
-import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import {
   SearchResultListItemBlueprint,
@@ -65,8 +36,6 @@ import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
-import { SearchType } from './components/SearchType';
-import { UrlUpdater } from './components/SearchPage/SearchPage';
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
@@ -78,18 +47,6 @@ export const searchApi = ApiBlueprint.make({
         new SearchClient({ discoveryApi, fetchApi }),
     }),
 });
-
-const useSearchPageStyles = makeStyles((theme: Theme) => ({
-  filter: {
-    '& + &': {
-      marginTop: theme.spacing(2.5),
-    },
-  },
-  filters: {
-    padding: theme.spacing(2),
-    marginTop: theme.spacing(2),
-  },
-}));
 
 /** @alpha */
 export const searchPage = PageBlueprint.makeWithOverrides({
@@ -112,139 +69,24 @@ export const searchPage = PageBlueprint.makeWithOverrides({
       title: 'Search',
       icon: <SearchIcon fontSize="inherit" />,
       loader: async () => {
-        const getResultItemComponent = (result: SearchResult) => {
-          const value = inputs.items.find(item =>
-            item
-              ?.get(SearchResultListItemBlueprint.dataRefs.item)
-              .predicate?.(result),
-          );
-          return (
-            value?.get(SearchResultListItemBlueprint.dataRefs.item).component ??
-            DefaultResultListItem
-          );
-        };
-
+        const { SearchPage } = await import('./alpha/SearchPage');
+        const items = inputs.items.map(item =>
+          item.get(SearchResultListItemBlueprint.dataRefs.item),
+        );
         const resultTypes = inputs.resultTypes.map(item =>
           item.get(SearchFilterResultTypeBlueprint.dataRefs.resultType),
         );
-
-        const additionalSearchFilters = inputs.searchFilters.map(
+        const searchFilters = inputs.searchFilters.map(
           item =>
             item.get(SearchFilterBlueprint.dataRefs.searchFilters).component,
         );
-
-        const Component = () => {
-          const classes = useSearchPageStyles();
-          const { isMobile } = useSidebarPinState();
-          const { types } = useSearch();
-          const catalogApi = useApi(catalogApiRef);
-          const configApi = useApi(configApiRef);
-
-          return (
-            <Content>
-              <Grid container direction="row">
-                <Grid item xs={12}>
-                  <SearchBar debounceTime={100} />
-                </Grid>
-                {!isMobile && (
-                  <Grid item xs={3}>
-                    <SearchType.Accordion
-                      name="Result Type"
-                      defaultValue={configApi.getOptionalString(
-                        'search.defaultType',
-                      )}
-                      showCounts
-                      types={[
-                        {
-                          value: 'software-catalog',
-                          name: 'Software Catalog',
-                          icon: <CatalogIcon />,
-                        },
-                      ].concat(resultTypes)}
-                    />
-                    <Paper className={classes.filters}>
-                      {types.includes('techdocs') && (
-                        <SearchFilter.Select
-                          className={classes.filter}
-                          label="Entity"
-                          name="name"
-                          values={async () => {
-                            // Return a list of entities which are documented.
-                            const { items } = await catalogApi.getEntities({
-                              fields: ['metadata.name'],
-                              filter: {
-                                'metadata.annotations.backstage.io/techdocs-ref':
-                                  CATALOG_FILTER_EXISTS,
-                              },
-                            });
-
-                            const names = items.map(
-                              entity => entity.metadata.name,
-                            );
-                            names.sort();
-                            return names;
-                          }}
-                        />
-                      )}
-                      <SearchFilter.Select
-                        className={classes.filter}
-                        label="Kind"
-                        name="kind"
-                        values={async () => {
-                          const { facets } = await catalogApi.getEntityFacets({
-                            facets: ['kind'],
-                          });
-                          return (facets.kind ?? [])
-                            .map(facet => facet.value)
-                            .sort((a, b) => a.localeCompare(b));
-                        }}
-                      />
-                      <SearchFilter.Checkbox
-                        className={classes.filter}
-                        label="Lifecycle"
-                        name="lifecycle"
-                        values={['experimental', 'production']}
-                      />
-                      {additionalSearchFilters.map(SearchFilterComponent => (
-                        <SearchFilterComponent className={classes.filter} />
-                      ))}
-                    </Paper>
-                  </Grid>
-                )}
-                <Grid item xs>
-                  <SearchPagination />
-                  <SearchResults>
-                    {({ results }) => (
-                      <>
-                        {results.map((result, index) => {
-                          const { noTrack } = config;
-                          const { document, ...rest } = result;
-                          const SearchResultListItem =
-                            getResultItemComponent(result);
-                          return (
-                            <SearchResultListItem
-                              {...rest}
-                              key={index}
-                              result={document}
-                              noTrack={noTrack}
-                            />
-                          );
-                        })}
-                      </>
-                    )}
-                  </SearchResults>
-                  <SearchResultPager />
-                </Grid>
-              </Grid>
-            </Content>
-          );
-        };
-
         return (
-          <SearchContextProvider>
-            <UrlUpdater />
-            <Component />
-          </SearchContextProvider>
+          <SearchPage
+            noTrack={config.noTrack}
+            items={items}
+            resultTypes={resultTypes}
+            searchFilters={searchFilters}
+          />
         );
       },
     });

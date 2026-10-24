@@ -1,5 +1,59 @@
 # @backstage/backend-openapi-utils
 
+## 0.7.3
+
+### Patch Changes
+
+- 812225c: Fixed the OpenAPI validation test server wrapper to support `supertest` 7.3 by returning a standard server address for the validation proxy.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/errors@1.3.2
+
+## 0.7.3-next.2
+
+### Patch Changes
+
+- 812225c: Fixed the OpenAPI validation test server wrapper to support `supertest` 7.3 by returning a standard server address for the validation proxy.
+
+## 0.7.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
+## 0.7.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
+## 0.7.2
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 0.7.1-next.0
 
 ### Patch Changes

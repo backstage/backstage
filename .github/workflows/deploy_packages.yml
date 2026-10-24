@@ -17,7 +17,7 @@ jobs:
 
     services:
       postgres18:
-        image: postgres:18
+        image: postgres:18@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -28,7 +28,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres14:
-        image: postgres:14
+        image: postgres:14@sha256:14bfab572eec6abf65892e1db7c3ba8d41b2a2855c1b143664907d6e146eb6e1
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -39,7 +39,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8.4
+        image: mysql:8.4@sha256:24989179f58856db763f418010c1169fecc944e3ec1ea7e921572d83eb070f70
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -50,7 +50,7 @@ jobs:
         ports:
           - 3306/tcp
       redis:
-        image: redis:7
+        image: redis:7@sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -68,20 +68,24 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
+        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
+      # Only the tree of the previous commit is needed to diff package versions,
+      # so keep this shallow rather than fetching its entire ancestry.
       - name: Fetch previous commit for release check
-        run: git fetch origin '${{ github.event.before }}'
+        env:
+          GH_EVENT_BEFORE: ${{ github.event.before }}
+        run: git fetch --depth 1 origin "$GH_EVENT_BEFORE"
 
       - name: Check if release
         if: inputs.force_release != true
@@ -95,7 +99,7 @@ jobs:
 
       - name: Restore backstage-cli cache
         id: backstage-cli-cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -127,14 +131,14 @@ jobs:
 
       - name: Save backstage-cli cache
         if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: .cache/backstage-cli
           key: ${{ steps.backstage-cli-cache.outputs.cache-primary-key }}
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
@@ -156,7 +160,7 @@ jobs:
             }
 
   # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
-  # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
+  # We can't reuse the output from the above step, but we'll have a guaranteed node_modules cache and
   # only run the build steps that are necessary for publishing
   release:
     needs: build
@@ -171,13 +175,13 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
       # Notify maintainers that a new release is ready to be published
       - name: Discord notification
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
         with:

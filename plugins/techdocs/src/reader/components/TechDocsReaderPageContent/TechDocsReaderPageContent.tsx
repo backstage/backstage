@@ -60,6 +60,10 @@ export type TechDocsReaderPageContentProps = {
    */
   withSearch?: boolean;
   /**
+   * Show or hide the feedback button, defaults to true.
+   */
+  withFeedbackLink?: boolean;
+  /**
    * If {@link TechDocsReaderPageContentProps.withSearch | withSearch} is true,
    * this will redirect the search result urls, e.g. turn search results into
    * links within the "Docs" tab of the entity page, instead of the global docs
@@ -93,6 +97,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     } = useTechDocsReaderContentData({
       defaultPath: props.defaultPath,
       onReady: props.onReady,
+      withFeedbackLink: props.withFeedbackLink,
     });
 
     if (isNotFound) return <NotFoundErrorPage />;

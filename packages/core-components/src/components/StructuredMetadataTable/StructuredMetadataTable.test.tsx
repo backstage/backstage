@@ -163,9 +163,9 @@ describe('<StructuredMetadataTable />', () => {
           .split('')
           .map((letter, index) => {
             if (index % 2 === 0) {
-              return letter.toLocaleLowerCase('en-US');
+              return letter.toLowerCase();
             }
-            return letter.toLocaleUpperCase('en-US');
+            return letter.toUpperCase();
           })
           .join('');
 

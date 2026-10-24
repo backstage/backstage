@@ -44,16 +44,28 @@ export const bitbucketCloudModule = createBackendModule({
       },
       async init({ scaffolder, config, autocomplete }) {
         const integrations = ScmIntegrations.fromConfig(config);
+        const requireScmUserCredentials =
+          config.getOptionalBoolean('scaffolder.requireScmUserCredentials') ??
+          false;
 
         scaffolder.addActions(
-          createPublishBitbucketCloudAction({ integrations, config }),
-          createBitbucketPipelinesRunAction({ integrations }),
+          createPublishBitbucketCloudAction({
+            integrations,
+            config,
+            requireScmUserCredentials,
+          }),
+          createBitbucketPipelinesRunAction({
+            integrations,
+            requireScmUserCredentials,
+          }),
           createPublishBitbucketCloudPullRequestAction({
             integrations,
             config,
+            requireScmUserCredentials,
           }),
           createBitbucketCloudBranchRestrictionAction({
             integrations,
+            requireScmUserCredentials,
           }),
         );
 

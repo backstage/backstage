@@ -59,6 +59,11 @@ export function compileConfigSchemas(
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
+    // The validators compiled here run only a few times per process, when
+    // config is loaded, so the time Ajv's code optimizer takes to generate
+    // faster validation code is never paid back. Skipping it roughly halves
+    // the compile time of large schemas, without changing the results.
+    code: { optimize: false },
   })
     .addKeyword({
       keyword: 'visibility',

@@ -39,21 +39,12 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import {
-  ScmIntegrationIcon,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
-
-import {
   DEFAULT_NAMESPACE,
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  getEntitySourceLocation,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 
@@ -73,6 +64,7 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useSourceTemplateCompoundEntityRef } from './hooks';
 import { AboutContent } from './AboutContent';
 import { makeStyles } from '@material-ui/core/styles';
+import { useCatalogSourceIconLinkProps } from './useCatalogSourceIconLinkProps';
 
 const useStyles = makeStyles({
   linkContainer: {
@@ -83,24 +75,8 @@ const useStyles = makeStyles({
   },
 });
 
-export function useCatalogSourceIconLinkProps() {
-  const { entity } = useEntity();
-  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
-  const entitySourceLocation = getEntitySourceLocation(
-    entity,
-    scmIntegrationsApi,
-  );
-  return {
-    label: t('aboutCard.viewSource'),
-    disabled: !entitySourceLocation,
-    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
-    href: entitySourceLocation?.locationTargetUrl,
-  };
-}
-
 // TODO: This hook is duplicated from the TechDocs plugin for backwards compatibility
-// Remove it when the the legacy frontend system support is dropped.
+// Remove it when the legacy frontend system support is dropped.
 function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
   const { entity } = useEntity();
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
@@ -119,7 +95,7 @@ function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
 }
 
 // TODO: This hook is duplicated from the Scaffolder plugin for backwards compatibility
-// Remove it when the the legacy frontend system support is dropped.
+// Remove it when the legacy frontend system support is dropped.
 function useScaffolderTemplateIconLinkProps(): IconLinkVerticalProps {
   const app = useApp();
   const { entity } = useEntity();

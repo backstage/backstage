@@ -34,13 +34,16 @@ interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
+const MOCK_AUDIENCE = 'backstage-app-aud-tag';
+
 class MockTokenFactory {
   private readonly publicKeys = new Array<AnyJWK>();
 
-  async userToken(): Promise<string> {
+  async userToken(audience: string | null = MOCK_AUDIENCE): Promise<string> {
     const { privateKey, kid } = await this.makeKeys();
     return new SignJWT({
       iss: `https://mock-team.cloudflareaccess.com`,
+      ...(audience ? { aud: [audience] } : {}),
       sub: '1234567890',
       name: 'User Name',
       iat: 1600000000,
@@ -58,6 +61,7 @@ class MockTokenFactory {
     const { privateKey, kid } = await this.makeKeys();
     return new SignJWT({
       iss: `https://mock-team.cloudflareaccess.com`,
+      aud: [MOCK_AUDIENCE],
       name: 'Bot',
       common_name: 'test_token_id.access',
       iat: 1600000000,
@@ -120,13 +124,66 @@ describe('helpers', () => {
     jest.useRealTimers();
   });
 
+  it('requires an application audience', () => {
+    expect(() =>
+      AuthHelper.fromConfig(new ConfigReader({ teamName: 'mock-team' })),
+    ).toThrow(/audience/);
+  });
+
+  it('rejects tokens issued for a different application audience', async () => {
+    jest.useFakeTimers({
+      now: 1600000004000,
+    });
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken('other-app-aud-tag');
+    const request = createRequest({
+      headers: { [CF_JWT_HEADER]: token },
+    });
+
+    await expect(helper.authenticate(request)).rejects.toThrow(
+      'unexpected "aud" claim value',
+    );
+  });
+
+  it('rejects tokens without an application audience', async () => {
+    jest.useFakeTimers({
+      now: 1600000004000,
+    });
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken(null);
+    const request = createRequest({
+      headers: { [CF_JWT_HEADER]: token },
+    });
+
+    await expect(helper.authenticate(request)).rejects.toThrow(
+      'missing required "aud" claim',
+    );
+  });
+
   it('works for regular tokens, through header auth', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
     });
 
     const helper = AuthHelper.fromConfig(
-      new ConfigReader({ teamName: 'mock-team' }),
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
       { cache },
     );
     const token = await tokenFactory.userToken();
@@ -143,6 +200,7 @@ describe('helpers', () => {
       },
       claims: {
         iss: `https://mock-team.cloudflareaccess.com`,
+        aud: [MOCK_AUDIENCE],
         sub: '1234567890',
         name: 'User Name',
         iat: 1600000000,
@@ -168,7 +226,10 @@ describe('helpers', () => {
     });
 
     const helper = AuthHelper.fromConfig(
-      new ConfigReader({ teamName: 'mock-team' }),
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
       { cache },
     );
     const token = await tokenFactory.userToken();
@@ -185,6 +246,7 @@ describe('helpers', () => {
       },
       claims: {
         iss: `https://mock-team.cloudflareaccess.com`,
+        aud: [MOCK_AUDIENCE],
         sub: '1234567890',
         name: 'User Name',
         iat: 1600000000,
@@ -207,6 +269,7 @@ describe('helpers', () => {
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
         teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
         serviceTokens: [
           {
             token: 'test_token_id.access',
@@ -230,6 +293,7 @@ describe('helpers', () => {
       },
       claims: {
         iss: `https://mock-team.cloudflareaccess.com`,
+        aud: [MOCK_AUDIENCE],
         name: 'Bot',
         common_name: 'test_token_id.access',
         iat: 1600000000,
@@ -248,6 +312,7 @@ describe('helpers', () => {
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
         teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
         jwtHeaderName: 'X-Auth-Token',
       }),
       { cache },
@@ -266,6 +331,7 @@ describe('helpers', () => {
       },
       claims: {
         iss: `https://mock-team.cloudflareaccess.com`,
+        aud: [MOCK_AUDIENCE],
         sub: '1234567890',
         name: 'User Name',
         iat: 1600000000,
@@ -293,6 +359,7 @@ describe('helpers', () => {
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
         teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
         authorizationCookieName: 'CF_Auth',
       }),
       { cache },
@@ -311,6 +378,7 @@ describe('helpers', () => {
       },
       claims: {
         iss: `https://mock-team.cloudflareaccess.com`,
+        aud: [MOCK_AUDIENCE],
         sub: '1234567890',
         name: 'User Name',
         iat: 1600000000,

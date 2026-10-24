@@ -143,9 +143,7 @@ export const FailedEntities = () => {
       sorting: true,
       field: 'entity_ref',
       customFilterAndSearch: (query, row: any) =>
-        row.entity_ref
-          .toLocaleUpperCase('en-US')
-          .includes(query.toLocaleUpperCase('en-US')),
+        row.entity_ref.toUpperCase().includes(query.toUpperCase()),
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).entity_ref,
     },

@@ -26,9 +26,9 @@ import { createBinRunner } from '../../util';
 import { CliHelpPage, CliModel } from './types';
 import { targetPaths } from '@backstage/cli-common';
 import { generateCliReport } from './generateCliReport';
-import { logApiReportInstructions } from '../common';
+import { logApiReportInstructions, logReportDiff } from '../common';
 
-function parseHelpPage(helpPageContent: string) {
+export function parseHelpPage(helpPageContent: string) {
   let usage: string | undefined;
 
   // Commander format: "Usage: backstage-cli ..."
@@ -40,7 +40,7 @@ function parseHelpPage(helpPageContent: string) {
   const lines = helpPageContent.split(/\r?\n/);
 
   let options = new Array<string>();
-  let commands = new Array<string>();
+  const commands = new Array<string>();
   let commandArguments = new Array<string>();
 
   while (lines.length > 0) {
@@ -49,7 +49,7 @@ function parseHelpPage(helpPageContent: string) {
     }
     if (lines.length > 0) {
       // Start of a new section, e.g. "Options:" or "FLAGS:"
-      const sectionName = lines.shift()?.toLocaleLowerCase('en-US');
+      const sectionName = lines.shift()?.toLowerCase();
       // Take lines until we hit the next section or the end
       const sectionEndIndex = lines.findIndex(
         line => line && !line.match(/^\s/),
@@ -64,8 +64,8 @@ function parseHelpPage(helpPageContent: string) {
 
       if (sectionName === 'options:' || sectionName === 'flags:') {
         options = sectionItems;
-      } else if (sectionName === 'commands:') {
-        commands = sectionItems;
+      } else if (sectionName === 'commands:' || sectionName === 'groups:') {
+        commands.push(...sectionItems);
       } else if (sectionName === 'arguments:') {
         commandArguments = sectionItems;
       } else if (sectionName === 'usage:') {
@@ -184,20 +184,13 @@ export async function runCliExtraction({
           } else {
             logApiReportInstructions();
 
-            if (existingReport) {
-              console.log('');
-              console.log(
-                `The conflicting file is ${relativePath(
-                  targetPaths.rootDir,
-                  reportPath,
-                )}, expecting the following content:`,
-              );
-              console.log('');
+            logReportDiff(
+              relativePath(targetPaths.rootDir, reportPath),
+              existingReport,
+              report,
+            );
 
-              console.log(report);
-
-              logApiReportInstructions();
-            }
+            logApiReportInstructions();
             throw new Error(`CLI report changed for ${packageDir}`);
           }
         }

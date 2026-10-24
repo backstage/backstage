@@ -260,4 +260,25 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Create a GitLab project access token and store it as a CI/CD variable',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '456',
+            name: 'backstage-access-token',
+            scopes: ['read_repository'],
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
+            variableProtected: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

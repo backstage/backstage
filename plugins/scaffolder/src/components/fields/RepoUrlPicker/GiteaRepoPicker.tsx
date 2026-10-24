@@ -29,10 +29,20 @@ export const GiteaRepoPicker = (
   props: BaseRepoUrlPickerProps<{
     allowedOwners?: string[];
     allowedRepos?: string[];
+    ownerLabel?: string;
+    ownerDescription?: string;
   }>,
 ) => {
   const theme = useScaffolderTheme();
-  const { allowedOwners = [], state, onChange, rawErrors, isDisabled } = props;
+  const {
+    allowedOwners = [],
+    state,
+    onChange,
+    rawErrors,
+    isDisabled,
+    ownerLabel,
+    ownerDescription,
+  } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { owner } = state;
@@ -44,8 +54,10 @@ export const GiteaRepoPicker = (
       return (
         <BuiSelect
           className={overrides.select}
-          label={t('fields.giteaRepoPicker.owner.title')}
-          description={t('fields.giteaRepoPicker.owner.description')}
+          label={ownerLabel ?? t('fields.giteaRepoPicker.owner.title')}
+          description={
+            ownerDescription ?? t('fields.giteaRepoPicker.owner.description')
+          }
           isDisabled={isDisabled || allowedOwners.length === 1}
           isInvalid={rawErrors?.length > 0 && !owner}
           selectedKey={owner ?? null}
@@ -60,8 +72,10 @@ export const GiteaRepoPicker = (
 
     return (
       <BuiTextField
-        label={t('fields.giteaRepoPicker.owner.inputTitle')}
-        description={t('fields.giteaRepoPicker.owner.description')}
+        label={ownerLabel ?? t('fields.giteaRepoPicker.owner.inputTitle')}
+        description={
+          ownerDescription ?? t('fields.giteaRepoPicker.owner.description')
+        }
         onChange={value => onChange({ owner: value })}
         isDisabled={isDisabled}
         value={owner ?? ''}
@@ -86,7 +100,7 @@ export const GiteaRepoPicker = (
           <>
             <MuiSelect
               native
-              label={t('fields.giteaRepoPicker.owner.title')}
+              label={ownerLabel ?? t('fields.giteaRepoPicker.owner.title')}
               onChange={selected =>
                 onChange({
                   owner: String(
@@ -99,16 +113,20 @@ export const GiteaRepoPicker = (
               items={ownerItems}
             />
             <FormHelperText>
-              {t('fields.giteaRepoPicker.owner.description')}
+              {ownerDescription ??
+                t('fields.giteaRepoPicker.owner.description')}
             </FormHelperText>
           </>
         ) : (
           <>
             <MuiTextField
               id="ownerInput"
-              label={t('fields.giteaRepoPicker.owner.inputTitle')}
+              label={ownerLabel ?? t('fields.giteaRepoPicker.owner.inputTitle')}
               onChange={e => onChange({ owner: e.target.value })}
-              helperText={t('fields.giteaRepoPicker.owner.description')}
+              helperText={
+                ownerDescription ??
+                t('fields.giteaRepoPicker.owner.description')
+              }
               disabled={isDisabled}
               value={owner}
             />

@@ -19,6 +19,7 @@
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { createRequire } from 'node:module';
 import os from 'node:os';
 import { join as joinPath } from 'node:path';
 
@@ -38,7 +39,6 @@ const mockRun = jest.fn();
 const mockRunOutput = jest.fn();
 const mockListTargetPackages = jest.fn();
 const mockLoadConfigSchema = jest.fn();
-const mockCreateRequire = jest.fn();
 
 // Mock external dependencies
 
@@ -78,10 +78,16 @@ jest.mock('@backstage/config-loader', () => ({
   loadConfigSchema: (...args: unknown[]) => mockLoadConfigSchema(...args),
 }));
 
-jest.mock('node:module', () => ({
-  ...jest.requireActual('node:module'),
-  createRequire: (...args: unknown[]) => mockCreateRequire(...args),
-}));
+jest.mock('node:module', () => {
+  const actual =
+    jest.requireActual<typeof import('node:module')>('node:module');
+  return {
+    ...actual,
+    createRequire: jest.fn(actual.createRequire),
+  };
+});
+
+const mockCreateRequire = createRequire as jest.Mock;
 
 // Unit tests for exported pure functions (no mocks required)
 

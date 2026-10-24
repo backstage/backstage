@@ -17,6 +17,9 @@
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
     ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+    addFiles: jest.fn(),
+    cloneRepo: jest.fn(),
+    commitAndPushBranch: jest.fn(),
     initRepoAndPush: jest.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
@@ -27,12 +30,22 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketCloudPullRequestAction } from './bitbucketCloudPullRequest';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { registerMswTestHooks } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
+import {
+  addFiles,
+  cloneRepo,
+  commitAndPushBranch,
+} from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import fs from 'fs-extra';
+import { join as joinPath } from 'node:path';
 
 describe('publish:bitbucketCloud:pull-request', () => {
   const config = new ConfigReader({
@@ -254,34 +267,28 @@ describe('publish:bitbucketCloud:pull-request', () => {
     participants: [{ type: '<string>' }],
   };
   const handlers = [
-    rest.get(
+    http.get(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-      (_, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json(responseOfBranches),
-        );
+      () => {
+        return HttpResponse.json(responseOfBranches, {
+          status: 200,
+        });
       },
     ),
-    rest.get(
+    http.get(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-      (_, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json(responseOfDefaultBranch),
-        );
+      () => {
+        return HttpResponse.json(responseOfDefaultBranch, {
+          status: 200,
+        });
       },
     ),
-    rest.post(
+    http.post(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-      (_, res, ctx) => {
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json(responseOfPullRequests),
-        );
+      () => {
+        return HttpResponse.json(responseOfPullRequests, {
+          status: 201,
+        });
       },
     ),
   ];
@@ -330,30 +337,26 @@ describe('publish:bitbucketCloud:pull-request', () => {
   it('should call the correct APIs with basic auth', async () => {
     expect.assertions(2);
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+          });
         },
       ),
     );
@@ -371,26 +374,22 @@ describe('publish:bitbucketCloud:pull-request', () => {
     expect.assertions(2);
     const token = 'user-token';
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${token}`);
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${token}`);
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+          });
         },
       ),
     );
@@ -436,13 +435,14 @@ describe('publish:bitbucketCloud:pull-request', () => {
 
     server.use(
       ...handlers,
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (_, res, ctx) => {
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+        () => {
+          return HttpResponse.json(
+            {},
+            {
+              status: 201,
+            },
           );
         },
       ),
@@ -460,5 +460,93 @@ describe('publish:bitbucketCloud:pull-request', () => {
       'pullRequestUrl',
       'https://bitbucket.org/workspace/repo/pull-requests/1',
     );
+  });
+
+  describe('when creating a source branch', () => {
+    const mockDir = createMockDirectory();
+    const workspacePath = mockDir.resolve('workspace');
+    const tempDir = mockDir.resolve('temporary');
+    const outsidePath = mockDir.resolve('outside');
+
+    const setupSourceBranchHandlers = () => {
+      server.use(
+        http.get(
+          'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
+          ({ request }) => {
+            const branchQuery = new URL(request.url).searchParams.get('q');
+            return HttpResponse.json({
+              ...responseOfBranches,
+              values:
+                branchQuery === 'name = "new-branch"'
+                  ? []
+                  : responseOfBranches.values,
+            });
+          },
+        ),
+        http.post(
+          'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
+          () => HttpResponse.json({}, { status: 201 }),
+        ),
+        http.post(
+          'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
+          () => HttpResponse.json(responseOfPullRequests, { status: 201 }),
+        ),
+      );
+    };
+
+    const createContext = () => {
+      const context = createMockActionContext({
+        workspacePath,
+        input: {
+          ...mockContext.input,
+          sourceBranch: 'new-branch',
+        },
+      });
+      context.createTemporaryDirectory = jest.fn().mockResolvedValue(tempDir);
+      return context;
+    };
+
+    afterEach(() => {
+      mockDir.clear();
+    });
+
+    it('rejects a cloned repository with a conflicting symlink', async () => {
+      mockDir.setContent({
+        [workspacePath]: { nested: { 'file.txt': 'workspace content' } },
+        [tempDir]: {},
+        [outsidePath]: {},
+      });
+      jest.mocked(cloneRepo).mockImplementation(async ({ dir }) => {
+        fs.symlinkSync(outsidePath, joinPath(dir, 'nested'));
+      });
+      setupSourceBranchHandlers();
+
+      await expect(action.handler(createContext())).rejects.toThrow(
+        /Cannot overwrite non-directory/,
+      );
+
+      expect(fs.existsSync(joinPath(outsidePath, 'file.txt'))).toBe(false);
+      expect(addFiles).not.toHaveBeenCalled();
+    });
+
+    it('copies workspace files into a regular cloned directory', async () => {
+      mockDir.setContent({
+        [workspacePath]: { nested: { 'file.txt': 'workspace content' } },
+        [tempDir]: {},
+      });
+      jest.mocked(cloneRepo).mockResolvedValue(undefined);
+      jest.mocked(addFiles).mockResolvedValue(undefined);
+      jest.mocked(commitAndPushBranch).mockResolvedValue({
+        commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+      });
+      setupSourceBranchHandlers();
+
+      await action.handler(createContext());
+
+      expect(
+        fs.readFileSync(joinPath(tempDir, 'nested', 'file.txt'), 'utf8'),
+      ).toBe('workspace content');
+      expect(commitAndPushBranch).toHaveBeenCalled();
+    });
   });
 });

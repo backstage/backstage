@@ -1,4 +1,5 @@
 abc
+accessor
 accessors
 ACLs
 addon
@@ -22,6 +23,7 @@ approvers
 asciidoc
 async
 Atlassian
+autocomplete
 autofix
 autologout
 automations
@@ -138,6 +140,7 @@ Dockerize
 dockerode
 Docusaurus
 Dominik
+dirtyreload
 DOMPurify
 don'ts
 dynatrace
@@ -156,6 +159,7 @@ etag
 Expedia
 facto
 failover
+falsy
 faq
 Fargate
 faqs
@@ -189,6 +193,7 @@ Hackathons
 hackathon
 haproxy
 hardcoded
+hardcodes
 hardcoding
 harness
 Helidon
@@ -204,6 +209,7 @@ http
 https
 Iain
 idempotency
+idempotent
 Iglesias
 iLert
 img
@@ -231,6 +237,7 @@ json
 jsonnet
 JSONSchema
 jsx
+justfile
 JWTs
 Kaewkasi
 Kaswell
@@ -255,6 +262,7 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+livereload
 liveness
 LLMs
 LocalStack
@@ -274,6 +282,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+materialx
 matchers
 md
 memcache
@@ -368,6 +377,8 @@ pipx
 plaintext
 plantuml
 Platformize
+pluggable
+Pluggable
 Podman
 posix
 postgres
@@ -389,6 +400,7 @@ pseudonymized
 pubsub
 Pulumi
 pygments
+pymdown
 pymdownx
 rankdir
 readme
@@ -490,9 +502,12 @@ subfolders
 subheader
 subheaders
 subkey
+submenu
 subpage
 subpath
 subpaths
+subplan
+subplans
 subroute
 subroutes
 subquery
@@ -557,10 +572,12 @@ ungrouped
 unicode
 unmanaged
 unmount
+unparseable
 unregister
 unregistering
 unregisters
 unregistration
+unpatched
 unreviewed
 unstarred
 untemplated
@@ -602,7 +619,11 @@ xyz
 yaml
 Zalando
 Zhou
+zensical
+Zensical
 zod
 Zolotusky
 zoomable
 zsh
+Zensical
+zensical

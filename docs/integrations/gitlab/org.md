@@ -90,7 +90,7 @@ amount of data, this can take significant time and resources.
 The token used must have the `read_api` scope, and the Users and Groups fetched
 will be those visible to the account which provisioned the token.
 
-:::note Note
+:::note
 
 The `schedule` has to be setup in the config, as shown below.
 

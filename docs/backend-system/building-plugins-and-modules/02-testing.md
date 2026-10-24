@@ -143,7 +143,7 @@ Example:
 
 ```ts
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 describe('read from remote', () => {
@@ -154,13 +154,9 @@ describe('read from remote', () => {
     expect.assertions(1);
 
     worker.use(
-      rest.get('https://remote-server.com/api/v3/foo', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe('Bearer fake');
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(JSON.stringify({ value: 7 })),
-        );
+      http.get('https://remote-server.com/api/v3/foo', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe('Bearer fake');
+        return HttpResponse.json({ value: 7 }, { status: 200 });
       }),
     );
 
@@ -238,6 +234,32 @@ it'll take into account when present.
 - `BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING`
+
+`TestDatabases` creates databases as your tests ask for them, and drops them
+when the test file finishes. In PostgreSQL, every `DROP DATABASE` waits for an
+immediate checkpoint, which writes all changed data on the server to disk and
+waits for it to be synced. With many parallel test workers, these checkpoints
+can take tens of seconds each and make the `afterAll` hooks time out. The Docker
+based engines avoid this by keeping their data in memory. If you supply your own
+PostgreSQL server for tests, turn off durability on it, since the data is thrown
+away anyway.
+
+Only do this on a dedicated PostgreSQL server that holds nothing but disposable
+test data, such as a CI service container. `ALTER SYSTEM` changes the setting
+for every database on the server, and with `fsync` off an operating system
+crash or power failure can corrupt all of them beyond repair. Never use these
+settings on a shared development or production server.
+
+```sql
+ALTER SYSTEM SET fsync = off;
+ALTER SYSTEM SET synchronous_commit = off;
+ALTER SYSTEM SET full_page_writes = off;
+SELECT pg_reload_conf();
+```
+
+You could instead keep the data directory on a `tmpfs`, but then the test
+databases use memory, which can run out on CI machines that also run many test
+workers.
 
 ## Testing Service Factories
 

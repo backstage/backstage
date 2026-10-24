@@ -15,8 +15,22 @@
  */
 
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { useState } from 'react';
+import { useMemo, useState, type PropsWithChildren } from 'react';
+import { createVersionedValueMap } from '@backstage/version-bridge';
+import {
+  Link as RouterLink,
+  MemoryRouter,
+  Route,
+  Routes,
+  useHref,
+  useInRouterContext,
+  useLocation,
+  useNavigate,
+  useResolvedPath,
+} from 'react-router-dom';
 import { BUIProvider } from '../../provider';
+import { BUIContext } from '../../provider/BUIContext';
+import type { BUIRoutingIntegration } from '../../navigation/types';
 import type { AsyncListSource } from '../../types/selectableCollection';
 import { Combobox } from './Combobox';
 import {
@@ -99,6 +113,19 @@ afterEach(() => {
 });
 
 describe('Combobox', () => {
+  it('opens when the input receives focus', async () => {
+    renderCombobox(
+      <Combobox
+        aria-label="Status"
+        options={owners.map(owner => ({ id: owner.id, label: owner.name }))}
+      />,
+    );
+
+    act(() => screen.getByRole('combobox').focus());
+
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+  });
+
   it('does not open when disabled', () => {
     renderCombobox(
       <Combobox
@@ -265,6 +292,91 @@ describe('Combobox', () => {
     expect(option.querySelector('.bui-ComboboxItemContent')).toBeVisible();
   });
 
+  it('renders a linked item with the host basename and navigates client-side', () => {
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <BUIProvider>
+          <Combobox aria-label="Destination">
+            <ComboboxItem id="docs" textValue="TechDocs" href="/catalog/docs">
+              TechDocs
+            </ComboboxItem>
+          </Combobox>
+          <LocationStatus />
+        </BUIProvider>
+      </MemoryRouter>,
+    );
+
+    openCombobox();
+    const option = screen.getByRole('option', { name: 'TechDocs' });
+    expect(option).toHaveAttribute('href', '/app/catalog/docs');
+    fireEvent.click(option);
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/docs');
+  });
+
+  it('routes a relative text preset from the component route with one basename', () => {
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog/entity']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <BUIProvider>
+          <Routes>
+            <Route
+              path="catalog/entity/*"
+              element={
+                <>
+                  <Combobox aria-label="Destination">
+                    <ComboboxItemText id="docs" title="TechDocs" href="docs" />
+                  </Combobox>
+                  <LocationStatus />
+                </>
+              }
+            />
+          </Routes>
+        </BUIProvider>
+      </MemoryRouter>,
+    );
+
+    openCombobox();
+    const option = screen.getByRole('option', { name: 'TechDocs' });
+    expect(option).toHaveAttribute('href', '/app/catalog/entity/docs');
+    fireEvent.click(option);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/entity/docs',
+    );
+  });
+
+  it('registers linked item navigation with the selected routing integration', () => {
+    const createRouterOptions = jest.fn(() => ({ replace: true }));
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <TrackingRoutingProvider createRouterOptions={createRouterOptions}>
+          <Combobox aria-label="Destination">
+            <ComboboxItem id="docs" textValue="TechDocs" href="/catalog/docs">
+              TechDocs
+            </ComboboxItem>
+          </Combobox>
+        </TrackingRoutingProvider>
+      </MemoryRouter>,
+    );
+
+    openCombobox();
+    expect(screen.getByRole('option', { name: 'TechDocs' })).toHaveAttribute(
+      'href',
+      '/app/catalog/docs',
+    );
+    expect(createRouterOptions).toHaveBeenCalledTimes(1);
+  });
+
   it('renders dynamic profile items with injected identity and value', () => {
     const owners = [
       {
@@ -326,10 +438,10 @@ describe('Combobox', () => {
       </Combobox>,
     );
 
+    openCombobox();
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: 'grace' },
     });
-    openCombobox();
 
     expect(
       screen.queryByRole('option', { name: 'Ada Lovelace' }),
@@ -413,16 +525,241 @@ describe('Combobox', () => {
       </Combobox>,
     );
 
+    openCombobox();
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: 'navy' },
     });
-    openCombobox();
 
     expect(
       screen.queryByRole('option', { name: 'Ada Lovelace' }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Grace Hopper' })).toBeVisible();
     expect(filter).toHaveBeenCalledWith(owners[1], 'navy');
+  });
+
+  it.each([
+    {
+      name: 'plain options',
+      query: 'grace',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={owners.map(({ id, name }) => ({ id, label: name }))}
+          search
+          onChange={onChange}
+        />
+      ),
+    },
+    {
+      name: 'a custom filter',
+      query: 'navy',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{ filter: (owner, query) => owner.email.includes(query) }}
+          allowsCustomValue
+          onChange={onChange}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>
+      ),
+    },
+    {
+      name: 'sections',
+      query: 'grace',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={[
+            {
+              title: 'Owners',
+              options: owners.map(({ id, name }) => ({ id, label: name })),
+            },
+          ]}
+          search
+          onChange={onChange}
+        />
+      ),
+    },
+    {
+      name: 'a custom filter on sections',
+      query: 'navy',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={[
+            {
+              title: 'Owners',
+              options: owners.map(({ id, name, email }) => ({
+                id,
+                label: name,
+                description: email,
+              })),
+            },
+          ]}
+          search={{
+            filter: (option, query) =>
+              option.description?.includes(query) ?? false,
+          }}
+          onChange={onChange}
+        />
+      ),
+    },
+  ])(
+    'selects a client search match with the keyboard for $name',
+    ({ query, renderSubject }) => {
+      const onChange = jest.fn();
+      renderCombobox(renderSubject(onChange));
+
+      const input = screen.getByRole('combobox');
+      openCombobox();
+      fireEvent.change(input, { target: { value: query } });
+
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(input).toHaveAttribute(
+        'aria-activedescendant',
+        screen.getByRole('option', { name: 'Grace Hopper' }).id,
+      );
+
+      fireEvent.keyDown(input, { key: 'Enter' });
+      expect(onChange).toHaveBeenCalledWith('grace');
+      expect(input).toHaveValue('Grace Hopper');
+
+      act(() => input.blur());
+      expect(onChange).toHaveBeenLastCalledWith('grace');
+      expect(input).toHaveValue('Grace Hopper');
+
+      openCombobox();
+      expect(screen.getAllByRole('option')).toHaveLength(2);
+    },
+  );
+
+  it.each([
+    {
+      name: 'Escape with allowsCustomValue',
+      search: {},
+      allowsCustomValue: true,
+      leave: (input: HTMLElement) =>
+        fireEvent.keyDown(input, { key: 'Escape' }),
+    },
+    {
+      name: 'blur with a controlled input',
+      search: { controlled: true },
+      allowsCustomValue: false,
+      leave: () => act(() => screen.getByText('Other').focus()),
+    },
+  ])(
+    'restores a selected option that a custom filter excludes, on $name',
+    ({ search, allowsCustomValue, leave }) => {
+      const onChange = jest.fn();
+      const filter = (owner: Owner, query: string) =>
+        owner.email.includes(query);
+
+      function OwnerCombobox() {
+        const [inputValue, setInputValue] = useState('');
+        return (
+          <>
+            <Combobox
+              aria-label="Owner"
+              items={owners}
+              search={
+                search.controlled
+                  ? { filter, inputValue, onInputChange: setInputValue }
+                  : { filter }
+              }
+              allowsCustomValue={allowsCustomValue}
+              onChange={onChange}
+            >
+              {owner => <ComboboxItemProfile name={owner.name} />}
+            </Combobox>
+            <button>Other</button>
+          </>
+        );
+      }
+
+      renderCombobox(<OwnerCombobox />);
+
+      const input = screen.getByRole('combobox');
+      openCombobox();
+      fireEvent.click(screen.getByRole('option', { name: 'Ada Lovelace' }));
+      act(() => input.focus());
+      openCombobox();
+      fireEvent.change(input, { target: { value: 'navy' } });
+
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(input).toHaveAttribute(
+        'aria-activedescendant',
+        screen.getByRole('option', { name: 'Grace Hopper' }).id,
+      );
+
+      leave(input);
+      expect(input).toHaveValue('Ada Lovelace');
+      expect(onChange).toHaveBeenLastCalledWith('ada');
+    },
+  );
+
+  it.each([
+    { name: 'defaultSelectedKey', selection: { defaultSelectedKey: 'ada' } },
+    { name: 'selectedKey', selection: { selectedKey: 'ada' } },
+  ])(
+    'restores the deprecated $name when a custom filter excludes it',
+    ({ selection }) => {
+      renderCombobox(
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{ filter: (owner, query) => owner.email.includes(query) }}
+          {...selection}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>,
+      );
+
+      const input = screen.getByRole('combobox');
+      expect(input).toHaveValue('Ada Lovelace');
+      openCombobox();
+      fireEvent.change(input, { target: { value: 'navy' } });
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+
+      fireEvent.keyDown(input, { key: 'Escape' });
+      expect(input).toHaveValue('Ada Lovelace');
+    },
+  );
+
+  it('applies a custom filter to a controlled input value changed by the caller', () => {
+    function ControlledOwnerCombobox({ inputValue }: { inputValue: string }) {
+      return (
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{
+            inputValue,
+            onInputChange: () => {},
+            filter: (owner, query) => owner.email.includes(query),
+          }}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>
+      );
+    }
+
+    const { rerender } = renderCombobox(
+      <ControlledOwnerCombobox inputValue="" />,
+    );
+    openCombobox();
+    expect(screen.getAllByRole('option')).toHaveLength(2);
+
+    rerender(
+      <BUIProvider>
+        <ControlledOwnerCombobox inputValue="navy" />
+      </BUIProvider>,
+    );
+
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    expect(screen.getByRole('option', { name: 'Grace Hopper' })).toBeVisible();
   });
 
   it('supports controlled nested client search state', () => {
@@ -502,10 +839,10 @@ describe('Combobox', () => {
     function AsyncOwnerCombobox() {
       const list = useAsyncList<Owner>({
         async load({ filterText }) {
-          const query = filterText?.toLocaleLowerCase() ?? '';
+          const query = filterText?.toLowerCase() ?? '';
           return {
             items: owners.filter(owner =>
-              owner.name.toLocaleLowerCase().includes(query),
+              owner.name.toLowerCase().includes(query),
             ),
           };
         },
@@ -1233,3 +1570,32 @@ describe('Combobox', () => {
     expect(onInputChange).toHaveBeenCalledWith('next-query');
   });
 });
+
+function LocationStatus() {
+  return <span role="status">{useLocation().pathname}</span>;
+}
+
+function TrackingRoutingProvider({
+  children,
+  createRouterOptions,
+}: PropsWithChildren<{
+  createRouterOptions: BUIRoutingIntegration['createRouterOptions'];
+}>) {
+  const routing = useMemo<BUIRoutingIntegration>(
+    () => ({
+      Link: RouterLink,
+      useHref,
+      useInRouterContext,
+      useLocation,
+      useNavigate,
+      useResolvedPath,
+      createRouterOptions,
+    }),
+    [createRouterOptions],
+  );
+  const value = useMemo(
+    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
+    [routing],
+  );
+  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
+}

@@ -59,6 +59,7 @@ export const TabDefinition = defineComponent<TabOwnProps>()({
     root: 'bui-Tab',
   },
   analytics: true,
+  navigation: { type: 'anchor' },
   propDefs: {
     className: {},
     matchStrategy: {},

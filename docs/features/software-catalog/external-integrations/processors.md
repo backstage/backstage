@@ -58,7 +58,7 @@ yarn new --select catalog-processor-module
 The CLI prompts for a module ID (for example, `team-name`). This generates a
 backend module package in the `plugins` folder:
 
-```
+```text
 plugins/catalog-backend-module-team-name-processor/
 ├── package.json
 ├── src/

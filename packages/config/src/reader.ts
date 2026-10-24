@@ -312,7 +312,13 @@ export class ConfigReader implements Config {
     if (typeof value === 'number' || value === undefined) {
       return value;
     }
-    const number = Number(value);
+    const trimmed = String(value).trim();
+    if (trimmed === '') {
+      throw new Error(
+        errors.convert(this.fullKey(key), this.context, 'number'),
+      );
+    }
+    const number = Number(trimmed);
     if (!Number.isFinite(number)) {
       throw new Error(
         errors.convert(this.fullKey(key), this.context, 'number'),

@@ -166,12 +166,12 @@ export function SearchExample() {
     getData: () => catalogData,
     paginationOptions: { pageSize: 5 },
     searchFn: (items, query) => {
-      const lowerQuery = query.toLocaleLowerCase('en-US');
+      const lowerQuery = query.toLowerCase();
       return items.filter(
         item =>
-          item.name.toLocaleLowerCase('en-US').includes(lowerQuery) ||
-          item.owner.name.toLocaleLowerCase('en-US').includes(lowerQuery) ||
-          item.type.toLocaleLowerCase('en-US').includes(lowerQuery),
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.owner.name.toLowerCase().includes(lowerQuery) ||
+          item.type.toLowerCase().includes(lowerQuery),
       );
     },
   });
@@ -402,12 +402,12 @@ export function CombinedExample() {
       // Filter data
       let filtered = catalogData;
       if (query) {
-        const lowerQuery = query.toLocaleLowerCase('en-US');
+        const lowerQuery = query.toLowerCase();
         filtered = filtered.filter(
           item =>
-            item.name.toLocaleLowerCase('en-US').includes(lowerQuery) ||
-            item.owner.name.toLocaleLowerCase('en-US').includes(lowerQuery) ||
-            item.type.toLocaleLowerCase('en-US').includes(lowerQuery),
+            item.name.toLowerCase().includes(lowerQuery) ||
+            item.owner.name.toLowerCase().includes(lowerQuery) ||
+            item.type.toLowerCase().includes(lowerQuery),
         );
       }
 

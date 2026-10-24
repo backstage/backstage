@@ -335,6 +335,7 @@ export async function createConfig(
       findOwnPaths(__dirname).resolve('config/webpack-public-path'),
       ...(options.additionalEntryPoints ?? []),
       paths.targetEntry,
+      ...(options.deferredEntryPoints ?? []),
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],

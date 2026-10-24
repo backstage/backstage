@@ -28,12 +28,13 @@ This tutorial assumes that you're already familiar with the following,
 2. `Express.js` and `Typescript`
 3. OpenAPI 3.1 schemas
 
-:::note OpenAPI Version Support
+:::note[OpenAPI Version Support]
 Backstage supports both OpenAPI 3.0 and 3.1 specifications. If you have existing OpenAPI 3.0 specs, we recommend that you migrate them to 3.1. You can use `oasdiff upgrade spec.yaml` to automate this conversion. The main changes are:
 
 - Replace `nullable: true` with `type: ['string', 'null']` or use `anyOf`/`oneOf`
 - Remove `allowReserved` from path parameters (only valid on query/cookie parameters in 3.1)
-  :::
+
+:::
 
 ### Setting up
 
@@ -48,6 +49,22 @@ Further, a `java` binary has to be available on your PATH.
 You should create a new folder, `src/schema` in your backend plugin to store your OpenAPI (and any other) specifications. For example, if you're adding a specification to the catalog plugin, you would add a `src/schema` folder to `plugins/catalog-backend`, making a `plugins/catalog-backend/src/schema` directory. This directory should have an `openapi.yaml` file inside.
 
 > Currently, only the `.yaml` extension is supported, not `.yml`.
+
+## Validating your spec
+
+After writing your `openapi.yaml`, you can validate that it is a structurally valid OpenAPI 3.x document by running the following command from your plugin directory:
+
+```bash
+yarn backstage-repo-tools package schema openapi validate
+```
+
+This checks that the spec parses correctly and conforms to the OpenAPI specification. It is a good idea to run this before generating any code from the spec.
+
+For style and best-practice linting, you can additionally run:
+
+```bash
+yarn backstage-repo-tools repo schema openapi lint
+```
 
 ## Generating a typed express router from a spec
 

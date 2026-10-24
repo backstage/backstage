@@ -126,16 +126,18 @@ const _default: OverridableFrontendPlugin<
     }>;
     'entity-content:techdocs': OverridableExtensionDefinition<{
       config: {
+        withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         group: string | false | undefined;
         icon: string | undefined;
       };
       configInput: {
+        withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };
@@ -342,12 +344,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         withoutSearch: boolean;
         withoutHeader: boolean;
+        withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         withoutSearch?: boolean | undefined;
         withoutHeader?: boolean | undefined;
+        withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
@@ -547,8 +551,6 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'table.emptyState.docsButton': 'DOCS';
     readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
-    readonly 'notFound.title': 'Documentation not found';
-    readonly 'notFound.builderNote': "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not generate docs if they are not found. Make sure the project's docs are generated and published by some external process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage instance.";
     readonly 'buildLogs.title': 'Build Details';
     readonly 'buildLogs.closeDrawer': 'Close the drawer';
     readonly 'buildLogs.showBuildLogs': 'Show Build Logs';

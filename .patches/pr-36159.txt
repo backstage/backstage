@@ -1,0 +1,1 @@
+Added the Zensical engine for TechDocs as a backend module, along with Zensical support in the TechDocs CLI

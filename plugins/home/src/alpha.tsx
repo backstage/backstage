@@ -40,7 +40,6 @@ import {
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
-import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
 import HomeIcon from '@material-ui/icons/Home';
 import LinkIcon from '@material-ui/icons/Link';
@@ -53,6 +52,12 @@ import {
 } from '@backstage/plugin-home-react/alpha';
 
 const rootRouteRef = createRouteRef();
+
+const VisitListener = reactLazy(() =>
+  import('./components/VisitListener').then(m => ({
+    default: m.VisitListener,
+  })),
+);
 
 const defaultConfigItemSchema = z.object({
   component: z.string(),
@@ -225,10 +230,10 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
   },
 });
 
-const homePageTopVisitedWidget = HomePageWidgetBlueprint.make({
-  name: 'top-visited',
+const homePageMostVisitedWidget = HomePageWidgetBlueprint.make({
+  name: 'most-visited',
   params: {
-    name: 'HomePageTopVisited',
+    name: 'HomePageMostVisited',
     title: 'Most Visited',
     description: 'Shows your most frequently visited pages',
     components: () =>
@@ -318,7 +323,7 @@ export default createFrontendPlugin({
     homePageToolkitWidget,
     homePageStarredEntitiesWidget,
     homePageRandomJokeWidget,
-    homePageTopVisitedWidget,
+    homePageMostVisitedWidget,
     homePageRecentlyVisitedWidget,
     homePageWorldClockWidget,
   ],

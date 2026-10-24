@@ -108,7 +108,7 @@ export async function checkTaskPermission(options: checkTaskPermissionOptions) {
   }
 }
 
-/** Fetches and transforms authorization conditions into filters, or returns `undefined` if the decision is not conditional.
+/** Fetches and transforms authorization conditions into filters, throws for denied decisions, or returns `undefined` if allowed.
  * @public
  */
 export const getAuthorizeConditions = async (
@@ -121,6 +121,9 @@ export const getAuthorizeConditions = async (
       [{ permission: permission }],
       { credentials },
     );
+    if (taskDecision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
     if (taskDecision.result === AuthorizeResult.CONDITIONAL) {
       return transformConditions(taskDecision.conditions);
     }

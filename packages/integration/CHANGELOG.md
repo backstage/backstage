@@ -1,5 +1,90 @@
 # @backstage/integration
 
+## 2.1.3
+
+### Patch Changes
+
+- 1f603db: Azure DevOps repository files now resolve to an edit URL when used by integrations such as TechDocs.
+- 7d17e72: Fixed Azure DevOps file and archive downloads to use the requested branch or tag, including when checking whether a repository tree has changed. Branches and tags with the same name are now distinguished.
+- 4bd3c42: Bitbucket Cloud OAuth access tokens returned by `getBitbucketCloudOAuthToken` are now cached separately for each set of OAuth client credentials. Previously a single token was cached globally, which could cause the wrong token to be used when more than one Bitbucket Cloud integration was configured or when OAuth credentials were rotated.
+- 933e50e: Fixed importing this package from ECMAScript module (ESM) projects, which failed since 2.1.0 with an error saying that `lodash` does not provide an export named `trimEnd`.
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+
+## 2.1.3-next.1
+
+### Patch Changes
+
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+
+## 2.1.3-next.0
+
+### Patch Changes
+
+- 1f603db: Azure DevOps repository files now resolve to an edit URL when used by integrations such as TechDocs.
+- 4bd3c42: Bitbucket Cloud OAuth access tokens returned by `getBitbucketCloudOAuthToken` are now cached separately for each set of OAuth client credentials. Previously a single token was cached globally, which could cause the wrong token to be used when more than one Bitbucket Cloud integration was configured or when OAuth credentials were rotated.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/connections@0.4.1-next.0
+
+## 2.1.2
+
+### Patch Changes
+
+- 23705f3: Fixed an issue where reading or downloading files from Bitbucket Server could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e592bc5: Fixed an issue where reading files from GitLab could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- Updated dependencies
+  - @backstage/connections@0.4.0
+  - @backstage/config@1.3.9
+
+## 2.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/connections@0.4.0-next.0
+
+## 2.1.2-next.0
+
+### Patch Changes
+
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+
+## 2.1.0
+
+### Minor Changes
+
+- dc951d4: Added support for creating a GitHub credentials provider backed by the connections service.
+
+### Patch Changes
+
+- 87bfe22: GitHub integrations now cache the list of app installations for a short period, avoiding a full `GET /app/installations` pagination on every token fetch. This significantly reduces API usage against the 15k/hour GitHub App rate limit for organizations with many installations or frequent credential refreshes.
+
+  The cache is refreshed on a 10-minute TTL, and is additionally invalidated when a lookup for a previously-unseen owner occurs (throttled to once per minute) or when GitHub reports that a cached installation is no longer available, so newly added or removed installations are still picked up promptly.
+
+- Updated dependencies
+  - @backstage/connections@0.3.0
+
+## 2.1.0-next.1
+
+### Patch Changes
+
+- 87bfe22: GitHub integrations now cache the list of app installations for a short period, avoiding a full `GET /app/installations` pagination on every token fetch. This significantly reduces API usage against the 15k/hour GitHub App rate limit for organizations with many installations or frequent credential refreshes.
+
+  The cache is refreshed on a 10-minute TTL, and is additionally invalidated when a lookup for a previously-unseen owner occurs (throttled to once per minute) or when GitHub reports that a cached installation is no longer available, so newly added or removed installations are still picked up promptly.
+
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.2
+
 ## 2.1.0-next.0
 
 ### Minor Changes

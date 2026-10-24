@@ -1,6 +1,6 @@
 {
   "name": "@backstage/catalog-model",
-  "version": "1.9.0",
+  "version": "1.10.2",
   "description": "Types and validators that help describe the model of a Backstage Catalog",
   "backstage": {
     "role": "common-library"
@@ -53,7 +53,7 @@
     "ajv": "^8.10.0",
     "ajv-errors": "^3.0.0",
     "lodash": "^4.17.21",
-    "zod": "^3.25.76"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -18,6 +18,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import {
@@ -53,6 +55,7 @@ import {
 import { KubernetesRouter } from './service/KubernetesRouter';
 import { KubernetesInitializer } from './service/KubernetesInitializer';
 import { kubernetesProxyPermissionRules } from './permissions/rules';
+import { createKubernetesActions } from './actions';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProviderFactory | undefined;
@@ -233,6 +236,7 @@ export const kubernetesPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         http,
@@ -245,6 +249,7 @@ export const kubernetesPlugin = createBackendPlugin({
         auth,
         httpAuth,
         auditor,
+        actionsRegistry,
       }) {
         permissionsRegistry.addResourceType({
           resourceRef: kubernetesProxyPermissionResourceRef,
@@ -296,6 +301,15 @@ export const kubernetesPlugin = createBackendPlugin({
           });
 
           http.use(await router.getRouter());
+
+          permissionsRegistry.addPermissions(kubernetesPermissions);
+
+          createKubernetesActions({
+            actionsRegistry,
+            clusterSupplier,
+            objectsProvider,
+            catalog,
+          });
         } else {
           logger.warn(
             'Failed to initialize kubernetes backend: valid kubernetes config is missing',

@@ -398,9 +398,10 @@ export interface QueryLocationsResponse {
 // @public
 export type StreamEntitiesRequest = Omit<
   QueryEntitiesInitialRequest,
-  'limit' | 'offset'
+  'limit' | 'offset' | 'totalItems'
 > & {
   pageSize?: number;
+  totalItems?: QueryEntitiesInitialRequest['totalItems'];
 };
 
 // @public

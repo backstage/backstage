@@ -18,10 +18,12 @@ import {
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
+import { errorApiRef } from '@backstage/frontend-plugin-api';
 import {
   EntityContextMenuItemBlueprint,
   type EntityContextMenuItemParams,
 } from '@backstage/plugin-catalog-react/alpha';
+import { MockErrorApi, withLogCollector } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
@@ -70,6 +72,55 @@ describe('EntityContextMenu', () => {
     await userEvent.click(item);
 
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports menu item errors without disrupting the menu collection', async () => {
+    const errorApi = new MockErrorApi({ collect: true });
+    const error = new Error('Failed to render menu item');
+    const onClick = jest.fn();
+
+    await withLogCollector(['error'], async () => {
+      await renderInTestApp(
+        <EntityContextMenu
+          contextMenuItems={[
+            createContextMenuItem({
+              icon: <span />,
+              useProps: () => {
+                throw error;
+              },
+            }),
+            createContextMenuItem({
+              icon: <span />,
+              useProps: () => ({ title: 'Healthy item', onClick }),
+            }),
+          ]}
+        />,
+        { apis: [[errorApiRef, errorApi]] },
+      );
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'More actions' }),
+      );
+
+      const healthyItem = await screen.findByRole('menuitem', {
+        name: 'Healthy item',
+      });
+      expect(screen.queryByText(error.message)).not.toBeInTheDocument();
+      expect(errorApi.getErrors()).toEqual([
+        {
+          error: expect.objectContaining({
+            message: expect.stringContaining(error.message),
+            cause: error,
+          }),
+          context: undefined,
+        },
+      ]);
+
+      await userEvent.click(healthyItem);
+    });
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
   it('supports an action alongside an internal link', async () => {

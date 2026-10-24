@@ -169,6 +169,53 @@ describe('GithubRepoPicker', () => {
         { timeout: 1500 },
       );
     });
+
+    it('still populates owners when disableRepoAutocomplete is true', async () => {
+      const onChange = jest.fn();
+
+      const { getAllByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GithubRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ host: 'github.com', repoName: 'repo' }}
+            accessToken="foo"
+            disableRepoAutocomplete
+          />
+        </TestApiProvider>,
+      );
+
+      // Owner autocomplete is still populated from the fetch even though
+      // repo autocomplete is disabled
+      const ownerInput = getAllByRole('textbox')[0];
+      await userEvent.click(ownerInput);
+      await waitFor(() => expect(getByText('spotify')).toBeInTheDocument());
+    });
+
+    it('does not surface repository suggestions when disableRepoAutocomplete is true', async () => {
+      const onChange = jest.fn();
+
+      await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GithubRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ host: 'github.com', owner: 'spotify' }}
+            accessToken="foo"
+            disableRepoAutocomplete
+          />
+        </TestApiProvider>,
+      );
+
+      // Repo suggestions are cleared rather than populated with fetched repos
+      await waitFor(
+        () => expect(onChange).toHaveBeenCalledWith({ availableRepos: [] }),
+        { timeout: 1500 },
+      );
+      expect(onChange).not.toHaveBeenCalledWith({
+        availableRepos: [{ name: 'backstage' }],
+      });
+    });
   });
 
   describe('GithubRepoPicker - isDisabled', () => {

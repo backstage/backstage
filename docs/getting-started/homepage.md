@@ -98,7 +98,7 @@ These widgets come from `@backstage/plugin-home`:
 | Starred Entities | `home-page-widget:home/starred-entities` | Shows entities you have starred in the catalog.                    |
 | Toolkit          | `home-page-widget:home/toolkit`          | A collection of configurable links and tools.                      |
 | World Clocks     | `home-page-widget:home/world-clock`      | Displays clocks for configured time zones.                         |
-| Most Visited     | `home-page-widget:home/top-visited`      | Shows your most frequently visited pages. Requires visit tracking. |
+| Most Visited     | `home-page-widget:home/most-visited`     | Shows your most frequently visited pages. Requires visit tracking. |
 | Recently Visited | `home-page-widget:home/recently-visited` | Shows pages you have recently visited. Requires visit tracking.    |
 | Random Joke      | `home-page-widget:home/random-joke`      | Shows a random programming joke.                                   |
 
@@ -112,6 +112,18 @@ This widget comes from `@backstage/plugin-search`:
 
 :::note
 The search bar widget requires `@backstage/plugin-search` to be installed.
+:::
+
+### Scaffolder plugin widget
+
+This widget comes from `@backstage/plugin-scaffolder`:
+
+| Widget             | Extension ID                                     | Description                                                                                |
+| :----------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------- |
+| Featured Templates | `home-page-widget:scaffolder/featured-templates` | Shows software templates tagged with a configurable catalog tag, defaulting to `featured`. |
+
+:::note
+The featured templates widget requires `@backstage/plugin-scaffolder` to be installed.
 :::
 
 ### Community widgets
@@ -171,6 +183,35 @@ app:
               timeZone: Europe/Stockholm
             - label: TYO
               timeZone: Asia/Tokyo
+```
+
+### Featured Templates
+
+The featured templates widget shows every template in the catalog whose
+`metadata.tags` contains a configurable tag, in the order the catalog returns
+them. Selecting a card opens the template form, and the empty state links to the
+templates page. By default the widget is titled `Featured Templates` and looks
+for the `featured` tag:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nodejs-service
+  title: Node.js Service
+  tags:
+    - featured
+```
+
+Both the title and the tag can be changed:
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:scaffolder/featured-templates:
+        config:
+          title: Golden Paths
+          tag: golden-path
 ```
 
 ### Disabling a widget

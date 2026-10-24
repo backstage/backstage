@@ -41,7 +41,7 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse, passthrough } from 'msw';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
@@ -54,6 +54,12 @@ import {
   kubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
+
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: jest.fn().mockReturnValue({
+    getEntityByRef: jest.fn(),
+  }),
+}));
 
 describe('API integration tests', () => {
   let app: ExtendedHttpServer;
@@ -118,22 +124,21 @@ describe('API integration tests', () => {
       getCustomResourcesByEntity: jest.fn().mockResolvedValue(happyK8SResult),
     };
 
-    jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockReturnValue({
-        getEntityByRef: jest.fn().mockImplementation(async entityRef => {
-          if (entityRef.name === 'noentity') {
-            return undefined;
-          }
-          return {
-            kind: entityRef.kind,
-            metadata: {
-              name: entityRef.name,
-              namespace: entityRef.namespace,
-            },
-          };
-        }),
+    const { CatalogClient } = jest.requireMock('@backstage/catalog-client');
+    (CatalogClient as jest.Mock).mockReturnValue({
+      getEntityByRef: jest.fn().mockImplementation(async (entityRef: any) => {
+        if (entityRef.name === 'noentity') {
+          return undefined;
+        }
+        return {
+          kind: entityRef.kind,
+          metadata: {
+            name: entityRef.name,
+            namespace: entityRef.namespace,
+          },
+        };
       }),
-    }));
+    });
 
     const { server } = await startTestBackend({
       features: [
@@ -497,7 +502,12 @@ describe('API integration tests', () => {
 
       const response = await request(app)
         .post('/api/kubernetes/services/test-service')
-        .send({ entity: { metadata: { name: 'thing' } } });
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'thing', namespace: 'default' },
+          },
+        });
 
       expect(response.body).toEqual({
         items: [
@@ -523,6 +533,7 @@ describe('API integration tests', () => {
             { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
           ],
         }),
+        watchResource: jest.fn(),
       };
 
       const { server } = await startTestBackend({
@@ -582,7 +593,10 @@ describe('API integration tests', () => {
       await request(app)
         .post('/api/kubernetes/services/test-service')
         .send({
-          entity: { metadata: { name: 'thing' } },
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'thing', namespace: 'default' },
+          },
           auth: { custom: 'custom-token' },
         });
 
@@ -626,6 +640,22 @@ describe('API integration tests', () => {
       expect(auditEvent.success).toHaveBeenCalled();
       expect(auditEvent.fail).not.toHaveBeenCalled();
     });
+
+    it('rejects entities not found in catalog', async () => {
+      const response = await request(app)
+        .post('/api/kubernetes/services/test-service')
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'noentity', namespace: 'default' },
+          },
+        })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toEqual(403);
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
+    });
   });
 
   describe('/proxy', () => {
@@ -634,20 +664,18 @@ describe('API integration tests', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.post(
+        http.post(
           'https://localhost:1234/api/v1/namespaces',
-          (req, res, ctx) => {
-            if (!req.headers.get('Authorization')) {
-              return res(ctx.status(401));
+          async ({ request: mswRequest }) => {
+            if (!mswRequest.headers.get('Authorization')) {
+              return new HttpResponse(null, { status: 401 });
             }
-            return req
-              .arrayBuffer()
-              .then(body =>
-                res(
-                  ctx.set('content-type', `${req.headers.get('content-type')}`),
-                  ctx.body(body),
-                ),
-              );
+            const body = await mswRequest.arrayBuffer();
+            return new HttpResponse(body, {
+              headers: {
+                'content-type': mswRequest.headers.get('content-type') ?? '',
+              },
+            });
           },
         ),
       );
@@ -665,7 +693,7 @@ describe('API integration tests', () => {
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .send(namespaceManifest);
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
       const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual(namespaceManifest);
@@ -699,7 +727,7 @@ metadata:
         .set('content-type', 'application/yaml')
         .send(yamlManifest);
 
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
 
       const response = await proxyEndpointRequest;
       expect(response.text).toEqual(yamlManifest);
@@ -718,7 +746,7 @@ metadata:
           metadata: { name: 'new-ns' },
         });
 
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
 
       const response = await proxyEndpointRequest;
 
@@ -740,12 +768,15 @@ metadata:
 
     it('permits custom client-side auth strategy', async () => {
       worker.use(
-        rest.get('http://my.cluster.url/api/v1/namespaces', (req, res, ctx) => {
-          if (req.headers.get('Authorization') !== 'custom-token') {
-            return res(ctx.status(401));
-          }
-          return res(ctx.json({ items: [] }));
-        }),
+        http.get(
+          'http://my.cluster.url/api/v1/namespaces',
+          ({ request: mswRequest }) => {
+            if (mswRequest.headers.get('Authorization') !== 'custom-token') {
+              return new HttpResponse(null, { status: 401 });
+            }
+            return HttpResponse.json({ items: [] });
+          },
+        ),
       );
 
       const { server } = await startTestBackend({
@@ -787,7 +818,7 @@ metadata:
         .get('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'custom-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'custom-token');
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
       const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual({ items: [] });
@@ -800,9 +831,7 @@ metadata:
         presentAuthMetadata: jest.fn().mockReturnValue({}),
       };
       worker.use(
-        rest.get('http://my.cluster/api', (_req, res, ctx) =>
-          res(ctx.json({})),
-        ),
+        http.get('http://my.cluster/api', () => HttpResponse.json({})),
       );
       const { server } = await startTestBackend({
         features: [
@@ -846,7 +875,7 @@ metadata:
       const proxyEndpointRequest = request(app).get(
         '/api/kubernetes/proxy/api',
       );
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
       const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual({});

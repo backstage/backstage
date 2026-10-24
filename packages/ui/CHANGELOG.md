@@ -1,5 +1,122 @@
 # @backstage/ui
 
+## 0.19.0
+
+### Minor Changes
+
+- 4e7a710: Updated React Aria dependencies to React Aria Components 1.22.0, React Aria 3.53.0, and React Stately 3.51.0. Existing Checkbox, Radio, and Switch implementations are retained.
+
+  **Migration:**
+
+  `MenuSection` no longer accepts `disabledKeys`. Move `disabledKeys` to `Menu` or set `isDisabled` on the affected `MenuItem` components.
+
+  Programmatic clicks on Checkbox and Switch labels no longer toggle their selection. Target the input when activating these controls programmatically, and use a full pointer interaction when simulating label clicks in tests.
+
+  **Affected components:** Checkbox, Menu, Switch
+
+### Patch Changes
+
+- 46659eb: The `--bui-bg-app` token now follows the page's `color-scheme` until a theme mode is set. While the app loads, the page background then matches a dark theme instead of showing as light. Browsers without `light-dark()` support keep the light value until the theme mode is set, as before.
+- 6c9ed14: Fixed `Combobox` keyboard selection while filtering. With `search`, or with `items` and no `search`, the arrow keys now move through the matching options only, and Enter selects the highlighted one. Screen readers also announce the number of matching options. As with a `Combobox` without `search`, opening the list with the button or on focus shows every option until the user types. With `search.filter`, Escape and blur now restore the label of the selected option even when the filter excludes it. In that case, the number of options announced to screen readers still counts the hidden selected option.
+
+  **Affected components:** Combobox
+
+- b313f2d: Added a `theme` CSS cascade layer between `components` and `utilities`. BUI leaves it empty: put your app's brand overrides in `@layer theme` to win over component styles without raising specificity, while utility props still take precedence. Existing styles are unaffected.
+
+  If your app already declares its own layer named `theme`, its rules now sit below BUI's utility classes instead of above them.
+
+## 0.19.0-next.0
+
+### Minor Changes
+
+- 4e7a710: Updated React Aria dependencies to React Aria Components 1.22.0, React Aria 3.53.0, and React Stately 3.51.0. Existing Checkbox, Radio, and Switch implementations are retained.
+
+  **Migration:**
+
+  `MenuSection` no longer accepts `disabledKeys`. Move `disabledKeys` to `Menu` or set `isDisabled` on the affected `MenuItem` components.
+
+  Programmatic clicks on Checkbox and Switch labels no longer toggle their selection. Target the input when activating these controls programmatically, and use a full pointer interaction when simulating label clicks in tests.
+
+  **Affected components:** Checkbox, Menu, Switch
+
+### Patch Changes
+
+- 6c9ed14: Fixed `Combobox` keyboard selection while filtering. With `search`, or with `items` and no `search`, the arrow keys now move through the matching options only, and Enter selects the highlighted one. Screen readers also announce the number of matching options. As with a `Combobox` without `search`, opening the list with the button or on focus shows every option until the user types. With `search.filter`, Escape and blur now restore the label of the selected option even when the filter excludes it. In that case, the number of options announced to screen readers still counts the hidden selected option.
+
+  **Affected components:** Combobox
+
+## 0.18.0
+
+### Minor Changes
+
+- d07e99e: Updated BUI links to use the hosting application's client-side router, including relative destinations and the application's configured router base path, while preserving native browser navigation where required.
+
+  **BREAKING**: Anchor-based components no longer accept the React Aria `render` prop. BUI now owns the underlying anchor so routing behavior remains consistent across application and plugin package versions.
+
+  ListRow, Tag, and table Row now retain client-side navigation when application and plugin packages load separate React Aria copies. Their existing modifier-key, target, download, and link-metadata behavior is unchanged.
+
+  **Migration:**
+
+  Remove `render` props from ButtonLink, ComboboxItem, Link, MenuItem, MenuListBoxItem, SearchAutocompleteItem, SelectItem, and Tab. BUI now selects and renders the appropriate anchor or router link automatically.
+
+  **Affected components:** ButtonLink, Card, ComboboxItem, Header, Link, ListRow, MenuItem, MenuListBoxItem, Row, SearchAutocompleteItem, SelectItem, Tab, Tag
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+
+  **Affected components:** Avatar
+
+- f914343: Prevent BUI styles from overriding document and native control line heights while preserving BUI component typography.
+- 947c612: Fixed `TablePagination` page-size controls to stay synchronized with controlled values and handle empty option lists without crashing.
+
+  **Affected components:** `TablePagination`
+
+- c435198: Fixed an issue where using `PluginHeader` with `FullPage` caused the page to be unexpectedly scrollable. The `--bui-header-height` CSS variable now correctly accounts for the header's `margin-bottom`, preventing the layout from overflowing the viewport.
+- c0b26db: Open `Combobox` suggestions when the input receives focus by default.
+
+  **Affected components:** Combobox
+
+- 0dd80f7: Fixed pagination state handling in `useTable`, including initial offsets, shrinking complete datasets, controlled loading transitions, valid zero and empty cursors, cached error recovery, immediately resolving reloads, and unnecessary reloads when controlled callback identities change.
+
+  **Affected components:** `useTable`
+
+## 0.18.0-next.2
+
+### Patch Changes
+
+- 0dd80f7: Fixed pagination state handling in `useTable`, including initial offsets, shrinking complete datasets, controlled loading transitions, valid zero and empty cursors, cached error recovery, immediately resolving reloads, and unnecessary reloads when controlled callback identities change.
+
+  **Affected components:** `useTable`
+
+## 0.18.0-next.1
+
+### Minor Changes
+
+- d07e99e: Updated BUI links to use the hosting application's client-side router, including relative destinations and the application's configured router base path, while preserving native browser navigation where required.
+
+  **BREAKING**: Anchor-based components no longer accept the React Aria `render` prop. BUI now owns the underlying anchor so routing behavior remains consistent across application and plugin package versions.
+
+  ListRow, Tag, and table Row now retain client-side navigation when application and plugin packages load separate React Aria copies. Their existing modifier-key, target, download, and link-metadata behavior is unchanged.
+
+  **Migration:**
+
+  Remove `render` props from ButtonLink, ComboboxItem, Link, MenuItem, MenuListBoxItem, SearchAutocompleteItem, SelectItem, and Tab. BUI now selects and renders the appropriate anchor or router link automatically.
+
+  **Affected components:** ButtonLink, Card, ComboboxItem, Header, Link, ListRow, MenuItem, MenuListBoxItem, Row, SearchAutocompleteItem, SelectItem, Tab, Tag
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- f914343: Prevent BUI styles from overriding document and native control line heights while preserving BUI component typography.
+
+## 0.17.1
+
+### Patch Changes
+
+- 52a58be: Fixed Table not filling container width in Firefox when using `TableRoot` directly inside `ResizableTableContainer`. Changed `overflow: hidden` to `overflow: auto` on the resizable container so it handles scrolling for direct `TableRoot` usages.
+
 ## 0.17.1-next.0
 
 ### Patch Changes

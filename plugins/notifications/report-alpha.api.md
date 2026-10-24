@@ -10,6 +10,8 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -39,6 +41,15 @@ const _default: OverridableFrontendPlugin<
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'home-page-widget:notifications/unread-notifications': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'unread-notifications';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
     }>;
     'page:notifications': OverridableExtensionDefinition<{
       kind: 'page';
@@ -183,6 +194,13 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
+    readonly 'unreadCard.emptyState': 'All caught up!';
+    readonly 'unreadCard.title_one': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.title_other': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.viewAll': 'View All';
+    readonly 'unreadCard.columnNotification': 'Notification';
+    readonly 'unreadCard.columnActions': 'Actions';
+    readonly 'unreadCard.resultsCount': '{{displayed}} results out of {{total}}';
   }
 >;
 

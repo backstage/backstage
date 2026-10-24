@@ -201,6 +201,7 @@ export default {
             'auth/oidc',
             'auth/add-auth-provider',
             'auth/service-to-service-auth',
+            'auth/offline-access',
             'auth/autologout',
             'auth/troubleshooting',
           ],
@@ -396,6 +397,12 @@ export default {
             'features/techdocs/concepts',
             'features/techdocs/addons',
             'features/techdocs/architecture',
+            {
+              type: 'category',
+              label: 'Engines',
+              link: { type: 'doc', id: 'features/techdocs/engines' },
+              items: ['features/techdocs/engines-zensical'],
+            },
             'features/techdocs/extensions',
             'features/techdocs/creating-and-publishing',
             'features/techdocs/configuration',
@@ -625,6 +632,7 @@ export default {
                 'frontend-system/building-apps/plugin-conversion',
                 'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
+                'frontend-system/building-apps/app-visualizer',
               ],
             ),
             sidebarElementWithIndex(
@@ -672,6 +680,7 @@ export default {
                 'tooling/cli/module-new',
                 'tooling/cli/module-test',
                 'tooling/cli/module-translations',
+                'tooling/cli/module-package-manager-yarn',
               ],
             ),
             'tooling/cli/building-cli-modules',
@@ -690,6 +699,7 @@ export default {
             'tooling/package-metadata',
           ],
         ),
+        'tooling/codemods',
         sidebarElementWithIndex(
           {
             label: 'User Interface',
@@ -758,7 +768,6 @@ export default {
             'tutorials/react-router-stable-migration',
             'tutorials/react18-migration',
             'tutorials/package-role-migration',
-            'tutorials/migrating-away-from-core',
             'tutorials/yarn-migration',
             'tutorials/migrate-to-mui5',
             'tutorials/auth-service-migration',

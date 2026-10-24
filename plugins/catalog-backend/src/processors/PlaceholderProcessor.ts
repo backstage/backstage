@@ -17,6 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 import yaml from 'yaml';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -102,6 +103,10 @@ export class PlaceholderProcessor implements CatalogProcessor {
       }
 
       const read = async (url: string): Promise<Buffer> => {
+        // Reads driven by a placeholder may only target files from the same
+        // repository as the entity's own location. The check runs here so
+        // that it applies to every read that a resolver makes
+        assertSameRepository(url, location.target, this.options.integrations);
         const response = await this.options.reader.readUrl(url);
         const buffer = await response.buffer();
         return buffer;
@@ -217,6 +222,126 @@ async function readTextLocation(
   }
 }
 
+// SCM integration types whose file URLs git-url-parse splits into the
+// repository and file path the same way regardless of folder names
+const RELIABLE_FILE_MARKER_PROVIDERS = new Set([
+  'github',
+  'gitlab',
+  'bitbucketCloud',
+]);
+
+function assertSameRepository(
+  resolvedUrl: string,
+  baseUrl: string,
+  integrations: ScmIntegrationRegistry,
+): void {
+  let resolvedHost: string | undefined;
+  let baseHost: string | undefined;
+  let baseProtocol: string | undefined;
+  try {
+    resolvedHost = new URL(resolvedUrl).host;
+    const parsedBase = new URL(baseUrl);
+    baseHost = parsedBase.host;
+    baseProtocol = parsedBase.protocol;
+  } catch {
+    // The git-url-parse based checks below still apply
+  }
+
+  // A target that belongs to a configured SCM integration may only be read
+  // from a location on the same host. This only needs the hosts, so it runs
+  // before the git-url-parse based checks: entities served by other readers
+  // — allowlisted plain web hosts, Gerrit, S3 — can otherwise direct
+  // credential-bearing reads at any repository on that integration,
+  // including when either URL fails to parse
+  if (
+    resolvedHost &&
+    baseHost &&
+    integrations.byUrl(resolvedUrl) &&
+    resolvedHost !== baseHost
+  ) {
+    throw new Error(
+      `Placeholder may only reference files from the same repository as the entity`,
+    );
+  }
+
+  // Only web locations name a repository that a target can be compared
+  // with. Other location keys, such as the keys that entity providers use
+  // for the entities they emit, can parse into a bogus owner and name and
+  // are left to the general reading rules, as before
+  if (baseProtocol !== 'http:' && baseProtocol !== 'https:') {
+    return;
+  }
+
+  let resolved;
+  let base;
+  try {
+    resolved = parseGitUrl(resolvedUrl);
+    base = parseGitUrl(baseUrl);
+  } catch {
+    return;
+  }
+
+  // A crafted URL can decode path traversal into the parsed owner or name
+  // fields, both in the placeholder target itself and in the entity's own
+  // location. Those are never legitimate references and are rejected
+  // outright, regardless of the parsed file paths. Encoded traversal
+  // artifacts (a remaining `%` after decoding, e.g. from double-encoding)
+  // are rejected for the same reason: repository identifiers never contain
+  // them
+  for (const parsed of [resolved, base]) {
+    if (
+      parsed.owner?.includes('%') ||
+      parsed.name?.includes('%') ||
+      parsed.owner?.split('/').includes('..') ||
+      parsed.name?.split('/').includes('..')
+    ) {
+      throw new Error(
+        `Placeholder may only reference files from the same repository as the entity`,
+      );
+    }
+  }
+
+  // Locations that do not parse into a repository cannot be compared.
+  // For providers whose file URLs carry a reliable marker (such as `blob`
+  // or `src`), a URL that parses a repository but no file path is a
+  // repository root, and is still compared so that it cannot read another
+  // repository's contents with the integration credential. For other
+  // providers, whether a file path parses depends on the folder names in
+  // the URL rather than on the repository, so the comparison is skipped
+  // whenever either side lacks a file path, as before
+  const hasReliableFileMarkers = RELIABLE_FILE_MARKER_PROVIDERS.has(
+    integrations.byUrl(resolvedUrl)?.type ?? '',
+  );
+  if (
+    !resolved.owner ||
+    !resolved.name ||
+    !base.owner ||
+    !base.name ||
+    (hasReliableFileMarkers
+      ? !resolved.filepath && !base.filepath
+      : !resolved.filepath || !base.filepath)
+  ) {
+    return;
+  }
+
+  // Only targets that belong to a configured SCM integration, or that share
+  // the host of the entity's own location, are held to the same-repository
+  // rule. Plain web URLs are a documented placeholder use and are left to
+  // the general reading rules instead
+  if (!integrations.byUrl(resolvedUrl) && resolved.resource !== base.resource) {
+    return;
+  }
+
+  if (
+    resolved.resource !== base.resource ||
+    resolved.full_name !== base.full_name
+  ) {
+    throw new Error(
+      `Placeholder may only reference files from the same repository as the entity`,
+    );
+  }
+}
+
 function relativeUrl({
   key,
   value,
@@ -230,7 +355,8 @@ function relativeUrl({
   }
 
   try {
-    return resolveUrl(value, baseUrl);
+    const resolved = resolveUrl(value, baseUrl);
+    return resolved;
   } catch (e) {
     // The only remaining case that isn't support is a relative file path that should be
     // resolved using a relative file location. Accessing local file paths can lead to
