@@ -293,7 +293,7 @@ export async function makeRollupConfigs(
         targetPaths.resolveRoot(
           'dist-types',
           relativePath(targetPaths.rootDir, targetDir),
-          e.path.replace(/\.(?:ts|tsx)$/, '.d.ts'),
+          e.path.replace(/\.[jt]sx?$/, '.d.ts'),
         ),
       ]),
     );

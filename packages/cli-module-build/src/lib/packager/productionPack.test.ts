@@ -16,6 +16,8 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import npmPackList from 'npm-packlist';
+import { createRequire } from 'node:module';
+import { realpathSync } from 'node:fs';
 import {
   compilePackageConfigSchemas,
   productionPack,
@@ -47,6 +49,66 @@ describe('productionPack', () => {
     $schema: 'http://json-schema.org/draft-07/schema#',
     ...configSchema,
   };
+
+  it('rewrites compiled entry points while preserving passthrough export patterns', async () => {
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify({
+          name: 'test-package',
+          version: '1.0.0',
+          files: ['dist', 'config'],
+          exports: {
+            '.': './src/index.ts',
+            './helper': './src/helper.js',
+            './config/*.js': './config/*.js',
+            './config/*': './config/*.js',
+          },
+        }),
+        dist: {
+          'index.cjs.js': '',
+          'index.d.ts': '',
+          'helper.cjs.js': '',
+          'helper.d.ts': '',
+        },
+        config: { 'example.js': '' },
+      },
+    });
+    await productionPack({
+      packageDir: mockDir.resolve('package'),
+      targetDir: mockDir.resolve('target'),
+    });
+    const content = mockDir.content({
+      path: 'target',
+      shouldReadAsText: true,
+    }) as Record<string, string>;
+    expect(JSON.parse(content['package.json'] as string).exports).toEqual({
+      '.': {
+        require: './dist/index.cjs.js',
+        types: './dist/index.d.ts',
+        default: './dist/index.cjs.js',
+      },
+      './helper': {
+        require: './dist/helper.cjs.js',
+        types: './dist/helper.d.ts',
+        default: './dist/helper.cjs.js',
+      },
+      './config/*.js': './config/*.js',
+      './config/*': './config/*.js',
+      './package.json': './package.json',
+    });
+    const requireFromPackage = createRequire(
+      mockDir.resolve('target/package.json'),
+    );
+    expect(requireFromPackage.resolve('test-package/helper')).toBe(
+      realpathSync(mockDir.resolve('target/dist/helper.cjs.js')),
+    );
+    expect(requireFromPackage.resolve('test-package/config/example')).toBe(
+      realpathSync(mockDir.resolve('target/config/example.js')),
+    );
+    expect(requireFromPackage.resolve('test-package/config/example.js')).toBe(
+      realpathSync(mockDir.resolve('target/config/example.js')),
+    );
+  });
 
   it('should replace TypeScript schemas in dist packages', async () => {
     mockDir.setContent({
