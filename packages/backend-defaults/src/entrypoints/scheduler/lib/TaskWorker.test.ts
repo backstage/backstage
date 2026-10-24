@@ -16,6 +16,7 @@
 
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { ConflictError, NotFoundError } from '@backstage/errors';
+import { createDeferred } from '@backstage/types';
 import { DateTime, Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
@@ -198,6 +199,61 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
       expect(fn).toHaveBeenCalledTimes(3);
     });
   });
+
+  it.each(['PT1S', 'manual'])(
+    'preserves a pending %s invocation if aborted while claiming',
+    async cadence => {
+      const controller = new AbortController();
+      const fn = jest.fn();
+      const worker = new TaskWorker(
+        'task1',
+        fn,
+        knex,
+        logger,
+        poller,
+        Duration.fromMillis(100),
+      );
+      const claimStarted = createDeferred<void>();
+      const finishClaim = createDeferred<void>();
+      const tryClaimTask = worker.tryClaimTask.bind(worker);
+      jest.spyOn(worker, 'tryClaimTask').mockImplementation(async (...args) => {
+        const claimed = await tryClaimTask(...args);
+        claimStarted.resolve();
+        await finishClaim;
+        return claimed;
+      });
+
+      await worker.start(
+        { version: 2, cadence, timeoutAfterDuration: 'PT1M' },
+        { signal: controller.signal },
+      );
+      await knex<DbTasksRow>(DB_TASKS_TABLE).update({
+        last_run_error_json: JSON.stringify({ message: 'previous error' }),
+        last_run_ended_at: knex.fn.now(),
+      });
+      if (cadence === 'manual') {
+        await TaskWorker.trigger(knex, 'task1');
+      }
+      await claimStarted;
+      const [claimedRow] = await knex<DbTasksRow>(DB_TASKS_TABLE);
+      expect(claimedRow.current_run_ticket).not.toBeNull();
+      expect(claimedRow.next_run_start_at).not.toBeNull();
+
+      controller.abort();
+      finishClaim.resolve();
+
+      await waitForExpect(async () => {
+        const [row] = await knex<DbTasksRow>(DB_TASKS_TABLE);
+        expect(row).toEqual({
+          ...claimedRow,
+          current_run_ticket: null,
+          current_run_started_at: null,
+          current_run_expires_at: null,
+        });
+      });
+      expect(fn).not.toHaveBeenCalled();
+    },
+  );
 
   it('stops retrying when the abort signal is triggered', async () => {
     const controller = new AbortController();
