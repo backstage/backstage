@@ -36005,9 +36005,9 @@ __metadata:
   linkType: hard
 
 "nodemailer@npm:^10.0.10":
-  version: 10.0.15
-  resolution: "nodemailer@npm:10.0.15"
-  checksum: 10/7deb294745af07ea9db0221b5585bca75fe1a77e5c80c923d7a1000b7e3ad4f677979c0118a4b278b2ccc103b5536c29b33fb720c443af0b06a78e50fa3ea2a6
+  version: 10.2.1
+  resolution: "nodemailer@npm:10.2.1"
+  checksum: 10/1f7c755800fd184e848955aabf66d7f8d78d1476a62e009e10b9c59d763c63442e7f0945ad4f1a790408df98cdde3e4a611c98b180af73be81d0299840ddd4e7
   languageName: node
   linkType: hard
 
