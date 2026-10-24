@@ -20,6 +20,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -29,18 +30,15 @@ import {
 } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
 import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
-import Autocomplete, {
-  createFilterOptions,
-} from '@material-ui/lab/Autocomplete';
-import {
-  catalogApiRef,
-  EntityDisplayName,
-  entityPresentationApiRef,
-  EntityRefPresentationSnapshot,
-} from '@backstage/plugin-catalog-react';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -49,6 +47,8 @@ import {
   useScaffolderTheme,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import { useEntityPickerOptions } from '../useEntityPickerOptions';
+import { useEntityPickerPagination } from '../useEntityPickerPagination';
 
 export { MyGroupsPickerSchema };
 
@@ -70,101 +70,150 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   } = props;
 
   const identityApi = useApi(identityApiRef);
-  const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
-  const entityPresentationApi = useApi(entityPresentationApiRef);
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
-  const { value: groups, loading } = useAsync(async () => {
-    const { userEntityRef } = await identityApi.getBackstageIdentity();
+  const { value: userEntityRef, loading: identityLoading } = useAsync(
+    async () => {
+      const { userEntityRef: identityEntityRef } =
+        await identityApi.getBackstageIdentity();
 
-    if (!userEntityRef) {
-      errorApi.post(new NotFoundError('No user entity ref found'));
-      return { catalogEntities: [], entityRefToPresentation: new Map() };
+      if (!identityEntityRef) {
+        errorApi.post(new NotFoundError('No user entity ref found'));
+        return undefined;
+      }
+
+      return identityEntityRef;
+    },
+  );
+  const catalogFilter = useMemo(
+    () =>
+      userEntityRef
+        ? {
+            kind: 'Group',
+            ['relations.hasMember']: [userEntityRef],
+          }
+        : undefined,
+    [userEntityRef],
+  );
+  const selectedEntityRef = useMemo(() => {
+    if (!formData) {
+      return undefined;
     }
-
-    const items: Entity[] = [];
-    for await (const batch of catalogApi.streamEntities({
-      query: {},
-      filter: {
-        kind: 'Group',
-        ['relations.hasMember']: [userEntityRef],
-      },
-    })) {
-      items.push(...batch);
+    try {
+      return stringifyEntityRef(parseEntityRef(formData));
+    } catch {
+      return undefined;
     }
-
-    const entityRefToPresentation = new Map<
-      string,
-      EntityRefPresentationSnapshot
-    >(
-      await Promise.all(
-        items.map(async item => {
-          const presentation = await entityPresentationApi.forEntity(item)
-            .promise;
-          return [stringifyEntityRef(item), presentation] as [
-            string,
-            EntityRefPresentationSnapshot,
-          ];
-        }),
-      ),
-    );
-
-    return { catalogEntities: items, entityRefToPresentation };
+  }, [formData]);
+  const selectedEntityRefs = useMemo(
+    () => (selectedEntityRef ? [selectedEntityRef] : []),
+    [selectedEntityRef],
+  );
+  const {
+    entities,
+    selectedEntities,
+    entityRefToPresentation,
+    loading,
+    loadingState,
+    setSearchText,
+    loadMore,
+    initialResultIsOnlyOption,
+  } = useEntityPickerOptions({
+    catalogFilter,
+    enabled: !identityLoading && Boolean(userEntityRef),
+    selectedEntityRefs,
   });
 
   // MUI: update handler
   const updateChange = (_: ChangeEvent<{}>, value: Entity | null) => {
+    setSearchText('');
     onChange(value ? stringifyEntityRef(value) : '');
   };
 
   const selectedEntity =
-    groups?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ||
+    entities.find(e => stringifyEntityRef(e) === selectedEntityRef) ??
+    selectedEntities.find(e => stringifyEntityRef(e) === selectedEntityRef) ??
     null;
-
-  // BUI: options
-  const buiOptions = useMemo(
+  const muiOptions = useMemo(
     () =>
-      (groups?.catalogEntities || []).map(entity => {
-        const entityRef = stringifyEntityRef(entity);
-        const presentation = groups?.entityRefToPresentation.get(entityRef);
-        return {
-          value: entityRef,
-          label: presentation?.primaryTitle || entityRef,
-        };
-      }),
-    [groups],
+      selectedEntity && !entities.includes(selectedEntity)
+        ? [selectedEntity, ...entities]
+        : entities,
+    [entities, selectedEntity],
   );
 
+  // BUI: options
+  const buiOptions = useMemo(() => {
+    const options = muiOptions.map(entity => {
+      const entityRef = stringifyEntityRef(entity);
+      const presentation = entityRefToPresentation.get(entityRef);
+      return {
+        value: entityRef,
+        label: presentation?.primaryTitle || entityRef,
+      };
+    });
+    if (
+      selectedEntityRef &&
+      !options.some(option => option.value === selectedEntityRef)
+    ) {
+      options.unshift({
+        value: selectedEntityRef,
+        label:
+          entityRefToPresentation.get(selectedEntityRef)?.primaryTitle ||
+          formData ||
+          selectedEntityRef,
+      });
+    }
+    return options;
+  }, [entityRefToPresentation, formData, muiOptions, selectedEntityRef]);
+
   const [inputValue, setInputValue] = useState('');
+  const inputIsDirtyRef = useRef(false);
+  const previousFormDataRef = useRef(formData);
+  const selectedPresentationTitle = formData
+    ? entityRefToPresentation.get(selectedEntityRef ?? formData)?.primaryTitle
+    : undefined;
 
   useEffect(() => {
-    if (formData) {
-      const opt = buiOptions.find(o => o.value === formData);
-      setInputValue(opt?.label || formData);
-    } else {
-      setInputValue('');
+    if (previousFormDataRef.current !== formData) {
+      previousFormDataRef.current = formData;
+      inputIsDirtyRef.current = false;
     }
-  }, [formData, buiOptions]);
+    if (!inputIsDirtyRef.current) {
+      setInputValue(formData ? selectedPresentationTitle || formData : '');
+    }
+  }, [formData, selectedPresentationTitle]);
 
   const selectedKey =
-    formData && buiOptions.some(o => o.value === formData) ? formData : null;
+    selectedEntityRef && buiOptions.some(o => o.value === selectedEntityRef)
+      ? selectedEntityRef
+      : null;
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      inputIsDirtyRef.current = false;
+      setSearchText('');
       onChange(key !== null ? String(key) : '');
     },
-    [onChange],
+    [onChange, setSearchText],
   );
 
   useEffect(() => {
-    if (required && groups?.catalogEntities.length === 1 && !selectedEntity) {
-      onChange(stringifyEntityRef(groups.catalogEntities[0]));
+    if (required && initialResultIsOnlyOption && !selectedEntity) {
+      onChange(stringifyEntityRef(entities[0]));
     }
-  }, [groups, onChange, selectedEntity, required]);
+  }, [entities, initialResultIsOnlyOption, onChange, selectedEntity, required]);
+
+  const pagination = useEntityPickerPagination({
+    entities,
+    selectedEntityRefs,
+    loading,
+    loadMore,
+  });
 
   if (theme === 'bui') {
-    const isAutoSelected = required && groups?.catalogEntities.length === 1;
+    const isAutoSelected = required && initialResultIsOnlyOption;
 
     return (
       <ScaffolderField
@@ -180,11 +229,18 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
           isRequired={required}
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
-          inputValue={inputValue}
-          onInputChange={setInputValue}
           onSelectionChange={handleSelectionChange}
-          isLoading={loading}
           options={buiOptions}
+          search={{
+            mode: 'server',
+            inputValue,
+            onInputChange: value => {
+              inputIsDirtyRef.current = true;
+              setInputValue(value);
+              setSearchText(value);
+            },
+          }}
+          loading={{ state: loadingState, onLoadMore: loadMore }}
           allowsCustomValue={false}
           isInvalid={rawErrors && rawErrors.length > 0}
         />
@@ -201,16 +257,29 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       errors={errors}
     >
       <Autocomplete
-        disabled={required && groups?.catalogEntities.length === 1}
+        disabled={isDisabled || (required && initialResultIsOnlyOption)}
         id="OwnershipEntityRefPicker-dropdown"
-        options={groups?.catalogEntities || []}
+        options={muiOptions}
         value={selectedEntity}
-        loading={loading}
+        inputValue={inputValue}
+        loading={identityLoading || loading}
         onChange={updateChange}
+        onInputChange={(event, value, reason) => {
+          // A new object for the same selection must not replace typed search.
+          if (reason === 'reset' && !event && inputIsDirtyRef.current) return;
+          inputIsDirtyRef.current = reason === 'input';
+          setInputValue(value);
+          if (reason === 'input' || reason === 'clear') {
+            setSearchText(value);
+          }
+        }}
         getOptionLabel={option =>
-          groups?.entityRefToPresentation.get(stringifyEntityRef(option))
-            ?.primaryTitle!
+          entityRefToPresentation.get(stringifyEntityRef(option))?.primaryTitle!
         }
+        getOptionSelected={(option, value) =>
+          stringifyEntityRef(option) === stringifyEntityRef(value)
+        }
+        filterSelectedOptions
         autoSelect
         renderInput={params => (
           <TextField
@@ -224,12 +293,9 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
           />
         )}
         renderOption={option => <EntityDisplayName entityRef={option} />}
-        filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            groups?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
-        })}
+        filterOptions={options => options}
         ListboxComponent={VirtualizedListbox}
+        {...pagination}
       />
     </ScaffolderField>
   );
