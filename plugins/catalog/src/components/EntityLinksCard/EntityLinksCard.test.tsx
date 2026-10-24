@@ -34,10 +34,12 @@ describe('EntityLinksCard', () => {
     url = 'https://dashboard.dashexample.com',
     title = 'admin dashboard',
     icon = undefined,
+    type = undefined,
   }: Partial<EntityLink> = {}): EntityLink => ({
     url,
     title,
     icon,
+    type,
   });
 
   it('should render a link', async () => {
@@ -64,5 +66,78 @@ describe('EntityLinksCard', () => {
       screen.getByText(/.*No links defined for this entity.*/),
     ).toBeInTheDocument();
     expect(screen.queryByText('admin dashboard')).not.toBeInTheDocument();
+  });
+
+  it('should group links by type in declared order with untyped links first', async () => {
+    const links: EntityLink[] = [
+      createLink({ url: 'https://jira.com', title: 'Jira Board' }),
+      createLink({
+        url: 'https://prod.com',
+        title: 'Prod web',
+        type: 'Prod',
+      }),
+      createLink({
+        url: 'https://prod-grafana.com',
+        title: 'Prod grafana',
+        type: 'Prod',
+      }),
+      createLink({
+        url: 'https://test.com',
+        title: 'Test web',
+        type: 'Test',
+      }),
+      createLink({
+        url: 'https://other.com',
+        title: 'Untyped second',
+        type: '  ',
+      }),
+    ];
+
+    await renderInTestApp(
+      <EntityProvider entity={createEntity(links)}>
+        <EntityLinksCard />
+      </EntityProvider>,
+    );
+
+    const prodHeading = screen.getByRole('heading', {
+      level: 4,
+      name: 'Prod',
+    });
+    const testHeading = screen.getByRole('heading', {
+      level: 4,
+      name: 'Test',
+    });
+
+    expect(prodHeading).toBeInTheDocument();
+    expect(testHeading).toBeInTheDocument();
+
+    const jiraLink = screen.getByText('Jira Board').closest('a')!;
+    const untypedSecondLink = screen.getByText('Untyped second').closest('a')!;
+    const prodWebLink = screen.getByText('Prod web').closest('a')!;
+    const prodGrafanaLink = screen.getByText('Prod grafana').closest('a')!;
+    const testWebLink = screen.getByText('Test web').closest('a')!;
+
+    expect(jiraLink).toBeInTheDocument();
+    expect(prodWebLink).toBeInTheDocument();
+    expect(prodGrafanaLink).toBeInTheDocument();
+    expect(testWebLink).toBeInTheDocument();
+    expect(untypedSecondLink).toBeInTheDocument();
+
+    // Verify ordering: untyped first, then Prod section, then Test section
+    expect(jiraLink.compareDocumentPosition(prodHeading)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(untypedSecondLink.compareDocumentPosition(prodHeading)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(prodHeading.compareDocumentPosition(prodWebLink)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(prodWebLink.compareDocumentPosition(testHeading)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(testHeading.compareDocumentPosition(testWebLink)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
   });
 });
