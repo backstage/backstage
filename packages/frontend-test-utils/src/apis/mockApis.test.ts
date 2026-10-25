@@ -18,6 +18,7 @@ import {
   coreApis,
   createRouteRef,
   FeatureFlagState,
+  type PendingOAuthRequest,
 } from '@backstage/frontend-plugin-api';
 import { createElement } from 'react';
 import { mockApis } from './mockApis';
@@ -102,6 +103,7 @@ describe('mockApis', () => {
       expect(factory.factory({})).toBe(mock);
       for (const method of Object.values(mock)) {
         expect(jest.isMockFunction(method)).toBe(true);
+        expect((method as jest.Mock).getMockImplementation()).toBeUndefined();
       }
     }
     expect(getMockApiFactory(mockApis.permission.mock())?.api.id).toBe(
@@ -109,48 +111,130 @@ describe('mockApis', () => {
     );
   });
 
-  it('provides usable defaults for app state, observables and toast handles', async () => {
-    const language = mockApis.appLanguage.mock();
-    expect(language.getAvailableLanguages()).toEqual({ languages: ['en'] });
-    expect(language.getLanguage()).toEqual({ language: 'en' });
+  it('keeps language and theme selections in memory and notifies subscribers', async () => {
+    const language = mockApis.appLanguage({ availableLanguages: ['en', 'sv'] });
     const languageListener = jest.fn();
-    const languageSubscription = language
-      .language$()
-      .subscribe(languageListener);
+    const subscription = language.language$().subscribe(languageListener);
     await Promise.resolve();
-    expect(languageListener).toHaveBeenCalledWith({ language: 'en' });
-    languageSubscription.unsubscribe();
-
-    const theme = mockApis.appTheme.mock();
-    expect(theme.getInstalledThemes()).toEqual([]);
-    expect(theme.getActiveThemeId()).toBeUndefined();
-    const themeListener = jest.fn();
-    theme.activeThemeId$().subscribe(themeListener);
-    await Promise.resolve();
-    expect(themeListener).toHaveBeenCalledWith(undefined);
-
-    const lifecycle = mockApis.appLifecycle.mock();
-    expect(lifecycle.isFinalized()).toBe(true);
-    expect(() => lifecycle.subscribe(jest.fn())()).not.toThrow();
-    expect(mockApis.appTree.mock().getNodesByRoutePath('/')).toEqual({
-      nodes: [],
+    expect(language.getAvailableLanguages()).toEqual({
+      languages: ['en', 'sv'],
     });
-    expect(mockApis.icons.mock().listIconKeys()).toEqual([]);
-    expect(mockApis.icons.mock().icon('missing')).toBeUndefined();
-    expect(
-      mockApis.pluginHeaderActions.mock().getPluginHeaderActions('test'),
-    ).toEqual([]);
+    expect(languageListener).toHaveBeenLastCalledWith({ language: 'en' });
+    language.setLanguage('sv');
+    expect(language.getLanguage()).toEqual({ language: 'sv' });
+    expect(languageListener).toHaveBeenLastCalledWith({ language: 'sv' });
+    language.setLanguage();
+    expect(language.getLanguage()).toEqual({ language: 'en' });
+    expect(() => language.setLanguage('unknown')).toThrow('not available');
+    subscription.unsubscribe();
+    languageListener.mockClear();
+    language.setLanguage('sv');
+    expect(languageListener).not.toHaveBeenCalled();
+    expect(mockApis.appLanguage().getLanguage()).toEqual({ language: 'en' });
 
-    const authListener = jest.fn();
-    mockApis.oauthRequest.mock().authRequest$().subscribe(authListener);
+    const theme = mockApis.appTheme();
+    const themeListener = jest.fn();
+    const themeSubscription = theme.activeThemeId$().subscribe(themeListener);
     await Promise.resolve();
-    expect(authListener).toHaveBeenCalledWith([]);
+    expect(theme.getInstalledThemes()).toEqual([]);
+    expect(themeListener).toHaveBeenLastCalledWith(undefined);
+    theme.setActiveThemeId('dark');
+    expect(theme.getActiveThemeId()).toBe('dark');
+    expect(themeListener).toHaveBeenLastCalledWith('dark');
+    theme.setActiveThemeId();
+    expect(theme.getActiveThemeId()).toBeUndefined();
+    themeSubscription.unsubscribe();
+    themeListener.mockClear();
+    theme.setActiveThemeId('light');
+    expect(themeListener).not.toHaveBeenCalled();
+    expect(getMockApiFactory(language)?.api).toBe(coreApis.appLanguage);
+    expect(getMockApiFactory(theme)?.api).toBe(coreApis.appTheme);
+  });
 
-    const toast = mockApis.toast.mock();
-    const handle = toast.post({ title: 'Test' });
-    handle.close();
-    expect(handle.close).toHaveBeenCalledTimes(1);
-    expect(toast.post).toHaveBeenCalledWith({ title: 'Test' });
+  it('supports lifecycle changes and plugin-scoped lookups', () => {
+    const lifecycle = mockApis.appLifecycle({ finalized: false });
+    const listener = jest.fn();
+    const unsubscribe = lifecycle.subscribe(listener);
+    expect(lifecycle.isFinalized()).toBe(false);
+    lifecycle.setFinalized(true);
+    lifecycle.setFinalized(true);
+    expect(lifecycle.isFinalized()).toBe(true);
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+    lifecycle.setFinalized(false);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(mockApis.appLifecycle().isFinalized()).toBe(true);
+
+    const element = createElement('span', null, 'Custom');
+    const icons = mockApis.icons({ icons: { custom: element } });
+    expect(icons.icon('custom')).toBe(element);
+    expect(icons.listIconKeys()).toEqual(['custom']);
+    expect(icons.getIcon('custom')).toEqual(expect.any(Function));
+    expect(icons.icon('missing')).toBeUndefined();
+    expect(icons.getIcon('missing')).toBeUndefined();
+    expect(mockApis.icons().listIconKeys()).toEqual([]);
+
+    const actions = mockApis.pluginHeaderActions({
+      actions: { test: [element] },
+    });
+    expect(actions.getPluginHeaderActions('test')).toEqual([element]);
+    expect(actions.getPluginHeaderActions('other')).toEqual([]);
+    expect(
+      mockApis.pluginHeaderActions().getPluginHeaderActions('test'),
+    ).toEqual([]);
+    for (const [api, ref] of [
+      [lifecycle, coreApis.appLifecycle],
+      [icons, coreApis.icons],
+      [actions, coreApis.pluginHeaderActions],
+    ]) {
+      expect(getMockApiFactory(api)?.api).toBe(ref);
+    }
+  });
+
+  it('collects toasts and closes each posted notification independently', () => {
+    const toast = mockApis.toast();
+    const message = { title: 'Test' };
+    const first = toast.post(message);
+    const second = toast.post(message);
+    expect(toast.getToasts()).toEqual([message, message]);
+    first.close();
+    first.close();
+    expect(toast.getToasts()).toEqual([message]);
+    second.close();
+    expect(toast.getToasts()).toEqual([]);
+    expect(mockApis.toast().getToasts()).toEqual([]);
+    expect(getMockApiFactory(toast)?.api).toBe(coreApis.toast);
+  });
+
+  it('coordinates typed OAuth requests until triggered or rejected', async () => {
+    const oauth = mockApis.oauthRequest();
+    let pending: PendingOAuthRequest[] = [];
+    const subscription = oauth.authRequest$().subscribe(value => {
+      pending = value;
+    });
+    await Promise.resolve();
+    const onAuthRequest = jest.fn(async (scopes: Set<string>) => ({
+      scopes: [...scopes].sort(),
+    }));
+    const request = oauth.createAuthRequester({
+      provider: { id: 'test', title: 'Test', icon: () => null },
+      onAuthRequest,
+    });
+    await Promise.resolve();
+    const first = request(new Set(['read']));
+    const second = request(new Set(['write']));
+    expect(onAuthRequest).not.toHaveBeenCalled();
+    expect(pending).toHaveLength(1);
+    await pending[0].trigger();
+    await expect(first).resolves.toEqual({ scopes: ['read', 'write'] });
+    await expect(second).resolves.toEqual({ scopes: ['read', 'write'] });
+    expect(onAuthRequest).toHaveBeenCalledTimes(1);
+    expect(pending).toEqual([]);
+    const rejected = request(new Set(['read']));
+    pending[0].reject();
+    await expect(rejected).rejects.toThrow();
+    subscription.unsubscribe();
+    expect(getMockApiFactory(oauth)?.api).toBe(coreApis.oauthRequest);
   });
 
   it('supports typed overrides including generic methods', async () => {
