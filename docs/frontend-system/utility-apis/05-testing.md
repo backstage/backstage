@@ -109,26 +109,25 @@ customizations remain available.
 
 Call an API helper directly, without `.mock()`, to create a functional fake.
 Fakes implement useful behavior, such as collecting notifications or updating
-in-memory state. Their methods are ordinary functions, so assert on the resulting
-state instead of using Jest call assertions.
+in-memory state. Use them to provide inputs or inspect effects of the component
+you are testing. Their methods are ordinary functions, so Jest call assertions
+do not apply.
 
-```ts
-const language = mockApis.appLanguage({ availableLanguages: ['en', 'sv'] });
-language.setLanguage('sv');
-expect(language.getLanguage()).toEqual({ language: 'sv' });
-
-const toast = mockApis.toast();
-const handle = toast.post({ title: 'Saved' });
-expect(toast.getToasts()).toEqual([{ title: 'Saved' }]);
-handle.close();
-expect(toast.getToasts()).toEqual([]);
-```
-
-Fakes can be registered in the same way as Jest mocks:
+For example, test that your `AppHeader` displays the configured application
+title. Supply a configuration fake and assert on the component's rendered output:
 
 ```tsx
-await renderInTestApp(<MyComponent />, {
-  apis: [mockApis.config({ data: { app: { title: 'Test App' } } }), toast],
+import { screen } from '@testing-library/react';
+import { mockApis, renderInTestApp } from '@backstage/frontend-test-utils';
+import { AppHeader } from './AppHeader';
+
+it('displays the configured application title', async () => {
+  const config = mockApis.config({ data: { app: { title: 'Test App' } } });
+  await renderInTestApp(<AppHeader />, { apis: [config] });
+
+  expect(
+    await screen.findByRole('heading', { name: 'Test App' }),
+  ).toBeInTheDocument();
 });
 ```
 
