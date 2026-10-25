@@ -281,17 +281,15 @@ export class ServiceRegistry {
   get<T, TInstances extends 'singleton' | 'multiton'>(
     ref: ServiceRef<T, 'plugin' | 'root', TInstances>,
     pluginId: string,
-  ): Promise<TInstances extends 'multiton' ? T[] : T> | undefined {
+  ): Promise<
+    [ok: false] | [ok: true, instance: TInstances extends 'multiton' ? T[] : T]
+  > {
     this.#instantiatedFactories.add(ref.id);
 
     const resolvedFactory = this.#resolveFactory(ref, pluginId);
 
     if (!resolvedFactory) {
-      return ref.multiton
-        ? (Promise.resolve([]) as
-            | Promise<TInstances extends 'multiton' ? T[] : T>
-            | undefined)
-        : undefined;
+      return Promise.resolve([false]);
     }
 
     return resolvedFactory
@@ -312,8 +310,12 @@ export class ServiceRegistry {
                       `Failed to instantiate 'root' scoped service '${ref.id}' because it depends on '${serviceRef.scope}' scoped service '${serviceRef.id}'.`,
                     );
                   }
-                  const target = this.get(serviceRef, pluginId)!;
-                  rootDeps.push(target.then(impl => [name, impl]));
+                  rootDeps.push(
+                    this.get(serviceRef, pluginId).then(([, impl]) => [
+                      name,
+                      impl,
+                    ]),
+                  );
                 }
 
                 existing = Promise.all(rootDeps).then(entries =>
@@ -333,8 +335,12 @@ export class ServiceRegistry {
 
               for (const [name, serviceRef] of Object.entries(factory.deps)) {
                 if (serviceRef.scope === 'root') {
-                  const target = this.get(serviceRef, pluginId)!;
-                  rootDeps.push(target.then(impl => [name, impl]));
+                  rootDeps.push(
+                    this.get(serviceRef, pluginId).then(([, impl]) => [
+                      name,
+                      impl,
+                    ]),
+                  );
                 }
               }
 
@@ -362,8 +368,12 @@ export class ServiceRegistry {
               >();
 
               for (const [name, serviceRef] of Object.entries(factory.deps)) {
-                const target = this.get(serviceRef, pluginId)!;
-                allDeps.push(target.then(impl => [name, impl]));
+                allDeps.push(
+                  this.get(serviceRef, pluginId).then(([, impl]) => [
+                    name,
+                    impl,
+                  ]),
+                );
               }
 
               result = implementation.context
@@ -384,6 +394,11 @@ export class ServiceRegistry {
           }),
         );
       })
-      .then(results => (ref.multiton ? results : results[0]));
+      .then(results => [
+        true,
+        (ref.multiton ? results : results[0]) as TInstances extends 'multiton'
+          ? T[]
+          : T,
+      ]);
   }
 }
