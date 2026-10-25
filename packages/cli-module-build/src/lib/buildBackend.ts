@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import * as tar from 'tar';
 import { createDistWorkspace } from './packager';
-import { buildPackage, Output } from './builder';
+import { buildPackage, getEntryPointsForRole, Output } from './builder';
 import { PackageGraph } from '@backstage/cli-node';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
@@ -40,6 +40,7 @@ export async function buildBackend(options: BuildBackendOptions) {
   await buildPackage({
     targetDir,
     packageJson: pkg,
+    entryPoints: getEntryPointsForRole('backend', pkg),
     outputs: new Set([Output.cjs]),
     minify,
     workspacePackages: await PackageGraph.listTargetPackages(),
