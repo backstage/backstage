@@ -972,8 +972,12 @@ discovery, following its migration instructions for extensions and defaults.
 
 Only one registration of each plugin is selected. Coordinate its remaining
 legacy page routes, converted tabs, and API factories when switching to the
-native registration; see [App Root Routes](#app-root-routes). Converted overview
-components can remain while their replacements are migrated.
+native registration; see [App Root Routes](#app-root-routes). Retained overview
+components also cause conversion to discover their plugins. To keep components
+from a plugin while enabling its native contributions, exclude its package from
+feature discovery and explicitly register its native plugin after
+`legacyFeatures`, as in the
+[TechDocs example](#replace-contributions-while-keeping-the-fallback).
 
 Remove replaced JSX and enable native contributions together to avoid missing
 or duplicated content. Preserve applicability predicates and tab paths, and
