@@ -99,6 +99,8 @@ export const GitHubRepoOwnerPicker = ({
         onSelectionChange={(key: Key | null) => {
           if (key !== null) {
             onChange({ owner: String(key) });
+          } else if (!owner?.trim()) {
+            onChange({ owner: '' });
           }
         }}
         options={options}
