@@ -441,3 +441,36 @@ requires a custom layout. It is not exposed as an app-config setting.
   ))}
 </CustomHomepageGrid>
 ```
+
+### Replacing the add widget dialog
+
+The dialog that opens from the **Add widget** button of `CustomHomepageGrid` is
+a swappable component. To show your own dialog, for example one with widget
+previews, override `AddWidgetDialog` from `@backstage/plugin-home/alpha` in a
+module for the app plugin.
+
+```tsx title="packages/app/src/modules/home/addWidgetDialogModule.tsx"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
+import { AddWidgetDialog } from '@backstage/plugin-home/alpha';
+import { MyAddWidgetDialog } from './MyAddWidgetDialog';
+
+export const appModuleAddWidgetDialog = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    SwappableComponentBlueprint.make({
+      name: 'home-add-widget-dialog',
+      params: defineParams =>
+        defineParams({
+          component: AddWidgetDialog,
+          loader: () => MyAddWidgetDialog,
+        }),
+    }),
+  ],
+});
+```
+
+Your component receives `open`, `onClose`, `widgets` and `handleAdd`, and renders
+the whole dialog itself, including the surrounding modal. Each widget has a
+`name` and optionally a `title` and a `description`. Call `handleAdd` with one of
+the provided widgets to add it to the grid.

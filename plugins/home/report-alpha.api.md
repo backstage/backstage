@@ -18,7 +18,29 @@ import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+
+// @alpha
+export const AddWidgetDialog: {
+  (props: AddWidgetDialogProps): JSX.Element | null;
+  ref: SwappableComponentRef<AddWidgetDialogProps, AddWidgetDialogProps>;
+};
+
+// @alpha
+export interface AddWidgetDialogProps {
+  handleAdd: (widget: AddWidgetDialogWidget) => void;
+  onClose: () => void;
+  open: boolean;
+  widgets: AddWidgetDialogWidget[];
+}
+
+// @alpha
+export interface AddWidgetDialogWidget {
+  description?: string;
+  name: string;
+  title?: string;
+}
 
 // @alpha
 const _default: OverridableFrontendPlugin<
