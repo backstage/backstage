@@ -169,7 +169,9 @@ describe('mockApis', () => {
     const icons = mockApis.icons({ icons: { custom: element } });
     expect(icons.icon('custom')).toBe(element);
     expect(icons.listIconKeys()).toEqual(['custom']);
-    expect(icons.getIcon('custom')).toEqual(expect.any(Function));
+    const legacyIcon = icons.getIcon('custom');
+    expect(legacyIcon).toEqual(expect.any(Function));
+    expect(icons.getIcon('custom')).toBe(legacyIcon);
     expect(icons.icon('missing')).toBeUndefined();
     expect(icons.getIcon('missing')).toBeUndefined();
     expect(mockApis.icons().listIconKeys()).toEqual([]);

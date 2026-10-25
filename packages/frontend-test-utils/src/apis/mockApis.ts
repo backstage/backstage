@@ -670,20 +670,23 @@ export namespace mockApis {
 
   /**
    * Creates an icon lookup backed by the supplied elements, empty by default.
+   * Legacy component lookups return the same component for each key.
    *
    * @public
    */
   export function icons(options?: {
     icons?: Record<string, IconElement>;
   }): MockWithApiFactory<IconsApi> {
-    const elements = new Map(Object.entries(options?.icons ?? {}));
+    const entries = new Map(
+      Object.entries(options?.icons ?? {}).map(([key, element]) => [
+        key,
+        { element, component: () => element },
+      ]),
+    );
     return attachMockApiFactory<IconsApi>(coreApis.icons, {
-      icon: key => elements.get(key),
-      getIcon(key: string) {
-        const element = elements.get(key);
-        return element === undefined ? undefined : () => element;
-      },
-      listIconKeys: () => [...elements.keys()],
+      icon: key => entries.get(key)?.element,
+      getIcon: key => entries.get(key)?.component,
+      listIconKeys: () => [...entries.keys()],
     });
   }
 
