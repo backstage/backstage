@@ -1016,3 +1016,35 @@ spec:
       createButtonText: 'Update'
       reviewButtonText: 'Verify'
 ```
+
+## Conditionally displaying parameter steps
+
+Set `ui:backstage.visibleWhen` on a parameter step to a JSON Schema that matches
+against the complete current form data. The step appears only when that schema
+matches. Include `required` when a condition depends on a value being present.
+
+```yaml
+parameters:
+  - title: Project
+    properties:
+      action:
+        type: string
+        enum: [create, manage]
+  - title: Initial configuration
+    ui:backstage:
+      visibleWhen:
+        required: [action]
+        properties:
+          action:
+            const: create
+    required: [name]
+    properties:
+      name:
+        type: string
+```
+
+Navigation, validation, and review use the visible steps. Values entered before a
+step becomes hidden are retained and remain part of the submitted task values.
+Step visibility is a presentation feature, not an authorization boundary. Use
+backend permissions and conditional task actions to enforce access and execution
+requirements.

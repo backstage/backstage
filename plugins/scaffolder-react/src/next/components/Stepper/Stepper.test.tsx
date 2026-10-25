@@ -26,6 +26,80 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it('skips conditional steps during navigation and validation', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Conditional steps',
+      steps: [
+        { title: 'Choose', schema: { type: 'object', properties: {} } },
+        {
+          title: 'Optional configuration',
+          schema: {
+            type: 'object',
+            'ui:backstage': {
+              visibleWhen: {
+                required: ['enabled'],
+                properties: { enabled: { const: true } },
+              },
+            },
+            required: ['details'],
+            properties: { details: { type: 'string' } },
+          },
+        },
+        { title: 'Finish', schema: { type: 'object', properties: {} } },
+      ],
+    };
+    const { getByRole, queryByText } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+    expect(queryByText('Optional configuration')).not.toBeInTheDocument();
+    fireEvent.click(getByRole('button', { name: 'Next' }));
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Review' })).toBeInTheDocument(),
+    );
+    fireEvent.click(getByRole('button', { name: 'Back' }));
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Next' })).toBeInTheDocument(),
+    );
+  });
+
+  it('shows conditional steps when their schema matches the form data', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Conditional steps',
+      steps: [
+        { title: 'Choose', schema: { properties: {} } },
+        {
+          title: 'Optional configuration',
+          schema: {
+            'ui:backstage': {
+              visibleWhen: {
+                required: ['enabled'],
+                properties: { enabled: { const: true } },
+              },
+            },
+            properties: { details: { type: 'string' } },
+          },
+        },
+      ],
+    };
+    const { getByRole, getByText, findByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          initialState={{ enabled: true }}
+          extensions={[]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
+    );
+    expect(getByText('Optional configuration')).toBeInTheDocument();
+    fireEvent.click(getByRole('button', { name: 'Next' }));
+    expect(
+      await findByRole('textbox', { name: 'details' }),
+    ).toBeInTheDocument();
+  });
+
   it('should render the step titles for each step of the manifest', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
