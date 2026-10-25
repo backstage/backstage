@@ -9,7 +9,8 @@ When testing frontend components and extensions, you often need to provide mock 
 
 ## The `mockApis` namespace
 
-The `mockApis` namespace is the main entry point for creating mock utility API instances in tests. It provides two usage patterns for each API:
+The `mockApis` namespace is the main entry point for creating mock utility API instances in tests. Every member of `coreApis` from `@backstage/frontend-plugin-api` has a matching
+`mockApis.<name>.mock()` helper. Some APIs also provide functional fake instances:
 
 ### Fake instances
 
@@ -192,3 +193,23 @@ The table below lists all core APIs available through the `mockApis` namespace.
 | `mockApis.translation()`          | `MockTranslationApi`  | Passthrough returning default messages from translation refs           |
 
 Each of these also has a `.mock()` variant that returns jest mocks, as described above.
+
+The following APIs provide `.mock()` helpers without functional fake instances:
+`appLanguage`, `appLifecycle`, `appTheme`, `appTree`, `dialog`, `icons`,
+`oauthRequest`, `pluginHeaderActions`, `pluginWrapper`, `routeResolution`,
+`swappableComponents`, and `toast`.
+
+These mocks provide empty collections and observable values where appropriate.
+The lifecycle mock represents a finalized app, the language mock uses English,
+and toast notifications return a closable handle. Changing the language or
+theme does not update the values returned by other methods. Supply partial implementations for
+behavior your test depends on, including dialog handles, app trees, wrappers,
+route resolution, or swappable components:
+
+```ts
+const lifecycle = mockApis.appLifecycle.mock({ isFinalized: () => false });
+const icons = mockApis.icons.mock({ listIconKeys: () => ['custom-icon'] });
+```
+
+The `permission` helper is also available for the permission plugin's API, which
+is defined outside `coreApis`.

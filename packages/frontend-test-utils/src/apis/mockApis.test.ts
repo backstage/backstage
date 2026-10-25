@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { FeatureFlagState } from '@backstage/frontend-plugin-api';
+import {
+  coreApis,
+  createRouteRef,
+  FeatureFlagState,
+} from '@backstage/frontend-plugin-api';
+import { createElement } from 'react';
 import { mockApis } from './mockApis';
+import { getMockApiFactory } from './MockWithApiFactory';
 
 describe('mockApis', () => {
   describe('alert', () => {
@@ -87,33 +93,111 @@ describe('mockApis', () => {
     });
   });
 
-  describe('re-exported APIs from test-utils', () => {
-    it('should have analytics', () => {
-      expect(mockApis.analytics).toBeDefined();
-    });
+  it('provides a registered jest mock for every core API', () => {
+    for (const name of Object.keys(coreApis) as (keyof typeof coreApis)[]) {
+      const mock = mockApis[name].mock();
+      const factory = getMockApiFactory(mock)!;
+      expect(factory.api).toBe(coreApis[name]);
+      expect(factory.deps).toEqual({});
+      expect(factory.factory({})).toBe(mock);
+      for (const method of Object.values(mock)) {
+        expect(jest.isMockFunction(method)).toBe(true);
+      }
+    }
+    expect(getMockApiFactory(mockApis.permission.mock())?.api.id).toBe(
+      'plugin.permission.api',
+    );
+  });
 
-    it('should have config', () => {
-      expect(mockApis.config).toBeDefined();
-    });
+  it('provides usable defaults for app state, observables and toast handles', async () => {
+    const language = mockApis.appLanguage.mock();
+    expect(language.getAvailableLanguages()).toEqual({ languages: ['en'] });
+    expect(language.getLanguage()).toEqual({ language: 'en' });
+    const languageListener = jest.fn();
+    const languageSubscription = language
+      .language$()
+      .subscribe(languageListener);
+    await Promise.resolve();
+    expect(languageListener).toHaveBeenCalledWith({ language: 'en' });
+    languageSubscription.unsubscribe();
 
-    it('should have discovery', () => {
-      expect(mockApis.discovery).toBeDefined();
-    });
+    const theme = mockApis.appTheme.mock();
+    expect(theme.getInstalledThemes()).toEqual([]);
+    expect(theme.getActiveThemeId()).toBeUndefined();
+    const themeListener = jest.fn();
+    theme.activeThemeId$().subscribe(themeListener);
+    await Promise.resolve();
+    expect(themeListener).toHaveBeenCalledWith(undefined);
 
-    it('should have identity', () => {
-      expect(mockApis.identity).toBeDefined();
+    const lifecycle = mockApis.appLifecycle.mock();
+    expect(lifecycle.isFinalized()).toBe(true);
+    expect(() => lifecycle.subscribe(jest.fn())()).not.toThrow();
+    expect(mockApis.appTree.mock().getNodesByRoutePath('/')).toEqual({
+      nodes: [],
     });
+    expect(mockApis.icons.mock().listIconKeys()).toEqual([]);
+    expect(mockApis.icons.mock().icon('missing')).toBeUndefined();
+    expect(
+      mockApis.pluginHeaderActions.mock().getPluginHeaderActions('test'),
+    ).toEqual([]);
 
-    it('should have permission', () => {
-      expect(mockApis.permission).toBeDefined();
-    });
+    const authListener = jest.fn();
+    mockApis.oauthRequest.mock().authRequest$().subscribe(authListener);
+    await Promise.resolve();
+    expect(authListener).toHaveBeenCalledWith([]);
 
-    it('should have storage', () => {
-      expect(mockApis.storage).toBeDefined();
-    });
+    const toast = mockApis.toast.mock();
+    const handle = toast.post({ title: 'Test' });
+    handle.close();
+    expect(handle.close).toHaveBeenCalledTimes(1);
+    expect(toast.post).toHaveBeenCalledWith({ title: 'Test' });
+  });
 
-    it('should have translation', () => {
-      expect(mockApis.translation).toBeDefined();
+  it('supports typed overrides including generic methods', async () => {
+    const oauth = mockApis.oauthRequest.mock({
+      createAuthRequester: ({ onAuthRequest }) => onAuthRequest,
     });
+    const requester = oauth.createAuthRequester({
+      provider: { id: 'test', title: 'Test', icon: () => null },
+      onAuthRequest: async scopes => ({ token: [...scopes].join(' ') }),
+    });
+    const response: { token: string } = await requester(new Set(['read']));
+    expect(response).toEqual({ token: 'read' });
+    expect(oauth.createAuthRequester).toHaveBeenCalledTimes(1);
+
+    const routeRef = createRouteRef({ params: ['name'] });
+    const routing = mockApis.routeResolution.mock({
+      resolve:
+        () =>
+        (...[params]) =>
+          `/test/${(params as { name: string }).name}`,
+    });
+    expect(routing.resolve(routeRef)?.({ name: 'example' })).toBe(
+      '/test/example',
+    );
+    expect(routing.resolve).toHaveBeenCalledWith(routeRef);
+
+    const dialog = mockApis.dialog.mock({
+      open<TResult>() {
+        let resolve: (value: TResult) => void;
+        const result = new Promise<TResult>(r => {
+          resolve = r;
+        });
+        return {
+          close: (...args) => resolve(args[0] as TResult),
+          update: () => {},
+          result: () => result,
+        };
+      },
+    });
+    const handle = dialog.open<boolean>(createElement('div'));
+    const result: Promise<boolean> = handle.result();
+    handle.close(true);
+    await expect(result).resolves.toBe(true);
+    expect(dialog.open).toHaveBeenCalledTimes(1);
+
+    const icons = mockApis.icons.mock({ listIconKeys: () => ['test'] });
+    expect(icons.listIconKeys()).toEqual(['test']);
+    expect(icons.listIconKeys).toHaveBeenCalledTimes(1);
   });
 });
