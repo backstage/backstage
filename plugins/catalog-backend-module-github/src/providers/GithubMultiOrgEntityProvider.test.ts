@@ -1153,6 +1153,224 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
     });
 
+    it('should assign organization namespace for custom teamTransformer', async () => {
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  login: 'a',
+                  id: 'f',
+                  name: 'b',
+                  bio: 'c',
+                  email: 'd',
+                  avatarUrl: 'e',
+                },
+              ],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  slug: 'team',
+                  combinedSlug: 'orgC/team',
+                  name: 'Team',
+                  description: 'The one and only team',
+                  avatarUrl: 'http://example.com/team.jpeg',
+                  parentTeam: undefined,
+                  members: {
+                    pageInfo: { hasNextPage: false },
+                    nodes: [{ login: 'a', id: 'f' }],
+                  },
+                },
+              ],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      const customTeamTransformer = jest
+        .fn()
+        .mockImplementation(async (team, _ctx) => {
+          return {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Group',
+            metadata: {
+              name: `${team.slug}-custom`,
+              description: team.description,
+              annotations: {
+                'github.com/team-slug': team.combinedSlug,
+              },
+            },
+            spec: {
+              type: 'team',
+              children: [],
+            },
+          };
+        });
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgC'],
+        teamTransformer: customTeamTransformer,
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+      await entityProvider.read();
+
+      expect(customTeamTransformer).toHaveBeenCalled();
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        entities: expect.arrayContaining([
+          {
+            entity: {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/orgs/orgC/teams/team',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/orgs/orgC/teams/team',
+                  'github.com/team-slug': 'orgC/team',
+                },
+                name: 'team-custom',
+                description: 'The one and only team',
+                namespace: 'orgc',
+              },
+              spec: {
+                children: [],
+                type: 'team',
+              },
+            },
+            locationKey: 'github-multi-org-provider:my-id',
+          },
+        ]),
+        type: 'full',
+      });
+    });
+
+    it('should respect alwaysUseDefaultNamespace option for custom teamTransformer', async () => {
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  login: 'a',
+                  id: 'f',
+                  name: 'b',
+                  bio: 'c',
+                  email: 'd',
+                  avatarUrl: 'e',
+                },
+              ],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  slug: 'team',
+                  combinedSlug: 'orgC/team',
+                  name: 'Team',
+                  description: 'The one and only team',
+                  avatarUrl: 'http://example.com/team.jpeg',
+                  parentTeam: undefined,
+                  members: {
+                    pageInfo: { hasNextPage: false },
+                    nodes: [{ login: 'a', id: 'f' }],
+                  },
+                },
+              ],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      const customTeamTransformer = jest
+        .fn()
+        .mockImplementation(async (team, _ctx) => {
+          return {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Group',
+            metadata: {
+              name: `${team.slug}-custom`,
+              description: team.description,
+              annotations: {
+                'github.com/team-slug': team.combinedSlug,
+              },
+            },
+            spec: {
+              type: 'team',
+              children: [],
+            },
+          };
+        });
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgC'],
+        alwaysUseDefaultNamespace: true,
+        teamTransformer: customTeamTransformer,
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+      await entityProvider.read();
+
+      expect(customTeamTransformer).toHaveBeenCalled();
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        entities: expect.arrayContaining([
+          {
+            entity: {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/orgs/orgC/teams/team',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/orgs/orgC/teams/team',
+                  'github.com/team-slug': 'orgC/team',
+                },
+                name: 'team-custom',
+                description: 'The one and only team',
+              },
+              spec: {
+                children: [],
+                type: 'team',
+              },
+            },
+            locationKey: 'github-multi-org-provider:my-id',
+          },
+        ]),
+        type: 'full',
+      });
+    });
+
     it('should not call applyMutation if an error is thrown', async () => {
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',
