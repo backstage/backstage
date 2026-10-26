@@ -91,6 +91,7 @@ describe('Microsoft Graph events module integration', () => {
   it.each(databases.eachSupportedId())(
     'starts, subscribes, and routes notifications for DB %p',
     async databaseId => {
+      created.clear();
       mockMicrosoft();
 
       const upserts = new Array<unknown>();
