@@ -1283,6 +1283,24 @@ overrides:
     expect(mockFetchPackageInfo).not.toHaveBeenCalled();
   });
 
+  it('should not change anything when a referenced catalog does not exist', async () => {
+    await fs.writeFile(
+      mockDir.resolve('pnpm-workspace.yaml'),
+      workspaceYaml.replace(/# Versions shared[\s\S]*lodash: \^4.0.0\n\n/, ''),
+    );
+    const before = mockDir.content();
+
+    await expect(
+      withLogCollector(['log', 'warn'], () =>
+        bump({ args: ['--skip-migrate'], info }),
+      ),
+    ).rejects.toThrow(
+      'Packages refer to the default catalog, which the workspace does not define. No files were changed.',
+    );
+    expect(mockDir.content()).toEqual(before);
+    expect(runObj.run).not.toHaveBeenCalled();
+  });
+
   it('should print the resolved versions without changing anything with --dry-run --json', async () => {
     await expect(bump({ args: ['--json'], info })).rejects.toThrow(
       'The --json flag can only be used together with --dry-run',
