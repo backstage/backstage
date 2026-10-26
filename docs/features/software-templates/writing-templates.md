@@ -1037,14 +1037,24 @@ parameters:
         properties:
           action:
             const: create
-    required: [name]
     properties:
       name:
         type: string
+    if:
+      required: [action]
+      properties:
+        action:
+          const: create
+    then:
+      required: [name]
 ```
 
-Navigation, validation, and review use the visible steps. Values entered before a
-step becomes hidden are retained and remain part of the submitted task values.
+Navigation, frontend validation, and review use the visible steps. Values entered
+before a step becomes hidden are retained and remain part of the submitted task
+values. The backend continues to validate the original parameter schemas. Use
+conditional JSON Schema requirements, as shown above, for fields that are only
+required in a particular workflow.
+
 Step visibility is a presentation feature, not an authorization boundary. Use
 backend permissions and conditional task actions to enforce access and execution
 requirements.
