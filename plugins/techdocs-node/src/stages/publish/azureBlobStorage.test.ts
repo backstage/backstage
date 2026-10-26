@@ -639,5 +639,43 @@ describe('AzureBlobStoragePublish', () => {
         await once(server.close(), 'close');
       }
     });
+
+    it('should release the Azure stream if the client disconnects before the download starts', async () => {
+      const body = new Readable({ read() {} });
+      let resolveDownload = (_value: unknown) => {};
+      const downloadStarted = new Promise<void>(resolveStarted => {
+        const { BlockBlobClient } = jest.requireMock('@azure/storage-blob');
+        jest.spyOn(BlockBlobClient.prototype, 'download').mockImplementation(
+          () =>
+            new Promise(resolve => {
+              resolveDownload = resolve;
+              resolveStarted();
+            }),
+        );
+      });
+
+      const server = app.listen(0);
+      try {
+        const serverSocketClosed = once(server, 'connection').then(([socket]) =>
+          once(socket, 'close'),
+        );
+        const { port } = server.address() as AddressInfo;
+        const req = http.get(
+          `http://localhost:${port}/${entityTripletPath}/index.html`,
+        );
+        req.on('error', () => {});
+
+        await downloadStarted;
+        req.destroy();
+        await serverSocketClosed;
+
+        resolveDownload({ readableStreamBody: body });
+        await once(body, 'close');
+        expect(body.destroyed).toBe(true);
+      } finally {
+        jest.restoreAllMocks();
+        await once(server.close(), 'close');
+      }
+    });
   });
 });

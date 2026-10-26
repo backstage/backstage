@@ -365,12 +365,19 @@ export class AzureBlobStoragePublish implements PublisherBase {
           if (!downloadRes.readableStreamBody) {
             throw new Error('Unable to parse the response data');
           }
+          const body = downloadRes.readableStreamBody as Readable;
+
+          // The client may have disconnected while the download was pending
+          if (res.destroyed) {
+            body.destroy();
+            return;
+          }
+
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
           )) {
             res.setHeader(headerKey, headerValue);
           }
-          const body = downloadRes.readableStreamBody as Readable;
           body.pipe(res);
 
           body.on('error', err => {
