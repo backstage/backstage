@@ -115,6 +115,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
     type: string,
     truncate = false,
   ): Promise<void> {
+    // Temporary tables are never analyzed automatically, so give the planner
+    // accurate statistics before querying or joining against it
+    await tx.raw('ANALYZE documents_to_insert');
+
     const documentSelect = truncate
       ? tx.raw(
           `jsonb_set(document, '{text}', to_jsonb(LEFT(document->>'text', 50000))) as document`,
@@ -142,6 +146,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
       .leftJoin<RawDocumentRow>('documents_to_insert', {
         'documents.hash': 'documents_to_insert.hash',
       })
+      .where('documents.type', type)
       .whereNull('documents_to_insert.hash');
 
     await tx<RawDocumentRow>('documents')
