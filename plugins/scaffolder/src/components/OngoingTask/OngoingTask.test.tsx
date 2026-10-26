@@ -60,7 +60,7 @@ jest.mock('@backstage/plugin-scaffolder-react', () => ({
 }));
 
 describe('OngoingTask', () => {
-  const initialTaskStream = useTaskEventStream('my-task');
+  const initialTaskStream = jest.mocked(useTaskEventStream)('my-task');
   const mockScaffolderApi = {
     cancelTask: jest.fn(),
     getTask: jest.fn().mockImplementation(async () => {}),
@@ -132,6 +132,31 @@ describe('OngoingTask', () => {
     expect(rendered.getByTestId('start-over-button')).toBeDisabled();
     expect(rendered.getByTestId('cancel-button')).toBeDisabled();
     stream.mockReturnValue(initial);
+  });
+
+  it('keeps retry disabled when create permission is denied after completion', async () => {
+    jest.mocked(useTaskEventStream).mockReturnValue({
+      ...initialTaskStream,
+      loading: false,
+      completed: true,
+      task: {
+        ...initialTaskStream.task!,
+        spec: {
+          ...initialTaskStream.task!.spec,
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+        },
+      },
+    });
+    const rendered = await render(
+      mockApis.permission({
+        authorize: request =>
+          request.permission.name === 'scaffolder.task.create'
+            ? AuthorizeResult.DENY
+            : AuthorizeResult.ALLOW,
+      }),
+    );
+    expect(rendered.getByTestId('retry-button')).toBeDisabled();
+    expect(mockScaffolderApi.cancelTask).not.toHaveBeenCalled();
   });
 
   it('preserves a manually hidden button bar when completion arrives', async () => {
