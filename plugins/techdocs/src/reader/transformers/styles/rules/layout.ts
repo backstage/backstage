@@ -94,8 +94,16 @@ export default ({ theme, sidebar }: RuleOptions) => `
       padding-right: calc(100% - 15.1rem);
   }
 }
+
 .md-sidebar--secondary {
-  right: ${theme.spacing(3)}px;
+  right: auto;
+  left: calc(${TECHDOCS_SIDEBAR_WIDTH} + 800px); /* Anchors it to the main content area */
+}
+
+@media screen and (min-width: 1440px) {
+  .md-sidebar--secondary {
+    left: calc(50vw + 350px);
+  }
 }
 
 .md-content {
