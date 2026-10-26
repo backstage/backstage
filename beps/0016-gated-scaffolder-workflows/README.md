@@ -1,9 +1,10 @@
 ---
 title: Gated Scaffolder Workflows
-status: provisional
+status: implementable
 authors:
   - '@spiffaz'
 owners:
+  - '@spiffaz'
   - '@backstage/scaffolder-maintainers'
 project-areas:
   - scaffolder
@@ -245,7 +246,7 @@ Downgrade is the operationally important case, because this feature deliberately
 
 Staged behind a feature flag, smallest useful first:
 
-- A0. Land this BEP as `provisional`, socialise in the scaffolder SIG / Discord, secure a maintainer co-owner, converge the API shape, and reconcile against #13809, #16622, #23967 and BEP-0004. The step-state persistence and skip this depends on landed in #35224, so the remaining question for the SIG is narrower: whether requiring `scaffolder.taskRecovery` for gated tasks is acceptable, or whether resume from a suspension should trigger the skip with recovery off. Move to `implementable`.
+- A0. Land this BEP as `implementable`. @spiffaz owns the implementation, and the scaffolder maintainers co-own it as reviewers. Before it merges, reconcile it against #13809, #16622, #23967 and BEP-0004. The step-state persistence and skip it depends on landed in #35224. The SIG still needs to decide whether requiring `scaffolder.taskRecovery` for gated tasks is acceptable, or whether resume from a suspension should trigger the skip with recovery off.
 - A1. The primitive: `waiting` status, `ctx.suspend` with worker-release (control-signal unwind), the atomic `processing -> waiting` + heartbeat teardown, the resume route + resource permission, the suspensions table + migration, and a reference `debug:suspend-until-signalled` action (this also addresses the spirit of the 30s `debug:wait` cap, #24846). Concurrency guarantees from Design Details included here, since they are correctness, not polish. `ctx.suspend` accepts `timeout` in A1 but does not enforce it until A2, so an A1 gate can wait indefinitely; the reference action documents this.
 - A2. Timeout enforcement (scheduled sweep + declared outcomes) and events + signals wiring.
 - A3. Docs (authoring gated actions, the replay/checkpoint discipline, downgrade path) and frontend rendering of the `waiting` state. Graduate out of alpha once the test plan passes and the flag is removed.
