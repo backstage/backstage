@@ -69,6 +69,7 @@ const testNotification1: Notification = {
     link: '/catalog',
     severity: 'critical',
     icon: 'docs',
+    metadata: { some_key: 'some_value' },
   },
 };
 const testNotification2: Notification = {
@@ -226,6 +227,24 @@ describe.each(databases.eachSupportedId())(
           id3,
           id1,
         ]);
+      });
+
+      it('should preserve metadata', async () => {
+        const metadataNotification = {
+          ...testNotification1,
+          id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          payload: {
+            ...testNotification1.payload,
+            metadata: { key: 'value' },
+          },
+        };
+        await storage.saveNotification(metadataNotification);
+
+        const notifications = await storage.getNotifications({ user });
+        const saved = notifications.find(
+          n => n.id === 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        );
+        expect(saved?.payload.metadata).toEqual({ key: 'value' });
       });
 
       it('should return null value for user for broadcast notifications', async () => {
@@ -581,6 +600,56 @@ describe.each(databases.eachSupportedId())(
     });
 
     describe('restoreExistingNotification', () => {
+      it.each(['notification', 'broadcast'] as const)(
+        'should persist, replace, and clear metadata for a scoped %s',
+        async type => {
+          const notification: Notification = {
+            ...testNotification2,
+            payload: {
+              ...testNotification2.payload,
+              metadata: {
+                nested: { values: ['original', 42, false, null] },
+              },
+            },
+          };
+          if (type === 'broadcast') {
+            await storage.saveBroadcast(notification);
+          } else {
+            await storage.saveNotification(notification);
+          }
+          const options = { id: notification.id, user };
+          expect(
+            (await storage.getNotification(options))?.payload.metadata,
+          ).toEqual(notification.payload.metadata);
+          expect(
+            (await storage.getNotifications({ user }))[0].payload.metadata,
+          ).toEqual(notification.payload.metadata);
+
+          const replacement = {
+            ...notification,
+            payload: { ...notification.payload, metadata: { changed: true } },
+          };
+          const restored = await storage.restoreExistingNotification({
+            id: notification.id,
+            notification: replacement,
+          });
+          expect(restored?.payload.metadata).toEqual({ changed: true });
+          expect(
+            (await storage.getNotification(options))?.payload.metadata,
+          ).toEqual({ changed: true });
+
+          const { metadata: _metadata, ...payload } = replacement.payload;
+          const cleared = await storage.restoreExistingNotification({
+            id: notification.id,
+            notification: { ...replacement, payload },
+          });
+          expect(cleared?.payload.metadata).toBeUndefined();
+          expect(
+            (await storage.getNotifications({ user }))[0].payload.metadata,
+          ).toBeUndefined();
+        },
+      );
+
       it('should return restore existing scope notification', async () => {
         await storage.saveNotification(testNotification1);
         await storage.saveNotification(testNotification2);

@@ -148,13 +148,18 @@ export async function makeRollupConfigs(
     source: string,
     importer: string | undefined,
     isResolved: boolean,
-  ) =>
-    Boolean(
+  ) => {
+    if (source.startsWith('node:')) {
+      return true;
+    }
+
+    return Boolean(
       importer &&
         !isResolved &&
         !internalImportPattern.test(source) &&
         !isFileImport(source),
     );
+  };
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();

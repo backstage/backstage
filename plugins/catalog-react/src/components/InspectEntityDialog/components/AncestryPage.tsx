@@ -127,9 +127,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     }
   }, [width, height]);
 
-  const hasKindIcon = app.getSystemIcon(
-    `kind:${node.kind.toLocaleLowerCase('en-US')}`,
-  );
+  const hasKindIcon = app.getSystemIcon(`kind:${node.kind.toLowerCase()}`);
   const padding = 10;
   const iconSize = height;
   const paddedIconWidth = hasKindIcon ? iconSize + padding : 0;

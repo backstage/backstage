@@ -29,6 +29,8 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+import type { StandardJSONSchemaV1 } from '@standard-schema/spec';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z } from 'zod/v3';
 
 // @public
@@ -215,6 +217,24 @@ export function createPermissionRule<
   TParams
 >;
 
+// @public @deprecated (undocumented)
+export function createPermissionRule<
+  TRef extends PermissionResourceRef,
+  TParams extends PermissionRuleParams = undefined,
+>(rule: {
+  name: string;
+  description: string;
+  resourceRef: TRef;
+  paramsSchema: z.ZodSchema<TParams>;
+  apply(resource: TRef['TResource'], params: NoInfer_2<TParams>): boolean;
+  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TRef['TQuery']>;
+}): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
+
 // @public @deprecated
 export function createPermissionRule<
   TResource,
@@ -234,7 +254,7 @@ export type CreatePermissionRuleOptions<
       name: string;
       description: string;
       resourceRef: TRef;
-      paramsSchema?: z.ZodSchema<TParams>;
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
       apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
       toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
     }
@@ -343,10 +363,16 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
-  paramsSchema?: z.ZodSchema<TParams>;
   apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
   toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
-};
+} & (
+  | {
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
+    }
+  | {
+      paramsSchema: z.ZodSchema<TParams>;
+    }
+);
 
 // @public
 export type PermissionRuleset<

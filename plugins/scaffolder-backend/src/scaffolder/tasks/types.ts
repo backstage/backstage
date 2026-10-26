@@ -37,13 +37,38 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 };
 
 /**
+ * Represents the completion state of a single step
+ */
+export type StepState = {
+  status: 'completed';
+  output: { [name: string]: JsonValue };
+};
+
+/**
+ * Represents the full state of a task including checkpoints and step states
+ */
+export type TaskState = {
+  checkpoints?: { [key: string]: JsonObject };
+  steps?: { [stepId: string]: StepState };
+};
+
+/**
+ * Options for updating step state
+ */
+export type UpdateStepStateOptions = {
+  stepId: string;
+  status: 'completed';
+  output: { [name: string]: JsonValue };
+};
+
+/**
  * TaskStoreListEventsOptions
  *
  */
 export type TaskStoreListEventsOptions = {
-  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
+  isTaskRecoverable?: boolean;
 };
 
 /**
@@ -139,21 +164,6 @@ export interface TaskStore {
   ): Promise<{ events: SerializedTaskEvent[] }>;
 
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
-
-  rehydrateWorkspace?(options: {
-    taskId: string;
-    targetPath: string;
-  }): Promise<void>;
-
-  cleanWorkspace({ taskId }: { taskId: string }): Promise<void>;
-
-  serializeWorkspace({
-    path,
-    taskId,
-  }: {
-    path: string;
-    taskId: string;
-  }): Promise<void>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };

@@ -51,7 +51,7 @@ const { token } = await auth.getPluginRequestToken({
 });
 ```
 
-:::note Note
+:::note
 
 Never store and reuse tokens. Always call `getPluginRequestToken` immediately
 before making a request. Otherwise you run the risk of running into permission
@@ -116,7 +116,7 @@ if (auth.isPrincipal(credentials, 'user')) {
 
 ## Configuring the service
 
-:::note Note
+:::note
 
 The `auth` service is not suitable for having its implementation replaced
 entirely in your private repo. If you desire additional service auth related

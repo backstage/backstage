@@ -4,7 +4,7 @@ title: Internationalization
 description: Documentation on adding internationalization to plugins and apps
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. For the new frontend system version, see [Internationalization](../frontend-system/building-plugins/07-internationalization.md). The i18n APIs (`createTranslationRef`, `useTranslationRef`) work the same way in both the old and new frontend systems.
 

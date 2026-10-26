@@ -199,9 +199,21 @@ async function applyPatchVersions(repo, patchVersions) {
     let hasChanges = false;
 
     if (pendingVersionBumps.has(packageJson.name)) {
-      packageJson.version = pendingVersionBumps.get(
-        packageJson.name,
-      ).targetVersion;
+      const { targetVersion } = pendingVersionBumps.get(packageJson.name);
+      packageJson.version = targetVersion;
+      const changelogPath = path.resolve(dir, 'CHANGELOG.md');
+      const changelog = await fs.readFile(changelogPath, 'utf8');
+      const titleEnd = changelog.indexOf('\n');
+      if (titleEnd === -1) {
+        throw new Error(`Invalid changelog for ${packageJson.name}`);
+      }
+      const entry = `\n## ${targetVersion}\n\n### Patch Changes\n\n- Bumped version to account for a patch release.\n`;
+      await fs.writeFile(
+        changelogPath,
+        `${changelog.slice(0, titleEnd + 1)}${entry}${changelog.slice(
+          titleEnd + 1,
+        )}`,
+      );
       hasChanges = true;
     }
 

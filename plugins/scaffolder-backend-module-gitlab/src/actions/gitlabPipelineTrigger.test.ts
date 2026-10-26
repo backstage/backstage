@@ -64,7 +64,7 @@ describe('gitlab:pipeline:trigger', () => {
 
   const action = createTriggerGitlabPipelineAction({ integrations });
 
-  it('should return a Pipeline Token Id', async () => {
+  it('should return a Pipeline Url and not checkpoint the trigger token', async () => {
     const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
@@ -74,6 +74,7 @@ describe('gitlab:pipeline:trigger', () => {
       },
       workspacePath: 'seen2much',
     });
+    const checkpointSpy = jest.spyOn(mockContext, 'checkpoint');
 
     mockGitlabClient.PipelineTriggerTokens.create.mockResolvedValue({
       id: 42,
@@ -113,6 +114,15 @@ describe('gitlab:pipeline:trigger', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'pipelineUrl',
+      'https://gitlab.com/hangar18-/pipelines/99',
+    );
+
+    expect(checkpointSpy).toHaveBeenCalledTimes(1);
+    expect(checkpointSpy).toHaveBeenCalledWith({
+      key: 'trigger.pipeline.123.main.My cool pipeline token',
+      fn: expect.any(Function),
+    });
+    await expect(checkpointSpy.mock.results[0].value).resolves.toBe(
       'https://gitlab.com/hangar18-/pipelines/99',
     );
   });
@@ -250,17 +260,35 @@ describe('gitlab:pipeline:trigger', () => {
       workspacePath: 'seen2much',
     });
 
-    await expect(
-      action.handler({
-        ...mockContext,
-      }),
-    ).rejects.toThrow('Failed to trigger pipeline');
+    mockGitlabClient.PipelineTriggerTokens.create.mockResolvedValue({
+      id: 42,
+      description: 'My cool pipeline token',
+      createdAt: new Date().toISOString(),
+      last_used: null,
+      token: 'glptt-abcdef',
+      updated_at: new Date().toISOString(),
+      owner: null,
+    });
+
+    mockGitlabClient.PipelineTriggerTokens.trigger.mockResolvedValue({
+      id: 99,
+      web_url: 'https://gitlab.com/hangar18-/pipelines/99',
+    });
+
+    await action.handler({
+      ...mockContext,
+    });
 
     expect(mockGitlabClient.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
       123,
       'main',
       'glptt-abcdef',
       { variables: { var_one: 'val1', var_two: 'val2' } },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'pipelineUrl',
+      'https://gitlab.com/hangar18-/pipelines/99',
     );
   });
 });

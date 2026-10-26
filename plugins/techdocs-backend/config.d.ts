@@ -16,6 +16,8 @@
 
 import { HumanDuration } from '@backstage/types';
 
+import { ContainerRunnerPullOptions } from '@backstage/plugin-techdocs-node';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
@@ -48,7 +50,21 @@ export interface Config {
       pullImage?: boolean;
 
       /**
-       * Override behavior specific to mkdocs.
+       * Credentials for private registries
+       * @visibility secret
+       */
+      pullOptions?: ContainerRunnerPullOptions;
+
+      /**
+       * Defines the default document generation engine behind TechDocs, used
+       * for entities without a backstage.io/techdocs-engine annotation.
+       * Must match a registered generator. Defaults to "mkdocs".
+       */
+      defaultEngine?: string;
+
+      /**
+       * Override behavior for mkdocs.yml-based builds. Unless noted otherwise,
+       * these settings apply to the MkDocs engine only.
        */
       mkdocs?: {
         /**
@@ -57,6 +73,8 @@ export interface Config {
          * or README.md in case a default <docs-dir>/index.md is not provided.
          * Note that https://www.mkdocs.org/user-guide/configuration/#edit_uri behavior
          * will be broken in these scenarios.
+         *
+         * Also applies to the Zensical engine.
          */
         legacyCopyReadmeMdToIndexMd?: boolean;
 
@@ -73,9 +91,27 @@ export interface Config {
          * 'hooks' key allows running arbitrary Python code during documentation generation.
          * Only use this in trusted environments where all mkdocs.yml files are audited.
          *
+         * Also applies to the Zensical engine, which reads the same mkdocs.yml, so
+         * this configuration will affect both.
+         *
          * @see https://www.mkdocs.org/user-guide/configuration/#hooks
          */
         dangerouslyAllowAdditionalKeys?: string[];
+
+        /**
+         * List of additional MkDocs plugins to allow beyond the default set.
+         * Plugins not in this list or the default set will be removed from
+         * mkdocs.yml before documentation generation.
+         *
+         * WARNING: Some MkDocs plugins can make outbound HTTP requests or execute
+         * arbitrary code during documentation generation. Only allow plugins that
+         * have been audited for use in your environment, including the configuration
+         * options that documentation authors can supply.
+         *
+         * Also applies to the Zensical engine, which reads the same mkdocs.yml, so
+         * this configuration will affect both.
+         */
+        dangerouslyAllowAdditionalPlugins?: string[];
 
         /**
          * Disable external fonts for all TechDocs sites.

@@ -43,3 +43,8 @@ createServiceBuilder(module)
 ```
 
 Be sure to register the app router last, as it serves content for HTML5-mode navigation, i.e. falling back to serving `index.html` for any route that can't be found.
+
+## Public entry point configuration
+
+To restrict configuration exposed to unauthenticated users, see
+[Restricting public configuration](https://backstage.io/docs/conf/writing/#restricting-public-configuration).

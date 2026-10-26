@@ -60,6 +60,7 @@ export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactory[];
   // (undocumented)
   extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[];
+  instanceId?: string;
 }
 
 // @public
@@ -70,6 +71,7 @@ export interface ExtensionPointFactoryMiddleware {
 
 // @public
 export interface ModuleStartupResult {
+  beginAt?: Date;
   failure?: {
     error: Error;
     allowed: boolean;
@@ -80,6 +82,7 @@ export interface ModuleStartupResult {
 
 // @public
 export interface PluginStartupResult {
+  beginAt?: Date;
   failure?: {
     error: Error;
     allowed: boolean;

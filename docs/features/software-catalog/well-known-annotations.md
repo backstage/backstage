@@ -257,13 +257,14 @@ to note that it originated from that user on GitHub.
 # Example:
 metadata:
   annotations:
-    github.com/user-id: '123456'
+    github.com/user-id: 'MDQ6VXNlcmJhY2tzdGFnZS5leGFtcGxl'
 ```
 
-The value of this annotation is the numeric user ID that identifies a user on
+The value of this annotation is the global node ID that identifies a user on
 [GitHub](https://github.com) (either the public one, or a private GitHub
-Enterprise installation) that is related to this entity. Unlike the username,
-which can be changed by the user, the user ID is immutable.
+Enterprise installation) that is related to this entity. It is the `node_id`
+field in the REST API and the `id` field in the GraphQL API. Unlike the
+username, which can be changed by the user, the node ID is immutable.
 
 This annotation can be used on a [User entity](descriptor-format.md#kind-user)
 to note that it originated from that user on GitHub. It enables the

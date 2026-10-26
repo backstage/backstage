@@ -7,13 +7,15 @@ description: TechDocs CLI - a utility command line interface for managing TechDo
 Utility command line interface for managing TechDocs sites in
 [Backstage](https://github.com/backstage/backstage).
 
-https://backstage.io/docs/features/techdocs/
+<https://backstage.io/docs/features/techdocs/>
 
 ## Features
 
 - Supports local development/preview of a TechDocs site in a Backstage app.
 - Supports generation and publishing of a documentation site in a CI/CD
   workflow.
+- Supports every [documentation engine](./engines.md) TechDocs ships with:
+  MkDocs (the default) and Zensical.
 
 ```bash
 techdocs-cli --help
@@ -24,12 +26,18 @@ Options:
   -h, --help                display help for command
 
 Commands:
-  generate|build [options]  Generate TechDocs documentation site using mkdocs.
-  publish [options]         Publish generated TechDocs site to an external storage AWS S3,
-                            Google GCS, etc.
-  serve:mkdocs [options]    Serve a documentation project locally using mkdocs serve.
-  serve [options]           Serve a documentation project locally in a Backstage app-like
-                            environment
+  generate|build [options]  Generate a TechDocs documentation site with the
+                            selected engine (MkDocs by default).
+  migrate [options]         Migrate objects with case-sensitive entity triplets
+                            to lower-case versions.
+  publish [options]         Publish generated TechDocs site to an external
+                            storage AWS S3, Google GCS, etc.
+  serve:raw [options]       Serve a documentation project locally using the
+                            configured engine.
+  serve:mkdocs [options]    [Deprecated: use serve:raw] Serve a documentation
+                            project locally.
+  serve [options]           Serve a documentation project locally in a Backstage
+                            app-like environment
   help [command]            display help for command
 ```
 
@@ -64,18 +72,32 @@ By default, Docker and
 make sure all the dependencies are installed. However, Docker can be disabled
 with `--no-docker` flag.
 
-The command starts two local servers - an MkDocs preview server on port 8000 and
-a Backstage app server on port 3000. The Backstage app has a custom TechDocs API
-implementation, which uses the MkDocs preview server as a proxy to fetch the
-generated documentation files and assets.
+Note that the `serve` command does not pull the Docker image and keeps using the
+one available locally. If serving misbehaves, for example changes to
+documentation files are no longer detected, update the image with
+`docker pull spotify/techdocs`.
+
+The command starts two local servers - the documentation engine's preview
+server on port 8000 (change it with `--engine-port`) and a Backstage app server
+on port 3000. The Backstage app has a custom TechDocs API implementation, which
+uses the engine's preview server as a proxy to fetch the generated
+documentation files and assets.
+
+The engine is `--engine` if passed, otherwise the
+`backstage.io/techdocs-engine` annotation in the `catalog-info.yaml` in the
+current directory, otherwise `mkdocs`. The default Docker image depends on the
+engine: `spotify/techdocs` for MkDocs and `ghcr.io/backstage/techdocs-zensical`
+for Zensical. See [Zensical Engine](./engines-zensical.md) for running Zensical
+without Docker.
 
 Backstage instances might differ from the provided preview app in appearance and
 behavior. To preview documentation with a different app, use
 `--preview-app-bundle-path` with a path to the bundle of the app to use instead.
 Typically, a `dist` or `build` directory.
 
-NOTE: When using a custom `techdocs` docker image, make sure the entry point is
-also `ENTRYPOINT ["mkdocs"]` or override with `--docker-entrypoint`.
+NOTE: When using a custom Docker image, make sure its entry point is the
+engine's command (`ENTRYPOINT ["mkdocs"]` or `ENTRYPOINT ["zensical"]`), or
+override it with `--docker-entrypoint`.
 
 Command reference:
 
@@ -85,21 +107,57 @@ Usage: techdocs-cli serve [options]
 Serve a documentation project locally in a Backstage app-like environment
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs")
+  -i, --docker-image <DOCKER_IMAGE>           Docker image to use. Defaults to the selected engine's image.
   --docker-entrypoint <DOCKER_ENTRYPOINT>     Override the image entrypoint
-  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
-                                              (can be added multiple times).
-  --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
-  --mkdocs-parameter-clean                    Pass "--clean" parameter to mkdocs server running in containerized environment.
-  --mkdocs-parameter-dirtyreload              Pass "--dirtyreload" parameter to mkdocs server running in containerized environment.
-  --mkdocs-parameter-strict                   Pass "--strict" parameter to mkdocs server running in containerized environment.
-  --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
-  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
-  --preview-app-port <PORT>                   Port where the preview will be served.
-                                              Can only be used with "--preview-app-bundle-path". (default: "3000")
-  -c, --mkdocs-config-file-name <FILENAME>    Yaml file to use as config by mkdocs.
-  -v --verbose                                Enable verbose output. (default: false)
+  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).
+  --no-docker                                 Do not use Docker, run the engine in the current user environment.
+  --site-name                                 Name for site when using the default config
+  --engine-port <PORT>                        Port for the documentation engine server (MkDocs, Zensical, etc.) to listen on. Defaults to 8000. The Backstage preview app is served on --preview-app-port.
+  --mkdocs-port <PORT>                        [Deprecated: use --engine-port] Port for MkDocs server to use
+  -v, --verbose                               Enable verbose output. (default: false)
+  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using another web app
+  --preview-app-port <PORT>                   Port for the preview app to be served on (default: "3000")
+  -c, --config-file-name <FILENAME>           Config file name for the documentation engine (e.g. mkdocs.yml). Overrides automatic detection.
+  --mkdocs-config-file-name <FILENAME>        [Deprecated: use --config-file-name] Mkdocs config file name
+  --parameter-clean                           Pass "--clean" to the documentation engine server. Clears the build cache before serving. (default: false)
+  --mkdocs-parameter-clean                    [Deprecated: use --parameter-clean] Pass "--clean" parameter to mkdocs server (default: false)
+  --parameter-dirtyreload                     Pass "--dirtyreload" to the documentation engine server. Only rebuilds changed files on reload (MkDocs only; ignored by other engines). (default: false)
+  --mkdocs-parameter-dirtyreload              [Deprecated: use --parameter-dirtyreload] Pass "--dirtyreload" parameter to mkdocs server (default: false)
+  --parameter-strict                          Pass "--strict" to the documentation engine server. Treats warnings as errors during build. (default: false)
+  --mkdocs-parameter-strict                   [Deprecated: use --parameter-strict] Pass "--strict" parameter to mkdocs server (default: false)
+  --engine <ENGINE>                           Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.
   -h, --help                                  display help for command
+```
+
+The `--mkdocs-*` options are deprecated, see [Deprecated options](#deprecated-options).
+
+### Serve with the engine's own preview server
+
+```bash
+techdocs-cli serve:raw
+```
+
+Runs the engine's own `serve` command (for example `mkdocs serve`) without the
+Backstage preview app. It picks the engine the same way as `serve`.
+`serve:mkdocs` is a deprecated alias for this command.
+
+Command reference:
+
+```bash
+Usage: techdocs-cli serve:raw [options]
+
+Serve a documentation project locally using the configured engine.
+
+Options:
+  -i, --docker-image <DOCKER_IMAGE>        Docker image to use. Defaults to the selected engine's image.
+  --docker-entrypoint <DOCKER_ENTRYPOINT>  Override the image entrypoint
+  --docker-option <DOCKER_OPTION...>       Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).
+  --no-docker                              Do not use Docker, run the engine serve command in the current user environment.
+  --site-name                              Name for site when using the default config
+  -p, --port <PORT>                        Port to serve documentation locally (default: "8000")
+  -v, --verbose                            Enable verbose output. (default: false)
+  --engine <ENGINE>                        Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.
+  -h, --help                               display help for command
 ```
 
 ### Generate TechDocs site from a documentation project
@@ -122,39 +180,56 @@ By default, this command uses Docker and
 sure all the dependencies are installed. But it can be disabled using
 `--no-docker` flag.
 
+The engine is chosen the same way as for `serve`: `--engine`, then the
+`backstage.io/techdocs-engine` annotation in `catalog-info.yaml`, then
+`mkdocs`. The chosen engine is recorded in `techdocs_metadata.json`, and
+`--engine` takes precedence over the annotation.
+
 Command reference:
 
 ```bash
 techdocs-cli generate --help
 Usage: techdocs-cli generate|build [options]
 
-Generate TechDocs documentation site using MkDocs.
+Generate a TechDocs documentation site with the selected engine (MkDocs by
+default).
 
 Options:
-  --source-dir <PATH>             Source directory containing mkdocs.yml and docs/ directory. (default: ".")
-  --output-dir <PATH>             Output directory containing generated TechDocs site. (default: "./site/")
-  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.0.3")
-  --no-pull                       Do not pull the latest docker image
-  --no-docker                     Do not use Docker, use MkDocs executable and plugins in current user environment.
-  --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g.
-                                  url:https://ghe.mycompany.net.com/org/repo.
-                                  This value is same as the backstage.io/techdocs-ref annotation of the corresponding
-                                  Backstage entity.
-                                  It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml
-                                  if not found.
-  --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
-                                  in techdocs_metadata.json.
-  --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
-  --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
-                                  Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
-  --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
-                                  in case a default <docs-dir>/index.md is not provided. (default: false)
-  --disableExternalFonts          Disable external font downloads for all TechDocs sites. Useful for air-gapped environments
-                                  where Google fonts cannot be accessed. (default: false)
-  --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
-  -v, --verbose                   Enable verbose output. (default: false)
-  -h, --help                      display help for command
+  --source-dir <PATH>                                   Source directory containing mkdocs.yml and docs/ directory. (default: ".")
+  --output-dir <PATH>                                   Output directory containing generated TechDocs site. (default: "./site/")
+  --docker-image <DOCKER_IMAGE>                         Docker image to use. Defaults to the selected engine's image.
+  --no-pull                                             Do not pull the latest docker image
+  --no-docker                                           Do not use Docker, run the engine and its plugins in the current user environment.
+  --techdocs-ref <HOST_TYPE:URL>                        The repository hosting documentation source files e.g. url:https://ghe.mycompany.net.com/org/repo.
+  This value is same as the backstage.io/techdocs-ref annotation of the corresponding Backstage entity.
+  It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml if not found.
+
+  --etag <ETAG>                                         A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json. If omitted, a sha256 content hash of the generated site output is computed automatically.
+  --site-name                                           Name for site when using the default config
+  -v, --verbose                                         Enable verbose output. (default: false)
+  --omitTechdocsCoreMkdocsPlugin                        Don't patch MkDocs file automatically with techdocs-core plugin. (default: false)
+  --legacyCopyReadmeMdToIndexMd                         Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided. (default: false)
+  --disableExternalFonts                                Disable external font downloads by default by setting theme.font: false in mkdocs.yml when not already configured. Useful for air-gapped environments where Google fonts cannot be accessed. (default: false)
+  --defaultPlugin [defaultPlugins...]                   Plugins which should be added automatically to the mkdocs.yaml file (default: [])
+  --dangerouslyAllowAdditionalKeys [additionalKeys...]  Top-level mkdocs.yml keys to allow beyond the built-in supported set, without failing or stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys backend config option, which techdocs-cli generate does not currently read from a config file. (default: [])
+  --runAsDefaultUser                                    Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
+  --engine <ENGINE>                                     Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.
+  -h, --help                                            display help for command
 ```
+
+### Deprecated options
+
+These still work but print a warning. If both the old and new option are
+given, the new one is used and the warning says the old one is ignored.
+
+| Deprecated                             | Use instead               |
+| -------------------------------------- | ------------------------- |
+| `serve:mkdocs`                         | `serve:raw`               |
+| `serve --mkdocs-port`                  | `--engine-port`           |
+| `serve --mkdocs-config-file-name`      | `--config-file-name`      |
+| `serve --mkdocs-parameter-clean`       | `--parameter-clean`       |
+| `serve --mkdocs-parameter-dirtyreload` | `--parameter-dirtyreload` |
+| `serve --mkdocs-parameter-strict`      | `--parameter-strict`      |
 
 ### Publish generated TechDocs sites
 
@@ -205,6 +280,8 @@ Options:
   --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>                       (Required for OpenStack) specify when --publisher-type openStackSwift
   --gcsBucketRootPath <GCS BUCKET ROOT PATH>                    Optional sub-directory to store files in Google cloud storage
   --directory <PATH>                                            Path of the directory containing generated files to publish (default: "./site/")
+  --skip-if-unchanged                                           Skip publishing if the local etag in techdocs_metadata.json matches the remote etag.
+                                                                The generate step computes a generated site content hash automatically unless --etag is overridden. (default: false)
   -h, --help                                                    display help for command
 ```
 

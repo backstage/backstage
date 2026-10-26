@@ -32,6 +32,10 @@ export interface LogViewerProps {
    */
   onDownloadLog?: () => void;
   /**
+   * Callback function to handle the copy log action, and show the copy button.
+   */
+  onCopyLog?: () => void | Promise<void>;
+  /**
    * The text of the logs to display.
    *
    * The LogViewer component is optimized for appending content at the end of the text.

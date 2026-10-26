@@ -1,5 +1,94 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 2.0.1
+
+### Patch Changes
+
+- 2153e90: Fixed search queries intermittently failing with a 500 error when a collator finished indexing. The index that the search alias pointed to before the rotation is no longer deleted immediately, so queries already running against it can complete. It is instead removed during the next indexing run for that document type. Note that this means the previous index is now retained between runs, so search storage usage per document type is roughly doubled.
+
+  Also improved error reporting for failed search queries. An index that disappears while a query is running is now reported as a missing index, and other query failures now include the underlying cause in the logs instead of `undefined`.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-search-backend-node@1.4.9
+  - @backstage/plugin-search-common@1.2.26
+
+## 2.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-search-backend-node@1.4.9-next.1
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/integration-aws-node@0.2.3-next.0
+  - @backstage/plugin-search-backend-node@1.4.9-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 3753c36: **BREAKING**: Upgraded the Elasticsearch client to version 8, requiring at least version 8.19 - the only 8.x release line still under support, [following the end of life of Elasticsearch 7.x and earlier 8.x lines](https://endoflife.date/elasticsearch). Elasticsearch 7.x clusters are no longer supported.
+
+  If you use the `elastic` provider or connect to a plain Elasticsearch node, make sure your cluster is running Elasticsearch 8.19 or later before upgrading. The `aws` and `opensearch` providers keep using the OpenSearch client and are unaffected. Existing TLS settings continue to work without any configuration changes.
+
+  The methods of the `ElasticSearchClientWrapper` now return a normalized response that exposes `body`, `statusCode`, `headers` and `warnings` for both providers, instead of the client specific response types. Code that relies on the raw client types or reads the `meta` property of a response needs to be adjusted.
+
+### Patch Changes
+
+- fe6ace6: Added optional `accountId` config to `search.elasticsearch` for resolving account-specific AWS credentials, enabling support for `webIdentityTokenFile` and `accountDefaults` when using AWS OpenSearch.
+- b11c9b4: Fixed a bug where an empty document type list could result in querying all indices instead of returning empty results.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.8
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-search-common@1.2.25
+
+## 1.8.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-search-backend-node@1.4.8-next.1
+  - @backstage/plugin-search-common@1.2.25-next.0
+
+## 1.8.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.8-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 1.8.8-next.0
+
+### Patch Changes
+
+- b11c9b4: Fixed a bug where an empty document type list could result in querying all indices instead of returning empty results.
+
+## 1.8.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-search-backend-node@1.4.7
+
 ## 1.8.6-next.0
 
 ### Patch Changes

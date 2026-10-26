@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { HumanDuration } from '@backstage/types';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { InputError } from '@backstage/errors';
 
 /**
  * Configuration for the stitching process, controlling polling and timeout
@@ -27,29 +27,7 @@ export type StitchingStrategy = {
   stitchTimeout: HumanDuration;
 };
 
-let immediateDeprecationLogged = false;
-
-export function stitchingStrategyFromConfig(
-  config: Config,
-  options?: { logger?: LoggerService },
-): StitchingStrategy {
-  const strategyMode = config.getOptionalString(
-    'catalog.stitchingStrategy.mode',
-  );
-
-  if (strategyMode === 'immediate') {
-    if (!immediateDeprecationLogged) {
-      immediateDeprecationLogged = true;
-      options?.logger?.warn(
-        "The 'immediate' stitching strategy mode has been removed and is no longer supported. Falling back to deferred stitching. Please remove the 'catalog.stitchingStrategy.mode' configuration key.",
-      );
-    }
-  } else if (strategyMode !== undefined && strategyMode !== 'deferred') {
-    options?.logger?.warn(
-      `Unknown stitching strategy mode '${strategyMode}', falling back to deferred stitching. Please remove or correct the 'catalog.stitchingStrategy.mode' configuration key.`,
-    );
-  }
-
+export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
   const pollingIntervalKey = 'catalog.stitchingStrategy.pollingInterval';
   const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
 
@@ -59,6 +37,18 @@ export function stitchingStrategyFromConfig(
   const stitchTimeout = config.has(stitchTimeoutKey)
     ? readDurationFromConfig(config, { key: stitchTimeoutKey })
     : { seconds: 60 };
+
+  for (const [key, duration] of [
+    [pollingIntervalKey, pollingInterval],
+    [stitchTimeoutKey, stitchTimeout],
+  ] as const) {
+    const milliseconds = durationToMilliseconds(duration);
+    if (!Number.isFinite(milliseconds) || milliseconds <= 0) {
+      throw new InputError(
+        `Duration in config at '${key}' must be finite and greater than zero`,
+      );
+    }
+  }
 
   return {
     pollingInterval: pollingInterval,

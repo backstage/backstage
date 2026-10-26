@@ -17,18 +17,15 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { connectionsServiceRef } from '@backstage/connections-node';
-import {
-  connectionTypes,
-  type ConnectionTypeKey,
-} from '@backstage/connections';
+import { connectionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { connectionTypes, type ConnectionType } from '@backstage/connections';
 import {
   type HttpAuthService,
   type LoggerService,
 } from '@backstage/backend-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 
-function isConnectionTypeKey(type: string): type is ConnectionTypeKey {
+function isConnectionType(type: string): type is ConnectionType {
   return Object.prototype.hasOwnProperty.call(connectionTypes, type);
 }
 
@@ -44,7 +41,7 @@ export async function createRouter({
 
   router.get('/schema/:type', async (req, res) => {
     const type = req.params.type;
-    if (!isConnectionTypeKey(type)) {
+    if (!isConnectionType(type)) {
       res.status(404).json('Cannot find connection type');
       return;
     }
@@ -78,8 +75,8 @@ export async function createRouter({
     let connection;
     try {
       connection = await connections.find({
-        type: p.type as ConnectionTypeKey,
-        url: p.url,
+        type: p.type as ConnectionType,
+        query: { url: p.url },
         authMethods: authMethods as any,
       });
     } catch (e) {

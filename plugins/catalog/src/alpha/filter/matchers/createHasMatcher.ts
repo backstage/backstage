@@ -34,7 +34,7 @@ export function createHasMatcher(
   onParseError: (error: Error) => void,
 ): EntityMatcherFn {
   const matchers = parameters.flatMap(parameter => {
-    const matcher = allowedMatchers[parameter.toLocaleLowerCase('en-US')];
+    const matcher = allowedMatchers[parameter.toLowerCase()];
     if (!matcher) {
       const known = Object.keys(allowedMatchers).map(m => `'${m}'`);
       onParseError(

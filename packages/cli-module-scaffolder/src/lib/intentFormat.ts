@@ -1,0 +1,123 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import chalk from 'chalk';
+
+export type OutputMode = 'human' | 'json';
+
+/**
+ * Shared `--output` flag definition for commands that support both formats.
+ */
+export const outputFlag = {
+  output: {
+    type: String,
+    description: 'Output format: "human" (default) or "json"',
+  },
+};
+
+export function parseOutputFlag(flags: Record<string, unknown>): OutputMode {
+  const output = flags.output;
+  if (output === undefined || output === 'human') return 'human';
+  if (output === 'json') return 'json';
+  throw new Error(
+    `Invalid --output value "${String(output)}", expected "human" or "json"`,
+  );
+}
+
+/**
+ * Describes one fetched page of a paginated list.
+ */
+export type PageResult = {
+  /** Number of items in this page */
+  count: number;
+  /** Total number of items across all pages, if known */
+  total?: number;
+  /** Cursor for the next page, if there is one */
+  nextCursor?: string;
+};
+
+/**
+ * Prints a single page of results followed by a footer with the number of
+ * results shown, unless the page is empty. When more results exist, a hint with the `--cursor` value to
+ * continue from is printed.
+ */
+export async function printPage<T extends PageResult>(
+  fetchPage: (cursor?: string) => Promise<T>,
+  render: (page: T) => void,
+  cursor?: string,
+): Promise<void> {
+  const page = await fetchPage(cursor);
+  render(page);
+
+  if (page.count > 0) {
+    const total = page.total === undefined ? '' : ` of ${page.total}`;
+    process.stdout.write(`${chalk.dim(`Showing ${page.count}${total}`)}\n`);
+  }
+  if (page.nextCursor) {
+    process.stdout.write(
+      `${chalk.dim(
+        `More results available, use --cursor ${page.nextCursor} to show them`,
+      )}\n`,
+    );
+  }
+}
+
+export function writeJson(data: unknown): void {
+  process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
+}
+
+function pad(str: string, width: number): string {
+  return str.length >= width ? str : str + ' '.repeat(width - str.length);
+}
+
+export function extractEntities(
+  result: unknown,
+): Array<Record<string, unknown>> {
+  if (Array.isArray(result)) return result;
+  const obj = result as Record<string, unknown> | undefined;
+  return (obj?.items ?? obj?.entities ?? []) as Array<Record<string, unknown>>;
+}
+
+export function formatEntityTable(
+  entities: Array<Record<string, unknown>>,
+): string {
+  if (entities.length === 0) {
+    return `${chalk.yellow('No entities found.')}\n`;
+  }
+
+  const lines: string[] = [];
+  lines.push(
+    `${chalk.bold(pad('NAME', 40))} ${chalk.bold(pad('KIND', 16))} ${chalk.bold(
+      pad('NAMESPACE', 16),
+    )} ${chalk.bold('TYPE')}`,
+  );
+
+  for (const entity of entities) {
+    const metadata = entity.metadata as Record<string, unknown> | undefined;
+    const spec = entity.spec as Record<string, unknown> | undefined;
+    const name = String(metadata?.name ?? entity.name ?? '');
+    const kind = String(entity.kind ?? '');
+    const namespace = String(
+      metadata?.namespace ?? entity.namespace ?? 'default',
+    );
+    const type = String(spec?.type ?? entity.type ?? '');
+    lines.push(
+      `${pad(name, 40)} ${pad(kind, 16)} ${pad(namespace, 16)} ${type}`,
+    );
+  }
+
+  return `${lines.join('\n')}\n`;
+}

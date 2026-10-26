@@ -62,6 +62,11 @@ export const homeTranslationRef = createTranslationRef({
       few: {
         title: 'The more pages you visit, the more pages will appear here.',
       },
+      disabled: {
+        title: 'Visit tracking is not enabled.',
+        description:
+          'Enable visit tracking in your app-config.yaml to see your most visited and recently visited pages here.',
+      },
     },
     quickStart: {
       title: 'Onboarding',

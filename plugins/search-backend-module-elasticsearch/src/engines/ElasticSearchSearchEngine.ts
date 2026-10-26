@@ -201,9 +201,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       authProvider,
     } = options;
     const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
+    const esConfig = config.getConfig('search.elasticsearch');
+    const awsAccountId = esConfig.getOptionalString('accountId');
     const clientOptions = await this.createElasticSearchClientOptions(
-      await credentialProvider?.getCredentialProvider(),
-      config.getConfig('search.elasticsearch'),
+      await credentialProvider?.getCredentialProvider(
+        awsAccountId ? { accountId: awsAccountId } : undefined,
+      ),
+      esConfig,
       authProvider,
     );
     if (clientOptions.provider === 'elastic') {
@@ -446,6 +450,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         queryOptions: this.queryOptions,
       },
     );
+    if (documentTypes && documentTypes.length === 0) {
+      return {
+        results: [],
+        nextPageCursor: undefined,
+        previousPageCursor: undefined,
+        numberOfResults: undefined,
+      };
+    }
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
       : this.constructSearchAlias('*');
@@ -494,7 +506,12 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         numberOfResults: result.body.hits.total.value,
       };
     } catch (error) {
-      if (error.meta?.body?.error?.type === 'index_not_found_exception') {
+      const errorBody = error.meta?.body?.error;
+      // The index can also go missing mid-query, nested under a search_phase_execution_exception
+      if (
+        errorBody?.type === 'index_not_found_exception' ||
+        errorBody?.caused_by?.type === 'index_not_found_exception'
+      ) {
         throw new MissingIndexError(
           `Missing index for ${queryIndices}. This means there are no documents to search through.`,
           error,
@@ -504,7 +521,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         `Failed to query documents for indices ${queryIndices}`,
         error,
       );
-      return Promise.reject({ results: [] });
+      throw new Error(
+        `Failed to query documents for indices ${queryIndices}: ${error?.message}`,
+        { cause: error },
+      );
     }
   }
 

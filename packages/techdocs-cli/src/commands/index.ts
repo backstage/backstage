@@ -15,15 +15,15 @@
  */
 
 import { Command } from 'commander';
-import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
-const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
   program
     .command('generate')
-    .description('Generate TechDocs documentation site using MkDocs.')
+    .description(
+      'Generate a TechDocs documentation site with the selected engine (MkDocs by default).',
+    )
     .option(
       '--source-dir <PATH>',
       'Source directory containing mkdocs.yml and docs/ directory.',
@@ -36,13 +36,12 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
-      defaultDockerImage,
+      "Docker image to use. Defaults to the selected engine's image.",
     )
     .option('--no-pull', 'Do not pull the latest docker image')
     .option(
       '--no-docker',
-      'Do not use Docker, use MkDocs executable and plugins in current user environment.',
+      'Do not use Docker, run the engine and its plugins in the current user environment.',
     )
     .option(
       '--techdocs-ref <HOST_TYPE:URL>',
@@ -52,11 +51,12 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--etag <ETAG>',
-      'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.',
+      'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.' +
+        ' If omitted, a sha256 content hash of the generated site output is computed automatically.',
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
     .option('-v, --verbose', 'Enable verbose output.', false)
@@ -81,9 +81,18 @@ export function registerCommands(program: Command) {
       [],
     )
     .option(
+      '--dangerouslyAllowAdditionalKeys [additionalKeys...]',
+      'Top-level mkdocs.yml keys to allow beyond the built-in supported set, without failing or stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys backend config option, which techdocs-cli generate does not currently read from a config file.',
+      [],
+    )
+    .option(
       '--runAsDefaultUser',
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
       false,
+    )
+    .option(
+      '--engine <ENGINE>',
+      'Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.',
     )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
@@ -230,15 +239,58 @@ export function registerCommands(program: Command) {
       'Path of the directory containing generated files to publish',
       './site/',
     )
+    .option(
+      '--skip-if-unchanged',
+      'Skip publishing if the local etag in techdocs_metadata.json matches the remote etag.' +
+        ' The generate step computes a generated site content hash automatically unless --etag is overridden.',
+      false,
+    )
     .action(lazy(() => import('./publish/publish'), 'default'));
+
+  const serveRawAction = lazy(() => import('./serve/mkdocs'), 'default');
+
+  program
+    .command('serve:raw')
+    .description(
+      'Serve a documentation project locally using the configured engine.',
+    )
+    .option(
+      '-i, --docker-image <DOCKER_IMAGE>',
+      "Docker image to use. Defaults to the selected engine's image.",
+    )
+    .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
+    )
+    .option(
+      '--docker-option <DOCKER_OPTION...>',
+      'Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).',
+    )
+    .option(
+      '--no-docker',
+      'Do not use Docker, run the engine serve command in the current user environment.',
+    )
+    .option(
+      '--site-name',
+      'Name for site when using the default config',
+      'Documentation Site',
+    )
+    .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
+    .option('-v, --verbose', 'Enable verbose output.', false)
+    .option(
+      '--engine <ENGINE>',
+      'Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.',
+    )
+    .action(serveRawAction);
 
   program
     .command('serve:mkdocs')
-    .description('Serve a documentation project locally using MkDocs serve.')
+    .description(
+      '[Deprecated: use serve:raw] Serve a documentation project locally.',
+    )
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
-      defaultDockerImage,
+      "Docker image to use. Defaults to the selected engine's image.",
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -254,12 +306,19 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
     .option('-v, --verbose', 'Enable verbose output.', false)
-    .action(lazy(() => import('./serve/mkdocs'), 'default'));
+    .option(
+      '--engine <ENGINE>',
+      'Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.',
+    )
+    .hook('preAction', command => {
+      command.setOptionValue('deprecatedCommandAlias', 'serve:mkdocs');
+    })
+    .action(serveRawAction);
 
   program
     .command('serve')
@@ -268,8 +327,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
-      defaultDockerImage,
+      "Docker image to use. Defaults to the selected engine's image.",
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -281,14 +339,21 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--no-docker',
-      'Do not use Docker, use MkDocs executable in current user environment.',
+      'Do not use Docker, run the engine in the current user environment.',
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using the default config',
       'Documentation Site',
     )
-    .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
+    .option(
+      '--engine-port <PORT>',
+      'Port for the documentation engine server (MkDocs, Zensical, etc.) to listen on. Defaults to 8000. The Backstage preview app is served on --preview-app-port.',
+    )
+    .option(
+      '--mkdocs-port <PORT>',
+      '[Deprecated: use --engine-port] Port for MkDocs server to use',
+    )
     .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
       '--preview-app-bundle-path <PATH_TO_BUNDLE>',
@@ -300,23 +365,46 @@ export function registerCommands(program: Command) {
       defaultPreviewAppPort,
     )
     .option(
-      '-c, --mkdocs-config-file-name <FILENAME>',
-      'Mkdocs config file name',
+      '-c, --config-file-name <FILENAME>',
+      'Config file name for the documentation engine (e.g. mkdocs.yml). Overrides automatic detection.',
+    )
+    .option(
+      '--mkdocs-config-file-name <FILENAME>',
+      '[Deprecated: use --config-file-name] Mkdocs config file name',
+    )
+    .option(
+      '--parameter-clean',
+      'Pass "--clean" to the documentation engine server. Clears the build cache before serving.',
+      false,
     )
     .option(
       '--mkdocs-parameter-clean',
-      'Pass "--clean" parameter to mkdocs server running in containerized environment',
+      '[Deprecated: use --parameter-clean] Pass "--clean" parameter to mkdocs server',
+      false,
+    )
+    .option(
+      '--parameter-dirtyreload',
+      'Pass "--dirtyreload" to the documentation engine server. Only rebuilds changed files on reload (MkDocs only; ignored by other engines).',
       false,
     )
     .option(
       '--mkdocs-parameter-dirtyreload',
-      'Pass "--dirtyreload" parameter to mkdocs server running in containerized environment',
+      '[Deprecated: use --parameter-dirtyreload] Pass "--dirtyreload" parameter to mkdocs server',
+      false,
+    )
+    .option(
+      '--parameter-strict',
+      'Pass "--strict" to the documentation engine server. Treats warnings as errors during build.',
       false,
     )
     .option(
       '--mkdocs-parameter-strict',
-      'Pass "--strict" parameter to mkdocs server running in containerized environment',
+      '[Deprecated: use --parameter-strict] Pass "--strict" parameter to mkdocs server',
       false,
+    )
+    .option(
+      '--engine <ENGINE>',
+      'Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.',
     )
     .hook('preAction', command => {
       if (

@@ -244,13 +244,17 @@ export class CatalogClient implements CatalogApi {
     // query-parameter behavior for backward compatibility.
     let filterPredicate: FilterPredicate | undefined;
     if (query !== undefined) {
+      // The types forbid primitives at the root, but callers that were built
+      // against older versions of the filter predicate types may still pass them
       if (typeof query !== 'object' || query === null || Array.isArray(query)) {
         throw new InputError('Query must be an object');
       }
       filterPredicate = query;
       if (filter !== undefined) {
         const converted = convertFilterToPredicate(filter);
-        filterPredicate = { $all: [filterPredicate, converted] };
+        if (converted) {
+          filterPredicate = { $all: [filterPredicate, converted] };
+        }
       }
     }
 
@@ -396,6 +400,8 @@ export class CatalogClient implements CatalogApi {
 
       let filterPredicate: FilterPredicate | undefined;
       if (query !== undefined) {
+        // The types forbid primitives at the root, but callers that were built
+        // against older versions of the filter predicate types may still pass them
         if (
           typeof query !== 'object' ||
           query === null ||
@@ -407,9 +413,11 @@ export class CatalogClient implements CatalogApi {
       }
       if (filter !== undefined) {
         const converted = convertFilterToPredicate(filter);
-        filterPredicate = filterPredicate
-          ? { $all: [filterPredicate, converted] }
-          : converted;
+        if (filterPredicate && converted) {
+          filterPredicate = { $all: [filterPredicate, converted] };
+        } else {
+          filterPredicate = filterPredicate ?? converted;
+        }
       }
       if (filterPredicate !== undefined) {
         body.query = filterPredicate as unknown as { [key: string]: any };
@@ -541,6 +549,8 @@ export class CatalogClient implements CatalogApi {
 
     let filterPredicate: FilterPredicate | undefined;
     if (query !== undefined) {
+      // The types forbid primitives at the root, but callers that were built
+      // against older versions of the filter predicate types may still pass them
       if (typeof query !== 'object' || query === null || Array.isArray(query)) {
         throw new InputError('Query must be an object');
       }
@@ -548,9 +558,11 @@ export class CatalogClient implements CatalogApi {
     }
     if (filter !== undefined) {
       const converted = convertFilterToPredicate(filter);
-      filterPredicate = filterPredicate
-        ? { $all: [filterPredicate, converted] }
-        : converted;
+      if (filterPredicate && converted) {
+        filterPredicate = { $all: [filterPredicate, converted] };
+      } else {
+        filterPredicate = filterPredicate ?? converted;
+      }
     }
 
     return await this.requestOptional(
@@ -728,7 +740,9 @@ export class CatalogClient implements CatalogApi {
     const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
     do {
       const res = await this.queryEntities(
-        cursor ? { ...request, cursor, limit } : { ...request, limit },
+        cursor
+          ? { ...request, cursor, limit }
+          : { ...request, limit, totalItems: 'exclude' },
         options,
       );
 

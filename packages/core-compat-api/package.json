@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.5.14-next.0",
+  "version": "0.5.16",
   "backstage": {
     "role": "web-library"
   },
@@ -39,7 +39,8 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -48,6 +49,7 @@
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

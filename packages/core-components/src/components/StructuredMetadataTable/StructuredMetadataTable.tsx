@@ -25,7 +25,7 @@ import {
   MetadataTableItem,
 } from './MetadataTable';
 import { CodeSnippet } from '../CodeSnippet';
-import jsyaml from 'js-yaml';
+import * as jsyaml from 'js-yaml';
 import {
   Theme,
   createStyles,

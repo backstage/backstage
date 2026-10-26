@@ -29,8 +29,7 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
   // the column layout and the name column's defaultKind stay consistent
   // with the rows during filter transitions (when stale rows are kept
   // visible while new data loads).
-  const effectiveKind =
-    entities[0]?.kind?.toLocaleLowerCase('en-US') ?? filters.kind?.value;
+  const effectiveKind = entities[0]?.kind?.toLowerCase() ?? filters.kind?.value;
   const showTypeColumn = filters.type === undefined;
 
   return [

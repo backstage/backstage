@@ -83,8 +83,6 @@ export interface RouterOptions {
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
   auditor: AuditorService;
-  /** @deprecated This option will be removed in a future release. */
-  enableRelationsCompatibility?: boolean;
 }
 
 /**
@@ -112,7 +110,6 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
-    enableRelationsCompatibility = false,
   } = options;
 
   const readonlyEnabled =
@@ -174,7 +171,7 @@ export async function createRouter(
         // When pagination parameters are passed in, use the legacy slow path
         // that loads all entities into memory
 
-        if (pagination || enableRelationsCompatibility === true) {
+        if (pagination) {
           const { entities, pageInfo } = await entitiesCatalog.entities({
             filter,
             fields,
@@ -196,7 +193,6 @@ export async function createRouter(
           await writeEntitiesResponse({
             res,
             items: entities,
-            alwaysUseObjectMode: enableRelationsCompatibility,
           });
           return;
         }
@@ -291,7 +287,6 @@ export async function createRouter(
         await writeEntitiesResponse({
           res,
           items,
-          alwaysUseObjectMode: enableRelationsCompatibility,
           responseWrapper: entities => ({
             items: entities,
             ...meta,
@@ -340,7 +335,6 @@ export async function createRouter(
         await writeEntitiesResponse({
           res,
           items,
-          alwaysUseObjectMode: enableRelationsCompatibility,
           responseWrapper: entities => ({
             items: entities,
             ...meta,
@@ -532,7 +526,6 @@ export async function createRouter(
         await writeEntitiesResponse({
           res,
           items,
-          alwaysUseObjectMode: enableRelationsCompatibility,
           responseWrapper: entities => ({
             items: entities,
           }),

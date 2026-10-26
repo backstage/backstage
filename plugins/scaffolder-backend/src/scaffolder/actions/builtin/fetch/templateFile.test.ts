@@ -23,6 +23,7 @@ import { join as joinPath } from 'node:path';
 import fs from 'fs-extra';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 import { createFetchTemplateFileAction } from './templateFile';
 import {
   ActionContext,
@@ -77,6 +78,30 @@ describe('fetch:template:file', () => {
   });
 
   describe('handler', () => {
+    it('requires an explicit token for SCM reads when configured', async () => {
+      const integrations = ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: { github: [{ host: 'github.com' }] },
+        }),
+      );
+      const requiredAction = createFetchTemplateFileAction({
+        reader: Symbol('UrlReader') as unknown as UrlReaderService,
+        integrations,
+        requireScmUserCredentials: true,
+      });
+
+      await expect(
+        requiredAction.handler(
+          mockContext({
+            url: 'https://github.com/backstage/community/blob/main/README.md',
+          }),
+        ),
+      ).rejects.toThrow(
+        'No user credentials provided for host github.com, but scaffolder.requireScmUserCredentials is enabled',
+      );
+      expect(mockFetchFile).not.toHaveBeenCalled();
+    });
+
     it('should disallow a target path outside working directory', async () => {
       await expect(
         action.handler(mockContext({ targetPath: '../' })),

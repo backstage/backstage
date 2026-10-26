@@ -20,6 +20,7 @@ import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
+import { createSubRouteRef } from './SubRouteRef';
 import { createBrowserHistory } from 'history';
 import { TestApiProvider } from '@backstage/test-utils';
 import { routeResolutionApiRef } from '../apis';
@@ -29,6 +30,30 @@ describe('v1 consumer', () => {
 
   afterEach(() => {
     context.reset();
+  });
+
+  it('should infer all nested sub-route parameters', () => {
+    const rootRouteRef = createRouteRef();
+    const revisionRouteRef = createSubRouteRef({
+      parent: rootRouteRef,
+      path: '/:name/:revision',
+    });
+    const attachmentRouteRef = createSubRouteRef({
+      parent: revisionRouteRef,
+      path: '/attachments/:attachmentId',
+    });
+
+    function useAttachmentRoute() {
+      const route = useRouteRef(attachmentRouteRef);
+      route?.({ name: '', revision: '', attachmentId: '' });
+      // @ts-expect-error
+      route?.({ name: '', revision: '' });
+      // @ts-expect-error
+      route?.({ attachmentId: '' });
+      return route;
+    }
+
+    expect(useAttachmentRoute).toEqual(expect.any(Function));
   });
 
   it('should resolve routes', () => {

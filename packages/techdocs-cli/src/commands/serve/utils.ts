@@ -24,7 +24,7 @@ export async function checkIfDockerIsOperational(
   const isOperational = await runCheck(['docker', 'info']);
   if (isOperational) {
     logger.info(
-      'Docker is up and running. Proceed to starting up mkdocs server',
+      'Docker is up and running. Proceed to starting up documentation server',
     );
     return true;
   }
@@ -32,4 +32,28 @@ export async function checkIfDockerIsOperational(
     'Docker is not running. Exiting. Please check status of Docker daemon with `docker info` before re-running',
   );
   return false;
+}
+
+/**
+ * Picks the value of a renamed flag, warning whenever the deprecated name is
+ * used and noting when it is ignored because the new name is also set.
+ */
+export function resolveDeprecatedOption(
+  logger: { warn(message: string): void },
+  options: {
+    value: string | undefined;
+    flag: string;
+    deprecatedValue: string | undefined;
+    deprecatedFlag: string;
+  },
+): string | undefined {
+  const { value, flag, deprecatedValue, deprecatedFlag } = options;
+  if (deprecatedValue !== undefined) {
+    const ignored =
+      value !== undefined ? ` Ignoring it because ${flag} is also set.` : '';
+    logger.warn(
+      `${deprecatedFlag} is deprecated and will be removed in a future release. Use ${flag} instead.${ignored}`,
+    );
+  }
+  return value ?? deprecatedValue;
 }

@@ -177,62 +177,51 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       role: plugin.manifest.backstage.role,
     };
 
-    const entryPoints: Array<{ location: URL; manifest: string }> = [
-      ...(plugin.alphaManifest?.main
-        ? [
-            {
-              location: new URL('alpha', `${plugin.location}/`),
-              manifest: plugin.alphaManifest.main,
-            },
-          ]
-        : []),
-      {
-        location: plugin.location,
-        manifest: plugin.manifest.main,
-      },
-    ];
+    let loadResult: BackendPluginEntryLoadResult;
 
-    if (entryPoints.length === 0) {
-      throw new Error(
-        `Failed to load dynamic backend plugin '${plugin.manifest.name}': no entry points to load`,
+    if (plugin.alphaManifest?.main) {
+      loadResult = await tryLoadBackendPluginEntry(
+        this.moduleLoader,
+        new URL('alpha', `${plugin.location}/`),
+        plugin.alphaManifest.main,
+      );
+
+      if (loadResult.kind === 'no-entrypoint') {
+        loadResult = await tryLoadBackendPluginEntry(
+          this.moduleLoader,
+          plugin.location,
+          plugin.manifest.main,
+        );
+      }
+    } else {
+      loadResult = await tryLoadBackendPluginEntry(
+        this.moduleLoader,
+        plugin.location,
+        plugin.manifest.main,
       );
     }
 
-    for (const [index, { location, manifest }] of entryPoints.entries()) {
-      const loadResult = await tryLoadBackendPluginEntry(
-        this.moduleLoader,
-        location,
-        manifest,
-      );
-
-      if (loadResult.installer) {
-        dynamicPlugin.installer = loadResult.installer;
-        this.logger.info(
-          `loaded dynamic backend plugin '${plugin.manifest.name}' from '${location}'`,
-        );
-        return dynamicPlugin;
-      }
-
-      if (!loadResult.error && index < entryPoints.length - 1) {
-        continue;
-      }
-
-      if (loadResult.error) {
-        dynamicPlugin.failure = `${loadResult.error.name}: ${loadResult.error.message}`;
-        this.logger.error(
-          `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${location}'`,
-          loadResult.error,
-        );
-        return dynamicPlugin;
-      }
-
-      dynamicPlugin.failure = `the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`;
-      this.logger.error(
-        `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${location}': ${dynamicPlugin.failure}`,
+    if (loadResult.kind === 'success') {
+      dynamicPlugin.installer = loadResult.installer;
+      this.logger.info(
+        `loaded dynamic backend plugin '${plugin.manifest.name}' from '${loadResult.location}'`,
       );
       return dynamicPlugin;
     }
 
+    if (loadResult.kind === 'error') {
+      dynamicPlugin.failure = `${loadResult.error.name}: ${loadResult.error.message}`;
+      this.logger.error(
+        `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${loadResult.location}'`,
+        loadResult.error,
+      );
+      return dynamicPlugin;
+    }
+
+    dynamicPlugin.failure = `the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`;
+    this.logger.error(
+      `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${loadResult.location}': ${dynamicPlugin.failure}`,
+    );
     return dynamicPlugin;
   }
 
@@ -362,20 +351,30 @@ export const dynamicPluginsFeatureDiscoveryLoader = createBackendFeatureLoader({
   },
 });
 
+type BackendPluginEntryLoadResult =
+  | {
+      kind: 'success';
+      location: URL;
+      installer: NonNullable<BackendDynamicPlugin['installer']>;
+    }
+  | { kind: 'error'; location: URL; error: Error }
+  | { kind: 'no-entrypoint'; location: URL };
+
 async function tryLoadBackendPluginEntry(
   moduleLoader: ModuleLoader,
   location: URL,
   manifest: string,
-): Promise<{
-  installer?: BackendDynamicPlugin['installer'];
-  error?: Error;
-}> {
+): Promise<BackendPluginEntryLoadResult> {
   try {
     const packagePath = path.resolve(url.fileURLToPath(location), manifest);
     const pluginModule = await moduleLoader.load(packagePath);
-    return { installer: resolveInstallerFromModule(pluginModule) };
+    const installer = resolveInstallerFromModule(pluginModule);
+    if (installer) {
+      return { kind: 'success', location, installer };
+    }
+    return { kind: 'no-entrypoint', location };
   } catch (error) {
-    return { error: toError(error) };
+    return { kind: 'error', location, error: toError(error) };
   }
 }
 

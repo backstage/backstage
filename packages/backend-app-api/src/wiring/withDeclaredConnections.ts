@@ -27,14 +27,14 @@ export function withDeclaredConnections(
       !registrations.some(({ type: registeredType }) => registeredType === type)
     ) {
       throw new InputError(
-        `Plugin attempted to look up an undeclared connection of type "${type}". Declare it during register() with declareConnection(reg, { type: "${type}" }).`,
+        `Plugin attempted to look up an undeclared connection of type "${type}". Declare it during register() with declareConnection(env, { type: "${type}" }).`,
       );
     }
   };
   return {
-    async find(options) {
+    async find(options: Parameters<ConnectionsService['find']>[0]) {
       assertDeclared(options.type);
       return service.find(options);
     },
-  };
+  } as ConnectionsService;
 }

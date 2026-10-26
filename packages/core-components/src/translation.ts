@@ -131,6 +131,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
       downloadBtn: {
         tooltip: 'Download logs',
       },
+      copyBtn: {
+        tooltip: 'Copy logs to clipboard',
+      },
       searchField: {
         placeholder: 'Search',
       },

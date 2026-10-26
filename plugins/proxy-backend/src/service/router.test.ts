@@ -37,6 +37,7 @@ describe('createRouter', () => {
   const deps = {
     logger: mockServices.logger.mock(),
     discovery: mockServices.discovery(),
+    httpAuthService: mockServices.httpAuth(),
     httpRouterService: mockServices.httpRouter.mock(),
   };
 
@@ -194,6 +195,7 @@ describe('createRouter', () => {
           proxy: {
             endpoints: {
               '/test': {
+                credentials: 'dangerously-allow-unauthenticated',
                 headers: {
                   Authorization: 'Bearer supersecret',
                 },
@@ -210,6 +212,7 @@ describe('createRouter', () => {
       expect(deps.logger.warn.mock.calls[0][0]).toEqual(
         'skipped configuring /test due to Proxy target for route "/test" must be a string, but is of type undefined',
       );
+      expect(deps.httpRouterService.addAuthPolicy).not.toHaveBeenCalled();
       expect(router).toBeDefined();
     });
   });
@@ -217,7 +220,7 @@ describe('createRouter', () => {
 
 describe('buildMiddleware', () => {
   const logger = mockServices.logger.mock();
-  const httpRouterService = mockServices.httpRouter.mock();
+  const httpAuthService = mockServices.httpAuth();
 
   beforeEach(() => {
     mockCreateProxyMiddleware.mockClear();
@@ -229,7 +232,8 @@ describe('buildMiddleware', () => {
       logger,
       '/test',
       'http://mocked',
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -258,7 +262,8 @@ describe('buildMiddleware', () => {
       logger,
       'test',
       'http://mocked',
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -283,7 +288,8 @@ describe('buildMiddleware', () => {
       logger,
       '/test',
       'http://mocked',
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -311,7 +317,8 @@ describe('buildMiddleware', () => {
         target: 'http://mocked',
         allowedMethods: ['GET', 'DELETE'],
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -338,7 +345,8 @@ describe('buildMiddleware', () => {
       {
         target: 'http://mocked',
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -387,7 +395,8 @@ describe('buildMiddleware', () => {
           Authorization: 'my-token',
         },
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -424,7 +433,8 @@ describe('buildMiddleware', () => {
         target: 'http://mocked',
         allowedHeaders: ['authorization', 'cookie'],
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -461,7 +471,8 @@ describe('buildMiddleware', () => {
       {
         target: 'http://mocked',
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -511,7 +522,8 @@ describe('buildMiddleware', () => {
         target: 'http://mocked',
         allowedHeaders: ['set-cookie'],
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -546,7 +558,8 @@ describe('buildMiddleware', () => {
       {
         target: 'http://mocked',
       },
-      httpRouterService,
+      httpAuthService,
+      false,
       true,
     );
 
@@ -574,7 +587,8 @@ describe('buildMiddleware', () => {
       {
         target: 'http://mocked',
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
@@ -592,7 +606,8 @@ describe('buildMiddleware', () => {
         logger,
         '/test',
         'backstage.io',
-        httpRouterService,
+        httpAuthService,
+        false,
       ),
     ).toThrow(/Proxy target is not a valid URL/);
     expect(() =>
@@ -601,7 +616,8 @@ describe('buildMiddleware', () => {
         logger,
         '/test',
         { target: 'backstage.io' },
-        httpRouterService,
+        httpAuthService,
+        false,
       ),
     ).toThrow(/Proxy target is not a valid URL/);
   });
@@ -614,7 +630,8 @@ describe('buildMiddleware', () => {
       {
         target: 'http://mocked',
       },
-      httpRouterService,
+      httpAuthService,
+      false,
     );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);

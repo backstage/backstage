@@ -39,6 +39,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -135,6 +136,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
+  const formWrapperRef = useRef<HTMLDivElement>(null);
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -220,9 +222,24 @@ export const Stepper = (stepperProps: StepperProps) => {
   );
 
   useEffect(() => {
-    const main = document.querySelector('main');
-    if (main && typeof main.scrollTo === 'function') {
-      main.scrollTo({ top: 0, behavior: 'auto' });
+    const getScrollableParent = (
+      element: HTMLElement | null,
+    ): HTMLElement | null => {
+      if (!element) return null;
+      const { overflowY } = window.getComputedStyle(element);
+      const isScrollable = overflowY === 'auto' || overflowY === 'scroll';
+      if (isScrollable && element.scrollHeight > element.clientHeight) {
+        return element;
+      }
+      return getScrollableParent(element.parentElement);
+    };
+
+    const scrollTarget = getScrollableParent(formWrapperRef.current);
+
+    if (scrollTarget && typeof scrollTarget.scrollTo === 'function') {
+      scrollTarget.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
     }
   }, [activeStep]);
 
@@ -269,7 +286,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           <MuiStepLabel>{reviewLabel}</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
-      <div className={styles.formWrapper}>
+      <div className={styles.formWrapper} ref={formWrapperRef}>
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form

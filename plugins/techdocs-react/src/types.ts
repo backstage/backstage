@@ -25,6 +25,7 @@ import { Entity } from '@backstage/catalog-model';
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
+  engine?: string;
 };
 
 /**

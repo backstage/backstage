@@ -118,9 +118,7 @@ export class DatabaseManagerImpl {
     const pluginIds = Array.from(this.databaseCache.keys());
     await Promise.allSettled(
       pluginIds.map(async pluginId => {
-        // We no longer need to keep connections alive.
         clearInterval(this.keepaliveIntervals.get(pluginId));
-
         const connection = await this.databaseCache.get(pluginId);
         if (connection) {
           if (connection.client.config.includes('sqlite3')) {
@@ -133,6 +131,19 @@ export class DatabaseManagerImpl {
               )}`,
             );
           });
+        }
+      }),
+    );
+
+    const connectors = new Set(Object.values(this.connectors));
+    await Promise.all(
+      Array.from(connectors, async connector => {
+        try {
+          await connector.shutdown?.();
+        } catch (error) {
+          deps?.logger?.error(
+            `Problem closing database connector: ${stringifyError(error)}`,
+          );
         }
       }),
     );
@@ -187,7 +198,10 @@ export class DatabaseManagerImpl {
     const clientPromise = connector.getClient(pluginId, deps);
     this.databaseCache.set(pluginId, clientPromise);
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (
+      this.config.getOptionalBoolean('keepalive') &&
+      process.env.NODE_ENV !== 'test'
+    ) {
       clientPromise.then(client =>
         this.startKeepaliveLoop(pluginId, client, deps.logger),
       );
@@ -206,8 +220,6 @@ export class DatabaseManagerImpl {
     this.keepaliveIntervals.set(
       pluginId,
       setInterval(() => {
-        // During testing it can happen that the environment is torn down and
-        // this client is `undefined`, but this interval is still run.
         client?.raw('select 1').then(
           () => {
             lastKeepaliveFailed = false;
@@ -255,11 +267,21 @@ export class DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
     const prefix =
       databaseConfig.getOptionalString('prefix') || 'backstage_plugin_';
+    const schemaPrefix = databaseConfig.getOptionalString('schemaPrefix') || '';
+
+    // Validate schemaPrefix contains only safe PostgreSQL identifier characters
+    if (schemaPrefix && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schemaPrefix)) {
+      throw new Error(
+        `Invalid schemaPrefix "${schemaPrefix}". ` +
+          `Schema prefix must start with a letter or underscore and contain only letters, numbers, and underscores.`,
+      );
+    }
+
     return new DatabaseManager(
       new DatabaseManagerImpl(
         databaseConfig,
         {
-          pg: new PgConnector(databaseConfig, prefix),
+          pg: new PgConnector(databaseConfig, prefix, schemaPrefix),
           sqlite3: new Sqlite3Connector(databaseConfig),
           'better-sqlite3': new Sqlite3Connector(databaseConfig),
           mysql: new MysqlConnector(databaseConfig, prefix),

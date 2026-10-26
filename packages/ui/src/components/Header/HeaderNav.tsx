@@ -15,17 +15,18 @@
  */
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useFocusVisible, useHover, useLink } from 'react-aria';
+import { mergeProps, useFocusVisible, useHover, useLink } from 'react-aria';
 import {
   matchRoutes,
   resolvePath,
-  useInRouterContext,
-  useLocation,
-  useResolvedPath,
+  type NavigateOptions,
 } from 'react-router-dom';
 import { Button as RAButton } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import {
   HeaderNavDefinition,
   HeaderNavItemDefinition,
@@ -38,17 +39,45 @@ import type {
   HeaderNavTabGroup,
   HeaderNavTabItem,
 } from './types';
+import { useRoutingIntegration } from '../../navigation/useRouting';
+import type { AnchorNavigation } from '../../navigation/useNavigation';
 
 function isTabGroup(tab: HeaderNavTabItem): tab is HeaderNavTabGroup {
   return 'items' in tab;
 }
 
-function HeaderNavLink(props: HeaderNavLinkProps) {
-  const { ownProps, analytics } = useDefinition(HeaderNavItemDefinition, props);
-  const { id, label, href, active, registerRef, onHighlight } = ownProps;
+type HeaderNavLinkViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof HeaderNavItemDefinition,
+    HeaderNavLinkProps
+  >;
+  navigation: AnchorNavigation;
+};
+
+function HeaderNavLinkView({
+  definitionResult,
+  navigation,
+}: HeaderNavLinkViewProps) {
+  const { ownProps, analytics } = definitionResult;
+  const { id, label, active, registerRef, onHighlight } = ownProps;
+  const { href } = ownProps;
 
   const linkRef = useRef<HTMLAnchorElement>(null);
-  const { linkProps } = useLink({ href }, linkRef);
+  let ariaHref = href;
+  let routerOptions: NavigateOptions | undefined;
+  if (navigation.type === 'router') {
+    ariaHref = navigation.ariaHref;
+    routerOptions = navigation.routerOptions;
+  } else if (navigation.type === 'native') {
+    ariaHref = navigation.ariaHref;
+  }
+  const { linkProps } = useLink(
+    {
+      href: ariaHref,
+      routerOptions,
+    },
+    linkRef,
+  );
   const { hoverProps } = useHover({
     onHoverStart: () => onHighlight(id),
     onHoverEnd: () => onHighlight(null),
@@ -60,27 +89,52 @@ function HeaderNavLink(props: HeaderNavLinkProps) {
       attributes: { to: href },
     });
   };
+  const { href: _href, ...anchorProps } = mergeProps(
+    linkProps,
+    hoverProps,
+  ) as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+  const ref = (el: HTMLAnchorElement | null) => {
+    (linkRef as React.MutableRefObject<HTMLAnchorElement | null>).current = el;
+    registerRef(id, el);
+  };
+  const commonProps = {
+    ...anchorProps,
+    ref,
+    className: ownProps.classes.root,
+    'aria-current': active ? ('page' as const) : undefined,
+    onClick: handleClick,
+    onFocus: () => onHighlight(id),
+    onBlur: () => onHighlight(null),
+    children: label,
+  };
+  const browserHref =
+    navigation.type === 'native' ? navigation.browserHref : href;
 
   return (
     <li>
-      <a
-        {...linkProps}
-        {...hoverProps}
-        ref={el => {
-          (
-            linkRef as React.MutableRefObject<HTMLAnchorElement | null>
-          ).current = el;
-          registerRef(id, el);
-        }}
-        className={ownProps.classes.root}
-        aria-current={active ? 'page' : undefined}
-        onClick={handleClick}
-        onFocus={() => onHighlight(id)}
-        onBlur={() => onHighlight(null)}
-      >
-        {label}
-      </a>
+      {navigation.type === 'router' ? (
+        <navigation.Link
+          {...commonProps}
+          {...navigation.routerLinkOptions}
+          to={navigation.to}
+        />
+      ) : (
+        <a {...commonProps} href={browserHref} />
+      )}
     </li>
+  );
+}
+
+function HeaderNavLink(props: HeaderNavLinkProps) {
+  const definitionResult = useDefinition(HeaderNavItemDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={{ href: definitionResult.ownProps.href }}
+      view={HeaderNavLinkView}
+      viewProps={{ definitionResult }}
+    />
   );
 }
 
@@ -137,8 +191,9 @@ interface HeaderNavProps {
 }
 
 function useAutoActiveTabId(tabs: HeaderNavTabItem[]): string | undefined {
-  const basePath = useResolvedPath('.').pathname;
-  const { pathname } = useLocation();
+  const routing = useRoutingIntegration({ fallback: true });
+  const basePath = routing.useResolvedPath('.').pathname;
+  const { pathname } = routing.useLocation();
 
   return useMemo(() => {
     const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
@@ -238,7 +293,8 @@ function HeaderNavInner(props: HeaderNavProps) {
 
 /** @internal */
 export function HeaderNav(props: HeaderNavProps) {
-  const inRouter = useInRouterContext();
+  const routing = useRoutingIntegration({ fallback: true });
+  const inRouter = routing.useInRouterContext();
 
   if (props.activeTabId === undefined && inRouter) {
     return <HeaderNavAutoDetect tabs={props.tabs} />;

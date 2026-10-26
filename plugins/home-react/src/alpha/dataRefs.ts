@@ -73,6 +73,22 @@ export const homePageWidgetDataRef =
   });
 
 /**
+ * Default layout configuration for a widget in the home page grid.
+ *
+ * @alpha
+ */
+export interface HomePageDefaultConfigItem {
+  component: string;
+  column: number;
+  row: number;
+  width: number;
+  height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
+}
+
+/**
  * Props provided to a home page layout component.
  *
  * @alpha
@@ -82,6 +98,11 @@ export interface HomePageLayoutProps {
    * The list of widget elements and metadata to render on the home page.
    */
   widgets: Array<HomePageWidgetData>;
+  /**
+   * Optional default layout configuration for the grid.
+   * Defines the initial position and size of widgets before users customize.
+   */
+  defaultConfig?: Array<HomePageDefaultConfigItem>;
 }
 
 /**

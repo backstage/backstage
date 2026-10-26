@@ -76,6 +76,8 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-auth-backend-module-github-provider': '1.0.0',
     '@backstage/plugin-auth-backend-module-guest-provider': '1.0.0',
     '@backstage/plugin-auth-node': '1.0.0',
+    '@backstage/plugin-home': '1.0.0',
+    '@backstage/plugin-home-react': '1.0.0',
     '@backstage/plugin-catalog': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
     '@backstage/plugin-catalog-backend-module-logs': '1.0.0',
@@ -308,6 +310,30 @@ describe('tasks', () => {
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
       ).resolves.toContain('sqlite3"');
     });
+
+    it.each(['default-app', 'legacy-app'])(
+      'should include required Yarn resolutions in the %s template',
+      async templateName => {
+        const templateDir = resolvePath(
+          __dirname,
+          `../../templates/${templateName}`,
+        );
+        const destinationDir = `templated-${templateName}`;
+
+        await templatingTask(templateDir, destinationDir, {
+          name: 'SuperCoolBackstageInstance',
+          dbTypeSqlite: true,
+        });
+
+        await expect(
+          fs.readJson(`${destinationDir}/package.json`),
+        ).resolves.toMatchObject({
+          resolutions: {
+            '@yarnpkg/core': '4.9.1',
+          },
+        });
+      },
+    );
   });
 
   describe('readGitConfig', () => {

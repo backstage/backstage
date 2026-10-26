@@ -460,63 +460,6 @@ describe.each(databases.eachSupportedId())(
         expect(entities.length).toBe(0);
       });
 
-      it('should return both target and targetRef for entities in compat mode', async () => {
-        await createDatabase();
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'one' },
-            spec: {},
-            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
-          },
-          [],
-        );
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'two' },
-            spec: {},
-            relations: [
-              {
-                type: 'r',
-                target: { kind: 'x', namespace: 'y', name: 'z' },
-              } as any,
-            ],
-          },
-          [],
-        );
-        const catalog = new DefaultEntitiesCatalog({
-          database: knex,
-          logger: mockServices.logger.mock(),
-
-          enableRelationsCompatibility: true,
-        });
-
-        const res = await catalog.entities();
-        const entities = entitiesResponseToObjects(res.entities);
-
-        expect(
-          entities.find(e => e?.metadata.name === 'one')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
-        expect(
-          entities.find(e => e?.metadata.name === 'two')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
-      });
-
       it('handles inversion both for existing and missing keys', async () => {
         await createDatabase();
 

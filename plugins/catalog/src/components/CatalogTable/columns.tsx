@@ -75,8 +75,8 @@ export const columnFactories = Object.freeze({
           ref => ref.name,
         ); // Extract system names from entityRefs
 
-        const searchText = systemNames.join(', ').toLocaleUpperCase('en-US');
-        return searchText.includes(query.toLocaleUpperCase('en-US'));
+        const searchText = systemNames.join(', ').toUpperCase();
+        return searchText.includes(query.toUpperCase());
       },
       render: ({ resolved }) => (
         <EntityRefLinks
@@ -112,10 +112,7 @@ export const columnFactories = Object.freeze({
         } else if (row.entity?.spec?.target) {
           targets = [row.entity?.spec?.target];
         }
-        return targets
-          .join(', ')
-          .toLocaleUpperCase('en-US')
-          .includes(query.toLocaleUpperCase('en-US'));
+        return targets.join(', ').toUpperCase().includes(query.toUpperCase());
       },
       render: ({ entity }) => (
         <>

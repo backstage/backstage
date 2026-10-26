@@ -36,9 +36,14 @@ export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, defaultWebhookSecret, githubCredentialsProvider } =
-    options;
+  const {
+    integrations,
+    defaultWebhookSecret,
+    githubCredentialsProvider,
+    requireScmUserCredentials,
+  } = options;
 
   const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 
@@ -133,6 +138,7 @@ export function createGithubWebhookAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         host,
         owner,

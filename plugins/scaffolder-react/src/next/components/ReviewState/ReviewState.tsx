@@ -58,7 +58,7 @@ function processSchema(
 
     if (
       definitionInSchema['ui:widget'] === 'password' ||
-      definitionInSchema['ui:field']?.toLocaleLowerCase('en-us') === 'secret'
+      definitionInSchema['ui:field']?.toLowerCase() === 'secret'
     ) {
       return [[name, '******']];
     }

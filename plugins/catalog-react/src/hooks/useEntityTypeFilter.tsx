@@ -97,11 +97,7 @@ export function useEntityTypeFilter(): {
 
     // Sort by facet count descending, so the most common types appear on top
     const newTypes = [
-      ...new Set(
-        sortBy(facets, f => -f.count).map(f =>
-          f.value.toLocaleLowerCase('en-US'),
-        ),
-      ),
+      ...new Set(sortBy(facets, f => -f.count).map(f => f.value.toLowerCase())),
     ];
     setAvailableTypes(newTypes);
 

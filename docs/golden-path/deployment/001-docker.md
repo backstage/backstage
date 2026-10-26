@@ -60,7 +60,7 @@ docker run -it -p 7007:7007 backstage
 You should see logs in your terminal and be able to open `http://localhost:7007`
 in your browser.
 
-:::tip Troubleshooting
+:::tip[Troubleshooting]
 
 If you run into build issues, two Docker flags can help:
 

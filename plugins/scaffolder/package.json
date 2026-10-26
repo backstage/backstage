@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.38.2-next.1",
+  "version": "1.40.0",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -69,6 +69,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
@@ -99,6 +100,7 @@
     "luxon": "^3.0.0",
     "qs": "^6.15.2",
     "react-aria-components": "^1.14.0",
+    "react-intersection-observer": "^9.5.3",
     "react-resizable": "^3.0.5",
     "react-resizable-panels": "^3.0.4",
     "react-use": "^17.2.4",

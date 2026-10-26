@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useReducer } from 'react';
 
 const FIRST_PAGE_CURSOR = Symbol('firstPage');
 
@@ -152,6 +152,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
+  const [, notifyCacheUpdate] = useReducer(version => version + 1, 0);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -168,13 +169,14 @@ export function usePageCache<T, TCursor extends CursorType = string>(
         initialCurrentCursor,
       );
 
-      if (!targetCursor) {
+      if (targetCursor === undefined) {
         return;
       }
 
       const existingEntry = cacheStore.get(targetCursor);
       if (existingEntry?.data !== undefined) {
         setCurrentCursor(targetCursor);
+        setError(undefined);
         return;
       }
 
@@ -215,6 +217,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
           setTotalCount(result.totalCount);
         }
 
+        notifyCacheUpdate();
         setIsPending(false);
       } catch (err) {
         if (abortController.signal.aborted) {
@@ -241,14 +244,14 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   const onNextPage = useCallback(() => {
     if (isPending) return;
     const page = cacheStore.get(currentCursor);
-    if (!page?.nextCursor) return;
+    if (page?.nextCursor === undefined) return;
     goToPage('next');
   }, [isPending, currentCursor, goToPage, cacheStore]);
 
   const onPreviousPage = useCallback(() => {
     if (isPending) return;
     const page = cacheStore.get(currentCursor);
-    if (!page?.prevCursor) return;
+    if (page?.prevCursor === undefined) return;
     goToPage('prev');
   }, [isPending, currentCursor, goToPage, cacheStore]);
 

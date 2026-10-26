@@ -15,6 +15,12 @@ Backstage.
 It is assumed an IAP is already serving traffic in front of a Backstage instance
 configured to serve the frontend app from the backend.
 
+Backstage caches IAP public verification keys in memory according to the
+Google IAP response cache headers, refreshing them before the advertised
+expiry. A conservative fallback is used when the headers are unavailable or
+invalid. This reduces repeated requests to the IAP key endpoint while allowing
+normal key rotation.
+
 ## Configuration
 
 Let's start by adding the following `auth` configuration in your
@@ -47,7 +53,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `emailMatchingUserEntityAnnotation`: Matches the email address from the auth provider with the User entity where the value of the `google.com/email` annotation matches. If no match is found it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 

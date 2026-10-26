@@ -27,12 +27,13 @@ import { DbRefreshStateRow } from '../../tables';
 export async function updateUnprocessedEntity(options: {
   tx: Knex | Knex.Transaction;
   entity: Entity;
+  entityRef?: string;
   hash: string;
   locationKey?: string;
 }): Promise<boolean> {
   const { tx, entity, hash, locationKey } = options;
 
-  const entityRef = stringifyEntityRef(entity);
+  const entityRef = options.entityRef ?? stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
   const refreshResult = await tx<DbRefreshStateRow>('refresh_state')

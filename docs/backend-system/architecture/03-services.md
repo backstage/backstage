@@ -254,7 +254,7 @@ deps: {fooServices: fooServiceRef},
 
 ## Service Factory Options Pattern
 
-:::note Note
+:::note
 
 This pattern is discouraged, only use it when necessary. If possible you should prefer to make services configurable via static configuration or re-implementation instead.
 

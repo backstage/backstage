@@ -29,7 +29,10 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
+import type {
+  WebhookProjectSchema,
+  WebhookPushEventSchema,
+} from '@gitbeaker/rest';
 import { randomUUID } from 'node:crypto';
 import {
   GitLabClient,
@@ -455,6 +458,18 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
     if (!(await this.shouldProcessProject(project, this.gitLabClient))) {
       this.logger.debug(`Skipping event ${event.project.path_with_namespace}`);
+      return;
+    }
+
+    const targetBranch =
+      this.config.branch ??
+      event.project.default_branch ??
+      this.config.fallbackBranch;
+
+    if (targetBranch && event.ref !== `refs/heads/${targetBranch}`) {
+      this.logger.debug(
+        `Skipping push event for ${event.project.path_with_namespace} targeting ${event.ref}`,
+      );
       return;
     }
 

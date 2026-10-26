@@ -57,7 +57,7 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
       !!scp &&
       (scp as string)
         .split(' ')
-        .map(s => s.toLocaleLowerCase('en-US'))
+        .map(s => s.toLowerCase())
         .some(s =>
           [
             'https://graph.microsoft.com/user.read',

@@ -41,13 +41,15 @@ export const proxyPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         logger: coreServices.logger,
+        httpAuth: coreServices.httpAuth,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ config, discovery, logger, httpRouter }) {
+      async init({ config, discovery, logger, httpAuth, httpRouter }) {
         await createRouter({
           config,
           discovery,
           logger,
+          httpAuthService: httpAuth,
           httpRouterService: httpRouter,
           additionalEndpoints,
         });

@@ -147,6 +147,53 @@ describe('FetchUrlReader', () => {
     expect(predicate(new URL('https://http.org'))).toBe(false);
   });
 
+  it('factory predicate only matches configured paths at segment boundaries', () => {
+    const entries = FetchUrlReader.factory({
+      config: new ConfigReader({
+        backend: {
+          reading: {
+            allow: [
+              { host: 'no-slash.example.com', paths: ['/allowed'] },
+              { host: 'slash.example.com', paths: ['/allowed/'] },
+              { host: 'root.example.com', paths: ['/'] },
+            ],
+          },
+        },
+      }),
+      logger: mockServices.logger.mock(),
+      treeResponseFactory: DefaultReadTreeResponseFactory.create({
+        config: new ConfigReader({}),
+      }),
+    });
+
+    const [{ predicate }] = entries;
+
+    expect(predicate(new URL('https://no-slash.example.com/allowed'))).toBe(
+      true,
+    );
+    expect(
+      predicate(new URL('https://no-slash.example.com/allowed/resource')),
+    ).toBe(true);
+    expect(
+      predicate(new URL('https://no-slash.example.com/allowed-sibling')),
+    ).toBe(false);
+    expect(predicate(new URL('https://no-slash.example.com/allowed2'))).toBe(
+      false,
+    );
+
+    expect(predicate(new URL('https://slash.example.com/allowed'))).toBe(false);
+    expect(predicate(new URL('https://slash.example.com/allowed/'))).toBe(true);
+    expect(
+      predicate(new URL('https://slash.example.com/allowed/resource')),
+    ).toBe(true);
+    expect(
+      predicate(new URL('https://slash.example.com/allowed-sibling')),
+    ).toBe(false);
+
+    expect(predicate(new URL('https://root.example.com/'))).toBe(true);
+    expect(predicate(new URL('https://root.example.com/anything'))).toBe(true);
+  });
+
   it('factory should throw for malformed uri', async () => {
     const buildFactory = (hosts: string[]) => {
       return FetchUrlReader.factory({

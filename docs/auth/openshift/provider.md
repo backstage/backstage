@@ -58,7 +58,7 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
-:::note Note
+:::note
 
 The OpenShift auth API does **not** implement the `OpenIdConnectApi` interface. In other words, it does **not** return an ID token.
 Instead, it returns an **access token**, which is used by the Kubernetes integration in place of an ID token.

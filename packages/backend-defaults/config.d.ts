@@ -681,6 +681,16 @@ export interface Config {
       /** Database name prefix override */
       prefix?: string;
       /**
+       * Whether to run a query every minute for each plugin database client to
+       * keep its connections active. Defaults to false.
+       */
+      keepalive?: boolean;
+      /**
+       * Prefix for schema names when using pluginDivisionMode: schema.
+       * @default ''
+       */
+      schemaPrefix?: string;
+      /**
        * Whether to ensure the given database exists by creating it if it does not.
        * Defaults to true if unspecified.
        */
@@ -1306,6 +1316,15 @@ export interface Config {
          */
         level: 'debug' | 'info' | 'warn' | 'error';
       }>;
+
+      /**
+       * List of values to allow through redaction.
+       *
+       * This makes it possible to avoid redacting certain values that are known to be safe to log.
+       *
+       * @visibility backend
+       */
+      redactAllowlist?: string[];
     };
 
     /**
@@ -1413,10 +1432,11 @@ export interface Config {
         host: string;
 
         /**
-         * An optional list of paths. In case they are present only targets matching
-         * any of them will are allowed. You can use trailing slashes to make sure only
-         * subdirectories are allowed, for example `/mydir/` will allow targets with
-         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         * An optional list of paths. When present, only targets matching an exact path
+         * or a path below it at a segment boundary are allowed. For example, `/mydir`
+         * allows `/mydir` and `/mydir/a`, but blocks `/mydir2`. A trailing slash excludes
+         * the exact path without the slash, so `/mydir/` allows `/mydir/a` but not
+         * `/mydir`.
          */
         paths?: string[];
       }>;

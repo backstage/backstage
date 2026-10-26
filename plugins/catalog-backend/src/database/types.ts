@@ -68,7 +68,13 @@ export type GetProcessableEntitiesResult = {
   items: RefreshStateItem[];
 };
 
-export type ReplaceUnprocessedEntitiesOptions =
+export type PreparedDeferredEntity = {
+  deferred: DeferredEntity;
+  entityRef: string;
+  hash: string;
+};
+
+export type PrepareUnprocessedEntitiesOptions =
   | {
       sourceKey: string;
       items: DeferredEntity[];
@@ -77,7 +83,22 @@ export type ReplaceUnprocessedEntitiesOptions =
   | {
       sourceKey: string;
       added: DeferredEntity[];
+      removed: (DeferredEntity | { entityRef: string; locationKey?: string })[];
+      type: 'delta';
+    };
+
+export type ReplaceUnprocessedEntitiesOptions =
+  | {
+      sourceKey: string;
+      items: DeferredEntity[];
+      preparedItems?: PreparedDeferredEntity[];
+      type: 'full';
+    }
+  | {
+      sourceKey: string;
+      added: DeferredEntity[];
       removed: { entityRef: string; locationKey?: string }[];
+      preparedItems?: PreparedDeferredEntity[];
       type: 'delta';
     };
 
@@ -154,6 +175,13 @@ export interface ProcessingDatabase {
  */
 export interface ProviderDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
+
+  /**
+   * Performs CPU-intensive mutation preparation before opening a transaction.
+   */
+  prepareUnprocessedEntities(
+    options: PrepareUnprocessedEntitiesOptions,
+  ): Promise<ReplaceUnprocessedEntitiesOptions>;
 
   /**
    * Add unprocessed entities to the front of the processing queue using a mutation.

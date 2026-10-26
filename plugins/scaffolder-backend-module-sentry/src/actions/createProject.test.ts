@@ -219,13 +219,13 @@ describe('sentry:project:create action', () => {
       http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
         async () => {
-          return HttpResponse.text('Bad response', { status: 201 });
+          return HttpResponse.text('TOP_SECRET_RESPONSE', { status: 201 });
         },
       ),
     );
 
     await expect(() => action.handler(actionContext)).rejects.toThrow(
-      new InputError(`Unexpected Sentry Response Type: Bad response`),
+      new InputError('Unexpected Sentry response content type'),
     );
   });
 
@@ -243,18 +243,75 @@ describe('sentry:project:create action', () => {
     );
 
     await expect(() => action.handler(actionContext)).rejects.toThrow(
-      new InputError(`Sentry Response was: OUCH`),
+      new InputError('Sentry API request failed with status 400'),
     );
   });
 
-  it('should create a Sentry project with custom apiBaseUrl.', async () => {
+  it('should not expose an invalid JSON response body.', async () => {
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+
+    worker.use(
+      http.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async () => {
+          return new HttpResponse('TOP_SECRET_RESPONSE', {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        },
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('Invalid JSON response from Sentry'),
+    );
+  });
+
+  it('should reject redirects without requesting the redirect target.', async () => {
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+    const redirectTarget = jest.fn(async () => {
+      return HttpResponse.json({ id: 'mock-id' }, { status: 201 });
+    });
+
+    worker.use(
+      http.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        ({ request }) => {
+          expect(request.redirect).toBe('error');
+          return HttpResponse.redirect(
+            'https://sentry.io/api/0/redirect-target/',
+            302,
+          );
+        },
+      ),
+      http.get('https://sentry.io/api/0/redirect-target/', redirectTarget),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('Failed to request Sentry API'),
+    );
+    expect(redirectTarget).not.toHaveBeenCalled();
+  });
+
+  it('should accept a normalized action apiBaseUrl that matches the configured URL.', async () => {
     expect.assertions(3);
 
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
+    const action = createSentryCreateProjectAction(
+      createScaffolderConfig({
+        sentry: {
+          token: sentryScaffolderConfigToken,
+          apiBaseUrl: 'https://custom.sentry.io/api/0',
+        },
+      }),
+    );
     const actionContext = getActionContext();
     actionContext.input = {
       ...actionContext.input,
-      apiBaseUrl: 'https://custom.sentry.io/api/0',
+      authToken: undefined,
+      apiBaseUrl: 'https://custom.sentry.io/api/0/',
     };
 
     worker.use(
@@ -262,7 +319,7 @@ describe('sentry:project:create action', () => {
         `https://custom.sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
         async ({ request }) => {
           expect(request.headers.get('Authorization')).toBe(
-            `Bearer ${actionContext.input.authToken}`,
+            `Bearer ${sentryScaffolderConfigToken}`,
           );
           expect(request.headers.get('Content-Type')).toBe(`application/json`);
           await expect(request.json()).resolves.toEqual({
@@ -274,6 +331,36 @@ describe('sentry:project:create action', () => {
     );
 
     await action.handler(actionContext);
+  });
+
+  it('should reject an action apiBaseUrl that does not safely match the configured URL.', async () => {
+    const action = createSentryCreateProjectAction(
+      createScaffolderConfig({
+        sentry: {
+          apiBaseUrl: 'https://config.sentry.io/api/0',
+        },
+      }),
+    );
+    const actionContext = getActionContext();
+    actionContext.input = {
+      ...actionContext.input,
+      apiBaseUrl: 'https://config.sentry.io.evil/api/0',
+    };
+    const requestHandler = jest.fn(async () => {
+      return HttpResponse.json({ id: 'mock-id' }, { status: 201 });
+    });
+
+    worker.use(
+      http.post(
+        `https://config.sentry.io.evil/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        requestHandler,
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('apiBaseUrl must match the effective Sentry API base URL'),
+    );
+    expect(requestHandler).not.toHaveBeenCalled();
   });
 
   it('should create a Sentry project with apiBaseUrl from config.', async () => {
@@ -294,6 +381,40 @@ describe('sentry:project:create action', () => {
         async ({ request }) => {
           expect(request.headers.get('Authorization')).toBe(
             `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
+            name: actionContext.input.name,
+          });
+          return HttpResponse.json({ id: 'mock-id' }, { status: 201 });
+        },
+      ),
+    );
+
+    await action.handler(actionContext);
+  });
+
+  it('should use the auth token and apiBaseUrl from config together.', async () => {
+    expect.assertions(3);
+
+    const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
+    const action = createSentryCreateProjectAction(
+      createScaffolderConfig({
+        sentry: {
+          token: sentryScaffolderConfigToken,
+          apiBaseUrl: 'https://config.sentry.io/api/0',
+        },
+      }),
+    );
+    const actionContext = getActionContext();
+    actionContext.input.authToken = undefined;
+
+    worker.use(
+      http.post(
+        `https://config.sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer ${sentryScaffolderConfigToken}`,
           );
           expect(request.headers.get('Content-Type')).toBe(`application/json`);
           await expect(request.json()).resolves.toEqual({

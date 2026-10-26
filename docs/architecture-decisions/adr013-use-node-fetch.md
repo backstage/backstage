@@ -4,7 +4,7 @@ title: 'ADR013: [superseded] Proper use of HTTP fetching libraries'
 description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, node-fetch, and cross-fetch for data fetching.
 ---
 
-:::note Superseded
+:::note[Superseded]
 
 This ADR has been superseded by [ADR014](./adr014-use-fetch.md) and no longer applies.
 

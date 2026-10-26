@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isVisualStudioDomain } from './core';
+import { isVisualStudioDomain } from './isVisualStudioDomain';
 
 export class AzureUrl {
   /**
@@ -102,6 +102,16 @@ export class AzureUrl {
     return url;
   };
 
+  #setVersionDescriptor(url: URL, parameterPrefix = 'versionDescriptor'): void {
+    if (this.#ref) {
+      url.searchParams.set(`${parameterPrefix}.version`, this.#ref);
+      url.searchParams.set(
+        `${parameterPrefix}.versionType`,
+        this.#prefix === 'GT' ? 'tag' : 'branch',
+      );
+    }
+  }
+
   /**
    * Returns a repo URL that can be used to navigate to the resource in azure.
    *
@@ -164,9 +174,7 @@ export class AzureUrl {
     url.searchParams.set('api-version', '6.0');
     url.searchParams.set('path', this.#path);
 
-    if (this.#ref) {
-      url.searchParams.set('version', this.#ref);
-    }
+    this.#setVersionDescriptor(url);
 
     return url.toString();
   }
@@ -206,9 +214,7 @@ export class AzureUrl {
     if (this.#path) {
       url.searchParams.set('scopePath', this.#path);
     }
-    if (this.#ref) {
-      url.searchParams.set('version', this.#ref);
-    }
+    this.#setVersionDescriptor(url);
 
     return url.toString();
   }
@@ -243,9 +249,7 @@ export class AzureUrl {
 
     url.searchParams.set('api-version', '6.0');
 
-    if (this.#ref) {
-      url.searchParams.set('searchCriteria.itemVersion.version', this.#ref);
-    }
+    this.#setVersionDescriptor(url, 'searchCriteria.itemVersion');
 
     return url.toString();
   }

@@ -88,7 +88,7 @@ is offered by each integration.
 To ingest entities from an existing system already tracking software, you can
 also write a _custom processor_ to convert between the existing system and
 Backstage's descriptor format. This is documented in
-[External Integrations](external-integrations.md).
+[External Integrations](external-integrations/index.md).
 
 ### Processor configuration
 
@@ -181,6 +181,18 @@ this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
 
+## Location analysis permissions
+
+The catalog location analysis endpoint invokes configured location analyzers,
+which may use configured source control integrations and run parts of the
+catalog processing pipeline in dry-run mode. When the permission system is
+enabled, callers must be granted `catalog.location.analyze`.
+
+Analysis may read through configured integrations and the `UrlReaderService`,
+which operate in a service context. Grant the permission to users who should be
+able to inspect those sources, and keep `backend.reading.allow` scoped according
+to the [Backstage threat model](../../overview/threat-model.md#common-backend-configuration).
+
 ## Automatic removal of orphaned entities
 
 Entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. The default behavior is to automatically remove orphaned entities. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
@@ -239,7 +251,19 @@ files.
 [Stitching](./life-of-an-entity.md#stitching) finalizes entities asynchronously via a worker queue. You can tune the following parameters under `catalog.stitchingStrategy`:
 
 - `pollingInterval` - the interval between polling for entities that need stitching
-- `stitchTimeout` - the maximum time to wait for an entity to be stitched
+- `stitchTimeout` - the lease duration before unfinished stitching work can be reclaimed
+
+Failed stitch attempts remain queued and are retried. After consecutive failures,
+the lease assigned on acquisition grows quadratically: the configured timeout is
+multiplied by the square of one plus the failure count, capped at one hour before
+adding up to 10% jitter. A configured timeout longer than one hour remains the
+minimum. Initial attempts use the configured timeout without jitter. Process
+restarts or expired leases alone do not increase the failure count.
+
+A new stitch request resets the failure count without shortening an existing
+lease. If it arrives during an attempt, that attempt makes the new request
+eligible when it finishes or fails. Errors continue to be logged; failed work is
+never discarded because of its retry count.
 
 These parameters accept a duration object, similar to the `processingInterval` parameter.
 
@@ -249,6 +273,11 @@ catalog:
     pollingInterval: { seconds: 1 }
     stitchTimeout: { minutes: 1 }
 ```
+
+Both durations must be greater than zero; invalid values prevent the catalog
+from starting. The defaults are one second between polls and a one-minute lease.
+Lease expiry allows another worker to reclaim unfinished work. It does not
+cancel the original attempt or impose a database query timeout.
 
 ## Subscribing to Catalog Errors
 
@@ -286,7 +315,7 @@ This will log errors with a level of `warn`.
 
 You should now see logs as the catalog emits events. Example:
 
-```
+```log
 [1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
 ```
 

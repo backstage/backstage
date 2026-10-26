@@ -223,6 +223,20 @@ export const appLanguageApiRef: ApiRef_2<AppLanguageApi, 'core.applanguage'> & {
 };
 
 // @public
+export interface AppLifecycleApi {
+  isFinalized(): boolean;
+  subscribe(listener: () => void): () => void;
+}
+
+// @public
+export const appLifecycleApiRef: ApiRef_2<
+  AppLifecycleApi,
+  'core.app-lifecycle'
+> & {
+  readonly $$type: '@backstage/ApiRef';
+};
+
+// @public
 export interface AppNode {
   readonly edges: AppNodeEdges;
   readonly instance?: AppNodeInstance;
@@ -862,7 +876,7 @@ export function createSubRouteRef<
   ParentParams extends AnyRouteRefParams = never,
 >(config: {
   path: Path;
-  parent: RouteRef<ParentParams>;
+  parent: RouteRef<ParentParams> | SubRouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public

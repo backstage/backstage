@@ -85,8 +85,8 @@ export const ComboboxListBoxDefinition = defineComponent<
     options: {},
     items: {},
     children: {},
+    hiddenKey: {},
     dependencies: {},
-    search: {},
     loading: {},
     isStale: {},
     getItemTextValue: {},
@@ -113,6 +113,7 @@ export const ComboboxItemDefinition = defineComponent<ComboboxItemOwnProps>()({
     indicator: 'bui-ComboboxItemIndicator',
     content: 'bui-ComboboxItemContent',
   },
+  navigation: { type: 'anchor' },
   propDefs: {
     children: {},
     textValue: {},

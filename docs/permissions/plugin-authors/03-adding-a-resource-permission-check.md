@@ -115,7 +115,7 @@ This enables decisions based on characteristics of the resource, but it's import
 Install the missing module:
 
 ```bash
-$ yarn workspace @internal/plugin-todo-list-backend add zod
+$ yarn workspace @internal/plugin-todo-list-backend add zod@4
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
@@ -126,7 +126,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
-import { z } from 'zod/v3';
+import * as z from 'zod';
 import { Todo, TodoFilter } from './todos';
 
 export const todoListPermissionResourceRef = createPermissionResourceRef<
@@ -160,7 +160,7 @@ export const rules = { isOwner };
 
 The `todoListPermissionResourceRef` is a utility that encapsulates the types and constants related to the resource type. It ensures that the resource and query types are consistent across all rules created for this resource.
 
-:::note Note
+:::note
 
 To support custom rules defined by Backstage integrators, you must export `todoListPermissionResourceRef` from the backend package, or a `*-node` package if you want to enable the creation of third-party modules.
 

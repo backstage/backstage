@@ -227,7 +227,7 @@ To use the discovery provider, you'll need a GitLab integration
 [set up](locations.md) with a `token`. Then you can add a provider config per group
 to the catalog configuration.
 
-:::note Note
+:::note
 
 The `schedule` has to be setup in the config, as shown below.
 

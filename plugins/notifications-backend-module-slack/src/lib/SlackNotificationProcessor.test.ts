@@ -218,6 +218,79 @@ describe('SlackNotificationProcessor', () => {
     });
   });
 
+  it('should resolve a relative link to an absolute URL', async () => {
+    const slack = new WebClient();
+
+    const processor = SlackNotificationProcessor.fromConfig(config, {
+      auth,
+      logger,
+      catalog: catalogServiceMock({
+        entities: DEFAULT_ENTITIES_RESPONSE.items,
+      }),
+      metrics,
+      slack,
+    })[0];
+
+    await processor.processOptions({
+      recipients: { type: 'entity', entityRef: 'group:default/mock' },
+      payload: { title: 'notification', link: '/announcements/view/123' },
+    });
+
+    expect(slack.chat.postMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attachments: [
+          expect.objectContaining({
+            blocks: expect.arrayContaining([
+              expect.objectContaining({
+                accessory: expect.objectContaining({
+                  url: 'https://example.org/announcements/view/123',
+                }),
+              }),
+            ]),
+          }),
+        ],
+      }),
+    );
+  });
+
+  it('should pass through an absolute link unchanged', async () => {
+    const slack = new WebClient();
+
+    const processor = SlackNotificationProcessor.fromConfig(config, {
+      auth,
+      logger,
+      catalog: catalogServiceMock({
+        entities: DEFAULT_ENTITIES_RESPONSE.items,
+      }),
+      metrics,
+      slack,
+    })[0];
+
+    await processor.processOptions({
+      recipients: { type: 'entity', entityRef: 'group:default/mock' },
+      payload: {
+        title: 'notification',
+        link: 'https://other.example.com/page',
+      },
+    });
+
+    expect(slack.chat.postMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attachments: [
+          expect.objectContaining({
+            blocks: expect.arrayContaining([
+              expect.objectContaining({
+                accessory: expect.objectContaining({
+                  url: 'https://other.example.com/page',
+                }),
+              }),
+            ]),
+          }),
+        ],
+      }),
+    );
+  });
+
   it('should use a custom block kit renderer when provided', async () => {
     const slack = new WebClient();
     const customBlocks: KnownBlock[] = [

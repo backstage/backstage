@@ -338,6 +338,378 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
+  it('rejects placeholders that reference a different repository', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://github.com/other-org/other-repo/blob/main/secret.txt',
+            },
+          },
+        },
+        {
+          type: 'url',
+          target:
+            'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+        },
+        () => {},
+      ),
+    ).rejects.toThrow(
+      /Placeholder may only reference files from the same repository/,
+    );
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('rejects placeholders with ambiguous repository paths', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://github.com/x/%2e%2e%2f%2e%2e%2frepos%2fvictim-org%2fprivate-repo%2fcontents%2fsecret.txt%3fref=main%23/blob/main/',
+            },
+          },
+        },
+        {
+          type: 'url',
+          target:
+            'https://github.com/attacker-org/attacker-repo/blob/main/catalog-info.yaml',
+        },
+        () => {},
+      ),
+    ).rejects.toThrow(
+      /Placeholder may only reference files from the same repository/,
+    );
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('rejects placeholders that reference a different repository when the base location parses with an empty file path', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://github.com/victim-org/private-repo/blob/main/secret.txt',
+            },
+          },
+        },
+        {
+          type: 'url',
+          target:
+            'https://github.com/x/%2e%2e%2f%2e%2e%2frepos%2fattacker-org%2fattacker-repo%2fcontents%2fcatalog-info.yaml%3fref=main%23/blob/main/',
+        },
+        () => {},
+      ),
+    ).rejects.toThrow(
+      /Placeholder may only reference files from the same repository/,
+    );
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('still allows placeholder targets on other plain web hosts', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
+
+    await processor.preProcessEntity(
+      {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: {
+          data: { $text: 'https://petstore.swagger.io/v2/swagger.json' },
+        },
+      } as any,
+      {
+        type: 'url',
+        target:
+          'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+      },
+      () => {},
+    );
+
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://petstore.swagger.io/v2/swagger.json',
+    );
+  });
+
+  it('rejects SCM placeholder targets from locations on other hosts, including non-SCM bases', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    for (const base of [
+      'https://allowlisted.example.com/org/repo/catalog-info.yaml',
+      'https://allowlisted.example.com/%ZZ/catalog-info.yaml',
+      'https://gerrit.example.com/g/my/repo/+/refs/heads/master/catalog-info.yaml',
+    ]) {
+      await expect(
+        processor.preProcessEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n' },
+            spec: {
+              data: {
+                $text:
+                  'https://github.com/victim-org/private-repo/blob/main/secret.txt',
+              },
+            },
+          },
+          { type: 'url', target: base },
+          () => {},
+        ),
+      ).rejects.toThrow(
+        /Placeholder may only reference files from the same repository/,
+      );
+    }
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('applies the same-repository rule to reads made by any placeholder resolver', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        openapi: async ({ read, resolveUrl, baseUrl }) => {
+          await read(
+            resolveUrl(
+              'https://github.com/victim-org/private-repo/blob/main/schema.json',
+              baseUrl,
+            ),
+          );
+          return 'schema';
+        },
+      },
+      reader,
+      integrations,
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: { data: { $openapi: 'x' } },
+        } as any,
+        {
+          type: 'url',
+          target:
+            'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+        },
+        () => {},
+      ),
+    ).rejects.toThrow(
+      /Placeholder may only reference files from the same repository/,
+    );
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('rejects repository-root placeholder targets that reference a different repository', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    for (const target of [
+      'https://github.com/victim-org/private-repo/blob/main',
+      'https://github.com/victim-org/private-repo',
+    ]) {
+      await expect(
+        processor.preProcessEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n' },
+            spec: { data: { $text: target } },
+          } as any,
+          {
+            type: 'url',
+            target:
+              'https://github.com/attacker-org/attacker-repo/blob/main/catalog-info.yaml',
+          },
+          () => {},
+        ),
+      ).rejects.toThrow(
+        /Placeholder may only reference files from the same repository/,
+      );
+    }
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
+
+    // A repository-root target of the entity's own repository still works
+    await processor.preProcessEntity(
+      {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: {
+          data: { $text: 'https://github.com/attacker-org/attacker-repo' },
+        },
+      } as any,
+      {
+        type: 'url',
+        target:
+          'https://github.com/attacker-org/attacker-repo/blob/main/catalog-info.yaml',
+      },
+      () => {},
+    );
+
+    expect(reader.readUrl).toHaveBeenLastCalledWith(
+      'https://github.com/attacker-org/attacker-repo',
+    );
+  });
+
+  it('still allows placeholders on entities whose location is not a web URL', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://github.com/backstage/backstage/blob/main/api.yaml',
+            },
+          },
+        } as any,
+        {
+          type: 'managed-entities',
+          target: 'managed-entities-v2:api:default/foo',
+        },
+        () => {},
+      ),
+    ).resolves.toEqual({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { data: 'TEXT' },
+    });
+
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://github.com/backstage/backstage/blob/main/api.yaml',
+    );
+  });
+
+  it('still allows same-repository reads on providers without reliable file markers', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations: ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: {
+            gerrit: [
+              {
+                host: 'gerrit.example.com',
+                gitilesBaseUrl: 'https://gerrit.example.com/g',
+              },
+            ],
+          },
+        }),
+      ),
+    });
+
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
+
+    // The folder names decide whether these URLs parse a file path at all
+    for (const [base, target] of [
+      [
+        'https://gerrit.example.com/g/my/repo/+/refs/heads/master/catalog-info.yaml',
+        './src/main/resources/openapi.yaml',
+      ],
+      [
+        'https://gerrit.example.com/g/my/repo/+/refs/heads/master/src/catalog-info.yaml',
+        '../openapi.yaml',
+      ],
+    ]) {
+      await expect(
+        processor.preProcessEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n' },
+            spec: { data: { $text: target } },
+          } as any,
+          { type: 'url', target: base },
+          () => {},
+        ),
+      ).resolves.toEqual({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: { data: 'TEXT' },
+      });
+    }
+
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://gerrit.example.com/g/my/repo/+/refs/heads/master/src/main/resources/openapi.yaml',
+    );
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://gerrit.example.com/g/my/repo/+/refs/heads/master/openapi.yaml',
+    );
+  });
+
   it('not resolves relative file path for relative file location', async () => {
     // We explicitly don't support this case, as it would allow for file system
     // traversal attacks. If we want to implement this, we need to have additional

@@ -16,7 +16,7 @@ We'll be walking you through how to setup authentication for your Backstage app 
 
 There are multiple authentication providers available for you to use with Backstage, feel free to follow [their instructions for adding authentication](../../auth/index.md).
 
-:::note Note
+:::note
 
 The default Backstage app comes with a guest Sign In Resolver. This resolver makes all users share a single "guest" identity and is only intended as a minimum requirement to quickly get up and running. You can read more about how [Sign In Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) play a role in creating a [Backstage User Identity](../../auth/identity-resolver.md#backstage-user-identity) for logged in users.
 
@@ -131,13 +131,16 @@ auth:
         /* highlight-add-start */
         signIn:
           resolvers:
-            # Matches the GitHub username with the Backstage user entity name.
+            # Matches the immutable GitHub user ID with the Backstage user entity.
             # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
         /* highlight-add-end */
 ```
 
-What this will do is take the user details provided by the auth provider and match that against a User in the Catalog. In this case - `usernameMatchingUserEntityName` - will match the GitHub user name with the `metadata.name` value of a User in the Catalog, if none is found you will get a "Failed to sign-in, unable to resolve user identity" message. We'll cover this in the next few sections.
+This configuration matches the immutable GitHub user ID provided by the auth
+provider with the `github.com/user-id` annotation on a User in the Catalog. If
+no matching user is found, you get a "Failed to sign-in, unable to resolve user
+identity" message. We'll cover this in the next few sections.
 
 Learn more about this topic in the [Sign-in Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) documentation.
 
@@ -160,7 +163,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 
 Restart Backstage from the terminal, by stopping it with `Ctrl+C`, and starting it with `yarn start`. You should be welcomed by a login prompt! If you try to login at this point you will get a "Failed to sign-in, unable to resolve user identity" message, read on as we'll fix that next.
 
-:::note Note
+:::note
 
 Sometimes the frontend starts before the backend resulting in errors on the sign in page. Wait for the backend to start and then reload Backstage to proceed.
 
@@ -168,7 +171,7 @@ Sometimes the frontend starts before the backend resulting in errors on the sign
 
 ## Adding a User
 
-The recommended approach for adding Users, and Groups, into your Catalog is to use one of the existing Org Entity Providers - [like this one for GitHub](https://backstage.io/docs/integrations/github/org) - or if those don't work you may need to [create one](https://backstage.io/docs/features/software-catalog/external-integrations#custom-entity-providers) that fits your Organization's needs.
+The recommended approach for adding Users, and Groups, into your Catalog is to use one of the existing Org Entity Providers - [like this one for GitHub](https://backstage.io/docs/integrations/github/org) - or if those don't work you may need to [create one](https://backstage.io/docs/features/software-catalog/external-integrations/entity-providers) that fits your Organization's needs.
 
 For the sake of this guide we'll simply step you through adding a User to the `org.yaml` file that is included when you create a new Backstage instance. Let's do that:
 
@@ -181,11 +184,15 @@ For the sake of this guide we'll simply step you through adding a User to the `o
    kind: User
    metadata:
      name: YOUR GITHUB USERNAME
+     annotations:
+       github.com/user-id: YOUR GITHUB USER ID
    spec:
      memberOf: [guests]
    ```
 
-3. Now make sure to replace the text "YOUR GITHUB USERNAME" with your actual GitHub User name.
+3. Replace `YOUR GITHUB USERNAME` with your GitHub username and
+   `YOUR GITHUB USER ID` with the `node_id` from your
+   [GitHub user profile](https://docs.github.com/en/rest/users/users#get-the-authenticated-user).
 
 Let's restart Backstage from the terminal once more, by stopping it with `Ctrl+C`, and starting it with `yarn start`. You should now be able to log into Backstage and see items in your Catalog.
 
@@ -227,7 +234,7 @@ integrations:
       token: ${GITHUB_TOKEN} # this will use the environment variable GITHUB_TOKEN
 ```
 
-:::note Note
+:::note
 
 If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Control-C`, then start it again with `yarn start`. Once the backend has restarted, retry the operation.
 

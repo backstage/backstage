@@ -17,11 +17,18 @@
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { filterPredicateToFilterFunction } from '@backstage/filter-predicates';
 import {
   EntityErrorFilter,
+  EntityKindFilter,
+  EntityLifecycleFilter,
+  EntityNamespaceFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
+  EntityTagFilter,
   EntityTextFilter,
+  EntityTypeFilter,
+  EntityUserFilter,
 } from './filters';
 
 const entities: Entity[] = [
@@ -270,5 +277,109 @@ describe('EntityOwnerFilter', () => {
       } as Entity),
     ).toBeTruthy();
     expect(filter.values).toStrictEqual(['user:default/my-user']);
+  });
+});
+
+describe('getCatalogQuery', () => {
+  it('builds predicates for builtin filters', () => {
+    expect(
+      new EntityKindFilter('component', 'Component').getCatalogQuery(),
+    ).toEqual({ kind: 'component' });
+    expect(new EntityTypeFilter('service').getCatalogQuery()).toEqual({
+      'spec.type': 'service',
+    });
+    expect(new EntityTagFilter([]).getCatalogQuery()).toBeUndefined();
+    expect(new EntityTypeFilter([]).getCatalogQuery()).toBeUndefined();
+    expect(new EntityTagFilter(['a', 'b']).getCatalogQuery()).toEqual({
+      $all: [
+        { 'metadata.tags': { $contains: 'a' } },
+        { 'metadata.tags': { $contains: 'b' } },
+      ],
+    });
+    expect(new EntityOwnerFilter(['team-a']).getCatalogQuery()).toEqual({
+      relations: {
+        $contains: { type: 'ownedBy', targetRef: 'group:default/team-a' },
+      },
+    });
+    expect(new EntityLifecycleFilter(['prod']).getCatalogQuery()).toEqual({
+      'spec.lifecycle': 'prod',
+    });
+    expect(new EntityNamespaceFilter(['ns']).getCatalogQuery()).toEqual({
+      'metadata.namespace': 'ns',
+    });
+    expect(new EntityOrphanFilter(true).getCatalogQuery()).toEqual({
+      'metadata.annotations.backstage.io/orphan': 'true',
+    });
+    expect(new EntityOrphanFilter(false).getCatalogQuery()).toBeUndefined();
+  });
+
+  it('builds predicates for EntityUserFilter', () => {
+    expect(EntityUserFilter.all().getCatalogQuery()).toBeUndefined();
+    expect(
+      EntityUserFilter.owned(['group:default/a']).getCatalogQuery(),
+    ).toEqual({
+      relations: {
+        $contains: { type: 'ownedBy', targetRef: 'group:default/a' },
+      },
+    });
+    expect(
+      EntityUserFilter.starred([
+        'component:default/a',
+        'api:other/b',
+      ]).getCatalogQuery(),
+    ).toEqual({
+      $any: [
+        {
+          kind: 'component',
+          'metadata.namespace': 'default',
+          'metadata.name': 'a',
+        },
+        { kind: 'api', 'metadata.namespace': 'other', 'metadata.name': 'b' },
+      ],
+    });
+  });
+});
+
+describe('getCatalogQuery evaluation', () => {
+  const sample: Entity[] = [
+    {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: { name: 'a', namespace: 'default', tags: ['java', 'web'] },
+      spec: { lifecycle: 'production' },
+      relations: [{ type: RELATION_OWNED_BY, targetRef: 'group:default/x' }],
+    },
+    {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: { name: 'b', namespace: 'default', tags: ['java'] },
+      spec: { lifecycle: 'experimental' },
+      relations: [{ type: RELATION_OWNED_BY, targetRef: 'group:default/y' }],
+    },
+    {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: { name: 'c', namespace: 'default' },
+    },
+  ];
+
+  it.each([
+    ['single tag', new EntityTagFilter(['java'])],
+    ['multiple tags', new EntityTagFilter(['java', 'web'])],
+    ['one owner', new EntityOwnerFilter(['group:default/x'])],
+    ['many owners', new EntityOwnerFilter(['x', 'y'])],
+    ['lifecycle', new EntityLifecycleFilter(['production'])],
+    ['owned', EntityUserFilter.owned(['group:default/y'])],
+    ['owned by nobody', EntityUserFilter.owned([])],
+    ['no lifecycles', new EntityLifecycleFilter([])],
+    ['no owners', new EntityOwnerFilter([])],
+    ['starred', EntityUserFilter.starred(['component:default/c'])],
+  ])('agrees with filterEntity for %s', (_name, filter) => {
+    const predicate = filter.getCatalogQuery();
+    expect(predicate).toBeDefined();
+    const matches = filterPredicateToFilterFunction<Entity>(predicate!);
+    expect(sample.filter(matches).map(e => e.metadata.name)).toEqual(
+      sample.filter(e => filter.filterEntity(e)).map(e => e.metadata.name),
+    );
   });
 });

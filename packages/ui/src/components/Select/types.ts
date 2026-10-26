@@ -302,7 +302,10 @@ export type SelectItemOwnProps = {
 
 /** @public */
 export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
-  Omit<ListBoxItemProps<T>, keyof SelectItemOwnProps | 'textValue'> & {
+  Omit<
+    ListBoxItemProps<T>,
+    keyof SelectItemOwnProps | 'render' | 'textValue'
+  > & {
     textValue: string;
   };
 

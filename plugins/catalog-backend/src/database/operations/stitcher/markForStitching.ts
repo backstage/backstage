@@ -61,11 +61,12 @@ export async function markForStitching(options: {
             chunk.map(ref => ({
               entity_ref: ref,
               stitch_ticket: ticket,
+              failure_count: 0,
               next_stitch_at: knex.fn.now(),
             })),
           )
           .onConflict('entity_ref')
-          .merge(['stitch_ticket']);
+          .merge(['stitch_ticket', 'failure_count']);
       }
     }, knex);
   }
@@ -83,11 +84,12 @@ export async function markForStitching(options: {
             refreshStateRows.map(row => ({
               entity_ref: row.entity_ref,
               stitch_ticket: ticket,
+              failure_count: 0,
               next_stitch_at: knex.fn.now(),
             })),
           )
           .onConflict('entity_ref')
-          .merge(['stitch_ticket']);
+          .merge(['stitch_ticket', 'failure_count']);
       }
     }, knex);
   }

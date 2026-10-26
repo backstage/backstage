@@ -1,5 +1,78 @@
 # @backstage/cli
 
+## 0.36.7
+
+### Patch Changes
+
+- 933e50e: The ESLint configuration for packages with the `common-library` role now reports named imports from `lodash`, such as `import { trimEnd } from 'lodash'`. Common libraries are published with an ESM build, and these imports cause that build to fail when imported from ESM projects in Node.js. Use `import lodash from 'lodash'` instead.
+- 36e3f24: Updated the test runner to use the latest Jest 30 releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/cli-module-test-jest@0.1.7
+  - @backstage/eslint-plugin@0.3.3
+  - @backstage/cli-module-build@0.1.9
+  - @backstage/cli-common@0.3.2
+  - @backstage/cli-defaults@0.1.7
+
+## 0.36.7-next.0
+
+### Patch Changes
+
+- 36e3f24: Updated the test runner to use the latest Jest 30 releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/cli-module-test-jest@0.1.7-next.0
+  - @backstage/cli-defaults@0.1.7-next.0
+  - @backstage/cli-module-build@0.1.9-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.36.6
+
+### Patch Changes
+
+- 89743dc: Replaced the deprecated dependency used by `repo list-deprecations` with the equivalent TypeScript ESLint rule.
+- Updated dependencies
+  - @backstage/cli-defaults@0.1.6
+  - @backstage/cli-common@0.3.1
+  - @backstage/cli-module-build@0.1.8
+  - @backstage/cli-module-test-jest@0.1.6
+
+## 0.36.6-next.1
+
+### Patch Changes
+
+- 89743dc: Replaced the deprecated dependency used by `repo list-deprecations` with the equivalent TypeScript ESLint rule.
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.8-next.2
+  - @backstage/cli-defaults@0.1.6-next.2
+
+## 0.36.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.8-next.0
+  - @backstage/cli-defaults@0.1.6-next.0
+
+## 0.36.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.7
+  - @backstage/cli-module-test-jest@0.1.5
+  - @backstage/eslint-plugin@0.3.2
+  - @backstage/cli-defaults@0.1.5
+
+## 0.36.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.7-next.0
+  - @backstage/cli-module-test-jest@0.1.5-next.0
+  - @backstage/cli-defaults@0.1.5-next.0
+
 ## 0.36.5-next.0
 
 ### Patch Changes

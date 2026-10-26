@@ -80,7 +80,7 @@ export function defaultConfigLoaderSync(
   } else if (
     runtimeConfigJson !==
     // Avoiding this string also being replaced at runtime
-    '__app_injected_runtime_config__'.toLocaleUpperCase('en-US')
+    '__app_injected_runtime_config__'.toUpperCase()
   ) {
     try {
       const data = JSON.parse(runtimeConfigJson) as JsonObject;

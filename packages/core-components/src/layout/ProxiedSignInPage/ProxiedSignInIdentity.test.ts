@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   DEFAULTS,
@@ -126,12 +126,8 @@ describe('ProxiedSignInIdentity', () => {
       }
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(makeToken()),
-          ),
+        http.get('http://example.com/api/auth/foo/refresh', () =>
+          HttpResponse.json(makeToken()),
         ),
       );
 
@@ -202,18 +198,14 @@ describe('ProxiedSignInIdentity', () => {
     it('handles headers passed as a promise', async () => {
       let req1: Request;
       const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn().mockImplementation(req => {
-        req1 = req;
+      const serverCalled = jest.fn().mockImplementation(({ request }) => {
+        req1 = request;
       });
 
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(dummySessionResponse),
-          ),
+        http.get('http://example.com/api/auth/foo/refresh', () =>
+          HttpResponse.json(dummySessionResponse),
         ),
       );
 
@@ -242,18 +234,14 @@ describe('ProxiedSignInIdentity', () => {
     it('handles headers passed as an object', async () => {
       let req1: Request;
       const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn().mockImplementation(req => {
-        req1 = req;
+      const serverCalled = jest.fn().mockImplementation(({ request }) => {
+        req1 = request;
       });
 
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(dummySessionResponse),
-          ),
+        http.get('http://example.com/api/auth/foo/refresh', () =>
+          HttpResponse.json(dummySessionResponse),
         ),
       );
 
@@ -280,18 +268,14 @@ describe('ProxiedSignInIdentity', () => {
     it('handles headers passed as a function', async () => {
       let req1: Request;
       const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn().mockImplementation(req => {
-        req1 = req;
+      const serverCalled = jest.fn().mockImplementation(({ request }) => {
+        req1 = request;
       });
 
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(dummySessionResponse),
-          ),
+        http.get('http://example.com/api/auth/foo/refresh', () =>
+          HttpResponse.json(dummySessionResponse),
         ),
       );
 
