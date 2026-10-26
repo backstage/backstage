@@ -171,8 +171,9 @@ request:
 | `IS_ACTION`        | Action category: `read`, `write`, `delete`, or `exec`                                     |
 | `IS_VERB`          | Kubernetes API verb derived from the method and path (for example `get`, `list`, `patch`) |
 
-Kubernetes `proxy` subresources are classified as `exec`, alongside `exec`, `attach`, and
-`portforward`. Restrict them with an `isAction({ actions: ['exec'] })` condition.
+Kubernetes API requests ending in `/proxy` are classified as `exec`, alongside
+`exec`, `attach`, and `portforward` requests. Restrict them with an
+`isAction({ actions: ['exec'] })` condition.
 
 Policies that return a definitive `ALLOW` for `kubernetes.proxy` grant full proxy access without evaluating these attributes. Use **conditional** decisions (as in the examples above) to enforce least-privilege restrictions on read, write, delete, exec, secrets, namespaces, and clusters.
 
