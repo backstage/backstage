@@ -135,7 +135,7 @@ it('displays the configured application title', async () => {
 
 | Helper                                      | Behavior                                                                                                                                                               |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mockApis.alert()`                          | Collects alerts; provides `getAlerts()`, `clearAlerts()`, and `waitForAlert()`                                                                                         |
+| `mockApis.alert()`                          | Legacy Alert API fake; use `mockApis.toast()` for new tests. Provides `getAlerts()`, `clearAlerts()`, and `waitForAlert()`                                             |
 | `mockApis.analytics()`                      | Collects analytics events; provides `getEvents()`                                                                                                                      |
 | `mockApis.appLanguage(options?)`            | Selects from `availableLanguages`, starting with `defaultLanguage` or English. Updates subscribers when the language changes; passing no language resets the selection |
 | `mockApis.appLifecycle(options?)`           | Starts finalized unless `finalized: false` is supplied. `setFinalized()` changes state and notifies subscribers                                                        |

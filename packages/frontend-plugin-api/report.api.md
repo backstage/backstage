@@ -440,8 +440,6 @@ export interface ConfigurableExtensionDataRef<
 
 // @public
 export namespace coreApis {
-  const // @deprecated
-    alert: typeof alertApiRef;
   const analytics: typeof analyticsApiRef;
   const appLanguage: typeof appLanguageApiRef;
   const appLifecycle: typeof appLifecycleApiRef;

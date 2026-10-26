@@ -22,7 +22,8 @@ system's `@backstage/core-plugin-api` package are unaffected.
 
 Provider-specific authentication refs, such as `githubAuthApiRef`, remain
 separate exports and are not deprecated. The provider-independent OAuth request
-coordinator is available as `coreApis.oauthRequest`.
+coordinator is available as `coreApis.oauthRequest`. The deprecated Alert API is
+not included in `coreApis`; use `coreApis.toast` for notifications.
 
 ## Via React hooks
 

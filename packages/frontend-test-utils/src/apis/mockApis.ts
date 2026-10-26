@@ -16,6 +16,7 @@
 
 import {
   coreApis,
+  alertApiRef,
   type AnalyticsApi,
   type ConfigApi,
   type DiscoveryApi,
@@ -131,7 +132,7 @@ export namespace mockApis {
   export function alert(): MockWithApiFactory<MockAlertApi> {
     const instance = new MockAlertApi();
     return attachMockApiFactory(
-      coreApis.alert,
+      alertApiRef,
       instance,
     ) as MockWithApiFactory<MockAlertApi>;
   }
@@ -149,7 +150,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.alert, () => ({
+    export const mock = createApiMock(alertApiRef, () => ({
       post: jest.fn(),
       alert$: jest.fn(),
     }));

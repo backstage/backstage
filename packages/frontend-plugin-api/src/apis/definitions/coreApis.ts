@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { alertApiRef } from './AlertApi';
 import { analyticsApiRef } from './AnalyticsApi';
 import { appLanguageApiRef } from './AppLanguageApi';
 import { appLifecycleApiRef } from './AppLifecycleApi';
@@ -48,14 +47,6 @@ import { translationApiRef } from './TranslationApi';
  * @public
  */
 export namespace coreApis {
-  /**
-   * The API reference for {@link AlertApi}.
-   *
-   * @deprecated Use {@link coreApis.toast} instead.
-   * @public
-   */
-  export const alert: typeof alertApiRef = alertApiRef;
-
   /**
    * The API reference for {@link AnalyticsApi}.
    *
