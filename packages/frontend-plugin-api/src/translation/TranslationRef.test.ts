@@ -37,6 +37,8 @@ describe('createTranslationRef', () => {
     });
     expect(ref('key')).toEqual({ ref, key: 'key' });
     expect(ref('key').ref).toBe(ref);
+    const selectedKey: keyof typeof ref.T = ref('key').key;
+    expect(selectedKey).toBe('key');
     expect(String(ref)).toBe('TranslationRef{id=test}');
     expect(() => ref.T).toThrow('Not implemented');
     // @ts-expect-error Unknown keys cannot be selected from this ref.
