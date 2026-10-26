@@ -455,7 +455,7 @@ describe('Stepper', () => {
     expect(getByText('invalid postcode')).toBeInTheDocument();
   });
 
-  it('should render ajv-errors message', async () => {
+  it('should render errorMessage messages', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
         {
