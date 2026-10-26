@@ -799,7 +799,7 @@ describe('scaffolderPlugin', () => {
 
     let statusCode: IncomingMessage['statusCode'] = undefined;
     let headers: IncomingMessage['headers'] = {};
-    const responseDataFn = jest.fn();
+    let responseData = '';
 
     // Get event stream for the task
     const req = request(server)
@@ -808,11 +808,15 @@ describe('scaffolderPlugin', () => {
       .parse((res, _) => {
         ({ statusCode, headers } = res as unknown as IncomingMessage);
 
+        res.setEncoding('utf8');
         res.on('data', chunk => {
-          responseDataFn(chunk.toString());
+          responseData += chunk;
 
           // the server expects the client to abort the request
-          if (chunk.includes('completion')) {
+          if (
+            responseData.includes('event: completion\n') &&
+            responseData.endsWith('\n\n')
+          ) {
             req.abort();
           }
         });
@@ -825,13 +829,10 @@ describe('scaffolderPlugin', () => {
 
     expect(statusCode).toBe(200);
     expect(headers['content-type']).toBe('text/event-stream');
-    expect(responseDataFn).toHaveBeenCalledTimes(10);
-    expect(responseDataFn).toHaveBeenLastCalledWith(
-      expect.stringContaining(taskId),
-    );
-    expect(responseDataFn).toHaveBeenLastCalledWith(
-      expect.stringContaining('event: completion'),
-    );
+    const events = responseData.split('\n\n').filter(Boolean);
+    expect(events).toHaveLength(10);
+    expect(events[events.length - 1]).toContain(taskId);
+    expect(events[events.length - 1]).toContain('event: completion');
   });
 
   it('supports fetching event stream for a task with after query', async () => {
@@ -871,7 +872,7 @@ describe('scaffolderPlugin', () => {
 
     let statusCode: IncomingMessage['statusCode'] = undefined;
     let headers: IncomingMessage['headers'] = {};
-    const responseDataFn = jest.fn();
+    let responseData = '';
 
     // Get event stream for the task
     const req = request(server)
@@ -881,11 +882,15 @@ describe('scaffolderPlugin', () => {
       .parse((res, _) => {
         ({ statusCode, headers } = res as unknown as IncomingMessage);
 
+        res.setEncoding('utf8');
         res.on('data', chunk => {
-          responseDataFn(chunk.toString());
+          responseData += chunk;
 
           // the server expects the client to abort the request
-          if (chunk.includes('completion')) {
+          if (
+            responseData.includes('event: completion\n') &&
+            responseData.endsWith('\n\n')
+          ) {
             req.abort();
           }
         });
@@ -898,21 +903,12 @@ describe('scaffolderPlugin', () => {
 
     expect(statusCode).toBe(200);
     expect(headers['content-type']).toBe('text/event-stream');
-    expect(responseDataFn).toHaveBeenCalledTimes(2);
-    expect(responseDataFn).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining(taskId),
-    );
-    expect(responseDataFn).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('event: log'),
-    );
-    expect(responseDataFn).toHaveBeenLastCalledWith(
-      expect.stringContaining(taskId),
-    );
-    expect(responseDataFn).toHaveBeenLastCalledWith(
-      expect.stringContaining('event: completion'),
-    );
+    const events = responseData.split('\n\n').filter(Boolean);
+    expect(events).toHaveLength(2);
+    expect(events[0]).toContain(taskId);
+    expect(events[0]).toContain('event: log');
+    expect(events[1]).toContain(taskId);
+    expect(events[1]).toContain('event: completion');
   });
 
   it('supports fetching events for a task', async () => {
