@@ -38,6 +38,9 @@ import path from 'node:path';
 import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
 import { Readable } from 'node:stream';
+import http from 'node:http';
+import { AddressInfo } from 'node:net';
+import { once } from 'node:events';
 import {
   createMockDirectory,
   mockServices,
@@ -1153,6 +1156,40 @@ describe('AwsS3Publish', () => {
       expect(Buffer.from(response.text).toString('utf8')).toEqual(
         'File Not Found',
       );
+    });
+
+    it('should release the S3 object stream if the client disconnects early', async () => {
+      // Simulates an object that is still being downloaded from S3
+      const body = new Readable({ read() {} });
+      body.push('partial content');
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return { Body: body };
+        }
+        return defaultS3SendImplementation(command);
+      });
+
+      const server = app.listen(0);
+      try {
+        const { port } = server.address() as AddressInfo;
+        await new Promise<void>(resolve => {
+          const req = http.get(
+            `http://localhost:${port}/${entityTripletPath}/index.html`,
+            res => {
+              res.once('data', () => {
+                req.destroy();
+                resolve();
+              });
+            },
+          );
+          req.on('error', () => {});
+        });
+
+        await once(body, 'close');
+        expect(body.destroyed).toBe(true);
+      } finally {
+        server.close();
+      }
     });
   });
 });
