@@ -17,6 +17,7 @@
 import {
   AuthorizeResult,
   PermissionCondition,
+  PermissionCriteria,
 } from '@backstage/plugin-permission-common';
 import { NotAllowedError, serializeError } from '@backstage/errors';
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
@@ -180,10 +181,7 @@ describe('Kubernetes Proxy ABAC enforcement', () => {
   }
 
   function makeConditionalDecision(
-    conditions:
-      | PermissionCondition
-      | { allOf: PermissionCondition[] }
-      | { anyOf: PermissionCondition[] },
+    conditions: PermissionCriteria<PermissionCondition>,
   ) {
     return {
       result: AuthorizeResult.CONDITIONAL,
@@ -232,6 +230,26 @@ describe('Kubernetes Proxy ABAC enforcement', () => {
     );
 
     expect(response.status).not.toBe(403);
+  });
+
+  it('returns 403 for a denied request before resolving an invalid cluster', async () => {
+    permissionApi.authorizeConditional.mockResolvedValue([
+      makeConditionalDecision({
+        rule: 'IS_ACTION',
+        resourceType: 'kubernetes-proxy-request',
+        params: { actions: ['write'] },
+      }),
+    ]);
+
+    const app = buildApp();
+    const response = await sendProxyRequest(
+      app,
+      'get',
+      '/proxy/api/v1/namespaces/default/pods',
+      { [HEADER_KUBERNETES_CLUSTER]: 'not-configured' },
+    );
+
+    expect(response.status).toBe(403);
   });
 
   it('denies mutating requests when policy only grants read access', async () => {
@@ -347,6 +365,50 @@ describe('Kubernetes Proxy ABAC enforcement', () => {
       app,
       'get',
       '/proxy/api/v1/namespaces/default/secrets/my-secret',
+      { [HEADER_KUBERNETES_CLUSTER]: 'production' },
+    );
+
+    expect(response.status).toBe(403);
+  });
+
+  it('denies encoded secrets for a policy negating the secrets resource type', async () => {
+    permissionApi.authorizeConditional.mockResolvedValue([
+      makeConditionalDecision({
+        not: {
+          rule: 'IS_RESOURCE_TYPE',
+          resourceType: 'kubernetes-proxy-request',
+          params: { resourceTypes: ['secrets'] },
+        },
+      }),
+    ]);
+
+    const app = buildApp();
+    const response = await sendProxyRequest(
+      app,
+      'get',
+      '/proxy/api/v1/namespaces/prod/secret%73',
+      { [HEADER_KUBERNETES_CLUSTER]: 'production' },
+    );
+
+    expect(response.status).toBe(403);
+  });
+
+  it('denies an ambiguous path before evaluating conditional policies', async () => {
+    permissionApi.authorizeConditional.mockResolvedValue([
+      makeConditionalDecision({
+        not: {
+          rule: 'IS_RESOURCE_TYPE',
+          resourceType: 'kubernetes-proxy-request',
+          params: { resourceTypes: ['secrets'] },
+        },
+      }),
+    ]);
+
+    const app = buildApp();
+    const response = await sendProxyRequest(
+      app,
+      'get',
+      '/proxy/api/v1/namespaces/prod/secret%2fs',
       { [HEADER_KUBERNETES_CLUSTER]: 'production' },
     );
 

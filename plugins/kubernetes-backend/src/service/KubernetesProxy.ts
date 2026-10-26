@@ -211,6 +211,15 @@ export class KubernetesProxy {
     onSocketClose: () => void,
     isClientDisconnected: () => boolean,
   ): Promise<boolean> {
+    const denyRequest = () => {
+      req.socket.removeListener('close', onSocketClose);
+      auditSession.finalize(new NotAllowedError('Unauthorized'));
+      res.status(403).json({
+        error: serializeError(new NotAllowedError('Unauthorized')),
+      });
+      return false;
+    };
+
     const credentials = await this.httpAuth.credentials(req);
 
     const authorizeResponse = await permissionApi.authorizeConditional(
@@ -221,42 +230,56 @@ export class KubernetesProxy {
     const decision = authorizeResponse[0];
 
     if (decision.result === AuthorizeResult.DENY) {
-      req.socket.removeListener('close', onSocketClose);
-      auditSession.finalize(new NotAllowedError('Unauthorized'));
-      res.status(403).json({
-        error: serializeError(new NotAllowedError('Unauthorized')),
-      });
-      return false;
+      return denyRequest();
     }
 
-    const cluster = await this.getClusterForRequest(req);
+    let cluster: ClusterDetails;
 
     if (decision.result === AuthorizeResult.CONDITIONAL) {
       const path = req.path || req.url.split('?')[0] || '';
       const queryString = req.url.includes('?')
         ? req.url.split('?')[1]
         : undefined;
-
       const parsed = parseKubernetesPath(path, req.method, queryString);
 
-      const proxyRequest: KubernetesProxyRequest = {
-        cluster: cluster.name,
-        verb: parsed?.verb ?? 'unknown',
-        action: parsed?.action ?? 'write',
-        resourceType: parsed?.resourceType,
-        namespace: parsed?.namespace,
-        subresource: parsed?.subresource,
-        apiGroup: parsed?.apiGroup ?? '',
-      };
-
-      if (!conditionAuthorizer(decision, proxyRequest)) {
-        req.socket.removeListener('close', onSocketClose);
-        auditSession.finalize(new NotAllowedError('Unauthorized'));
-        res.status(403).json({
-          error: serializeError(new NotAllowedError('Unauthorized')),
-        });
-        return false;
+      if (!parsed) {
+        return denyRequest();
       }
+
+      const clusterNameHeader =
+        req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
+      const requestedClusterName =
+        typeof clusterNameHeader === 'string' && clusterNameHeader.length > 0
+          ? clusterNameHeader
+          : undefined;
+
+      const matchesConditions = (clusterName: string) =>
+        conditionAuthorizer(decision, {
+          cluster: clusterName,
+          verb: parsed.verb,
+          action: parsed.action,
+          resourceType: parsed.resourceType,
+          namespace: parsed.namespace,
+          subresource: parsed.subresource,
+          apiGroup: parsed.apiGroup,
+        });
+
+      // When a cluster was explicitly requested, evaluate the conditions using
+      // that name before resolving it. A policy denial should remain a 403 even
+      // if the supplied cluster name is invalid.
+      if (requestedClusterName) {
+        if (!matchesConditions(requestedClusterName)) {
+          return denyRequest();
+        }
+        cluster = await this.getClusterForRequest(req);
+      } else {
+        cluster = await this.getClusterForRequest(req);
+        if (!matchesConditions(cluster.name)) {
+          return denyRequest();
+        }
+      }
+    } else {
+      cluster = await this.getClusterForRequest(req);
     }
 
     if (isClientDisconnected()) {

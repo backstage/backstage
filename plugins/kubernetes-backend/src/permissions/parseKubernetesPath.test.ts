@@ -223,6 +223,66 @@ describe('parseKubernetesPath', () => {
       });
     });
 
+    it('parses legacy watch paths as watches', () => {
+      expect(
+        parseKubernetesPath(
+          '/api/v1/watch/namespaces/prod/secrets',
+          'GET',
+        ),
+      ).toEqual({
+        verb: 'watch',
+        action: 'read',
+        resourceType: 'secrets',
+        namespace: 'prod',
+        subresource: undefined,
+        apiGroup: '',
+      });
+    });
+
+    it('decodes percent-encoded namespace and resource segments', () => {
+      expect(
+        parseKubernetesPath(
+          '/api/v1/namespaces/pr%6Fd/secret%73',
+          'GET',
+        ),
+      ).toEqual({
+        verb: 'list',
+        action: 'read',
+        resourceType: 'secrets',
+        namespace: 'prod',
+        subresource: undefined,
+        apiGroup: '',
+      });
+    });
+
+    it.each([
+      '/api/v1/namespaces/prod/secret%2fs',
+      '/api/v1/namespaces/prod/secret%252fs',
+      '/api/v1/namespaces/prod/../secrets',
+      '/api/v1/namespaces//prod/secrets',
+      '/api/v1/namespaces/prod/secret%ZZ',
+    ])('rejects ambiguous path %s', path => {
+      expect(parseKubernetesPath(path, 'GET')).toBeUndefined();
+    });
+
+    it('does not treat watch=false as a watch request', () => {
+      expect(
+        parseKubernetesPath(
+          '/api/v1/namespaces/prod/secrets',
+          'GET',
+          'watch=false',
+        )?.verb,
+      ).toBe('list');
+    });
+
+    it.each([
+      '/api/v1/namespaces/default/pods/my-pod/proxy',
+      '/api/v1/namespaces/default/services/my-service/proxy',
+      '/api/v1/nodes/my-node/proxy',
+    ])('classifies proxy subresource %s as exec', path => {
+      expect(parseKubernetesPath(path, 'GET')?.action).toBe('exec');
+    });
+
     it('parses secrets access', () => {
       const result = parseKubernetesPath(
         '/api/v1/namespaces/default/secrets/my-secret',

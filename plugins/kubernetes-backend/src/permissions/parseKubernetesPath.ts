@@ -34,8 +34,8 @@ export interface ParsedKubernetesRequest {
   apiGroup: string;
 }
 
-/** Subresources that represent interactive exec/attach sessions */
-const EXEC_SUBRESOURCES = new Set(['exec', 'attach']);
+/** Subresources that can open interactive or tunneled connections */
+const EXEC_SUBRESOURCES = new Set(['exec', 'attach', 'proxy']);
 
 /** Subresources that represent read operations regardless of HTTP method */
 const READ_SUBRESOURCES = new Set(['log', 'status']);
@@ -44,12 +44,12 @@ const READ_SUBRESOURCES = new Set(['log', 'status']);
  * Parses a Kubernetes API path and HTTP method into structured request attributes.
  *
  * Handles both core API paths (`/api/v1/...`) and API group paths (`/apis/group/version/...`).
- * Returns undefined for non-resource paths (healthz, openapi, version, etc.).
+ * Returns undefined for non-resource or ambiguous paths (healthz, openapi, version, etc.).
  *
  * @param path - The proxy-relative path (e.g., `/api/v1/namespaces/default/pods/mypod`)
  * @param method - The HTTP method (GET, POST, PUT, PATCH, DELETE)
  * @param queryString - Optional query string for watch detection
- * @returns Parsed request attributes, or undefined for non-resource paths
+ * @returns Parsed request attributes, or undefined for non-resource or ambiguous paths
  */
 export function parseKubernetesPath(
   path: string,
@@ -58,9 +58,37 @@ export function parseKubernetesPath(
 ): ParsedKubernetesRequest | undefined {
   const upperMethod = method.toUpperCase();
 
-  // Strip leading slash and split
-  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  const segments = cleanPath.split('/').filter(s => s.length > 0);
+  // Decode each segment before matching it, while rejecting paths whose
+  // interpretation could differ between this parser and the API server.
+  const cleanPath = path.split(/[?#]/, 1)[0];
+  const pathWithoutLeadingSlash = cleanPath.startsWith('/')
+    ? cleanPath.slice(1)
+    : cleanPath;
+  const encodedSegments = pathWithoutLeadingSlash.split('/');
+  if (encodedSegments.some(segment => segment.length === 0)) {
+    return undefined;
+  }
+
+  let segments: string[];
+  try {
+    segments = encodedSegments.map(segment => decodeURIComponent(segment));
+  } catch {
+    return undefined;
+  }
+
+  if (
+    segments.some(
+      segment =>
+        segment.length === 0 ||
+        segment === '.' ||
+        segment === '..' ||
+        segment.includes('/') ||
+        segment.includes('\\') ||
+        segment.includes('%'),
+    )
+  ) {
+    return undefined;
+  }
 
   if (segments.length === 0) {
     return undefined;
@@ -68,12 +96,17 @@ export function parseKubernetesPath(
 
   let apiGroup: string;
   let resourceSegments: string[];
+  let isLegacyWatchPath = false;
 
   if (segments[0] === 'api') {
     // Core API: /api/v1/...
     apiGroup = '';
     // Skip 'api' and version
     resourceSegments = segments.slice(2);
+    if (upperMethod === 'GET' && resourceSegments[0] === 'watch') {
+      isLegacyWatchPath = true;
+      resourceSegments = resourceSegments.slice(1);
+    }
   } else if (segments[0] === 'apis') {
     // API group: /apis/{group}/{version}/...
     if (segments.length < 3) {
@@ -82,6 +115,10 @@ export function parseKubernetesPath(
     apiGroup = segments[1];
     // Skip 'apis', group, and version
     resourceSegments = segments.slice(3);
+    if (upperMethod === 'GET' && resourceSegments[0] === 'watch') {
+      isLegacyWatchPath = true;
+      resourceSegments = resourceSegments.slice(1);
+    }
   } else {
     // Non-resource paths: healthz, openapi, version, etc.
     return undefined;
@@ -99,12 +136,9 @@ export function parseKubernetesPath(
 
   const { resourceType, namespace, subresource, hasResourceName } = parsed;
 
-  const verb = resolveVerb(
-    upperMethod,
-    hasResourceName,
-    subresource,
-    queryString,
-  );
+  const verb = isLegacyWatchPath
+    ? 'watch'
+    : resolveVerb(upperMethod, hasResourceName, subresource, queryString);
   const action = resolveAction(verb, subresource);
 
   return {
@@ -182,7 +216,7 @@ function resolveVerb(
   // Check for watch query parameter
   if (method === 'GET' && queryString) {
     const params = new URLSearchParams(queryString);
-    if (params.get('watch') === 'true' || params.has('watch')) {
+    if (params.getAll('watch').some(value => value.toLowerCase() === 'true')) {
       return 'watch';
     }
   }

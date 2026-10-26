@@ -171,7 +171,22 @@ request:
 | `IS_ACTION`        | Action category: `read`, `write`, `delete`, or `exec`                                     |
 | `IS_VERB`          | Kubernetes API verb derived from the method and path (for example `get`, `list`, `patch`) |
 
+Kubernetes `proxy` subresources are classified as `exec`, alongside `exec`, `attach`, and
+`portforward`. Restrict them with an `isAction({ actions: ['exec'] })` condition.
+
 Policies that return a definitive `ALLOW` for `kubernetes.proxy` grant full proxy access without evaluating these attributes. Use **conditional** decisions (as in the examples above) to enforce least-privilege restrictions on read, write, delete, exec, secrets, namespaces, and clusters.
+
+Prefer allow-list conditions that name the actions, resource types, namespaces, or
+clusters a user may access. For example, combine
+`isAction({ actions: ['read'] })` with
+`isNamespace({ namespaces: ['team-a'] })`. Avoid relying on negated conditions
+such as “anything except secrets”: malformed or unsupported paths are denied,
+and explicit allow lists make the intended access easier to review.
+
+Some Kubernetes requests do not target a namespace. Cross-namespace requests and
+cluster-scoped resources have no namespace attribute, so they do not match
+`isNamespace` conditions. Add a separate condition for those requests if they
+should be allowed.
 
 For more background on conditional policies, see [Writing a policy](../../permissions/writing-a-policy.md).
 

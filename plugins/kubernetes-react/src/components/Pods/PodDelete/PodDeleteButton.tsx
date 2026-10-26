@@ -27,21 +27,6 @@ import { kubernetesReactTranslationRef } from '../../../translation';
 import { usePodDelete } from './usePodDelete';
 import { PodScope } from './types';
 
-const isPermissionDeniedError = (error: unknown): boolean => {
-  let message = '';
-  if (error instanceof Error) {
-    message = error.message;
-  } else if (typeof error === 'string') {
-    message = error;
-  }
-
-  return (
-    /\b403\b/.test(message) ||
-    /NotAllowedError/i.test(message) ||
-    /Unauthorized/i.test(message)
-  );
-};
-
 /**
  * Props for PodDeleteButton
  *
@@ -58,7 +43,7 @@ export interface PodDeleteButtonProps {
  */
 export const PodDeleteButton = ({ podScope }: PodDeleteButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [hasError, setHasError] = useState(false);
   const deletePod = usePodDelete();
 
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
@@ -66,17 +51,12 @@ export const PodDeleteButton = ({ podScope }: PodDeleteButtonProps) => {
 
   const handleDeleteClick = async () => {
     setIsLoading(true);
-    setErrorMessage(undefined);
     try {
       await deletePod(podScope);
     } catch (error) {
-      setErrorMessage(
-        isPermissionDeniedError(error)
-          ? t('podDrawer.errors.deletePermissionDenied')
-          : t('podDrawer.errors.deleteFailed'),
-      );
-    } finally {
-      setIsLoading(false);
+      setHasError(true);
+      // eslint-disable-next-line no-console
+      console.error(error);
     }
   };
 
@@ -97,13 +77,14 @@ export const PodDeleteButton = ({ podScope }: PodDeleteButtonProps) => {
             {buttonText}
           </Button>
         </CardActions>
-        {errorMessage && (
+        {hasError && (
           <Typography
             variant="body1"
             color="error"
             style={{ textAlign: 'right' }}
           >
-            {errorMessage}
+            Could not delete the pod. Please check the console for the full
+            report.
           </Typography>
         )}
       </Grid>
