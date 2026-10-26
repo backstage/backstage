@@ -22,7 +22,8 @@ import {
   DynamicPlugin,
   FrontendDynamicPlugin,
 } from './types';
-import { ScannedPluginPackage } from '../scanner';
+import { PackageRole, ScannedPluginPackage } from '../scanner';
+import { getPackageRolePlatform } from './packageRoles';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { ModuleLoader } from '../loader';
 import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
@@ -36,7 +37,6 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
 import * as fs from 'node:fs';
 
@@ -135,7 +135,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
 
     for (const scannedPlugin of this.packages) {
       const role = scannedPlugin.manifest.backstage.role;
-      const platform = PackageRoles.getRoleInfo(role).platform;
+      const platform = getPackageRolePlatform(role);
       const isPlugin =
         role.endsWith('-plugin') ||
         role.endsWith('-plugin-module') ||

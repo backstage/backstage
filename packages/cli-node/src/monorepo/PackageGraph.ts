@@ -19,6 +19,7 @@ import { getPackages, Package } from '@manypkg/get-packages';
 import { targetPaths } from '@backstage/cli-common';
 import { PackageRole } from '../roles';
 import { GitUtils } from '../git';
+import { readFilesAtRef } from '../git/GitUtils';
 import { detectPackageManager, Lockfile, LockfileDiff } from '../pacman';
 import { JsonValue } from '@backstage/types';
 
@@ -404,17 +405,18 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           await GitUtils.readFileAtRef(lockfileName, options.ref),
           {
             // Workspace packages must be named from the same ref as the lockfile
-            readWorkspacePackageJson: async dir => {
-              try {
-                return JSON.parse(
-                  await GitUtils.readFileAtRef(
-                    path.posix.join(dir, 'package.json'),
-                    options.ref,
-                  ),
-                );
-              } catch {
-                return undefined;
-              }
+            readWorkspacePackageJsons: async dirs => {
+              const files = await readFilesAtRef(
+                dirs.map(dir => path.posix.join(dir, 'package.json')),
+                options.ref,
+              );
+              return files.map(file => {
+                try {
+                  return file === undefined ? undefined : JSON.parse(file);
+                } catch {
+                  return undefined;
+                }
+              });
             },
           },
         );
