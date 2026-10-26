@@ -1,6 +1,6 @@
 import { releases } from './releases';
 
-function tryToLoadCustomSidebar(ref) {
+function tryToLoadCustomSidebar(ref: string) {
   try {
     return require(ref);
   } catch (e) {

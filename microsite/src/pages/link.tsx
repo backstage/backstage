@@ -1,7 +1,7 @@
 import { Redirect } from '@docusaurus/router';
 import React from 'react';
 
-const redirects = {
+const redirects: Record<string, string> = {
   'bind-routes':
     '/docs/plugins/composability#binding-external-routes-in-the-app',
   'scm-auth': '/docs/auth/#scaffolder-configuration-software-templates',
