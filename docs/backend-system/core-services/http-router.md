@@ -188,7 +188,13 @@ paths are rejected, and unmatched upgrades receive a 404 response. When no route
 are registered, existing server-level listeners are unaffected. Mixing these
 routes with direct server-level upgrade listeners is unsupported; registration
 fails if a listener already exists. Migrate those listeners to registered routes
-before using this API, and do not add direct listeners afterwards.
+before using this API, and do not add direct listeners afterwards. Existing
+workarounds that handle upgrades through Express may also stop working once a
+route is registered. Migrate those handlers to this API as well.
+
+Plugin upgrades wait for startup using `backend.lifecycle.startupRequestPauseTimeout`
+(the default is five seconds). Upgrades receive HTTP 503 if startup times out or
+the plugin is shutting down. The framework checks readiness again after authentication.
 
 The router destroys tracked sockets during server shutdown. Plugins remain
 responsible for closing upstream proxy connections and resources they create.

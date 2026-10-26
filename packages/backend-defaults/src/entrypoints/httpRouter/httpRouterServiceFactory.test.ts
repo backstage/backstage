@@ -28,7 +28,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import { request as httpRequest, IncomingMessage, Server } from 'node:http';
-import { Duplex } from 'node:stream';
+import { Duplex, PassThrough } from 'node:stream';
 import { once } from 'node:events';
 
 describe('httpRouterFactory', () => {
@@ -183,6 +183,121 @@ describe('httpRouterFactory', () => {
       authProtocol: mockCredentials.user.token(),
     });
     accepted.socket.destroy();
+  });
+
+  it('waits for startup before authenticating upgrades and rejects after shutdown', async () => {
+    const lifecycle = mockServices.lifecycle.mock();
+    const rootHttpRouter = mockServices.rootHttpRouter.mock();
+    const auth = mockServices.auth.mock({
+      authenticate: async () => mockCredentials.user(),
+      isPrincipal: mockServices.auth().isPrincipal,
+    });
+    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
+      dependencies: [lifecycle.factory, rootHttpRouter.factory, auth.factory],
+    });
+    const router = await tester.getSubject();
+    const handler = jest.fn();
+    router.addWebSocketHandler({ path: '/events', handler });
+    const upgradeHandler =
+      rootHttpRouter.addWebSocketHandler.mock.calls[0][0].handler;
+    const socket = new PassThrough();
+    const context = {
+      request: {
+        headers: { authorization: mockCredentials.user.header() },
+      } as IncomingMessage,
+      socket,
+      head: Buffer.alloc(0),
+    };
+    const pending = upgradeHandler(context);
+    expect(auth.authenticate).not.toHaveBeenCalled();
+    expect(handler).not.toHaveBeenCalled();
+
+    await lifecycle.addStartupHook.mock.calls[0][0]();
+    await pending;
+    expect(auth.authenticate).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith(expect.objectContaining({ socket }));
+
+    await lifecycle.addShutdownHook.mock.calls[0][0]();
+    const end = jest.spyOn(socket, 'end');
+    await upgradeHandler(context);
+    expect(end).toHaveBeenCalledWith(
+      expect.stringContaining('503 Service Unavailable'),
+      expect.any(Function),
+    );
+    expect(auth.authenticate).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
+    socket.destroy();
+  });
+
+  it('rejects startup timeouts and shutdown during authentication', async () => {
+    const lifecycle = mockServices.lifecycle.mock();
+    const rootHttpRouter = mockServices.rootHttpRouter.mock();
+    const auth = mockServices.auth.mock({
+      authenticate: async () => mockCredentials.user(),
+      isPrincipal: mockServices.auth().isPrincipal,
+    });
+    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
+      dependencies: [
+        lifecycle.factory,
+        rootHttpRouter.factory,
+        auth.factory,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              lifecycle: { startupRequestPauseTimeout: { milliseconds: 1 } },
+            },
+          },
+        }),
+      ],
+    });
+    const router = await tester.getSubject();
+    const handler = jest.fn();
+    router.addWebSocketHandler({ path: '/events', handler });
+    const upgradeHandler =
+      rootHttpRouter.addWebSocketHandler.mock.calls[0][0].handler;
+    const socket = new PassThrough();
+    const end = jest.spyOn(socket, 'end');
+    const context = {
+      request: {
+        headers: { authorization: mockCredentials.user.header() },
+      } as IncomingMessage,
+      socket,
+      head: Buffer.alloc(0),
+    };
+    await upgradeHandler(context);
+    expect(end).toHaveBeenCalledWith(
+      expect.stringContaining('503 Service Unavailable'),
+      expect.any(Function),
+    );
+    expect(auth.authenticate).not.toHaveBeenCalled();
+    expect(handler).not.toHaveBeenCalled();
+    socket.destroy();
+
+    await lifecycle.addStartupHook.mock.calls[0][0]();
+    let finishAuthentication: (
+      credentials: ReturnType<typeof mockCredentials.user>,
+    ) => void;
+    const authenticating = new Promise<void>(resolve => {
+      auth.authenticate.mockImplementationOnce(() => {
+        resolve();
+        return new Promise(r => {
+          finishAuthentication = r;
+        });
+      });
+    });
+    const secondSocket = new PassThrough();
+    const secondEnd = jest.spyOn(secondSocket, 'end');
+    const pending = upgradeHandler({ ...context, socket: secondSocket });
+    await authenticating;
+    await lifecycle.addShutdownHook.mock.calls[0][0]();
+    finishAuthentication!(mockCredentials.user());
+    await pending;
+    expect(secondEnd).toHaveBeenCalledWith(
+      expect.stringContaining('503 Service Unavailable'),
+      expect.any(Function),
+    );
+    expect(handler).not.toHaveBeenCalled();
+    secondSocket.destroy();
   });
 
   describe('auth services', () => {

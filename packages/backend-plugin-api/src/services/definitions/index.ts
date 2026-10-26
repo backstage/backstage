@@ -40,7 +40,6 @@ export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,
   HttpRouterServiceWebSocketHandler,
-  HttpRouterServiceWebSocketOptions,
   HttpRouterServiceWebSocketContext,
 } from './HttpRouterService';
 export type {
@@ -64,7 +63,7 @@ export type { RootConfigService } from './RootConfigService';
 export type { RootHealthService } from './RootHealthService';
 export type {
   RootHttpRouterService,
-  RootHttpRouterServiceWebSocketOptions,
+  RootHttpRouterServiceWebSocketHandler,
 } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';
 export type { RootLoggerService } from './RootLoggerService';

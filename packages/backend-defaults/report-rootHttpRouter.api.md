@@ -17,7 +17,7 @@ import { RequestListener } from 'node:http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
-import { RootHttpRouterServiceWebSocketOptions } from '@backstage/backend-plugin-api';
+import { RootHttpRouterServiceWebSocketHandler } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -40,7 +40,7 @@ export function createHttpServer(
 // @public
 export class DefaultRootHttpRouter implements RootHttpRouterService {
   // (undocumented)
-  addWebSocketHandler(input: RootHttpRouterServiceWebSocketOptions): void;
+  addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void;
   attachWebSocketServer(server: Server, logger: LoggerService): void;
   closeWebSockets(): void;
   // (undocumented)

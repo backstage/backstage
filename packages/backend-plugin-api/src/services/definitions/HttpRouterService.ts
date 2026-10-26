@@ -20,19 +20,6 @@ import type { Duplex } from 'node:stream';
 import type { BackstageCredentials } from './AuthService';
 
 /**
- * Handles an authenticated WebSocket upgrade or forwards it upstream.
- * The request retains its full URL.
- *
- * The handler must take ownership of the socket or close it before resolving.
- * Express middleware and path-based HTTP auth policies do not apply.
- *
- * @public
- */
-export type HttpRouterServiceWebSocketHandler = (
-  context: HttpRouterServiceWebSocketContext,
-) => void | Promise<void>;
-
-/**
  * Request, transport, and credentials available to a WebSocket upgrade handler.
  *
  * @public
@@ -51,10 +38,14 @@ export interface HttpRouterServiceWebSocketContext {
  *
  * @public
  */
-export interface HttpRouterServiceWebSocketOptions {
+export interface HttpRouterServiceWebSocketHandler {
   /** An exact path relative to the plugin base URL. Use `/` for the base URL. */
   path: string;
-  handler: HttpRouterServiceWebSocketHandler;
+  /**
+   * Handles an authenticated upgrade or forwards it upstream. The request retains
+   * its full URL. Take ownership of the socket or close it before resolving.
+   */
+  handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
   /**
    * Defaults to `authenticated`, accepting user and service tokens.
    * `user` accepts only full user tokens. `user-cookie` also accepts limited
@@ -95,12 +86,13 @@ export interface HttpRouterService {
    * string, and treats a trailing slash as significant. Patterns are not supported.
    *
    * The handler receives the raw upgrade request, socket, and buffered data.
-   * The framework authenticates before invoking the handler. The handler owns
-   * the handshake or forwarding, including protocol selection. HTTP middleware
+   * The framework waits for plugin startup and authenticates before invoking the
+   * handler, rejecting upgrades during shutdown. The handler owns the handshake
+   * or forwarding, including protocol selection. HTTP middleware
    * and path-based auth policies do not apply.
    * The framework destroys upgraded sockets when the backend shuts down.
    */
-  addWebSocketHandler(options: HttpRouterServiceWebSocketOptions): void;
+  addWebSocketHandler(options: HttpRouterServiceWebSocketHandler): void;
 
   /**
    * Adds an auth policy to the router. This is used to allow unauthenticated or

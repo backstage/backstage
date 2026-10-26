@@ -20,15 +20,15 @@ import {
   coreServices,
   createServiceFactory,
   HttpRouterServiceAuthPolicy,
-  HttpRouterServiceWebSocketOptions,
+  HttpRouterServiceWebSocketHandler,
 } from '@backstage/backend-plugin-api';
 import {
   createAuthIntegrationRouter,
   createCookieAuthRefreshMiddleware,
   createCredentialsBarrier,
-  createLifecycleMiddleware,
 } from './http';
 import { MiddlewareFactory } from '../rootHttpRouter';
+import { createLifecycleGate } from './http/createLifecycleMiddleware';
 import { authenticateWebSocket } from './http/authenticateWebSocket';
 import { createRateLimitMiddleware } from './http/createRateLimitMiddleware.ts';
 
@@ -74,7 +74,8 @@ export const httpRouterServiceFactory = createServiceFactory({
     });
 
     router.use(createAuthIntegrationRouter({ auth }));
-    router.use(createLifecycleMiddleware({ config, lifecycle }));
+    const lifecycleGate = createLifecycleGate({ config, lifecycle });
+    router.use(lifecycleGate.middleware);
     router.use(credentialsBarrier.middleware);
     router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 
@@ -92,7 +93,7 @@ export const httpRouterServiceFactory = createServiceFactory({
         path,
         handler,
         authPolicy = 'authenticated',
-      }: HttpRouterServiceWebSocketOptions): void {
+      }: HttpRouterServiceWebSocketHandler): void {
         if (!path.startsWith('/')) {
           throw new Error('WebSocket path must start with /');
         }
@@ -101,17 +102,24 @@ export const httpRouterServiceFactory = createServiceFactory({
           async handler({ request, socket, head }) {
             let context;
             try {
+              await lifecycleGate.check();
+              if (socket.destroyed) {
+                return;
+              }
               context = await authenticateWebSocket({
                 auth,
                 config,
                 request,
                 authPolicy,
               });
+              await lifecycleGate.check();
             } catch (error) {
-              const status =
-                error.name === 'NotAllowedError'
-                  ? '403 Forbidden'
-                  : '401 Unauthorized';
+              let status = '401 Unauthorized';
+              if (error.name === 'ServiceUnavailableError') {
+                status = '503 Service Unavailable';
+              } else if (error.name === 'NotAllowedError') {
+                status = '403 Forbidden';
+              }
               socket.end(
                 `HTTP/1.1 ${status}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`,
                 () => socket.destroy(),
