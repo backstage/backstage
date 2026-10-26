@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RJSFSchema } from '@rjsf/utils';
+import { ErrorSchemaBuilder, RJSFSchema } from '@rjsf/utils';
 import { customizeValidator, validator } from './index';
 
 describe('validator', () => {
@@ -106,9 +106,10 @@ describe('validator', () => {
     expect(custom.validateFormData('user:me', refSchema).errors).toEqual([]);
     expect(custom.validateFormData('me', refSchema).errors).toHaveLength(1);
 
-    expect(
-      custom.toErrorList({ __errors: ['root'], a: { __errors: ['child'] } }),
-    ).toEqual([
+    const errorSchema = new ErrorSchemaBuilder()
+      .addErrors('root')
+      .addErrors('child', 'a').ErrorSchema;
+    expect(custom.toErrorList(errorSchema)).toEqual([
       { property: '.', message: 'root', stack: '. root' },
       { property: '.a', message: 'child', stack: '.a child' },
     ]);
