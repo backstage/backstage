@@ -26,6 +26,61 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it('updates step visibility when earlier form data changes', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Changing steps',
+      steps: [
+        {
+          title: 'Choose',
+          schema: { properties: { action: { type: 'string' } } },
+        },
+        {
+          title: 'Create configuration',
+          schema: {
+            'ui:backstage': {
+              visibleWhen: {
+                required: ['action'],
+                properties: { action: { const: 'create' } },
+              },
+            },
+            properties: { details: { type: 'string' } },
+          },
+        },
+        { title: 'Finish', schema: { properties: {} } },
+      ],
+    };
+    const { getByRole, queryByText, findByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+    expect(queryByText('Create configuration')).not.toBeInTheDocument();
+    fireEvent.change(getByRole('textbox', { name: 'action' }), {
+      target: { value: 'create' },
+    });
+    fireEvent.click(getByRole('button', { name: 'Next' }));
+    fireEvent.change(await findByRole('textbox', { name: 'details' }), {
+      target: { value: 'Retained' },
+    });
+    fireEvent.click(getByRole('button', { name: 'Back' }));
+    fireEvent.change(await findByRole('textbox', { name: 'action' }), {
+      target: { value: 'manage' },
+    });
+    await waitFor(() =>
+      expect(queryByText('Create configuration')).not.toBeInTheDocument(),
+    );
+    fireEvent.click(getByRole('button', { name: 'Next' }));
+    expect(await findByRole('button', { name: 'Review' })).toBeInTheDocument();
+    fireEvent.click(getByRole('button', { name: 'Back' }));
+    fireEvent.change(await findByRole('textbox', { name: 'action' }), {
+      target: { value: 'create' },
+    });
+    fireEvent.click(getByRole('button', { name: 'Next' }));
+    expect(await findByRole('textbox', { name: 'details' })).toHaveValue(
+      'Retained',
+    );
+  });
+
   it('skips conditional steps during navigation and validation', async () => {
     const manifest: TemplateParameterSchema = {
       title: 'Conditional steps',
