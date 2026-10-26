@@ -201,8 +201,10 @@ In Yarn projects, the bundle gets a `.yarnrc.yml` and a `yarn.lock`. The `resolu
 
 In pnpm projects, the bundle gets a `pnpm-workspace.yaml` and a `pnpm-lock.yaml`. The workspace file sets `nodeLinker: hoisted` and carries the `overrides` of the root `pnpm-workspace.yaml`, since pnpm ignores the `resolutions` field. It also copies two groups of settings from the root workspace file:
 
-- `storeDir`, `cacheDir`, `minimumReleaseAge`, `minimumReleaseAgeExclude`, `resolutionMode`, and `allowBuilds`, so that the offline steps read the same store and metadata cache as the source project, and native dependencies are built the same way.
-- `packageExtensions`, `patchedDependencies`, `peerDependencyRules`, `ignoredOptionalDependencies`, `supportedArchitectures`, `autoInstallPeers`, `excludeLinksFromLockfile`, `dedupePeerDependents`, `catalog`, and `catalogs`, which change what the lockfile resolves to. Patch files are copied into the bundle.
+- `storeDir`, `cacheDir`, `registry`, `registries`, `namedRegistries`, `minimumReleaseAge`, `minimumReleaseAgeExclude`, `resolutionMode`, and `allowBuilds`, so that the offline steps read the same store and metadata cache as the source project, and native dependencies are built the same way.
+- `packageExtensions`, `patchedDependencies`, `pnpmfile`, `peerDependencyRules`, `ignoredOptionalDependencies`, `supportedArchitectures`, `autoInstallPeers`, `excludeLinksFromLockfile`, `dedupePeerDependents`, `catalog`, and `catalogs`, which change what the lockfile resolves to.
+
+The patch files and the pnpmfile are copied into the bundle. Files from outside of the workspace root are renamed when their names collide. Only the pnpmfile itself is copied, so a pnpmfile that loads other local files fails the command. Move that code into the pnpmfile. The registry settings of the root `.npmrc` file are copied into a `.npmrc` file of the bundle, since pnpm keeps its metadata cache per registry. Auth settings and credentials in registry URLs are not copied.
 
 Other settings of the root workspace file that could affect the result are named in a warning. When the root `package.json` pins a pnpm version in `packageManager`, the bundle `package.json` gets the same pin, so that the bundle uses that pnpm version even when it is written outside the source project.
 

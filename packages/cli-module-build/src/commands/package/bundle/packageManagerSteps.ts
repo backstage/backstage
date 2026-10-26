@@ -19,14 +19,12 @@ import { PackageManager, Pnpm, Yarn } from '@backstage/cli-node/alpha';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import {
-  basename,
   isAbsolute,
   join as joinPath,
-  relative as relativePath,
   resolve as resolvePath,
-  sep as pathSep,
 } from 'node:path';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { copyPnpmWorkspaceFiles } from '../../../lib/pnpmWorkspaceFiles';
 import { createStepLogger, showLogOnError } from './stepLogger';
 
 type StepLogger = ReturnType<typeof createStepLogger>;
@@ -227,9 +225,10 @@ const yarnSteps: BundlePackageManagerSteps = {
  * The first group makes the offline steps work. pnpm's store and metadata
  * cache are global on the machine, and the offline steps rely on both having
  * been filled by the install in the source project, so the bundle looks in
- * the same place. `minimumReleaseAge` and `resolutionMode` select between
- * separate metadata caches, and `allowBuilds` builds the same native
- * dependencies as the source project.
+ * the same place. The metadata cache is kept per registry, and
+ * `minimumReleaseAge` and `resolutionMode` select between separate metadata
+ * caches, and `allowBuilds` builds the same native dependencies as the source
+ * project.
  *
  * The second group changes what the lockfile resolves to. pnpm records these
  * in the lockfile and re-resolves the seeded one when they do not match, which
@@ -238,6 +237,9 @@ const yarnSteps: BundlePackageManagerSteps = {
 const PNPM_SETTINGS_TO_COPY = [
   'storeDir',
   'cacheDir',
+  'registry',
+  'registries',
+  'namedRegistries',
   'minimumReleaseAge',
   'minimumReleaseAgeExclude',
   'resolutionMode',
@@ -263,8 +265,9 @@ const PNPM_SETTINGS_SET_BY_BUNDLE = new Set([
   'nodeLinker',
   // Merged with the resolutions of the plugin and written from those
   'overrides',
-  // Copied together with the patch files it points at
+  // Copied together with the files they point at
   'patchedDependencies',
+  'pnpmfile',
 ]);
 
 /**
@@ -297,45 +300,11 @@ const PNPM_SETTINGS_WITHOUT_EFFECT_ON_BUNDLE = new Set([
   'updateNotifier',
 ]);
 
-/**
- * Copies the patch files of the source project into the bundle and returns a
- * `patchedDependencies` setting that points at the copies. A patch that is
- * inside the source project keeps its path, so that two patch files with the
- * same name do not collide.
- */
-async function copyPnpmPatches(options: {
-  rootDir: string;
-  targetDir: string;
-  patchedDependencies: Record<string, unknown>;
-}): Promise<Record<string, string>> {
-  const { rootDir, targetDir, patchedDependencies } = options;
+// Lines of an .npmrc file that pick the registry of all or of scoped packages
+const NPMRC_REGISTRY_PATTERN = /^\s*(@[^\s:=]+:)?registry\s*=/;
 
-  const copied: Record<string, string> = {};
-  for (const [name, value] of Object.entries(patchedDependencies)) {
-    if (typeof value !== 'string') {
-      continue;
-    }
-    const patchPath = isAbsolute(value) ? value : resolvePath(rootDir, value);
-    if (!(await fs.pathExists(patchPath))) {
-      console.warn(
-        chalk.yellow(
-          `The patch file for ${chalk.cyan(name)} was not found at ${chalk.cyan(
-            patchPath,
-          )}, the bundle will not be patched`,
-        ),
-      );
-      continue;
-    }
-    const fromRoot = relativePath(rootDir, patchPath);
-    const bundlePath =
-      fromRoot && !fromRoot.startsWith('..') && !isAbsolute(fromRoot)
-        ? fromRoot
-        : joinPath('patches', basename(patchPath));
-    await fs.copy(patchPath, joinPath(targetDir, bundlePath));
-    copied[name] = bundlePath.split(pathSep).join('/');
-  }
-  return copied;
-}
+// The user and password in a URL
+const URL_CREDENTIALS_PATTERN = /(:\/\/)[^/@\s]*@/;
 
 async function readPnpmWorkspaceConfig(
   rootDir: string,
@@ -376,9 +345,11 @@ export function describeMissingFromPnpmCache(
     const name = metadata?.[1] ?? 'a package';
     return (
       `pnpm has no cached metadata for ${name}. The bundle reads the ` +
-      `metadata cache through the cacheDir, minimumReleaseAge, and ` +
-      `resolutionMode settings in the pnpm-workspace.yaml of the project, so ` +
-      `install the project with the same settings before bundling.`
+      `metadata cache of the project, which pnpm keeps per registry, so it ` +
+      `uses the registry settings from the .npmrc and pnpm-workspace.yaml of ` +
+      `the project and from your user configuration, along with the ` +
+      `cacheDir, minimumReleaseAge, and resolutionMode settings. Install the ` +
+      `project with the same settings before bundling.`
     );
   }
 
@@ -424,9 +395,29 @@ async function runOfflinePnpmStep(
 const pnpmSteps: BundlePackageManagerSteps = {
   lockfileName: 'pnpm-lock.yaml',
 
-  async prepareBundleDir() {
+  async prepareBundleDir({ targetDir, rootDir }) {
     // The bundle pnpm-workspace.yaml is written together with the overrides
     // once those are known, which is before pnpm first runs in the bundle.
+
+    // pnpm keeps its metadata cache per registry, so the offline steps only
+    // find the packages of the project when they use the same registries.
+    // Auth settings and the credentials in registry URLs are left out, since
+    // the offline steps don't use them and the bundle may be shipped. pnpm
+    // keeps the metadata cache of a registry without its credentials.
+    const npmrcPath = joinPath(rootDir, '.npmrc');
+    if (await fs.pathExists(npmrcPath)) {
+      const registryLines = (await fs.readFile(npmrcPath, 'utf8'))
+        .split(/\r?\n/)
+        .filter(line => NPMRC_REGISTRY_PATTERN.test(line));
+      if (registryLines.length > 0) {
+        await fs.writeFile(
+          joinPath(targetDir, '.npmrc'),
+          `${registryLines
+            .map(line => line.trim().replace(URL_CREDENTIALS_PATTERN, '$1'))
+            .join('\n')}\n`,
+        );
+      }
+    }
   },
 
   async readRootOverrides({ rootDir }) {
@@ -474,17 +465,28 @@ const pnpmSteps: BundlePackageManagerSteps = {
     }
 
     // A patch is applied through a file, so the files come along with the
-    // setting that names them.
-    const patchedDependencies = rootConfig.patchedDependencies;
-    if (patchedDependencies && typeof patchedDependencies === 'object') {
-      const copied = await copyPnpmPatches({
-        rootDir,
-        targetDir,
-        patchedDependencies: patchedDependencies as Record<string, unknown>,
-      });
-      if (Object.keys(copied).length > 0) {
-        config.patchedDependencies = copied;
-      }
+    // setting that names them. The pnpmfiles change what the lockfile
+    // resolves to, and their checksum is part of it.
+    const copied = await copyPnpmWorkspaceFiles({
+      workspaceRootDir: rootDir,
+      targetDir,
+      settings: rootConfig,
+      targetName: 'the bundle',
+    });
+    for (const { name, path } of copied.missingPatches) {
+      console.warn(
+        chalk.yellow(
+          `The patch file for ${chalk.cyan(name)} was not found at ${chalk.cyan(
+            path,
+          )}, the bundle will not be patched`,
+        ),
+      );
+    }
+    if (Object.keys(copied.patchedDependencies).length > 0) {
+      config.patchedDependencies = copied.patchedDependencies;
+    }
+    if (copied.pnpmfile !== undefined) {
+      config.pnpmfile = copied.pnpmfile;
     }
 
     // pnpm ignores the `resolutions` field, so the merged overrides go into

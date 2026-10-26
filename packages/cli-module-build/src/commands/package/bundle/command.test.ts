@@ -778,6 +778,8 @@ overrides:
   some-dep: 1.0.0
 patchedDependencies:
   patched-dep@2.0.0: patches/patched-dep.patch
+registries:
+  '@ws': https://ws.example.com/
 catalog:
   react: ^18.0.0
 customSetting: true
@@ -798,6 +800,14 @@ customSetting: true
           'pnpm-workspace.yaml': pnpmWorkspace,
           'pnpm-lock.yaml': '# root pnpm-lock.yaml',
           'patches/patched-dep.patch': '# patch',
+          '.pnpmfile.cjs': 'module.exports = { hooks: {} };',
+          '.npmrc': [
+            'registry=https://registry.example.com/',
+            ' @priv:registry = https://priv.example.com/',
+            '@cred:registry=https://${NPM_USER}:${NPM_PASS}@cred.example.com/',
+            '//priv.example.com/:_authToken=secret',
+            'strict-ssl=false',
+          ].join('\n'),
           'tmp/.keep': '',
         });
         setupCreateDistWorkspaceMock(ctx.pluginDir);
@@ -817,6 +827,7 @@ customSetting: true
           nodeLinker: 'hoisted',
           storeDir: joinPath(mockDir.path, '.pnpm-store'),
           minimumReleaseAge: 4320,
+          registries: { '@ws': 'https://ws.example.com/' },
           catalog: { react: '^18.0.0' },
           patchedDependencies: {
             'patched-dep@2.0.0': 'patches/patched-dep.patch',
@@ -826,6 +837,13 @@ customSetting: true
         await expectPathExists(
           [ctx.targetDir, 'patches', 'patched-dep.patch'],
           true,
+        );
+        await expectPathExists([ctx.targetDir, '.pnpmfile.cjs'], true);
+        // Only the registry settings, and not the auth settings, are carried
+        await expect(
+          fs.readFile(joinPath(ctx.targetDir, '.npmrc'), 'utf8'),
+        ).resolves.toBe(
+          'registry=https://registry.example.com/\n@priv:registry = https://priv.example.com/\n@cred:registry=https://cred.example.com/\n',
         );
         await expectPathExists([ctx.targetDir, '.yarnrc.yml'], false);
         await expect(
@@ -1285,7 +1303,7 @@ describe('describeMissingFromPnpmCache', () => {
       is-odd.jsonl
 `),
     ).toMatch(
-      /^pnpm has no cached metadata for is-odd\. .*cacheDir, minimumReleaseAge, and resolutionMode/,
+      /^pnpm has no cached metadata for is-odd\. .*per registry, .*registry settings from the \.npmrc and pnpm-workspace\.yaml .*cacheDir, minimumReleaseAge, and resolutionMode/,
     );
 
     expect(
