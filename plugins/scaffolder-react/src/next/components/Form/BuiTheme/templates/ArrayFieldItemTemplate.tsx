@@ -57,13 +57,13 @@ export default function ArrayFieldItemTemplate<
   onReorderClick,
   readonly,
   schema,
+  uiSchema,
 }: ArrayFieldTemplateItemType<T, S, F>) {
   const [isOpen, setIsOpen] = useState(true);
 
-  const itemSchema = schema?.items as S | undefined;
-  const itemTitle = itemSchema?.title
-    ? `${itemSchema.title} ${index + 1}`
-    : `Item ${index + 1}`;
+  const itemTitle =
+    uiSchema?.['ui:title'] ??
+    (schema.title ? `${schema.title} ${index + 1}` : `Item ${index + 1}`);
 
   return (
     <Box mb="4">
