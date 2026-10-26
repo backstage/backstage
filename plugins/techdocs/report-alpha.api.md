@@ -26,9 +26,8 @@ import { SearchFilterResultTypeBlueprintParams } from '@backstage/plugin-search-
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import { SnapshotSource } from '@backstage/types';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
-import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -349,7 +348,12 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -457,7 +461,12 @@ const _default: OverridableFrontendPlugin<
       name: 'reader';
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

@@ -80,12 +80,6 @@ export type Observer<T> = {
 };
 
 // @public
-export interface SnapshotSource<T> {
-  readonly getSnapshot: () => T;
-  readonly subscribe: (onChange: () => void) => () => void;
-}
-
-// @public
 export type Subscription = {
   unsubscribe(): void;
   readonly closed: boolean;

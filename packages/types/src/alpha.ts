@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { TranslationRef } from './TranslationRef';
-
-/**
- * A reference to a directly displayable message without interpolation or nesting.
- * @public
- */
-export type TranslationMessageRef<
-  TMessages extends { [key: string]: string } = { [key: string]: string },
-> = {
-  [TKey in Extract<keyof TMessages, string>]: {
-    /** The translation ref that owns the message. */
-    ref: TranslationRef<string, TMessages>;
-    /** The message key within the ref. */
-    key: TKey;
-  };
-}[Extract<keyof TMessages, string>];
+export type { SnapshotSource } from './snapshot';

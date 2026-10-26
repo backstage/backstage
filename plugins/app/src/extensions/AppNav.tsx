@@ -37,7 +37,6 @@ import {
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
-import { SnapshotSource } from '@backstage/types';
 import { createSnapshotSourceCollection } from '@internal/frontend';
 
 class NavItemBag implements NavContentNavItems {
@@ -157,19 +156,24 @@ function NavContentRenderer(props: {
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
   const titleSource = useMemo(() => {
-    const sources = new Map<string, SnapshotSource<string>>();
     const pages =
       appTreeApi
         .getTree()
         .tree.nodes.get('app/routes')
         ?.edges.attachments.get('routes') ?? [];
-    for (const page of pages) {
-      if (!page.spec.disabled) {
-        const source = page.instance?.getData(coreExtensionData.titleSource);
-        if (source) sources.set(page.spec.id, source);
-      }
-    }
-    return createSnapshotSourceCollection(sources);
+    return createSnapshotSourceCollection(
+      pages.map(page => {
+        const source = page.spec.disabled
+          ? undefined
+          : page.instance?.getData(coreExtensionData.titleSource);
+        return (
+          source ?? {
+            getSnapshot: () => undefined,
+            subscribe: () => () => {},
+          }
+        );
+      }),
+    );
   }, [appTreeApi]);
   const translatedTitles = useSyncExternalStore(
     titleSource.subscribe,
@@ -206,7 +210,7 @@ function NavContentRenderer(props: {
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
-    const items = pageNodes.flatMap((node): NavContentNavItem[] => {
+    const items = pageNodes.flatMap((node, index): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
         return [];
       }
@@ -232,7 +236,7 @@ function NavContentRenderer(props: {
         ? resolvedTitle
         : matchingNavItem?.title ?? pluginTitle ?? pluginId;
 
-      const title = translatedTitles.get(node.spec.id) ?? staticTitle;
+      const title = translatedTitles[index] ?? staticTitle;
 
       // PageBlueprint resolves icon as: params.icon ?? plugin.icon
       // We want the priority: page (params) -> nav item -> plugin -> (excluded)

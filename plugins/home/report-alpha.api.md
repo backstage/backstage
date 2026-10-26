@@ -18,8 +18,7 @@ import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { SnapshotSource } from '@backstage/types';
-import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
@@ -278,7 +277,12 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;

@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import { SnapshotSource } from '@backstage/types';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { ApiHolder } from '../apis';
-import { TranslationMessageRef } from './TranslationMessageRef';
-import { toInternalTranslationRef } from './TranslationRef';
+import { TranslationRef, toInternalTranslationRef } from './TranslationRef';
 import { createTranslationTitleSource } from './createTranslationTitleSource';
 
 /** @internal */
 export function resolveTranslationTitle(
-  title: string | TranslationMessageRef,
+  title: string | { ref: TranslationRef; key: string },
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string; source?: SnapshotSource<string> };
 export function resolveTranslationTitle(
-  title: string | TranslationMessageRef | undefined,
+  title: string | { ref: TranslationRef; key: string } | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string | undefined; source?: SnapshotSource<string> };
 export function resolveTranslationTitle(
-  title: string | TranslationMessageRef | undefined,
+  title: string | { ref: TranslationRef; key: string } | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string | undefined; source?: SnapshotSource<string> } {

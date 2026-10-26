@@ -14,39 +14,33 @@
  * limitations under the License.
  */
 
-import { SnapshotSource } from '@backstage/types';
+import { SnapshotSource } from '@backstage/types/alpha';
 
 /**
- * Aggregates the sources of a stable extension collection into one cached snapshot.
+ * Aggregates a stable array of sources into a cached snapshot in the same order.
  * Shared by page and navigation consumers so hooks are never called inside loops.
  * @internal
  */
-export function createSnapshotSourceCollection<TKey, TValue>(
-  sources: ReadonlyMap<TKey, SnapshotSource<TValue>>,
-): SnapshotSource<ReadonlyMap<TKey, TValue>> {
-  let snapshot: ReadonlyMap<TKey, TValue> = new Map(
-    Array.from(sources, ([key, source]) => [key, source.getSnapshot()]),
-  );
+export function createSnapshotSourceCollection<TValue>(
+  sources: readonly SnapshotSource<TValue>[],
+): SnapshotSource<readonly TValue[]> {
+  let snapshot: readonly TValue[] = sources.map(source => source.getSnapshot());
   const listeners = new Set<() => void>();
   let disconnect: (() => void) | undefined;
 
   const connect = () => {
     let active = true;
     const update = () => {
-      if (!active) return;
-      const next = new Map(
-        Array.from(sources, ([key, source]) => [key, source.getSnapshot()]),
-      );
-      if (
-        Array.from(next).some(
-          ([key, value]) => !Object.is(value, snapshot.get(key)),
-        )
-      ) {
+      if (!active) {
+        return;
+      }
+      const next = sources.map(source => source.getSnapshot());
+      if (next.some((value, index) => !Object.is(value, snapshot[index]))) {
         snapshot = next;
         listeners.forEach(listener => listener());
       }
     };
-    const stops = Array.from(new Set(sources.values()), source =>
+    const stops = Array.from(new Set(sources), source =>
       source.subscribe(update),
     );
     update();
@@ -61,7 +55,9 @@ export function createSnapshotSourceCollection<TKey, TValue>(
     subscribe: onChange => {
       const listener = () => onChange();
       listeners.add(listener);
-      if (listeners.size === 1) disconnect = connect();
+      if (listeners.size === 1) {
+        disconnect = connect();
+      }
       return () => {
         if (listeners.delete(listener) && listeners.size === 0) {
           disconnect?.();

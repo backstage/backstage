@@ -338,60 +338,11 @@ plain title during initial loading. A configured `title` supplies that plain
 fallback instead. Resolved translations take precedence over configured and plain
 titles. Missing locale messages use the translation API's existing fallback.
 Later language changes retain the previously resolved title while loading, without
-remounting page content. Failures are reported through the error API, and the
-source uses the API's fallback when available.
+remounting page content. Failed loads use the translation API's fallback when available.
 
 Message keys are validated when the extension is instantiated. Titles must not
 require interpolation or pluralization arguments, or contain nested `$t(...)`
-references, so the declared default is directly usable as a string. For compile-time key checking,
-check the descriptor against the ref's message type:
-
-```ts
-import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
-
-const title = {
-  ref: myPluginTranslationRef,
-  key: 'indexPage.title',
-} satisfies TranslationMessageRef<typeof myPluginTranslationRef.T>;
-```
-
-The plain object blueprint parameter does not itself infer the relationship
-between the ref and key; use the typed descriptor when you want that check before
-startup.
-
-### Consuming runtime titles
-
-`coreExtensionData.title` remains a static string. For a translated title, the
-blueprint also emits `coreExtensionData.titleSource`, a
-`SnapshotSource<string>` from `@backstage/types`. The page header and consumers
-that opt in share this source. Framework navigation labels and sorting, sub-page
-tabs, and breadcrumbs consume it automatically.
-
-Custom consumers can read and subscribe directly with `useSyncExternalStore`:
-
-```tsx
-import { SnapshotSource } from '@backstage/types';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
-
-function RuntimeTitle(props: { source: SnapshotSource<string> }) {
-  const title = useSyncExternalStore(
-    props.source.subscribe,
-    props.source.getSnapshot,
-  );
-  return <span>{title}</span>;
-}
-```
-
-When an extension has no title source, use its static title and the consumer's
-existing fallback. Custom extensions can emit a title source backed by their own
-runtime state. A source exposes only synchronous reads and change notifications;
-its owner controls updates, loading, and errors. Subscribe only when the value is
-being consumed, publish before notifying, and release external subscriptions when
-the last consumer leaves. Snapshots must be immutable and stable while unchanged.
-
-Consumers that only read the plain title continue to work and show the static
-fallback. A plugin's custom header must consume the source itself to participate;
-this mechanism does not rewrite strings inside arbitrary plugin content.
+references, so the declared default is directly usable as a string.
 
 ### Using the CLI for full translation workflows
 
