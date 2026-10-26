@@ -457,15 +457,25 @@ describe('useTaskEventStream', () => {
             body: { message: 'Recovered' },
           } as LogEvent),
         );
-        expect(result.current.cancelled).toBe(false);
-        expect(result.current.task?.status).toBe('processing');
-        expect(result.current.steps.active).toEqual({
-          id: 'active',
-          status: 'open',
-          startedAt: undefined,
-          endedAt: undefined,
-        });
       }
+      expect(result.current.cancelled).toBe(!recoverable);
+      expect(result.current.task?.status).toBe(
+        recoverable ? 'processing' : 'cancelled',
+      );
+      expect(result.current.steps.active).toMatchObject(
+        recoverable
+          ? {
+              id: 'active',
+              status: 'open',
+              startedAt: undefined,
+              endedAt: undefined,
+            }
+          : {
+              id: 'active',
+              status: 'cancelled',
+              endedAt: '2026-01-01T00:00:05Z',
+            },
+      );
     },
   );
 
