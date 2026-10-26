@@ -15,7 +15,7 @@
  */
 
 import {
-  RootHttpRouterServiceWebSocketOptions,
+  RootHttpRouterServiceWebSocketHandler,
   LoggerService,
   RootHttpRouterService,
 } from '@backstage/backend-plugin-api';
@@ -51,7 +51,7 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
   #indexPath?: string;
   #webSocketHandlers = new Map<
     string,
-    RootHttpRouterServiceWebSocketOptions['handler']
+    RootHttpRouterServiceWebSocketHandler['handler']
   >();
   #webSockets = new Set<Duplex>();
   #webSocketServer?: Server;
@@ -112,7 +112,7 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
   addWebSocketHandler({
     path,
     handler,
-  }: RootHttpRouterServiceWebSocketOptions): void {
+  }: RootHttpRouterServiceWebSocketHandler): void {
     if (
       !path.startsWith('/') ||
       /[?#\\]/.test(path) ||

@@ -59,7 +59,7 @@ export function createRouter(options: RouterOptions): express.Router {
   httpRouter.addWebSocketHandler({
     path: '/',
     authPolicy: 'user',
-    async handler(request, socket, head, { credentials, authProtocol }) {
+    async handler({ request, socket, head, credentials, authProtocol }) {
       if (!auth.isPrincipal(credentials, 'user')) {
         throw new Error('Signals requires user credentials');
       }

@@ -430,7 +430,7 @@ export interface HttpAuthService {
 // @public
 export interface HttpRouterService {
   addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
-  addWebSocketHandler(options: HttpRouterServiceWebSocketOptions): void;
+  addWebSocketHandler(options: HttpRouterServiceWebSocketHandler): void;
   use(handler: Handler): void;
 }
 
@@ -456,15 +456,9 @@ export interface HttpRouterServiceWebSocketContext {
 }
 
 // @public
-export type HttpRouterServiceWebSocketHandler = (
-  context: HttpRouterServiceWebSocketContext,
-) => void | Promise<void>;
-
-// @public
-export interface HttpRouterServiceWebSocketOptions {
+export interface HttpRouterServiceWebSocketHandler {
   authPolicy?: 'authenticated' | 'user' | 'user-cookie' | 'unauthenticated';
-  // (undocumented)
-  handler: HttpRouterServiceWebSocketHandler;
+  handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
   path: string;
 }
 
@@ -627,12 +621,12 @@ export interface RootHealthService {
 
 // @public
 export interface RootHttpRouterService {
-  addWebSocketHandler(options: RootHttpRouterServiceWebSocketOptions): void;
+  addWebSocketHandler(options: RootHttpRouterServiceWebSocketHandler): void;
   use(path: string, handler: Handler): void;
 }
 
 // @public
-export interface RootHttpRouterServiceWebSocketOptions {
+export interface RootHttpRouterServiceWebSocketHandler {
   // (undocumented)
   handler(context: {
     request: IncomingMessage;

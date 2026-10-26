@@ -24,7 +24,7 @@ import type { Duplex } from 'node:stream';
  *
  * @public
  */
-export interface RootHttpRouterServiceWebSocketOptions {
+export interface RootHttpRouterServiceWebSocketHandler {
   path: string;
   handler(context: {
     request: IncomingMessage;
@@ -54,5 +54,5 @@ export interface RootHttpRouterService {
    * The handler owns authentication, origin checks, and the handshake or
    * forwarding. HTTP middleware and auth policies do not apply.
    */
-  addWebSocketHandler(options: RootHttpRouterServiceWebSocketOptions): void;
+  addWebSocketHandler(options: RootHttpRouterServiceWebSocketHandler): void;
 }

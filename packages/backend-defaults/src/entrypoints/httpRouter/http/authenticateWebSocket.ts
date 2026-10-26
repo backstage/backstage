@@ -17,7 +17,7 @@
 import type {
   AuthService,
   HttpRouterServiceWebSocketContext,
-  HttpRouterServiceWebSocketOptions,
+  HttpRouterServiceWebSocketHandler,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
@@ -29,7 +29,7 @@ export async function authenticateWebSocket(options: {
   auth: AuthService;
   config: RootConfigService;
   request: IncomingMessage;
-  authPolicy: NonNullable<HttpRouterServiceWebSocketOptions['authPolicy']>;
+  authPolicy: NonNullable<HttpRouterServiceWebSocketHandler['authPolicy']>;
 }): Promise<
   Pick<HttpRouterServiceWebSocketContext, 'credentials' | 'authProtocol'>
 > {
