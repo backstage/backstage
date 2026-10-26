@@ -71,6 +71,9 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
       <div>
         <button onClick={() => languageApi.setLanguage('sv')}>Swedish</button>
         <button onClick={() => languageApi.setLanguage('en')}>English</button>
+        <button onClick={() => languageApi.setLanguage('de')}>
+          Empty title
+        </button>
       </div>
     );
   }
@@ -164,6 +167,16 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
               resource: createTranslationResource({
                 ref: titleRef,
                 translations: {
+                  de: async () => ({
+                    default: {
+                      page: '',
+                      overview: null,
+                      other: null,
+                      configuredPage: null,
+                      configuredTab: null,
+                      disabled: null,
+                    },
+                  }),
                   sv: async () => ({
                     default: {
                       page: 'API-dokumentation',
@@ -201,7 +214,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         extensions: [
           {
             'api:app/app-language': {
-              config: { availableLanguages: ['en', 'sv'] },
+              config: { availableLanguages: ['en', 'sv', 'de'] },
             },
           },
           {
@@ -258,6 +271,15 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
     screen.getByRole('tab', { name: 'Translated tab' }),
   ).toBeInTheDocument();
   expect(screen.queryByText('Translated disabled')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Empty title' }));
+  expect(
+    await screen.findByText('Overview', { selector: 'output' }),
+  ).toBeInTheDocument();
+  expect(screen.getByLabelText('Page state')).toHaveValue(
+    'kept across languages',
+  );
+  expect(mount).toHaveBeenCalledTimes(1);
+  expect(unmount).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: 'English' }));
   expect(await screen.findByText('APIs / Overview')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'APIs' })).toBeInTheDocument();
