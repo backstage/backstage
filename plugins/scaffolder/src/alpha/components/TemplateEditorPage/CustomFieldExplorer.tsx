@@ -25,7 +25,7 @@ import { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import validator from '@rjsf/validator-ajv8';
+import { validator } from '@internal/rjsf-validator';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
