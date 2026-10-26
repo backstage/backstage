@@ -15,7 +15,14 @@
  */
 
 import fs from 'node:fs';
-import { dirname, resolve as resolvePath } from 'node:path';
+import {
+  dirname,
+  relative as relativePath,
+  resolve as resolvePath,
+  sep,
+} from 'node:path';
+import { Minimatch } from 'minimatch';
+import yaml from 'yaml';
 
 /**
  * The name of the backstage's config file
@@ -56,9 +63,10 @@ export type TargetPaths = {
    * The root directory of the package manager workspace that contains the
    * target directory. This is the nearest directory with a
    * `pnpm-workspace.yaml` file, or with a `package.json` that has a
-   * `workspaces` field. pnpm ignores the `workspaces` field, so within a pnpm
-   * workspace it only starts a workspace of its own for a Yarn project, which
-   * has a `yarn.lock` or `.yarnrc.yml` file. The lockfile and the package
+   * `workspaces` field. pnpm ignores the `workspaces` field, so a directory
+   * with one is part of a pnpm workspace above it when the `packages`
+   * patterns of that workspace include the directory or a directory inside
+   * it, and a workspace of its own otherwise. The lockfile and the package
    * manager configuration live here, and installs act on everything inside
    * it.
    *
@@ -304,10 +312,41 @@ function hasPnpmWorkspaceFile(dir: string): boolean {
   return fs.existsSync(resolvePath(dir, 'pnpm-workspace.yaml'));
 }
 
-function isYarnProject(dir: string): boolean {
+function readPnpmWorkspacePatterns(dir: string): string[] {
+  const path = resolvePath(dir, 'pnpm-workspace.yaml');
+  try {
+    const data = yaml.parse(fs.readFileSync(path, 'utf8'));
+    return Array.isArray(data?.packages) ? data.packages.map(String) : [];
+  } catch (error) {
+    throw new Error(
+      `Failed to parse pnpm-workspace.yaml file while searching for root, ${error}`,
+    );
+  }
+}
+
+/**
+ * Returns true if the nearest `pnpm-workspace.yaml` above `dir` includes
+ * `dir` or a directory inside it in its `packages` field. Without a
+ * `packages` field, a pnpm workspace only includes its root. A negated
+ * pattern that matches `dir` leaves out all of it.
+ */
+function isInPnpmWorkspace(dir: string): boolean {
+  const parentDir = dirname(dir);
+  if (parentDir === dir) {
+    return false;
+  }
+  const pnpmRootDir = findAncestorDir(parentDir, hasPnpmWorkspaceFile);
+  if (!pnpmRootDir) {
+    return false;
+  }
+  const relDir = relativePath(pnpmRootDir, dir).split(sep).join('/');
+  const matchers = readPnpmWorkspacePatterns(pnpmRootDir).map(
+    pattern => new Minimatch(pattern.replace(/^(!?)\.\//, '$1')),
+  );
   return (
-    fs.existsSync(resolvePath(dir, 'yarn.lock')) ||
-    fs.existsSync(resolvePath(dir, '.yarnrc.yml'))
+    matchers.some(m => !m.negate && m.match(relDir, true)) &&
+    // The trailing slash also matches patterns that end with /**
+    !matchers.some(m => m.negate && !m.match(`${relDir}/`))
   );
 }
 
@@ -337,17 +376,15 @@ function findAncestorDir(
 /**
  * Finds the root of the Yarn, npm, or pnpm workspace that contains `dir`.
  * pnpm reads its workspace packages from `pnpm-workspace.yaml` and ignores
- * the `workspaces` field, so within a pnpm workspace that field only counts
- * for a Yarn project of its own.
+ * the `workspaces` field, so that field only starts a workspace of its own
+ * when no pnpm workspace above includes the directory.
  */
 function findWorkspaceRootDir(dir: string): string | undefined {
-  const inPnpmWorkspace =
-    findAncestorDir(dir, hasPnpmWorkspaceFile) !== undefined;
   return findAncestorDir(
     dir,
     path =>
       hasPnpmWorkspaceFile(path) ||
-      (hasWorkspacesField(path) && (!inPnpmWorkspace || isYarnProject(path))),
+      (hasWorkspacesField(path) && !isInPnpmWorkspace(path)),
   );
 }
 
