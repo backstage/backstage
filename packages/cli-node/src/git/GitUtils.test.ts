@@ -16,7 +16,7 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
-import { runGit, GitUtils } from './GitUtils';
+import { runGit, GitUtils, readFilesAtRef } from './GitUtils';
 
 const mockDir = createMockDirectory();
 overrideTargetPaths(mockDir.path);
@@ -39,7 +39,7 @@ function commit(message: string) {
 }
 
 beforeAll(async () => {
-  mockDir.setContent({ 'a.txt': 'a', 'b.txt': 'b' });
+  mockDir.setContent({ 'a.txt': 'a', 'b.txt': 'b', 'dir/ö.txt': 'åäö\n' });
   await runGit('init', '--quiet', '--initial-branch', 'main');
   await runGit('add', '.');
   await commit('initial');
@@ -89,5 +89,33 @@ describe('listChangedFiles', () => {
       'b.txt',
       'c.txt',
     ]);
+  });
+});
+
+describe('readFilesAtRef', () => {
+  it('reads files at the merge base in one go', async () => {
+    await expect(readFilesAtRef([], 'main')).resolves.toEqual([]);
+    await expect(
+      readFilesAtRef(
+        ['a.txt', 'missing.txt', 'dir', 'dir/ö.txt', 'b.txt'],
+        'main',
+      ),
+    ).resolves.toEqual(['a', undefined, undefined, 'åäö\n', 'b']);
+    await expect(readFilesAtRef(['a.txt'], 'feature')).resolves.toEqual([
+      'changed',
+    ]);
+    await expect(readFilesAtRef(['a.txt'], 'missing-ref')).resolves.toEqual([
+      undefined,
+    ]);
+
+    // Paths are relative to a workspace root in a subdirectory of the repo
+    const subdir = overrideTargetPaths(mockDir.resolve('dir'));
+    try {
+      await expect(readFilesAtRef(['ö.txt'], 'main')).resolves.toEqual([
+        'åäö\n',
+      ]);
+    } finally {
+      subdir.restore();
+    }
   });
 });

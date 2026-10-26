@@ -286,9 +286,8 @@ describe('Pnpm', () => {
     );
 
     const named = await local.parseLockfile(mockLockfile, {
-      readWorkspacePackageJson: async dir => ({
-        name: dir === '.' ? 'root' : 'b',
-      }),
+      readWorkspacePackageJsons: async dirs =>
+        dirs.map(dir => ({ name: dir === '.' ? 'root' : 'b' })),
     });
     expect(named.diff(loaded)).toEqual({ added: [], changed: [], removed: [] });
   });

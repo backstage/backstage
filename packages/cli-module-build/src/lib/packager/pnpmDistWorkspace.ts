@@ -15,19 +15,13 @@
  */
 
 import fs from 'fs-extra';
-import {
-  basename,
-  isAbsolute,
-  join as joinPath,
-  relative as relativePath,
-  resolve as resolvePath,
-  sep as pathSep,
-} from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
+import { resolve as resolvePath, sep as pathSep } from 'node:path';
 import { Document, parseAllDocuments, parseDocument } from 'yaml';
+import { copyPnpmWorkspaceFiles } from '../pnpmWorkspaceFiles';
 
 const LOCKFILE = 'pnpm-lock.yaml';
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
-const DEFAULT_PNPMFILES = ['.pnpmfile.cjs', '.pnpmfile.mjs'];
 const DEPENDENCY_FIELDS = [
   'dependencies',
   'devDependencies',
@@ -38,10 +32,6 @@ const DEPENDENCY_FIELDS = [
 // Keeps the formatting that pnpm writes as far as possible
 const STRINGIFY_OPTIONS = { lineWidth: 0, flowCollectionPadding: false };
 
-// require() and import() calls and import statements of relative paths
-const LOCAL_IMPORT_PATTERN =
-  /(?:\brequire(?:\.resolve)?\s*\(|\bimport\s*\(|\bfrom|\bimport)\s*(['"`])(\.\.?\/[^'"`]*)\1/g;
-
 /**
  * Prepares a dist workspace that was created from a pnpm workspace, so that
  * `pnpm install --frozen-lockfile` works in it. The lockfile and
@@ -49,9 +39,9 @@ const LOCAL_IMPORT_PATTERN =
  *
  * - The lockfile entries of bundled packages are emptied, since their
  *   dependencies are removed from their `package.json` in the dist workspace.
- * - The patch files that `patchedDependencies` points at, and the pnpmfile,
+ * - The patch files that `patchedDependencies` points at, and the pnpmfiles,
  *   are copied. Patch files outside of the workspace root are copied into
- *   `patches`, and a pnpmfile outside of it into the root of the dist
+ *   `patches`, and pnpmfiles outside of it into the root of the dist
  *   workspace, and the settings are changed to point at the copies. A
  *   pnpmfile that loads other local files fails, since those are not copied.
  *
@@ -85,48 +75,27 @@ export async function preparePnpmDistWorkspace(options: {
   let changed = false;
 
   // A patch is applied through a file, so the files come along with the
-  // setting that names them
-  for (const [name, path] of Object.entries(
-    settings.patchedDependencies ?? {},
-  )) {
-    if (typeof path !== 'string') {
-      continue;
-    }
-    const copied = await copyFromWorkspace(
-      workspaceRootDir,
-      targetDir,
-      path,
-      'patches',
-    );
-    if (copied) {
-      files.push(copied.path);
-      if (copied.moved) {
-        doc.setIn(['patchedDependencies', name], copied.path);
-        changed = true;
-      }
+  // setting that names them. The checksum of the pnpmfiles is part of the
+  // lockfile.
+  const copied = await copyPnpmWorkspaceFiles({
+    workspaceRootDir,
+    targetDir,
+    settings,
+    targetName: 'the dist workspace',
+  });
+  files.push(...copied.files);
+  for (const [name, path] of Object.entries(copied.patchedDependencies)) {
+    if (settings.patchedDependencies?.[name] !== path) {
+      doc.setIn(['patchedDependencies', name], path);
+      changed = true;
     }
   }
-
-  // The checksum of the pnpmfile is part of the lockfile
-  const pnpmfiles =
-    typeof settings.pnpmfile === 'string'
-      ? [settings.pnpmfile]
-      : DEFAULT_PNPMFILES;
-  for (const path of pnpmfiles) {
-    const copied = await copyFromWorkspace(
-      workspaceRootDir,
-      targetDir,
-      path,
-      '.',
-    );
-    if (copied) {
-      await checkPnpmfileImports(resolvePath(targetDir, copied.path), path);
-      files.push(copied.path);
-      if (copied.moved) {
-        doc.set('pnpmfile', copied.path);
-        changed = true;
-      }
-    }
+  if (
+    copied.pnpmfile !== undefined &&
+    !isDeepStrictEqual(copied.pnpmfile, settings.pnpmfile)
+  ) {
+    doc.set('pnpmfile', copied.pnpmfile);
+    changed = true;
   }
 
   if (changed) {
@@ -187,52 +156,6 @@ async function emptyLockfileImporters(
       docs.map(doc => doc.toString(STRINGIFY_OPTIONS)).join('\n'),
     );
   }
-}
-
-/**
- * Fails when a pnpmfile loads local files, since only the pnpmfile itself is
- * copied into the dist workspace and the install would not find them.
- */
-async function checkPnpmfileImports(pnpmfilePath: string, name: string) {
-  const source = (await fs.readFile(pnpmfilePath, 'utf8'))
-    // Imports in comments don't count
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/(^|\s)\/\/.*$/gm, '$1');
-  const imports = Array.from(
-    source.matchAll(LOCAL_IMPORT_PATTERN),
-    match => match[2],
-  );
-  if (imports.length > 0) {
-    throw new Error(
-      `The pnpmfile ${name} loads ${imports.join(
-        ', ',
-      )}, but only the pnpmfile itself is copied into the dist workspace. Move that code into the pnpmfile.`,
-    );
-  }
-}
-
-/**
- * Copies a file of the source workspace into the dist workspace. A file
- * inside the workspace keeps its relative path, while a file outside of it is
- * moved into the given directory of the dist workspace.
- */
-async function copyFromWorkspace(
-  workspaceRootDir: string,
-  targetDir: string,
-  path: string,
-  outsideDir: string,
-): Promise<{ path: string; moved: boolean } | undefined> {
-  const sourcePath = resolvePath(workspaceRootDir, path);
-  if (!(await fs.pathExists(sourcePath))) {
-    return undefined;
-  }
-  const fromRoot = relativePath(workspaceRootDir, sourcePath);
-  const moved = !fromRoot || fromRoot.startsWith('..') || isAbsolute(fromRoot);
-  const targetPath = moved
-    ? joinPath(outsideDir, basename(sourcePath))
-    : fromRoot;
-  await fs.copy(sourcePath, joinPath(targetDir, targetPath));
-  return { path: toPosixPath(targetPath), moved };
 }
 
 function toPosixPath(path: string) {
