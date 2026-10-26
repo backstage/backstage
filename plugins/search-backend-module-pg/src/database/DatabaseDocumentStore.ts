@@ -122,14 +122,16 @@ export class DatabaseDocumentStore implements DatabaseStore {
       : 'document';
 
     // Copy all new rows into the documents table
+    const rowsToInsert = tx<RawDocumentRow>('documents_to_insert')
+      .select('type', documentSelect, 'hash')
+      .whereNotExists(
+        tx<RawDocumentRow>('documents')
+          .select(tx.raw('1'))
+          .whereRaw('documents.hash = documents_to_insert.hash'),
+      );
+
     await tx
-      .insert(
-        tx<RawDocumentRow>('documents_to_insert').select(
-          'type',
-          documentSelect,
-          'hash',
-        ),
-      )
+      .insert(rowsToInsert)
       .into(tx.raw('documents (type, document, hash)'))
       .onConflict('hash')
       .ignore();

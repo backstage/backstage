@@ -105,6 +105,43 @@ describe.each(supportedDatabases.eachSupportedId())(
       ).toEqual([{ count: '2' }]);
     });
 
+    it('should re-index unchanged documents without re-inserting or failing', async () => {
+      const { store, knex } = await createStore();
+
+      const documents = [
+        {
+          title: 'TITLE 1',
+          text: 'TEXT 1',
+          location: 'LOCATION-1',
+        },
+        {
+          title: 'TITLE 2',
+          text: 'TEXT 2',
+          location: 'LOCATION-2',
+        },
+      ];
+
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'my-type', documents);
+        await store.completeInsert(tx, 'my-type');
+      });
+
+      expect(
+        await knex.count('*').where('type', 'my-type').from('documents'),
+      ).toEqual([{ count: '2' }]);
+
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'my-type', documents);
+        await store.completeInsert(tx, 'my-type');
+      });
+
+      expect(
+        await knex.count('*').where('type', 'my-type').from('documents'),
+      ).toEqual([{ count: '2' }]);
+    });
+
     it('should insert truncated documents', async () => {
       const { store, knex } = await createStore();
 
