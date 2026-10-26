@@ -68,7 +68,7 @@ type ReducerLogEntry = {
 
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
-  | { type: 'CANCELLED' }
+  | { type: 'CANCELLED'; data: ReducerLogEntry }
   | { type: 'RECOVERED'; data: ReducerLogEntry }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
   | { type: 'COMPLETED'; data: ReducerLogEntry }
@@ -145,10 +145,24 @@ function reducer(draft: TaskStream, action: ReducerAction) {
 
     case 'CANCELLED': {
       draft.cancelled = true;
+      if (draft.task) {
+        draft.task.status = 'cancelled';
+      }
+      for (const step of Object.values(draft.steps)) {
+        if (step.status === 'processing') {
+          step.status = 'cancelled';
+          step.endedAt = action.data.createdAt;
+        } else if (step.status === 'open') {
+          step.status = 'skipped';
+        }
+      }
       return;
     }
 
     case 'RECOVERED': {
+      if (draft.task) {
+        draft.task.status = 'processing';
+      }
       draft.cancelled = false;
       draft.completed = false;
       draft.output = undefined;
@@ -183,7 +197,8 @@ function reducer(draft: TaskStream, action: ReducerAction) {
 }
 
 /**
- * A hook to stream the logs of a task being processed
+ * A hook to stream the logs of a task being processed. Cancellation marks active
+ * steps as cancelled and unstarted steps as skipped, preserving finished steps.
  *
  * @public
  */
@@ -267,7 +282,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                 isStreamComplete = true;
               }
               emitLogs();
-              dispatch({ type: 'CANCELLED' });
+              dispatch({ type: 'CANCELLED', data: event });
               if (isStreamComplete) {
                 cleanUpStream();
               }

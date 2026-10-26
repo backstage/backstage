@@ -380,6 +380,95 @@ describe('useTaskEventStream', () => {
     expect(mockApi.streamLogs).toHaveBeenCalledTimes(1);
   });
 
+  it.each([false, true])(
+    'updates step states on cancellation (recoverable: %s)',
+    async recoverable => {
+      let subscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+      const unsubscribe = jest.fn();
+      const task = makeTask();
+      task.spec.steps = ['done', 'active', 'pending', 'failed', 'skipped'].map(
+        id => ({ id, action: 'debug:log', name: id }),
+      );
+      if (recoverable)
+        task.spec.EXPERIMENTAL_recovery = {
+          EXPERIMENTAL_strategy: 'startOver',
+        };
+      const mockApi = {
+        getTask: jest.fn().mockResolvedValue(task),
+        streamLogs: jest.fn().mockImplementation(
+          () =>
+            new ObservableImpl<LogEvent>(observer => {
+              subscriber = observer;
+              return unsubscribe;
+            }),
+        ),
+      };
+      const { result } = setup(mockApi);
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      act(() => {
+        for (const [i, [stepId, status]] of Object.entries({
+          done: 'completed',
+          active: 'processing',
+          failed: 'failed',
+          skipped: 'skipped',
+        }).entries()) {
+          subscriber.next({
+            ...makeLogEvent(i + 1, stepId),
+            body: { message: stepId, stepId, status },
+          } as LogEvent);
+        }
+        subscriber.next({
+          id: 5,
+          taskId: task.id,
+          type: 'cancelled',
+          createdAt: '2026-01-01T00:00:05Z',
+          body: { message: 'Cancelled' },
+        } as LogEvent);
+      });
+      expect(result.current.cancelled).toBe(true);
+      expect(result.current.task?.status).toBe('cancelled');
+      expect(result.current.steps.active).toMatchObject({
+        status: 'cancelled',
+        startedAt: '2026-01-01T00:00:00Z',
+        endedAt: '2026-01-01T00:00:05Z',
+      });
+      expect(result.current.steps.pending).toEqual({
+        id: 'pending',
+        status: 'skipped',
+      });
+      expect(result.current.steps.done).toMatchObject({
+        status: 'completed',
+        endedAt: '2026-01-01T00:00:00Z',
+      });
+      expect(result.current.steps.failed.status).toBe('failed');
+      expect(result.current.steps.skipped.status).toBe('skipped');
+      expect(unsubscribe).toHaveBeenCalledTimes(recoverable ? 0 : 1);
+      expect(mockApi.streamLogs).toHaveBeenCalledTimes(1);
+      if (recoverable) {
+        act(() =>
+          subscriber.next({
+            id: 6,
+            taskId: task.id,
+            type: 'recovered',
+            createdAt: '2026-01-01T00:00:06Z',
+            body: { message: 'Recovered' },
+          } as LogEvent),
+        );
+        expect(result.current.cancelled).toBe(false);
+        expect(result.current.task?.status).toBe('processing');
+        expect(result.current.steps.active).toEqual({
+          id: 'active',
+          status: 'open',
+          startedAt: undefined,
+          endedAt: undefined,
+        });
+      }
+    },
+  );
+
   it('tears down the subscription when a non-recoverable task is cancelled', async () => {
     let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
     const unsubscribeSpy = jest.fn();
