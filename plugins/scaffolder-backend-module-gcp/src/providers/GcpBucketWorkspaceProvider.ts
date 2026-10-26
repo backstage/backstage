@@ -21,6 +21,7 @@ import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import getRawBody from 'raw-body';
 import { Storage } from '@google-cloud/storage';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { randomUUID } from 'node:crypto';
 
 import {
   serializeWorkspace,
@@ -47,6 +48,11 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
   }
 
   public async cleanWorkspace(options: { taskId: string }): Promise<void> {
+    await this.storage.bucket(this.getGcpBucketName()).deleteFiles({
+      prefix: `${options.taskId}/`,
+    });
+
+    // Also remove snapshots written by older versions of the provider.
     const file = this.storage
       .bucket(this.getGcpBucketName())
       .file(options.taskId);
@@ -61,10 +67,24 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
     path: string;
     taskId: string;
   }): Promise<void> {
-    const fileCloud = this.storage
-      .bucket(this.getGcpBucketName())
-      .file(options.taskId);
     const { contents: workspace } = await serializeWorkspace(options);
+    const bucket = this.storage.bucket(this.getGcpBucketName());
+    const prefix = `${options.taskId}/`;
+    const [files] = await bucket.getFiles({ prefix });
+    // Derive the sequence from stored snapshots so ordering survives restarts
+    // and does not depend on clock resolution or clock skew between workers.
+    const sequence =
+      files.reduce(
+        (latest, file) =>
+          Math.max(
+            latest,
+            Number(file.name.slice(prefix.length).split('-')[0]) || 0,
+          ),
+        0,
+      ) + 1;
+    const fileCloud = bucket.file(
+      `${prefix}${String(sequence).padStart(16, '0')}-${randomUUID()}.tar`,
+    );
     try {
       await fileCloud.save(workspace, {
         contentType: 'application/x-tar',
@@ -78,6 +98,19 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
     this.logger.info(
       `Workspace for task ${options.taskId} has been serialized.`,
     );
+
+    // Only remove snapshots that existed before this upload. Cleanup failure
+    // must not invalidate a successfully saved workspace.
+    try {
+      await Promise.all(
+        files.map(file => file.delete({ ignoreNotFound: true })),
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to delete old workspace snapshots for task '${options.taskId}'`,
+        error,
+      );
+    }
   }
 
   public async rehydrateWorkspace(options: {
@@ -85,6 +118,15 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
     targetPath: string;
   }): Promise<void> {
     const bucket = this.storage.bucket(this.getGcpBucketName());
+    const [files] = await bucket.getFiles({ prefix: `${options.taskId}/` });
+    const latest = files.sort((a, b) => b.name.localeCompare(a.name))[0];
+    if (latest) {
+      const workspace = await getRawBody(latest.createReadStream());
+      await restoreWorkspace({ path: options.targetPath, buffer: workspace });
+      return;
+    }
+
+    // Tasks started before upgrading may still have a single legacy snapshot.
     const file = bucket.file(options.taskId);
     const result = await file.exists();
     if (result[0]) {
