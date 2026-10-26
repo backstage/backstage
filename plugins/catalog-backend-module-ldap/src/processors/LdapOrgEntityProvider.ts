@@ -279,13 +279,12 @@ export class LdapOrgEntityProvider implements EntityProvider {
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
 
-    // Be lazy and create the client each time; even though it's pretty
-    // inefficient, we usually only do this once per entire refresh loop and
-    // don't have to worry about timeouts and reconnects etc. Two clients so
-    // user and group searches can run in parallel (ldapts is not safe to share).
-    const [userClient, groupClient] = await createClientPair(
+    // Create clients lazily for each refresh. By default, separate clients let
+    // user and group searches run in parallel (ldapts is not safe to share).
+    const [userClient, groupClient] = await createClients(
       this.options.logger,
       this.options.provider,
+      this.options.provider.parallelReads !== false,
     );
 
     try {
@@ -314,7 +313,9 @@ export class LdapOrgEntityProvider implements EntityProvider {
 
       markCommitComplete();
     } finally {
-      await Promise.allSettled([userClient.unbind(), groupClient.unbind()]);
+      const clients =
+        userClient === groupClient ? [userClient] : [userClient, groupClient];
+      await Promise.allSettled(clients.map(client => client.unbind()));
     }
   }
 
@@ -344,10 +345,21 @@ export class LdapOrgEntityProvider implements EntityProvider {
   }
 }
 
-async function createClientPair(
+async function createClients(
   logger: LoggerService,
   provider: LdapProviderConfig,
+  parallelReads: boolean,
 ): Promise<[LdapClient, LdapClient]> {
+  if (!parallelReads) {
+    const client = await LdapClient.create(
+      logger,
+      provider.target,
+      provider.bind,
+      provider.tls,
+    );
+    return [client, client];
+  }
+
   const results = await Promise.allSettled([
     LdapClient.create(logger, provider.target, provider.bind, provider.tls),
     LdapClient.create(logger, provider.target, provider.bind, provider.tls),

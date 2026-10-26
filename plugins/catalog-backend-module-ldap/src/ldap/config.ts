@@ -48,6 +48,8 @@ export type LdapProviderConfig = {
   groups: GroupConfig[];
   // Schedule configuration for refresh tasks.
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  // Whether user and group reads use separate connections and run in parallel.
+  parallelReads?: boolean;
   // Configuration for overriding the vendor-specific default attribute names.
   vendor?: VendorConfig;
 };
@@ -565,6 +567,7 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
       groups: readGroupConfig(c.getConfig('groups')).map(it =>
         mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
       ),
+      parallelReads: c.getOptionalBoolean('parallelReads'),
       vendor,
     };
 
@@ -617,6 +620,7 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
         mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
       ),
       schedule,
+      parallelReads: c.getOptionalBoolean('parallelReads'),
       vendor,
     };
 

@@ -130,6 +130,21 @@ The `secret` is the password of the same user. In this example, it is given in
 the form of an environment variable `LDAP_SECRET`, that has to be set when the
 backend starts.
 
+### parallelReads
+
+By default, the provider reads users and groups concurrently using separate
+LDAP connections. Set `parallelReads` to `false` to use one connection and read
+them sequentially. This can reduce concurrent connection load on the LDAP
+server, at the cost of a longer refresh time.
+
+```yaml
+catalog:
+  providers:
+    ldapOrg:
+      default:
+        parallelReads: false
+```
+
 ### users
 
 The `users` block defines the settings that govern the reading and

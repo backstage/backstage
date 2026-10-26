@@ -34,6 +34,13 @@ export interface Config {
       target: string;
 
       /**
+       * Whether to read users and groups concurrently using separate LDAP
+       * connections. Defaults to true. Set to false to use one connection and
+       * read sequentially.
+       */
+      parallelReads?: boolean;
+
+      /**
        * The settings to use for the bind command. If none are specified,
        * the bind command is not issued.
        */
@@ -447,6 +454,13 @@ export interface Config {
            * "ldaps://ds.example.net", with no trailing slash.
            */
           target: string;
+
+          /**
+           * Whether to read users and groups concurrently using separate LDAP
+           * connections. Defaults to true. Set to false to use one connection and
+           * read sequentially.
+           */
+          parallelReads?: boolean;
 
           /**
            * The settings to use for the bind command. If none are specified,

@@ -193,6 +193,7 @@ export type LdapProviderConfig = {
   users: UserConfig[];
   groups: GroupConfig[];
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  parallelReads?: boolean;
   vendor?: VendorConfig;
 };
 
