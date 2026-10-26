@@ -36,7 +36,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "jose": "^5.0.0",
+    "jose": "^6.1.0",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

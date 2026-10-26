@@ -3594,7 +3594,7 @@ __metadata:
     "@types/passport-auth0": "npm:^1.0.5"
     "@types/passport-oauth2": "npm:^1.4.15"
     express: "npm:^4.22.0"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     passport: "npm:^0.7.0"
     passport-auth0: "npm:^1.4.3"
     passport-oauth2: "npm:^1.6.1"
@@ -3615,7 +3615,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     express: "npm:^4.22.0"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     msw: "npm:^2.0.8"
     node-cache: "npm:^5.1.2"
     zod: "npm:^3.25.76 || ^4.0.0"
@@ -3635,7 +3635,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/passport": "npm:^1.0.16"
     express: "npm:^4.22.0"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     passport: "npm:^0.7.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -3693,7 +3693,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     express: "npm:^4.22.0"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     msw: "npm:^2.0.0"
     node-mocks-http: "npm:^1.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
@@ -3804,7 +3804,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/passport-microsoft": "npm:^1.0.0"
     express: "npm:^4.22.0"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     msw: "npm:^2.0.0"
     passport-microsoft: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
@@ -3839,7 +3839,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
@@ -3860,7 +3860,7 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.1"
     express-session: "npm:^1.17.3"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     msw: "npm:^2.0.0"
     openid-client: "npm:^5.5.0"
     passport: "npm:^0.7.0"
@@ -3943,7 +3943,7 @@ __metadata:
     cookie-parser: "npm:^1.4.6"
     express: "npm:^4.22.0"
     express-session: "npm:^1.17.3"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     luxon: "npm:^3.4.3"
     msw: "npm:^2.0.0"
     openid-client: "npm:^5.4.3"
@@ -3967,7 +3967,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/passport-oauth2": "npm:^1.4.15"
-    jose: "npm:^5.0.0"
+    jose: "npm:^6.1.0"
     msw: "npm:^2.0.8"
     passport-oauth2: "npm:^1.6.1"
     supertest: "npm:^7.0.0"
@@ -32463,13 +32463,6 @@ __metadata:
   version: 4.15.9
   resolution: "jose@npm:4.15.9"
   checksum: 10/256234b6f85cdc080b1331f2d475bd58c8ccf459cb20f70ac5e4200b271bce10002b1c2f8e5b96dd975d83065ae5a586d52cdf89d28471d56de5d297992f9905
-  languageName: node
-  linkType: hard
-
-"jose@npm:^5.0.0":
-  version: 5.10.0
-  resolution: "jose@npm:5.10.0"
-  checksum: 10/03881d1dfb390dcf50926402edcfe233bf557b5a77321fcb1bdb53453bc1cdd26d2d0a9ab28c7445cbb826881f84fdf5074179700f10c2711ccb9880f51065d7
   languageName: node
   linkType: hard
 
