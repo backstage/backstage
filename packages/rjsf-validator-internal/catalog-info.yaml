@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-rjsf-validator
+  title: '@internal/rjsf-validator'
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: framework-maintainers
