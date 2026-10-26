@@ -19,17 +19,17 @@ describe('hashValidationToken', () => {
   it('produces a deterministic hash for the same token and salt', async () => {
     const token = 'test-token';
     const salt = 'test-salt';
-    const hash1 = hashValidationToken(token, salt);
-    const hash2 = hashValidationToken(token, salt);
+    const hash1 = hashValidationToken({ token, salt });
+    const hash2 = hashValidationToken({ token, salt });
     expect(hash1).toBe(hash2);
     expect(typeof hash1).toBe('string');
     expect(hash1.length).toBe(64); // 32 bytes in hex
   });
 
   it('produces different hashes for different tokens or salts', async () => {
-    const hashA = hashValidationToken('tokenA', 'saltA');
-    const hashB = hashValidationToken('tokenB', 'saltA');
-    const hashC = hashValidationToken('tokenA', 'saltB');
+    const hashA = hashValidationToken({ token: 'tokenA', salt: 'saltA' });
+    const hashB = hashValidationToken({ token: 'tokenB', salt: 'saltA' });
+    const hashC = hashValidationToken({ token: 'tokenA', salt: 'saltB' });
     expect(hashA).not.toBe(hashB);
     expect(hashA).not.toBe(hashC);
   });
@@ -48,7 +48,7 @@ describe('newValidationToken', () => {
 
   it('hash matches hashValidationToken output', async () => {
     const { validationToken, hash, salt } = newValidationToken();
-    const expectedHash = hashValidationToken(validationToken, salt);
+    const expectedHash = hashValidationToken({ token: validationToken, salt });
     expect(hash).toBe(expectedHash);
   });
 

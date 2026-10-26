@@ -189,7 +189,7 @@ describe('createWebhookRequestValidator', () => {
     });
     (hashValidationToken as jest.Mock).mockReturnValue('not-h');
     await target(request, context);
-    expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
+    expect(hashValidationToken).toHaveBeenCalledWith({ token: 'a', salt: 's' });
     expect(logger.warn).toHaveBeenCalledWith(
       'Invalid clientState for notification item.',
     );
@@ -214,7 +214,7 @@ describe('createWebhookRequestValidator', () => {
       return undefined;
     });
     (hashValidationToken as jest.Mock).mockImplementation(
-      (clientState, salt) => {
+      ({ token: clientState, salt }) => {
         if (clientState === 'a' && salt === 's') return 'h';
         if (clientState === 'c' && salt === 's2') return 'not-h2';
         return '';
@@ -244,15 +244,21 @@ describe('createWebhookRequestValidator', () => {
       return undefined;
     });
     (hashValidationToken as jest.Mock).mockImplementation(
-      (clientState, salt) => {
+      ({ token: clientState, salt }) => {
         if (clientState === 'a' && salt === 's') return 'h';
         if (clientState === 'c' && salt === 's2') return 'h2';
         return '';
       },
     );
     await target(request, context);
-    expect(hashValidationToken).toHaveBeenNthCalledWith(1, 'a', 's');
-    expect(hashValidationToken).toHaveBeenNthCalledWith(2, 'c', 's2');
+    expect(hashValidationToken).toHaveBeenNthCalledWith(1, {
+      token: 'a',
+      salt: 's',
+    });
+    expect(hashValidationToken).toHaveBeenNthCalledWith(2, {
+      token: 'c',
+      salt: 's2',
+    });
     expect(request.body).toEqual({
       value: [
         { subscriptionId: 'b', resource: '/users/1' },
@@ -288,8 +294,8 @@ describe('createWebhookRequestValidator', () => {
     expect(databaseClient.getById).toHaveBeenNthCalledWith(1, 'b');
     expect(databaseClient.getById).toHaveBeenNthCalledWith(2, 'd');
     expect(hashValidationToken).toHaveBeenCalledTimes(4);
-    expect(hashValidationToken).toHaveBeenCalledWith('a', 's');
-    expect(hashValidationToken).toHaveBeenCalledWith('x', 's');
+    expect(hashValidationToken).toHaveBeenCalledWith({ token: 'a', salt: 's' });
+    expect(hashValidationToken).toHaveBeenCalledWith({ token: 'x', salt: 's' });
     expect(request.body).toEqual({
       value: [
         { subscriptionId: 'b', resource: '/users/1' },
@@ -324,9 +330,7 @@ describe('createWebhookRequestValidator', () => {
       });
       jest
         .mocked(hashValidationToken)
-        .mockImplementation(clientState =>
-          clientState === 'valid' ? 'h' : 'not-h',
-        );
+        .mockImplementation(({ token }) => (token === 'valid' ? 'h' : 'not-h'));
 
       await target(request, context);
 
@@ -335,12 +339,12 @@ describe('createWebhookRequestValidator', () => {
       expect(
         jest
           .mocked(hashValidationToken)
-          .mock.calls.filter(([state]) => state === 'valid'),
+          .mock.calls.filter(([state]) => state.token === 'valid'),
       ).toHaveLength(2);
       expect(
         jest
           .mocked(hashValidationToken)
-          .mock.calls.filter(([state]) => state === 'invalid'),
+          .mock.calls.filter(([state]) => state.token === 'invalid'),
       ).toHaveLength(2);
       expect(request.body).toEqual({
         value: clientStates.map(() => ({ subscriptionId: 'b' })),
