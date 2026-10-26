@@ -29,6 +29,7 @@ import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-re
 import { SnapshotSource } from '@backstage/types/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -348,7 +349,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -456,7 +457,7 @@ const _default: OverridableFrontendPlugin<
       name: 'reader';
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

@@ -35,13 +35,13 @@ describe('createTranslationRef', () => {
       key: 'value',
       'nested.title': 'Nested',
     });
-    expect(ref('key')).toEqual([ref, 'key']);
-    expect(ref('key')[0]).toBe(ref);
+    expect(ref('key')).toEqual({ ref, key: 'key' });
+    expect(ref('key').ref).toBe(ref);
     expect(String(ref)).toBe('TranslationRef{id=test}');
     expect(() => ref.T).toThrow('Not implemented');
     // @ts-expect-error Unknown keys cannot be selected from this ref.
     ref('missing');
-    expect(ref('nested.title')).toEqual([ref, 'nested.title']);
+    expect(ref('nested.title')).toEqual({ ref, key: 'nested.title' });
     // @ts-expect-error Only flattened message keys can be selected.
     ref('nested');
   });
@@ -65,7 +65,7 @@ describe('createTranslationRef', () => {
       },
     });
 
-    expect(ref('nested.inner.key')).toEqual([ref, 'nested.inner.key']);
+    expect(ref('nested.inner.key')).toEqual({ ref, key: 'nested.inner.key' });
 
     const internalRef = toInternalTranslationRef(ref);
 

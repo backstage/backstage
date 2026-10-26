@@ -23,6 +23,7 @@ export {
   type TranslationResourceOptions,
   createTranslationResource,
   type TranslationRef,
+  type TranslationRefTuple,
   type TranslationRefOptions,
   createTranslationRef,
   useTranslationRef,

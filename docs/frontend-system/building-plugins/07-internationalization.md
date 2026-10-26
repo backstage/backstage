@@ -317,7 +317,7 @@ Go to the Settings page — you should see a language select dropdown. Switch la
 Page and sub-page blueprints accept either a plain title string or a message
 reference. To enable a translated title, select a message from your plugin's
 existing translation ref. Calling the ref checks the key against its declared
-messages and returns a tuple identifying the message:
+messages and returns a `TranslationRefTuple` object with `ref` and `key` properties:
 
 ```tsx
 PageBlueprint.make({

@@ -1857,7 +1857,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
     path: string;
-    title?: string | readonly [TranslationRef, string];
+    title?: string | TranslationRefTuple;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
@@ -2208,7 +2208,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sub-page';
   params: {
     path: string;
-    title: string | readonly [TranslationRef, string];
+    title: string | TranslationRefTuple;
     icon?: IconElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
@@ -2423,10 +2423,7 @@ export interface TranslationRef<
 > {
   // (undocumented)
   $$type: '@backstage/TranslationRef';
-  (key: keyof TMessages & string): readonly [
-    ref: TranslationRef<TId, TMessages>,
-    key: string,
-  ];
+  (key: keyof TMessages & string): TranslationRefTuple<TId, TMessages>;
   // (undocumented)
   id: TId;
   // (undocumented)
@@ -2451,6 +2448,19 @@ export interface TranslationRefOptions<
   messages: TNestedMessages;
   // (undocumented)
   translations?: TTranslations;
+}
+
+// @public
+export interface TranslationRefTuple<
+  TId extends string = string,
+  TMessages extends {
+    [key in string]: string;
+  } = {
+    [key in string]: string;
+  },
+> {
+  readonly key: string;
+  readonly ref: TranslationRef<TId, TMessages>;
 }
 
 // @public (undocumented)

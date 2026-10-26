@@ -23,6 +23,7 @@ import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-rea
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -186,7 +187,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
@@ -346,7 +347,7 @@ export const searchPage: OverridableExtensionDefinition<{
   name: undefined;
   params: {
     path: string;
-    title?: string | readonly [TranslationRef, string];
+    title?: string | TranslationRefTuple;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;

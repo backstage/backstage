@@ -26,6 +26,7 @@ export {
 } from './TranslationResource';
 export {
   type TranslationRef,
+  type TranslationRefTuple,
   type TranslationRefOptions,
   createTranslationRef,
 } from './TranslationRef';

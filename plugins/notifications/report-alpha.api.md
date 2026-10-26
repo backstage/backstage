@@ -20,6 +20,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -135,7 +136,7 @@ const _default: OverridableFrontendPlugin<
       };
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

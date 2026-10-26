@@ -25,16 +25,29 @@ export interface TranslationRef<
   TMessages extends { [key in string]: string } = { [key in string]: string },
 > {
   /** Selects a message key, checked against this ref's declared messages. */
-  (key: keyof TMessages & string): readonly [
-    ref: TranslationRef<TId, TMessages>,
-    key: string,
-  ];
+  (key: keyof TMessages & string): TranslationRefTuple<TId, TMessages>;
 
   $$type: '@backstage/TranslationRef';
 
   id: TId;
 
   T: TMessages;
+}
+
+/**
+ * A message selected from a translation ref.
+ *
+ * Created by calling a translation ref with one of its declared message keys.
+ * @public
+ */
+export interface TranslationRefTuple<
+  TId extends string = string,
+  TMessages extends { [key in string]: string } = { [key in string]: string },
+> {
+  /** The ref that owns the selected message. */
+  readonly ref: TranslationRef<TId, TMessages>;
+  /** The selected message key. */
+  readonly key: string;
 }
 
 /** @internal */
@@ -146,10 +159,10 @@ export function createTranslationRef<
   > = Object.assign(
     (
       key: keyof FlattenedMessages<TNestedMessages> & string,
-    ): readonly [
-      TranslationRef<TId, FlattenedMessages<TNestedMessages>>,
-      string,
-    ] => [ref, key],
+    ): TranslationRefTuple<TId, FlattenedMessages<TNestedMessages>> => ({
+      ref,
+      key,
+    }),
     {
       $$type: '@backstage/TranslationRef' as const,
       version: 'v1' as const,
