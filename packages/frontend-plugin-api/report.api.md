@@ -1857,12 +1857,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
     path: string;
-    title?:
-      | string
-      | {
-          ref: TranslationRef;
-          key: string;
-        };
+    title?: string | readonly [TranslationRef, string];
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
@@ -2213,12 +2208,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sub-page';
   params: {
     path: string;
-    title:
-      | string
-      | {
-          ref: TranslationRef;
-          key: string;
-        };
+    title: string | readonly [TranslationRef, string];
     icon?: IconElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
@@ -2433,6 +2423,10 @@ export interface TranslationRef<
 > {
   // (undocumented)
   $$type: '@backstage/TranslationRef';
+  (key: keyof TMessages & string): readonly [
+    ref: TranslationRef<TId, TMessages>,
+    key: string,
+  ];
   // (undocumented)
   id: TId;
   // (undocumented)

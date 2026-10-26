@@ -258,12 +258,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?:
-          | string
-          | {
-              ref: TranslationRef;
-              key: string;
-            };
+        title?: string | readonly [TranslationRef, string];
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

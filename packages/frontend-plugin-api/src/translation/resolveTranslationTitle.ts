@@ -21,34 +21,31 @@ import { createTranslationTitleSource } from './createTranslationTitleSource';
 
 /** @internal */
 export function resolveTranslationTitle(
-  title: string | { ref: TranslationRef; key: string },
+  title: string | readonly [TranslationRef, string],
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string; source?: SnapshotSource<string> };
 export function resolveTranslationTitle(
-  title: string | { ref: TranslationRef; key: string } | undefined,
+  title: string | readonly [TranslationRef, string] | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string | undefined; source?: SnapshotSource<string> };
 export function resolveTranslationTitle(
-  title: string | { ref: TranslationRef; key: string } | undefined,
+  title: string | readonly [TranslationRef, string] | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string | undefined; source?: SnapshotSource<string> } {
   if (typeof title !== 'object' || title === null) {
     return { title: configuredTitle ?? title };
   }
-  const defaultTitle = toInternalTranslationRef(title.ref).getDefaultMessages()[
-    title.key
-  ];
+  const [ref, key] = title;
+  const defaultTitle = toInternalTranslationRef(ref).getDefaultMessages()[key];
   if (typeof defaultTitle !== 'string') {
-    throw new Error(
-      `Unknown title translation key '${title.key}' in '${title.ref.id}'`,
-    );
+    throw new Error(`Unknown title translation key '${key}' in '${ref.id}'`);
   }
   if (defaultTitle.includes('{{') || defaultTitle.includes('$t(')) {
     throw new Error(
-      `Title translation '${title.ref.id}:${title.key}' must not contain interpolation or nested translations`,
+      `Title translation '${ref.id}:${key}' must not contain interpolation or nested translations`,
     );
   }
   const fallback = configuredTitle ?? defaultTitle;

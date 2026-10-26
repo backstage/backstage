@@ -59,7 +59,7 @@ it('shares lazy subscriptions, retains titles while loading, and recovers from f
   const errorApi = new MockErrorApi();
   const post = jest.spyOn(errorApi, 'post').mockImplementation(() => {});
   const source = createTranslationTitleSource({
-    translation: { ref, key: 'title' },
+    translation: ref('title'),
     fallback: 'Configured',
     apis: TestApiRegistry.from(
       [translationApiRef, api],
@@ -118,7 +118,7 @@ it('supports initial loading, fallback-only APIs, Strict Mode, and reconnecting 
     ],
   });
   const source = createTranslationTitleSource({
-    translation: { ref, key: 'title' },
+    translation: ref('title'),
     fallback: 'Default',
     apis: TestApiRegistry.from(
       [translationApiRef, api],
@@ -144,7 +144,7 @@ it('supports initial loading, fallback-only APIs, Strict Mode, and reconnecting 
   expect(loader).toHaveBeenCalledTimes(1);
   next.unmount();
   const fallback = createTranslationTitleSource({
-    translation: { ref, key: 'title' },
+    translation: ref('title'),
     fallback: 'Configured',
     apis: TestApiRegistry.from(),
   });

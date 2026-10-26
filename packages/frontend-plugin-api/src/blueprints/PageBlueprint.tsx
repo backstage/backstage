@@ -85,7 +85,7 @@ export const PageBlueprint = createExtensionBlueprint({
     params: {
       path: string;
       /** A plain title or a message reference resolved using the translation API. */
-      title?: string | { ref: TranslationRef; key: string };
+      title?: string | readonly [TranslationRef, string];
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;

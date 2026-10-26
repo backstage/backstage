@@ -81,7 +81,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
       PageBlueprint.make({
         params: {
           path: '/example',
-          title: { ref: titleRef, key: 'page' },
+          title: titleRef('page'),
           icon: <span />,
           routeRef: createRouteRef(),
         },
@@ -90,7 +90,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         name: 'overview',
         params: {
           path: 'overview',
-          title: { ref: titleRef, key: 'overview' },
+          title: titleRef('overview'),
           loader: async () => <Content />,
         },
       }),
@@ -98,7 +98,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         name: 'configured',
         params: {
           path: 'configured',
-          title: { ref: titleRef, key: 'configuredTab' },
+          title: titleRef('configuredTab'),
           loader: async () => <div>Configured content</div>,
         },
       }),
@@ -106,7 +106,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         name: 'other',
         params: {
           path: '/other',
-          title: { ref: titleRef, key: 'other' },
+          title: titleRef('other'),
           loader: async () => (
             <>
               <div>Other page content</div>
@@ -121,7 +121,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         name: 'configured',
         params: {
           path: '/configured',
-          title: { ref: titleRef, key: 'configuredPage' },
+          title: titleRef('configuredPage'),
           icon: <span />,
           routeRef: createRouteRef(),
         },
@@ -140,7 +140,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         disabled: true,
         params: {
           path: '/disabled',
-          title: { ref: titleRef, key: 'disabled' },
+          title: titleRef('disabled'),
           icon: <span />,
           routeRef: createRouteRef(),
           loader: disabledLoader,

@@ -316,13 +316,14 @@ Go to the Settings page — you should see a language select dropdown. Switch la
 
 Page and sub-page blueprints accept either a plain title string or a message
 reference. To enable a translated title, select a message from your plugin's
-existing translation ref:
+existing translation ref. Calling the ref checks the key against its declared
+messages and returns a tuple identifying the message:
 
 ```tsx
 PageBlueprint.make({
   params: {
     path: '/my-plugin',
-    title: { ref: myPluginTranslationRef, key: 'indexPage.title' },
+    title: myPluginTranslationRef('indexPage.title'),
     loader: () => import('./MyPage').then(m => <m.MyPage />),
   },
 });
@@ -335,12 +336,14 @@ Existing string title parameters keep their behavior.
 
 The blueprint reads the ref's declared default message synchronously to provide a
 plain title during initial loading. A configured `title` supplies that plain
-fallback instead. Resolved translations take precedence over configured and plain
-titles. Missing locale messages use the translation API's existing fallback.
+fallback instead. Every resolved API value takes precedence over configured and
+plain titles, including when the API resolves to the ref's declared default.
+Missing locale messages use the translation API's existing fallback.
 Later language changes retain the previously resolved title while loading, without
 remounting page content. Failed loads use the translation API's fallback when available.
 
-Message keys are validated when the extension is instantiated. Titles must not
+Message keys are checked by TypeScript when calling the ref and validated again
+when the extension is instantiated. Titles must not
 require interpolation or pluralization arguments, or contain nested `$t(...)`
 references, so the declared default is directly usable as a string.
 
