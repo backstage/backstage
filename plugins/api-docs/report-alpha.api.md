@@ -23,6 +23,8 @@ import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { SnapshotSource } from '@backstage/types';
+import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha @deprecated (undocumented)
@@ -500,6 +502,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -525,6 +534,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
+              SnapshotSource<string>,
+              'core.titleSource',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
               {
@@ -542,7 +558,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationMessageRef;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

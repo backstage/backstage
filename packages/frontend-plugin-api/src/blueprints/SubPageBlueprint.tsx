@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TranslationMessageRef } from '../translation/TranslationMessageRef';
+import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
@@ -48,6 +50,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
+    coreExtensionData.titleSource.optional(),
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
   ],
@@ -66,7 +69,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
       /**
        * The title displayed in the tab for this sub-page.
        */
-      title: string;
+      title: string | TranslationMessageRef;
       /**
        * Optional icon for this sub-page, displayed in the tab.
        */
@@ -81,10 +84,16 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       routeRef?: RouteRef;
     },
-    { config, node },
+    { config, node, apis },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
-    yield coreExtensionData.title(config.title ?? params.title);
+    const { title, source } = resolveTranslationTitle(
+      params.title,
+      config.title,
+      apis,
+    );
+    yield coreExtensionData.title(title);
+    if (source) yield coreExtensionData.titleSource(source);
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );

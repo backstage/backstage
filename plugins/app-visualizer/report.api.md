@@ -12,6 +12,8 @@ import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SnapshotSource } from '@backstage/types';
+import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 const visualizerPlugin: OverridableFrontendPlugin<
@@ -47,6 +49,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -72,6 +81,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
+              SnapshotSource<string>,
+              'core.titleSource',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
               {
@@ -87,7 +103,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
       };
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationMessageRef;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
@@ -128,6 +144,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -137,7 +160,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationMessageRef;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
@@ -166,6 +189,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -175,7 +205,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationMessageRef;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
@@ -204,6 +234,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -213,7 +250,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationMessageRef;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;

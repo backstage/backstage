@@ -36,6 +36,9 @@ import {
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { SnapshotSource } from '@backstage/types';
+import { createSnapshotSourceCollection } from '@internal/frontend';
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -153,6 +156,26 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
+  const titleSource = useMemo(() => {
+    const sources = new Map<string, SnapshotSource<string>>();
+    const pages =
+      appTreeApi
+        .getTree()
+        .tree.nodes.get('app/routes')
+        ?.edges.attachments.get('routes') ?? [];
+    for (const page of pages) {
+      if (!page.spec.disabled) {
+        const source = page.instance?.getData(coreExtensionData.titleSource);
+        if (source) sources.set(page.spec.id, source);
+      }
+    }
+    return createSnapshotSourceCollection(sources);
+  }, [appTreeApi]);
+  const translatedTitles = useSyncExternalStore(
+    titleSource.subscribe,
+    titleSource.getSnapshot,
+  );
+
   // Deprecated items: just resolve nav item routeRefs to paths, no page discovery.
   const legacyItems = useMemo(() => {
     return props.legacyNavItems.flatMap(item => {
@@ -205,9 +228,11 @@ function NavContentRenderer(props: {
         resolvedTitle !== undefined &&
         resolvedTitle !== pluginTitle &&
         resolvedTitle !== pluginId;
-      const title = hasExplicitPageTitle
+      const staticTitle = hasExplicitPageTitle
         ? resolvedTitle
         : matchingNavItem?.title ?? pluginTitle ?? pluginId;
+
+      const title = translatedTitles.get(node.spec.id) ?? staticTitle;
 
       // PageBlueprint resolves icon as: params.icon ?? plugin.icon
       // We want the priority: page (params) -> nav item -> plugin -> (excluded)
@@ -239,7 +264,7 @@ function NavContentRenderer(props: {
     });
 
     return new NavItemBag(items);
-  }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+  }, [appTreeApi, routeResolutionApi, props.legacyNavItems, translatedTitles]);
 
   return <props.Content navItems={navItems} items={legacyItems} />;
 }
