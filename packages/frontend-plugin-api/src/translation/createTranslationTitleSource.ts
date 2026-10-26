@@ -21,12 +21,12 @@ import { TranslationSnapshot } from '../apis/definitions/TranslationApi';
 
 /** @internal */
 export function createTranslationTitleSource(options: {
-  translation: { ref: TranslationRef; key: string };
+  translation: readonly [TranslationRef, string];
   fallback: string;
   apis: ApiHolder;
 }): SnapshotSource<string> {
   const {
-    translation: { ref, key },
+    translation: [ref, key],
     fallback,
     apis,
   } = options;
