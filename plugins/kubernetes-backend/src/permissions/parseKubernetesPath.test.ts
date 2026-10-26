@@ -225,10 +225,7 @@ describe('parseKubernetesPath', () => {
 
     it('parses legacy watch paths as watches', () => {
       expect(
-        parseKubernetesPath(
-          '/api/v1/watch/namespaces/prod/secrets',
-          'GET',
-        ),
+        parseKubernetesPath('/api/v1/watch/namespaces/prod/secrets', 'GET'),
       ).toEqual({
         verb: 'watch',
         action: 'read',
@@ -241,10 +238,7 @@ describe('parseKubernetesPath', () => {
 
     it('decodes percent-encoded namespace and resource segments', () => {
       expect(
-        parseKubernetesPath(
-          '/api/v1/namespaces/pr%6Fd/secret%73',
-          'GET',
-        ),
+        parseKubernetesPath('/api/v1/namespaces/pr%6Fd/secret%73', 'GET'),
       ).toEqual({
         verb: 'list',
         action: 'read',
