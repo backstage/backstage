@@ -18,6 +18,7 @@ import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { detectPackageManager, PackageManager, YarnLockfile } from '../pacman';
 import { GitUtils } from '../git';
+import { readFilesAtRef } from '../git/GitUtils';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -25,9 +26,14 @@ jest.mock('../pacman', () => ({
   ...jest.requireActual('../pacman'),
   detectPackageManager: jest.fn(),
 }));
+jest.mock('../git/GitUtils', () => ({
+  ...jest.requireActual('../git/GitUtils'),
+  readFilesAtRef: jest.fn(),
+}));
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
+const mockReadFilesAtRef = jest.mocked(readFilesAtRef);
 const mockDetectPackageManager = jest.mocked(detectPackageManager);
 
 // A Yarn package manager whose lockfile in the working tree has the given contents
@@ -357,10 +363,12 @@ a@^1:
       parseLockfile,
     } as Partial<PackageManager> as PackageManager);
     mockListChangedFiles.mockResolvedValueOnce(['pnpm-lock.yaml']);
-    mockReadFileAtRef
-      .mockResolvedValueOnce('lockfileVersion: 9.0')
-      .mockResolvedValueOnce('{"name":"a"}')
-      .mockRejectedValueOnce(new Error('does not exist'));
+    mockReadFileAtRef.mockResolvedValueOnce('lockfileVersion: 9.0');
+    mockReadFilesAtRef.mockResolvedValueOnce([
+      '{"name":"a"}',
+      undefined,
+      'not json',
+    ]);
     await expect(
       graph.listChangedPackages({
         ref: 'origin/master',
@@ -371,13 +379,18 @@ a@^1:
       .calls[0] as unknown as Parameters<PackageManager['parseLockfile']>)!;
     expect(contents).toBe('lockfileVersion: 9.0');
     await expect(
-      parseOptions?.readWorkspacePackageJson?.('packages/a'),
-    ).resolves.toEqual({ name: 'a' });
-    await expect(
-      parseOptions?.readWorkspacePackageJson?.('packages/gone'),
-    ).resolves.toBeUndefined();
-    expect(mockReadFileAtRef).toHaveBeenCalledWith(
-      'packages/a/package.json',
+      parseOptions?.readWorkspacePackageJsons?.([
+        'packages/a',
+        'packages/gone',
+        'packages/broken',
+      ]),
+    ).resolves.toEqual([{ name: 'a' }, undefined, undefined]);
+    expect(mockReadFilesAtRef).toHaveBeenCalledWith(
+      [
+        'packages/a/package.json',
+        'packages/gone/package.json',
+        'packages/broken/package.json',
+      ],
       'origin/master',
     );
 

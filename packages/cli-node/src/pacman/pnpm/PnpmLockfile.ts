@@ -59,7 +59,7 @@ type PnpmEntry = LockfileEntry & {
  * listed under their name with a `workspace:<dir>` range.
  *
  * pnpm lists workspace packages by directory, so their names come from the
- * `readWorkspacePackageJson` option, which must read from the same source as
+ * `readWorkspacePackageJsons` option, which must read from the same source as
  * the lockfile. Without it, workspace packages are listed under their
  * directory instead, and the lockfile can't be diffed.
  */
@@ -189,7 +189,12 @@ export class PnpmLockfile implements Lockfile {
 
     // Workspace packages and their direct dependencies
     let hasUnnamedWorkspacePackages = false;
-    for (const [dir, importer] of Object.entries(lockfile.importers)) {
+    const importers = Object.entries(lockfile.importers);
+    const packageJsons =
+      (await options?.readWorkspacePackageJsons?.(
+        importers.map(([dir]) => dir),
+      )) ?? [];
+    for (const [index, [dir, importer]] of importers.entries()) {
       const nodeKey = `importer:${dir}`;
       const node: PnpmNode = {
         version: `link:${dir}`,
@@ -215,7 +220,7 @@ export class PnpmLockfile implements Lockfile {
         }
       }
 
-      const packageJson = await options?.readWorkspacePackageJson?.(dir);
+      const packageJson = packageJsons[index];
       if (!packageJson) {
         // Without a name the package is listed under its directory, which
         // nothing else refers to it by
