@@ -16,17 +16,17 @@
 
 import { SnapshotSource } from '@backstage/types/alpha';
 import { ApiHolder, appLanguageApiRef, translationApiRef } from '../apis';
-import { TranslationRef } from './TranslationRef';
+import { TranslationRefTuple } from './TranslationRef';
 import { TranslationSnapshot } from '../apis/definitions/TranslationApi';
 
 /** @internal */
 export function createTranslationTitleSource(options: {
-  translation: readonly [TranslationRef, string];
+  translation: TranslationRefTuple;
   fallback: string;
   apis: ApiHolder;
 }): SnapshotSource<string> {
   const {
-    translation: [ref, key],
+    translation: { ref, key },
     fallback,
     apis,
   } = options;

@@ -44,6 +44,7 @@ import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
@@ -1252,7 +1253,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -1476,7 +1477,7 @@ const _default: OverridableFrontendPlugin<
       name: 'entity';
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

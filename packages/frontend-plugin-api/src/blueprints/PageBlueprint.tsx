@@ -18,7 +18,7 @@ import { JSX } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { createSnapshotSourceCollection } from '@internal/frontend';
 import { SnapshotSource } from '@backstage/types/alpha';
-import { TranslationRef } from '../translation/TranslationRef';
+import { TranslationRefTuple } from '../translation/TranslationRef';
 import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
@@ -85,7 +85,7 @@ export const PageBlueprint = createExtensionBlueprint({
     params: {
       path: string;
       /** A plain title or a message reference resolved using the translation API. */
-      title?: string | readonly [TranslationRef, string];
+      title?: string | TranslationRefTuple;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;

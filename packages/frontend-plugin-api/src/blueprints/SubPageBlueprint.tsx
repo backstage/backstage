@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TranslationRef } from '../translation/TranslationRef';
+import { TranslationRefTuple } from '../translation/TranslationRef';
 import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
@@ -69,7 +69,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
       /**
        * The title displayed in the tab for this sub-page.
        */
-      title: string | readonly [TranslationRef, string];
+      title: string | TranslationRefTuple;
       /**
        * Optional icon for this sub-page, displayed in the tab.
        */

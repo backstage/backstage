@@ -16,29 +16,32 @@
 
 import { SnapshotSource } from '@backstage/types/alpha';
 import { ApiHolder } from '../apis';
-import { TranslationRef, toInternalTranslationRef } from './TranslationRef';
+import {
+  TranslationRefTuple,
+  toInternalTranslationRef,
+} from './TranslationRef';
 import { createTranslationTitleSource } from './createTranslationTitleSource';
 
 /** @internal */
 export function resolveTranslationTitle(
-  title: string | readonly [TranslationRef, string],
+  title: string | TranslationRefTuple,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string; source?: SnapshotSource<string> };
 export function resolveTranslationTitle(
-  title: string | readonly [TranslationRef, string] | undefined,
+  title: string | TranslationRefTuple | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string | undefined; source?: SnapshotSource<string> };
 export function resolveTranslationTitle(
-  title: string | readonly [TranslationRef, string] | undefined,
+  title: string | TranslationRefTuple | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
 ): { title: string | undefined; source?: SnapshotSource<string> } {
   if (typeof title !== 'object' || title === null) {
     return { title: configuredTitle ?? title };
   }
-  const [ref, key] = title;
+  const { ref, key } = title;
   const defaultTitle = toInternalTranslationRef(ref).getDefaultMessages()[key];
   if (typeof defaultTitle !== 'string') {
     throw new Error(`Unknown title translation key '${key}' in '${ref.id}'`);

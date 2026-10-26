@@ -41,6 +41,7 @@ import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -287,7 +288,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | readonly [TranslationRef, string];
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -483,7 +484,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string | readonly [TranslationRef, string];
+        title: string | TranslationRefTuple;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -528,7 +529,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string | readonly [TranslationRef, string];
+        title: string | TranslationRefTuple;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -591,7 +592,7 @@ const _default: OverridableFrontendPlugin<
       name: 'tasks';
       params: {
         path: string;
-        title: string | readonly [TranslationRef, string];
+        title: string | TranslationRefTuple;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -665,7 +666,7 @@ const _default: OverridableFrontendPlugin<
       name: 'templates';
       params: {
         path: string;
-        title: string | readonly [TranslationRef, string];
+        title: string | TranslationRefTuple;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -710,7 +711,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string | readonly [TranslationRef, string];
+        title: string | TranslationRefTuple;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
