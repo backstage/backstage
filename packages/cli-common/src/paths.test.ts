@@ -144,11 +144,14 @@ describe('targetPaths', () => {
       // A pnpm workspace with Backstage installations in subdirectories,
       // which a workspaces field marks, and one backstage.json at the top
       'pnpm/package.json': '{}',
-      'pnpm/pnpm-workspace.yaml': 'packages:\n  - apps/**\n  - libs/*\n',
+      'pnpm/pnpm-workspace.yaml':
+        "packages:\n  - apps/**\n  - '!apps/excluded'\n  - ./libs/*\n  - other/{lib-?,svc}\n",
       'pnpm/backstage.json': '{}',
       'pnpm/apps/backstage/package.json': JSON.stringify({
         workspaces: ['packages/*'],
       }),
+      // A leftover from Yarn, which pnpm ignores
+      'pnpm/apps/backstage/.yarnrc.yml': '',
       'pnpm/apps/backstage/packages/backend/package.json': '{}',
       // A second installation with a backstage.json of its own
       'pnpm/apps/second/package.json': JSON.stringify({
@@ -157,17 +160,30 @@ describe('targetPaths', () => {
       'pnpm/apps/second/backstage.json': '{}',
       'pnpm/apps/second/packages/app/package.json': '{}',
       'pnpm/libs/other/package.json': '{}',
-      // A separate Yarn project inside the pnpm workspace
+      'pnpm/other/lib-a/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      // A separate Yarn project that the packages patterns leave out
       'pnpm/tools/yarn-project/package.json': JSON.stringify({
         workspaces: ['packages/*'],
       }),
-      'pnpm/tools/yarn-project/yarn.lock': '',
       'pnpm/tools/yarn-project/packages/a/package.json': '{}',
-      // A Yarn project that has no yarn.lock or .yarnrc.yml yet
-      'pnpm/tools/new-yarn-project/package.json': JSON.stringify({
+      'pnpm/other/lib-ab/package.json': JSON.stringify({
         workspaces: ['packages/*'],
       }),
-      'pnpm/tools/new-yarn-project/packages/a/package.json': '{}',
+      'pnpm/other/svc/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/excluded/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/excluded/packages/a/package.json': '{}',
+      // A pnpm-workspace.yaml with settings only, which includes no packages
+      'settings-only/pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
+      'settings-only/yarn/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'settings-only/yarn/packages/a/package.json': '{}',
       // A pnpm app, which has no workspaces field
       'pnpm-app/package.json': '{}',
       'pnpm-app/pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
@@ -244,20 +260,43 @@ describe('targetPaths', () => {
     // Outside of an installation, the installation root is the workspace root
     expectRoots('pnpm/libs/other', 'pnpm', 'pnpm', 'pnpm/backstage.json');
 
-    // A Yarn project in a pnpm workspace is a workspace of its own
+    // The packages patterns decide which installations belong to the pnpm
+    // workspace, and the rest are workspaces of their own
+    expectRoots(
+      'pnpm/other/lib-a',
+      'pnpm',
+      'pnpm/other/lib-a',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/other/lib-ab',
+      'pnpm/other/lib-ab',
+      'pnpm/other/lib-ab',
+      'pnpm/other/lib-ab/backstage.json',
+    );
+    expectRoots(
+      'pnpm/other/svc',
+      'pnpm',
+      'pnpm/other/svc',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/apps/excluded/packages/a',
+      'pnpm/apps/excluded',
+      'pnpm/apps/excluded',
+      'pnpm/apps/excluded/backstage.json',
+    );
     expectRoots(
       'pnpm/tools/yarn-project/packages/a',
       'pnpm/tools/yarn-project',
       'pnpm/tools/yarn-project',
       'pnpm/tools/yarn-project/backstage.json',
     );
-
-    // Until then, it counts as an installation in the pnpm workspace
     expectRoots(
-      'pnpm/tools/new-yarn-project/packages/a',
-      'pnpm',
-      'pnpm/tools/new-yarn-project',
-      'pnpm/backstage.json',
+      'settings-only/yarn/packages/a',
+      'settings-only/yarn',
+      'settings-only/yarn',
+      'settings-only/yarn/backstage.json',
     );
 
     expectRoots(
