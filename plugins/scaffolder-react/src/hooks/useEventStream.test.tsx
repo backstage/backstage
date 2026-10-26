@@ -224,7 +224,7 @@ describe('useTaskEventStream', () => {
       await Promise.resolve();
     });
 
-    act(() => {
+    await act(async () => {
       streamSubscriber.next({
         id: 1,
         taskId: 'test-task-id',
@@ -290,7 +290,7 @@ describe('useTaskEventStream', () => {
       await Promise.resolve();
     });
 
-    act(() => {
+    await act(async () => {
       streamSubscriber.next({
         id: 1,
         taskId: 'test-task-id',
@@ -570,7 +570,7 @@ describe('useTaskEventStream', () => {
           } as LogEvent),
         );
       }
-      act(() =>
+      await act(async () =>
         subscriber.next({
           id: 3,
           taskId: task.id,
@@ -593,6 +593,153 @@ describe('useTaskEventStream', () => {
     },
   );
 
+  it.each(['processing', 'failed'] as const)(
+    'uses the backend status for a message-only completion (initial: %s)',
+    async status => {
+      let subscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+      const task = makeTask({ status });
+      task.spec.EXPERIMENTAL_recovery = {
+        EXPERIMENTAL_strategy: 'startOver',
+      };
+      const mockApi = {
+        getTask: jest
+          .fn()
+          .mockResolvedValueOnce(task)
+          .mockResolvedValue(makeTask({ status: 'failed' })),
+        streamLogs: jest.fn().mockImplementation(
+          () =>
+            new ObservableImpl<LogEvent>(observer => {
+              subscriber = observer;
+            }),
+        ),
+      };
+      const { result } = setup(mockApi);
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      await act(async () => {
+        subscriber.next({
+          id: 1,
+          taskId: task.id,
+          type: 'recovered',
+          createdAt: '2026-01-01T00:00:01Z',
+          body: { message: 'Recovered' },
+        } as LogEvent);
+        subscriber.next({
+          id: 2,
+          taskId: task.id,
+          type: 'completion',
+          createdAt: '2026-01-01T00:00:02Z',
+          body: { message: 'This task exceeded its timeout' },
+        } as LogEvent);
+      });
+      expect(result.current.task?.status).toBe('failed');
+      expect(result.current.completed).toBe(true);
+      expect(result.current.cancelled).toBe(false);
+      expect(result.current.error).toBeUndefined();
+      expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+      expect(mockApi.getTask).toHaveBeenLastCalledWith(task.id);
+    },
+  );
+
+  it.each([false, true])(
+    'ignores an outdated completion status refresh (reject: %s)',
+    async reject => {
+      let subscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+      let resolveTask: (task: ScaffolderTask) => void;
+      let rejectTask: (error: Error) => void;
+      const task = makeTask();
+      task.spec.EXPERIMENTAL_recovery = {
+        EXPERIMENTAL_strategy: 'startOver',
+      };
+      const mockApi = {
+        getTask: jest
+          .fn()
+          .mockResolvedValueOnce(task)
+          .mockImplementation(
+            () =>
+              new Promise<ScaffolderTask>((resolve, rejectPromise) => {
+                resolveTask = resolve;
+                rejectTask = rejectPromise;
+              }),
+          ),
+        streamLogs: jest.fn().mockImplementation(
+          () =>
+            new ObservableImpl<LogEvent>(observer => {
+              subscriber = observer;
+            }),
+        ),
+      };
+      const { result } = setup(mockApi);
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      act(() => {
+        subscriber.next({
+          id: 1,
+          taskId: task.id,
+          type: 'completion',
+          createdAt: '2026-01-01T00:00:01Z',
+          body: { message: 'Finished' },
+        } as LogEvent);
+        subscriber.next({
+          id: 2,
+          taskId: task.id,
+          type: 'recovered',
+          createdAt: '2026-01-01T00:00:02Z',
+          body: { message: 'Recovered' },
+        } as LogEvent);
+      });
+      await act(async () => {
+        if (reject) {
+          rejectTask(new Error('Status refresh failed'));
+        } else {
+          resolveTask(makeTask({ status: 'failed' }));
+        }
+      });
+      expect(result.current.task?.status).toBe('processing');
+      expect(result.current.completed).toBe(false);
+      expect(result.current.error).toBeUndefined();
+    },
+  );
+
+  it('reports a failed status refresh without guessing the task outcome', async () => {
+    let subscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+    const error = new Error('Could not fetch task status');
+    const mockApi = {
+      getTask: jest
+        .fn()
+        .mockResolvedValueOnce(makeTask())
+        .mockRejectedValue(error),
+      streamLogs: jest.fn().mockImplementation(
+        () =>
+          new ObservableImpl<LogEvent>(observer => {
+            subscriber = observer;
+          }),
+      ),
+    };
+    const { result } = setup(mockApi);
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      subscriber.next({
+        id: 1,
+        taskId: 'test-task-id',
+        type: 'completion',
+        createdAt: '2026-01-01T00:00:01Z',
+        body: { message: 'Finished', output: {} },
+      } as LogEvent);
+    });
+    expect(result.current.task?.status).toBe('processing');
+    expect(result.current.completed).toBe(true);
+    expect(result.current.output).toEqual({});
+    expect(result.current.error).toBe(error);
+  });
+
   it('tears down the subscription when a non-recoverable task completes', async () => {
     let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
     const unsubscribeSpy = jest.fn();
@@ -614,7 +761,7 @@ describe('useTaskEventStream', () => {
       await Promise.resolve();
     });
 
-    act(() => {
+    await act(async () => {
       streamSubscriber.next({
         id: 1,
         taskId: 'test-task-id',

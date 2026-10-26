@@ -68,6 +68,7 @@ type ReducerLogEntry = {
 
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
+  | { type: 'TASK_STATUS'; data: ScaffolderTaskStatus }
   | { type: 'CANCELLED'; data: ReducerLogEntry }
   | { type: 'RECOVERED'; data: ReducerLogEntry }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
@@ -136,13 +137,18 @@ function reducer(draft: TaskStream, action: ReducerAction) {
     }
 
     case 'COMPLETED': {
-      if (draft.task && !draft.cancelled) {
-        draft.task.status = action.data.body.error ? 'failed' : 'completed';
-      }
       draft.completed = true;
       draft.output = action.data.body.output;
       draft.error = action.data.body.error;
 
+      return;
+    }
+
+    case 'TASK_STATUS': {
+      if (draft.task) {
+        draft.task.status = action.data;
+        draft.cancelled = action.data === 'cancelled';
+      }
       return;
     }
 
@@ -202,7 +208,8 @@ function reducer(draft: TaskStream, action: ReducerAction) {
 /**
  * A hook to stream the logs of a task being processed. Cancellation marks active
  * steps as cancelled and unstarted steps as skipped, preserving finished steps.
- * Recovery and completion events update the task status, including during replay.
+ * Recovery resets the task status; completion refreshes it from the backend,
+ * including during replay.
  *
  * @public
  */
@@ -227,6 +234,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let isStreamComplete = false;
     let hasInitialized = false;
     let startGeneration = 0;
+    let taskStatusVersion = 0;
     let currentEmitLogs: (() => void) | undefined;
 
     const cleanUpStream = () => {
@@ -282,6 +290,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
             case 'log':
               return collectedLogEvents.push(event);
             case 'cancelled':
+              taskStatusVersion++;
               if (!isTaskRecoverable) {
                 isStreamComplete = true;
               }
@@ -291,17 +300,37 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                 cleanUpStream();
               }
               return undefined;
-            case 'completion':
+            case 'completion': {
+              const statusVersion = ++taskStatusVersion;
+              const isCurrent = () =>
+                !didCancel &&
+                generation === startGeneration &&
+                statusVersion === taskStatusVersion;
               if (!isTaskRecoverable) {
                 isStreamComplete = true;
               }
               emitLogs();
               dispatch({ type: 'COMPLETED', data: event });
+              // Completion bodies can omit errors even for failed tasks.
+              void scaffolderApi.getTask(taskId).then(
+                task => {
+                  if (isCurrent()) {
+                    dispatch({ type: 'TASK_STATUS', data: task.status });
+                  }
+                },
+                error => {
+                  if (isCurrent()) {
+                    dispatch({ type: 'ERROR', data: error });
+                  }
+                },
+              );
               if (isStreamComplete) {
                 cleanUpStream();
               }
               return undefined;
+            }
             case 'recovered':
+              taskStatusVersion++;
               isStreamComplete = false;
               dispatch({ type: 'RECOVERED', data: event });
               return undefined;
