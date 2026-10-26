@@ -320,11 +320,21 @@ export class GoogleGCSPublish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      // Pipe file chunks directly from storage to client.
-      this.storageClient
+      const body = this.storageClient
         .bucket(this.bucketName)
         .file(filePath)
-        .createReadStream()
+        .createReadStream();
+
+      // If the client disconnects before the file is fully sent, the piped
+      // body is left paused and keeps its connection to GCS open.
+      res.on('close', () => {
+        if (!body.readableEnded) {
+          body.destroy();
+        }
+      });
+
+      // Pipe file chunks directly from storage to client.
+      body
         .on('pipe', () => {
           res.writeHead(200, responseHeaders);
         })

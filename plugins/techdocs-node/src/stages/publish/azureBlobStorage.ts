@@ -26,6 +26,7 @@ import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
 import { default as path, default as platformPath } from 'node:path';
+import { Readable } from 'node:stream';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
@@ -369,7 +370,27 @@ export class AzureBlobStoragePublish implements PublisherBase {
           )) {
             res.setHeader(headerKey, headerValue);
           }
-          downloadRes.readableStreamBody.pipe(res);
+          const body = downloadRes.readableStreamBody as Readable;
+          body.pipe(res);
+
+          body.on('error', err => {
+            this.logger.warn(
+              `TechDocs Azure router failed to serve content from container ${this.containerName} at path ${filePath}: ${err.message}`,
+            );
+            if (!res.headersSent) {
+              res.status(404).send('File Not Found');
+            } else {
+              res.destroy();
+            }
+          });
+
+          // If the client disconnects before the file is fully sent, the piped
+          // body is left paused and keeps its connection to Azure open.
+          res.on('close', () => {
+            if (!body.readableEnded) {
+              body.destroy();
+            }
+          });
         })
         .catch(e => {
           this.logger.warn(
