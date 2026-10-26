@@ -297,6 +297,8 @@ export default async ({ args, info }: CliCommandContext) => {
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
     const catalogUpdates = new Map<string, Map<string, string>>();
+    // Nothing is written until all updates are known to apply
+    const packageUpdates = new Map<string, object>();
     await runConcurrentTasks({
       concurrencyFactor: 4,
       items: versionBumps.entries(),
@@ -378,11 +380,30 @@ export default async ({ args, info }: CliCommandContext) => {
           }
         }
 
-        if (changed && !dryRun) {
-          await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
+        if (changed) {
+          packageUpdates.set(pkgPath, pkgJson);
         }
       },
     });
+
+    const missingCatalogs = Array.from(catalogUpdates.keys()).filter(
+      catalogName => !catalogs?.[catalogName],
+    );
+    if (missingCatalogs.length > 0) {
+      throw new Error(
+        `Packages refer to ${missingCatalogs
+          .map(catalogName => `the ${catalogName} catalog`)
+          .join(
+            ', ',
+          )}, which the workspace does not define. No files were changed.`,
+      );
+    }
+
+    if (!dryRun) {
+      for (const [pkgPath, pkgJson] of packageUpdates) {
+        await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
+      }
+    }
 
     for (const [catalogName, entries] of catalogUpdates) {
       for (const [dependency, range] of entries) {
