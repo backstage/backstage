@@ -34,6 +34,8 @@ Each new version is written where the dependency is declared. A version range is
 backstage-cli versions:bump --catalog backstage-next --release next
 ```
 
+A catalog belongs to the whole pnpm workspace, so bumping it also moves every other package in the workspace that refers to it, including packages outside of the Backstage installation that you run the command in. If a package refers to a catalog that `pnpm-workspace.yaml` doesn't define, the command fails before it changes any files.
+
 `--dry-run --json` prints the resolved version of each package as JSON and changes no files, which lets other tools reuse the version resolution.
 
 In pnpm workspaces, `overrides` in `pnpm-workspace.yaml` take precedence over both version ranges and catalogs. The command warns about overrides that pin the packages it bumps, since those packages keep the versions from the overrides until you update or remove them.
