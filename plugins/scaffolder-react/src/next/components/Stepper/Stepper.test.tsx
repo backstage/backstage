@@ -16,16 +16,257 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
 import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
-import { Stepper } from './Stepper';
+import { Stepper, type StepperProps } from './Stepper';
 
 describe('Stepper', () => {
+  it.each(['default', 'custom state', 'custom step'])(
+    'omits hidden values from %s review while retaining submitted values',
+    async review => {
+      const onCreate = jest.fn();
+      const manifest: TemplateParameterSchema = {
+        title: 'Sensitive steps',
+        steps: [
+          {
+            title: 'Choose',
+            schema: {
+              properties: {
+                enabled: { type: 'boolean', title: 'Show credentials' },
+                shared: { type: 'string' },
+                masked: {
+                  type: 'string',
+                  'ui:backstage': { review: { mask: 'Custom mask' } },
+                },
+                omitted: {
+                  type: 'string',
+                  'ui:backstage': { review: { show: false } },
+                },
+                visiblePassword: { type: 'string', 'ui:widget': 'password' },
+              },
+            },
+          },
+          {
+            title: 'Credentials',
+            schema: {
+              'ui:backstage': {
+                visibleWhen: { properties: { enabled: { const: true } } },
+              },
+              properties: {
+                password: {
+                  type: 'string',
+                  title: 'Password',
+                  'ui:widget': 'password',
+                },
+                shared: { type: 'string' },
+                hiddenMask: {
+                  type: 'string',
+                  'ui:backstage': { review: { mask: 'Hidden mask' } },
+                },
+                hiddenOmitted: {
+                  type: 'string',
+                  'ui:backstage': { review: { show: false } },
+                },
+              },
+            },
+          },
+        ],
+      };
+      const initialState = {
+        enabled: true,
+        shared: 'shared-value',
+        extra: 'extra-value',
+        masked: 'masked-value',
+        omitted: 'omitted-value',
+        visiblePassword: 'visible-password',
+        hiddenMask: 'hidden-mask-value',
+        hiddenOmitted: 'hidden-omitted-value',
+      };
+      const components: Record<string, StepperProps['components']> = {
+        default: {},
+        'custom state': {
+          ReviewStateComponent: ({ formState }) => (
+            <pre>{JSON.stringify(formState)}</pre>
+          ),
+        },
+        'custom step': {
+          ReviewStepComponent: ({ formData, handleCreate }) => (
+            <>
+              <pre>{JSON.stringify(formData)}</pre>
+              <button onClick={handleCreate}>Create</button>
+            </>
+          ),
+        },
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            initialState={initialState}
+            extensions={[]}
+            onCreate={onCreate}
+            components={components[review]}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(await screen.findByLabelText('Password'), {
+        target: { value: 'hidden-password' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+      fireEvent.click(
+        await screen.findByRole('checkbox', { name: 'Show credentials' }),
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      for (const value of [
+        'hidden-password',
+        'hidden-mask-value',
+        'hidden-omitted-value',
+        'Hidden mask',
+      ]) {
+        expect(
+          screen.queryByText(value, { exact: false }),
+        ).not.toBeInTheDocument();
+      }
+      expect(
+        screen.getByText('shared-value', { exact: false }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('extra-value', { exact: false }),
+      ).toBeInTheDocument();
+      const displayedValues =
+        review === 'default'
+          ? ['Custom mask', '******']
+          : ['masked-value', 'omitted-value', 'visible-password'];
+      const absentValues =
+        review === 'default'
+          ? ['masked-value', 'omitted-value', 'visible-password']
+          : ['Custom mask', '******'];
+      for (const value of displayedValues) {
+        expect(screen.getByText(value, { exact: false })).toBeInTheDocument();
+      }
+      for (const value of absentValues) {
+        expect(
+          screen.queryByText(value, { exact: false }),
+        ).not.toBeInTheDocument();
+      }
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          ...initialState,
+          enabled: false,
+          password: 'hidden-password',
+        }),
+      );
+    },
+  );
+
+  it.each([false, true])(
+    'keeps the displayed cursor when an earlier step is revealed (self hiding: %s)',
+    async selfHiding => {
+      const condition = {
+        required: ['enabled'],
+        properties: { enabled: { const: true } },
+      };
+      const manifest: TemplateParameterSchema = {
+        title: 'Cursor',
+        steps: [
+          {
+            title: 'Earlier',
+            schema: {
+              'ui:backstage': { visibleWhen: condition },
+              properties: selfHiding
+                ? { enabled: { type: 'boolean' } }
+                : { earlier: { type: 'string' } },
+            },
+          },
+          {
+            title: 'Current',
+            schema: { properties: { enabled: { type: 'boolean' } } },
+          },
+        ],
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            initialState={{ enabled: selfHiding }}
+            onCreate={jest.fn()}
+          />
+        </SecretsContextProvider>,
+      );
+      if (selfHiding) {
+        fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+      }
+      expect(
+        screen.getByRole('button', { name: 'Review' }),
+      ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+      expect(
+        screen.getByRole('button', { name: 'Review' }),
+      ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+      expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+    },
+  );
+
+  it('stays on review after the last step hides itself', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Review cursor',
+      steps: [
+        {
+          title: 'Optional',
+          schema: {
+            'ui:backstage': {
+              visibleWhen: { properties: { enabled: { const: true } } },
+            },
+            properties: { enabled: { type: 'boolean' } },
+          },
+        },
+      ],
+    };
+    const { rerender } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          initialState={{ enabled: true }}
+          extensions={[]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+    expect(
+      await screen.findByRole('button', { name: 'Create' }),
+    ).toBeInTheDocument();
+    const revealedManifest = {
+      ...manifest,
+      steps: [
+        {
+          title: 'Optional',
+          schema: { properties: { enabled: { type: 'boolean' } } },
+        },
+      ],
+    };
+    rerender(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={revealedManifest}
+          extensions={[]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+  });
+
   it('updates step visibility when earlier form data changes', async () => {
     const manifest: TemplateParameterSchema = {
       title: 'Changing steps',

@@ -50,6 +50,7 @@ import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps
 import { Form } from '../Form';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
+import { findSchemaForKey } from '../ReviewState/util';
 import {
   createAsyncValidators,
   type FormValidation,
@@ -153,6 +154,23 @@ export const Stepper = (stepperProps: StepperProps) => {
     activeStep >= allSteps.length || nextVisibleIndex === -1
       ? steps.length
       : nextVisibleIndex;
+
+  const displayedStep = visibleSteps[visibleStep]?.index ?? allSteps.length;
+  if (activeStep !== displayedStep) {
+    setActiveStep(displayedStep);
+  }
+
+  const hiddenSteps = allSteps.filter(step => !steps.includes(step));
+  // Preserve shared and extra values, excluding only fields owned by hidden steps.
+  const reviewState = hiddenSteps.length
+    ? Object.fromEntries(
+        Object.entries(stepsState).filter(
+          ([key]) =>
+            findSchemaForKey(key, steps, stepsState) ||
+            !findSchemaForKey(key, hiddenSteps, stepsState),
+        ),
+      )
+    : stepsState;
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
@@ -350,7 +368,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={stepsState}
+            formData={reviewState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -358,7 +376,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={stepsState} schemas={steps} />
+            <ReviewStateComponent formState={reviewState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 variant="tertiary"

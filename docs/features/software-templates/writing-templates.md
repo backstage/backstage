@@ -1051,7 +1051,9 @@ parameters:
 
 Navigation, frontend validation, and review use the visible steps. Values entered
 before a step becomes hidden are retained and remain part of the submitted task
-values. The backend continues to validate the original parameter schemas. Use
+values. Fields belonging only to hidden steps are omitted from review, including
+custom review components. Visible fields retain their configured review masks.
+The backend continues to validate the original parameter schemas. Use
 conditional JSON Schema requirements, as shown above, for fields that are only
 required in a particular workflow.
 
