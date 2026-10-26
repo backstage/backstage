@@ -49,7 +49,7 @@ export class TokenCache {
       return false;
     }
     const { hash, salt } = entry;
-    const hashedClientState = hashValidationToken(clientState, salt);
+    const hashedClientState = hashValidationToken({ token: clientState, salt });
     return hashedClientState === hash;
   }
 
@@ -176,7 +176,8 @@ export function createWebhookRequestValidator(
       const subscriptionRecord = await databaseClient.getById(subscriptionId);
       if (!subscriptionRecord) {
         logger.warn(`No subscription record found for ID ${subscriptionId}`);
-        continue;
+        context.reject();
+        return;
       }
 
       const { token_hash, token_salt } = subscriptionRecord;
@@ -184,7 +185,10 @@ export function createWebhookRequestValidator(
       // Store the hash and salt in the cache for future notifications in this request
       tokenCache.set({ subscriptionId, hash: token_hash, salt: token_salt });
 
-      const hashedClientState = hashValidationToken(clientState, token_salt);
+      const hashedClientState = hashValidationToken({
+        token: clientState,
+        salt: token_salt,
+      });
 
       if (hashedClientState !== token_hash) {
         logger.warn(`Invalid clientState for notification item.`);

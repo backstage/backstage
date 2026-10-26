@@ -20,15 +20,25 @@ import crypto from 'node:crypto';
  * @param token
  * @param salt
  */
-export const hashValidationToken = (token: string, salt: string) =>
-  crypto.createHash('sha256').update(salt).update(token).digest('hex');
+export const hashValidationToken = ({
+  token,
+  salt,
+}: {
+  token: string;
+  salt: string;
+}) => crypto.createHash('sha256').update(salt).update(token).digest('hex');
+
+/**
+ * Generates a new random salt for hashing.
+ */
+export const newSalt = () => crypto.randomBytes(16).toString('hex');
 
 /**
  * Generates a new validation token, its salt, and the corresponding hash.
  */
 export function newValidationToken() {
   const validationToken = crypto.randomBytes(32).toString('hex');
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = hashValidationToken(validationToken, salt);
+  const salt = newSalt();
+  const hash = hashValidationToken({ token: validationToken, salt });
   return { validationToken, hash, salt };
 }

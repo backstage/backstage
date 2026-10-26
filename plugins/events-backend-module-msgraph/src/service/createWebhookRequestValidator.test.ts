@@ -164,17 +164,27 @@ describe('createWebhookRequestValidator', () => {
     expect(context.reject).toHaveBeenCalled();
   });
 
-  it('warns if no subscription record found', async () => {
+  it('rejects immediately if no subscription record is found', async () => {
     const request = createRequest({
-      body: { value: [{ clientState: 'a', subscriptionId: 'b' }] },
+      body: {
+        value: [
+          { clientState: 'a', subscriptionId: 'b' },
+          { clientState: 'c', subscriptionId: 'd' },
+        ],
+      },
     });
     (databaseClient.getById as jest.Mock).mockResolvedValue(undefined);
     await target(request, context);
+    expect(databaseClient.getById).toHaveBeenCalledTimes(1);
+    expect(databaseClient.getById).toHaveBeenCalledWith('b');
     expect(logger.warn).toHaveBeenCalledWith(
       'No subscription record found for ID b',
     );
     expect(request.body).toEqual({
-      value: [{ subscriptionId: 'b' }],
+      value: [
+        expect.objectContaining({ subscriptionId: 'b' }),
+        expect.objectContaining({ subscriptionId: 'd' }),
+      ],
     });
     expect(context.reject).toHaveBeenCalledWith();
   });
