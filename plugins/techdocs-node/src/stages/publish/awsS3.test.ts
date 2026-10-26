@@ -1188,7 +1188,7 @@ describe('AwsS3Publish', () => {
         await once(body, 'close');
         expect(body.destroyed).toBe(true);
       } finally {
-        server.close();
+        await server.close();
       }
     });
   });
