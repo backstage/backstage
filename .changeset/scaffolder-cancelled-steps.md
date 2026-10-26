@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': patch
 ---
 
-Update task and step statuses when cancellation arrives, preserving finished steps and resetting statuses when a recoverable task restarts.
+Update task and step statuses when cancellation arrives, preserving finished steps and resetting statuses when a recoverable task restarts. Task status also reflects the final outcome when replaying recovery and completion events.

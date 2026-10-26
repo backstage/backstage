@@ -136,6 +136,9 @@ function reducer(draft: TaskStream, action: ReducerAction) {
     }
 
     case 'COMPLETED': {
+      if (draft.task && !draft.cancelled) {
+        draft.task.status = action.data.body.error ? 'failed' : 'completed';
+      }
       draft.completed = true;
       draft.output = action.data.body.output;
       draft.error = action.data.body.error;
@@ -199,6 +202,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
 /**
  * A hook to stream the logs of a task being processed. Cancellation marks active
  * steps as cancelled and unstarted steps as skipped, preserving finished steps.
+ * Recovery and completion events update the task status, including during replay.
  *
  * @public
  */
