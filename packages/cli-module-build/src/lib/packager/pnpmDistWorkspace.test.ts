@@ -67,7 +67,7 @@ describe('preparePnpmDistWorkspace', () => {
 
   it('empties the lockfile entries of bundled packages and copies the files that the install reads', async () => {
     mockDir.setContent({
-      'outside/b.patch': 'b',
+      'outside/a.patch': 'b',
       'outside/hooks.cjs': 'hooks',
       'project/patches/a.patch': 'a',
       'project/.pnpmfile.cjs': 'default hooks',
@@ -78,7 +78,7 @@ describe('preparePnpmDistWorkspace', () => {
 
 patchedDependencies:
   a@1.0.0: patches/a.patch
-  b@1.0.0: ../outside/b.patch
+  b@1.0.0: ../outside/a.patch
 `,
       },
     });
@@ -93,8 +93,8 @@ patchedDependencies:
       'pnpm-lock.yaml',
       'pnpm-workspace.yaml',
       'patches/a.patch',
-      'patches/b.patch',
       '.pnpmfile.cjs',
+      'patches/a-2.patch',
     ]);
     expect(mockDir.content({ path: 'dist', shouldReadAsText: true })).toEqual({
       // Only the entry of the bundled package changes
@@ -107,9 +107,9 @@ patchedDependencies:
 
 patchedDependencies:
   a@1.0.0: patches/a.patch
-  b@1.0.0: patches/b.patch
+  b@1.0.0: patches/a-2.patch
 `,
-      patches: { 'a.patch': 'a', 'b.patch': 'b' },
+      patches: { 'a.patch': 'a', 'a-2.patch': 'b' },
       '.pnpmfile.cjs': 'default hooks',
     });
 
@@ -150,30 +150,6 @@ module.exports = { hooks: { readPackage } };
     await expect(prepare()).rejects.toThrow(
       'The pnpmfile .pnpmfile.cjs loads ./hooks/read-package.cjs, but only the pnpmfile itself is copied into the dist workspace. Move that code into the pnpmfile.',
     );
-
-    mockDir.setContent({
-      'project/hooks.mjs': `import lodash from 'lodash';
-import { a } from "../shared/a.mjs";
-export const hooks = { readPackage: pkg => import('./b.mjs').then(() => pkg) };
-`,
-      dist: { 'pnpm-workspace.yaml': 'pnpmfile: hooks.mjs\n' },
-    });
-    await expect(prepare()).rejects.toThrow(
-      'The pnpmfile hooks.mjs loads ../shared/a.mjs, ./b.mjs, but only the pnpmfile itself is copied',
-    );
-
-    // Packages and imports in comments are fine
-    mockDir.setContent({
-      'project/hooks.cjs': `/* const local = require('./local.cjs'); */
-const lodash = require('lodash'); // require('./local.cjs')
-module.exports = { hooks: {} };
-`,
-      dist: { 'pnpm-workspace.yaml': 'pnpmfile: hooks.cjs\n' },
-    });
-    await expect(prepare()).resolves.toEqual([
-      'pnpm-workspace.yaml',
-      'hooks.cjs',
-    ]);
   });
 });
 

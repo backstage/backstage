@@ -222,22 +222,23 @@ export class Pnpm implements PackageManager {
     return PnpmLockfile.load(
       resolvePath(this.workspaceRootDir, this.lockfileName()),
       {
-        readWorkspacePackageJson: async dir => {
-          try {
-            return await fs.readJson(
-              resolvePath(this.workspaceRootDir, dir, 'package.json'),
-            );
-          } catch {
-            return undefined;
-          }
-        },
+        readWorkspacePackageJsons: dirs =>
+          Promise.all(
+            dirs.map(dir =>
+              fs
+                .readJson(
+                  resolvePath(this.workspaceRootDir, dir, 'package.json'),
+                )
+                .catch(() => undefined),
+            ),
+          ),
       },
     );
   }
 
   /**
    * Parses the given `pnpm-lock.yaml` contents. The workspace packages are
-   * only named when `options.readWorkspacePackageJson` is given.
+   * only named when `options.readWorkspacePackageJsons` is given.
    */
   async parseLockfile(
     contents: string,
