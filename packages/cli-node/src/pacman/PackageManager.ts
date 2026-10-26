@@ -67,18 +67,19 @@ export type PackageManagerInstallOptions = {
  */
 export type ParseLockfileOptions = {
   /**
-   * Reads the `package.json` file of a workspace package, given the directory
-   * of the package relative to the workspace root with forward slashes. It must
-   * read from the same source as the lockfile contents, such as the same git
-   * ref, and return `undefined` when the file doesn't exist there.
+   * Reads the `package.json` files of workspace packages, given the
+   * directories of the packages relative to the workspace root with forward
+   * slashes. It must read from the same source as the lockfile contents, such
+   * as the same git ref, and return the files in the same order as the
+   * directories, with `undefined` for each file that doesn't exist there.
    *
    * Lockfiles that list workspace packages by directory, such as the pnpm
    * lockfile, use it to name them. Without it those packages can't be named,
    * and diffing the lockfile fails.
    */
-  readWorkspacePackageJson?: (
-    dir: string,
-  ) => Promise<{ name?: string; version?: string } | undefined>;
+  readWorkspacePackageJsons?: (
+    dirs: string[],
+  ) => Promise<Array<{ name?: string; version?: string } | undefined>>;
 };
 
 /**
