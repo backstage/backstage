@@ -93,6 +93,15 @@ describe('PageBlueprint', () => {
                 "config": {
                   "optional": true,
                 },
+                "id": "core.titleSource",
+                "optional": [Function],
+                "toString": [Function],
+              },
+              {
+                "$$type": "@backstage/ExtensionDataRef",
+                "config": {
+                  "optional": true,
+                },
                 "id": "core.icon",
                 "optional": [Function],
                 "toString": [Function],
@@ -122,6 +131,15 @@ describe('PageBlueprint', () => {
               "optional": true,
             },
             "id": "core.title",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "core.titleSource",
             "optional": [Function],
             "toString": [Function],
           },

@@ -15,6 +15,7 @@
  */
 
 import { JSX } from 'react';
+import { SnapshotSource } from '@backstage/types';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing/RouteRef';
 import { createExtensionDataRef } from './createExtensionDataRef';
@@ -22,6 +23,10 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 /** @public */
 export const coreExtensionData = {
   title: createExtensionDataRef<string>().with({ id: 'core.title' }),
+  /** A runtime title shared by the extension and consumers that opt in. */
+  titleSource: createExtensionDataRef<SnapshotSource<string>>().with({
+    id: 'core.titleSource',
+  }),
   /** An icon element for the extension. Should be exactly 24x24 pixels. */
   icon: createExtensionDataRef<IconElement>().with({ id: 'core.icon' }),
   reactElement: createExtensionDataRef<JSX.Element>().with({

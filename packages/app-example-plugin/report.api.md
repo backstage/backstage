@@ -13,6 +13,8 @@ import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SnapshotSource } from '@backstage/types';
+import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 const examplePlugin: OverridableFrontendPlugin<
@@ -48,6 +50,13 @@ const examplePlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -73,6 +82,13 @@ const examplePlugin: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
+              SnapshotSource<string>,
+              'core.titleSource',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
               {
@@ -88,7 +104,7 @@ const examplePlugin: OverridableFrontendPlugin<
       };
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationMessageRef;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;

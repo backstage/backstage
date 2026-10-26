@@ -13,6 +13,8 @@ import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { SnapshotSource } from '@backstage/types';
+import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -51,6 +53,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -76,6 +85,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
+              SnapshotSource<string>,
+              'core.titleSource',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
               {
@@ -91,7 +107,7 @@ const _default: OverridableFrontendPlugin<
       };
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationMessageRef;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -119,6 +135,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -139,7 +162,7 @@ const _default: OverridableFrontendPlugin<
       name: 'auth-providers';
       params: {
         path: string;
-        title: string;
+        title: string | TranslationMessageRef;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -168,6 +191,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -177,7 +207,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationMessageRef;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -206,6 +236,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -215,7 +252,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationMessageRef;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
