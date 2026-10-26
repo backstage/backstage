@@ -114,4 +114,47 @@ describe('validator', () => {
       { property: '.a', message: 'child', stack: '.a child' },
     ]);
   });
+
+  it('supports the errorMessage keyword when enabled', () => {
+    // `errorMessage` is not part of the RJSF schema type
+    const messageSchema = {
+      type: 'object',
+      required: ['name', 'id'],
+      properties: {
+        name: { type: 'string', pattern: '^[a-z]+$' },
+        postcode: { type: 'string', pattern: '^[0-9]+$', minLength: 5 },
+        id: { type: 'string', errorMessage: 'bad id' },
+        owner: { $ref: '#/definitions/owner' },
+      },
+      definitions: {
+        owner: {
+          type: 'string',
+          pattern: '^[a-z]+$',
+          errorMessage: { pattern: 'lowercase owner', _: 'bad owner' },
+        },
+      },
+      errorMessage: {
+        properties: { postcode: 'invalid postcode' },
+        required: { name: 'name is needed' },
+      },
+    } as RJSFSchema;
+    const data = { postcode: 'abc', id: 1, owner: 'ABC' };
+
+    const custom = customizeValidator({ errorMessage: true });
+    const byProperty = Object.fromEntries(
+      custom
+        .validateFormData(data, messageSchema)
+        .errors.map(e => [e.property, e.message]),
+    );
+    expect(byProperty).toEqual({
+      '.name': 'name is needed',
+      '.postcode': 'invalid postcode',
+      '.id': 'bad id',
+      '.owner': 'lowercase owner',
+    });
+
+    const plain = validator.validateFormData(data, messageSchema).errors;
+    expect(plain.map(e => e.message)).not.toContain('invalid postcode');
+    expect(plain.filter(e => e.property === '.postcode')).toHaveLength(2);
+  });
 });

@@ -6448,6 +6448,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@cfworker/json-schema": "npm:^4.1.1"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
@@ -6456,7 +6457,6 @@ __metadata:
     "@rjsf/core": "npm:5.24.13"
     "@rjsf/material-ui": "npm:5.24.13"
     "@rjsf/utils": "npm:5.24.13"
-    "@rjsf/validator-ajv8": "npm:5.24.13"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -6464,8 +6464,6 @@ __metadata:
     "@types/humanize-duration": "npm:^3.18.1"
     "@types/json-schema": "npm:^7.0.9"
     "@types/react": "npm:^18.0.0"
-    ajv: "npm:^8.0.1"
-    ajv-errors: "npm:^3.0.0"
     classnames: "npm:^2.2.6"
     flatted: "npm:^3.4.2"
     humanize-duration: "npm:^3.25.1"
@@ -15458,20 +15456,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/validator-ajv8@npm:5.24.13":
-  version: 5.24.13
-  resolution: "@rjsf/validator-ajv8@npm:5.24.13"
-  dependencies:
-    ajv: "npm:^8.12.0"
-    ajv-formats: "npm:^2.1.1"
-    lodash: "npm:^4.17.21"
-    lodash-es: "npm:^4.17.21"
-  peerDependencies:
-    "@rjsf/utils": ^5.24.x
-  checksum: 10/a684862ded27792c8f40cfcf26436fa91f0666c6b95aa7281bb6448221a85cffb6a178fd99d172758aae2c41c58033047d902743962b7f3a2b46204ebdb0009d
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-commonjs@npm:^26.0.0":
   version: 26.0.3
   resolution: "@rollup/plugin-commonjs@npm:26.0.3"
@@ -21782,7 +21766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.0, ajv@npm:^8.0.1, ajv@npm:^8.10.0, ajv@npm:^8.11.0, ajv@npm:^8.12.0, ajv@npm:^8.16.0, ajv@npm:^8.17.1, ajv@npm:^8.18.0, ajv@npm:^8.20.0, ajv@npm:^8.9.0":
+"ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.11.0, ajv@npm:^8.12.0, ajv@npm:^8.16.0, ajv@npm:^8.17.1, ajv@npm:^8.18.0, ajv@npm:^8.20.0, ajv@npm:^8.9.0":
   version: 8.20.0
   resolution: "ajv@npm:8.20.0"
   dependencies:

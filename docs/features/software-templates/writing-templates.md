@@ -714,8 +714,24 @@ catalogFilter:
 
 ### Custom validation messages
 
-You may specify custom JSON Schema validation messages as supported by the
-[ajv-errors](https://github.com/ajv-validator/ajv-errors) plugin library to [ajv](https://github.com/ajv-validator/ajv).
+You can set custom validation messages with the `errorMessage` keyword, using the same format as the
+[ajv-errors](https://github.com/ajv-validator/ajv-errors) library. All of its message forms are supported, except message templates such as `${/path}`.
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        pattern: '^[a-z0-9-]+$'
+    errorMessage:
+      required:
+        name: 'Please enter a name'
+      properties:
+        name: 'Use only lowercase letters, digits and dashes'
+```
 
 ## `spec.steps` - `Action[]`
 

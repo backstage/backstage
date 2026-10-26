@@ -41,6 +41,11 @@ export interface CustomValidatorOptionsType {
   /** JSON Schema dialect used by the engine. Defaults to `7`, matching the draft that `@rjsf/validator-ajv8` uses. */
   draft?: SchemaDraft;
 
+  /** Support the `errorMessage` keyword from `ajv-errors` for custom error messages. Defaults to `false`.
+   * This is a Backstage addition that is not part of `@rjsf/validator-cfworker`.
+   */
+  errorMessage?: boolean;
+
   /** Hook for applying additional setup to each constructed validator. */
   extenderFn?: (validator: Validator) => Validator;
 

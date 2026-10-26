@@ -40,7 +40,10 @@ import {
 
 import createCfworkerInstance from './createCfworkerInstance';
 import type { RawValidationErrorsType } from './processRawValidationErrors';
-import processRawValidationErrors from './processRawValidationErrors';
+import processRawValidationErrors, {
+  removeSummaryErrors,
+} from './processRawValidationErrors';
+import { applyErrorMessages } from './errorMessage';
 import type {
   CFWorkerValidationError,
   CustomValidatorOptionsType,
@@ -199,6 +202,9 @@ export default class CFWorkerValidator<
         normalizeFormDataForValidation(formData),
       );
       errors = result.valid ? undefined : result.errors;
+      if (errors && this.options.errorMessage) {
+        errors = applyErrorMessages(removeSummaryErrors(errors), schema);
+      }
     } catch (error) {
       validationError = error as Error;
     }
