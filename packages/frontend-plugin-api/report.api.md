@@ -397,7 +397,7 @@ export const bitbucketServerAuthApiRef: ApiRef_2<
 
 // @public
 export function BreadcrumbEntry(props: {
-  entry: Omit<BreadcrumbEntryData, 'depth'>;
+  entry?: Omit<BreadcrumbEntryData, 'depth'>;
   children: ReactNode;
 }): JSX_3.Element;
 
