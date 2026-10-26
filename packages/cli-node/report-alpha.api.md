@@ -83,12 +83,14 @@ export type PackageManagerInstallOptions = {
 
 // @alpha
 export type ParseLockfileOptions = {
-  readWorkspacePackageJson?: (dir: string) => Promise<
-    | {
-        name?: string;
-        version?: string;
-      }
-    | undefined
+  readWorkspacePackageJsons?: (dirs: string[]) => Promise<
+    Array<
+      | {
+          name?: string;
+          version?: string;
+        }
+      | undefined
+    >
   >;
 };
 

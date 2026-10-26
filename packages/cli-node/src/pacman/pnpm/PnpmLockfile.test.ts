@@ -27,17 +27,22 @@ async function readFixture(name: string) {
 
 // Names workspace packages after their directory
 const namedByDir = {
-  readWorkspacePackageJson: async (dir: string) => ({
-    name: dir === '.' ? 'root' : `@fixture/${dir.split('/').pop()}`,
-  }),
+  readWorkspacePackageJsons: async (dirs: string[]) =>
+    dirs.map(dir => ({
+      name: dir === '.' ? 'root' : `@fixture/${dir.split('/').pop()}`,
+    })),
 };
 
 // Reads the workspace packages of the fixture workspace
 const fromPinnedDir = {
-  readWorkspacePackageJson: (dir: string) =>
-    fs
-      .readJson(joinPath(pinnedDir, dir, 'package.json'))
-      .catch(() => undefined),
+  readWorkspacePackageJsons: (dirs: string[]) =>
+    Promise.all(
+      dirs.map(dir =>
+        fs
+          .readJson(joinPath(pinnedDir, dir, 'package.json'))
+          .catch(() => undefined),
+      ),
+    ),
 };
 
 const PNPM_PACKAGES = ['pnpm', '@pnpm/exe.linux-x64', '@pnpm/exe.darwin-arm64'];
@@ -237,7 +242,10 @@ snapshots:
 
   foo@1.0.0: {}
 `,
-      { readWorkspacePackageJson: async () => ({ name: 'fixture-root' }) },
+      {
+        readWorkspacePackageJsons: async dirs =>
+          dirs.map(() => ({ name: 'fixture-root' })),
+      },
     );
 
     const diff = small.diff(pinned);
