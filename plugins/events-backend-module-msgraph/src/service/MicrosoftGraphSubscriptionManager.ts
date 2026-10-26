@@ -26,8 +26,15 @@ import type {
   MicrosoftGraphSubscriptionsDatabaseClient,
   MicrosoftGraphSubscriptionsDatabaseOperations,
 } from '../database/databaseClient';
-import { type MicrosoftGraphClient } from './MicrosoftGraphClient';
-import { newValidationToken } from './validationToken';
+import {
+  ActiveSubscriptionsCache,
+  type MicrosoftGraphClient,
+} from './MicrosoftGraphClient';
+import {
+  hashValidationToken,
+  newSalt,
+  newValidationToken,
+} from './validationToken';
 import { Subscription } from '@microsoft/microsoft-graph-types';
 import { difference } from 'lodash';
 
@@ -273,9 +280,14 @@ export class MicrosoftGraphSubscriptionManager {
    * Ensures that all configured resources have an active subscription in MS Graph and in the database.
    */
   async ensureActiveSubscriptions() {
+    const subscriptionsCache =
+      this.msGraphClient.createActiveSubscriptionsCache();
+
     const results = await Promise.allSettled(
-      this.resources.map(resource =>
-        this.ensureActiveResourceSubscription(resource),
+      this.resources.map(
+        resource =>
+          this.ensureActiveResourceSubscription(resource, subscriptionsCache),
+        subscriptionsCache,
       ),
     );
 
@@ -286,14 +298,21 @@ export class MicrosoftGraphSubscriptionManager {
     }
   }
 
-  async ensureActiveResourceSubscription(resource: string) {
+  async ensureActiveResourceSubscription(
+    resource: string,
+    subscriptionsCache: ActiveSubscriptionsCache,
+  ) {
     const logger = this.logger.child({ resource });
     let createdSubscriptionId: string | undefined;
 
     try {
       await this.database.transaction(async trx => {
         const { existingSubscriptionId, isValid, expiresSoon } =
-          await this.checkExistingSubscription(trx, resource);
+          await this.checkExistingSubscription(
+            trx,
+            subscriptionsCache,
+            resource,
+          );
 
         if (existingSubscriptionId && isValid && !expiresSoon) {
           logger.debug(
@@ -303,7 +322,7 @@ export class MicrosoftGraphSubscriptionManager {
           return;
         } else if (!existingSubscriptionId || !isValid) {
           logger.debug(
-            `No valid subscription for resource '${resource}' exists, creating a new one.`,
+            `No valid subscription for resource '${resource}' exists.`,
           );
 
           if (existingSubscriptionId) {
@@ -388,6 +407,7 @@ export class MicrosoftGraphSubscriptionManager {
 
   private async checkExistingSubscription(
     trx: MicrosoftGraphSubscriptionsDatabaseOperations,
+    subscriptionsCache: ActiveSubscriptionsCache,
     resource: string,
   ): Promise<{
     existingSubscriptionId?: string;
@@ -398,17 +418,36 @@ export class MicrosoftGraphSubscriptionManager {
 
     logger.debug(`Checking active subscription for resource '${resource}'.`);
     const existingSubscriptionRecord = await trx.findByResource(resource);
-    const existingSubscriptionId = existingSubscriptionRecord?.id;
-    if (!existingSubscriptionId) {
-      logger.debug(`No subscription record for resource '${resource}' exists.`);
-      return {};
+    let existingSubscriptionId = existingSubscriptionRecord?.id;
+    const missingDBRecord = existingSubscriptionId === undefined;
+    if (missingDBRecord) {
+      logger.debug(
+        `No subscription record for resource '${resource}' exists in the database. Checking MS Graph for existing subscription...`,
+      );
+      const msgraphSubscription = await subscriptionsCache.find({
+        resource,
+        changeType: SUBSCRIPTION_CHANGE_TYPE,
+        url: this.getNotificationUrl(),
+      });
+
+      if (msgraphSubscription) {
+        existingSubscriptionId = msgraphSubscription.id;
+        logger.debug(
+          `Found subscription ${existingSubscriptionId} for resource '${resource}' in MS Graph.`,
+        );
+      } else {
+        logger.debug(
+          `No subscription for resource '${resource}' exists in MS Graph.`,
+        );
+        return {};
+      }
     }
 
     let msgraphSubscription: Subscription | undefined;
 
     try {
       msgraphSubscription = await this.msGraphClient.getSubscription(
-        existingSubscriptionId,
+        existingSubscriptionId!,
       );
     } catch (err) {
       this.logger.warn(
@@ -425,15 +464,10 @@ export class MicrosoftGraphSubscriptionManager {
     }
 
     const exists = Boolean(msgraphSubscription);
-    const expirationDateTime =
-      msgraphSubscription &&
-      new Date(
-        msgraphSubscription.expirationDateTime ??
-          existingSubscriptionRecord.expires_at,
-      );
-    const remainingTime = !expirationDateTime
+    const remainingTime = !msgraphSubscription?.expirationDateTime
       ? 0
-      : expirationDateTime.valueOf() - new Date().valueOf();
+      : new Date(msgraphSubscription.expirationDateTime).valueOf() -
+        new Date().valueOf();
     const isActive = remainingTime > 0;
     const expiresSoon = remainingTime <= subscriptionExpirationBuffer.valueOf();
     const notificationUrlMatches = Boolean(
@@ -462,6 +496,35 @@ export class MicrosoftGraphSubscriptionManager {
     } else if (expiresSoon) {
       logger.debug(
         `Subscription ${existingSubscriptionId} for resource '${resource}' will soon expire.`,
+      );
+    }
+
+    if (missingDBRecord && existingSubscriptionId && isValid) {
+      // If the subscription exists in MS Graph but not in the database, we can create a new record in the database to reflect the existing subscription
+      // But it requires the clientState
+      if (!msgraphSubscription.clientState) {
+        logger.warn(
+          `Subscription ${existingSubscriptionId} for resource '${resource}' exists in MS Graph but has no clientState. Cannot create a record in the database.`,
+        );
+        return { existingSubscriptionId, isValid: false };
+      }
+
+      const salt = newSalt();
+      const hash = hashValidationToken({
+        salt,
+        token: msgraphSubscription.clientState!,
+      });
+
+      await trx.insert({
+        id: existingSubscriptionId,
+        resource,
+        expires_at: new Date(msgraphSubscription!.expirationDateTime!),
+        token_hash: hash,
+        token_salt: salt,
+      });
+
+      logger.info(
+        `Created subscription record for resource '${resource}' in the database for existing subscription ${existingSubscriptionId}.`,
       );
     }
 

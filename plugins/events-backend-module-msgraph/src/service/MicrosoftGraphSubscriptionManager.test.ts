@@ -26,6 +26,7 @@ import type {
   MicrosoftGraphClient,
 } from './MicrosoftGraphClient';
 import { MicrosoftGraphSubscriptionManager } from './MicrosoftGraphSubscriptionManager';
+import { hashValidationToken } from './validationToken';
 
 describe('MicrosoftGraphSubscriptionManager', () => {
   let logger: ReturnType<typeof mockServices.logger.mock>;
@@ -443,6 +444,76 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
       expect(logger.info).toHaveBeenCalledWith(
         "Created new subscription subid for resource 'users'.",
+      );
+    });
+
+    it('restores a valid Graph subscription missing from the database', async () => {
+      databaseClient.findByResource.mockResolvedValue(undefined);
+      const graphSubscription = {
+        id: 'existing-subscription',
+        resource: 'users',
+        notificationUrl: 'https://example.com/notifications',
+        changeType: 'updated,deleted',
+        clientState: 'existing-client-state',
+        expirationDateTime: DateTime.now().plus({ minutes: 45 }).toISO(),
+      };
+      jest.mocked(subscriptionsCache.find).mockResolvedValue(graphSubscription);
+      msGraphClient.getSubscription.mockResolvedValue(graphSubscription);
+
+      await ensureActiveResourceSubscription('users');
+
+      expect(subscriptionsCache.find).toHaveBeenCalledWith({
+        resource: 'users',
+        changeType: 'updated,deleted',
+        url: 'https://example.com/notifications',
+      });
+      expect(databaseClient.insert).toHaveBeenCalledTimes(1);
+      const [record] = databaseClient.insert.mock.calls[0];
+      expect(record).toEqual(
+        expect.objectContaining({
+          id: 'existing-subscription',
+          resource: 'users',
+          expires_at: new Date(graphSubscription.expirationDateTime!),
+        }),
+      );
+      expect(record.token_hash).toBe(
+        hashValidationToken({
+          token: graphSubscription.clientState,
+          salt: record.token_salt,
+        }),
+      );
+      expect(msGraphClient.createSubscription).not.toHaveBeenCalled();
+      expect(msGraphClient.deleteSubscription).not.toHaveBeenCalled();
+      expect(msGraphClient.renewSubscription).not.toHaveBeenCalled();
+    });
+
+    it('replaces a valid Graph subscription without a client state', async () => {
+      databaseClient.findByResource.mockResolvedValue(undefined);
+      jest.mocked(subscriptionsCache.find).mockResolvedValue({
+        id: 'unrecoverable-subscription',
+      });
+      msGraphClient.getSubscription.mockResolvedValue({
+        id: 'unrecoverable-subscription',
+        resource: 'users',
+        notificationUrl: 'https://example.com/notifications',
+        changeType: 'updated,deleted',
+        expirationDateTime: DateTime.now().plus({ minutes: 45 }).toISO(),
+      });
+      msGraphClient.createSubscription.mockResolvedValue({
+        id: 'replacement-subscription',
+        expirationDateTime: DateTime.now().plus({ minutes: 45 }).toISO(),
+      });
+
+      await ensureActiveResourceSubscription('users');
+
+      expect(databaseClient.insert).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'replacement-subscription' }),
+      );
+      expect(msGraphClient.deleteSubscription).toHaveBeenCalledWith(
+        'unrecoverable-subscription',
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        "Subscription unrecoverable-subscription for resource 'users' exists in MS Graph but has no clientState. Cannot create a record in the database.",
       );
     });
 

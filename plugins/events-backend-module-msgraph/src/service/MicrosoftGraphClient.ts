@@ -69,6 +69,51 @@ class ClientWrapperImpl implements ClientWrapper {
 }
 
 /**
+ * Caches active subscriptions to avoid repeated calls to Microsoft Graph.
+ * The cache is populated on the first call to `find` and reused for subsequent calls.
+ *
+ * @internal
+ */
+export class ActiveSubscriptionsCache {
+  private cache?: Promise<Subscription[]>;
+  constructor(private readonly msGraphClient: MicrosoftGraphClient) {}
+
+  async find(filter: {
+    resource: string;
+    url: string;
+    changeType: string;
+  }): Promise<Subscription | undefined> {
+    if (!this.cache) {
+      const now = new Date();
+      this.cache = this.msGraphClient
+        .listSubscriptions()
+        .then(subscriptions =>
+          subscriptions.filter(
+            sub => new Date(sub.expirationDateTime ?? 0) > now && !!sub.id,
+          ),
+        );
+    }
+    const subscriptions = await this.cache;
+
+    const changeTypes = filter.changeType.split(',').map(ct => ct.trim());
+    const changeTypesMatch = (subChangeType: string | undefined) => {
+      if (!subChangeType) {
+        return false;
+      }
+      const subChangeTypes = subChangeType.split(',').map(ct => ct.trim());
+      return changeTypes.every(ct => subChangeTypes.includes(ct));
+    };
+
+    return subscriptions.find(
+      sub =>
+        sub.resource === filter.resource &&
+        sub.notificationUrl === filter.url &&
+        changeTypesMatch(sub.changeType),
+    );
+  }
+}
+
+/**
  * Client for interacting with Microsoft Graph Subscriptions API.
  * @internal
  */
@@ -175,6 +220,10 @@ export class MicrosoftGraphClient {
       id: string;
       expirationDateTime: string;
     };
+  }
+
+  createActiveSubscriptionsCache() {
+    return new ActiveSubscriptionsCache(this);
   }
 
   private async clientCall<T>(

@@ -137,6 +137,101 @@ describe('MicrosoftGraphClient', () => {
     });
   });
 
+  describe('createActiveSubscriptionsCache', () => {
+    it('shares the Graph listing and matches only active subscriptions', async () => {
+      const expirationDateTime = new Date(Date.now() + 60_000).toISOString();
+      jest.spyOn(client, 'listSubscriptions').mockResolvedValue([
+        {
+          id: 'match',
+          resource: 'users',
+          notificationUrl: 'https://example.com/notifications',
+          changeType: 'deleted, updated',
+          expirationDateTime,
+        },
+        {
+          id: 'expired',
+          resource: 'expired',
+          notificationUrl: 'https://example.com/notifications',
+          changeType: 'updated,deleted',
+          expirationDateTime: new Date(Date.now() - 60_000).toISOString(),
+        },
+        {
+          resource: 'missing-id',
+          notificationUrl: 'https://example.com/notifications',
+          changeType: 'updated,deleted',
+          expirationDateTime,
+        },
+      ]);
+      const cache = client.createActiveSubscriptionsCache();
+
+      const [first, second] = await Promise.all([
+        cache.find({
+          resource: 'users',
+          url: 'https://example.com/notifications',
+          changeType: 'updated,deleted',
+        }),
+        cache.find({
+          resource: 'users',
+          url: 'https://example.com/notifications',
+          changeType: 'updated',
+        }),
+      ]);
+
+      expect(first?.id).toBe('match');
+      expect(second?.id).toBe('match');
+      await expect(
+        cache.find({
+          resource: 'expired',
+          url: 'https://example.com/notifications',
+          changeType: 'updated,deleted',
+        }),
+      ).resolves.toBeUndefined();
+      await expect(
+        cache.find({
+          resource: 'missing-id',
+          url: 'https://example.com/notifications',
+          changeType: 'updated,deleted',
+        }),
+      ).resolves.toBeUndefined();
+      expect(client.listSubscriptions).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not match subscriptions with a different resource, URL, or change type', async () => {
+      jest.spyOn(client, 'listSubscriptions').mockResolvedValue([
+        {
+          id: 'subid',
+          resource: 'users',
+          notificationUrl: 'https://example.com/notifications',
+          changeType: 'updated',
+          expirationDateTime: new Date(Date.now() + 60_000).toISOString(),
+        },
+      ]);
+      const cache = client.createActiveSubscriptionsCache();
+
+      await expect(
+        cache.find({
+          resource: 'groups',
+          url: 'https://example.com/notifications',
+          changeType: 'updated',
+        }),
+      ).resolves.toBeUndefined();
+      await expect(
+        cache.find({
+          resource: 'users',
+          url: 'https://other.example.com/notifications',
+          changeType: 'updated',
+        }),
+      ).resolves.toBeUndefined();
+      await expect(
+        cache.find({
+          resource: 'users',
+          url: 'https://example.com/notifications',
+          changeType: 'deleted',
+        }),
+      ).resolves.toBeUndefined();
+    });
+  });
+
   describe('createSubscription', () => {
     it('calls MS Graph API with correct params and returns subscription', async () => {
       const fakeSub = { id: 'subid', expirationDateTime: undefined };
