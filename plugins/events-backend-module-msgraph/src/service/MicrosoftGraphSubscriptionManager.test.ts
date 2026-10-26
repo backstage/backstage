@@ -228,7 +228,7 @@ describe('MicrosoftGraphSubscriptionManager', () => {
       await fn();
       await fn();
 
-      expect(target.cleanupObsoleteSubscriptions).toHaveBeenCalledTimes(3);
+      expect(target.cleanupObsoleteSubscriptions).toHaveBeenCalledTimes(4);
       expect(target.ensureActiveSubscriptions).toHaveBeenCalledTimes(4);
       expect(logger.warn).toHaveBeenCalledWith(
         'MS Graph subscription cleanup failed, will retry on next run.',
