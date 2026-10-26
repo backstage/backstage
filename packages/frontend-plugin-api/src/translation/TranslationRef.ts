@@ -47,7 +47,8 @@ export interface TranslationRefTuple<
   /** The ref that owns the selected message. */
   readonly ref: TranslationRef<TId, TMessages>;
   /** The selected message key. */
-  readonly key: string;
+  // Defer key extraction so typed refs remain assignable to refs with unknown messages.
+  readonly key: keyof TMessages extends infer TKey ? TKey & string : never;
 }
 
 /** @internal */
@@ -161,7 +162,10 @@ export function createTranslationRef<
       key: keyof FlattenedMessages<TNestedMessages> & string,
     ): TranslationRefTuple<TId, FlattenedMessages<TNestedMessages>> => ({
       ref,
-      key,
+      key: key as unknown as TranslationRefTuple<
+        TId,
+        FlattenedMessages<TNestedMessages>
+      >['key'],
     }),
     {
       $$type: '@backstage/TranslationRef' as const,

@@ -2380,7 +2380,7 @@ export interface TranslationRefTuple<
     [key in string]: string;
   },
 > {
-  readonly key: string;
+  readonly key: keyof TMessages extends infer TKey ? TKey & string : never;
   readonly ref: TranslationRef<TId, TMessages>;
 }
 
