@@ -16,7 +16,6 @@
 
 import { TestApiRegistry } from '@backstage/test-utils';
 import { createTranslationRef } from './TranslationRef';
-import { TranslationMessageRef } from './TranslationMessageRef';
 import { resolveTranslationTitle } from './resolveTranslationTitle';
 
 it('preserves static titles, resolves defaults without an API, and rejects invalid message selections', () => {
@@ -29,11 +28,8 @@ it('preserves static titles, resolves defaults without an API, and rejects inval
       nested: '$t(interpolated)',
     },
   });
-  const translation = { ref, key: 'title' } satisfies TranslationMessageRef<
-    typeof ref.T
-  >;
-  // @ts-expect-error The descriptor can be checked against the ref's message keys.
-  const invalid: TranslationMessageRef<typeof ref.T> = { ref, key: 'missing' };
+  const translation = { ref, key: 'title' };
+  const invalid = { ref, key: 'missing' };
   expect(resolveTranslationTitle('Plain', undefined, apis)).toEqual({
     title: 'Plain',
   });

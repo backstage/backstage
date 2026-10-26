@@ -17,8 +17,8 @@
 import { JSX } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { createSnapshotSourceCollection } from '@internal/frontend';
-import { SnapshotSource } from '@backstage/types';
-import { TranslationMessageRef } from '../translation/TranslationMessageRef';
+import { SnapshotSource } from '@backstage/types/alpha';
+import { TranslationRef } from '../translation/TranslationRef';
 import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
@@ -85,7 +85,7 @@ export const PageBlueprint = createExtensionBlueprint({
     params: {
       path: string;
       /** A plain title or a message reference resolved using the translation API. */
-      title?: string | TranslationMessageRef;
+      title?: string | { ref: TranslationRef; key: string };
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
@@ -117,14 +117,19 @@ export const PageBlueprint = createExtensionBlueprint({
     if (source) {
       yield coreExtensionData.titleSource(source);
     }
-    const childSources = new Map<string, SnapshotSource<string>>();
-    if (!params.loader) {
-      for (const page of inputs.pages) {
-        const childSource = page.get(coreExtensionData.titleSource);
-        if (childSource) childSources.set(page.node.spec.id, childSource);
-      }
-    }
-    const childTitlesSource = createSnapshotSourceCollection(childSources);
+    const childTitlesSource = createSnapshotSourceCollection(
+      params.loader
+        ? []
+        : inputs.pages.map(
+            page =>
+              page.get(coreExtensionData.titleSource) ?? {
+                getSnapshot: () =>
+                  page.get(coreExtensionData.title) ??
+                  page.get(coreExtensionData.routePath),
+                subscribe: () => () => {},
+              },
+          ),
+    );
 
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
@@ -162,12 +167,10 @@ export const PageBlueprint = createExtensionBlueprint({
           childTitlesSource.subscribe,
           childTitlesSource.getSnapshot,
         );
-        const pages = inputs.pages.map(page => {
+        const pages = inputs.pages.map((page, index) => {
           const path = page.get(coreExtensionData.routePath);
           const tabTitle =
-            childTitles.get(page.node.spec.id) ??
-            page.get(coreExtensionData.title) ??
-            path;
+            childTitles[index] ?? page.get(coreExtensionData.title) ?? path;
           return { page, path, title: tabTitle };
         });
         const tabs: PageLayoutTab[] = pages.map(

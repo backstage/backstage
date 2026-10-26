@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TranslationMessageRef } from '../translation/TranslationMessageRef';
+import { TranslationRef } from '../translation/TranslationRef';
 import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
@@ -69,7 +69,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
       /**
        * The title displayed in the tab for this sub-page.
        */
-      title: string | TranslationMessageRef;
+      title: string | { ref: TranslationRef; key: string };
       /**
        * Optional icon for this sub-page, displayed in the tab.
        */
@@ -93,7 +93,9 @@ export const SubPageBlueprint = createExtensionBlueprint({
       apis,
     );
     yield coreExtensionData.title(title);
-    if (source) yield coreExtensionData.titleSource(source);
+    if (source) {
+      yield coreExtensionData.titleSource(source);
+    }
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SnapshotSource } from '@backstage/types';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { createSnapshotSourceCollection } from './createSnapshotSourceCollection';
 
 it('caches collection snapshots, shares subscriptions, closes read/subscribe gaps, and cleans up', () => {
@@ -33,12 +33,11 @@ it('caches collection snapshots, shares subscriptions, closes read/subscribe gap
     getSnapshot: () => value,
     subscribe,
   };
-  const collection = createSnapshotSourceCollection(
-    new Map([
-      ['a', source],
-      ['b', source],
-    ]),
-  );
+  const middle: SnapshotSource<string> = {
+    getSnapshot: () => 'Middle',
+    subscribe: () => () => {},
+  };
+  const collection = createSnapshotSourceCollection([source, middle, source]);
   const initial = collection.getSnapshot();
   expect(collection.getSnapshot()).toBe(initial);
   expect(subscribe).not.toHaveBeenCalled();
@@ -46,8 +45,9 @@ it('caches collection snapshots, shares subscriptions, closes read/subscribe gap
   const unsubscribe = collection.subscribe(onChange);
   const unsubscribeAgain = collection.subscribe(onChange);
   expect(subscribe).toHaveBeenCalledTimes(1);
-  expect([...collection.getSnapshot().values()]).toEqual([
+  expect(collection.getSnapshot()).toEqual([
     'Changed before subscribing',
+    'Middle',
     'Changed before subscribing',
   ]);
   const snapshot = collection.getSnapshot();
@@ -58,6 +58,7 @@ it('caches collection snapshots, shares subscriptions, closes read/subscribe gap
   callbacks.forEach(callback => callback());
   expect(onChange).toHaveBeenCalledTimes(3);
   expect(collection.getSnapshot()).not.toBe(snapshot);
+  expect(collection.getSnapshot()).toEqual(['Next', 'Middle', 'Next']);
   unsubscribe();
   unsubscribe();
   expect(stop).not.toHaveBeenCalled();

@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-import { SnapshotSource } from '@backstage/types';
-import {
-  ApiHolder,
-  appLanguageApiRef,
-  errorApiRef,
-  translationApiRef,
-  TranslationApi,
-} from '../apis';
+import { SnapshotSource } from '@backstage/types/alpha';
+import { ApiHolder, appLanguageApiRef, translationApiRef } from '../apis';
+import { TranslationRef } from './TranslationRef';
 import { TranslationSnapshot } from '../apis/definitions/TranslationApi';
-import { TranslationMessageRef } from './TranslationMessageRef';
-
-const reportedErrors = new WeakMap<TranslationApi, Set<string>>();
 
 /** @internal */
 export function createTranslationTitleSource(options: {
-  translation: TranslationMessageRef;
+  translation: { ref: TranslationRef; key: string };
   fallback: string;
   apis: ApiHolder;
 }): SnapshotSource<string> {
@@ -39,7 +31,6 @@ export function createTranslationTitleSource(options: {
     apis,
   } = options;
   const api = apis.get(translationApiRef);
-  const errorApi = apis.get(errorApiRef);
   const languageApi = apis.get(appLanguageApiRef);
   const initial = api?.getTranslation(ref);
   let value = initial?.ready ? initial.t(key) : fallback;
@@ -47,11 +38,15 @@ export function createTranslationTitleSource(options: {
   let disconnect: (() => void) | undefined;
 
   const connect = () => {
-    if (!api) return () => {};
+    if (!api) {
+      return () => {};
+    }
     let active = true;
     let failed = false;
     const update = (snapshot: TranslationSnapshot<Record<string, string>>) => {
-      if (!active || !snapshot.ready) return;
+      if (!active || !snapshot.ready) {
+        return;
+      }
       const next = snapshot.t(key);
       if (next !== value) {
         value = next;
@@ -61,25 +56,12 @@ export function createTranslationTitleSource(options: {
     const subscribe = () =>
       api.translation$(ref).subscribe({
         next: update,
-        error: error => {
-          if (!active) return;
+        error: () => {
+          if (!active) {
+            return;
+          }
           failed = true;
           update(api.getTranslation(ref));
-          if (errorApi) {
-            let reported = reportedErrors.get(api);
-            if (!reported) {
-              reported = new Set();
-              reportedErrors.set(api, reported);
-            }
-            if (!reported.has(ref.id)) {
-              reported.add(ref.id);
-              errorApi.post(
-                new Error(
-                  `Failed to load translation resource '${ref.id}'; caused by ${error}`,
-                ),
-              );
-            }
-          }
         },
       });
     let subscription = subscribe();
@@ -106,7 +88,9 @@ export function createTranslationTitleSource(options: {
     subscribe: onChange => {
       const listener = () => onChange();
       listeners.add(listener);
-      if (listeners.size === 1) disconnect = connect();
+      if (listeners.size === 1) {
+        disconnect = connect();
+      }
       return () => {
         if (listeners.delete(listener) && listeners.size === 0) {
           disconnect?.();

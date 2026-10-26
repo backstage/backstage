@@ -21,8 +21,7 @@ import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
-import { SnapshotSource } from '@backstage/types';
-import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -187,7 +186,12 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
@@ -347,7 +351,12 @@ export const searchPage: OverridableExtensionDefinition<{
   name: undefined;
   params: {
     path: string;
-    title?: string | TranslationMessageRef;
+    title?:
+      | string
+      | {
+          ref: TranslationRef;
+          key: string;
+        };
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;

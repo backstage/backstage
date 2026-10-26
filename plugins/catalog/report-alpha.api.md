@@ -39,11 +39,10 @@ import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import { SnapshotSource } from '@backstage/types';
+import { SnapshotSource } from '@backstage/types/alpha';
 import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
-import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -1253,7 +1252,12 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -1477,7 +1481,12 @@ const _default: OverridableFrontendPlugin<
       name: 'entity';
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

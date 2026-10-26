@@ -36,11 +36,10 @@ import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alph
 import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderTemplateFilterHook } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
-import { SnapshotSource } from '@backstage/types';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
-import { TranslationMessageRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -288,7 +287,12 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationMessageRef;
+        title?:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -484,7 +488,12 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string | TranslationMessageRef;
+        title:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -529,7 +538,12 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string | TranslationMessageRef;
+        title:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -592,7 +606,12 @@ const _default: OverridableFrontendPlugin<
       name: 'tasks';
       params: {
         path: string;
-        title: string | TranslationMessageRef;
+        title:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -666,7 +685,12 @@ const _default: OverridableFrontendPlugin<
       name: 'templates';
       params: {
         path: string;
-        title: string | TranslationMessageRef;
+        title:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -711,7 +735,12 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string | TranslationMessageRef;
+        title:
+          | string
+          | {
+              ref: TranslationRef;
+              key: string;
+            };
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;

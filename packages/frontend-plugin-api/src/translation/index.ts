@@ -30,4 +30,3 @@ export {
   createTranslationRef,
 } from './TranslationRef';
 export { useTranslationRef } from './useTranslationRef';
-export type { TranslationMessageRef } from './TranslationMessageRef';

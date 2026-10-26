@@ -86,8 +86,8 @@ it('shares lazy subscriptions, retains titles while loading, and recovers from f
   expect(late.result.current).toBe('Svenska');
   expect(extra).toHaveBeenCalledTimes(1);
   act(() => languageApi.setLanguage('de'));
-  await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
-  expect(result.current).toBe('App English');
+  await waitFor(() => expect(result.current).toBe('App English'));
+  expect(post).not.toHaveBeenCalled();
   act(() => languageApi.setLanguage('sv'));
   await waitFor(() => expect(result.current).toBe('Svenska'));
   unsubscribe();

@@ -25,7 +25,7 @@
  * Sources own their update, loading, and error policies. Consumers only read and
  * subscribe; no asynchronous work or subscriptions should start during a read.
  *
- * @public
+ * @alpha
  */
 export interface SnapshotSource<T> {
   /** Returns the current snapshot, without side effects. */
