@@ -48,7 +48,7 @@ export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public
+// @public @deprecated
 export const analyticsApiRef: ApiRef_2<AnalyticsApi, 'core.analytics'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -217,7 +217,7 @@ export type AppLanguageApi = {
   }>;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const appLanguageApiRef: ApiRef_2<AppLanguageApi, 'core.applanguage'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -228,7 +228,7 @@ export interface AppLifecycleApi {
   subscribe(listener: () => void): () => void;
 }
 
-// @public
+// @public @deprecated
 export const appLifecycleApiRef: ApiRef_2<
   AppLifecycleApi,
   'core.app-lifecycle'
@@ -308,7 +308,7 @@ export type AppThemeApi = {
   setActiveThemeId(themeId?: string): void;
 };
 
-// @public
+// @public @deprecated
 export const appThemeApiRef: ApiRef_2<AppThemeApi, 'core.apptheme'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -330,7 +330,7 @@ export interface AppTreeApi {
   };
 }
 
-// @public
+// @public @deprecated
 export const appTreeApiRef: ApiRef_2<AppTreeApi, 'core.app-tree'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -413,7 +413,7 @@ export interface BreadcrumbEntryData {
 // @public
 export type ConfigApi = Config;
 
-// @public
+// @public @deprecated
 export const configApiRef: ApiRef_2<Config, 'core.config'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -436,6 +436,31 @@ export interface ConfigurableExtensionDataRef<
       optional: true;
     }
   >;
+}
+
+// @public
+export namespace coreApis {
+  const analytics: typeof analyticsApiRef;
+  const appLanguage: typeof appLanguageApiRef;
+  const appLifecycle: typeof appLifecycleApiRef;
+  const appTheme: typeof appThemeApiRef;
+  const appTree: typeof appTreeApiRef;
+  const config: typeof configApiRef;
+  const dialog: typeof dialogApiRef;
+  const discovery: typeof discoveryApiRef;
+  const error: typeof errorApiRef;
+  const featureFlags: typeof featureFlagsApiRef;
+  const fetch: typeof fetchApiRef;
+  const icons: typeof iconsApiRef;
+  const identity: typeof identityApiRef;
+  const oauthRequest: typeof oauthRequestApiRef;
+  const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
+  const pluginWrapper: typeof pluginWrapperApiRef;
+  const routeResolution: typeof routeResolutionApiRef;
+  const storage: typeof storageApiRef;
+  const swappableComponents: typeof swappableComponentsApiRef;
+  const toast: typeof toastApiRef;
+  const translation: typeof translationApiRef;
 }
 
 // @public (undocumented)
@@ -986,7 +1011,7 @@ export interface DialogApiDialog<TResult = void> {
   ): void;
 }
 
-// @public
+// @public @deprecated
 export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -996,7 +1021,7 @@ export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
 
-// @public
+// @public @deprecated
 export const discoveryApiRef: ApiRef_2<DiscoveryApi, 'core.discovery'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -1022,7 +1047,7 @@ export type ErrorApiErrorContext = {
   hidden?: boolean;
 };
 
-// @public
+// @public @deprecated
 export const errorApiRef: ApiRef_2<ErrorApi, 'core.error'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -1401,7 +1426,7 @@ export interface FeatureFlagsApi {
   save(options: FeatureFlagsSaveOptions): void;
 }
 
-// @public
+// @public @deprecated
 export const featureFlagsApiRef: ApiRef_2<
   FeatureFlagsApi,
   'core.featureflags'
@@ -1438,7 +1463,7 @@ export type FetchApi = {
   fetch: typeof fetch;
 };
 
-// @public
+// @public @deprecated
 export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -1562,7 +1587,7 @@ export interface IconsApi {
   listIconKeys(): string[];
 }
 
-// @public
+// @public @deprecated
 export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -1577,7 +1602,7 @@ export type IdentityApi = {
   signOut(): Promise<void>;
 };
 
-// @public
+// @public @deprecated
 export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -1621,7 +1646,7 @@ export type OAuthRequestApi = {
   authRequest$(): Observable<PendingOAuthRequest[]>;
 };
 
-// @public
+// @public @deprecated
 export const oauthRequestApiRef: ApiRef_2<
   OAuthRequestApi,
   'core.oauthrequest'
@@ -1963,7 +1988,7 @@ export type PluginHeaderActionsApi = {
   getPluginHeaderActions(pluginId: string): Array<JSX_2.Element | null>;
 };
 
-// @public
+// @public @deprecated
 export const pluginHeaderActionsApiRef: ApiRef_2<
   PluginHeaderActionsApi,
   'core.plugin-header-actions'
@@ -1995,7 +2020,7 @@ export type PluginWrapperApi = {
     | undefined;
 };
 
-// @public
+// @public @deprecated
 export const pluginWrapperApiRef: ApiRef_2<
   PluginWrapperApi,
   'core.plugin-wrapper'
@@ -2095,7 +2120,7 @@ export interface RouteResolutionApi {
   ): RouteFunc<TParams> | undefined;
 }
 
-// @public
+// @public @deprecated
 export const routeResolutionApiRef: ApiRef_2<
   RouteResolutionApi,
   'core.route-resolution'
@@ -2140,7 +2165,7 @@ export interface StorageApi {
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
-// @public
+// @public @deprecated
 export const storageApiRef: ApiRef_2<StorageApi, 'core.storage'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -2232,7 +2257,7 @@ export interface SwappableComponentsApi {
   ): (props: TInnerComponentProps) => JSX.Element | null;
 }
 
-// @public
+// @public @deprecated
 export const swappableComponentsApiRef: ApiRef_2<
   SwappableComponentsApi,
   'core.swappable-components'
@@ -2265,7 +2290,7 @@ export type ToastApiPostResult = {
   close(): void;
 };
 
-// @public
+// @public @deprecated
 export const toastApiRef: ApiRef<ToastApi>;
 
 // @public (undocumented)
@@ -2286,7 +2311,7 @@ export type TranslationApi = {
   ): Observable<TranslationSnapshot<TMessages>>;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const translationApiRef: ApiRef_2<TranslationApi, 'core.translation'> & {
   readonly $$type: '@backstage/ApiRef';
 };
