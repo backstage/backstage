@@ -506,6 +506,7 @@ export type TemplateParameterSchema = {
 export interface TemplateParametersV1beta3 extends JsonObject {
   // (undocumented)
   'backstage:permissions'?: TemplatePermissionsV1beta3;
+  when?: string | boolean;
 }
 
 // @public

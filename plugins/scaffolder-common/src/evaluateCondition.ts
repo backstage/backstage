@@ -14,89 +14,17 @@
  * limitations under the License.
  */
 import { JsonValue } from '@backstage/types';
+import { createTemplateRenderer, type TemplateContext } from 'nunjitsu';
 
-function resolveValue(
-  token: string,
-  formState: Record<string, JsonValue>,
-): JsonValue | undefined {
-  const stringMatch = token.match(/^(['"])(.*)\1$/);
-  if (stringMatch) {
-    return stringMatch[2];
-  }
-
-  if (/^-?\d+(\.\d+)?$/.test(token)) {
-    return Number(token);
-  }
-
-  if (token === 'true') return true;
-  if (token === 'false') return false;
-  if (token === 'null') return null;
-  if (token === 'undefined') return undefined;
-
-  const parts = token.split('.');
-  if (parts[0] !== 'parameters') return undefined;
-
-  const BLOCKED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
-  let current: JsonValue | undefined = formState;
-  for (const part of parts.slice(1)) {
-    if (BLOCKED_KEYS.has(part)) return undefined;
-    if (
-      current === undefined ||
-      current === null ||
-      typeof current !== 'object' ||
-      Array.isArray(current)
-    ) {
-      return undefined;
-    }
-    current = (current as Record<string, JsonValue>)[part];
-  }
-  return current;
-}
-
-function isTruthy(value: JsonValue | undefined): boolean {
-  if (Array.isArray(value)) return value.length > 0;
-  return !!value;
-}
-
-function evaluateExpression(
-  expression: string,
-  formState: Record<string, JsonValue>,
-): JsonValue | undefined {
-  const comparisonMatch = expression.match(
-    /^(\w+(?:\.\w+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?)\s*(===|!==|==|!=)\s*(\w+(?:\.\w+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?)$/,
-  );
-  if (comparisonMatch) {
-    const left = resolveValue(comparisonMatch[1].trim(), formState);
-    const op = comparisonMatch[2];
-    const right = resolveValue(comparisonMatch[3].trim(), formState);
-    switch (op) {
-      case '===':
-        return left === right;
-      case '!==':
-        return left !== right;
-      case '==':
-        // eslint-disable-next-line eqeqeq
-        return left == right;
-      case '!=':
-        // eslint-disable-next-line eqeqeq
-        return left != right;
-      default:
-        return undefined;
-    }
-  }
-
-  if (expression.startsWith('!')) {
-    const value = resolveValue(expression.slice(1).trim(), formState);
-    return !isTruthy(value);
-  }
-
-  return resolveValue(expression, formState);
-}
+const conditionRenderer = createTemplateRenderer();
 
 /**
- * Evaluates a step-level `when` condition against the current form state.
- * Supports `${{ parameters.field === 'value' }}` syntax for comparisons,
- * simple truthiness checks, and boolean/negation expressions.
+ * Evaluates a parameter step's `when` condition using Nunjitsu.
+ *
+ * Conditions may use `${{ ... }}` delimiters or contain a bare expression.
+ * Undefined, empty, and invalid conditions keep the step visible so that its
+ * parameters are still validated. Empty arrays are treated as false, matching
+ * action step conditions.
  *
  * @public
  */
@@ -104,16 +32,29 @@ export function evaluateCondition(
   condition: string | boolean | undefined,
   formState: Record<string, JsonValue>,
 ): boolean {
-  if (condition === undefined || condition === null) return true;
-  if (typeof condition === 'boolean') return condition;
+  if (condition === undefined || condition === null) {
+    return true;
+  }
+  if (typeof condition === 'boolean') {
+    return condition;
+  }
 
-  const trimmed = condition.trim();
-  if (!trimmed) return true;
+  const expression = condition.trim();
+  if (!expression) {
+    return true;
+  }
 
-  const match = trimmed.match(/^\$\{\{([\s\S]*)\}\}$/);
-  const expression = match ? match[1].trim() : trimmed;
-
-  if (!expression) return true;
-
-  return isTruthy(evaluateExpression(expression, formState));
+  try {
+    const source = expression.startsWith('${{')
+      ? expression
+      : `\${{ ${expression} }}`;
+    const result = conditionRenderer.renderValue(source, {
+      // Nunjitsu validates and copies optional JSON properties at runtime.
+      parameters: formState as TemplateContext,
+    });
+    return Array.isArray(result) ? result.length > 0 : !!result;
+  } catch {
+    // Invalid conditions must not bypass parameter validation.
+    return true;
+  }
 }
