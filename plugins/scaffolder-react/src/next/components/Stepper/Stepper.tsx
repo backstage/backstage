@@ -50,14 +50,13 @@ import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps
 import { Form } from '../Form';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import { findSchemaForKey } from '../ReviewState/util';
 import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
-import { hasErrors } from './utils';
+import { filterReviewState, hasErrors } from './utils';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -161,16 +160,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   }
 
   const hiddenSteps = allSteps.filter(step => !steps.includes(step));
-  // Preserve shared and extra values, excluding only fields owned by hidden steps.
-  const reviewState = hiddenSteps.length
-    ? Object.fromEntries(
-        Object.entries(stepsState).filter(
-          ([key]) =>
-            findSchemaForKey(key, steps, stepsState) ||
-            !findSchemaForKey(key, hiddenSteps, stepsState),
-        ),
-      )
-    : stepsState;
+  const reviewState = filterReviewState(stepsState, steps, hiddenSteps);
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();

@@ -39,6 +39,22 @@ describe('Stepper', () => {
               properties: {
                 enabled: { type: 'boolean', title: 'Show credentials' },
                 shared: { type: 'string' },
+                connection: {
+                  type: 'object',
+                  properties: {
+                    credentials: {
+                      type: 'object',
+                      properties: { username: { type: 'string' } },
+                    },
+                    servers: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: { host: { type: 'string' } },
+                      },
+                    },
+                  },
+                },
                 masked: {
                   type: 'string',
                   'ui:backstage': { review: { mask: 'Custom mask' } },
@@ -64,6 +80,27 @@ describe('Stepper', () => {
                   'ui:widget': 'password',
                 },
                 shared: { type: 'string' },
+                connection: {
+                  type: 'object',
+                  properties: {
+                    credentials: {
+                      type: 'object',
+                      properties: {
+                        password: { type: 'string', 'ui:widget': 'password' },
+                        'private/key': { type: 'string' },
+                      },
+                    },
+                    servers: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          password: { type: 'string', 'ui:widget': 'password' },
+                        },
+                      },
+                    },
+                  },
+                },
                 hiddenMask: {
                   type: 'string',
                   'ui:backstage': { review: { mask: 'Hidden mask' } },
@@ -80,6 +117,14 @@ describe('Stepper', () => {
       const initialState = {
         enabled: true,
         shared: 'shared-value',
+        connection: {
+          credentials: {
+            username: 'retained-user',
+            password: 'nested-password',
+            'private/key': 'nested-private-key',
+          },
+          servers: [{ host: 'retained-host', password: 'array-password' }],
+        },
         extra: 'extra-value',
         masked: 'masked-value',
         omitted: 'omitted-value',
@@ -125,6 +170,9 @@ describe('Stepper', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
       await screen.findByRole('button', { name: 'Create' });
       for (const value of [
+        'nested-password',
+        'nested-private-key',
+        'array-password',
         'hidden-password',
         'hidden-mask-value',
         'hidden-omitted-value',
@@ -140,6 +188,9 @@ describe('Stepper', () => {
       expect(
         screen.getByText('extra-value', { exact: false }),
       ).toBeInTheDocument();
+      for (const value of ['retained-user', 'retained-host']) {
+        expect(screen.getByText(value, { exact: false })).toBeInTheDocument();
+      }
       const displayedValues =
         review === 'default'
           ? ['Custom mask', '******']
@@ -162,6 +213,14 @@ describe('Stepper', () => {
           ...initialState,
           enabled: false,
           password: 'hidden-password',
+          connection: {
+            credentials: {
+              username: 'retained-user',
+              password: 'nested-password',
+              'private/key': 'nested-private-key',
+            },
+            servers: [{ host: 'retained-host', password: 'array-password' }],
+          },
         }),
       );
     },
