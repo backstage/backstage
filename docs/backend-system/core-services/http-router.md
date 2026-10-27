@@ -85,11 +85,7 @@ library of your choice to complete the handshake, or forward the upgrade upstrea
 import { WebSocketServer } from 'ws';
 
 // Inside plugin initialization, with http, auth, lifecycle, and logger services.
-const server = new WebSocketServer({
-  noServer: true,
-  handleProtocols: protocols =>
-    protocols.has('events.v1') ? 'events.v1' : false,
-});
+const server = new WebSocketServer({ noServer: true });
 
 http.addWebSocketHandler({
   path: '/events',
@@ -124,9 +120,7 @@ Add your chosen WebSocket library to your plugin's dependencies. In this example
 `coreServices.auth`, `coreServices.lifecycle`, and `coreServices.logger`. The plugin owns its WebSocket
 server, connection callbacks, protocol selection, and cleanup. The router only
 dispatches authenticated upgrades and owns the underlying transport lifetime.
-The example logs the user identity when available and selects `events.v1` when offered.
-Define credential and protocol requirements for your own plugin. Keep client
-tracking enabled when using `server.clients` for cleanup. Signals disables it
+The example logs the user identity when available. Keep client tracking enabled when using `server.clients` for cleanup. Signals disables it
 because its connection manager already tracks and closes connections.
 
 `credentials` contains verified Backstage credentials, and
@@ -156,10 +150,10 @@ WebSocket routes require authentication by default. The framework first checks a
 Bearer token in the `Authorization` header, then tries each comma-separated
 `Sec-WebSocket-Protocol` value in order until one authenticates. Tokens need not
 have a particular format. Browser clients cannot set `Authorization`, so pass the
-bearer token as the first protocol value, followed by any application protocols:
+bearer token through the protocol list:
 
 ```ts
-const connection = new WebSocket(url, [token, 'events.v1']);
+const connection = new WebSocket(url, [token]);
 ```
 
 WebSocket routes require token authentication by default. Cookie authentication
