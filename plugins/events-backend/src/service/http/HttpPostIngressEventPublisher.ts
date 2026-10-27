@@ -153,7 +153,11 @@ export class HttpPostIngressEventPublisher {
             case 'text/plain':
               response
                 .contentType('text/plain')
-                .send(context.rejectionDetails!.payload);
+                .send(
+                  typeof context.rejectionDetails!.payload === 'number'
+                    ? String(context.rejectionDetails!.payload)
+                    : context.rejectionDetails!.payload,
+                );
               break;
             default:
               throw new Error('Unsupported rejection content type');
