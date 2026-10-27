@@ -2320,6 +2320,77 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   describe.each(['/v2/tasks', '/v2/dry-run'])(
     'conditional parameters in %s',
     endpoint => {
+      it.each(['nested', 'reference'])(
+        'excludes hidden %s fields while preserving visible values',
+        async shape => {
+          const visible =
+            shape === 'nested'
+              ? {
+                  properties: {
+                    config: {
+                      type: 'object',
+                      properties: { project: { type: 'string' } },
+                    },
+                  },
+                }
+              : { properties: { name: { type: 'string' } } };
+          const hidden =
+            shape === 'nested'
+              ? {
+                  when: false,
+                  properties: {
+                    config: {
+                      type: 'object',
+                      properties: { awsRegion: { type: 'string' } },
+                    },
+                  },
+                }
+              : {
+                  when: false,
+                  definitions: {
+                    Hidden: {
+                      type: 'object',
+                      properties: { awsRegion: { type: 'string' } },
+                    },
+                  },
+                  allOf: [{ $ref: '#/definitions/Hidden' }],
+                };
+          const values =
+            shape === 'nested'
+              ? { config: { project: 'keep', awsRegion: 'remove' } }
+              : { name: 'keep', awsRegion: 'remove' };
+          const template = generateMockTemplate({
+            parameters: [visible, hidden],
+            output: { parameters: '${{ parameters }}' },
+          });
+          const { router, taskBroker } = await createTestRouter({
+            entities: [template, mockUser],
+          });
+          const response = await request(router)
+            .post(endpoint)
+            .send(
+              endpoint === '/v2/tasks'
+                ? {
+                    templateRef: 'template:default/create-react-app-template',
+                    values,
+                  }
+                : { template, values, directoryContents: [] },
+            );
+          expect(response.status).toBe(endpoint === '/v2/tasks' ? 201 : 200);
+          const dispatch =
+            taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+          const actual =
+            endpoint === '/v2/tasks'
+              ? dispatch.mock.calls[0][0].spec.parameters
+              : response.body.output.parameters;
+          expect(actual).toEqual(
+            shape === 'nested'
+              ? { config: { project: 'keep' } }
+              : { name: 'keep' },
+          );
+        },
+      );
+
       it('uses Nunjitsu conditions, validates visible fields, and removes only hidden fields', async () => {
         const template = generateMockTemplate({
           parameters: [
