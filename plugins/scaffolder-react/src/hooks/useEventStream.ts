@@ -394,6 +394,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
             return;
           }
 
+          taskStatusVersion++;
           const maxRetries = 3;
 
           if (!error.message) {
