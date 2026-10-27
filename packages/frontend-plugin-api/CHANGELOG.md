@@ -1,5 +1,12 @@
 # @backstage/frontend-plugin-api
 
+## 0.18.3-next.0
+
+### Patch Changes
+
+- ac2de0f: Fixed a "Type instantiation is excessively deep and possibly infinite" error from `createFrontendPlugin` in plugins with many extensions, in particular with TypeScript 5.9 and later. In rare cases, the extensions in the type of a plugin may be in a different order or include extensions that were missing before.
+- 8ca78a2: Added `coreApis`, a namespace of core Utility API refs. The deprecated Alert API is excluded in favor of Toast. The individual refs with namespace equivalents are deprecated in favor of their `coreApis` equivalents, while remaining compatible. Provider-specific authentication refs remain separate and are not deprecated.
+
 ## 0.18.2
 
 ### Patch Changes

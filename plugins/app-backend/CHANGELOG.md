@@ -1,5 +1,16 @@
 # @backstage/plugin-app-backend
 
+## 0.5.20-next.0
+
+### Patch Changes
+
+- 11f4455: Documented that if your package manager doesn't hoist workspace packages, for example pnpm with `hoistWorkspacePackages: false`, you need to add the app package to the `dependencies` of the root `package.json`.
+- 2fea3e2: Reduced startup database traffic and memory usage when checking for previously cached static assets.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-app-node@0.1.51-next.0
+
 ## 0.5.19
 
 ### Patch Changes
