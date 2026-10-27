@@ -53,6 +53,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
       headers: {
         'x-ado-webhook-secret': headerSecret,
       },
+      query: {},
       raw: {
         body: Buffer.from('{}'),
         encoding: 'utf-8',
