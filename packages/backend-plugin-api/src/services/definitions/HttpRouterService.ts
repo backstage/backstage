@@ -46,14 +46,8 @@ export interface HttpRouterServiceWebSocketHandler {
    * its full URL. Take ownership of the socket or close it before resolving.
    */
   handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
-  /**
-   * Defaults to `authenticated`, accepting user and service tokens.
-   * `user` accepts only full user tokens. `user-cookie` also accepts limited
-   * user tokens and the Backstage auth cookie. Cookie requests require an
-   * Origin matching the app URL or configured CORS origins.
-   * `unauthenticated` supplies none credentials without authenticating tokens.
-   */
-  authPolicy?: 'authenticated' | 'user' | 'user-cookie' | 'unauthenticated';
+  /** Uses the same authentication policies as HTTP routes. Requires authentication by default. */
+  authPolicy?: HttpRouterServiceAuthPolicy['allow'];
 }
 
 /**

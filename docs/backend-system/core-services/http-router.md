@@ -84,7 +84,7 @@ library of your choice to complete the handshake, or forward the upgrade upstrea
 ```ts
 import { WebSocketServer } from 'ws';
 
-// Inside plugin initialization, with http, lifecycle, and logger services.
+// Inside plugin initialization, with http, auth, lifecycle, and logger services.
 const server = new WebSocketServer({
   noServer: true,
   handleProtocols: protocols =>
@@ -93,8 +93,15 @@ const server = new WebSocketServer({
 
 http.addWebSocketHandler({
   path: '/events',
-  handler({ request, socket, head }) {
+  handler({ request, socket, head, credentials }) {
+    if (!auth.isPrincipal(credentials, 'user')) {
+      socket.end('HTTP/1.1 401 Unauthorized\r\nConnection: close\r\n\r\n');
+      return;
+    }
     server.handleUpgrade(request, socket, head, connection => {
+      logger.info(
+        `WebSocket connected for ${credentials.principal.userEntityRef}`,
+      );
       connection.on('error', error => {
         logger.warn('WebSocket connection failed', error);
         connection.terminate();
@@ -115,12 +122,14 @@ lifecycle.addShutdownHook(() => {
 ```
 
 Add your chosen WebSocket library to your plugin's dependencies. In this example,
-`http`, `lifecycle`, and `logger` come from `coreServices.httpRouter`,
-`coreServices.lifecycle`, and `coreServices.logger`. The plugin owns its WebSocket
+`http`, `auth`, `lifecycle`, and `logger` come from `coreServices.httpRouter`,
+`coreServices.auth`, `coreServices.lifecycle`, and `coreServices.logger`. The plugin owns its WebSocket
 server, connection callbacks, protocol selection, and cleanup. The router only
 dispatches authenticated upgrades and owns the underlying transport lifetime.
-The example selects `events.v1` when offered; define protocol requirements for
-your own plugin.
+The example requires user credentials and selects `events.v1` when offered.
+Define credential and protocol requirements for your own plugin. Keep client
+tracking enabled when using `server.clients` for cleanup. Signals disables it
+because its connection manager already tracks and closes connections.
 
 `credentials` contains verified Backstage credentials, and
 `authProtocol` contains the offered protocol value that authenticated
@@ -155,30 +164,17 @@ bearer token as the first protocol value, followed by any application protocols:
 const connection = new WebSocket(url, [token, 'events.v1']);
 ```
 
-Each route can set `authPolicy`:
-
-- `authenticated` (default): accepts full user or service credentials.
-- `user`: accepts only full user credentials, continuing past service tokens to
-  find a user token among the offered protocols.
-- `user-cookie`: also accepts limited user tokens and the `backstage-auth`
-  cookie. Cookie authentication requires an `Origin` matching the app base URL
-  or a configured `backend.cors.origin` pattern.
-- `unauthenticated`: skips token authentication and supplies none credentials.
-
-For example, register a public route with
-`http.addWebSocketHandler({ path: '/public', authPolicy: 'unauthenticated', handler })`.
-Missing or invalid credentials receive HTTP 401 before the handler runs.
-A disallowed cookie origin receives HTTP 403.
-
-`backend.auth.dangerouslyDisableDefaultAuthPolicy` also disables the default
-WebSocket policy. Explicit `user` and `user-cookie` policies still apply.
-`addAuthPolicy` remains specific to Express HTTP routes and does not change
-WebSocket policies.
+WebSocket routes support the same authentication policies as HTTP routes:
+authentication is required by default, with `user-cookie` and `unauthenticated`
+available through the route's `authPolicy` option.
 
 ### Routing and lifecycle
 
-Upgrades bypass Express middleware, including rate limiting and CORS. Apart from
-the cookie-origin check, origin policy remains the handler's responsibility.
+Upgrades bypass Express middleware, including rate limiting. Browser CORS checks
+do not apply to WebSockets. Cookie authentication checks the request origin
+against `app.baseUrl` and the existing `backend.cors.origin` configuration; no
+separate WebSocket configuration is needed. Other origin restrictions remain
+the handler's responsibility.
 Root-level WebSocket registrations use the same `{ path, handler }` shape but
 have no plugin authentication policy; their handler object contains only
 `request`, `socket`, and `head`. Root handlers must authenticate callers.
@@ -266,6 +262,7 @@ import {
   createCredentialsBarrier,
   createAuthIntegrationRouter,
   createRateLimitMiddleware,
+  createWebSocketRouter,
 } from '@backstage/backend-defaults/httpRouter';
 import PromiseRouter from 'express-promise-router';
 import { Handler } from 'express';
@@ -325,6 +322,13 @@ backend.add(
         use(handler: Handler): void {
           router.use(handler);
         },
+        addWebSocketHandler: createWebSocketRouter({
+          auth,
+          config,
+          lifecycle,
+          pluginId: plugin.getId(),
+          rootHttpRouter,
+        }),
         addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
           credentialsBarrier.addAuthPolicy(policy);
         },

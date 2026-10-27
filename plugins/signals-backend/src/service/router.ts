@@ -58,10 +58,13 @@ export function createRouter(options: RouterOptions): express.Router {
 
   httpRouter.addWebSocketHandler({
     path: '/',
-    authPolicy: 'user',
     async handler({ request, socket, head, credentials, authProtocol }) {
       if (!auth.isPrincipal(credentials, 'user')) {
-        throw new Error('Signals requires user credentials');
+        socket.end(
+          'HTTP/1.1 401 Unauthorized\r\nConnection: close\r\nContent-Length: 0\r\n\r\n',
+          () => socket.destroy(),
+        );
+        return;
       }
       const identity = await userInfo.getUserInfo(credentials);
       if (socket.destroyed) {

@@ -41,7 +41,6 @@ export function createHttpServer(
 export class DefaultRootHttpRouter implements RootHttpRouterService {
   // (undocumented)
   addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void;
-  attachWebSocketServer(server: Server, logger: LoggerService): void;
   closeWebSockets(): void;
   // (undocumented)
   static create(options?: DefaultRootHttpRouterOptions): DefaultRootHttpRouter;
@@ -54,6 +53,8 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
 // @public
 export interface DefaultRootHttpRouterOptions {
   indexPath?: string | false;
+  logger?: LoggerService;
+  server?: Server;
 }
 
 // @public

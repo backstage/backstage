@@ -29,7 +29,9 @@ export async function authenticateWebSocket(options: {
   auth: AuthService;
   config: RootConfigService;
   request: IncomingMessage;
-  authPolicy: NonNullable<HttpRouterServiceWebSocketHandler['authPolicy']>;
+  authPolicy:
+    | NonNullable<HttpRouterServiceWebSocketHandler['authPolicy']>
+    | 'authenticated';
 }): Promise<
   Pick<HttpRouterServiceWebSocketContext, 'credentials' | 'authProtocol'>
 > {
@@ -56,7 +58,7 @@ export async function authenticateWebSocket(options: {
       });
       if (
         auth.isPrincipal(credentials, 'user') ||
-        (authPolicy !== 'user' && auth.isPrincipal(credentials, 'service'))
+        auth.isPrincipal(credentials, 'service')
       ) {
         return { credentials, authProtocol: candidate.authProtocol };
       }

@@ -212,12 +212,16 @@ describe('httpRouterFactory', () => {
     expect(auth.authenticate).not.toHaveBeenCalled();
     expect(handler).not.toHaveBeenCalled();
 
-    await lifecycle.addStartupHook.mock.calls[0][0]();
+    for (const [hook] of lifecycle.addStartupHook.mock.calls) {
+      await hook();
+    }
     await pending;
     expect(auth.authenticate).toHaveBeenCalledTimes(1);
     expect(handler).toHaveBeenCalledWith(expect.objectContaining({ socket }));
 
-    await lifecycle.addShutdownHook.mock.calls[0][0]();
+    for (const [hook] of lifecycle.addShutdownHook.mock.calls) {
+      await hook();
+    }
     const end = jest.spyOn(socket, 'end');
     await upgradeHandler(context);
     expect(end).toHaveBeenCalledWith(
@@ -273,7 +277,9 @@ describe('httpRouterFactory', () => {
     expect(handler).not.toHaveBeenCalled();
     socket.destroy();
 
-    await lifecycle.addStartupHook.mock.calls[0][0]();
+    for (const [hook] of lifecycle.addStartupHook.mock.calls) {
+      await hook();
+    }
     let finishAuthentication: (
       credentials: ReturnType<typeof mockCredentials.user>,
     ) => void;
@@ -289,7 +295,9 @@ describe('httpRouterFactory', () => {
     const secondEnd = jest.spyOn(secondSocket, 'end');
     const pending = upgradeHandler({ ...context, socket: secondSocket });
     await authenticating;
-    await lifecycle.addShutdownHook.mock.calls[0][0]();
+    for (const [hook] of lifecycle.addShutdownHook.mock.calls) {
+      await hook();
+    }
     finishAuthentication!(mockCredentials.user());
     await pending;
     expect(secondEnd).toHaveBeenCalledWith(

@@ -39,6 +39,10 @@ export interface DefaultRootHttpRouterOptions {
    * not given. Disables index path behavior if false is given.
    */
   indexPath?: string | false;
+  /** The HTTP server whose upgrades this router handles. Required for WebSocket registrations. */
+  server?: Server;
+  /** Logger for failed WebSocket upgrades. */
+  logger?: LoggerService;
 }
 
 /**
@@ -74,11 +78,17 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
     } else {
       indexPath = options.indexPath;
     }
-    return new DefaultRootHttpRouter(indexPath);
+    return new DefaultRootHttpRouter({ ...options, indexPath });
   }
 
-  private constructor(indexPath?: string) {
-    this.#indexPath = indexPath;
+  private constructor({
+    indexPath,
+    server,
+    logger,
+  }: DefaultRootHttpRouterOptions) {
+    this.#indexPath = indexPath || undefined;
+    this.#webSocketServer = server;
+    this.#webSocketLogger = logger;
     this.#router.use(this.#namedRoutes);
 
     // Any request with a /api/ prefix will skip the index router, even if no named router matches
@@ -129,7 +139,9 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
       throw new Error(`WebSocket handler already registered for ${path}`);
     }
     if (!this.#webSocketServer) {
-      throw new Error('WebSocket server is not attached');
+      throw new Error(
+        'WebSocket routing requires an HTTP server in the router options',
+      );
     }
     if (this.#webSocketHandlers.size === 0) {
       if (this.#webSocketServer.listenerCount('upgrade') > 0) {
@@ -172,18 +184,6 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
       });
     }
     this.#webSocketHandlers.set(path, handler);
-  }
-
-  /**
-   * Attaches the HTTP server before registering WebSocket handlers. The router
-   * installs its upgrade listener when the first handler is registered.
-   */
-  attachWebSocketServer(server: Server, logger: LoggerService): void {
-    if (this.#webSocketServer) {
-      throw new Error('WebSocket server is already attached');
-    }
-    this.#webSocketServer = server;
-    this.#webSocketLogger = logger;
   }
 
   /**
