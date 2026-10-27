@@ -94,14 +94,12 @@ const server = new WebSocketServer({
 http.addWebSocketHandler({
   path: '/events',
   handler({ request, socket, head, credentials }) {
-    if (!auth.isPrincipal(credentials, 'user')) {
-      socket.end('HTTP/1.1 401 Unauthorized\r\nConnection: close\r\n\r\n');
-      return;
-    }
     server.handleUpgrade(request, socket, head, connection => {
-      logger.info(
-        `WebSocket connected for ${credentials.principal.userEntityRef}`,
-      );
+      if (auth.isPrincipal(credentials, 'user')) {
+        logger.info(
+          `WebSocket connected for ${credentials.principal.userEntityRef}`,
+        );
+      }
       connection.on('error', error => {
         logger.warn('WebSocket connection failed', error);
         connection.terminate();
@@ -126,7 +124,7 @@ Add your chosen WebSocket library to your plugin's dependencies. In this example
 `coreServices.auth`, `coreServices.lifecycle`, and `coreServices.logger`. The plugin owns its WebSocket
 server, connection callbacks, protocol selection, and cleanup. The router only
 dispatches authenticated upgrades and owns the underlying transport lifetime.
-The example requires user credentials and selects `events.v1` when offered.
+The example logs the user identity when available and selects `events.v1` when offered.
 Define credential and protocol requirements for your own plugin. Keep client
 tracking enabled when using `server.clients` for cleanup. Signals disables it
 because its connection manager already tracks and closes connections.
