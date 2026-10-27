@@ -31,8 +31,6 @@ import MuiStepper from '@material-ui/core/Stepper';
 import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
-import { customizeValidator } from '@rjsf/validator-ajv8';
-import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
 import {
   ComponentType,
@@ -56,10 +54,7 @@ import {
 } from './createAsyncValidators';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
-import { filterReviewState, hasErrors } from './utils';
-
-const validator = customizeValidator();
-ajvErrors(validator.ajv);
+import { filterReviewState, hasErrors, validator } from './utils';
 
 /** @alpha */
 export type BackstageTemplateStepperClassKey =

@@ -88,6 +88,24 @@ describe('Stepper', () => {
           {
             title: 'Choose',
             schema: {
+              dependencies: {
+                enabled: {
+                  oneOf: [
+                    {
+                      properties: {
+                        enabled: { const: true },
+                        password: {
+                          type: 'string',
+                          title: 'Retained credential',
+                          'ui:widget': 'password',
+                        },
+                      },
+                    },
+                    { properties: { enabled: { const: false } } },
+                  ],
+                },
+              },
+
               properties: {
                 enabled: { type: 'boolean', title: 'Show credentials' },
                 shared: { type: 'string' },

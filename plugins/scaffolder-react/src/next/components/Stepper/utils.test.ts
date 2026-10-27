@@ -219,4 +219,130 @@ describe('filterReviewState', () => {
       extra: 'extra-value',
     });
   });
+  it.each(['properties', 'patternProperties'])(
+    'does not apply additionalProperties to a key matched by %s',
+    keyword => {
+      const formState = {
+        connection: { username: 'visible-user', password: 'hidden-password' },
+        other: { password: 'visible-additional-value' },
+      };
+      const visible = step({
+        [keyword]: {
+          [keyword === 'properties' ? 'connection' : '^connection$']: {
+            properties: { username: { type: 'string' } },
+          },
+        },
+        additionalProperties: { properties: { password: { type: 'string' } } },
+      });
+      const hidden = step({
+        properties: {
+          connection: {
+            properties: {
+              password: { type: 'string', 'ui:widget': 'password' },
+            },
+          },
+        },
+      });
+      expect(filterReviewState(formState, [visible], [hidden])).toEqual({
+        connection: { username: 'visible-user' },
+        other: { password: 'visible-additional-value' },
+      });
+      expect(formState.connection.password).toBe('hidden-password');
+    },
+  );
+
+  it('preserves overlapping fields only when their visible dependency branch is active', () => {
+    const visible = step({
+      properties: { action: { type: 'string' }, username: { type: 'string' } },
+      dependencies: {
+        action: {
+          oneOf: [
+            {
+              properties: {
+                action: { const: 'create' },
+                password: { type: 'string', 'ui:widget': 'password' },
+              },
+            },
+            { properties: { action: { const: 'manage' } } },
+          ],
+        },
+      },
+    });
+    const hidden = step({
+      properties: { password: { type: 'string', 'ui:widget': 'password' } },
+    });
+    const formState = {
+      action: 'manage',
+      username: 'visible-user',
+      password: 'retained-password',
+    };
+    expect(filterReviewState(formState, [visible], [hidden])).toEqual({
+      action: 'manage',
+      username: 'visible-user',
+    });
+    const creationState = { ...formState, action: 'create' };
+    expect(filterReviewState(creationState, [visible], [hidden])).toEqual(
+      creationState,
+    );
+    expect(formState.password).toBe('retained-password');
+  });
+  it('evaluates referenced nested conditions against local data while keeping root references', () => {
+    const visible = step({
+      properties: { connection: { $ref: '#/definitions/connection' } },
+      definitions: {
+        creation: {
+          required: ['mode'],
+          properties: { mode: { const: 'create' } },
+        },
+        connection: {
+          properties: { mode: { type: 'string' } },
+          if: { $ref: '#/definitions/creation' },
+          then: {
+            properties: {
+              password: { type: 'string', 'ui:widget': 'password' },
+            },
+          },
+          else: { properties: { username: { type: 'string' } } },
+        },
+      },
+    });
+    const hidden = step({
+      properties: {
+        connection: { properties: { password: { type: 'string' } } },
+      },
+    });
+    const formState = {
+      connection: {
+        mode: 'manage',
+        username: 'visible-user',
+        password: 'retained-password',
+      },
+    };
+    expect(filterReviewState(formState, [visible], [hidden])).toEqual({
+      connection: { mode: 'manage', username: 'visible-user' },
+    });
+    const creation = {
+      connection: { mode: 'create', password: 'retained-password' },
+    };
+    expect(filterReviewState(creation, [visible], [hidden])).toEqual(creation);
+  });
+
+  it('activates a visible dependency only when its trigger is present, including a false value', () => {
+    const visible = step({
+      properties: { enabled: { type: 'boolean' } },
+      dependencies: {
+        enabled: {
+          properties: { password: { type: 'string', 'ui:widget': 'password' } },
+        },
+      },
+    });
+    const hidden = step({ properties: { password: { type: 'string' } } });
+    expect(
+      filterReviewState({ password: 'retained-password' }, [visible], [hidden]),
+    ).toEqual({});
+    const formState = { enabled: false, password: 'retained-password' };
+    expect(filterReviewState(formState, [visible], [hidden])).toEqual(
+      formState,
+    );
+  });
 });

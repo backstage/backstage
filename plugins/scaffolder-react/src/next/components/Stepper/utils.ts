@@ -15,8 +15,13 @@
  */
 import type { JsonObject, JsonValue } from '@backstage/types';
 import type { FieldValidation } from '@rjsf/utils';
+import { customizeValidator } from '@rjsf/validator-ajv8';
+import ajvErrors from 'ajv-errors';
 import { FormValidation } from './createAsyncValidators';
 import type { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
+
+export const validator = customizeValidator();
+ajvErrors(validator.ajv);
 
 function isFieldValidation(error: any): error is FieldValidation {
   return !!error && '__errors' in error;
@@ -48,12 +53,18 @@ export function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-// Inspect declarations rather than resolving a schema against retained form data.
-// All conditional branches count as ownership, including inactive hidden branches.
+type OwnershipContext = {
+  root: JsonObject;
+  activeOnly: boolean;
+  data?: JsonValue;
+};
+
+// Inspect declared fields without inferring schemas from retained values.
+// Visible steps use active branches; hidden steps include inactive branches.
 function declaresPath(
   schema: JsonValue | undefined,
   path: string[],
-  root: JsonObject,
+  context: OwnershipContext,
   visited = new Set<JsonObject>(),
 ): boolean {
   if (!isObject(schema) || visited.has(schema)) {
@@ -61,13 +72,23 @@ function declaresPath(
   }
   visited.add(schema);
   const [key, ...rest] = path;
+  let childData: JsonValue | undefined;
+  if (Array.isArray(context.data)) {
+    childData = context.data[Number(key)];
+  } else if (isObject(context.data)) {
+    childData = context.data[key];
+  }
   const ownsChild = (child: JsonValue | undefined) =>
     child !== undefined &&
-    (rest.length === 0 || declaresPath(child, rest, root));
+    (rest.length === 0 ||
+      declaresPath(child, rest, { ...context, data: childData }));
 
-  if (
+  const explicitProperty =
     isObject(schema.properties) &&
-    Object.prototype.hasOwnProperty.call(schema.properties, key) &&
+    Object.prototype.hasOwnProperty.call(schema.properties, key);
+  if (
+    explicitProperty &&
+    isObject(schema.properties) &&
     ownsChild(schema.properties[key])
   ) {
     return true;
@@ -80,14 +101,17 @@ function declaresPath(
       return true;
     }
   }
-  if (isObject(schema.patternProperties)) {
-    for (const [pattern, child] of Object.entries(schema.patternProperties)) {
-      if (new RegExp(pattern).test(key) && ownsChild(child)) {
-        return true;
-      }
-    }
+  const patterns = isObject(schema.patternProperties)
+    ? Object.entries(schema.patternProperties).filter(([pattern]) =>
+        new RegExp(pattern).test(key),
+      )
+    : [];
+  if (patterns.some(([, child]) => ownsChild(child))) {
+    return true;
   }
   if (
+    !explicitProperty &&
+    patterns.length === 0 &&
     isObject(schema.additionalProperties) &&
     ownsChild(schema.additionalProperties)
   ) {
@@ -99,7 +123,7 @@ function declaresPath(
     typeof reference === 'string' &&
     (reference === '#' || reference.startsWith('#/'))
   ) {
-    let target: JsonValue | undefined = root;
+    let target: JsonValue | undefined = context.root;
     const segments = reference === '#' ? [] : reference.slice(2).split('/');
     for (const segment of segments) {
       const name = decodeURIComponent(segment)
@@ -111,7 +135,7 @@ function declaresPath(
         target = isObject(target) ? target[name] : undefined;
       }
     }
-    if (declaresPath(target, path, root, visited)) {
+    if (declaresPath(target, path, context, visited)) {
       return true;
     }
   }
@@ -120,22 +144,47 @@ function declaresPath(
     const branches = schema[keyword];
     if (
       Array.isArray(branches) &&
-      branches.some(branch => declaresPath(branch, path, root, visited))
+      branches.some(
+        branch =>
+          (!context.activeOnly ||
+            keyword === 'allOf' ||
+            (isObject(branch) &&
+              validator.isValid(branch, context.data ?? {}, context.root))) &&
+          declaresPath(branch, path, context, visited),
+      )
     ) {
       return true;
     }
   }
-  for (const keyword of ['then', 'else']) {
-    if (declaresPath(schema[keyword], path, root, visited)) {
-      return true;
-    }
+  let conditionalBranches = [schema.then, schema.else];
+  if (context.activeOnly) {
+    const condition = schema.if;
+    const matchesCondition =
+      condition === true ||
+      (isObject(condition) &&
+        validator.isValid(condition, context.data ?? {}, context.root));
+    conditionalBranches =
+      condition === undefined
+        ? []
+        : [schema[matchesCondition ? 'then' : 'else']];
+  }
+  if (
+    conditionalBranches.some(branch =>
+      declaresPath(branch, path, context, visited),
+    )
+  ) {
+    return true;
   }
   for (const keyword of ['dependencies', 'dependentSchemas']) {
     const dependencies = schema[keyword];
     if (
       isObject(dependencies) &&
-      Object.values(dependencies).some(branch =>
-        declaresPath(branch, path, root, visited),
+      Object.entries(dependencies).some(
+        ([trigger, branch]) =>
+          (!context.activeOnly ||
+            (isObject(context.data) &&
+              Object.prototype.hasOwnProperty.call(context.data, trigger))) &&
+          declaresPath(branch, path, context, visited),
       )
     ) {
       return true;
@@ -152,16 +201,27 @@ export function filterReviewState(
   if (!hiddenSteps.length) {
     return formState;
   }
-  const ownsPath = (steps: ParsedTemplateSchema[], path: string[]) =>
+  const ownsPath = (
+    steps: ParsedTemplateSchema[],
+    path: string[],
+    activeOnly: boolean,
+  ) =>
     steps.some(({ mergedSchema }) =>
-      declaresPath(mergedSchema, path, mergedSchema),
+      declaresPath(mergedSchema, path, {
+        root: mergedSchema,
+        data: formState,
+        activeOnly,
+      }),
     );
 
   function filterValue(
     value: JsonValue | undefined,
     path: string[],
   ): JsonValue | undefined {
-    if (!ownsPath(visibleSteps, path) && ownsPath(hiddenSteps, path)) {
+    if (
+      !ownsPath(visibleSteps, path, true) &&
+      ownsPath(hiddenSteps, path, false)
+    ) {
       return undefined;
     }
     if (Array.isArray(value)) {
