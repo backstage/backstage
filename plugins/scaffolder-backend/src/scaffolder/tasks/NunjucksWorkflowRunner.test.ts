@@ -1313,6 +1313,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
       const publicUrl = 'https://example.com/merge_requests/1';
+      const nestedPublicUrl = 'https://example.com/merge_requests/2';
       const task = createMockTaskWithSpec(
         {
           steps: [
@@ -1323,7 +1324,10 @@ describe('NunjucksWorkflowRunner', () => {
               input: {
                 token: '${{ secrets.token }}',
                 publicUrl,
-                nested: { token: '${{ secrets.token | upper }}', publicUrl },
+                nested: {
+                  token: '${{ secrets.token | upper }}',
+                  publicUrl: nestedPublicUrl,
+                },
               },
             },
           ],
@@ -1333,6 +1337,7 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
       const logs = JSON.stringify(fakeTaskLog.mock.calls);
       expect(logs).toContain(publicUrl);
+      expect(logs).toContain(nestedPublicUrl);
       expect(logs).not.toContain('private-test-token');
       expect(logs).not.toContain('PRIVATE-TEST-TOKEN');
     });
