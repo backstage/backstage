@@ -1519,6 +1519,59 @@ describe('postgres', () => {
       await Promise.all(clients.map(client => client.destroy()));
     });
 
+    it('shares admin clients regardless of connection property order', async () => {
+      const createAdminClient = jest.fn().mockImplementation(async () => ({
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            count: jest.fn().mockResolvedValue([{ count: '1' }]),
+          }),
+        }),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      }));
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+          plugin: {
+            plugin1: { connection: { user: 'user1', password: 'pw1' } },
+            plugin2: { connection: { password: 'pw1', user: 'user1' } },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const clients = await Promise.all([
+        connector.getClient('plugin1', deps),
+        connector.getClient('plugin2', deps),
+      ]);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(1);
+      await connector.shutdown();
+      await Promise.all(clients.map(client => client.destroy()));
+    });
+
+    it('does not create admin pools once shutdown has started', async () => {
+      const createAdminClient = jest.fn();
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      await connector.shutdown();
+
+      await expect(connector.getClient('plugin1', deps)).rejects.toThrow(
+        'PostgreSQL connector is shutting down',
+      );
+      expect(createAdminClient).not.toHaveBeenCalled();
+    });
+
     it('creates schemas with the plugin connection credentials and role', async () => {
       const admin = {
         raw: jest.fn().mockResolvedValue(undefined),

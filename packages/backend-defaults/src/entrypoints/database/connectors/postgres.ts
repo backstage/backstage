@@ -965,6 +965,23 @@ export function computePgPluginConfig(
 
 type PgAdminConfig = Knex.Config & { role?: string };
 
+/**
+ * Serializes a value with object keys in sorted order, so that equivalent
+ * configurations produce the same string regardless of property order.
+ */
+function stableStringify(value: unknown): string {
+  return JSON.stringify(value, (_key, item) => {
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      return Object.fromEntries(
+        Object.keys(item)
+          .sort()
+          .map(key => [key, item[key]]),
+      );
+    }
+    return item;
+  });
+}
+
 export class PgConnector implements Connector {
   private readonly config: Config;
   private readonly prefix: string;
@@ -975,6 +992,7 @@ export class PgConnector implements Connector {
   private readonly adminPoolIdleTimeoutMillis: number;
   private readonly databaseAdminPools = new Map<string, PgAdminPool>();
   private readonly schemaAdminPools = new Map<string, PgAdminPool>();
+  private shuttingDown = false;
 
   constructor(
     config: Config,
@@ -1014,10 +1032,17 @@ export class PgConnector implements Connector {
       connection: pluginDbConfig.adminConnection,
       ...(pluginDbConfig.role && { role: pluginDbConfig.role }),
     };
-    return { key: JSON.stringify(adminConfig), adminConfig };
+    return { key: stableStringify(adminConfig), adminConfig };
+  }
+
+  private assertNotShuttingDown(): void {
+    if (this.shuttingDown) {
+      throw new Error('PostgreSQL connector is shutting down');
+    }
   }
 
   private getDatabaseAdminPool(key: string, adminConfig: PgAdminConfig) {
+    this.assertNotShuttingDown();
     let pool = this.databaseAdminPools.get(key);
     if (!pool) {
       pool = new PgAdminPool(
@@ -1037,6 +1062,7 @@ export class PgConnector implements Connector {
     adminConfig: PgAdminConfig,
     databaseName: string | undefined,
   ) {
+    this.assertNotShuttingDown();
     const poolKey = `${key}\n${databaseName ?? ''}`;
     let pool = this.schemaAdminPools.get(poolKey);
     if (!pool) {
@@ -1100,6 +1126,9 @@ export class PgConnector implements Connector {
   }
 
   async shutdown(): Promise<void> {
+    // Refuse to create admin pools from here on, so that work still in flight
+    // cannot create a pool that this shutdown never sees.
+    this.shuttingDown = true;
     const results = await Promise.allSettled(
       [
         ...this.databaseAdminPools.values(),
