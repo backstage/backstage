@@ -22,6 +22,7 @@ import {
   ReviewStepProps,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
+import { evaluateCondition } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -47,7 +48,6 @@ import {
 import { scaffolderReactTranslationRef } from '../../../translation';
 import { useFormDataFromQuery, useTemplateSchema } from '../../hooks';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
-import { evaluateCondition } from '../../lib';
 import { Form } from '../Form';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
@@ -147,10 +147,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   }, [visibleSteps.length]);
 
   const filteredFormState = useMemo(() => {
-    const hiddenSteps = steps.filter(
-      step =>
-        step.when !== undefined && !evaluateCondition(step.when, stepsState),
-    );
+    const hiddenSteps = steps.filter(step => !visibleSteps.includes(step));
     if (hiddenSteps.length === 0) return stepsState;
 
     const collectSchemaKeys = (schema: Record<string, unknown>): string[] => {
@@ -340,7 +337,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         {visibleSteps.map((step, index) => {
           const isAllowedLabelClick = activeStep > index;
           return (
-            <MuiStep key={step.title}>
+            <MuiStep key={steps.indexOf(step)}>
               <MuiStepLabel
                 aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
                 style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
@@ -361,7 +358,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < visibleSteps.length ? (
           <Form
-            key={`${activeStep}-${visibleSteps[activeStep]?.title}`}
+            key={steps.indexOf(visibleSteps[activeStep])}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={stepsState}
