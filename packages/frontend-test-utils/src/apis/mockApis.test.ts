@@ -103,6 +103,10 @@ describe('mockApis', () => {
       expect(factory.api).toBe(coreApis[name]);
       expect(factory.deps).toEqual({});
       expect(factory.factory({})).toBe(mock);
+      if (name === 'routeResolution') {
+        // resolvePath supplies an empty match list by default.
+        continue;
+      }
       for (const method of Object.values(mock)) {
         expect(jest.isMockFunction(method)).toBe(true);
         expect((method as jest.Mock).getMockImplementation()).toBeUndefined();
