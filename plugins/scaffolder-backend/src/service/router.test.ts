@@ -1649,7 +1649,7 @@ describe('scaffolder router', () => {
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
-      const responseDataFn = jest.fn();
+      let responseData = '';
 
       const req = request(router)
         .get('/v2/tasks/a-random-id/eventstream')
@@ -1660,11 +1660,15 @@ describe('scaffolder router', () => {
             headers: Record<string, string>;
           });
 
+          res.setEncoding('utf8');
           res.on('data', chunk => {
-            responseDataFn(chunk.toString());
+            responseData += chunk;
 
             // the server expects the client to abort the request
-            if (chunk.includes('completion')) {
+            if (
+              responseData.includes('event: completion\n') &&
+              responseData.endsWith('\n\n')
+            ) {
               req.abort();
             }
           });
@@ -1677,12 +1681,10 @@ describe('scaffolder router', () => {
 
       expect(statusCode).toBe(200);
       expect(headers['content-type']).toBe('text/event-stream');
-      expect(responseDataFn).toHaveBeenCalledTimes(2);
-      expect(responseDataFn).toHaveBeenCalledWith(`event: log
+      expect(responseData).toBe(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
 
-`);
-      expect(responseDataFn).toHaveBeenCalledWith(`event: completion
+event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
 
 `);
