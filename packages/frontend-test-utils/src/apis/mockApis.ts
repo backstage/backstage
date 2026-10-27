@@ -837,7 +837,11 @@ export namespace mockApis {
       const { navigate, ...rest } = partialImpl ?? {};
       const instance = createMockAppHistory({ navigate });
       const navigateMock = jest.fn(
-        (...args: [path: string, options?: AppNavigateOptions] | [delta: number]) => {
+        (
+          ...args:
+            | [path: string, options?: AppNavigateOptions]
+            | [delta: number]
+        ) => {
           if (typeof args[0] === 'number') {
             instance.navigate(args[0]);
           } else if (args.length === 1) {
