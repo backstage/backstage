@@ -341,7 +341,8 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                 isStreamComplete = true;
               }
               emitLogs();
-              dispatch({ type: 'COMPLETED', data: event });
+              const completion: ReducerLogEntry = event;
+              dispatch({ type: 'COMPLETED', data: completion });
               // Completion bodies can omit errors even for failed tasks.
               const refreshTaskStatus = (attempt = 0) => {
                 void scaffolderApi.getTask(taskId).then(
@@ -350,7 +351,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                       dispatch({
                         type: 'TASK_STATUS',
                         data: task.status,
-                        error: event.body.error,
+                        error: completion.body.error,
                       });
                     }
                   },
