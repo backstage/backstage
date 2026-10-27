@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Importing from node:path/posix forces the use of forward slashes on all OSes
 import { join as joinPath } from 'node:path/posix';
 import { PortableTemplateInputRoleParams } from '../types';
 
