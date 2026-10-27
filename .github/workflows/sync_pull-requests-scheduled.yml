@@ -135,9 +135,9 @@ jobs:
           action: synchronize
           required-checks: |
             DCO
-            E2E Linux 22.x
             E2E Linux 24.x
-            Test 22.x
+            E2E Linux 26.x
             Test 24.x
-            Verify 22.x
+            Test 26.x
             Verify 24.x
+            Verify 26.x
