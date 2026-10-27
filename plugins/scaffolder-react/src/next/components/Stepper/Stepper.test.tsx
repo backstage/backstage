@@ -24,8 +24,60 @@ import { LayoutTemplate } from '../../../layouts';
 import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper, type StepperProps } from './Stepper';
+import * as stepperUtils from './utils';
+
+jest.mock('./utils', () => ({
+  ...jest.requireActual('./utils'),
+  filterReviewState: jest.fn(jest.requireActual('./utils').filterReviewState),
+}));
 
 describe('Stepper', () => {
+  it('defers hidden field filtering until review is displayed', async () => {
+    const filter = jest.mocked(stepperUtils.filterReviewState);
+    filter.mockClear();
+    try {
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Deferred review',
+              steps: [
+                {
+                  title: 'Choose',
+                  schema: { properties: { action: { type: 'string' } } },
+                },
+                {
+                  title: 'Hidden',
+                  schema: {
+                    'ui:backstage': {
+                      visibleWhen: {
+                        required: ['enabled'],
+                        properties: { enabled: { const: true } },
+                      },
+                    },
+                    properties: { password: { type: 'string' } },
+                  },
+                },
+              ],
+            }}
+            extensions={[]}
+            onCreate={jest.fn()}
+          />
+        </SecretsContextProvider>,
+      );
+      expect(filter).not.toHaveBeenCalled();
+      fireEvent.change(screen.getByRole('textbox', { name: 'action' }), {
+        target: { value: 'manage' },
+      });
+      expect(filter).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      expect(filter).toHaveBeenCalled();
+    } finally {
+      filter.mockClear();
+    }
+  });
+
   it.each(['default', 'custom state', 'custom step'])(
     'omits hidden values from %s review while retaining submitted values',
     async review => {

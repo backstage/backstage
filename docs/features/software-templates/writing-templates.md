@@ -1053,7 +1053,8 @@ Navigation, frontend validation, and review use the visible steps. Values entere
 before a step becomes hidden are retained and remain part of the submitted task
 values. Fields belonging only to hidden steps, including nested fields in shared
 objects and arrays, are omitted from review, including custom review components.
-Visible fields retain their configured review masks.
+This also applies to retained fields declared in conditional branches that are
+no longer active. Visible fields retain their configured review masks.
 The backend continues to validate the original parameter schemas. Use
 conditional JSON Schema requirements, as shown above, for fields that are only
 required in a particular workflow.

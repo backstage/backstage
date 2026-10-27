@@ -160,7 +160,10 @@ export const Stepper = (stepperProps: StepperProps) => {
   }
 
   const hiddenSteps = allSteps.filter(step => !steps.includes(step));
-  const reviewState = filterReviewState(stepsState, steps, hiddenSteps);
+  const reviewState =
+    visibleStep === steps.length
+      ? filterReviewState(stepsState, steps, hiddenSteps)
+      : stepsState;
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
