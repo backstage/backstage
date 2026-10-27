@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-common': minor
 ---
 
-Added support for `when` conditions on parameter step entries. This allows template authors to conditionally show or hide wizard steps based on answers from earlier steps using the `${{ parameters.fieldName === 'value' }}` expression syntax.
+Added support for `when` conditions on parameter step entries. This allows template authors to conditionally show or hide wizard steps based on answers from earlier steps using the `${{ parameters.fieldName === 'value' }}` expression syntax. Conditions use Nunjitsu 0.7.0 in both the frontend and backend, including built-in filters, comparisons, and the `not` keyword. Invalid conditions keep the step visible so its parameters are still validated.

@@ -10,7 +10,6 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
-import { evaluateCondition } from '@backstage/plugin-scaffolder-common';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
@@ -119,8 +118,6 @@ export const DefaultTemplateOutputs: (props: {
 
 // @alpha (undocumented)
 export const EmbeddableWorkflow: (props: WorkflowProps) => JSX_2.Element;
-
-export { evaluateCondition };
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {

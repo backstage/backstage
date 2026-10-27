@@ -1054,7 +1054,7 @@ describe('scaffolder router', () => {
       );
     });
 
-    it('skips validation for parameter steps whose if condition evaluates to false', async () => {
+    it('skips validation for parameter steps whose when condition evaluates to false', async () => {
       const templateWithConditionalParams = generateMockTemplate({
         parameters: [
           {
@@ -1156,7 +1156,7 @@ describe('scaffolder router', () => {
       );
     });
 
-    it('validates parameter steps whose if condition evaluates to true', async () => {
+    it('validates parameter steps whose when condition evaluates to true', async () => {
       const templateWithConditionalParams = generateMockTemplate({
         parameters: [
           {
@@ -2316,6 +2316,111 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       expect(response.status).toBe(200);
     });
   });
+
+  describe.each(['/v2/tasks', '/v2/dry-run'])(
+    'conditional parameters in %s',
+    endpoint => {
+      it('uses Nunjitsu conditions, validates visible fields, and removes only hidden fields', async () => {
+        const template = generateMockTemplate({
+          parameters: [
+            {
+              type: 'object',
+              required: ['provider'],
+              properties: {
+                provider: { type: 'string' },
+                shared: { type: 'string' },
+              },
+            },
+            {
+              type: 'object',
+              when: "${{ parameters.provider | lower in ['aws'] and not parameters.skip }}",
+              required: ['region'],
+              properties: {
+                region: { type: 'string' },
+                shared: { type: 'string' },
+              },
+              allOf: [{ properties: { hiddenExtra: { type: 'string' } } }],
+            },
+          ],
+          output: { parameters: '${{ parameters }}' },
+        });
+        const { router, taskBroker } = await createTestRouter({
+          entities: [template, mockUser],
+        });
+        const send = (values: Record<string, JsonValue>) =>
+          request(router)
+            .post(endpoint)
+            .send(
+              endpoint === '/v2/tasks'
+                ? {
+                    templateRef: 'template:default/create-react-app-template',
+                    values,
+                  }
+                : { template, values, directoryContents: [] },
+            );
+
+        const invalid = await send({ provider: 'AWS', shared: 'keep' });
+        expect(invalid.status).toBe(400);
+        expect(invalid.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: 'required', argument: 'region' }),
+          ]),
+        );
+        expect(taskBroker.dispatch).not.toHaveBeenCalled();
+
+        const valid = await send({
+          provider: 'GCP',
+          shared: 'keep',
+          region: 'remove',
+          hiddenExtra: 'remove',
+        });
+        const expected = { provider: 'GCP', shared: 'keep' };
+        const dispatch =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+        expect(valid.status).toBe(endpoint === '/v2/tasks' ? 201 : 200);
+        expect(dispatch).toHaveBeenCalledTimes(
+          endpoint === '/v2/tasks' ? 1 : 0,
+        );
+        const actual =
+          endpoint === '/v2/tasks'
+            ? dispatch.mock.calls[0][0].spec.parameters
+            : valid.body.output.parameters;
+        expect(actual).toEqual(expected);
+      });
+
+      it('keeps validation enabled for malformed conditions', async () => {
+        const template = generateMockTemplate({
+          parameters: [
+            {
+              when: '${{ invalid...syntax }}',
+              required: ['name'],
+              properties: { name: { type: 'string' } },
+            },
+          ],
+        });
+        const { router, taskBroker } = await createTestRouter({
+          entities: [template, mockUser],
+        });
+        const response = await request(router)
+          .post(endpoint)
+          .send(
+            endpoint === '/v2/tasks'
+              ? {
+                  templateRef: 'template:default/create-react-app-template',
+                  values: {},
+                }
+              : { template, values: {}, directoryContents: [] },
+          );
+        expect(response.status).toBe(400);
+        expect(response.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: 'required', argument: 'name' }),
+          ]),
+        );
+        expect(taskBroker.dispatch).not.toHaveBeenCalled();
+      });
+    },
+  );
 
   describe('GET /v2/autocomplete/:provider/:resource', () => {
     it('should throw an error when the provider is not registered', async () => {

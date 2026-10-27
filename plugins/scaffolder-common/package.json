@@ -68,6 +68,7 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@types/json-schema": "^7.0.9",
     "cross-fetch": "^4.0.0",
+    "nunjitsu": "^0.7.0",
     "uri-template": "^2.0.0",
     "zen-observable": "^0.10.0"
   },

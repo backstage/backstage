@@ -469,7 +469,7 @@ spec:
 
 When `spec.parameters` is an array of steps, you can use the `when` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
 
-The `when` field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
+The frontend wizard and backend validation use Nunjitsu to evaluate `when` conditions. The field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
 
 ```yaml
 spec:
@@ -505,8 +505,12 @@ The `when` field supports:
 
 - **Equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
 - **Truthiness checks:** `${{ parameters.field }}` evaluates to true when the field is set and non-empty
-- **Negation:** `${{ !parameters.field }}`
+- **Negation:** `${{ not parameters.field }}`
+- **Combined conditions:** `${{ parameters.enabled and parameters.count > 1 }}`
+- **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
 - **Boolean values:** `when: true` or `when: false`
+
+Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.
 

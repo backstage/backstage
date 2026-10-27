@@ -48,11 +48,11 @@ import {
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
 import {
+  evaluateCondition,
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
-import { createTemplateRenderer, TemplateContext } from 'nunjitsu';
 import {
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
@@ -209,48 +209,6 @@ function formatSecretsValidationErrors(result: ValidatorResult) {
       instance: {},
     };
   });
-}
-
-const conditionRenderer = createTemplateRenderer();
-
-// The frontend wizard uses a lighter evaluator from @backstage/plugin-scaffolder-common
-// that supports the same documented subset (equality, truthiness, negation).
-// Nunjitsu can't run in the browser, so the two evaluators must stay in sync
-// for the expressions we document.
-function evaluateIfCondition(
-  condition: string | boolean | undefined,
-  formState: Record<string, JsonValue>,
-  logger?: LoggerService,
-): boolean {
-  if (condition === undefined || condition === null) return true;
-  if (typeof condition === 'boolean') return condition;
-
-  const trimmed = condition.trim();
-  if (!trimmed) return true;
-
-  const match = trimmed.match(/^\$\{\{([\s\S]*)\}\}$/);
-  const inner = match ? match[1].trim() : trimmed;
-  if (!inner) return true;
-
-  const negated = inner.startsWith('!');
-  const expr = negated ? inner.slice(1).trim() : inner;
-
-  let result: unknown;
-  try {
-    result = conditionRenderer.renderValue(`\${{ ${expr} }}`, {
-      parameters: formState,
-    } as TemplateContext);
-  } catch (error) {
-    logger?.warn(
-      `Failed to evaluate parameter step condition "${condition}": ${
-        error instanceof Error ? error.message : 'unknown error'
-      }`,
-    );
-    return true;
-  }
-
-  const truthy = Array.isArray(result) ? result.length > 0 : !!result;
-  return negated ? !truthy : truthy;
 }
 
 function collectPropertyKeys(schema: Record<string, unknown>): string[] {
@@ -693,10 +651,9 @@ export async function createRouter(
             typeof condition === 'string' || typeof condition === 'boolean';
           if (
             isStepCondition &&
-            !evaluateIfCondition(
+            !evaluateCondition(
               condition as string | boolean,
               values as Record<string, JsonValue>,
-              logger,
             )
           ) {
             for (const key of collectPropertyKeys(param)) {
@@ -1207,10 +1164,9 @@ export async function createRouter(
             typeof condition === 'string' || typeof condition === 'boolean';
           if (
             isStepCondition &&
-            !evaluateIfCondition(
+            !evaluateCondition(
               condition as string | boolean,
               body.values as Record<string, JsonValue>,
-              logger,
             )
           ) {
             for (const key of collectPropertyKeys(param)) {

@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export { extractSchemaFromStep, createFieldValidation } from './schema';
-export { evaluateCondition } from '@backstage/plugin-scaffolder-common';
