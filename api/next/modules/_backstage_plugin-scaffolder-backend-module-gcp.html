@@ -15,7 +15,16 @@
 </div></section>
 <section class="tsd-panel tsd-typography"><h1 id="backstageplugin-scaffolder-backend-module-gcp" class="tsd-anchor-link">@backstage/plugin-scaffolder-backend-module-gcp<a href="#backstageplugin-scaffolder-backend-module-gcp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <p>The GCP bucket module for <a href="https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend">@backstage/plugin-scaffolder-backend</a>.</p>
-<p><em>This plugin was created through the Backstage CLI</em></p>
+<p>When used as the <code>gcpBucket</code> task recovery workspace provider, the module saves
+each workspace snapshot as a separate object under the task's prefix in the
+configured bucket. This avoids the per-object write rate limit when template
+steps finish in quick succession. Recovery restores the latest snapshot, including
+snapshots saved by older versions of the provider.</p>
+<p>Older snapshots are deleted after a successful save. If that cleanup fails, the
+module logs a warning and keeps the saved workspace available for recovery.
+Task cleanup removes all snapshots for the task. The backend's Google Cloud
+credentials need permissions to list, create, read, and delete objects in the
+bucket.</p>
 </section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="variables">Variables<a href="#variables" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="default"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Variable"><use href="../assets/icons.svg#icon-32"></use></svg><a href="../variables/_backstage_plugin-scaffolder-backend-module-gcp.default.html">default</a><a href="#default" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details></div>
