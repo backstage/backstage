@@ -277,7 +277,7 @@ export async function load(url, context, nextLoad) {
       exportInteropAnnotation: true,
     },
     jsc: {
-      target: 'es2023',
+      target: 'es2024',
       parser: {
         syntax: 'typescript',
       },
