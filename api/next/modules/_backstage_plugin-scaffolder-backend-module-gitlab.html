@@ -16,6 +16,12 @@
 <section class="tsd-panel tsd-typography"><h1 id="scaffolder-backend-module-gitlab" class="tsd-anchor-link">scaffolder-backend-module-gitlab<a href="#scaffolder-backend-module-gitlab" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <p>Welcome to the Gitlab Module for Scaffolder.</p>
 <p>Here you can find all Gitlab related features to improve your scaffolder:</p>
+<p>For <code>publish:gitlab:merge-request</code> and <code>gitlab:repo:push</code>, <code>commitAction: auto</code>
+checks files individually if the repository file listing fails, except for a 404
+response. Individual checks skip unchanged files, update changed files, and create
+missing files; other errors stop the action before committing. A 404 listing
+response continues to treat all files as new, including when pushing to a new
+branch.</p>
 <h2 id="getting-started" class="tsd-anchor-link">Getting started<a href="#getting-started" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <h2 id="from-your-backstage-root-directory" class="tsd-anchor-link">From your Backstage root directory<a href="#from-your-backstage-root-directory" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <pre><code class="bash"><span class="hl-0"># From your Backstage root directory</span><br/><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-3">--cwd</span><span class="hl-2"> </span><span class="hl-4">packages/backend</span><span class="hl-2"> </span><span class="hl-4">add</span><span class="hl-2"> </span><span class="hl-4">@backstage/plugin-scaffolder-backend-module-gitlab</span>
