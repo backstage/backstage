@@ -71,7 +71,7 @@ describe('DefaultHttpAuthService', () => {
     expect(secondAuthenticate).toHaveBeenCalledTimes(1);
   });
 
-  it('issues a host-only user cookie and expires any legacy domain cookie', async () => {
+  it('issues and clears a host-only user cookie', async () => {
     const httpAuthService = DefaultHttpAuthService.create({
       discovery: {
         getBaseUrl: async () => 'http://localhost:7007/api/test',
@@ -98,21 +98,15 @@ describe('DefaultHttpAuthService', () => {
     const issued = await supertest(app).post('/cookie');
     expect(issued.status).toBe(200);
     expect(issued.header['set-cookie']).toEqual([
-      expect.stringMatching(
-        /^backstage-auth=;.*Domain=example\.com;.*Expires=Thu, 01 Jan 1970/,
-      ),
       expect.stringMatching(/^backstage-auth=mock-limited-user-token/),
     ]);
-    expect(issued.header['set-cookie'][1]).not.toMatch(/Domain=/);
+    expect(issued.header['set-cookie'][0]).not.toMatch(/Domain=/);
 
     const cleared = await supertest(app).delete('/cookie');
     expect(cleared.status).toBe(200);
     expect(cleared.header['set-cookie']).toEqual([
-      expect.stringMatching(
-        /^backstage-auth=;.*Domain=example\.com;.*Expires=Thu, 01 Jan 1970/,
-      ),
       expect.stringMatching(/^backstage-auth=;.*Expires=Thu, 01 Jan 1970/),
     ]);
-    expect(cleared.header['set-cookie'][1]).not.toMatch(/Domain=/);
+    expect(cleared.header['set-cookie'][0]).not.toMatch(/Domain=/);
   });
 });
