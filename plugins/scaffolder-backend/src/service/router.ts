@@ -54,6 +54,7 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
+  filterHiddenStepValues,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
@@ -209,53 +210,6 @@ function formatSecretsValidationErrors(result: ValidatorResult) {
       instance: {},
     };
   });
-}
-
-function collectPropertyKeys(schema: Record<string, unknown>): string[] {
-  const keys: string[] = [];
-  if (schema.properties && typeof schema.properties === 'object') {
-    keys.push(...Object.keys(schema.properties as Record<string, unknown>));
-  }
-  for (const keyword of ['allOf', 'oneOf', 'anyOf']) {
-    const entries = schema[keyword];
-    if (Array.isArray(entries)) {
-      for (const entry of entries) {
-        if (entry && typeof entry === 'object') {
-          keys.push(...collectPropertyKeys(entry as Record<string, unknown>));
-        }
-      }
-    }
-  }
-  for (const keyword of ['then', 'else']) {
-    const sub = schema[keyword];
-    if (sub && typeof sub === 'object' && !Array.isArray(sub)) {
-      keys.push(...collectPropertyKeys(sub as Record<string, unknown>));
-    }
-  }
-  if (schema.dependencies && typeof schema.dependencies === 'object') {
-    for (const dep of Object.values(
-      schema.dependencies as Record<string, unknown>,
-    )) {
-      if (dep && typeof dep === 'object' && !Array.isArray(dep)) {
-        keys.push(...collectPropertyKeys(dep as Record<string, unknown>));
-      }
-    }
-  }
-  return keys;
-}
-
-function stripHiddenStepValues(
-  values: JsonObject,
-  hiddenStepKeys: Set<string>,
-  visibleStepKeys: Set<string>,
-): JsonObject {
-  for (const key of visibleStepKeys) {
-    hiddenStepKeys.delete(key);
-  }
-  if (hiddenStepKeys.size === 0) return values;
-  return Object.fromEntries(
-    Object.entries(values).filter(([key]) => !hiddenStepKeys.has(key)),
-  );
 }
 
 async function validateSecrets(options: {
@@ -641,29 +595,29 @@ export async function createRouter(
           credentials,
         );
 
-        const hiddenStepKeys = new Set<string>();
-        const visibleStepKeys = new Set<string>();
+        const parameterSteps = [template.spec.parameters ?? []]
+          .flat()
+          .map(schema => {
+            const condition = schema.when;
+            const isStepCondition =
+              typeof condition === 'string' || typeof condition === 'boolean';
+            return {
+              schema,
+              visible:
+                !isStepCondition ||
+                evaluateCondition(
+                  condition,
+                  values as Record<string, JsonValue>,
+                ),
+            };
+          });
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
+        for (const { schema: parameters, visible } of parameterSteps) {
+          if (!visible) continue;
           const param = parameters as Record<string, unknown>;
           const condition = param.when;
           const isStepCondition =
             typeof condition === 'string' || typeof condition === 'boolean';
-          if (
-            isStepCondition &&
-            !evaluateCondition(
-              condition as string | boolean,
-              values as Record<string, JsonValue>,
-            )
-          ) {
-            for (const key of collectPropertyKeys(param)) {
-              hiddenStepKeys.add(key);
-            }
-            continue;
-          }
-          for (const key of collectPropertyKeys(param)) {
-            visibleStepKeys.add(key);
-          }
           const { when: _, ...rest } = param;
           const schema = isStepCondition ? rest : param;
           const result = validate(values, schema);
@@ -682,10 +636,9 @@ export async function createRouter(
           }
         }
 
-        const filteredValues = stripHiddenStepValues(
-          values as JsonObject,
-          hiddenStepKeys,
-          visibleStepKeys,
+        const filteredValues = filterHiddenStepValues(
+          values as Record<string, JsonValue>,
+          parameterSteps,
         );
 
         const secretsValid = await validateSecrets({
@@ -1154,29 +1107,29 @@ export async function createRouter(
           template.metadata.namespace || 'default'
         }/${template.metadata.name}`;
 
-        const dryRunHiddenKeys = new Set<string>();
-        const dryRunVisibleKeys = new Set<string>();
+        const dryRunParameterSteps = [template.spec.parameters ?? []]
+          .flat()
+          .map(schema => {
+            const condition = schema.when;
+            const isStepCondition =
+              typeof condition === 'string' || typeof condition === 'boolean';
+            return {
+              schema,
+              visible:
+                !isStepCondition ||
+                evaluateCondition(
+                  condition,
+                  body.values as Record<string, JsonValue>,
+                ),
+            };
+          });
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
+        for (const { schema: parameters, visible } of dryRunParameterSteps) {
+          if (!visible) continue;
           const param = parameters as Record<string, unknown>;
           const condition = param.when;
           const isStepCondition =
             typeof condition === 'string' || typeof condition === 'boolean';
-          if (
-            isStepCondition &&
-            !evaluateCondition(
-              condition as string | boolean,
-              body.values as Record<string, JsonValue>,
-            )
-          ) {
-            for (const key of collectPropertyKeys(param)) {
-              dryRunHiddenKeys.add(key);
-            }
-            continue;
-          }
-          for (const key of collectPropertyKeys(param)) {
-            dryRunVisibleKeys.add(key);
-          }
           const { when: _, ...rest } = param;
           const schema = isStepCondition ? rest : param;
           const result = validate(body.values, schema);
@@ -1198,10 +1151,9 @@ export async function createRouter(
           }
         }
 
-        const dryRunFilteredValues = stripHiddenStepValues(
-          body.values as JsonObject,
-          dryRunHiddenKeys,
-          dryRunVisibleKeys,
+        const dryRunFilteredValues = filterHiddenStepValues(
+          body.values as Record<string, JsonValue>,
+          dryRunParameterSteps,
         );
 
         const secretsValid = await validateSecrets({

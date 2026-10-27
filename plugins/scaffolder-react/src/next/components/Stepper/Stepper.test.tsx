@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/test-utils';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
@@ -923,6 +923,74 @@ describe('Stepper', () => {
   });
 
   describe('conditional steps with when', () => {
+    it.each(['nested', 'reference'])(
+      'excludes hidden %s fields while preserving visible values',
+      async shape => {
+        const visible: JsonObject =
+          shape === 'nested'
+            ? {
+                properties: {
+                  config: {
+                    type: 'object',
+                    properties: { project: { type: 'string' } },
+                  },
+                },
+              }
+            : { properties: { name: { type: 'string' } } };
+        const hidden: JsonObject =
+          shape === 'nested'
+            ? {
+                properties: {
+                  config: {
+                    type: 'object',
+                    properties: { awsRegion: { type: 'string' } },
+                  },
+                },
+              }
+            : {
+                definitions: {
+                  Hidden: {
+                    type: 'object',
+                    properties: { awsRegion: { type: 'string' } },
+                  },
+                },
+                allOf: [{ $ref: '#/definitions/Hidden' }],
+              };
+        const initial: Record<string, JsonValue> =
+          shape === 'nested'
+            ? { config: { project: 'keep', awsRegion: 'remove' } }
+            : { name: 'keep', awsRegion: 'remove' };
+        const onCreate = jest.fn();
+        await renderInTestApp(
+          <SecretsContextProvider>
+            <Stepper
+              manifest={{
+                title: 'Hidden fields',
+                steps: [
+                  { title: 'Visible', schema: visible },
+                  { title: 'Hidden', when: false, schema: hidden },
+                ],
+              }}
+              extensions={[]}
+              initialState={initial}
+              onCreate={onCreate}
+            />
+          </SecretsContextProvider>,
+        );
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+        });
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        });
+        expect(onCreate).toHaveBeenCalledWith(
+          shape === 'nested'
+            ? { config: { project: 'keep' } }
+            : { name: 'keep' },
+        );
+      },
+    );
+
     it('uses Nunjitsu conditions and keeps steps with matching titles separate', async () => {
       const manifest: TemplateParameterSchema = {
         title: 'Conditional Steps',
