@@ -68,8 +68,6 @@ export function createWebSocketRouter(options: {
           let status = '401 Unauthorized';
           if (error.name === 'ServiceUnavailableError') {
             status = '503 Service Unavailable';
-          } else if (error.name === 'NotAllowedError') {
-            status = '403 Forbidden';
           }
           socket.end(
             `HTTP/1.1 ${status}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`,

@@ -46,8 +46,11 @@ export interface HttpRouterServiceWebSocketHandler {
    * its full URL. Take ownership of the socket or close it before resolving.
    */
   handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
-  /** Uses the same authentication policies as HTTP routes. Requires authentication by default. */
-  authPolicy?: HttpRouterServiceAuthPolicy['allow'];
+  /**
+   * Requires token authentication by default. Set to `unauthenticated` to handle
+   * authentication in the handler. Cookie authentication is not supported.
+   */
+  authPolicy?: 'unauthenticated';
 }
 
 /**
