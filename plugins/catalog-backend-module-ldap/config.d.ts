@@ -34,11 +34,10 @@ export interface Config {
       target: string;
 
       /**
-       * Whether to read users and groups concurrently using separate LDAP
-       * connections. Defaults to true. Set to false to use one connection and
-       * read sequentially.
+       * Whether to read users and groups sequentially using one LDAP connection.
+       * Defaults to false.
        */
-      parallelReads?: boolean;
+      disableParallelReads?: boolean;
 
       /**
        * The settings to use for the bind command. If none are specified,
@@ -456,11 +455,10 @@ export interface Config {
           target: string;
 
           /**
-           * Whether to read users and groups concurrently using separate LDAP
-           * connections. Defaults to true. Set to false to use one connection and
-           * read sequentially.
+           * Whether to read users and groups sequentially using one LDAP connection.
+           * Defaults to false.
            */
-          parallelReads?: boolean;
+          disableParallelReads?: boolean;
 
           /**
            * The settings to use for the bind command. If none are specified,

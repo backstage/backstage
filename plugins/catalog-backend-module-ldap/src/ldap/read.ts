@@ -332,14 +332,23 @@ export async function readLdapOrg(
             transformer: options?.groupTransformer,
           }),
         ]
-      : await Promise.all([
-          readLdapUsers(client, userConfig, vendorConfig, {
-            transformer: options?.userTransformer,
-          }),
-          readLdapGroups(groupClient, groupConfig, vendorConfig, {
-            transformer: options?.groupTransformer,
-          }),
-        ]);
+      : await (async () => {
+          const [usersRead, groupsRead] = await Promise.allSettled([
+            readLdapUsers(client, userConfig, vendorConfig, {
+              transformer: options?.userTransformer,
+            }),
+            readLdapGroups(groupClient, groupConfig, vendorConfig, {
+              transformer: options?.groupTransformer,
+            }),
+          ]);
+          if (usersRead.status === 'rejected') {
+            throw usersRead.reason;
+          }
+          if (groupsRead.status === 'rejected') {
+            throw groupsRead.reason;
+          }
+          return [usersRead.value, groupsRead.value] as const;
+        })();
 
   const { users, userMemberOf } = usersResult;
   const { groups, groupMemberOf, groupMember } = groupsResult;

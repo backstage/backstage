@@ -133,16 +133,16 @@ backend starts.
 ### Parallel read behavior
 
 By default, the provider reads users and groups concurrently using separate
-LDAP connections. Set `parallelReads` to `false` to use one connection and read
-them sequentially. This can reduce concurrent connection load on the LDAP
-server, at the cost of a longer refresh time.
+LDAP connections. Set `disableParallelReads` to `true` to use one connection
+and read them sequentially. This can reduce concurrent connection load on the
+LDAP server, at the cost of a longer refresh time.
 
 ```yaml
 catalog:
   providers:
     ldapOrg:
       default:
-        parallelReads: false
+        disableParallelReads: true
 ```
 
 ### users
@@ -276,6 +276,7 @@ options:
     - entryUUID
     - objectGUID
     - ipaUniqueID
+    - uid
     - cn
     - description
     - groupType

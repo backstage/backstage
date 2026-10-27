@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
 import { createDeferred } from '@backstage/types';
 import { Entry, SearchResult } from 'ldapts';
 import { LdapClient } from './client';
-import { GroupConfig, UserConfig, VendorConfig } from './config';
+import {
+  GroupConfig,
+  readProviderConfigs,
+  UserConfig,
+  VendorConfig,
+} from './config';
 import {
   LDAP_DN_ANNOTATION,
   LDAP_RDN_ANNOTATION,
@@ -591,6 +597,46 @@ describe('readLdapUsers', () => {
     const config: UserConfig[] = [];
     const { users } = await readLdapUsers(client, config, {});
     expect(users).toHaveLength(0);
+  });
+});
+
+describe('Google group defaults', () => {
+  it('requests and maps the Google UUID attribute for groups', async () => {
+    const config = readProviderConfigs(
+      new ConfigReader({
+        catalog: {
+          providers: {
+            ldapOrg: {
+              default: {
+                target: 'ldap://example.com',
+                users: { dn: 'ou=users' },
+                groups: { dn: 'ou=groups' },
+              },
+            },
+          },
+        },
+      }),
+    )[0];
+    const googleClient: jest.Mocked<LdapClient> = {
+      search: jest.fn().mockResolvedValue({
+        searchEntries: [
+          { dn: 'cn=team', uid: 'google-uid', cn: 'team' } as Entry,
+        ],
+        searchReferences: [],
+      }),
+      getVendor: jest.fn().mockResolvedValue(GoogleLdapVendor),
+    } as any;
+
+    const { groups } = await readLdapGroups(
+      googleClient,
+      config.groups,
+      undefined,
+    );
+
+    expect(config.groups[0].options.attributes).toContain('uid');
+    expect(groups[0].metadata.annotations?.[LDAP_UUID_ANNOTATION]).toBe(
+      'google-uid',
+    );
   });
 });
 

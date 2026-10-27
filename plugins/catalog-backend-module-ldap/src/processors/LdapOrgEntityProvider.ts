@@ -284,7 +284,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
     const [userClient, groupClient] = await createClients(
       this.options.logger,
       this.options.provider,
-      this.options.provider.parallelReads !== false,
+      !this.options.provider.disableParallelReads,
     );
 
     try {
@@ -421,9 +421,9 @@ function withLocations(providerId: string, entity: Entity): Entity {
     metadata: {
       ...entity.metadata,
       annotations: {
-        ...entity.metadata.annotations,
         [ANNOTATION_LOCATION]: location,
         [ANNOTATION_ORIGIN_LOCATION]: location,
+        ...entity.metadata.annotations,
       },
     },
   };

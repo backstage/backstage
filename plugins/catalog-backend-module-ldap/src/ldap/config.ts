@@ -48,8 +48,8 @@ export type LdapProviderConfig = {
   groups: GroupConfig[];
   // Schedule configuration for refresh tasks.
   schedule?: SchedulerServiceTaskScheduleDefinition;
-  // Whether user and group reads use separate connections and run in parallel.
-  parallelReads?: boolean;
+  // Whether user and group reads run sequentially using one connection.
+  disableParallelReads?: boolean;
   // Configuration for overriding the vendor-specific default attribute names.
   vendor?: VendorConfig;
 };
@@ -208,6 +208,7 @@ const DEFAULT_GROUP_SEARCH_ATTRIBUTES = [
   'entryUUID',
   'objectGUID',
   'ipaUniqueID',
+  'uid',
   'cn',
   'description',
   'groupType',
@@ -567,7 +568,7 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
       groups: readGroupConfig(c.getConfig('groups')).map(it =>
         mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
       ),
-      parallelReads: c.getOptionalBoolean('parallelReads'),
+      disableParallelReads: c.getOptionalBoolean('disableParallelReads'),
       vendor,
     };
 
@@ -620,7 +621,7 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
         mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
       ),
       schedule,
-      parallelReads: c.getOptionalBoolean('parallelReads'),
+      disableParallelReads: c.getOptionalBoolean('disableParallelReads'),
       vendor,
     };
 
