@@ -20,10 +20,8 @@ import type {
   HttpRouterServiceWebSocketHandler,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
-import { parse as parseCookie } from 'cookie';
+import { AuthenticationError } from '@backstage/errors';
 import type { IncomingMessage } from 'node:http';
-import { readCorsOptions } from '../../rootHttpRouter/http/readCorsOptions';
 
 export async function authenticateWebSocket(options: {
   auth: AuthService;
@@ -39,7 +37,6 @@ export async function authenticateWebSocket(options: {
   if (authPolicy === 'unauthenticated') {
     return { credentials: await auth.getNoneCredentials() };
   }
-  const allowLimitedAccess = authPolicy === 'user-cookie';
   const bearer =
     request.headers.authorization?.match(/^Bearer[ ]+(\S+)$/i)?.[1];
   const protocols =
@@ -53,9 +50,7 @@ export async function authenticateWebSocket(options: {
   ];
   for (const candidate of candidates) {
     try {
-      const credentials = await auth.authenticate(candidate.token, {
-        allowLimitedAccess,
-      });
+      const credentials = await auth.authenticate(candidate.token);
       if (
         auth.isPrincipal(credentials, 'user') ||
         auth.isPrincipal(credentials, 'service')
@@ -64,36 +59,6 @@ export async function authenticateWebSocket(options: {
       }
     } catch {
       // Offered protocols may be application protocols rather than credentials.
-    }
-  }
-  const cookie =
-    allowLimitedAccess && request.headers.cookie
-      ? parseCookie(request.headers.cookie)['backstage-auth']
-      : undefined;
-  if (cookie) {
-    const origin = request.headers.origin;
-    const appUrl = config.getOptionalString('app.baseUrl');
-    let allowedOrigin = Boolean(
-      origin && appUrl && origin === new URL(appUrl).origin,
-    );
-    const corsOrigin = readCorsOptions(
-      config.getOptionalConfig('backend'),
-    ).origin;
-    if (!allowedOrigin && origin && typeof corsOrigin === 'function') {
-      allowedOrigin = await new Promise<boolean>((resolve, reject) => {
-        corsOrigin(origin, (error, allowed) =>
-          error ? reject(error) : resolve(Boolean(allowed)),
-        );
-      });
-    }
-    if (!allowedOrigin) {
-      throw new NotAllowedError('WebSocket cookie origin is not allowed');
-    }
-    const credentials = await auth.authenticate(cookie, {
-      allowLimitedAccess: true,
-    });
-    if (auth.isPrincipal(credentials, 'user')) {
-      return { credentials };
     }
   }
   if (

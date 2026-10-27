@@ -164,17 +164,16 @@ bearer token as the first protocol value, followed by any application protocols:
 const connection = new WebSocket(url, [token, 'events.v1']);
 ```
 
-WebSocket routes support the same authentication policies as HTTP routes:
-authentication is required by default, with `user-cookie` and `unauthenticated`
-available through the route's `authPolicy` option.
+WebSocket routes require token authentication by default. Cookie authentication
+is not supported. Set `authPolicy: 'unauthenticated'` if the handler will manage
+authentication itself; the framework then supplies none credentials without
+validating tokens.
 
 ### Routing and lifecycle
 
-Upgrades bypass Express middleware, including rate limiting. Browser CORS checks
-do not apply to WebSockets. Cookie authentication checks the request origin
-against `app.baseUrl` and the existing `backend.cors.origin` configuration; no
-separate WebSocket configuration is needed. Other origin restrictions remain
-the handler's responsibility.
+Upgrades bypass Express middleware, including rate limiting. Cross-origin
+WebSockets do not require CORS response headers, and `backend.cors` does not apply
+to upgrades. Any additional origin restrictions are the handler's responsibility.
 Root-level WebSocket registrations use the same `{ path, handler }` shape but
 have no plugin authentication policy; their handler object contains only
 `request`, `socket`, and `head`. Root handlers must authenticate callers.

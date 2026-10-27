@@ -75,85 +75,58 @@ describe('authenticateWebSocket', () => {
     }
   });
 
-  it('allows limited tokens and cookies only with the cookie policy and checks cookie origins', async () => {
+  it('ignores cookies, rejects limited tokens, and accepts tokens from any origin', async () => {
     const auth = mockServices.auth();
+    const authenticate = jest.spyOn(auth, 'authenticate');
     const config = mockServices.rootConfig({
       data: {
-        app: { baseUrl: 'https://app.example.com/path' },
-        backend: { cors: { origin: ['https://*.trusted.example.com'] } },
+        app: { baseUrl: 'https://app.example.com' },
+        backend: { cors: { origin: 'https://app.example.com' } },
       },
     });
-    const token = mockCredentials.limitedUser.token();
-    const req = request({
-      cookie: `backstage-auth=${encodeURIComponent(token)}`,
-      origin: 'https://app.example.com',
-    });
-    await expect(
-      authenticateWebSocket({
-        auth,
-        config,
-        request: req,
-        authPolicy: 'user-cookie',
-      }),
-    ).resolves.toEqual({ credentials: mockCredentials.user() });
-    await expect(
-      authenticateWebSocket({
-        auth,
-        config,
-        request: req,
-        authPolicy: 'authenticated',
-      }),
-    ).rejects.toThrow('Missing or invalid');
-    req.headers.origin = 'https://preview.trusted.example.com';
-    await expect(
-      authenticateWebSocket({
-        auth,
-        config,
-        request: req,
-        authPolicy: 'user-cookie',
-      }),
-    ).resolves.toEqual({ credentials: mockCredentials.user() });
-    for (const origin of [undefined, 'https://untrusted.example.com']) {
-      req.headers.origin = origin;
+    for (const token of [
+      mockCredentials.user.token(),
+      mockCredentials.limitedUser.token(),
+    ]) {
       await expect(
         authenticateWebSocket({
           auth,
           config,
-          request: req,
-          authPolicy: 'user-cookie',
+          request: request({
+            cookie: `backstage-auth=${encodeURIComponent(token)}`,
+            origin: 'https://app.example.com',
+          }),
+          authPolicy: 'authenticated',
         }),
-      ).rejects.toThrow('origin is not allowed');
+      ).rejects.toThrow('Missing or invalid');
     }
-    const protocolRequest = request({ 'sec-websocket-protocol': token });
+    expect(authenticate).not.toHaveBeenCalled();
     await expect(
       authenticateWebSocket({
         auth,
         config,
-        request: protocolRequest,
-        authPolicy: 'user-cookie',
-      }),
-    ).resolves.toEqual({
-      credentials: mockCredentials.user(),
-      authProtocol: token,
-    });
-    await expect(
-      authenticateWebSocket({
-        auth,
-        config,
-        request: protocolRequest,
+        request: request({
+          'sec-websocket-protocol': mockCredentials.limitedUser.token(),
+        }),
         authPolicy: 'authenticated',
       }),
     ).rejects.toThrow('Missing or invalid');
-    req.headers.origin = 'https://app.example.com';
-    req.headers.cookie = `backstage-auth=${mockCredentials.service.token()}`;
-    await expect(
-      authenticateWebSocket({
-        auth,
-        config,
-        request: req,
-        authPolicy: 'user-cookie',
-      }),
-    ).rejects.toThrow('Missing or invalid');
+    for (const origin of [undefined, 'https://other.example.com']) {
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          request: request({
+            'sec-websocket-protocol': mockCredentials.user.token(),
+            origin,
+          }),
+          authPolicy: 'authenticated',
+        }),
+      ).resolves.toEqual({
+        credentials: mockCredentials.user(),
+        authProtocol: mockCredentials.user.token(),
+      });
+    }
   });
 
   it('makes unauthenticated access explicit and preserves the default-policy escape hatch', async () => {

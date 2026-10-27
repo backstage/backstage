@@ -2,7 +2,7 @@
 '@backstage/backend-plugin-api': minor
 ---
 
-Add WebSocket upgrade routes to the HTTP router services. Routes use the same authentication policies as HTTP routes: authenticated by default, with `user-cookie` and `unauthenticated` overrides. Browser clients can pass bearer tokens through the WebSocket protocol header.
+Add WebSocket upgrade routes to the HTTP router services. Routes require token authentication by default. The `unauthenticated` override leaves authentication to the handler. Cookie authentication is not supported. Browser clients can pass bearer tokens through the WebSocket protocol header.
 
 ```ts
 httpRouter.addWebSocketHandler({
