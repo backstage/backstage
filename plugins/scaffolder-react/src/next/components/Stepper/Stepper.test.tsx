@@ -15,7 +15,7 @@
  */
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
-import type { RJSFValidationError } from '@rjsf/utils';
+import type { FieldValidation, RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
 
@@ -297,6 +297,118 @@ describe('Stepper', () => {
   );
 
   it.each([false, true])(
+    'validates a newly revealed earlier step before review (previously validated: %s)',
+    async previouslyValidated => {
+      const onCreate = jest.fn();
+      const validateEarlier = jest.fn(
+        async (value: unknown, errors: FieldValidation) => {
+          if (value !== 'approved') {
+            errors.addError('Enter approved value');
+          }
+        },
+      );
+      const EarlierField = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<string>) => (
+        <input
+          aria-label="Earlier value"
+          value={formData ?? ''}
+          onChange={event => onChange(event.target.value || undefined)}
+        />
+      );
+      const manifest: TemplateParameterSchema = {
+        title: 'Required earlier step',
+        steps: [
+          {
+            title: 'Earlier',
+            schema: {
+              'ui:backstage': {
+                visibleWhen: {
+                  required: ['enabled'],
+                  properties: { enabled: { const: true } },
+                },
+              },
+              required: ['earlier'],
+              properties: {
+                earlier: { type: 'string', 'ui:field': 'Earlier' },
+              },
+            },
+          },
+          {
+            title: 'Current',
+            schema: { properties: { enabled: { type: 'boolean' } } },
+          },
+        ],
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[
+              {
+                name: 'Earlier',
+                component: EarlierField,
+                validation: validateEarlier,
+              },
+            ]}
+            initialState={{
+              enabled: previouslyValidated,
+              ...(previouslyValidated ? { earlier: 'approved' } : {}),
+            }}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      if (previouslyValidated) {
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        fireEvent.click(
+          await screen.findByRole('checkbox', { name: 'enabled' }),
+        );
+      }
+      validateEarlier.mockClear();
+      fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+      expect(
+        screen.queryByRole('textbox', { name: 'Earlier value' }),
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      const earlier = await screen.findByRole('textbox', {
+        name: 'Earlier value',
+      });
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      fireEvent.change(earlier, { target: { value: 'temporary' } });
+      fireEvent.change(earlier, { target: { value: '' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/required property 'earlier'/),
+      ).not.toHaveLength(0);
+      expect(validateEarlier).not.toHaveBeenCalled();
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.change(earlier, { target: { value: 'invalid' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/Enter approved value/),
+      ).not.toHaveLength(0);
+      expect(validateEarlier).toHaveBeenCalled();
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      fireEvent.change(earlier, { target: { value: 'approved' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          enabled: true,
+          earlier: 'approved',
+        }),
+      );
+    },
+  );
+
+  it.each([false, true])(
     'keeps the displayed cursor when an earlier step is revealed (self hiding: %s)',
     async selfHiding => {
       const condition = {
@@ -346,7 +458,60 @@ describe('Stepper', () => {
     },
   );
 
+  it('visits a pending earlier step when the current step hides itself', async () => {
+    const onCreate = jest.fn();
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Mutually exclusive steps',
+            steps: [
+              {
+                title: 'Earlier',
+                schema: {
+                  'ui:backstage': {
+                    visibleWhen: { properties: { enabled: { const: true } } },
+                  },
+                  required: ['earlier'],
+                  properties: { earlier: { type: 'string' } },
+                },
+              },
+              {
+                title: 'Current',
+                schema: {
+                  'ui:backstage': {
+                    visibleWhen: { properties: { enabled: { const: false } } },
+                  },
+                  properties: { enabled: { type: 'boolean' } },
+                },
+              },
+            ],
+          }}
+          initialState={{ enabled: false }}
+          extensions={[]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+    const earlier = await screen.findByRole('textbox', { name: /earlier/ });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.change(earlier, { target: { value: 'configured' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        enabled: true,
+        earlier: 'configured',
+      }),
+    );
+  });
+
   it('stays on review after the last step hides itself', async () => {
+    const onCreate = jest.fn();
     const manifest: TemplateParameterSchema = {
       title: 'Review cursor',
       steps: [
@@ -367,7 +532,7 @@ describe('Stepper', () => {
           manifest={manifest}
           initialState={{ enabled: true }}
           extensions={[]}
-          onCreate={jest.fn()}
+          onCreate={onCreate}
         />
       </SecretsContextProvider>,
     );
@@ -389,11 +554,21 @@ describe('Stepper', () => {
         <Stepper
           manifest={revealedManifest}
           extensions={[]}
-          onCreate={jest.fn()}
+          onCreate={onCreate}
         />
       </SecretsContextProvider>,
     );
     expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    expect(
+      await screen.findByRole('checkbox', { name: 'enabled' }),
+    ).toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ enabled: false }),
+    );
   });
 
   it('updates step visibility when earlier form data changes', async () => {

@@ -125,6 +125,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
+  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(
+    () => new Set(),
+  );
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
@@ -141,13 +144,30 @@ export const Stepper = (stepperProps: StepperProps) => {
       );
     });
   const steps = visibleSteps.map(({ step }) => step);
+  const visibleIndices = new Set(visibleSteps.map(({ index }) => index));
+  if ([...validatedSteps].some(index => !visibleIndices.has(index))) {
+    setValidatedSteps(
+      new Set([...validatedSteps].filter(index => visibleIndices.has(index))),
+    );
+  }
+  const pendingStep = visibleSteps.find(
+    ({ index }) => !validatedSteps.has(index),
+  );
   const nextVisibleIndex = visibleSteps.findIndex(
     ({ index }) => index >= activeStep,
   );
-  const visibleStep =
+  let visibleStep =
     activeStep >= allSteps.length || nextVisibleIndex === -1
       ? steps.length
       : nextVisibleIndex;
+  // If the current step hides itself, visit pending steps before falling through to review.
+  if (
+    activeStep < allSteps.length &&
+    visibleStep === steps.length &&
+    pendingStep
+  ) {
+    visibleStep = visibleSteps.indexOf(pendingStep);
+  }
 
   const displayedStep = visibleSteps[visibleStep]?.index ?? allSteps.length;
   if (activeStep !== displayedStep) {
@@ -215,8 +235,14 @@ export const Stepper = (stepperProps: StepperProps) => {
       setStepsState(current => {
         return { ...current, ...e.formData };
       });
+      setValidatedSteps(current => {
+        if (!current.has(displayedStep)) return current;
+        const updated = new Set(current);
+        updated.delete(displayedStep);
+        return updated;
+      });
     },
-    [setStepsState],
+    [displayedStep],
   );
 
   const handleNext = useCallback(
@@ -239,13 +265,26 @@ export const Stepper = (stepperProps: StepperProps) => {
         setErrors(returnedValidation);
       } else {
         setErrors(undefined);
+        const validated = new Set(validatedSteps);
+        validated.add(displayedStep);
+        setValidatedSteps(validated);
         const nextStep =
-          visibleSteps[visibleStep + 1]?.index ?? allSteps.length;
+          visibleSteps[visibleStep + 1]?.index ??
+          visibleSteps.find(({ index }) => !validated.has(index))?.index ??
+          allSteps.length;
         analytics.captureEvent('click', `Next Step (${visibleStep + 1})`);
         setActiveStep(nextStep);
       }
     },
-    [validation, analytics, visibleSteps, visibleStep, allSteps.length],
+    [
+      validation,
+      analytics,
+      visibleSteps,
+      visibleStep,
+      allSteps.length,
+      validatedSteps,
+      displayedStep,
+    ],
   );
 
   useEffect(() => {
@@ -275,6 +314,11 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = useCallback(async () => {
+    // A manifest update can reveal a step while review is already displayed.
+    if (pendingStep) {
+      setActiveStep(pendingStep.index);
+      return;
+    }
     setIsCreating(true);
     analytics.captureEvent('click', `${createLabel}`);
     try {
@@ -282,7 +326,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     } finally {
       setIsCreating(false);
     }
-  }, [analytics, createLabel, onCreate, stepsState]);
+  }, [analytics, createLabel, onCreate, stepsState, pendingStep]);
 
   return (
     <>

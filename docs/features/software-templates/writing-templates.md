@@ -1060,6 +1060,11 @@ The backend continues to validate the original parameter schemas. Use
 conditional JSON Schema requirements, as shown above, for fields that are only
 required in a particular workflow.
 
+Revealing an earlier step keeps the user on the current step while it remains
+visible. Before review, the workflow returns to visible steps that still need
+validation.
+A step that is hidden and later shown again must be validated again.
+
 Step visibility is a presentation feature, not an authorization boundary. Use
 backend permissions and conditional task actions to enforce access and execution
 requirements.
