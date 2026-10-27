@@ -39,7 +39,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "express": "^4.22.0",
-    "jose": "^5.0.0",
+    "jose": "^6.1.0",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

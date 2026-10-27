@@ -39,7 +39,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@types/passport": "^1.0.16",
     "express": "^4.22.0",
-    "jose": "^5.0.0",
+    "jose": "^6.1.0",
     "passport": "^0.7.0",
     "zod": "^3.25.76 || ^4.0.0"
   },
