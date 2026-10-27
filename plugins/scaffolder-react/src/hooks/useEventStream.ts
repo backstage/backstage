@@ -79,6 +79,7 @@ type ReducerAction =
 function reducer(draft: TaskStream, action: ReducerAction) {
   switch (action.type) {
     case 'INIT': {
+      draft.cancelled = false;
       draft.steps = action.data.spec.steps.reduce((current, next) => {
         current[next.id] = { status: 'open', id: next.id };
         return current;

@@ -63,7 +63,10 @@ describe('useTaskEventStream', () => {
         {children}
       </TestApiProvider>
     );
-    return renderHook(() => useTaskEventStream('test-task-id'), { wrapper });
+    return renderHook(({ taskId }) => useTaskEventStream(taskId), {
+      wrapper,
+      initialProps: { taskId: 'test-task-id' },
+    });
   }
 
   it('flushes buffered logs before tearing down on visibility hide', async () => {
@@ -1026,6 +1029,61 @@ describe('useTaskEventStream', () => {
       );
     },
   );
+
+  it('scopes cancellation to the task when switching task IDs', async () => {
+    let subscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+    const mockApi = {
+      getTask: jest.fn().mockImplementation(async id => makeTask({ id })),
+      streamLogs: jest.fn().mockImplementation(
+        () =>
+          new ObservableImpl<LogEvent>(observer => {
+            subscriber = observer;
+          }),
+      ),
+    };
+    const { result, rerender } = setup(mockApi);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    act(() => {
+      subscriber.next({
+        id: 1,
+        taskId: 'test-task-id',
+        type: 'cancelled',
+        createdAt: '2026-01-01T00:00:01Z',
+        body: { message: 'Cancelled' },
+      } as LogEvent);
+    });
+    expect(result.current.cancelled).toBe(true);
+    rerender({ taskId: 'next-task-id' });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(result.current.task?.id).toBe('next-task-id');
+    expect(result.current.cancelled).toBe(false);
+    act(() => {
+      subscriber.next({
+        ...makeLogEvent(2, 'Started next task'),
+        taskId: 'next-task-id',
+      });
+      jest.advanceTimersByTime(500);
+    });
+    expect(result.current.steps['step-1'].status).toBe('processing');
+    mockApi.getTask.mockResolvedValue(
+      makeTask({ id: 'next-task-id', status: 'completed' }),
+    );
+    await act(async () => {
+      subscriber.next({
+        id: 3,
+        taskId: 'next-task-id',
+        type: 'completion',
+        createdAt: '2026-01-01T00:00:03Z',
+        body: { message: 'Finished' },
+      } as LogEvent);
+    });
+    expect(result.current.task?.status).toBe('completed');
+    expect(result.current.cancelled).toBe(false);
+  });
 
   it('tears down the subscription when a non-recoverable task completes', async () => {
     let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
