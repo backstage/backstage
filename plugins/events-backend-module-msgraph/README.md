@@ -91,7 +91,7 @@ deleted from Graph or is deleted successfully, the module removes its database r
 also logged and cleanup is retried on a later refresh; notifications are accepted only while the subscription record
 remains in the database.
 
-This subscription managements assumes that all replicas of the Backstage events backend are configured with the same
+This subscription management assumes that all replicas of the Backstage events backend are configured with the same
 `subscriptionResources` and credentials.
 
 ```mermaid
