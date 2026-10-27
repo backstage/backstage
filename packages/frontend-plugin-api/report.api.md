@@ -16,6 +16,7 @@ import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backsta
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
+import { ForwardRefExoticComponent } from 'react';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
@@ -23,6 +24,7 @@ import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
+import { RefAttributes } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 
@@ -2195,6 +2197,9 @@ export interface RouteResolutionApi {
       sourcePath?: string;
     },
   ): RouteFunc<TParams> | undefined;
+  resolvePath(options: { pathname: string; node?: AppNode }): {
+    matches: readonly RouteResolutionMatch[];
+  };
 }
 
 // @public @deprecated
@@ -2204,6 +2209,27 @@ export const routeResolutionApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
+
+// @public
+export interface RouteResolutionMatch {
+  basePath: string;
+  contributesPath: boolean;
+  node: AppNode;
+  params: Record<string, string>;
+  routePattern: string;
+}
+
+// @public
+export const RouterLink: ForwardRefExoticComponent<
+  RouterLinkProps & RefAttributes<HTMLAnchorElement>
+>;
+
+// @public
+export interface RouterLinkProps
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
+    AppNavigateOptions {
+  href: string;
+}
 
 // @public
 export type SessionApi = {
@@ -2602,6 +2628,11 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
+
+// @public
+export function useRouteResolution(): {
+  matches: readonly RouteResolutionMatch[];
+};
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(
