@@ -68,7 +68,7 @@ type ReducerLogEntry = {
 
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
-  | { type: 'TASK_STATUS'; data: ScaffolderTaskStatus }
+  | { type: 'TASK_STATUS'; data: ScaffolderTaskStatus; error?: Error }
   | { type: 'CANCELLED'; data: ReducerLogEntry }
   | { type: 'RECOVERED'; data: ReducerLogEntry }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
@@ -114,7 +114,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
         const currentStepLog = draft.stepLogs?.[entry.body.stepId];
         const currentStep = draft.steps?.[entry.body.stepId];
 
-        if (currentStep) {
+        if (currentStep && !draft.cancelled) {
           if (entry.body.status && entry.body.status !== currentStep.status) {
             currentStep.status = entry.body.status;
 
@@ -145,7 +145,8 @@ function reducer(draft: TaskStream, action: ReducerAction) {
     }
 
     case 'TASK_STATUS': {
-      if (draft.task) {
+      draft.error = action.error;
+      if (draft.task && !draft.cancelled) {
         draft.task.status = action.data;
         draft.cancelled = action.data === 'cancelled';
       }
@@ -209,7 +210,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
  * A hook to stream the logs of a task being processed. Cancellation marks active
  * steps as cancelled and unstarted steps as skipped, preserving finished steps.
  * Recovery resets the task status; completion refreshes it from the backend,
- * including during replay.
+ * including during replay. Cancellation remains in effect until recovery.
  *
  * @public
  */
@@ -228,6 +229,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let subscription: Subscription | undefined;
     let logPusher: NodeJS.Timeout | undefined;
     let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let taskStatusRetryTimer: ReturnType<typeof setTimeout> | undefined;
     let retryCount = 1;
     let isTaskRecoverable = false;
     let lastSeenEventId: number | undefined;
@@ -235,9 +237,19 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let hasInitialized = false;
     let startGeneration = 0;
     let taskStatusVersion = 0;
+    let latestCompletionEventId: number | undefined;
+    let lastRecoveredEventId: number | undefined;
     let currentEmitLogs: (() => void) | undefined;
 
+    const clearTaskStatusRetry = () => {
+      if (taskStatusRetryTimer) {
+        clearTimeout(taskStatusRetryTimer);
+        taskStatusRetryTimer = undefined;
+      }
+    };
+
     const cleanUpStream = () => {
+      clearTaskStatusRetry();
       currentEmitLogs?.();
       currentEmitLogs = undefined;
       if (subscription) {
@@ -269,6 +281,8 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
       });
 
       const collectedLogEvents = new Array<LogEvent>();
+      let hasCompletionEvent = false;
+      let completionEventId: number | undefined;
 
       function emitLogs() {
         if (collectedLogEvents.length) {
@@ -284,12 +298,13 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
         next: event => {
           retryCount = 1;
           if (event.id !== undefined) {
-            lastSeenEventId = event.id;
+            lastSeenEventId = Math.max(lastSeenEventId ?? event.id, event.id);
           }
           switch (event.type) {
             case 'log':
               return collectedLogEvents.push(event);
             case 'cancelled':
+              clearTaskStatusRetry();
               taskStatusVersion++;
               if (!isTaskRecoverable) {
                 isStreamComplete = true;
@@ -301,6 +316,22 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               }
               return undefined;
             case 'completion': {
+              // Recoverable streams replay completion events on every poll.
+              // A new subscription may retry a refresh interrupted by cleanup.
+              if (
+                (event.id !== undefined &&
+                  ((lastRecoveredEventId !== undefined &&
+                    event.id <= lastRecoveredEventId) ||
+                    (latestCompletionEventId !== undefined &&
+                      event.id < latestCompletionEventId))) ||
+                (hasCompletionEvent && event.id === completionEventId)
+              ) {
+                return undefined;
+              }
+              hasCompletionEvent = true;
+              completionEventId = event.id;
+              latestCompletionEventId = event.id;
+              clearTaskStatusRetry();
               const statusVersion = ++taskStatusVersion;
               const isCurrent = () =>
                 !didCancel &&
@@ -312,24 +343,40 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               emitLogs();
               dispatch({ type: 'COMPLETED', data: event });
               // Completion bodies can omit errors even for failed tasks.
-              void scaffolderApi.getTask(taskId).then(
-                task => {
-                  if (isCurrent()) {
-                    dispatch({ type: 'TASK_STATUS', data: task.status });
-                  }
-                },
-                error => {
-                  if (isCurrent()) {
-                    dispatch({ type: 'ERROR', data: error });
-                  }
-                },
-              );
+              const refreshTaskStatus = (attempt = 0) => {
+                void scaffolderApi.getTask(taskId).then(
+                  task => {
+                    if (isCurrent()) {
+                      dispatch({
+                        type: 'TASK_STATUS',
+                        data: task.status,
+                        error: event.body.error,
+                      });
+                    }
+                  },
+                  error => {
+                    if (isCurrent()) {
+                      dispatch({ type: 'ERROR', data: error });
+                      if (attempt < 3) {
+                        taskStatusRetryTimer = setTimeout(() => {
+                          taskStatusRetryTimer = undefined;
+                          if (isCurrent()) refreshTaskStatus(attempt + 1);
+                        }, 1000);
+                      }
+                    }
+                  },
+                );
+              };
+              refreshTaskStatus();
               if (isStreamComplete) {
                 cleanUpStream();
               }
               return undefined;
             }
             case 'recovered':
+              emitLogs();
+              clearTaskStatusRetry();
+              lastRecoveredEventId = event.id;
               taskStatusVersion++;
               isStreamComplete = false;
               dispatch({ type: 'RECOVERED', data: event });

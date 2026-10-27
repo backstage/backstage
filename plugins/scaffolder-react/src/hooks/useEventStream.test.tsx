@@ -712,7 +712,8 @@ describe('useTaskEventStream', () => {
       getTask: jest
         .fn()
         .mockResolvedValueOnce(makeTask())
-        .mockRejectedValue(error),
+        .mockRejectedValueOnce(error)
+        .mockResolvedValue(makeTask({ status: 'failed' })),
       streamLogs: jest.fn().mockImplementation(
         () =>
           new ObservableImpl<LogEvent>(observer => {
@@ -738,7 +739,293 @@ describe('useTaskEventStream', () => {
     expect(result.current.completed).toBe(true);
     expect(result.current.output).toEqual({});
     expect(result.current.error).toBe(error);
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(3);
+    expect(result.current.task?.status).toBe('failed');
+    expect(result.current.error).toBeUndefined();
   });
+
+  function setupRecoverableStream() {
+    const task = makeTask();
+    task.spec.EXPERIMENTAL_recovery = {
+      EXPERIMENTAL_strategy: 'startOver',
+    };
+    let subscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+    const mockApi = {
+      getTask: jest.fn().mockResolvedValue(task),
+      streamLogs: jest.fn().mockImplementation(
+        () =>
+          new ObservableImpl<LogEvent>(observer => {
+            subscriber = observer;
+          }),
+      ),
+    };
+    return {
+      ...setup(mockApi),
+      mockApi,
+      emit: (id: number, type: LogEvent['type'], body: LogEvent['body']) =>
+        subscriber.next({
+          id,
+          taskId: task.id,
+          type,
+          createdAt: `2026-01-01T00:00:0${id}Z`,
+          body,
+        } as LogEvent),
+    };
+  }
+
+  it('preserves cancellation through late failure logs and completion until recovery', async () => {
+    const { result, mockApi, emit } = setupRecoverableStream();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    mockApi.getTask.mockResolvedValue(makeTask({ status: 'failed' }));
+    act(() => {
+      emit(1, 'log', {
+        message: 'Started',
+        stepId: 'step-1',
+        status: 'processing',
+      });
+      emit(2, 'cancelled', { message: 'Cancelled' });
+    });
+    await act(async () => {
+      emit(3, 'log', {
+        message: 'Aborted action',
+        stepId: 'step-1',
+        status: 'failed',
+      });
+      emit(4, 'completion', { message: 'Aborted workflow' });
+    });
+    expect(result.current.task?.status).toBe('cancelled');
+    expect(result.current.cancelled).toBe(true);
+    expect(result.current.steps['step-1']).toMatchObject({
+      status: 'cancelled',
+      startedAt: '2026-01-01T00:00:01Z',
+      endedAt: '2026-01-01T00:00:02Z',
+    });
+    expect(result.current.stepLogs['step-1']).toContain(
+      '2026-01-01T00:00:03Z Aborted action',
+    );
+    act(() => {
+      emit(5, 'log', {
+        message: 'Late abort',
+        stepId: 'step-1',
+        status: 'failed',
+      });
+      emit(6, 'recovered', { message: 'Recovered' });
+      jest.advanceTimersByTime(500);
+    });
+    expect(result.current.steps['step-1']).toMatchObject({
+      status: 'open',
+      endedAt: undefined,
+    });
+    expect(result.current.stepLogs['step-1']).toContain(
+      '2026-01-01T00:00:05Z Late abort',
+    );
+    act(() => {
+      emit(7, 'log', {
+        message: 'Restarted',
+        stepId: 'step-1',
+        status: 'processing',
+      });
+      jest.advanceTimersByTime(500);
+    });
+    expect(result.current.cancelled).toBe(false);
+    expect(result.current.task?.status).toBe('processing');
+    expect(result.current.steps['step-1']).toMatchObject({
+      status: 'processing',
+      startedAt: '2026-01-01T00:00:07Z',
+      endedAt: undefined,
+    });
+  });
+
+  it('deduplicates completions while a slow refresh is pending and after it succeeds', async () => {
+    const { result, mockApi, emit } = setupRecoverableStream();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    let resolveTask: (task: ScaffolderTask) => void;
+    mockApi.getTask.mockImplementation(
+      () =>
+        new Promise<ScaffolderTask>(resolve => {
+          resolveTask = resolve;
+        }),
+    );
+    act(() => {
+      emit(1, 'completion', { message: 'Finished' });
+      for (let i = 0; i < 5; i++) {
+        jest.advanceTimersByTime(1000);
+        emit(1, 'completion', { message: 'Finished' });
+      }
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      resolveTask(makeTask({ status: 'failed' }));
+    });
+    expect(result.current.task?.status).toBe('failed');
+    act(() => {
+      emit(1, 'completion', { message: 'Finished' });
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+    act(() => {
+      emit(2, 'recovered', { message: 'Recovered' });
+    });
+    await act(async () => {
+      emit(1, 'completion', { message: 'Finished' });
+    });
+    expect(result.current.task?.status).toBe('processing');
+    expect(result.current.completed).toBe(false);
+    expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+    act(() => {
+      Object.defineProperty(document, 'hidden', {
+        value: true,
+        writable: true,
+        configurable: true,
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+      Object.defineProperty(document, 'hidden', {
+        value: false,
+        writable: true,
+        configurable: true,
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    expect(mockApi.streamLogs).toHaveBeenLastCalledWith(
+      expect.objectContaining({ after: 2 }),
+    );
+    await act(async () => {
+      emit(3, 'completion', { message: 'New outcome' });
+      resolveTask(makeTask({ status: 'completed' }));
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(3);
+    expect(result.current.task?.status).toBe('completed');
+  });
+
+  it('retries failed completion refreshes without duplicate requests and clears the refresh error', async () => {
+    const { result, mockApi, emit } = setupRecoverableStream();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const error = new Error('Temporary API failure');
+    mockApi.getTask
+      .mockRejectedValueOnce(error)
+      .mockResolvedValue(makeTask({ status: 'failed' }));
+    await act(async () => {
+      emit(1, 'completion', { message: 'Timed out' });
+    });
+    expect(result.current.error).toBe(error);
+    act(() => {
+      emit(1, 'completion', { message: 'Timed out' });
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(3);
+    expect(result.current.task?.status).toBe('failed');
+    expect(result.current.error).toBeUndefined();
+    act(() => {
+      emit(1, 'completion', { message: 'Timed out' });
+      jest.advanceTimersByTime(10000);
+    });
+    expect(mockApi.getTask).toHaveBeenCalledTimes(3);
+  });
+
+  it('bounds status refresh retries even if completion keeps repeating', async () => {
+    const { result, mockApi, emit } = setupRecoverableStream();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const error = new Error('API unavailable');
+    mockApi.getTask.mockRejectedValue(error);
+    await act(async () => {
+      emit(1, 'completion', { message: 'Finished' });
+    });
+    for (let i = 0; i < 6; i++) {
+      await act(async () => {
+        emit(1, 'completion', { message: 'Finished' });
+        jest.advanceTimersByTime(1000);
+      });
+    }
+    expect(mockApi.getTask).toHaveBeenCalledTimes(5);
+    expect(result.current.error).toBe(error);
+  });
+
+  it.each(['recovered', 'cancelled', 'unmount'] as const)(
+    'cancels pending status retries on %s',
+    async change => {
+      const { mockApi, emit, unmount } = setupRecoverableStream();
+      await act(async () => {
+        await Promise.resolve();
+      });
+      mockApi.getTask.mockRejectedValue(new Error('Temporary API failure'));
+      await act(async () => {
+        emit(1, 'completion', { message: 'Finished' });
+      });
+      act(() => {
+        if (change === 'unmount') unmount();
+        else emit(2, change, { message: change });
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(10000);
+      });
+      expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+    },
+  );
+
+  it.each([false, true])(
+    'retries an interrupted refresh after reconnect (reject old request: %s)',
+    async reject => {
+      const { result, mockApi, emit } = setupRecoverableStream();
+      await act(async () => {
+        await Promise.resolve();
+      });
+      let resolveTask: (task: ScaffolderTask) => void;
+      let rejectTask: (error: Error) => void;
+      mockApi.getTask
+        .mockImplementationOnce(
+          () =>
+            new Promise<ScaffolderTask>((resolve, rejectPromise) => {
+              resolveTask = resolve;
+              rejectTask = rejectPromise;
+            }),
+        )
+        .mockResolvedValue(makeTask({ status: 'failed' }));
+      act(() => {
+        emit(1, 'completion', { message: 'Finished' });
+      });
+      act(() => {
+        Object.defineProperty(document, 'hidden', {
+          value: true,
+          writable: true,
+          configurable: true,
+        });
+        document.dispatchEvent(new Event('visibilitychange'));
+        Object.defineProperty(document, 'hidden', {
+          value: false,
+          writable: true,
+          configurable: true,
+        });
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      await act(async () => {
+        emit(1, 'completion', { message: 'Finished' });
+      });
+      expect(mockApi.getTask).toHaveBeenCalledTimes(3);
+      expect(result.current.task?.status).toBe('failed');
+      await act(async () => {
+        if (reject) rejectTask(new Error('Old request failed'));
+        else resolveTask(makeTask({ status: 'completed' }));
+      });
+      expect(result.current.task?.status).toBe('failed');
+      expect(result.current.error).toBeUndefined();
+      expect(mockApi.streamLogs).toHaveBeenLastCalledWith(
+        expect.objectContaining({ after: 1 }),
+      );
+    },
+  );
 
   it('tears down the subscription when a non-recoverable task completes', async () => {
     let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
