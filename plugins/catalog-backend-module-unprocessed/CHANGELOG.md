@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.18-next.0
+
+### Patch Changes
+
+- af39b90: Fixed pending entities being returned without their entity ID and entity ref.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
 ## 0.6.17
 
 ### Patch Changes

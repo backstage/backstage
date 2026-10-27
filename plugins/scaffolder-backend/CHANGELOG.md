@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.2.2-next.0
+
+### Patch Changes
+
+- be5074c: Preserve public task log values when rendering without secrets omits an earlier object field, while continuing to redact secret-derived keys and values.
+- 62eaba9: Fixed custom task permission rules registered by backend modules being ignored when authorizing task access and filtering task lists.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+
 ## 4.2.1
 
 ### Patch Changes
