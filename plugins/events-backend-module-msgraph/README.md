@@ -123,29 +123,64 @@ before they are published to avoid exposing it in logs or otherwise.
 
 ```mermaid
 sequenceDiagram
-  participant WebhookRequestValidator
+  participant Scheduler
   participant MicrosoftGraphSubscriptionManager
   participant MicrosoftGraphSubscriptionsDatabaseClient
   participant MicrosoftGraphClient
+  participant WebhookRequestValidator
 
-  loop on schedule
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionManager: ensureActiveSubscriptions
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: get current subscription IDs
-    MicrosoftGraphSubscriptionsDatabaseClient ->> MicrosoftGraphSubscriptionManager: subscription IDs
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: validateActiveSubscription
-    MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: expired/invalid subscriptions
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: createSubscription/renewSubscription
-    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: insert/update subscription
+  loop immediately at startup and every five minutes
+    Scheduler ->> MicrosoftGraphSubscriptionManager: run refresh task
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionManager: cleanup obsolete resources (best effort)
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: findByResource for each obsolete resource
+    MicrosoftGraphSubscriptionsDatabaseClient ->> MicrosoftGraphSubscriptionManager: subscription record
+    opt obsolete subscription record exists
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: deleteSubscription
+      MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: deleted or not found
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: deleteById
+    end
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionManager: ensure active subscriptions for configured resources
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: findByResource
+    MicrosoftGraphSubscriptionsDatabaseClient ->> MicrosoftGraphSubscriptionManager: subscription record (if any)
+    opt no database record
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: listSubscriptions and find matching active subscription
+      MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: matching subscription (if any)
+    end
+    opt existing subscription found
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: getSubscription
+      MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: current subscription details
+    end
+    alt no valid subscription
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: createSubscription
+      MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: subscription ID and expiration
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: insert subscription and salted clientState hash
+    else valid subscription expires within ten minutes
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: renewSubscription
+      MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: updated expiration
+      MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: update expiration
+    else valid subscription
+      Note over MicrosoftGraphSubscriptionManager: leave subscription unchanged
+    end
   end
 
-  Note over WebhookRequestValidator: on new webhook event
-  WebhookRequestValidator ->> MicrosoftGraphSubscriptionsDatabaseClient: databaseClient.getById(subscriptionId)
-  MicrosoftGraphSubscriptionsDatabaseClient ->> WebhookRequestValidator: token_hash, token_salt
-  WebhookRequestValidator ->> WebhookRequestValidator: reject request if token_hash !== hashValidationToken(clientState, token_salt)
+  Note over WebhookRequestValidator: on notification request (validation-token requests are answered separately)
+  loop each notification
+    WebhookRequestValidator ->> MicrosoftGraphSubscriptionsDatabaseClient: getById(subscriptionId) on first occurrence
+    MicrosoftGraphSubscriptionsDatabaseClient ->> WebhookRequestValidator: token_hash and token_salt
+    WebhookRequestValidator ->> WebhookRequestValidator: hash clientState and compare, cache hash and salt for this request
+    WebhookRequestValidator ->> WebhookRequestValidator: remove clientState from notification
+  end
+  alt every notification is valid
+    WebhookRequestValidator ->> WebhookRequestValidator: accept request
+  else malformed or any notification is invalid
+    WebhookRequestValidator ->> WebhookRequestValidator: reject request
+  end
 ```
 
-Consumers can subscribe to `msgraph/upsert` and `msgraph/delete` and use the notification `resource` to retrieve current
-data from Microsoft Graph or handle deletions. This module only routes notifications; it does not update catalog
+Consumers can subscribe to `msgraph/upsert` and `msgraph/delete` and use the notification payload to retrieve current
+data from Microsoft Graph or handle deletions. Refer
+to [MS Graph documentation](https://learn.microsoft.com/en-us/graph/api/resources/changenotification?view=graph-rest-1.0)
+for the payload schema. This module only routes notifications; it does not update catalog
 entities.
 
 ## How to test locally
