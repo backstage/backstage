@@ -464,7 +464,7 @@ export interface HttpRouterServiceWebSocketContext {
 
 // @public
 export interface HttpRouterServiceWebSocketHandler {
-  authPolicy?: 'authenticated' | 'user' | 'user-cookie' | 'unauthenticated';
+  authPolicy?: HttpRouterServiceAuthPolicy['allow'];
   handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
   path: string;
 }

@@ -26,25 +26,13 @@ function request(headers: IncomingMessage['headers']): IncomingMessage {
 }
 
 describe('authenticateWebSocket', () => {
-  it('tries opaque protocol values in order and enforces principal policies', async () => {
+  it('tries opaque protocol values in order and accepts authenticated principals', async () => {
     const auth = mockServices.auth();
     const authenticate = jest.spyOn(auth, 'authenticate');
     const config = mockServices.rootConfig();
     const req = request({
       'sec-websocket-protocol': `application, ${mockCredentials.service.token()}, ${mockCredentials.user.token()}`,
     });
-    await expect(
-      authenticateWebSocket({ auth, config, request: req, authPolicy: 'user' }),
-    ).resolves.toEqual({
-      credentials: mockCredentials.user(),
-      authProtocol: mockCredentials.user.token(),
-    });
-    expect(authenticate.mock.calls.map(([token]) => token)).toEqual([
-      'application',
-      mockCredentials.service.token(),
-      mockCredentials.user.token(),
-    ]);
-    authenticate.mockClear();
     await expect(
       authenticateWebSocket({
         auth,
@@ -56,7 +44,10 @@ describe('authenticateWebSocket', () => {
       credentials: mockCredentials.service(),
       authProtocol: mockCredentials.service.token(),
     });
-    expect(authenticate).toHaveBeenCalledTimes(2);
+    expect(authenticate.mock.calls.map(([token]) => token)).toEqual([
+      'application',
+      mockCredentials.service.token(),
+    ]);
     req.headers.authorization = mockCredentials.user.header();
     await expect(
       authenticateWebSocket({
@@ -72,14 +63,13 @@ describe('authenticateWebSocket', () => {
     for (const headers of [
       {},
       { 'sec-websocket-protocol': 'invalid, other' },
-      { 'sec-websocket-protocol': mockCredentials.service.token() },
     ]) {
       await expect(
         authenticateWebSocket({
           auth,
           config,
           request: request(headers),
-          authPolicy: 'user',
+          authPolicy: 'authenticated',
         }),
       ).rejects.toThrow('Missing or invalid');
     }
@@ -106,11 +96,14 @@ describe('authenticateWebSocket', () => {
         authPolicy: 'user-cookie',
       }),
     ).resolves.toEqual({ credentials: mockCredentials.user() });
-    for (const authPolicy of ['authenticated', 'user'] as const) {
-      await expect(
-        authenticateWebSocket({ auth, config, request: req, authPolicy }),
-      ).rejects.toThrow('Missing or invalid');
-    }
+    await expect(
+      authenticateWebSocket({
+        auth,
+        config,
+        request: req,
+        authPolicy: 'authenticated',
+      }),
+    ).rejects.toThrow('Missing or invalid');
     req.headers.origin = 'https://preview.trusted.example.com';
     await expect(
       authenticateWebSocket({
@@ -188,13 +181,5 @@ describe('authenticateWebSocket', () => {
         authPolicy: 'authenticated',
       }),
     ).resolves.toEqual({ credentials: mockCredentials.none() });
-    await expect(
-      authenticateWebSocket({
-        auth,
-        config,
-        request: request({}),
-        authPolicy: 'user',
-      }),
-    ).rejects.toThrow('Missing or invalid');
   });
 });

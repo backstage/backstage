@@ -101,6 +101,7 @@ describe('signals framework router', () => {
       undefined,
       mockCredentials.user.invalidToken(),
       mockCredentials.service.token(),
+      [mockCredentials.service.token(), mockCredentials.user.token()],
       'application-protocol',
     ]) {
       const result = await connectWebSocket(backend.server, protocols);
@@ -109,8 +110,8 @@ describe('signals framework router', () => {
     }
     const mixed = await connectWebSocket(backend.server, [
       'application-protocol',
-      mockCredentials.service.token(),
       mockCredentials.user.token(),
+      mockCredentials.service.token(),
     ]);
     expect(mixed.ws?.readyState).toBe(WebSocket.OPEN);
     expect(mixed.ws?.protocol).toBe(mockCredentials.user.token());

@@ -25,9 +25,17 @@ import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 describe('DefaultRootHttpRouter', () => {
   it('validates WebSocket registrations and leaves legacy upgrade listeners untouched', () => {
     const server = createServer();
-    const router = DefaultRootHttpRouter.create();
+    const router = DefaultRootHttpRouter.create({
+      server,
+      logger: mockServices.logger.mock(),
+    });
     const handler = jest.fn();
-    router.attachWebSocketServer(server, mockServices.logger.mock());
+    expect(() =>
+      DefaultRootHttpRouter.create().addWebSocketHandler({
+        path: '/events',
+        handler,
+      }),
+    ).toThrow('requires an HTTP server');
     expect(server.listenerCount('upgrade')).toBe(0);
     for (const path of [
       '',
@@ -65,8 +73,7 @@ describe('DefaultRootHttpRouter', () => {
   it('closes failed upgrades and destroys active sockets at shutdown', async () => {
     const server = createServer();
     const logger = mockServices.logger.mock();
-    const router = DefaultRootHttpRouter.create();
-    router.attachWebSocketServer(server, logger);
+    const router = DefaultRootHttpRouter.create({ server, logger });
     router.addWebSocketHandler({
       path: '/throws',
       handler: () => {
