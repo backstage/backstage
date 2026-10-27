@@ -27,7 +27,7 @@ backend.add(import('@backstage/plugin-events-backend-module-msgraph'));
 ## Configuration
 
 This module uses one set of Microsoft Entra application credentials, and therefore supports one tenant per Backstage
-backend. `subscriptionResources` must contain one or both of `users` and `groups`.
+backend. Use `subscriptionResources` to select `users`, `groups`, or both.
 
 Add module configuration in your `app-config.yaml`:
 
@@ -62,26 +62,37 @@ subscriptions for the configured resources.
 The webhook ingress publishes validated notifications on `msgraph`. The event router partitions each notification
 collection by `changeType` and republishes:
 
-- `msgraph/upsert` for notifications with `changeType: updated` (for users and groups Microsoft Graph reports both creations and updates
+- `msgraph/upsert` for notifications with `changeType: updated` (for users and groups Microsoft Graph reports both
+  creations and updates
   this way).
 - `msgraph/delete` for notifications with `changeType: deleted`.
 
 Each published event payload is an array of the matching notification objects, not the original
-`ChangeNotificationCollection`. The notification objects are passed through unchanged (with `clientState` secret removed by the validator).
-Invalid collections and notifications with other change types are not forwarded.
+`ChangeNotificationCollection`. The notification objects are passed through unchanged except that the validator removes
+the
+`clientState` secret. The webhook validator rejects malformed collections or notifications that fail validation; the
+router
+does not forward notifications whose `changeType` is neither `updated` nor `deleted`.
 
 ## How it works
 
 Unlike GitHub webhook events, Microsoft Graph subscriptions must be created through the Graph API. This module
 creates subscriptions for the configured resources, handles Graph's endpoint validation request, and periodically
-checks and renews subscriptions. The subscription refresh runs immediately after startup (following any configured
-`startupDelay`) and then every five minutes. It stores subscription records and salted hashes of the generated
-`clientState` tokens in the Backstage database. On notification requests, it validates each notification against the
-stored subscription before the events backend publishes the event.
+checks and renews subscriptions. After any configured `startupDelay`, it triggers a refresh and then
+refreshes every five minutes. It stores subscription records and salted hashes of the generated `clientState` tokens in
+the Backstage database. On notification requests, it validates each notification against the stored subscription before
+the
+events backend publishes the event.
 
-Each refresh also deletes subscriptions for resources no longer listed in `subscriptionResources` from Microsoft
-Graph and the database, so their notifications are no longer accepted. If Graph deletion fails, the refresh reports
-the error and retries on the next run.
+Each refresh also attempts to delete subscriptions for resources no longer listed in `subscriptionResources` from
+Microsoft Graph and the database. If deletion from Graph fails, the module logs a warning, keeps the database record so
+it can retry on a later refresh, and continues reconciling active subscriptions. If the subscription has already been
+deleted from Graph or is deleted successfully, the module removes its database record. A database deletion failure is
+also logged and cleanup is retried on a later refresh; notifications are accepted only while the subscription record
+remains in the database.
+
+This subscription managements assumes that all replicas of the Backstage events backend are configured with the same
+`subscriptionResources` and credentials.
 
 ```mermaid
 sequenceDiagram
