@@ -20,7 +20,7 @@ import {
   fetchApiRef,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { toError } from '@backstage/errors';
@@ -91,6 +91,15 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
     [discoveryApi, fetchApi],
   );
 
+  useEffect(() => {
+    if (actionState.error) {
+      toastApi.post({
+        title: toError(actionState.error).message,
+        status: 'danger',
+      });
+    }
+  }, [actionState.error, toastApi]);
+
   const getConsentState = (): ConsentState => {
     if (actionState.value) {
       return { status: 'completed', action: actionState.value.action };
@@ -123,16 +132,9 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
           return;
         }
 
-        try {
-          await handleActionInternal(action, state.session);
-        } catch (err) {
-          toastApi.post({
-            title: toError(err).message,
-            status: 'danger',
-          });
-        }
+        await handleActionInternal(action, state.session);
       },
-      [state, handleActionInternal, toastApi],
+      [state, handleActionInternal],
     ),
   };
 };
