@@ -96,6 +96,22 @@ Elements in `app/root.elements` render during bootstrap, before the routes of th
 
 Utility APIs that are first materialized during bootstrap are frozen for the lifetime of that app instance. Finalization may still add new APIs and may override existing API refs that were not materialized during bootstrap, but any deferred override of an already materialized bootstrap API is ignored and reported as an app error.
 
+### Migrating from `createSpecializedApp`
+
+Replace `createSpecializedApp(options)` from `@backstage/frontend-app-api` with
+`prepareSpecializedApp(options).finalize()`, and replace the
+`CreateSpecializedAppOptions` type with `PrepareSpecializedAppOptions`.
+Synchronous finalization requires session preparation to be complete; for sign-in
+or asynchronous predicate context, render `getBootstrapApp().element` and use
+`onFinalized()` as described above. Choose either `finalize()` or `onFinalized()`
+for each prepared app; they cannot be combined.
+
+The `advanced.apis` option is replaced by `advanced.sessionState`. To reuse an
+existing session, pass the `sessionState` from a previously finalized app, obtained
+through either `finalize()` or the `onFinalized()` callback. This preserves its API
+instances, identity, and predicate context. An arbitrary API holder cannot be used
+as session state; register custom APIs with `ApiBlueprint` extensions instead.
+
 ## Plugin Info Resolution
 
 When a plugin is installed in an app it may provide sources of information about the plugin that can be useful to end users and admins. This includes things like what version of a plugin is running, what team owns the plugin, and who to contact for support. You can read more about how the plugins provide this information in the [plugins `info` option section](./15-plugins.md#info-option).

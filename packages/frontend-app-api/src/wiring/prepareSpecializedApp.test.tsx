@@ -36,13 +36,12 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { act, render, screen } from '@testing-library/react';
 import {
-  createSessionStateFromApis,
   FinalizedSpecializedApp,
   PrepareSpecializedAppOptions,
   prepareSpecializedApp,
   PreparedSpecializedApp,
 } from './prepareSpecializedApp';
-import { mockApis, TestApiRegistry } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import {
   configApiRef,
   featureFlagsApiRef,
@@ -365,7 +364,7 @@ describe('specialized app', () => {
               ],
             });
 
-      const app = createSpecializedApp({
+      const app = finalizeSpecializedApp({
         features: [
           appRootPlugin,
           createFrontendPlugin({
@@ -560,8 +559,27 @@ describe('specialized app', () => {
     expect(screen.getByText('Selected API: module')).toBeInTheDocument();
   });
 
-  it('should reuse provided apis', async () => {
+  it('should reuse APIs from a finalized session', async () => {
     const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const originalApp = prepareSpecializedApp({
+      config: new ConfigReader({ anything: 'config' }),
+      features: [
+        makeAppPlugin(),
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'from-apis' }),
+                }),
+            }),
+          ],
+        }),
+      ],
+    }).finalize();
     const app = finalizeSpecializedApp({
       features: [
         createFrontendPlugin({
@@ -584,12 +602,7 @@ describe('specialized app', () => {
         }),
       ],
       advanced: {
-        sessionState: createSessionStateFromApis(
-          TestApiRegistry.from(
-            [configApiRef, new ConfigReader({ anything: 'config' })],
-            [testApiRef, { value: 'from-apis' }],
-          ),
-        ),
+        sessionState: originalApp.sessionState,
       },
     });
 
