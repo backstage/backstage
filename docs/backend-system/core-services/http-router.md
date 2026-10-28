@@ -185,8 +185,6 @@ the plugin is shutting down. The framework checks readiness again after authenti
 
 The router destroys tracked sockets during server shutdown. Plugins remain
 responsible for closing upstream proxy connections and resources they create.
-This initial API does not supply handshake timeouts or graceful WebSocket close
-frames.
 
 ## Rate limiting
 
