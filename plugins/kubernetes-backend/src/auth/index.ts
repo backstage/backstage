@@ -20,6 +20,7 @@ export * from './AwsIamStrategy';
 export * from './AzureIdentityStrategy';
 export * from './GoogleStrategy';
 export * from './GoogleServiceAccountStrategy';
+export * from './MicrosoftEntraIdStrategy';
 export * from './DispatchStrategy';
 export * from './ServiceAccountStrategy';
 export * from './OidcStrategy';
