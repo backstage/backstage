@@ -98,7 +98,7 @@
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "qs": "^6.15.2",
+    "qs": "^6.17.0",
     "react-aria-components": "^1.14.0",
     "react-intersection-observer": "^9.5.3",
     "react-resizable": "^3.0.5",
