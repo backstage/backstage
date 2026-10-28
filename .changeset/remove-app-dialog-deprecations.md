@@ -2,6 +2,6 @@
 '@backstage/plugin-app': minor
 ---
 
-Provides the revised dialog and icons APIs under versioned IDs, while retaining adapters under `core.dialog` and `core.icons`. The original dialog API forwards `open` to the current implementation, but `show` and `showModal` now throw errors directing callers to use `open` with explicit dialog presentation.
+The deprecated `DialogApi.show` and `DialogApi.showModal` methods now throw errors. Use `DialogApi.open` and provide your own dialog surface and dismissal handling.
 
-The original icons API continues providing `getIcon` through the current implementation, including custom overrides. New icon callers should use `IconsApi.icon` to obtain an icon element.
+Added support for the new icons API while preserving `IconsApi.getIcon` for older plugins.

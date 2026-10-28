@@ -28,6 +28,7 @@ import {
   NotFoundErrorPageProps,
   ProgressProps,
   ExternalRouteRef,
+  IconComponent,
   IconElement,
   IconsApi,
   RouteFunc,
@@ -99,6 +100,10 @@ class CompatIconsApi implements IconsApi {
     this.#app = app;
   }
 
+  getIcon(key: string): IconComponent | undefined {
+    return this.#app.getSystemIcon(key);
+  }
+
   icon(key: string): IconElement | undefined {
     const Icon = this.#app.getSystemIcon(key);
     return Icon ? createElement(Icon) : undefined;
@@ -142,7 +147,8 @@ class ForwardsCompatApis implements ApiHolder {
   get<T>(ref: ApiRef<any>): T | undefined {
     if (ref.id === swappableComponentsApiRef.id) {
       return this.#componentsApi as T;
-    } else if (ref.id === iconsApiRef.id) {
+    } else if (ref.id === iconsApiRef.id || ref.id === 'core.icons') {
+      // Older plugins still request the original icons API ID.
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;

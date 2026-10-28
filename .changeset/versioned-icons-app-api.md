@@ -2,4 +2,4 @@
 '@backstage/frontend-app-api': patch
 ---
 
-The default icons implementation now exposes element lookups through `IconsApi.icon`. The app provides component lookups for older consumers through a separate compatibility adapter.
+Removed the deprecated component-based icon lookup from the default icons API. Use `IconsApi.icon` to retrieve icon elements.
