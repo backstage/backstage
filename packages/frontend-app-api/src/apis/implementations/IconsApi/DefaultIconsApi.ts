@@ -20,6 +20,8 @@ import {
   IconsApi,
 } from '@backstage/frontend-plugin-api';
 import { createElement, isValidElement } from 'react';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createIconComponentLookup } from '../../../../../core-plugin-api/src/icons/createIconComponentLookup';
 
 /**
  * Implementation for the {@link IconsApi}
@@ -28,6 +30,20 @@ import { createElement, isValidElement } from 'react';
  */
 export class DefaultIconsApi implements IconsApi {
   #icons: Map<string, IconElement>;
+  #getIcon = createIconComponentLookup(key => this.icon(key));
+
+  static withLegacySupport(iconsApi: IconsApi): IconsApi & {
+    getIcon(key: string): IconComponent | undefined;
+  } {
+    if (iconsApi instanceof DefaultIconsApi) {
+      return iconsApi;
+    }
+    return {
+      icon: key => iconsApi.icon(key),
+      listIconKeys: () => iconsApi.listIconKeys(),
+      getIcon: createIconComponentLookup(key => iconsApi.icon(key)),
+    };
+  }
 
   constructor(icons: { [key in string]: IconComponent | IconElement }) {
     const deprecatedKeys: string[] = [];
@@ -56,6 +72,10 @@ export class DefaultIconsApi implements IconsApi {
 
   icon(key: string): IconElement | undefined {
     return this.#icons.get(key);
+  }
+
+  getIcon(key: string): IconComponent | undefined {
+    return this.#getIcon(key);
   }
 
   listIconKeys(): string[] {

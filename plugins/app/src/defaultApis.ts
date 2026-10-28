@@ -78,7 +78,8 @@ import {
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
 import { legacyDialogApiRef, legacyIconsApiRef } from './apis/legacyApiRefs';
 import { LegacyDialogApi } from './apis/LegacyDialogApi';
-import { LegacyIconsApi } from './apis/LegacyIconsApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { DefaultIconsApi } from '../../../packages/frontend-app-api/src/apis/implementations/IconsApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
@@ -97,7 +98,7 @@ export const apis = [
       defineParams({
         api: legacyIconsApiRef,
         deps: { iconsApi: iconsApiRef },
-        factory: ({ iconsApi }) => new LegacyIconsApi(iconsApi),
+        factory: ({ iconsApi }) => DefaultIconsApi.withLegacySupport(iconsApi),
       }),
   }),
   ApiBlueprint.make({

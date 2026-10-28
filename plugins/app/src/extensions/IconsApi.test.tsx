@@ -24,11 +24,12 @@ import {
 import { type LegacyIconsApi } from '../apis/legacyApiRefs';
 import { screen } from '@testing-library/react';
 
+const oldIconsApiRef = createApiRef<LegacyIconsApi>().with({
+  id: 'core.icons',
+  pluginId: 'app',
+});
+
 it('provides the original icons contract backed by a custom v2 API', async () => {
-  const oldIconsApiRef = createApiRef<LegacyIconsApi>().with({
-    id: 'core.icons',
-    pluginId: 'app',
-  });
   const element = <span>custom icon</span>;
   const iconsApi = {
     icon: jest.fn((key: string) => (key === 'custom' ? element : undefined)),
@@ -56,4 +57,26 @@ it('provides the original icons contract backed by a custom v2 API', async () =>
     ],
   });
   expect(await screen.findByText('custom icon')).toBeInTheDocument();
+});
+
+it('provides the same default implementation for both icons API versions', async () => {
+  function Consumer() {
+    const legacy = useApi(oldIconsApiRef);
+    const current = useApi(iconsApiRef);
+    expect(legacy).toBe(current);
+    expect(legacy.getIcon('catalog')).toEqual(expect.any(Function));
+    expect(current.icon('catalog')).toBeDefined();
+    return <span>Both versions available</span>;
+  }
+  renderTestApp({
+    extensions: [
+      AppRootElementBlueprint.make({
+        name: 'icons-test',
+        params: { element: <Consumer /> },
+      }),
+    ],
+  });
+  expect(
+    await screen.findByText('Both versions available'),
+  ).toBeInTheDocument();
 });

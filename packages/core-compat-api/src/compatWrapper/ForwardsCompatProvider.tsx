@@ -100,13 +100,13 @@ class CompatIconsApi implements IconsApi {
     this.#app = app;
   }
 
-  getIcon(key: string): IconComponent | undefined {
-    return this.#app.getSystemIcon(key);
-  }
-
   icon(key: string): IconElement | undefined {
     const Icon = this.#app.getSystemIcon(key);
     return Icon ? createElement(Icon) : undefined;
+  }
+
+  getIcon(key: string): IconComponent | undefined {
+    return this.#app.getSystemIcon(key);
   }
 
   listIconKeys(): string[] {
