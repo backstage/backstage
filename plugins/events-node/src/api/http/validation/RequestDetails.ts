@@ -28,19 +28,6 @@ export interface ParsedQueryString {
 }
 
 /**
- * Key-value pairs of query parameters.
- *
- * @public
- */
-export interface ParsedQueryString {
-  [key: string]:
-    | (ParsedQueryString | string)[]
-    | ParsedQueryString
-    | string
-    | undefined;
-}
-
-/**
  * View on an incoming request that has to be validated.
  *
  * @public
