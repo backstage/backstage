@@ -146,18 +146,16 @@ export class HttpPostIngressEventPublisher {
         if (context.wasRejected()) {
           response.status(context.rejectionDetails!.status);
 
-          switch (context.rejectionDetails!.contentType) {
+          const rejectionContentType =
+            context.rejectionDetails?.contentType ?? 'application/json';
+          switch (rejectionContentType) {
             case 'application/json':
               response.json(context.rejectionDetails!.payload);
               break;
             case 'text/plain':
               response
                 .contentType('text/plain')
-                .send(
-                  typeof context.rejectionDetails!.payload === 'number'
-                    ? String(context.rejectionDetails!.payload)
-                    : context.rejectionDetails!.payload,
-                );
+                .send(String(context.rejectionDetails!.payload));
               break;
             default:
               throw new Error('Unsupported rejection content type');

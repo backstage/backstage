@@ -165,7 +165,7 @@ export interface RequestDetails {
 // @public
 export interface RequestRejectionDetails {
   // (undocumented)
-  contentType: 'application/json' | 'text/plain';
+  contentType?: 'application/json' | 'text/plain';
   // (undocumented)
   payload: unknown;
   // (undocumented)

@@ -3,7 +3,6 @@
 '@backstage/plugin-events-node': minor
 ---
 
-Add support for request query strings.
-
-Add `contentType` to `RequestRejectionDetails` to support both `text/plain` and `application/json` content types.
-This is required to enable MSGraph webhook events.
+The requests passed to request validators now include the parsed query string. The request rejection details now also
+support an optional `contentType` option for the provided payload, defaulting to `application/json` but also allowing
+`text/plain`.
