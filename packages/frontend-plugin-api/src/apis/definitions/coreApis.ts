@@ -23,6 +23,7 @@ import { configApiRef } from './ConfigApi';
 import { dialogApiRef } from './DialogApi';
 import { discoveryApiRef } from './DiscoveryApi';
 import { errorApiRef } from './ErrorApi';
+import { extensionFragmentsApiRef } from './ExtensionFragmentsApi';
 import { featureFlagsApiRef } from './FeatureFlagsApi';
 import { fetchApiRef } from './FetchApi';
 import { iconsApiRef } from './IconsApi';
@@ -109,6 +110,14 @@ export namespace coreApis {
    * @public
    */
   export const error: typeof errorApiRef = errorApiRef;
+
+  /**
+   * The API reference for {@link ExtensionFragmentsApi}.
+   *
+   * @public
+   */
+  export const extensionFragments: typeof extensionFragmentsApiRef =
+    extensionFragmentsApiRef;
 
   /**
    * The API reference for {@link FeatureFlagsApi}.
