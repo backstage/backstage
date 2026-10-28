@@ -26,6 +26,7 @@ export class RequestValidationContextImpl implements RequestValidationContext {
     this.#rejectionDetails = {
       status: details?.status ?? 403,
       payload: details?.payload ?? {},
+      contentType: details?.contentType ?? 'application/json',
     };
   }
 
