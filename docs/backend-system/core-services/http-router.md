@@ -128,19 +128,7 @@ because its connection manager already tracks and closes connections.
 the caller, when authentication used that header. The router does not select
 or echo a protocol on your behalf.
 
-For forwarding, pass the same upgrade arguments to your WebSocket proxy:
-
-```ts
-http.addWebSocketHandler({
-  path: '/proxy',
-  handler({ request, socket, head }) {
-    proxy.ws(request, socket, head);
-  },
-});
-```
-
-`proxy` represents your WebSocket proxy. Preserve `head` to avoid losing buffered
-data. The handler must accept, forward, or close the socket before returning.
+The handler must accept, forward, or close the socket before returning.
 Thrown errors and rejected promises close the socket. The request retains its
 full URL, including `/api/<plugin-id>` and the query string.
 
