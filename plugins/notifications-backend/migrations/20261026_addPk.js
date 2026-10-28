@@ -21,16 +21,20 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('broadcast_user_status', table => {
-    table.dropUnique([], 'broadcast_user_idx');
     table.primary(['broadcast_id', 'user'], {
-      constraintName: 'broadcast_user_idx',
+      constraintName: 'broadcast_user_pkey',
+    });
+  });
+  await knex.schema.alterTable('broadcast_user_status', table => {
+    table.dropUnique([], 'broadcast_user_idx');
+  });
+  await knex.schema.alterTable('user_settings', table => {
+    table.primary(['settings_key_hash'], {
+      constraintName: 'user_settings_pkey',
     });
   });
   await knex.schema.alterTable('user_settings', table => {
     table.dropUnique([], 'user_settings_unique_idx');
-    table.primary(['settings_key_hash'], {
-      constraintName: 'user_settings_unique_idx',
-    });
   });
 };
 
@@ -39,13 +43,17 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('broadcast_user_status', table => {
-    table.dropPrimary('broadcast_user_idx');
     table.unique(['broadcast_id', 'user'], { indexName: 'broadcast_user_idx' });
   });
+  await knex.schema.alterTable('broadcast_user_status', table => {
+    table.dropPrimary('broadcast_user_pkey');
+  });
   await knex.schema.alterTable('user_settings', table => {
-    table.dropPrimary('user_settings_unique_idx');
     table.unique(['settings_key_hash'], {
       indexName: 'user_settings_unique_idx',
     });
+  });
+  await knex.schema.alterTable('user_settings', table => {
+    table.dropPrimary('user_settings_pkey');
   });
 };
