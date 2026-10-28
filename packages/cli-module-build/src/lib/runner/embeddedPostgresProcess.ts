@@ -27,32 +27,6 @@ export function embeddedPostgresProcess(modulePath: string) {
   const { pathToFileURL } = require('node:url') as typeof import('node:url');
 
   const TEMP_DIR_PREFIX = 'backstage-dev-db-';
-  const PID_FILE = 'backstage.pid';
-
-  async function cleanStaleDatabases() {
-    const entries = (await fs.readdir(os.tmpdir())).filter(d =>
-      d.startsWith(TEMP_DIR_PREFIX),
-    );
-    await Promise.all(
-      entries.map(async d => {
-        const dir = resolvePath(os.tmpdir(), d);
-        const raw = await fs
-          .readFile(resolvePath(dir, PID_FILE), 'utf8')
-          .catch(() => undefined);
-        const pid = raw ? Number(raw.trim()) : NaN;
-        if (pid) {
-          try {
-            process.kill(pid, 0);
-            return;
-          } catch {
-            // The owning helper has exited.
-          }
-        }
-        await fs.rm(dir, { recursive: true, force: true });
-      }),
-    );
-  }
-
   async function main() {
     // Register before starting: the parent may disappear during initialization.
     const disconnected = once(process, 'disconnect');
@@ -77,7 +51,6 @@ export function embeddedPostgresProcess(modulePath: string) {
             `as an explicit dependency in your project: ${error.message}`,
         );
       })) as typeof import('embedded-postgres');
-      await cleanStaleDatabases();
       tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), TEMP_DIR_PREFIX));
       pg = new EmbeddedPostgres({
         databaseDir: tmpDir,
@@ -93,7 +66,6 @@ export function embeddedPostgresProcess(modulePath: string) {
         onLog() {},
       });
       await pg.initialise();
-      await fs.writeFile(resolvePath(tmpDir, PID_FILE), String(process.pid));
       await pg.start();
       started = true;
       if (process.connected) {

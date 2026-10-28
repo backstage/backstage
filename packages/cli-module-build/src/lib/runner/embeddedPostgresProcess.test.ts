@@ -30,6 +30,14 @@ describe('embeddedPostgresProcess', () => {
 
   it('can be stringified and run in isolation after normal and minified builds', async () => {
     for (const minify of [false, true]) {
+      const otherDatabases = {
+        'backstage-dev-db-initializing': { 'keep.txt': 'initializing' },
+        'backstage-dev-db-abandoned': {
+          'backstage.pid': 'invalid',
+          'keep.txt': 'abandoned',
+        },
+      };
+      mockDir.setContent(otherDatabases);
       const [config] = await makeRollupConfigs({
         targetDir: targetPaths.resolveRoot('packages/cli-module-build'),
         outputs: new Set([Output.cjs]),
@@ -109,8 +117,11 @@ describe('embeddedPostgresProcess', () => {
           child.disconnect();
         }
         const result = await exit;
-        mockDir.clear();
         expect(result).toEqual([0, null]);
+        expect(mockDir.content({ shouldReadAsText: true })).toEqual(
+          otherDatabases,
+        );
+        mockDir.clear();
       }
     }
   }, 30_000);

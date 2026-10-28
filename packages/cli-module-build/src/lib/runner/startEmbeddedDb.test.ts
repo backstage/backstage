@@ -119,8 +119,10 @@ describe('embedded Postgres process lifecycle', () => {
       await waitFor(async () => (await readEvents()).includes('ready:'));
       const firstEvents = await readEvents();
       const databaseDir = firstEvents.match(/database:(.+)/)![1];
-      const helperPid = Number(
-        await fs.readFile(resolvePath(databaseDir, 'backstage.pid'), 'utf8'),
+      const postgresPid = Number(
+        (
+          await fs.readFile(resolvePath(databaseDir, 'postmaster.pid'), 'utf8')
+        ).split('\n')[0],
       );
       parent.stdin!.write('\n');
       await waitFor(
@@ -134,7 +136,7 @@ describe('embedded Postgres process lifecycle', () => {
       expect((await readEvents()).match(/drained/g)).toHaveLength(2);
       expect(await isAvailable()).toBe(false);
       expect(await fs.pathExists(databaseDir)).toBe(false);
-      expect(() => process.kill(helperPid, 0)).toThrow();
+      expect(() => process.kill(postgresPid, 0)).toThrow();
     }, 30_000);
   });
 
@@ -153,8 +155,10 @@ describe('embedded Postgres process lifecycle', () => {
     const { exit, ready } = await start();
     await ready;
     const databaseDir = await fs.readFile(resolvePath(dir, 'database'), 'utf8');
-    const helperPid = Number(
-      await fs.readFile(resolvePath(databaseDir, 'backstage.pid'), 'utf8'),
+    const postgresPid = Number(
+      (
+        await fs.readFile(resolvePath(databaseDir, 'postmaster.pid'), 'utf8')
+      ).split('\n')[0],
     );
     expect(await isAvailable()).toBe(true);
     process.kill(parent.pid!, 'SIGKILL');
@@ -162,7 +166,7 @@ describe('embedded Postgres process lifecycle', () => {
     await waitFor(async () => !(await fs.pathExists(databaseDir)));
     await waitFor(async () => {
       try {
-        process.kill(helperPid, 0);
+        process.kill(postgresPid, 0);
         return false;
       } catch {
         return true;

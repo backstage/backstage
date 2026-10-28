@@ -21,7 +21,9 @@ CLI module that provides build, start, and packaging commands for the Backstage 
 When using `backend.database.client: embedded-postgres` for local development,
 PostgreSQL stays available across backend reloads and while the backend runs its
 shutdown hooks after Ctrl-C. The CLI stops the database after the backend exits.
-The database also stops if the CLI process exits unexpectedly.
+The database also stops if the CLI process exits unexpectedly. Each development
+process cleans up only its own database directory. Any files left behind after a
+crash are left to the operating system's temporary-file cleanup policy.
 
 ## Documentation
 
