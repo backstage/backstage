@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { IconComponent, IconsApi } from '@backstage/frontend-plugin-api';
-import type { LegacyIconsApi as LegacyIconsApiContract } from '@internal/frontend';
+import type {
+  IconComponent,
+  IconElement,
+} from '@backstage/frontend-plugin-api';
 import { cloneElement } from 'react';
 
 const legacyFontSizeMap = {
@@ -25,29 +27,20 @@ const legacyFontSizeMap = {
   large: '2.1875rem',
 } as const;
 
-function mergeClassNames(...classNames: Array<string | undefined>) {
-  const merged = classNames.filter(Boolean).join(' ');
-  if (merged) {
-    return merged;
-  }
-  return undefined;
-}
-
-export class LegacyIconsApi implements LegacyIconsApiContract {
-  #components = new Map<string, IconComponent>();
-
-  constructor(private readonly iconsApi: IconsApi) {}
-
-  icon(key: string) {
-    return this.iconsApi.icon(key);
-  }
-
-  getIcon(key: string): IconComponent | undefined {
-    let component = this.#components.get(key);
+/**
+ * Provides stable icon components for legacy app contexts from element lookups.
+ * @internal
+ */
+export function createIconComponentLookup(
+  lookup: (key: string) => IconElement | undefined,
+): (key: string) => IconComponent | undefined {
+  const components = new Map<string, IconComponent>();
+  return key => {
+    let component = components.get(key);
     if (component) {
       return component;
     }
-    const el = this.iconsApi.icon(key);
+    const el = lookup(key);
     if (el === undefined) {
       return undefined;
     }
@@ -74,7 +67,9 @@ export class LegacyIconsApi implements LegacyIconsApiContract {
 
       return cloneElement(el, {
         ...rest,
-        className: mergeClassNames(elementProps.className, className),
+        className:
+          [elementProps.className, className].filter(Boolean).join(' ') ||
+          undefined,
         style: {
           ...elementProps.style,
           fontSize: legacyFontSizeMap[fontSize],
@@ -82,11 +77,7 @@ export class LegacyIconsApi implements LegacyIconsApiContract {
         },
       });
     };
-    this.#components.set(key, component);
+    components.set(key, component);
     return component;
-  }
-
-  listIconKeys() {
-    return this.iconsApi.listIconKeys();
-  }
+  };
 }

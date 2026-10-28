@@ -16,11 +16,11 @@
 
 import {
   useApi,
-  toastApiRef,
+  alertApiRef,
   fetchApiRef,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { toError } from '@backstage/errors';
@@ -41,7 +41,7 @@ type ConsentState =
   | { status: 'completed'; action: 'approve' | 'reject' };
 
 export const useConsentSession = (opts: { sessionId?: string }) => {
-  const toastApi = useApi(toastApiRef);
+  const alertApi = useApi(alertApiRef);
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const { sessionId } = opts;
@@ -91,15 +91,6 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
     [discoveryApi, fetchApi],
   );
 
-  useEffect(() => {
-    if (actionState.error) {
-      toastApi.post({
-        title: toError(actionState.error).message,
-        status: 'danger',
-      });
-    }
-  }, [actionState.error, toastApi]);
-
   const getConsentState = (): ConsentState => {
     if (actionState.value) {
       return { status: 'completed', action: actionState.value.action };
@@ -128,13 +119,18 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
     state,
     handleAction: useCallback(
       async (action: 'approve' | 'reject') => {
-        if (state.status !== 'loaded') {
-          return;
-        }
+        if (state.status !== 'loaded') return;
 
-        await handleActionInternal(action, state.session);
+        try {
+          await handleActionInternal(action, state.session);
+        } catch (err) {
+          alertApi.post({
+            message: toError(err).message,
+            severity: 'error',
+          });
+        }
       },
-      [state, handleActionInternal],
+      [state, handleActionInternal, alertApi],
     ),
   };
 };

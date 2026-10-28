@@ -30,7 +30,6 @@ import {
   createExtensionTester,
   renderInTestApp as renderInNewTestApp,
 } from '@backstage/frontend-test-utils';
-import { legacyIconsApiRef } from '@internal/frontend';
 import { screen } from '@testing-library/react';
 import { compatWrapper } from './compatWrapper';
 import {
@@ -135,10 +134,6 @@ describe('ForwardsCompatProvider', () => {
     function Component() {
       const components = useApi(swappableComponentsApiRef);
       const icons = useApi(iconsApiRef);
-      const legacyIcons = useApi(legacyIconsApiRef);
-      const app = useApp();
-      expect(legacyIcons.listIconKeys()).toEqual(icons.listIconKeys());
-      expect(legacyIcons.getIcon('catalog')).toBe(app.getSystemIcon('catalog'));
       return (
         <div data-testid="ctx">
           components:{' '}

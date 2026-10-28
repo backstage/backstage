@@ -14,39 +14,25 @@
  * limitations under the License.
  */
 
-import { Observable } from '@backstage/types';
-import { createApiRef } from '@backstage/frontend-plugin-api';
-
 /**
- * Message handled by the {@link AlertApi}.
+ * @deprecated AlertApi is deprecated. Use ToastApi from `@backstage/frontend-plugin-api` instead.
  *
- * @public
- * @deprecated Use `ToastApiMessage` from `@backstage/frontend-plugin-api` instead.
- */
-export type AlertMessage = {
-  message: string;
-  severity?: 'success' | 'info' | 'warning' | 'error';
-  display?: 'permanent' | 'transient';
-};
-
-/**
- * The alert API is used to report alerts to the app and display them to the user.
+ * ToastApi provides richer notification features including title/description,
+ * action links, custom icons, per-toast timeout control, and programmatic dismiss.
  *
- * @public
- * @deprecated Use `ToastApi` from `@backstage/frontend-plugin-api` instead.
- */
-export type AlertApi = {
-  post(alert: AlertMessage): void;
-  alert$(): Observable<AlertMessage>;
-};
-
-/**
- * API reference for the legacy alert API.
+ * @example
+ * ```typescript
+ * // Before (AlertApi)
+ * import { alertApiRef } from '@backstage/core-plugin-api';
+ * alertApi.post({ message: 'Saved!', severity: 'success', display: 'transient' });
  *
- * @public
- * @deprecated Use `toastApiRef` from `@backstage/frontend-plugin-api` instead.
+ * // After (ToastApi)
+ * import { toastApiRef } from '@backstage/frontend-plugin-api';
+ * toastApi.post({ title: 'Saved!', status: 'success', timeout: 5000 });
+ * ```
  */
-export const alertApiRef = createApiRef<AlertApi>().with({
-  id: 'core.alert',
-  pluginId: 'app',
-});
+export {
+  type AlertApi,
+  type AlertMessage,
+  alertApiRef,
+} from '@backstage/frontend-plugin-api';

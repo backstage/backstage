@@ -15,4 +15,3 @@
  */
 
 export * from './OpaqueApiRef';
-export * from './legacyApiRefs';

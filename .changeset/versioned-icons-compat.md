@@ -2,4 +2,6 @@
 '@backstage/core-compat-api': patch
 ---
 
-Preserves legacy system icon lookups when using the revised icons API, and provides both icons API versions when rendering frontend plugins in legacy apps.
+Updated app compatibility providers to use the current element-based icons API while preserving legacy app context component lookups.
+
+The forwards compatibility provider supplies the `core.icons.v2` API. Older compiled consumers requesting `core.icons` must upgrade; the adapter for that original API ID is only provided by `@backstage/plugin-app` in new-system apps.

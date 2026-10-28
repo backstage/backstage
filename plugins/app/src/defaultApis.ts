@@ -76,10 +76,9 @@ import {
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
-import { legacyDialogApiRef, legacyIconsApiRef } from '@internal/frontend';
+import { legacyDialogApiRef, legacyIconsApiRef } from './apis/legacyApiRefs';
 import { LegacyDialogApi } from './apis/LegacyDialogApi';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { LegacyIconsApi } from '../../../packages/frontend-app-api/src/apis/implementations/IconsApi/LegacyIconsApi';
+import { LegacyIconsApi } from './apis/LegacyIconsApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [

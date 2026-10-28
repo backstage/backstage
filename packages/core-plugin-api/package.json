@@ -51,7 +51,6 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",

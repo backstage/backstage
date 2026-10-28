@@ -15,10 +15,11 @@
  */
 
 import { useMemo } from 'react';
-import { legacyIconsApiRef } from '@internal/frontend';
+import { createIconComponentLookup } from '../icons/createIconComponentLookup';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
+  iconsApiRef,
   useApiHolder,
   ErrorDisplay,
   NotFoundErrorPage,
@@ -92,7 +93,7 @@ function useOptionalApiHolder(): ApiHolder | undefined {
 export const useApp = (): AppContextV1 => {
   const apiHolder = useOptionalApiHolder();
   const appTreeApi = apiHolder?.get(appTreeApiRef);
-  const iconsApi = apiHolder?.get(legacyIconsApiRef);
+  const iconsApi = apiHolder?.get(iconsApiRef);
   const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
     'app-context',
   );
@@ -107,6 +108,8 @@ export const useApp = (): AppContextV1 => {
     }
 
     const { tree } = appTreeApi.getTree();
+
+    const getSystemIcon = createIconComponentLookup(key => iconsApi.icon(key));
 
     let gatheredPlugins: BackstagePlugin[] | undefined = undefined;
 
@@ -133,13 +136,11 @@ export const useApp = (): AppContextV1 => {
         return gatheredPlugins;
       },
 
-      getSystemIcon(key: string): IconComponent | undefined {
-        return iconsApi.getIcon(key);
-      },
+      getSystemIcon,
 
       getSystemIcons(): Record<string, IconComponent> {
         return Object.fromEntries(
-          iconsApi.listIconKeys().map(key => [key, iconsApi.getIcon(key)!]),
+          iconsApi.listIconKeys().map(key => [key, getSystemIcon(key)!]),
         );
       },
 

@@ -21,7 +21,7 @@ import {
   iconsApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
-import { type LegacyIconsApi } from '@internal/frontend';
+import { type LegacyIconsApi } from '../apis/legacyApiRefs';
 import { screen } from '@testing-library/react';
 
 it('provides the original icons contract backed by a custom v2 API', async () => {

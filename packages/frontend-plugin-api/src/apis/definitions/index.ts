@@ -32,6 +32,7 @@ export {
 
 export * from './auth';
 
+export * from './AlertApi';
 export * from './AppLanguageApi';
 export * from './AppLifecycleApi';
 export * from './AppThemeApi';

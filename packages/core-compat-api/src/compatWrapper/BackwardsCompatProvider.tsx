@@ -15,7 +15,8 @@
  */
 
 import { useMemo } from 'react';
-import { legacyIconsApiRef } from '@internal/frontend';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createIconComponentLookup } from '../../../core-plugin-api/src/icons/createIconComponentLookup';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
@@ -25,6 +26,7 @@ import {
   createFrontendPlugin as createNewPlugin,
   FrontendPlugin as NewFrontendPlugin,
   appTreeApiRef,
+  iconsApiRef,
   useApi,
   routeResolutionApiRef,
   ErrorDisplay,
@@ -93,10 +95,12 @@ function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
 // Recreates the old AppContext APIs using the various new APIs that replaced it
 function LegacyAppContextProvider(props: { children: ReactNode }) {
   const appTreeApi = useApi(appTreeApiRef);
-  const iconsApi = useApi(legacyIconsApiRef);
+  const iconsApi = useApi(iconsApiRef);
 
   const appContext = useMemo(() => {
     const { tree } = appTreeApi.getTree();
+
+    const getSystemIcon = createIconComponentLookup(key => iconsApi.icon(key));
 
     let gatheredPlugins: LegacyBackstagePlugin[] | undefined = undefined;
 
@@ -123,13 +127,11 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
         return gatheredPlugins;
       },
 
-      getSystemIcon(key: string): IconComponent | undefined {
-        return iconsApi.getIcon(key);
-      },
+      getSystemIcon,
 
       getSystemIcons(): Record<string, IconComponent> {
         return Object.fromEntries(
-          iconsApi.listIconKeys().map(key => [key, iconsApi.getIcon(key)!]),
+          iconsApi.listIconKeys().map(key => [key, getSystemIcon(key)!]),
         );
       },
 

@@ -74,3 +74,31 @@ export default createApp({
 In this example the overriding extension is kept minimal, but just like any other extension it can also have `deps`, configurability, and inputs. Check out [the Creating section](./02-creating.md) for more details about that.
 
 When you create a replacement extension, in general you may want to mimic its extension config schema or input shapes where applicable. This makes it an easier thing to slot in to an app, since it'll be responding to extensibility the same way as the original one did.
+
+### Dialog and icons API versions
+
+The dialog and icons API references use the IDs `core.dialog.v2` and
+`core.icons.v2`. When upgrading `@backstage/frontend-plugin-api`, also upgrade
+`@backstage/plugin-app` so that the app provides these APIs. Custom implementations
+should use the API references from the upgraded package and implement their
+contracts.
+
+The dialog API exposes `open`, which renders the supplied element without adding
+a dialog surface or backdrop. When migrating from `show` or `showModal`, provide
+your own dialog presentation and dismissal handling. Include `undefined` in the
+result type if the dialog can be dismissed without a result.
+
+The icons API exposes `icon`, which returns an element that you can render
+directly. Replace calls to `getIcon`, which returned a component, with `icon`.
+
+The app plugin also provides adapters at the original API IDs for older compiled
+consumers. The dialog adapter forwards `open`, but `show` and `showModal` throw
+errors directing callers to migrate. The icons adapter forwards element lookups
+and provides component lookups through `getIcon`, preserving legacy sizing and
+props. These adapters use the app's implementations of the versioned APIs,
+including custom overrides.
+
+These adapters are provided only by `@backstage/plugin-app`. The forwards
+compatibility provider in old-system apps supplies the versioned icons API, so
+plugins running in those apps must migrate to the versioned contract. Legacy
+app context methods such as `getSystemIcon` still return icon components.

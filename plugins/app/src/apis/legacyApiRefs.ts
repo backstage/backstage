@@ -15,13 +15,12 @@
  */
 
 import type {
-  ApiRef,
   DialogApi,
   DialogApiDialog,
   IconComponent,
   IconsApi,
 } from '@backstage/frontend-plugin-api';
-import { OpaqueApiRef } from './OpaqueApiRef';
+import { createApiRef } from '@backstage/frontend-plugin-api';
 
 export interface LegacyDialogApi extends DialogApi {
   show<TResult = void>(
@@ -43,20 +42,11 @@ export interface LegacyIconsApi extends IconsApi {
   getIcon(key: string): IconComponent | undefined;
 }
 
-// These contracts remain available to plugins compiled against the original API IDs.
-// Use the opaque constructor to avoid initializing frontend-plugin-api in a cycle.
-function createLegacyApiRef<T>(id: string): ApiRef<T> {
-  return OpaqueApiRef.createInstance('v1', {
-    id,
-    pluginId: 'app',
-    T: null as unknown as T,
-    toString() {
-      return `apiRef{${id}}`;
-    },
-  }) as ApiRef<T>;
-}
-
-export const legacyDialogApiRef =
-  createLegacyApiRef<LegacyDialogApi>('core.dialog');
-export const legacyIconsApiRef =
-  createLegacyApiRef<LegacyIconsApi>('core.icons');
+export const legacyDialogApiRef = createApiRef<LegacyDialogApi>().with({
+  id: 'core.dialog',
+  pluginId: 'app',
+});
+export const legacyIconsApiRef = createApiRef<LegacyIconsApi>().with({
+  id: 'core.icons',
+  pluginId: 'app',
+});

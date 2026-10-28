@@ -25,6 +25,24 @@ import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 
+// @public @deprecated
+export type AlertApi = {
+  post(alert: AlertMessage): void;
+  alert$(): Observable<AlertMessage>;
+};
+
+// @public @deprecated
+export const alertApiRef: ApiRef_2<AlertApi, 'core.alert'> & {
+  readonly $$type: '@backstage/ApiRef';
+};
+
+// @public @deprecated
+export type AlertMessage = {
+  message: string;
+  severity?: 'success' | 'info' | 'warning' | 'error';
+  display?: 'permanent' | 'transient';
+};
+
 // @public
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;

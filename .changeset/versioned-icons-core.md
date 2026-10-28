@@ -2,4 +2,4 @@
 '@backstage/core-plugin-api': patch
 ---
 
-Keeps legacy `useApp` system icon lookups on the original icons API contract when the app provides the revised icons API.
+Updated legacy `useApp` system icon lookups to use the current element-based icons API while preserving component identity, sizing, and forwarded props.

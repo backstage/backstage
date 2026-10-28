@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+import { type LegacyDialogApi as LegacyDialogApiContract } from './legacyApiRefs';
 import { LegacyDialogApi } from './LegacyDialogApi';
 
-it('forwards open to the supplied v2 API and preserves its handle', () => {
+it('forwards open to v2 and rejects removed dialog methods', () => {
   const handle = { close: jest.fn(), update: jest.fn(), result: jest.fn() };
   const open = jest.fn().mockReturnValue(handle);
-  const api = new LegacyDialogApi({ open });
+  const api: LegacyDialogApiContract = new LegacyDialogApi({ open });
   const element = <div>dialog</div>;
   expect(api.open(element)).toBe(handle);
   expect(open).toHaveBeenCalledWith(element);
+  expect(() => api.show(element)).toThrow(
+    'DialogApi.show is no longer supported',
+  );
+  expect(() => api.showModal(element)).toThrow(
+    'DialogApi.showModal is no longer supported',
+  );
+  expect(open).toHaveBeenCalledTimes(1);
 });
