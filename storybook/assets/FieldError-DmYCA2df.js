@@ -1,3 +1,0 @@
-import{aN as t,r as n,aO as c,j as p}from"./iframe-CMSX-Slv.js";import{a as l}from"./FieldError-BqVen_RV.js";const d={"bui-FieldError":"_bui-FieldError_shuk3_20"},m=t()({styles:d,classNames:{root:"bui-FieldError"},propDefs:{className:{}}}),s=n.forwardRef((r,e)=>{const{ownProps:o,restProps:i}=c(m,r),{classes:a}=o;return p.jsx(l,{className:a.root,ref:e,...i})});s.displayName="FieldError";s.__docgenInfo={description:`Displays a validation error message associated with a form field.
-
-@public`,methods:[],displayName:"FieldError",props:{className:{required:!1,tsType:{name:"string"},description:""}},composes:["Omit"]};export{s as F};

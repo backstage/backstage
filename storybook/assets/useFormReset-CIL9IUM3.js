@@ -1,1 +1,0 @@
-import{f as o}from"./useFocusRing-DUZK2ZXK.js";import{r as d}from"./iframe-CMSX-Slv.js";function m(r,a,t){let f=o(e=>{t&&!e.defaultPrevented&&t(a)});d.useEffect(()=>{let e=r?.current?.form;return e?.addEventListener("reset",f),()=>{e?.removeEventListener("reset",f)}},[r])}export{m as $};
