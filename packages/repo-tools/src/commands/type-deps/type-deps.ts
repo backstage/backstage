@@ -26,11 +26,13 @@ export default async () => {
   const { packages } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
+  let checkedCount = 0;
 
   for (const pkg of packages) {
     if (!shouldCheckTypes(pkg)) {
       continue;
     }
+    checkedCount += 1;
     const { errors } = await checkTypes(pkg);
     if (errors.length) {
       hadErrors = true;
@@ -53,6 +55,16 @@ export default async () => {
         }
       }
     }
+  }
+
+  if (checkedCount === 0) {
+    console.error(
+      chalk.red(
+        'No packages with built type declarations were found, make sure to build all packages before checking type dependencies',
+      ),
+    );
+
+    process.exit(1);
   }
 
   if (hadErrors) {
