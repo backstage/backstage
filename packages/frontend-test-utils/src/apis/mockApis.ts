@@ -788,6 +788,23 @@ export namespace mockApis {
   }
 
   /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#ExtensionFragmentsApi}.
+   *
+   * @public
+   */
+  export namespace extensionFragments {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.extensionFragments, () => ({
+      getFragment: jest.fn(),
+    }));
+  }
+
+  /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#PluginWrapperApi}.
    *
    * @public

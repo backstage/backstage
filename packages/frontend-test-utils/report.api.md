@@ -34,6 +34,7 @@ import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
+import { ExtensionFragmentsApi } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FeatureFlagsApi } from '@backstage/frontend-plugin-api';
 import { FeatureFlagState } from '@backstage/frontend-plugin-api';
@@ -267,6 +268,11 @@ export namespace mockApis {
   export namespace error {
     const // (undocumented)
       mock: (partialImpl?: Partial<ErrorApi> | undefined) => ApiMock<ErrorApi>;
+  }
+  export namespace extensionFragments {
+    const mock: (
+      partialImpl?: Partial<ExtensionFragmentsApi> | undefined,
+    ) => ApiMock<ExtensionFragmentsApi>;
   }
   export function featureFlags(options?: {
     initialStates?: Record<string, FeatureFlagState>;

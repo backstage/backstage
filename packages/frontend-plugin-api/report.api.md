@@ -470,6 +470,7 @@ export namespace coreApis {
   const dialog: typeof dialogApiRef;
   const discovery: typeof discoveryApiRef;
   const error: typeof errorApiRef;
+  const extensionFragments: typeof extensionFragmentsApiRef;
   const featureFlags: typeof featureFlagsApiRef;
   const fetch: typeof fetchApiRef;
   const icons: typeof iconsApiRef;
@@ -1363,6 +1364,28 @@ export type ExtensionDefinitionParameters = {
   params?: object | ExtensionBlueprintDefineParams;
 };
 
+// @public
+export function ExtensionFragment(props: ExtensionFragmentProps): JSX_2.Element;
+
+// @public
+export interface ExtensionFragmentProps {
+  extensionId: string;
+  fallback?: ReactNode;
+}
+
+// @public
+export interface ExtensionFragmentsApi {
+  getFragment(extensionId: string): JSX_2.Element | undefined;
+}
+
+// @public
+export const extensionFragmentsApiRef: ApiRef_2<
+  ExtensionFragmentsApi,
+  'core.extension-fragments'
+> & {
+  readonly $$type: '@backstage/ApiRef';
+};
+
 // @public (undocumented)
 export interface ExtensionInput<
   UExtensionData extends ExtensionDataRef<
@@ -1467,6 +1490,19 @@ export type FetchApi = {
 export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
   readonly $$type: '@backstage/ApiRef';
 };
+
+// @public
+export const FragmentBlueprint: ExtensionBlueprint_2<{
+  kind: 'fragment';
+  params: {
+    loader: () => Promise<JSX_2.Element>;
+  };
+  output: ExtensionDataRef_2<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @public (undocumented)
 export type FrontendFeature =
