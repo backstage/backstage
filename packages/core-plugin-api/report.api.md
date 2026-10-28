@@ -44,7 +44,6 @@ import { fetchApiRef } from '@backstage/frontend-plugin-api';
 import { githubAuthApiRef } from '@backstage/frontend-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/frontend-plugin-api';
 import { googleAuthApiRef } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
@@ -405,7 +404,10 @@ export { gitlabAuthApiRef };
 
 export { googleAuthApiRef };
 
-export { IconComponent };
+// @public
+export type IconComponent = ComponentType<{
+  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+}>;
 
 export { IdentityApi };
 

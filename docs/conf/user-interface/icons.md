@@ -153,3 +153,23 @@ locations within a plugin.
 If an icon key is not available as a default icon or one you have added, a
 fallback icon is used instead.
 :::
+
+## Migrating from component-based icon lookups
+
+The new frontend system uses `IconElement` and `IconsApi.icon` instead of
+`IconComponent` and `IconsApi.getIcon`. Render the returned element directly:
+
+```tsx
+const icon = iconsApi.icon('alert');
+return <span>{icon}</span>;
+```
+
+An unknown key returns `undefined`. A registered `null` icon renders nothing.
+When registering icons, prefer JSX elements such as `<MyIcon />` rather than
+component references such as `MyIcon`. For Material UI icons, pass
+`fontSize="inherit"` to let the surrounding UI control their size.
+
+Legacy plugins can continue importing `IconComponent` from
+`@backstage/core-plugin-api` and using `useApp().getSystemIcon`. The compatibility
+layer adapts icon elements to components for these plugins. Icon bundles and
+authentication provider definitions also continue accepting legacy components.
