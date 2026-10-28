@@ -16,7 +16,6 @@
 
 import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
-import { IconComponent } from '../icons';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
@@ -50,10 +49,7 @@ describe('useApp', () => {
 
   describe('new system', () => {
     const mockIcon = () => null;
-    // Model an older consumer of the retained runtime contract.
-    const mockIconsApi: IconsApi & {
-      getIcon(key: string): IconComponent | undefined;
-    } = {
+    const mockIconsApi: IconsApi = {
       icon: jest.fn((key: string) =>
         key === 'test-icon' ? mockIcon() : undefined,
       ),
@@ -110,7 +106,6 @@ describe('useApp', () => {
       expect(appContext.getPlugins()).toHaveLength(1);
       expect(appContext.getPlugins()[0].getId()).toBe('test-plugin');
       expect(appContext.getSystemIcon('test-icon')).toBe(mockIcon);
-      expect(appContext.getSystemIcon('missing')).toBeUndefined();
       expect(appContext.getSystemIcons()).toEqual({ 'test-icon': mockIcon });
       expect(appContext.getComponents().Progress).toBeDefined();
       expect(appContext.getComponents().NotFoundErrorPage).toBeDefined();

@@ -15,16 +15,10 @@
  */
 
 import { createApiRef } from '../system';
-import { IconElement } from '../../icons';
+import { IconComponent, IconElement } from '../../icons';
 
 /**
  * API for accessing app icons.
- *
- * @remarks
- * Implementations must retain a runtime `getIcon(key: string)` method returning
- * a legacy icon component or `undefined` for older consumers of `core.icons`.
- * This method is omitted from the public type to guide new consumers to `icon`,
- * but cannot be removed at runtime until a new version of the icons API is introduced.
  *
  * @public
  */
@@ -33,6 +27,11 @@ export interface IconsApi {
    * Look up an icon element by key.
    */
   icon(key: string): IconElement | undefined;
+
+  /**
+   * @deprecated Use {@link IconsApi.icon} instead.
+   */
+  getIcon(key: string): IconComponent | undefined;
 
   listIconKeys(): string[];
 }

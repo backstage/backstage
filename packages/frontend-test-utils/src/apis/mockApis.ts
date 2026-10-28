@@ -671,6 +671,7 @@ export namespace mockApis {
 
   /**
    * Creates an icon lookup backed by the supplied elements, empty by default.
+   * Legacy component lookups return the same component for each key.
    *
    * @public
    */
@@ -683,13 +684,11 @@ export namespace mockApis {
         { element, component: () => element },
       ]),
     );
-    const implementation = {
-      icon: (key: string) => entries.get(key)?.element,
-      // Retain the runtime method for older core.icons consumers until API v2.
-      getIcon: (key: string) => entries.get(key)?.component,
+    return attachMockApiFactory<IconsApi>(coreApis.icons, {
+      icon: key => entries.get(key)?.element,
+      getIcon: key => entries.get(key)?.component,
       listIconKeys: () => [...entries.keys()],
-    };
-    return attachMockApiFactory<IconsApi>(coreApis.icons, implementation);
+    });
   }
 
   /**
@@ -706,7 +705,6 @@ export namespace mockApis {
      */
     export const mock = createApiMock(coreApis.icons, () => ({
       icon: jest.fn(),
-      // Retain the runtime method for older core.icons consumers until API v2.
       getIcon: jest.fn(),
       listIconKeys: jest.fn(),
     }));

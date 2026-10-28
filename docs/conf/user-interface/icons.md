@@ -149,33 +149,22 @@ const alertIcon = iconsApi.icon('alert');
 This is useful when you have an icon that you want to render in several
 locations within a plugin.
 
-:::note
-If an icon key is not available as a default icon or one you have added, a
-fallback icon is used instead.
-:::
+### Prefer icon elements
 
-## Migrating from component-based icon lookups
-
-The new frontend system uses `IconElement` and `IconsApi.icon` instead of
-`IconComponent` and `IconsApi.getIcon`. Render the returned element directly:
+Use `IconElement` and `IconsApi.icon` for element-based icon rendering. Render
+the returned element directly:
 
 ```tsx
 const icon = iconsApi.icon('alert');
 return <span>{icon}</span>;
 ```
 
-An unknown key returns `undefined`. A registered `null` icon renders nothing.
+An unknown key returns `undefined`; the consuming component decides whether to
+show a fallback icon. A registered `null` icon renders nothing.
 When registering icons, prefer JSX elements such as `<MyIcon />` rather than
 component references such as `MyIcon`. For Material UI icons, pass
 `fontSize="inherit"` to let the surrounding UI control their size.
 
-Legacy plugins can continue importing `IconComponent` from
-`@backstage/core-plugin-api` and using `useApp().getSystemIcon`. The compatibility
-layer adapts icon elements to components for these plugins. Icon bundles and
-authentication provider definitions also continue accepting legacy components.
-
-Custom `IconsApi` implementations must continue providing `getIcon(key)` at
-runtime for older consumers of `core.icons`. It returns a legacy icon component
-or `undefined` for an unknown key. Although `getIcon` is no longer part of the
-public TypeScript interface, removing it at runtime requires a new version of
-the icons API.
+The deprecated `IconComponent` type and `IconsApi.getIcon` method remain
+available for existing consumers. Plugins can adopt element-based icons
+independently of migrating between frontend systems.

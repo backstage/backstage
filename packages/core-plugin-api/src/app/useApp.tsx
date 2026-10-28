@@ -35,11 +35,6 @@ import type {
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 
-// core.icons retains getIcon at runtime for older consumers until API v2.
-type LegacyIconsApi = typeof iconsApiRef.T & {
-  getIcon(key: string): IconComponent | undefined;
-};
-
 const legacyPluginStore = getOrCreateGlobalSingleton(
   'legacy-plugin-compatibility-store',
   () => new WeakMap<FrontendPlugin, BackstagePlugin>(),
@@ -97,7 +92,7 @@ function useOptionalApiHolder(): ApiHolder | undefined {
 export const useApp = (): AppContextV1 => {
   const apiHolder = useOptionalApiHolder();
   const appTreeApi = apiHolder?.get(appTreeApiRef);
-  const iconsApi = apiHolder?.get(iconsApiRef) as LegacyIconsApi | undefined;
+  const iconsApi = apiHolder?.get(iconsApiRef);
   const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
     'app-context',
   );

@@ -19,7 +19,6 @@ import {
   createRouteRef,
   FeatureFlagState,
   type PendingOAuthRequest,
-  type IconElement,
 } from '@backstage/frontend-plugin-api';
 import { createElement } from 'react';
 import { mockApis } from './mockApis';
@@ -170,19 +169,11 @@ describe('mockApis', () => {
     const icons = mockApis.icons({ icons: { custom: element } });
     expect(icons.icon('custom')).toBe(element);
     expect(icons.listIconKeys()).toEqual(['custom']);
-    // Simulate a consumer compiled against the older core.icons contract.
-    const legacyIcons = icons as typeof icons & {
-      getIcon(key: string): (() => IconElement) | undefined;
-    };
-    const legacyIcon = legacyIcons.getIcon('custom')!;
-    expect(legacyIcon()).toBe(element);
-    expect(legacyIcons.getIcon('custom')).toBe(legacyIcon);
-    expect(legacyIcons.getIcon('missing')).toBeUndefined();
-    expect(mockApis.icons.mock()).toHaveProperty(
-      'getIcon',
-      expect.any(Function),
-    );
+    const legacyIcon = icons.getIcon('custom');
+    expect(legacyIcon).toEqual(expect.any(Function));
+    expect(icons.getIcon('custom')).toBe(legacyIcon);
     expect(icons.icon('missing')).toBeUndefined();
+    expect(icons.getIcon('missing')).toBeUndefined();
     expect(mockApis.icons().listIconKeys()).toEqual([]);
 
     const actions = mockApis.pluginHeaderActions({

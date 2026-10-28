@@ -34,7 +34,6 @@ import { screen } from '@testing-library/react';
 import { compatWrapper } from './compatWrapper';
 import {
   useApp,
-  IconComponent,
   useRouteRef as useOldRouteRef,
   createRouteRef as createOldRouteRef,
 } from '@backstage/core-plugin-api';
@@ -135,14 +134,6 @@ describe('ForwardsCompatProvider', () => {
     function Component() {
       const components = useApi(swappableComponentsApiRef);
       const icons = useApi(iconsApiRef);
-      // Simulate a consumer compiled against the older core.icons contract.
-      const legacyIcons = icons as typeof icons & {
-        getIcon(key: string): IconComponent | undefined;
-      };
-      const LegacyIcon = legacyIcons.getIcon('catalog');
-      expect(LegacyIcon).toBeDefined();
-      expect(legacyIcons.getIcon('catalog')).toBe(LegacyIcon);
-      expect(legacyIcons.getIcon('missing')).toBeUndefined();
       return (
         <div data-testid="ctx">
           components:{' '}

@@ -45,11 +45,6 @@ import {
 } from '@backstage/version-bridge';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
-// core.icons retains getIcon at runtime for older consumers until API v2.
-type LegacyIconsApi = typeof iconsApiRef.T & {
-  getIcon(key: string): IconComponent | undefined;
-};
-
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(
   'legacy-plugin-compatibility-store',
@@ -98,7 +93,7 @@ function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
 // Recreates the old AppContext APIs using the various new APIs that replaced it
 function LegacyAppContextProvider(props: { children: ReactNode }) {
   const appTreeApi = useApi(appTreeApiRef);
-  const iconsApi = useApi(iconsApiRef) as LegacyIconsApi;
+  const iconsApi = useApi(iconsApiRef);
 
   const appContext = useMemo(() => {
     const { tree } = appTreeApi.getTree();

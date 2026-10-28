@@ -18,7 +18,6 @@ import {
   ApiHolder,
   ApiRef,
   AppContext,
-  IconComponent,
   useApp,
 } from '@backstage/core-plugin-api';
 import {
@@ -29,6 +28,7 @@ import {
   NotFoundErrorPageProps,
   ProgressProps,
   ExternalRouteRef,
+  IconComponent,
   IconElement,
   IconsApi,
   RouteFunc,
@@ -105,8 +105,6 @@ class CompatIconsApi implements IconsApi {
     return Icon ? createElement(Icon) : undefined;
   }
 
-  // Older consumers of core.icons still call this method at runtime.
-  // It can only be removed in a new version of the icons API.
   getIcon(key: string): IconComponent | undefined {
     return this.#app.getSystemIcon(key);
   }

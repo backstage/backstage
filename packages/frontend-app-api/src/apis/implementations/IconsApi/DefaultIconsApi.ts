@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { IconElement, IconsApi } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import {
+  IconComponent,
+  IconElement,
+  IconsApi,
+} from '@backstage/frontend-plugin-api';
 import { cloneElement, createElement, isValidElement } from 'react';
 
 const legacyFontSizeMap = {
@@ -71,8 +74,6 @@ export class DefaultIconsApi implements IconsApi {
     return this.#icons.get(key);
   }
 
-  // Keep this runtime method for older consumers of core.icons. Removing it
-  // requires a new version of the icons API, even though it is no longer public.
   getIcon(key: string): IconComponent | undefined {
     let component = this.#components.get(key);
     if (component) {

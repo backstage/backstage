@@ -22,11 +22,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
 import { Header, Breadcrumbs } from '@backstage/core-components';
-import {
-  IconComponent,
-  useApi,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 
 import {
   Entity,

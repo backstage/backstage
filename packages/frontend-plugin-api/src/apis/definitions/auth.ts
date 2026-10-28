@@ -17,8 +17,7 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 
 import { createApiRef } from '../system';
-import { IconElement } from '../../icons/types';
-import { ComponentType } from 'react';
+import { IconComponent, IconElement } from '../../icons/types';
 import { Observable } from '@backstage/types';
 
 /**
@@ -61,14 +60,10 @@ export type AuthProviderInfo = {
    *
    * @remarks
    *
-   * Accepts either an `IconElement` (e.g. `<MyIcon />`) or an icon component
+   * Accepts either an `IconElement` (e.g. `<MyIcon />`) or an `IconComponent`
    * (e.g. `MyIcon`). Prefer passing `IconElement`.
    */
-  icon:
-    | ComponentType<{
-        fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-      }>
-    | IconElement;
+  icon: IconComponent | IconElement;
 
   /**
    * Optional user friendly message to display for the auth provider.
