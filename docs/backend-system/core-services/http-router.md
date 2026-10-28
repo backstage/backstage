@@ -134,11 +134,11 @@ full URL, including `/api/<plugin-id>` and the query string.
 
 ### Authentication policies
 
-WebSocket routes require authentication by default. The framework first checks a
-Bearer token in the `Authorization` header, then tries each comma-separated
-`Sec-WebSocket-Protocol` value in order until one authenticates. Tokens need not
-have a particular format. Browser clients cannot set `Authorization`, so pass the
-bearer token through the protocol list:
+WebSocket routes require authentication by default. The framework tries each
+comma-separated `Sec-WebSocket-Protocol` value in order until one authenticates.
+If none authenticates, it falls back to a Bearer token in the `Authorization`
+header. Tokens need not have a particular format. Browser clients cannot set
+`Authorization`, so pass the bearer token through the protocol list:
 
 ```ts
 const connection = new WebSocket(url, [token]);

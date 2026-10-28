@@ -48,6 +48,7 @@ describe('authenticateWebSocket', () => {
       'application',
       mockCredentials.service.token(),
     ]);
+    authenticate.mockClear();
     req.headers.authorization = mockCredentials.user.header();
     await expect(
       authenticateWebSocket({
@@ -57,9 +58,14 @@ describe('authenticateWebSocket', () => {
         authPolicy: 'authenticated',
       }),
     ).resolves.toEqual({
-      credentials: mockCredentials.user(),
-      authProtocol: mockCredentials.user.token(),
+      credentials: mockCredentials.service(),
+      authProtocol: mockCredentials.service.token(),
     });
+    expect(authenticate.mock.calls.map(([token]) => token)).toEqual([
+      'application',
+      mockCredentials.service.token(),
+    ]);
+    authenticate.mockClear();
     req.headers['sec-websocket-protocol'] = 'application';
     await expect(
       authenticateWebSocket({
@@ -72,6 +78,10 @@ describe('authenticateWebSocket', () => {
       credentials: mockCredentials.user(),
       authProtocol: undefined,
     });
+    expect(authenticate.mock.calls.map(([token]) => token)).toEqual([
+      'application',
+      mockCredentials.user.token(),
+    ]);
     for (const headers of [
       {},
       { 'sec-websocket-protocol': 'invalid, other' },
