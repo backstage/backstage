@@ -26,7 +26,8 @@ export function embeddedPostgresProcess(modulePath: string) {
   const { once } = require('node:events') as typeof import('node:events');
   const { pathToFileURL } = require('node:url') as typeof import('node:url');
 
-  const TEMP_DIR_PREFIX = 'backstage-dev-db-';
+  // Older CLI versions sweep backstage-dev-db-* directories without PID markers.
+  const TEMP_DIR_PREFIX = 'backstage-embedded-db-';
   async function main() {
     // Register before starting: the parent may disappear during initialization.
     const disconnected = once(process, 'disconnect');

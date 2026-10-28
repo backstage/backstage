@@ -20,6 +20,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { targetPaths } from '@backstage/cli-common';
 import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { readdirSync } from 'node:fs';
 import { getPortPromise } from 'portfinder';
 import { OutputOptions, rollup } from 'rollup';
 import { makeRollupConfigs } from '../builder/config';
@@ -112,6 +113,11 @@ describe('embeddedPostgresProcess', () => {
             }),
           ]),
         ).toEqual([{ ready: true }]);
+        expect(
+          readdirSync(mockDir.path)
+            .filter(name => name.startsWith('backstage-dev-db-'))
+            .sort(),
+        ).toEqual(Object.keys(otherDatabases).sort());
       } finally {
         if (child.connected) {
           child.disconnect();
