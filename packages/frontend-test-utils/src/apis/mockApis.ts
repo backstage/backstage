@@ -677,11 +677,19 @@ export namespace mockApis {
   export function icons(options?: {
     icons?: Record<string, IconElement>;
   }): MockWithApiFactory<IconsApi> {
-    const entries = new Map(Object.entries(options?.icons ?? {}));
-    return attachMockApiFactory<IconsApi>(coreApis.icons, {
-      icon: key => entries.get(key),
+    const entries = new Map(
+      Object.entries(options?.icons ?? {}).map(([key, element]) => [
+        key,
+        { element, component: () => element },
+      ]),
+    );
+    const implementation = {
+      icon: (key: string) => entries.get(key)?.element,
+      // Retain the runtime method for older core.icons consumers until API v2.
+      getIcon: (key: string) => entries.get(key)?.component,
       listIconKeys: () => [...entries.keys()],
-    });
+    };
+    return attachMockApiFactory<IconsApi>(coreApis.icons, implementation);
   }
 
   /**
@@ -698,6 +706,8 @@ export namespace mockApis {
      */
     export const mock = createApiMock(coreApis.icons, () => ({
       icon: jest.fn(),
+      // Retain the runtime method for older core.icons consumers until API v2.
+      getIcon: jest.fn(),
       listIconKeys: jest.fn(),
     }));
   }

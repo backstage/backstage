@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { render, renderHook, screen } from '@testing-library/react';
-import { ComponentType, PropsWithChildren } from 'react';
+import { renderHook } from '@testing-library/react';
+import { PropsWithChildren } from 'react';
+import { IconComponent } from '../icons';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
@@ -48,20 +49,18 @@ describe('useApp', () => {
   });
 
   describe('new system', () => {
-    const mockIconsApi: IconsApi = {
-      icon: jest.fn((key: string) => {
-        if (key === 'empty') {
-          return null;
-        }
-        return key === 'test-icon' ? (
-          <span
-            aria-label="test icon"
-            className="original"
-            style={{ color: 'red' }}
-          />
-        ) : undefined;
-      }),
-      listIconKeys: jest.fn(() => ['test-icon', 'empty']),
+    const mockIcon = () => null;
+    // Model an older consumer of the retained runtime contract.
+    const mockIconsApi: IconsApi & {
+      getIcon(key: string): IconComponent | undefined;
+    } = {
+      icon: jest.fn((key: string) =>
+        key === 'test-icon' ? mockIcon() : undefined,
+      ),
+      getIcon: jest.fn((key: string) =>
+        key === 'test-icon' ? mockIcon : undefined,
+      ),
+      listIconKeys: jest.fn(() => ['test-icon']),
     };
 
     const mockPlugin = {
@@ -110,47 +109,9 @@ describe('useApp', () => {
       expect(appContext).toBeDefined();
       expect(appContext.getPlugins()).toHaveLength(1);
       expect(appContext.getPlugins()[0].getId()).toBe('test-plugin');
-      const SystemIcon = appContext.getSystemIcon('test-icon')!;
-      const systemIcons = appContext.getSystemIcons();
-      expect(SystemIcon).toBeDefined();
-      expect(systemIcons['test-icon']).toBe(SystemIcon);
+      expect(appContext.getSystemIcon('test-icon')).toBe(mockIcon);
       expect(appContext.getSystemIcon('missing')).toBeUndefined();
-      const EmptyIcon = appContext.getSystemIcon('empty')!;
-      expect(systemIcons.empty).toBe(EmptyIcon);
-      const emptyRender = render(<EmptyIcon />);
-      expect(emptyRender.container).toBeEmptyDOMElement();
-      emptyRender.unmount();
-      renderedHook.rerender();
-      expect(renderedHook.result.current.getSystemIcon('test-icon')).toBe(
-        SystemIcon,
-      );
-
-      const CompatSystemIcon = SystemIcon as ComponentType<{
-        fontSize: 'large';
-        className: string;
-        style: { color: string };
-        title: string;
-      }>;
-      render(
-        <CompatSystemIcon
-          fontSize="large"
-          className="custom"
-          style={{ color: 'blue' }}
-          title="title"
-        />,
-      );
-      expect(screen.getByLabelText('test icon')).toHaveAttribute(
-        'class',
-        'original custom',
-      );
-      expect(screen.getByLabelText('test icon')).toHaveAttribute(
-        'title',
-        'title',
-      );
-      expect(screen.getByLabelText('test icon')).toHaveStyle({
-        color: 'rgb(0, 0, 255)',
-        fontSize: '2.1875rem',
-      });
+      expect(appContext.getSystemIcons()).toEqual({ 'test-icon': mockIcon });
       expect(appContext.getComponents().Progress).toBeDefined();
       expect(appContext.getComponents().NotFoundErrorPage).toBeDefined();
     });

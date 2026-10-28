@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cloneElement, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
@@ -34,6 +34,11 @@ import type {
 } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
+
+// core.icons retains getIcon at runtime for older consumers until API v2.
+type LegacyIconsApi = typeof iconsApiRef.T & {
+  getIcon(key: string): IconComponent | undefined;
+};
 
 const legacyPluginStore = getOrCreateGlobalSingleton(
   'legacy-plugin-compatibility-store',
@@ -84,62 +89,6 @@ function useOptionalApiHolder(): ApiHolder | undefined {
   }
 }
 
-const legacyFontSizeMap = {
-  inherit: 'inherit',
-  small: '1.25rem',
-  medium: '1.5rem',
-  large: '2.1875rem',
-} as const;
-
-function createLegacyIconResolver(iconsApi: typeof iconsApiRef.T) {
-  const components = new Map<string, IconComponent>();
-
-  return (key: string): IconComponent | undefined => {
-    let component = components.get(key);
-    if (component) {
-      return component;
-    }
-    const element = iconsApi.icon(key);
-    if (element === undefined) {
-      return undefined;
-    }
-    component = props => {
-      if (element === null) {
-        return null;
-      }
-
-      const {
-        fontSize = 'medium',
-        className,
-        style,
-        ...rest
-      } = props as {
-        fontSize?: keyof typeof legacyFontSizeMap;
-        className?: string;
-        style?: Record<string, unknown>;
-      } & Record<string, unknown>;
-      const elementProps = element.props as {
-        className?: string;
-        style?: Record<string, unknown>;
-      };
-
-      return cloneElement(element, {
-        ...rest,
-        className:
-          [elementProps.className, className].filter(Boolean).join(' ') ||
-          undefined,
-        style: {
-          ...elementProps.style,
-          fontSize: legacyFontSizeMap[fontSize],
-          ...style,
-        },
-      });
-    };
-    components.set(key, component);
-    return component;
-  };
-}
-
 /**
  * React hook providing {@link AppContext}.
  *
@@ -148,7 +97,7 @@ function createLegacyIconResolver(iconsApi: typeof iconsApiRef.T) {
 export const useApp = (): AppContextV1 => {
   const apiHolder = useOptionalApiHolder();
   const appTreeApi = apiHolder?.get(appTreeApiRef);
-  const iconsApi = apiHolder?.get(iconsApiRef);
+  const iconsApi = apiHolder?.get(iconsApiRef) as LegacyIconsApi | undefined;
   const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
     'app-context',
   );
@@ -163,7 +112,6 @@ export const useApp = (): AppContextV1 => {
     }
 
     const { tree } = appTreeApi.getTree();
-    const resolveIcon = createLegacyIconResolver(iconsApi);
 
     let gatheredPlugins: BackstagePlugin[] | undefined = undefined;
 
@@ -191,12 +139,12 @@ export const useApp = (): AppContextV1 => {
       },
 
       getSystemIcon(key: string): IconComponent | undefined {
-        return resolveIcon(key);
+        return iconsApi.getIcon(key);
       },
 
       getSystemIcons(): Record<string, IconComponent> {
         return Object.fromEntries(
-          iconsApi.listIconKeys().map(key => [key, resolveIcon(key)!]),
+          iconsApi.listIconKeys().map(key => [key, iconsApi.getIcon(key)!]),
         );
       },
 

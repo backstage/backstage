@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cloneElement, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
@@ -25,7 +25,6 @@ import {
   FrontendPlugin as NewFrontendPlugin,
   appTreeApiRef,
   iconsApiRef,
-  IconsApi,
   useApi,
   routeResolutionApiRef,
   ErrorDisplay,
@@ -46,61 +45,10 @@ import {
 } from '@backstage/version-bridge';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
-const legacyFontSizeMap = {
-  inherit: 'inherit',
-  small: '1.25rem',
-  medium: '1.5rem',
-  large: '2.1875rem',
-} as const;
-
-function createLegacyIconResolver(iconsApi: IconsApi) {
-  const components = new Map<string, IconComponent>();
-
-  return (key: string): IconComponent | undefined => {
-    let component = components.get(key);
-    if (component) {
-      return component;
-    }
-    const element = iconsApi.icon(key);
-    if (element === undefined) {
-      return undefined;
-    }
-    component = props => {
-      if (element === null) {
-        return null;
-      }
-
-      const {
-        fontSize = 'medium',
-        className,
-        style,
-        ...rest
-      } = props as {
-        fontSize?: keyof typeof legacyFontSizeMap;
-        className?: string;
-        style?: Record<string, unknown>;
-      } & Record<string, unknown>;
-      const elementProps = element.props as {
-        className?: string;
-        style?: Record<string, unknown>;
-      };
-
-      return cloneElement(element, {
-        ...rest,
-        className:
-          [elementProps.className, className].filter(Boolean).join(' ') ||
-          undefined,
-        style: {
-          ...elementProps.style,
-          fontSize: legacyFontSizeMap[fontSize],
-          ...style,
-        },
-      });
-    };
-    components.set(key, component);
-    return component;
-  };
-}
+// core.icons retains getIcon at runtime for older consumers until API v2.
+type LegacyIconsApi = typeof iconsApiRef.T & {
+  getIcon(key: string): IconComponent | undefined;
+};
 
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(
@@ -150,11 +98,10 @@ function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
 // Recreates the old AppContext APIs using the various new APIs that replaced it
 function LegacyAppContextProvider(props: { children: ReactNode }) {
   const appTreeApi = useApi(appTreeApiRef);
-  const iconsApi = useApi(iconsApiRef);
+  const iconsApi = useApi(iconsApiRef) as LegacyIconsApi;
 
   const appContext = useMemo(() => {
     const { tree } = appTreeApi.getTree();
-    const resolveIcon = createLegacyIconResolver(iconsApi);
 
     let gatheredPlugins: LegacyBackstagePlugin[] | undefined = undefined;
 
@@ -182,12 +129,12 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
       },
 
       getSystemIcon(key: string): IconComponent | undefined {
-        return resolveIcon(key);
+        return iconsApi.getIcon(key);
       },
 
       getSystemIcons(): Record<string, IconComponent> {
         return Object.fromEntries(
-          iconsApi.listIconKeys().map(key => [key, resolveIcon(key)!]),
+          iconsApi.listIconKeys().map(key => [key, iconsApi.getIcon(key)!]),
         );
       },
 

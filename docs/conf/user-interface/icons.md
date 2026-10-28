@@ -173,3 +173,9 @@ Legacy plugins can continue importing `IconComponent` from
 `@backstage/core-plugin-api` and using `useApp().getSystemIcon`. The compatibility
 layer adapts icon elements to components for these plugins. Icon bundles and
 authentication provider definitions also continue accepting legacy components.
+
+Custom `IconsApi` implementations must continue providing `getIcon(key)` at
+runtime for older consumers of `core.icons`. It returns a legacy icon component
+or `undefined` for an unknown key. Although `getIcon` is no longer part of the
+public TypeScript interface, removing it at runtime requires a new version of
+the icons API.
