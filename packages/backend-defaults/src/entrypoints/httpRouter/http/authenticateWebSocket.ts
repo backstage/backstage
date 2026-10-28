@@ -44,7 +44,7 @@ export async function authenticateWebSocket(options: {
       ?.split(',')
       .map(value => value.trim())
       .filter(Boolean) ?? [];
-  const candidates = bearer ? [bearer, ...protocols] : protocols;
+  const candidates = bearer ? [...protocols, bearer] : protocols;
   for (const token of candidates) {
     try {
       const credentials = await auth.authenticate(token);

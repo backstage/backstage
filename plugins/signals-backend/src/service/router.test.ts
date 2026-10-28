@@ -100,14 +100,19 @@ describe('signals framework router', () => {
     expect(first.ws?.protocol).toBe(mockCredentials.user.token());
     expect(userInfo.getUserInfo).toHaveBeenCalledWith(mockCredentials.user());
     first.ws?.close();
-    const dualHeader = await connectWebSocket(
-      backend.server,
-      mockCredentials.user.token(),
-      { authorization: mockCredentials.user.header() },
-    );
-    expect(dualHeader.ws?.readyState).toBe(WebSocket.OPEN);
-    expect(dualHeader.ws?.protocol).toBe(mockCredentials.user.token());
-    dualHeader.ws?.close();
+    for (const authorization of [
+      mockCredentials.user.header(),
+      mockCredentials.service.header(),
+    ]) {
+      const dualHeader = await connectWebSocket(
+        backend.server,
+        mockCredentials.user.token(),
+        { authorization },
+      );
+      expect(dualHeader.ws?.readyState).toBe(WebSocket.OPEN);
+      expect(dualHeader.ws?.protocol).toBe(mockCredentials.user.token());
+      dualHeader.ws?.close();
+    }
     for (const protocols of [
       undefined,
       mockCredentials.user.invalidToken(),
