@@ -133,7 +133,7 @@ export interface ExampleApi {
   getExample(): { example: string };
 }
 
-export const exampleApiRef = createApiRef<ExampleApi>({
+export const exampleApiRef = createApiRef<ExampleApi>().with({
   id: 'plugin.example.api',
 });
 

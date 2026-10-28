@@ -268,6 +268,7 @@ export function createFrontendPlugin<
 
   return OpaqueFrontendPlugin.createInstance('v1', {
     pluginId,
+    id: pluginId,
     title: options.title,
     icon: options.icon,
     routes: options.routes ?? ({} as TRoutes),

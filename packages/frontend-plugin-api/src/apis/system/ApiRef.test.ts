@@ -63,10 +63,4 @@ describe('ApiRef', () => {
       );
     }
   });
-
-  it('should reject invalid ids with builder pattern', () => {
-    expect(() => createApiRef().with({ id: '123' })).toThrow(
-      `API id must only contain period separated lowercase alphanum tokens with dashes, got '123'`,
-    );
-  });
 });

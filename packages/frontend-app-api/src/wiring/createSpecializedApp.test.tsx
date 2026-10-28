@@ -116,6 +116,23 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
 
+  it('should consume and deduplicate older plugins that only expose id', () => {
+    const oldApp = makeAppPlugin('Old app');
+    const oldPlugin = createFrontendPlugin({ pluginId: 'old-plugin' });
+    Reflect.deleteProperty(oldApp, 'pluginId');
+    Reflect.deleteProperty(oldPlugin, 'pluginId');
+
+    const app = createSpecializedApp({
+      features: [makeAppPlugin('Replaced app'), oldApp, oldPlugin],
+    });
+
+    render(app.element);
+    expect(screen.getByText('Old app')).toBeInTheDocument();
+    const tree = app.apis.get(appTreeApiRef)!.getTree().tree;
+    expect(tree.nodes.get('app')!.spec.plugin!.pluginId).toBe('app');
+    expect(app.errors).toBeUndefined();
+  });
+
   it('should forward config', () => {
     const app = createSpecializedApp({
       config: mockApis.config({ data: { test: 'foo' } }),

@@ -163,7 +163,7 @@ export interface WorkApi {
  * The work interface for the Example plugin.
  * @public
  */
-export const workApiRef = createApiRef<WorkApi>({
+export const workApiRef = createApiRef<WorkApi>().with({
   id: 'plugin.example.work',
 });
 ```
@@ -225,3 +225,19 @@ Finally, let's add the `exampleWorkApi` extension to the plugin:
 ### Further work
 
 Since utility APIs are now complete extensions, you may want to take a bigger look at how they used to be used, and what the new frontend system offers. You may for example consider [adding configurability or inputs](../utility-apis/02-creating.md) to your API, if that makes sense for your current application.
+
+## Updating deprecated frontend API aliases
+
+When updating a plugin that already uses the new frontend system, replace these
+removed exports from `@backstage/frontend-plugin-api`:
+
+| Removed API               | Replacement                      |
+| ------------------------- | -------------------------------- |
+| `createApiRef<T>({ id })` | `createApiRef<T>().with({ id })` |
+| `PluginOptions`           | `CreateFrontendPluginOptions`    |
+| `PageTab`                 | `PageLayoutTab`                  |
+| `plugin.id`               | `plugin.pluginId`                |
+
+The `createApiRef` export from `@backstage/core-plugin-api` continues to accept
+configuration directly. Runtime compatibility with older frontend plugins is
+preserved, so you can update plugins independently.
