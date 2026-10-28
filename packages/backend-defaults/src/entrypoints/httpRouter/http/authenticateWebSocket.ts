@@ -44,18 +44,18 @@ export async function authenticateWebSocket(options: {
       ?.split(',')
       .map(value => value.trim())
       .filter(Boolean) ?? [];
-  const candidates = [
-    ...(bearer ? [{ token: bearer, authProtocol: undefined }] : []),
-    ...protocols.map(token => ({ token, authProtocol: token })),
-  ];
-  for (const candidate of candidates) {
+  const candidates = bearer ? [bearer, ...protocols] : protocols;
+  for (const token of candidates) {
     try {
-      const credentials = await auth.authenticate(candidate.token);
+      const credentials = await auth.authenticate(token);
       if (
         auth.isPrincipal(credentials, 'user') ||
         auth.isPrincipal(credentials, 'service')
       ) {
-        return { credentials, authProtocol: candidate.authProtocol };
+        return {
+          credentials,
+          authProtocol: protocols.includes(token) ? token : undefined,
+        };
       }
     } catch {
       // Offered protocols may be application protocols rather than credentials.

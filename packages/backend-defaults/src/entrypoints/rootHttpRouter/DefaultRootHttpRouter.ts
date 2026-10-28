@@ -119,10 +119,8 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
     }
   }
 
-  addWebSocketHandler({
-    path,
-    handler,
-  }: RootHttpRouterServiceWebSocketHandler): void {
+  addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void {
+    const { path, handler } = input;
     if (
       !path.startsWith('/') ||
       /[?#\\]/.test(path) ||

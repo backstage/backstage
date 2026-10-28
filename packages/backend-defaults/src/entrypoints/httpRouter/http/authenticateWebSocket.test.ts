@@ -58,6 +58,18 @@ describe('authenticateWebSocket', () => {
       }),
     ).resolves.toEqual({
       credentials: mockCredentials.user(),
+      authProtocol: mockCredentials.user.token(),
+    });
+    req.headers['sec-websocket-protocol'] = 'application';
+    await expect(
+      authenticateWebSocket({
+        auth,
+        config,
+        request: req,
+        authPolicy: 'authenticated',
+      }),
+    ).resolves.toEqual({
+      credentials: mockCredentials.user(),
       authProtocol: undefined,
     });
     for (const headers of [

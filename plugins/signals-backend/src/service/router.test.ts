@@ -28,11 +28,14 @@ import { signalsPlugin } from '../plugin';
 async function connectWebSocket(
   server: http.Server,
   protocols?: string | string[],
+  headers: Record<string, string> = {},
 ): Promise<{ ws?: WebSocket; error?: Error; statusCode?: number }> {
   const { port } = server.address() as { port: number };
 
   return new Promise(resolve => {
-    const ws = new WebSocket(`ws://127.0.0.1:${port}/api/signals`, protocols);
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/api/signals`, protocols, {
+      headers,
+    });
     let settled = false;
 
     const settle = (result: {
@@ -97,6 +100,14 @@ describe('signals framework router', () => {
     expect(first.ws?.protocol).toBe(mockCredentials.user.token());
     expect(userInfo.getUserInfo).toHaveBeenCalledWith(mockCredentials.user());
     first.ws?.close();
+    const dualHeader = await connectWebSocket(
+      backend.server,
+      mockCredentials.user.token(),
+      { authorization: mockCredentials.user.header() },
+    );
+    expect(dualHeader.ws?.readyState).toBe(WebSocket.OPEN);
+    expect(dualHeader.ws?.protocol).toBe(mockCredentials.user.token());
+    dualHeader.ws?.close();
     for (const protocols of [
       undefined,
       mockCredentials.user.invalidToken(),
