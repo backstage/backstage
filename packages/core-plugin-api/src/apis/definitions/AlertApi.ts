@@ -15,7 +15,7 @@
  */
 
 import { Observable } from '@backstage/types';
-import { createApiRef } from '../system';
+import { createApiRef } from '@backstage/frontend-plugin-api';
 
 /**
  * Message handled by the {@link AlertApi}.
@@ -46,4 +46,7 @@ export type AlertApi = {
  * @public
  * @deprecated Use `toastApiRef` from `@backstage/frontend-plugin-api` instead.
  */
-export const alertApiRef = createApiRef<AlertApi>({ id: 'core.alert' });
+export const alertApiRef = createApiRef<AlertApi>().with({
+  id: 'core.alert',
+  pluginId: 'app',
+});

@@ -39,7 +39,7 @@ export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
       const impls = {} as T;
 
       for (const key in apis) {
-        if (apis.hasOwnProperty(key)) {
+        if (Object.hasOwn(apis, key)) {
           const ref = apis[key];
           const api = apiHolder.get(ref);
           if (!api) {

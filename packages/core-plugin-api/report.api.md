@@ -81,7 +81,9 @@ export type AlertApi = {
 };
 
 // @public @deprecated
-export const alertApiRef: ApiRef<AlertApi>;
+export const alertApiRef: ApiRef<AlertApi, 'core.alert'> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 // @public @deprecated
 export type AlertMessage = {
