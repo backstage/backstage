@@ -15,8 +15,16 @@
  */
 
 import { ErrorPanel } from '@backstage/core-components';
-import { useAsync, useRerender } from '@react-hookz/web';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { toError } from '@backstage/errors';
+import { useRerender } from '@react-hookz/web';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   TemplateDirectoryAccess,
   TemplateFileAccess,
@@ -24,6 +32,8 @@ import {
 
 const MAX_SIZE = 1024 * 1024;
 const MAX_SIZE_MESSAGE = 'This file is too large to be displayed';
+// Keeps reads overlapping for slow file access without starting every read at once
+const FILE_READ_CONCURRENCY = 6;
 
 interface DirectoryEditorFile {
   /** The path of the file relative to the root directory */
@@ -38,12 +48,19 @@ interface DirectoryEditorFile {
   /** Save the staged content of the file to disk */
   save(): Promise<void>;
   /** Reload the staged content of the file from disk */
-  reload(): Promise<void>;
+  reload(options?: { silent?: boolean }): Promise<void>;
 }
 
 interface DirectoryEditor {
   /** A list of all files in the edited directory */
   files: Array<DirectoryEditorFile>;
+
+  /** Whether the directory is being loaded from disk */
+  loading: boolean;
+  /** Number of files loaded so far during the current reload */
+  loadedFileCount: number;
+  /** Total number of files to load during the current reload */
+  totalFileCount: number;
 
   /** The currently selected file */
   selectedFile: DirectoryEditorFile | undefined;
@@ -98,13 +115,15 @@ class DirectoryEditorFileManager implements DirectoryEditorFile {
     }
   }
 
-  async reload(): Promise<void> {
+  async reload(options?: { silent?: boolean }): Promise<void> {
     const file = await this.#access.file();
     if (file.size > MAX_SIZE) {
       if (this.#content !== undefined) {
         this.#content = undefined;
         this.#savedContent = undefined;
-        this.#signalUpdate();
+        if (!options?.silent) {
+          this.#signalUpdate();
+        }
       }
       return;
     }
@@ -113,7 +132,9 @@ class DirectoryEditorFileManager implements DirectoryEditorFile {
     if (this.#content !== content) {
       this.#content = content;
       this.#savedContent = content;
-      this.#signalUpdate();
+      if (!options?.silent) {
+        this.#signalUpdate();
+      }
     }
   }
 }
@@ -124,6 +145,10 @@ class DirectoryEditorManager implements DirectoryEditor {
 
   #files: DirectoryEditorFile[] = [];
   #selectedFile: DirectoryEditorFile | undefined;
+  #loading = false;
+  #loadedFileCount = 0;
+  #totalFileCount = 0;
+  #reloadPromise: Promise<void> | null = null;
 
   constructor(access: TemplateDirectoryAccess) {
     this.#access = access;
@@ -131,6 +156,18 @@ class DirectoryEditorManager implements DirectoryEditor {
 
   get files() {
     return this.#files;
+  }
+
+  get loading() {
+    return this.#loading;
+  }
+
+  get loadedFileCount() {
+    return this.#loadedFileCount;
+  }
+
+  get totalFileCount() {
+    return this.#totalFileCount;
   }
 
   get selectedFile() {
@@ -151,28 +188,102 @@ class DirectoryEditorManager implements DirectoryEditor {
   }
 
   async save(): Promise<void> {
+    if (this.#loading) {
+      return;
+    }
     await Promise.all(this.#files.map(file => file.save()));
   }
 
-  async reload(): Promise<void> {
-    const selectedPath = this.#selectedFile?.path;
+  reload(): Promise<void> {
+    if (this.#reloadPromise) {
+      return this.#reloadPromise;
+    }
 
-    const files = await this.#access.listFiles();
-    const fileManagers = await Promise.all(
-      files.map(async file => {
-        const manager = new DirectoryEditorFileManager(
-          file,
-          this.#signalUpdate,
-        );
-        await manager.reload();
-        return manager;
-      }),
-    );
-    this.#files.length = 0;
-    this.#files.push(...fileManagers);
-
-    this.setSelectedFile(selectedPath);
+    this.#loading = true;
+    this.#loadedFileCount = 0;
+    this.#totalFileCount = 0;
     this.#signalUpdate();
+
+    const doReload = async () => {
+      const fileAccesses = await this.#access.listFiles();
+
+      this.#totalFileCount = fileAccesses.length;
+      this.#signalUpdate();
+
+      const results = new Array<DirectoryEditorFileManager>(
+        fileAccesses.length,
+      );
+
+      if (fileAccesses.length > 0) {
+        await new Promise<void>((resolve, reject) => {
+          let nextIndex = 0;
+          let activeCount = 0;
+          // Once a read fails the reload is abandoned, so reads that are
+          // still in flight must not touch the results or the progress.
+          let failed = false;
+
+          const launchNext = () => {
+            const runTask = (index: number) => {
+              activeCount++;
+
+              const manager = new DirectoryEditorFileManager(
+                fileAccesses[index],
+                this.#signalUpdate,
+              );
+
+              manager.reload({ silent: true }).then(
+                () => {
+                  activeCount--;
+                  if (failed) {
+                    return;
+                  }
+                  results[index] = manager;
+                  this.#loadedFileCount++;
+                  this.#signalUpdate();
+                  if (nextIndex >= fileAccesses.length && activeCount === 0) {
+                    resolve();
+                  } else {
+                    launchNext();
+                  }
+                },
+                err => {
+                  activeCount--;
+                  if (failed) {
+                    return;
+                  }
+                  failed = true;
+                  reject(toError(err));
+                },
+              );
+            };
+
+            while (
+              !failed &&
+              activeCount < FILE_READ_CONCURRENCY &&
+              nextIndex < fileAccesses.length
+            ) {
+              runTask(nextIndex++);
+            }
+          };
+
+          launchNext();
+        });
+      }
+
+      this.#files = results;
+      // Keep whichever file is selected now, as it may have changed while
+      // the files were loading.
+      this.setSelectedFile(this.#selectedFile?.path);
+    };
+
+    // Clean up in a chained handler so that it always runs after the promise
+    // has been stored, even if loading fails before the first await.
+    this.#reloadPromise = doReload().finally(() => {
+      this.#reloadPromise = null;
+      this.#loading = false;
+      this.#signalUpdate();
+    });
+    return this.#reloadPromise;
   }
 
   subscribe(listener: () => void): () => void {
@@ -208,34 +319,53 @@ interface DirectoryEditorProviderProps {
 export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   const { directory } = props;
 
-  const [{ result, error }, { execute }] = useAsync(
-    async (dir?: TemplateDirectoryAccess) => {
-      if (!dir) {
-        return undefined;
-      }
-
-      const manager = new DirectoryEditorManager(dir);
-      await manager.reload();
-
-      const firstYaml = manager.files.find(file => file.path.match(/\.ya?ml$/));
-      if (firstYaml) {
-        manager.setSelectedFile(firstYaml.path);
-      }
-
-      return manager;
-    },
+  const manager = useMemo(
+    () => (directory ? new DirectoryEditorManager(directory) : undefined),
+    [directory],
   );
 
+  const [error, setError] = useState<Error>();
+
   useEffect(() => {
-    execute(directory);
-  }, [execute, directory]);
+    let isCurrent = true;
+    if (!manager) {
+      setError(undefined);
+      return undefined;
+    }
+
+    setError(undefined);
+
+    manager
+      .reload()
+      .then(() => {
+        if (!isCurrent) {
+          return;
+        }
+        const firstYaml = manager.files.find(file =>
+          file.path.match(/\.ya?ml$/),
+        );
+        if (firstYaml) {
+          manager.setSelectedFile(firstYaml.path);
+        }
+      })
+      .catch(cause => {
+        if (!isCurrent) {
+          return;
+        }
+        setError(cause instanceof Error ? cause : new Error(String(cause)));
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [manager]);
 
   if (error) {
     return <ErrorPanel error={error} />;
   }
 
   return (
-    <DirectoryEditorContext.Provider value={result}>
+    <DirectoryEditorContext.Provider value={manager}>
       {props.children}
     </DirectoryEditorContext.Provider>
   );
