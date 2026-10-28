@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   RequestDetails,
@@ -32,13 +33,39 @@ import {
  */
 export function createGitlabTokenValidator(
   config: Config,
-): RequestValidator | undefined {
+  logger?: LoggerService,
+): RequestValidator {
   const secret = config.getOptionalString(
     'events.modules.gitlab.webhookSecret',
   );
 
+  const dangerouslyAllowUnauthenticatedEvents =
+    config.getOptionalBoolean(
+      'events.modules.gitlab.dangerouslyAllowUnauthenticatedEvents',
+    ) ?? false;
+
   if (!secret) {
-    return undefined;
+    if (dangerouslyAllowUnauthenticatedEvents) {
+      return async () => {};
+    }
+
+    return async (
+      _request: RequestDetails,
+      context: RequestValidationContext,
+    ): Promise<void> => {
+      const msg =
+        "Rejecting incoming unsigned GitLab event. Webhook secrets are required by default unless 'events.modules.gitlab.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true.";
+      if (logger) {
+        logger.warn(msg);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(msg);
+      }
+      context.reject({
+        status: 403,
+        payload: { message: 'invalid token' },
+      });
+    };
   }
 
   return async (
