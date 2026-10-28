@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
+import { legacyIconsApiRef, type LegacyIconsApi } from '@internal/frontend';
 import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
-  iconsApiRef,
   AppTreeApi,
-  IconsApi,
   AppTree,
   AppNode,
 } from '@backstage/frontend-plugin-api';
@@ -49,7 +48,7 @@ describe('useApp', () => {
 
   describe('new system', () => {
     const mockIcon = () => null;
-    const mockIconsApi: IconsApi = {
+    const mockIconsApi: LegacyIconsApi = {
       icon: jest.fn((key: string) =>
         key === 'test-icon' ? mockIcon() : undefined,
       ),
@@ -92,7 +91,7 @@ describe('useApp', () => {
         <TestApiProvider
           apis={[
             [appTreeApiRef, mockAppTreeApi],
-            [iconsApiRef, mockIconsApi],
+            [legacyIconsApiRef, mockIconsApi],
           ]}
         >
           {children}
@@ -134,7 +133,7 @@ describe('useApp', () => {
         expect(() =>
           renderHook(() => useApp(), {
             wrapper: ({ children }: PropsWithChildren<{}>) => (
-              <TestApiProvider apis={[[iconsApiRef, mockIconsApi]]}>
+              <TestApiProvider apis={[[legacyIconsApiRef, mockIconsApi]]}>
                 {children}
               </TestApiProvider>
             ),

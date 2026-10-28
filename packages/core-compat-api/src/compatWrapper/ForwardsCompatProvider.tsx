@@ -42,6 +42,7 @@ import {
   NotFoundErrorPage,
   ErrorDisplay,
 } from '@backstage/frontend-plugin-api';
+import { legacyIconsApiRef, type LegacyIconsApi } from '@internal/frontend';
 import { ComponentType, createElement, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
@@ -93,7 +94,7 @@ class CompatComponentsApi implements SwappableComponentsApi {
   }
 }
 
-class CompatIconsApi implements IconsApi {
+class CompatIconsApi implements LegacyIconsApi {
   readonly #app: AppContext;
 
   constructor(app: AppContext) {
@@ -147,7 +148,7 @@ class ForwardsCompatApis implements ApiHolder {
   get<T>(ref: ApiRef<any>): T | undefined {
     if (ref.id === swappableComponentsApiRef.id) {
       return this.#componentsApi as T;
-    } else if (ref.id === iconsApiRef.id) {
+    } else if (ref.id === iconsApiRef.id || ref.id === legacyIconsApiRef.id) {
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;

@@ -15,10 +15,10 @@
  */
 
 import { useMemo } from 'react';
+import { legacyIconsApiRef } from '@internal/frontend';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
-  iconsApiRef,
   useApiHolder,
   ErrorDisplay,
   NotFoundErrorPage,
@@ -92,7 +92,7 @@ function useOptionalApiHolder(): ApiHolder | undefined {
 export const useApp = (): AppContextV1 => {
   const apiHolder = useOptionalApiHolder();
   const appTreeApi = apiHolder?.get(appTreeApiRef);
-  const iconsApi = apiHolder?.get(iconsApiRef);
+  const iconsApi = apiHolder?.get(legacyIconsApiRef);
   const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
     'app-context',
   );

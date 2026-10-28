@@ -127,6 +127,6 @@ export interface DialogApi {
  * @deprecated Use {@link coreApis.dialog} instead.
  */
 export const dialogApiRef = createApiRef<DialogApi>().with({
-  id: 'core.dialog',
+  id: 'core.dialog.v2',
   pluginId: 'app',
 });

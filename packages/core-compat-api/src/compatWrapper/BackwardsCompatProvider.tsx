@@ -15,6 +15,7 @@
  */
 
 import { useMemo } from 'react';
+import { legacyIconsApiRef } from '@internal/frontend';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
@@ -24,7 +25,6 @@ import {
   createFrontendPlugin as createNewPlugin,
   FrontendPlugin as NewFrontendPlugin,
   appTreeApiRef,
-  iconsApiRef,
   useApi,
   routeResolutionApiRef,
   ErrorDisplay,
@@ -93,7 +93,7 @@ function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
 // Recreates the old AppContext APIs using the various new APIs that replaced it
 function LegacyAppContextProvider(props: { children: ReactNode }) {
   const appTreeApi = useApi(appTreeApiRef);
-  const iconsApi = useApi(iconsApiRef);
+  const iconsApi = useApi(legacyIconsApiRef);
 
   const appContext = useMemo(() => {
     const { tree } = appTreeApi.getTree();

@@ -980,7 +980,7 @@ export interface DialogApiDialog<TResult = void> {
 }
 
 // @public @deprecated
-export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog'> & {
+export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1548,15 +1548,13 @@ export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
-  // @deprecated (undocumented)
-  getIcon(key: string): IconComponent | undefined;
   icon(key: string): IconElement | undefined;
   // (undocumented)
   listIconKeys(): string[];
 }
 
 // @public @deprecated
-export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons'> & {
+export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 

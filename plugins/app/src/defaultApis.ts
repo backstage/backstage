@@ -63,6 +63,7 @@ import {
 import {
   ApiBlueprint,
   dialogApiRef,
+  iconsApiRef,
   toastApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -75,9 +76,31 @@ import {
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
+import { legacyDialogApiRef, legacyIconsApiRef } from '@internal/frontend';
+import { LegacyDialogApi } from './apis/LegacyDialogApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { LegacyIconsApi } from '../../../packages/frontend-app-api/src/apis/implementations/IconsApi/LegacyIconsApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
+  ApiBlueprint.make({
+    name: 'legacy-dialog',
+    params: defineParams =>
+      defineParams({
+        api: legacyDialogApiRef,
+        deps: { dialogApi: dialogApiRef },
+        factory: ({ dialogApi }) => new LegacyDialogApi(dialogApi),
+      }),
+  }),
+  ApiBlueprint.make({
+    name: 'legacy-icons',
+    params: defineParams =>
+      defineParams({
+        api: legacyIconsApiRef,
+        deps: { iconsApi: iconsApiRef },
+        factory: ({ iconsApi }) => new LegacyIconsApi(iconsApi),
+      }),
+  }),
   ApiBlueprint.make({
     name: 'dialog',
     params: defineParams =>
