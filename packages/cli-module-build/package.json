@@ -6,7 +6,9 @@
     "role": "cli-module"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -15,34 +17,8 @@
     "directory": "packages/cli-module-build"
   },
   "license": "Apache-2.0",
-  "exports": {
-    ".": "./src/index.ts",
-    "./embedded-postgres": "./src/embeddedPostgres.js",
-    "./config/*.js": "./config/*.js",
-    "./config/*": "./config/*.js",
-    "./templates/*": "./templates/*",
-    "./bin/*": "./bin/*",
-    "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "embedded-postgres": [
-        "src/embeddedPostgres.js"
-      ],
-      "config/*.js": [
-        "config/*.js"
-      ],
-      "config/*": [
-        "config/*.js"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "bin": "bin/backstage-cli-module-build",
   "files": [
     "dist",

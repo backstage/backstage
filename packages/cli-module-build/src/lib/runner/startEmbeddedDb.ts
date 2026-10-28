@@ -24,6 +24,8 @@ import { getPortPromise } from 'portfinder';
 import { ConfigSources } from '@backstage/config-loader';
 import { targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
+import { ForwardedError } from '@backstage/errors';
+import { embeddedPostgresProcess } from './embeddedPostgresProcess';
 
 export interface EmbeddedDbConnectionConfig {
   host?: string;
@@ -91,10 +93,25 @@ async function startEmbeddedDbInternal(
   const user = userConfig?.user ?? 'postgres';
   const password = userConfig?.password ?? 'postgres';
   const port = userConfig?.port ?? (await getPortPromise());
+  let embeddedPostgresPath: string;
+  try {
+    embeddedPostgresPath = require.resolve('embedded-postgres');
+  } catch (error) {
+    throw new ForwardedError(
+      `Failed to resolve 'embedded-postgres'. It must be installed as an explicit dependency in your project`,
+      error,
+    );
+  }
+
   // Isolate both Postgres and the library's exit hooks from terminal signals.
   const child = spawn(
     process.execPath,
-    [require.resolve('@backstage/cli-module-build/embedded-postgres')],
+    [
+      '--eval',
+      `(${embeddedPostgresProcess.toString()})(${JSON.stringify(
+        embeddedPostgresPath,
+      )})`,
+    ],
     {
       detached: true,
       windowsHide: true,

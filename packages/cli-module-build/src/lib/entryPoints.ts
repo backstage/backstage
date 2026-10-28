@@ -74,11 +74,6 @@ export function readEntryPoints(pkg: BackstagePackageJson): Array<EntryPoint> {
         );
       }
 
-      // Export patterns expose existing files rather than individual build inputs.
-      if (mount.includes('*')) {
-        continue;
-      }
-
       // Setting the EXPERIMENTAL_TRIM_NEXT_ENTRY flag will remove any `./next` entry points
       if (process.env.EXPERIMENTAL_TRIM_NEXT_ENTRY && mount === './next') {
         continue;

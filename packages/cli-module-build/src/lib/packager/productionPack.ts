@@ -255,12 +255,7 @@ async function rewriteEntryPoints(
     return undefined;
   }
   const distFiles = await fs.readdir(distPath);
-  const outputExports: Record<string, string | Record<string, string>> =
-    Object.fromEntries(
-      Object.entries(pkg.exports ?? {}).filter(([mount]) =>
-        mount.includes('*'),
-      ),
-    );
+  const outputExports = {} as Record<string, string | Record<string, string>>;
 
   const entryPoints = readEntryPoints(pkg);
 

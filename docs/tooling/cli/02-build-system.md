@@ -739,9 +739,7 @@ The Backstage CLI supports implementation of subpath exports through the `"expor
   },
 ```
 
-This in turn would allow you to import anything exported in `src/index.ts` via `@backstage/plugins-foo`, and `src/components.ts` via `@backstage/plugins-foo/components`. JavaScript entry points are also supported and can enable type checking with `// @ts-check`.
-
-Export patterns containing `*` are preserved when publishing, but do not create build inputs. Use them to expose files that are already included in the published package, such as `"./config/*": "./config/*.js"`. Declare each source entry point that needs to be built explicitly.
+This in turn would allow you to import anything exported in `src/index.ts` via `@backstage/plugins-foo`, and `src/components.ts` via `@backstage/plugins-foo/components`. Note that patterns are not supported, meaning the exports may not contain `*` wildcards.
 
 As with the rest of the Backstage CLI build system, the setup is optimized for local development, which is why the `"exports"` targets point directly to source files. The `package build` command will detect the `"exports"` field and automatically generate the corresponding `dist` files, and the `prepublish` command will rewrite the `"exports"` field to point to the `dist` files, as well as generating folder-based entry points for backwards compatibility.
 
