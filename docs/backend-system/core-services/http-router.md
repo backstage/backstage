@@ -124,8 +124,8 @@ The example logs the user identity when available. Keep client tracking enabled 
 because its connection manager already tracks and closes connections.
 
 `credentials` contains verified Backstage credentials, and
-`authProtocol` contains the offered protocol value that authenticated
-the caller, when authentication used that header. The router does not select
+`authProtocol` contains the verified token when it was also offered through the
+protocol header. The router does not select
 or echo a protocol on your behalf.
 
 The handler must accept, forward, or close the socket before returning.
