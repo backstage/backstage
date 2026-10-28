@@ -63,8 +63,6 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items.
 
-To migrate from the removed flat `items` prop, use `navItems.rest()` to get the remaining items. Replace `item.to` with `item.href` and `item.text` with `item.title`, and render `item.icon` as a React element rather than a component type.
-
 ### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html)
 
 Router extensions allow you to replace the router component used by the app. They are always attached to the app root extension.
