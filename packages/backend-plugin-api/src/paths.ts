@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { isChildPath } from '@backstage/cli-common';
+import { findOwnPaths, isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
-import { resolve as resolvePath } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve as resolvePath } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -28,19 +30,43 @@ export const packagePathMocks = new Map<
  * Resolve a path relative to the root of a package directory.
  * Additional path arguments are resolved relative to the package dir.
  *
+ * The first argument can be a package name or a file URL string such as
+ * `import.meta.url`. For a file URL, the package root is the nearest ancestor
+ * directory containing a `package.json` file, starting from the module's
+ * directory. This lets a package resolve its own assets without using its name.
+ *
  * This is particularly useful when you want to access assets shipped with
  * your backend plugin package. When doing so, do not forget to include the assets
  * in your published package by adding them to `files` in your `package.json`.
  *
+ * @example
+ * ```ts
+ * const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
+ * ```
+ *
  * @public
  */
 export function resolvePackagePath(name: string, ...paths: string[]) {
-  const mockedResolve = packagePathMocks.get(name);
+  const packageDir = name.startsWith('file:')
+    ? findOwnPaths(dirname(fileURLToPath(name))).dir
+    : undefined;
+  const packageName =
+    packageDir && packagePathMocks.size > 0
+      ? JSON.parse(
+          readFileSync(resolvePath(packageDir, 'package.json'), 'utf8'),
+        ).name
+      : name;
+
+  const mockedResolve = packagePathMocks.get(packageName);
   if (mockedResolve) {
     const resolved = mockedResolve(paths);
     if (resolved) {
       return resolved;
     }
+  }
+
+  if (packageDir) {
+    return resolvePath(packageDir, ...paths);
   }
 
   const req =
