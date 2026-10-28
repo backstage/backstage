@@ -1318,6 +1318,18 @@ export type ExtensionDefinitionParameters = {
   params?: object | ExtensionBlueprintDefineParams;
 };
 
+// @public @deprecated (undocumented)
+export type ExtensionFactoryMiddleware = (
+  originalFactory: (contextOverrides?: {
+    config?: JsonObject;
+  }) => ExtensionDataContainer<ExtensionDataRef>,
+  context: {
+    node: AppNode;
+    apis: ApiHolder;
+    config?: JsonObject;
+  },
+) => Iterable<ExtensionDataValue<any, any>>;
+
 // @public (undocumented)
 export interface ExtensionInput<
   UExtensionData extends ExtensionDataRef<

@@ -17,6 +17,7 @@
 import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import {
   ConfigApi,
+  ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
@@ -28,7 +29,6 @@ import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseU
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
-  ExtensionFactoryMiddleware,
   FinalizedSpecializedApp,
   prepareSpecializedApp,
   PreparedSpecializedApp,
