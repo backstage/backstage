@@ -58,6 +58,7 @@ export type AnalyticsImplementationFactory<
 export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   kind: 'app-root-wrapper';
   params: {
+    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ExtensionDataRef<
@@ -166,6 +167,7 @@ export interface NavContentNavItemsWithComponent {
 export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
   params: {
+    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ExtensionDataRef<

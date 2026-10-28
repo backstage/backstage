@@ -60,7 +60,7 @@ const ExamplePage2 = examplePlugin2.provide(
   }),
 );
 
-describe('convertLegacyAppRoot', () => {
+describe('convertLegacyApp', () => {
   it('should find and extract root and routes', () => {
     const collected = convertLegacyAppRoot(
       <>

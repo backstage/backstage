@@ -171,3 +171,17 @@ export function convertLegacyAppRoot(
     }),
   ];
 }
+
+/**
+ * @public
+ * @deprecated
+ * Use `convertLegacyAppRoot` instead.
+ */
+export const convertLegacyApp = convertLegacyAppRoot;
+
+/**
+ * @public
+ * @deprecated
+ * Use `ConvertLegacyAppRootOptions` instead.
+ */
+export type ConvertLegacyAppOptions = ConvertLegacyAppRootOptions;
