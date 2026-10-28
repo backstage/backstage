@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { join as joinPath } from 'node:path';
+// Importing from node:path/posix forces the use of forward slashes on all OSes
+import { join as joinPath } from 'node:path/posix';
 import { PortableTemplateInputRoleParams } from '../types';
 
 export type ResolvePackageParamsOptions = {
