@@ -31,6 +31,7 @@ describe('core API namespaces', () => {
       dialog: apis.dialogApiRef,
       discovery: apis.discoveryApiRef,
       error: apis.errorApiRef,
+      extensionFragments: apis.extensionFragmentsApiRef,
       featureFlags: apis.featureFlagsApiRef,
       fetch: apis.fetchApiRef,
       icons: apis.iconsApiRef,

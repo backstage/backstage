@@ -125,3 +125,7 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 ### SearchResultListItem - [Example](https://github.com/backstage/backstage/blob/8cb9a85596a5417a004811ffa429527b17ce9b72/plugins/catalog/src/alpha/searchResultItems.tsx#L19-L27)
 
 Creates search result list items for different types of search results, to be displayed in search result lists. Exported as `SearchResultListItemBlueprint`.
+
+## Fragments
+
+Use `FragmentBlueprint` and `ExtensionFragment` for lightweight embedding of React content from another plugin. See [Extension fragments](./10-extension-fragments.md) for registration, rendering, configuration, and testing.
