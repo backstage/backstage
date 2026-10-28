@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { generatePath, matchRoutes, RouteMatch } from 'react-router-dom';
+import { createRouteMatcher, matchRouteRefs } from './matchRouteRefs';
 import {
   RouteRef,
   ExternalRouteRef,
@@ -22,10 +22,12 @@ import {
   AnyRouteRefParams,
   RouteFunc,
   RouteResolutionApi,
+  RouteResolutionMatch,
+  AppNode,
 } from '@backstage/frontend-plugin-api';
-import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
 import {
+  generatePath,
   OpaqueRouteRef,
   OpaqueExternalRouteRef,
   OpaqueSubRouteRef,
@@ -93,7 +95,7 @@ function resolveTargetRef(
  */
 function resolveBasePath(
   targetRef: RouteRef,
-  match: RouteMatch<string, BackstageRouteObject>[],
+  match: NonNullable<ReturnType<typeof matchRouteRefs>>,
   routePaths: Map<RouteRef, string>,
   routeParents: Map<RouteRef, RouteRef | undefined>,
 ) {
@@ -112,7 +114,9 @@ function resolveBasePath(
     // Starting at the desired target ref and traversing back through its parents, we search
     // for a target ref that is present in the match for our current location. When a match
     // is found it means we have found a common base to resolve the route from.
-    matchIndex = match.findIndex(m => m.route.routeRefs.has(targetSearchRef!));
+    matchIndex = match.findIndex(m =>
+      m.routeObject.routeRefs.has(targetSearchRef!),
+    );
     if (matchIndex !== -1) {
       break;
     }
@@ -164,7 +168,17 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
   private readonly routeMatches = new Map<
     string,
-    RouteMatch<string, BackstageRouteObject>[]
+    NonNullable<ReturnType<typeof matchRouteRefs>>
+  >();
+
+  private readonly nodeAncestors = new WeakMap<AppNode, ReadonlySet<AppNode>>();
+  private matchedPathname: string | undefined;
+  private matchedRoutes: { matches: readonly RouteResolutionMatch[] } = {
+    matches: [],
+  };
+  private scopedMatches = new WeakMap<
+    AppNode,
+    { matches: readonly RouteResolutionMatch[] }
   >();
 
   constructor(
@@ -179,10 +193,75 @@ export class RouteResolver implements RouteResolutionApi {
     this.routePaths = routePaths;
     this.routeParents = routeParents;
     this.routeObjects = routeObjects;
+    createRouteMatcher(routeObjects);
     this.routeBindings = routeBindings;
     this.appBasePath = appBasePath;
     this.routeAliasResolver = routeAliasResolver;
     this.routeRefsById = routeRefsById;
+
+    // Route-bearing nodes identify the app trees. Index every descendant as
+    // well, so non-routing extensions inherit scope without walking at render.
+    const roots = new Set<AppNode>();
+    for (const route of routeObjects) {
+      if (route.appNode) {
+        let root = route.appNode;
+        while (root.edges.attachedTo) {
+          root = root.edges.attachedTo.node;
+        }
+        roots.add(root);
+      }
+    }
+    const indexNode = (node: AppNode, ancestors: ReadonlySet<AppNode>) => {
+      const chain = new Set([...ancestors, node]);
+      this.nodeAncestors.set(node, chain);
+      for (const children of node.edges.attachments.values()) {
+        for (const child of children) {
+          indexNode(child, chain);
+        }
+      }
+    };
+    for (const root of roots) {
+      indexNode(root, new Set());
+    }
+  }
+
+  resolvePath(options: { pathname: string; node?: AppNode }): {
+    matches: readonly RouteResolutionMatch[];
+  } {
+    if (options.pathname !== this.matchedPathname) {
+      this.matchedRoutes = {
+        matches: this.matchSourceLocation(options.pathname).flatMap(match => {
+          const node = match.routeObject.appNode;
+          return node
+            ? [
+                {
+                  node,
+                  basePath: match.pathnameBase,
+                  routePattern: match.routePattern,
+                  params: match.params,
+                  contributesPath: match.routeObject.path.length > 0,
+                },
+              ]
+            : [];
+        }),
+      };
+      this.matchedPathname = options.pathname;
+      this.scopedMatches = new WeakMap();
+    }
+    if (!options.node) {
+      return this.matchedRoutes;
+    }
+    let result = this.scopedMatches.get(options.node);
+    if (!result) {
+      const ancestors = this.nodeAncestors.get(options.node);
+      result = {
+        matches: this.matchedRoutes.matches.filter(match =>
+          ancestors?.has(match.node),
+        ),
+      };
+      this.scopedMatches.set(options.node, result);
+    }
+    return result;
   }
 
   resolve<TParams extends AnyRouteRefParams>(
@@ -220,23 +299,9 @@ export class RouteResolver implements RouteResolutionApi {
     );
 
     const routeFunc: RouteFunc<TParams> = (...[params]) => {
-      // We selectively encode some some known-dangerous characters in the
-      // params. The reason that we don't perform a blanket `encodeURIComponent`
-      // here is that this encoding was added defensively long after the initial
-      // release of this code. There's likely to be many users of this code that
-      // already encode their parameters knowing that this code didn't do this
-      // for them in the past. Therefore, we are extra careful NOT to include
-      // the percent character in this set, even though that might seem like a
-      // bad idea.
-      const encodedParams =
-        params &&
-        mapValues(params, value => {
-          if (typeof value === 'string') {
-            return value.replaceAll(/[&?#;\/]/g, c => encodeURIComponent(c));
-          }
-          return value;
-        });
-      return joinPaths(basePath, generatePath(targetPath, encodedParams));
+      // Encoding of dangerous path characters lives in generatePath so direct
+      // callers get the same protection as route-ref resolution.
+      return joinPaths(basePath, generatePath(targetPath, params ?? {}));
     };
     return routeFunc;
   }
@@ -249,7 +314,7 @@ export class RouteResolver implements RouteResolutionApi {
     if (match) {
       this.routeMatches.delete(sourceLocation);
     } else {
-      match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
+      match = matchRouteRefs(this.routeObjects, sourceLocation) ?? [];
     }
     this.routeMatches.set(sourceLocation, match);
     if (this.routeMatches.size > MAX_CACHED_SOURCE_LOCATIONS) {

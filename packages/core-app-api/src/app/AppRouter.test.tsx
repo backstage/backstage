@@ -22,9 +22,10 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { InternalAppContext } from './InternalAppContext';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Link } from '@backstage/ui';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { AppRouter } from './AppRouter';
 import useAsync from 'react-use/esm/useAsync';
 import { AppContextProvider } from './AppContext';
@@ -41,6 +42,56 @@ describe('AppRouter', () => {
   const mockComponents = {
     Router: MemoryRouter,
   } as AppComponents;
+
+  it('provides scoped BUI navigation through the legacy app router', () => {
+    const appIdentityProxy = new AppIdentityProxy();
+    function Location() {
+      const { pathname } = useLocation();
+      return <output>{pathname}</output>;
+    }
+    const components = {
+      Router: (props: React.ComponentProps<typeof MemoryRouter>) => (
+        <MemoryRouter
+          {...props}
+          initialEntries={['/app/catalog']}
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        />
+      ),
+    } as AppComponents;
+    render(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, appIdentityProxy],
+          [
+            configApiRef,
+            new ConfigReader({ app: { baseUrl: 'http://localhost/app' } }),
+          ],
+        ]}
+      >
+        <InternalAppContext.Provider
+          value={{ routeObjects: [], appIdentityProxy }}
+        >
+          <AppContextProvider
+            appContext={{ getComponents: () => components } as any}
+          >
+            <AppRouter>
+              <Location />
+              <Routes>
+                <Route
+                  path="catalog/*"
+                  element={<Link href="create">Create</Link>}
+                />
+              </Routes>
+            </AppRouter>
+          </AppContextProvider>
+        </InternalAppContext.Provider>
+      </TestApiProvider>,
+    );
+    const link = screen.getByRole('link', { name: 'Create' });
+    expect(link).toHaveAttribute('href', '/app/catalog/create');
+    fireEvent.click(link);
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/create');
+  });
 
   it('should fall back to guest if there is no sign-in page', async () => {
     const appIdentityProxy = new AppIdentityProxy();

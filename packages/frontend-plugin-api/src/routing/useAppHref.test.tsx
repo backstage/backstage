@@ -1,0 +1,686 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { type AppNode } from '@backstage/frontend-plugin-api';
+import { default as React, PropsWithChildren } from 'react';
+import { default as tlr, render, renderHook } from '@testing-library/react';
+import {
+  Link as RouterLink,
+  MemoryRouter,
+  Outlet,
+  Route,
+  Routes,
+  useHref as useRouterHref,
+} from 'react-router-dom';
+import {
+  TestApiProvider,
+  mockApis,
+  createMockAppHistory,
+} from '@backstage/frontend-test-utils';
+import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef } from './AppHistoryApi';
+import { useAppHref } from './useAppHref';
+
+const mockRouteNode = {} as AppNode;
+
+// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
+jest.mock('../components/AppNodeProvider', () => {
+  const actual = jest.requireActual('../components/AppNodeProvider');
+  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
+});
+
+describe('useAppHref', () => {
+  const appHistory = createMockAppHistory({ basename: '/backstage' });
+
+  const targets = [
+    '/catalog',
+    '/search?q=https://example.com',
+    'https://example.com/x',
+    '//example.com/x',
+    'mailto:support@example.com',
+    'tel:+15555550123',
+  ];
+
+  // Every spelling a browser executes rather than navigates to, including the
+  // ones it only executes after dropping the tabs and newlines from the URL.
+  const executableTargets = [
+    // eslint-disable-next-line no-script-url
+    'javascript:alert(1)',
+    // eslint-disable-next-line no-script-url
+    'JavaScript:alert(1)',
+    '\tjavascript:alert(1)',
+    'java\tscript:alert(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+  ];
+
+  const withAppHistory = ({ children }: PropsWithChildren<{}>) => (
+    <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+      <MemoryRouter>{children}</MemoryRouter>
+    </TestApiProvider>
+  );
+
+  // No app history registered — the old frontend system path, where React
+  // Router's own useHref would otherwise resolve and prefix these.
+  const withReactRouterOnly = ({ children }: PropsWithChildren<{}>) => (
+    <TestApiProvider apis={[]}>
+      <MemoryRouter basename="/backstage" initialEntries={['/backstage/']}>
+        {children}
+      </MemoryRouter>
+    </TestApiProvider>
+  );
+
+  const renderTargets = (
+    wrapper: (props: PropsWithChildren<{}>) => JSX.Element,
+    hrefs: string[] = targets,
+  ) =>
+    hrefs.map(
+      to => renderHook(() => useAppHref(to), { wrapper }).result.current,
+    );
+
+  it('should apply the app basename to app-relative targets and pass others through', () => {
+    expect(renderTargets(withAppHistory)).toEqual([
+      '/backstage/catalog',
+      '/backstage/search?q=https://example.com',
+      'https://example.com/x',
+      '//example.com/x',
+      'mailto:support@example.com',
+      'tel:+15555550123',
+    ]);
+  });
+
+  it('should pass non-app-relative targets through on the React Router fallback too', () => {
+    expect(renderTargets(withReactRouterOnly)).toEqual([
+      '/backstage/catalog',
+      '/backstage/search?q=https://example.com',
+      'https://example.com/x',
+      '//example.com/x',
+      'mailto:support@example.com',
+      'tel:+15555550123',
+    ]);
+  });
+
+  it('should hand the target back when there is no router at all', () => {
+    // A framework app can legitimately have no React Router: `RouterBlueprint`
+    // may be swapped for a passthrough, and `createSpecializedApp` without
+    // `@backstage/plugin-app` mounts none. React Router's own `useHref` throws
+    // there, so this hook must not be built on it.
+    const withoutRouter = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        {children}
+      </TestApiProvider>
+    );
+    const withNeitherAuthority = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[]}>{children}</TestApiProvider>
+    );
+
+    // The app history still knows the deploy basename without a router.
+    expect(renderTargets(withoutRouter)).toEqual([
+      '/backstage/catalog',
+      '/backstage/search?q=https://example.com',
+      'https://example.com/x',
+      '//example.com/x',
+      'mailto:support@example.com',
+      'tel:+15555550123',
+    ]);
+    // With neither authority there is no basename and nothing to render the
+    // href with, so every target comes back as written.
+    expect(renderTargets(withNeitherAuthority)).toEqual(targets);
+  });
+
+  it('rejects relative paths with app history and with the legacy router', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      for (const wrapper of [withAppHistory, withReactRouterOnly]) {
+        for (const to of ['details', '../edit', '.']) {
+          expect(() => renderHook(() => useAppHref(to), { wrapper })).toThrow(
+            'App routing requires',
+          );
+        }
+      }
+    } finally {
+      error.mockRestore();
+    }
+  });
+
+  it('should return an inert href for targets a browser would execute', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const inert = executableTargets.map(() => 'about:blank');
+
+    expect(renderTargets(withAppHistory, executableTargets)).toEqual(inert);
+    expect(renderTargets(withReactRouterOnly, executableTargets)).toEqual(
+      inert,
+    );
+
+    // Matched on the message: React Router warns about its own future flags
+    // through the same spy.
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('about:blank'));
+    warn.mockRestore();
+  });
+});
+
+/**
+ * The route trees both authorities are run through, each paired with the
+ * browser URL it renders at — deploy basename included — so the same situation
+ * can be set up on the framework path: an app history standing at that
+ * location, under that basename, with the page mount a framework app would
+ * publish for that shape.
+ */
+const trees: Array<{
+  name: string;
+  url: string;
+  basename?: string;
+  /** The mount a framework app publishes where this tree has route matches. */
+  pageMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>;
+  parentMount?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>;
+  wrapper: (p: PropsWithChildren) => any;
+}> = [
+  {
+    name: 'no route match',
+    url: '/catalog/x',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/x']}>{children}</MemoryRouter>
+    ),
+  },
+  {
+    name: 'location with a trailing slash',
+    url: '/catalog/',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/']}>{children}</MemoryRouter>
+    ),
+  },
+  {
+    // The shape the two authorities used to disagree on: this page's match
+    // spans four segments, so climbing a segment per `..` landed on
+    // `/catalog/default/component`, which no route claims.
+    name: 'one deep parameterized match',
+    url: '/catalog/default/component/foo/docs',
+    pageMount: {
+      basePath: '/catalog/default/component/foo',
+      routePattern: '/catalog/:namespace/:kind/:name',
+    },
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/default/component/foo/docs']}>
+        <Routes>
+          <Route path="/catalog/:namespace/:kind/:name/*" element={children} />
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    // A sub-page of a parameterized page: one match below it, so the first
+    // `..` lands on the page and the second climbs off it.
+    name: 'sub-page below a parameterized page',
+    parentMount: { basePath: '/catalog/foo', routePattern: '/catalog/:name' },
+    url: '/catalog/foo/tab-1',
+    pageMount: {
+      basePath: '/catalog/foo/tab-1',
+      routePattern: '/catalog/:name/tab-1',
+    },
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/foo/tab-1']}>
+        <Routes>
+          <Route path="/catalog/:name" element={<Outlet />}>
+            <Route path="tab-1/*" element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'nested matches',
+    parentMount: { basePath: '/catalog', routePattern: '/catalog' },
+    url: '/catalog/sub/x',
+    pageMount: { basePath: '/catalog/sub', routePattern: '/catalog/sub' },
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/sub/x']}>
+        <Routes>
+          <Route path="/catalog" element={<Outlet />}>
+            <Route path="sub/*" element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'pathless layout route',
+    url: '/catalog/x',
+    pageMount: { basePath: '/catalog', routePattern: '/catalog' },
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/x']}>
+        <Routes>
+          <Route element={<Outlet />}>
+            <Route path="/catalog/*" element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'index route',
+    url: '/catalog',
+    pageMount: { basePath: '/catalog', routePattern: '/catalog' },
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog']}>
+        <Routes>
+          <Route path="/catalog" element={<Outlet />}>
+            <Route index element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'deployed under a basename',
+    url: '/backstage',
+    basename: '/backstage',
+    wrapper: ({ children }) => (
+      <MemoryRouter basename="/backstage" initialEntries={['/backstage']}>
+        {children}
+      </MemoryRouter>
+    ),
+  },
+];
+
+const targets = [
+  '/catalog',
+  '/catalog/',
+  '/catalog?kind=component',
+  '/catalog#frag',
+  '/search?query=https://example.com',
+  '?tab=readme',
+  '#section',
+];
+
+/**
+ * The framework spelling of a React Router href.
+ *
+ * The one value the two authorities render differently:
+ * `AppHistory.createHref` normalizes every target through `URL`, so a target
+ * that lands on the app root renders as `${basename}/` where React Router
+ * renders it as `${basename}`. Both address the app root, and only a deploy
+ * basename makes the two spellings distinguishable at all.
+ */
+function appRootSpelling(routerHref: string, basename?: string): string {
+  if (!basename) {
+    return routerHref;
+  }
+  const rest = routerHref.slice(basename.length);
+  const atAppRoot = rest === '' || rest.startsWith('?') || rest.startsWith('#');
+  return atAppRoot ? `${basename}/${rest}` : routerHref;
+}
+
+describe('the React Router authority', () => {
+  // Reading React Router's contexts instead of calling its hooks is only safe
+  // if it gives the same answers, so the expectations here are computed from
+  // React Router itself: both hooks render in the same tree and must agree.
+  // This is the old frontend system's path, which is permanent and never
+  // migrated, so nothing here may move.
+  it.each(trees)('renders hrefs like React Router ($name)', ({ wrapper }) => {
+    for (const to of targets) {
+      const { result } = renderHook(
+        () => ({
+          routerHref: useRouterHref(to),
+          appHref: useAppHref(to),
+        }),
+        { wrapper },
+      );
+
+      expect({ to, href: result.current.appHref }).toEqual({
+        to,
+        href: result.current.routerHref,
+      });
+    }
+  });
+});
+
+describe('the framework authority', () => {
+  // The framework renders an href for the page the target is written in, which
+  // is the same question React Router answers, so every tree above is run
+  // through it too: an app history standing at the tree's own location, and
+  // the page mount a framework app would publish for the tree's shape. A
+  // target that renders one href under the old frontend system and a different
+  // one under the new fails here — there is no exemption list, because a
+  // divergence is exactly the bug this suite exists to catch.
+  it.each(trees)(
+    'renders hrefs like React Router ($name)',
+    ({ url, basename, pageMount, parentMount, wrapper: Tree }) => {
+      const appHistory = createMockAppHistory({
+        initialLocation: url,
+        basename,
+      });
+      const MountedContent = ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            mockApis.routeResolution({
+              resolvePath: {
+                matches: [parentMount, pageMount]
+                  .filter((mount): mount is NonNullable<typeof mount> =>
+                    Boolean(mount),
+                  )
+                  .map(mount => ({ ...mount, node: mockRouteNode })),
+              },
+            }),
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      );
+      const wrapper = ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          <Tree>
+            <MountedContent>{children}</MountedContent>
+          </Tree>
+        </TestApiProvider>
+      );
+
+      for (const to of targets) {
+        const { result } = renderHook(
+          () => ({
+            routerHref: useRouterHref(to),
+            appHref: useAppHref(to),
+          }),
+          { wrapper },
+        );
+
+        expect({ to, href: result.current.appHref }).toEqual({
+          to,
+          href: appRootSpelling(result.current.routerHref, basename),
+        });
+      }
+    },
+  );
+
+  // A page registered at `/catalog`, currently rendering `/catalog/foo`, in an
+  // app deployed under `/backstage`.
+  const PAGE_URL = '/backstage/catalog/foo';
+  const pageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
+    basePath: '/catalog',
+    routePattern: '/catalog',
+  };
+
+  it('resolves a target against the page it is written in, chrome and content alike', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: PAGE_URL,
+      basename: '/backstage',
+    });
+
+    /** A page's own chrome: inside the page mount, above its router adapter. */
+    const chrome = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
+          <TestApiProvider
+            apis={[
+              mockApis.routeResolution({
+                resolvePath: {
+                  matches: [{ ...pageMount, node: mockRouteNode }],
+                },
+              }),
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    /** A page's content: the match its adapter projects for the same mount. */
+    const content = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
+          <Routes>
+            <Route
+              path="/catalog/*"
+              element={
+                <TestApiProvider
+                  apis={[
+                    mockApis.routeResolution({
+                      resolvePath: {
+                        matches: [{ ...pageMount, node: mockRouteNode }],
+                      },
+                    }),
+                  ]}
+                >
+                  {children}
+                </TestApiProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    /** The same page under the old frontend system. */
+    const legacy = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[]}>
+        <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
+          <Routes>
+            <Route path="/catalog/*" element={children} />
+          </Routes>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    const hrefs = (wrapper: (props: PropsWithChildren<{}>) => JSX.Element) =>
+      Object.fromEntries(
+        ['#frag', '?query=x', '/x', 'https://example.com/x'].map(to => [
+          to,
+          renderHook(() => useAppHref(to), { wrapper }).result.current,
+        ]),
+      );
+
+    const onThePage = {
+      // No pathname of their own, so they keep the location they were written
+      // at rather than falling back to the app root.
+      '#frag': '/backstage/catalog/foo#frag',
+      '?query=x': '/backstage/catalog/foo?query=x',
+      '/x': '/backstage/x',
+      'https://example.com/x': 'https://example.com/x',
+    };
+
+    // The framework answers the same whether or not a React Router match
+    // happens to be in context, which is what makes a page's answer
+    // independent of the routing library hosting it.
+    expect(hrefs(chrome)).toEqual(onThePage);
+    expect(hrefs(content)).toEqual(onThePage);
+    expect(hrefs(legacy)).toEqual(onThePage);
+  });
+});
+
+/** Both authorities for the same target, side by side on the same page. */
+function LinkSeam(props: { to: string }) {
+  return (
+    <>
+      <RouterLink to={props.to}>link</RouterLink>
+      <a href={useAppHref(props.to)}>hook</a>
+    </>
+  );
+}
+
+describe('the seam between the two', () => {
+  // `Link` hands an internal target to React Router's own `Link`, so on a page
+  // hosted by the React Router v6 adapter the href a plugin author gets from
+  // their markup is the one rendered here, while `AppRoot` injects `useAppHref`
+  // into Backstage UI's provider and every `@backstage/ui` anchor on the same
+  // page renders through that instead. Comparing the two hooks is not enough:
+  // the component is a separate authority, so it is rendered beside the hook
+  // in one tree and the pair have to agree, target for target.
+  it.each(trees)(
+    'renders the same href through a link as through the hook ($name)',
+    ({ url, basename, pageMount, parentMount, wrapper: Tree }) => {
+      const appHistory = createMockAppHistory({
+        initialLocation: url,
+        basename,
+      });
+
+      const MountedContent = ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            mockApis.routeResolution({
+              resolvePath: {
+                matches: [parentMount, pageMount]
+                  .filter((mount): mount is NonNullable<typeof mount> =>
+                    Boolean(mount),
+                  )
+                  .map(mount => ({ ...mount, node: mockRouteNode })),
+              },
+            }),
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      );
+      for (const to of targets) {
+        const view = render(
+          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+            <Tree>
+              <MountedContent>
+                <LinkSeam to={to} />
+              </MountedContent>
+            </Tree>
+          </TestApiProvider>,
+        );
+        const hrefOf = (name: string) =>
+          view.getByRole('link', { name }).getAttribute('href');
+
+        expect({ to, href: hrefOf('hook') }).toEqual({
+          to,
+          href: appRootSpelling(hrefOf('link')!, basename),
+        });
+        view.unmount();
+      }
+    },
+  );
+});
+
+/**
+ * React Router v6 beta is still a supported version — `AppManager.compat.test`
+ * runs the old frontend system against both, and the migration CLI writes
+ * `'6.0.0-beta.0 || ^6.3.0'` — and it exports none of the `UNSAFE_*` context
+ * objects the React Router fallback in `useAppHref.ts` reads. Each one used to be
+ * imported straight off the module, so under beta they were `undefined` when
+ * handed to `useContext` and this hook could not answer at all.
+ *
+ * That bites hardest in the configuration the fallbacks exist for: a framework
+ * app with no ambient router renders every BUI anchor's href through this
+ * hook, so routerless chrome under beta went through it or nowhere. Only
+ * running the suite against stable is why it shipped, so both versions run
+ * here.
+ *
+ * The harness mirrors `AppManager.compat.test.tsx` and the beta arm of
+ * `Link.test.tsx`: the module registry is reset so the hook is re-required
+ * against the mocked router, and React and Testing Library are pinned to the
+ * instances this file already loaded so the re-required hook still renders
+ * through them. The version aliases are the ones `@backstage/core-app-api`
+ * declares. The mock app history is the one imported above, because it is a
+ * plain object and a subscription rather than anything router-versioned.
+ */
+describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
+  beforeAll(() => {
+    jest.resetModules();
+    jest.doMock('react', () => React);
+    jest.doMock('@testing-library/react', () => tlr);
+    jest.doMock('react-router', () =>
+      rrVersion === 'beta'
+        ? jest.requireActual('react-router-beta')
+        : jest.requireActual('react-router-stable'),
+    );
+    jest.doMock('react-router-dom', () =>
+      rrVersion === 'beta'
+        ? jest.requireActual('react-router-dom-beta')
+        : jest.requireActual('react-router-dom-stable'),
+    );
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
+  /**
+   * The hook under test and the page mount provider it reads, both out of the
+   * registry the mocks apply to. The mount context itself is a
+   * `@backstage/version-bridge` global singleton, so the provider is the same
+   * object either registry hands back — requiring it here only keeps the two
+   * halves of the tree consistent.
+   */
+  function requireVersioned() {
+    return {
+      ...(require('./useAppHref') as typeof import('./useAppHref')),
+      ...(require('@internal/frontend') as typeof import('@internal/frontend')),
+    };
+  }
+
+  it('renders hrefs from the app history with no router at all', () => {
+    const versioned = requireVersioned();
+
+    // A page registered at `/catalog`, currently rendering `/catalog/foo`, in
+    // an app deployed under `/backstage`, with no React Router anywhere — the
+    // shape a `RouterBlueprint` passthrough or a `createSpecializedApp` without
+    // `@backstage/plugin-app` leaves behind.
+    const appHistory = createMockAppHistory({
+      initialLocation: '/backstage/catalog/foo',
+      basename: '/backstage',
+    });
+    const mount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
+      basePath: '/catalog',
+      routePattern: '/catalog',
+    };
+    const wrapper = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider
+        apis={[
+          [appHistoryApiRef, appHistory],
+          mockApis.routeResolution({
+            resolvePath: {
+              matches: [{ ...mount, node: mockRouteNode }],
+            },
+          }),
+        ]}
+      >
+        {children}
+      </TestApiProvider>
+    );
+    const href = (to: string) =>
+      renderHook(() => versioned.useAppHref(to), { wrapper }).result.current;
+
+    // The basename is applied once, independently of the React Router version.
+    expect({
+      '#frag': href('#frag'),
+      '?query=x': href('?query=x'),
+      '/x': href('/x'),
+      'https://example.com/x': href('https://example.com/x'),
+    }).toEqual({
+      '#frag': '/backstage/catalog/foo#frag',
+      '?query=x': '/backstage/catalog/foo?query=x',
+      '/x': '/backstage/x',
+      'https://example.com/x': 'https://example.com/x',
+    });
+  });
+
+  it('hands the target back with neither authority present', () => {
+    const versioned = requireVersioned();
+    const { result } = renderHook(() => ({
+      href: versioned.useAppHref('/catalog'),
+      fragmentHref: versioned.useAppHref('#section'),
+      externalHref: versioned.useAppHref('mailto:someone@example.com'),
+    }));
+
+    // The stand-in contexts report no router under beta, and under stable
+    // there is no router in this tree to report one.
+    expect(result.current.href).toBe('/catalog');
+    expect(result.current.fragmentHref).toBe('/#section');
+    expect(result.current.externalHref).toBe('mailto:someone@example.com');
+  });
+});

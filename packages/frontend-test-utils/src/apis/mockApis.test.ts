@@ -16,8 +16,10 @@
 
 import {
   coreApis,
+  type AppNode,
   createRouteRef,
   FeatureFlagState,
+  type AppLocation,
   type PendingOAuthRequest,
 } from '@backstage/frontend-plugin-api';
 import { createElement } from 'react';
@@ -101,6 +103,10 @@ describe('mockApis', () => {
       expect(factory.api).toBe(coreApis[name]);
       expect(factory.deps).toEqual({});
       expect(factory.factory({})).toBe(mock);
+      if (name === 'routeResolution') {
+        // resolvePath supplies an empty match list by default.
+        continue;
+      }
       for (const method of Object.values(mock)) {
         expect(jest.isMockFunction(method)).toBe(true);
         expect((method as jest.Mock).getMockImplementation()).toBeUndefined();
@@ -285,5 +291,194 @@ describe('mockApis', () => {
     const icons = mockApis.icons.mock({ listIconKeys: () => ['test'] });
     expect(icons.listIconKeys()).toEqual(['test']);
     expect(icons.listIconKeys).toHaveBeenCalledTimes(1);
+  });
+
+  describe('appHistory', () => {
+    it('can create an instance', () => {
+      const navigate = jest.fn();
+      const history = mockApis.appHistory({ navigate });
+      history.navigate('/catalog');
+      expect(navigate).toHaveBeenCalledWith('/catalog');
+      expect(history.navigateCalls).toEqual([
+        { to: '/catalog', options: undefined },
+      ]);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const history = mockApis.appHistory.mock({
+        navigate: jest.fn(),
+      });
+      history.navigate('/tools');
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+    });
+
+    it('keeps the real behavior around a supplied navigate implementation', () => {
+      const navigate = jest.fn();
+      const history = mockApis.appHistory.mock({ navigate });
+
+      history.navigate('/tools', { replace: true, state: { step: 1 } });
+
+      // The supplied implementation observes the call rather than replacing
+      // everything around it, so the location still tracks the navigation.
+      expect(navigate).toHaveBeenCalledWith('/tools', {
+        replace: true,
+        state: { step: 1 },
+      });
+      expect(history.navigate).toHaveBeenCalledWith('/tools', {
+        replace: true,
+        state: { step: 1 },
+      });
+      expect(history.location).toEqual({
+        pathname: '/tools',
+        search: '',
+        hash: '',
+        state: { step: 1 },
+      });
+
+      // Arity survives the hand-off, so single-argument assertions hold.
+      history.navigate('/only-path');
+      expect(navigate.mock.calls[1]).toEqual(['/only-path']);
+
+      // External navigation is recorded without leaving the test page.
+      history.navigate('https://example.com/x');
+      history.navigate('mailto:support@example.com');
+      expect(navigate).toHaveBeenCalledTimes(4);
+      expect(navigate).toHaveBeenLastCalledWith('mailto:support@example.com');
+      expect(history.location.pathname).toBe('/only-path');
+    });
+
+    it('gives every location$ subscription its own handler', () => {
+      const history = mockApis.appHistory.mock();
+      const seen: string[] = [];
+      // The same function subscribing twice is two subscriptions, exactly as
+      // it is on the real app history.
+      const onNext = (l: AppLocation) => seen.push(l.pathname);
+
+      const first = history.location$.subscribe(onNext);
+      const second = history.location$.subscribe(onNext);
+      expect(seen).toEqual(['/', '/']);
+
+      history.navigate('/catalog');
+      expect(seen).toEqual(['/', '/', '/catalog', '/catalog']);
+
+      first.unsubscribe();
+      expect(first.closed).toBe(true);
+      expect(second.closed).toBe(false);
+
+      history.navigate('/tools');
+      expect(seen).toEqual(['/', '/', '/catalog', '/catalog', '/tools']);
+
+      second.unsubscribe();
+    });
+
+    it('only stops tracking the location when a test asks it to', () => {
+      const pinned: AppLocation = {
+        pathname: '/pinned',
+        search: '',
+        hash: '',
+        state: undefined,
+      };
+      const history = mockApis.appHistory.mock({ location: pinned });
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.location).toBe(pinned);
+    });
+
+    it('has working defaults for everything a subscriber needs', () => {
+      const history = mockApis.appHistory.mock();
+
+      expect(history.createHref('/catalog')).toBe('/catalog');
+      expect(history.createHref('/catalog/foo/edit')).toBe('/catalog/foo/edit');
+      expect(history.createHref).toHaveBeenLastCalledWith('/catalog/foo/edit');
+      expect(history.location).toEqual({
+        pathname: '/',
+        search: '',
+        hash: '',
+        state: undefined,
+      });
+
+      const seen: AppLocation[] = [];
+      const subscription = history.location$.subscribe(l => seen.push(l));
+      expect(seen).toEqual([history.location]);
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.location.pathname).toBe('/tools');
+      expect(seen[1]).toBe(history.location);
+
+      subscription.unsubscribe();
+    });
+  });
+
+  describe('routeResolution', () => {
+    it('can create an instance', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution({
+        routes: [[home, '/home']],
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/home');
+    });
+
+    it('supports fixed path matches with defaults and custom resolution callbacks', () => {
+      const node = {} as AppNode;
+      const options = { pathname: '/catalog/entity', node };
+      expect(mockApis.routeResolution().resolvePath(options)).toEqual({
+        matches: [],
+      });
+      const api = mockApis.routeResolution({
+        resolvePath: {
+          matches: [
+            { node, basePath: '/catalog' },
+            {
+              node,
+              basePath: '/catalog/entity',
+              routePattern: '/catalog/:name',
+              params: { name: 'entity' },
+              contributesPath: false,
+            },
+          ],
+        },
+      });
+      const result = api.resolvePath(options);
+      expect(result.matches).toEqual([
+        {
+          node,
+          basePath: '/catalog',
+          routePattern: '/catalog',
+          params: {},
+          contributesPath: true,
+        },
+        {
+          node,
+          basePath: '/catalog/entity',
+          routePattern: '/catalog/:name',
+          params: { name: 'entity' },
+          contributesPath: false,
+        },
+      ]);
+      expect(api.resolvePath({ pathname: '/unrelated' })).toEqual(result);
+      expect(api.resolvePath).toHaveBeenCalledWith(options);
+      const resolvePath = jest.fn(({ pathname }) =>
+        pathname === options.pathname ? result : { matches: [] },
+      );
+      const dynamic = mockApis.routeResolution({ resolvePath });
+      expect(dynamic.resolvePath(options)).toBe(result);
+      expect(dynamic.resolvePath({ pathname: '/unrelated' })).toEqual({
+        matches: [],
+      });
+      expect(resolvePath).toHaveBeenCalledWith(options);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution.mock({
+        resolve: jest.fn(() => () => '/mocked'),
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/mocked');
+      expect(routeResolution.resolve).toHaveBeenCalledWith(home);
+    });
   });
 });
