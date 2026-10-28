@@ -82,7 +82,7 @@ describe('convertLegacyPlugin', () => {
 
     const internalConverted = OpaqueFrontendPlugin.toInternal(converted);
 
-    expect(internalConverted.pluginId).toBe('test');
+    expect(internalConverted.id).toBe('test');
     expect(internalConverted.routes).toEqual({
       test: routeRef,
     });

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { createApiRef, type ApiRef } from '@backstage/frontend-plugin-api';
+import { createApiRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecoratorsApi } from './types';
 
 /** @public */
-export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi> & {
-  readonly $$type: '@backstage/ApiRef';
-} = createApiRef<ScaffolderFormDecoratorsApi>().with({
+export const formDecoratorsApiRef = createApiRef<ScaffolderFormDecoratorsApi>({
   id: 'plugin.scaffolder.form-decorators',
 });

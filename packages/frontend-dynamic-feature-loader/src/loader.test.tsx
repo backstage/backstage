@@ -282,7 +282,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'test-plugin',
+        id: 'test-plugin',
         version: 'v1',
       },
     ]);
@@ -388,12 +388,12 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'plugin-1',
+        id: 'plugin-1',
         version: 'v1',
       },
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'plugin-2',
+        id: 'plugin-2',
         version: 'v1',
       },
     ]);
@@ -487,12 +487,12 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'test-plugin',
+        id: 'test-plugin',
         version: 'v1',
       },
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'test-plugin-alpha',
+        id: 'test-plugin-alpha',
         version: 'v1',
       },
     ]);
@@ -564,7 +564,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'test-plugin',
+        id: 'test-plugin',
         version: 'v1',
       },
     ]);
@@ -741,7 +741,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'plugin-2',
+        id: 'plugin-2',
         version: 'v1',
       },
     ]);
@@ -849,7 +849,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'plugin-2',
+        id: 'plugin-2',
         version: 'v1',
       },
     ]);
@@ -955,7 +955,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'plugin-2',
+        id: 'plugin-2',
         version: 'v1',
       },
     ]);
@@ -1055,7 +1055,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'plugin-2',
+        id: 'plugin-2',
         version: 'v1',
       },
     ]);

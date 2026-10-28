@@ -53,7 +53,7 @@ export interface FooWidgetsApi {
 }
 
 // Create the API reference
-export const fooWidgetsApiRef = createApiRef<FooWidgetsApi>().with({
+export const fooWidgetsApiRef = createApiRef<FooWidgetsApi>({
   id: 'plugin.foo.widgets',
 });
 ```

@@ -495,6 +495,11 @@ export function createApiFactory<Api, Impl extends Api>(
   instance: Impl,
 ): ApiFactory<Api, Impl, {}>;
 
+// @public @deprecated
+export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> & {
+  readonly $$type: '@backstage/ApiRef';
+};
+
 // @public
 export function createApiRef<T>(): {
   with<const TId extends string>(
@@ -1502,6 +1507,8 @@ export interface FrontendPlugin<
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
   readonly icon?: IconElement;
+  // @deprecated
+  readonly id: string;
   info(): Promise<FrontendPluginInfo>;
   readonly pluginId: string;
   // (undocumented)

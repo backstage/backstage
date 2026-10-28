@@ -44,7 +44,7 @@ describe('RouteTracker', () => {
       appNode: {
         spec: {
           extension: { id: 'home.page.index' },
-          plugin: { pluginId: 'home' },
+          plugin: { id: 'home' },
         },
       } as AppNode,
     },
@@ -57,7 +57,7 @@ describe('RouteTracker', () => {
       appNode: {
         spec: {
           extension: { id: 'plugin1.page.index' },
-          plugin: { pluginId: 'plugin1' },
+          plugin: { id: 'plugin1' },
         },
       } as AppNode,
     },
@@ -70,7 +70,7 @@ describe('RouteTracker', () => {
       appNode: {
         spec: {
           extension: { id: 'plugin2.page.index' },
-          plugin: { pluginId: 'plugin2' },
+          plugin: { id: 'plugin2' },
         },
       } as AppNode,
     },

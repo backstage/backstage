@@ -53,7 +53,7 @@ describe('resolveAsyncFeatures', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'test-feature',
+        id: 'test-feature',
         version: 'v1',
         extensions: [
           {
@@ -97,7 +97,7 @@ describe('resolveAsyncFeatures', () => {
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
-        pluginId: 'test',
+        id: 'test',
         version: 'v1',
         extensions: [
           {

@@ -29,7 +29,7 @@ export interface WorkApi {
  * API Reference for {@link WorkApi}.
  * @public
  */
-export const workApiRef = createApiRef<WorkApi>().with({
+export const workApiRef = createApiRef<WorkApi>({
   id: 'plugin.example.work',
 });
 ```

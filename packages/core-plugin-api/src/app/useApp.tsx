@@ -53,8 +53,7 @@ function toLegacyPlugin(plugin: FrontendPlugin): BackstagePlugin {
 
   legacy = {
     getId(): string {
-      // Older plugins may only expose the original identity field.
-      return plugin.pluginId ?? (plugin as { id?: string }).id!;
+      return plugin.pluginId ?? plugin.id;
     },
     get routes() {
       return {};

@@ -26,7 +26,7 @@ interface TechDocsAddonsApi {
   getAddons(): TechDocsAddonOptions[];
 }
 
-export const techdocsAddonsApiRef = createApiRef<TechDocsAddonsApi>().with({
+export const techdocsAddonsApiRef = createApiRef<TechDocsAddonsApi>({
   id: 'plugin.techdocs.addons',
 });
 

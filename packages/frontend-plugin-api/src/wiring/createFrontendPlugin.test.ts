@@ -142,9 +142,7 @@ describe('createFrontendPlugin', () => {
   it('should create an empty plugin', () => {
     const plugin = createFrontendPlugin({ pluginId: 'test' });
 
-    expect(plugin.pluginId).toBe('test');
-    // @ts-expect-error id is only retained for older app runtimes
-    expect(plugin.id).toBe('test');
+    expect(plugin).toBeDefined();
     expect(String(plugin)).toBe('Plugin{id=test}');
   });
 

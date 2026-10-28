@@ -28,8 +28,6 @@ export const OpaqueFrontendPlugin = OpaqueType.create<{
   public: OverridableFrontendPlugin;
   versions: {
     readonly version: 'v1';
-    // Retained for compatibility with older frontend app versions.
-    readonly id: string;
     readonly title?: string;
     readonly icon?: IconElement;
     readonly extensions: Extension<unknown>[];

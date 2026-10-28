@@ -71,10 +71,7 @@ export function extractRouteInfoFromAppNode(
       ?.replace(/^\//, '');
 
     const foundRouteRef = current.instance?.getData(coreExtensionData.routeRef);
-    const routeRef = routeAliasResolver(
-      foundRouteRef,
-      current.spec.plugin?.pluginId,
-    );
+    const routeRef = routeAliasResolver(foundRouteRef, current.spec.plugin?.id);
     if (foundRouteRef && routeRef !== foundRouteRef) {
       routeAliases.set(foundRouteRef, routeRef);
     }

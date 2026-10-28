@@ -19,10 +19,10 @@ import { TestApiProvider } from './TestApiProvider';
 import { mockApis } from './mockApis';
 import { render, screen } from '@testing-library/react';
 
-const xApiRef = createApiRef<{ a: string; b: number }>().with({
+const xApiRef = createApiRef<{ a: string; b: number }>({
   id: 'x',
 });
-const yApiRef = createApiRef<string>().with({
+const yApiRef = createApiRef<string>({
   id: 'y',
 });
 

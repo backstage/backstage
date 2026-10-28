@@ -116,23 +116,6 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
 
-  it('should consume and deduplicate older plugins that only expose id', () => {
-    const oldApp = makeAppPlugin('Old app');
-    const oldPlugin = createFrontendPlugin({ pluginId: 'old-plugin' });
-    Reflect.deleteProperty(oldApp, 'pluginId');
-    Reflect.deleteProperty(oldPlugin, 'pluginId');
-
-    const app = createSpecializedApp({
-      features: [makeAppPlugin('Replaced app'), oldApp, oldPlugin],
-    });
-
-    render(app.element);
-    expect(screen.getByText('Old app')).toBeInTheDocument();
-    const tree = app.apis.get(appTreeApiRef)!.getTree().tree;
-    expect(tree.nodes.get('app')!.spec.plugin!.pluginId).toBe('app');
-    expect(app.errors).toBeUndefined();
-  });
-
   it('should forward config', () => {
     const app = createSpecializedApp({
       config: mockApis.config({ data: { test: 'foo' } }),
@@ -318,17 +301,17 @@ describe('createSpecializedApp', () => {
   it.each([
     [
       'first ID segment',
-      createApiRef<{ value: string }>().with({ id: 'test.api' }),
+      createApiRef<{ value: string }>({ id: 'test.api' }),
       'test',
     ],
     [
       'plugin-prefixed ID',
-      createApiRef<{ value: string }>().with({ id: 'plugin.test.api' }),
+      createApiRef<{ value: string }>({ id: 'plugin.test.api' }),
       'test',
     ],
     [
       'core-prefixed ID',
-      createApiRef<{ value: string }>().with({ id: 'core.test-api' }),
+      createApiRef<{ value: string }>({ id: 'core.test-api' }),
       'app',
     ],
   ])(
@@ -519,9 +502,7 @@ describe('createSpecializedApp', () => {
   });
 
   it('should allow API overrides within the same plugin', () => {
-    const testApiRef = createApiRef<{ value: string }>().with({
-      id: 'test.api',
-    });
+    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
     const appRootPlugin = createFrontendPlugin({
       pluginId: 'app',
       extensions: [
@@ -575,9 +556,7 @@ describe('createSpecializedApp', () => {
   });
 
   it('should reuse provided apis', async () => {
-    const testApiRef = createApiRef<{ value: string }>().with({
-      id: 'test.api',
-    });
+    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
@@ -1174,9 +1153,7 @@ describe('createSpecializedApp', () => {
         name: 'visible-api',
         params: defineParams =>
           defineParams({
-            api: createApiRef<{ value: string }>().with({
-              id: 'test.visible-api',
-            }),
+            api: createApiRef<{ value: string }>({ id: 'test.visible-api' }),
             deps: {},
             factory: () => ({ value: 'visible' }),
           }),
@@ -1185,9 +1162,7 @@ describe('createSpecializedApp', () => {
         name: 'deferred-api',
         params: defineParams =>
           defineParams({
-            api: createApiRef<{ value: string }>().with({
-              id: 'test.deferred-api',
-            }),
+            api: createApiRef<{ value: string }>({ id: 'test.deferred-api' }),
             deps: {},
             factory: () => ({ value: 'deferred' }),
           }),
@@ -1237,7 +1212,7 @@ describe('createSpecializedApp', () => {
     });
 
     it('should ignore deferred overrides of materialized bootstrap APIs', () => {
-      const apiRef = createApiRef<{ value: string }>().with({
+      const apiRef = createApiRef<{ value: string }>({
         id: 'test.bootstrap-frozen-api',
       });
       let bootstrapApiValue: string | undefined;
@@ -1343,7 +1318,7 @@ describe('createSpecializedApp', () => {
     });
 
     it('should allow deferred overrides of bootstrap APIs that were not materialized', () => {
-      const apiRef = createApiRef<{ value: string }>().with({
+      const apiRef = createApiRef<{ value: string }>({
         id: 'test.bootstrap-overridable-api',
       });
       let finalApiValue: string | undefined;
@@ -1835,7 +1810,7 @@ describe('createSpecializedApp', () => {
         getCredentials: async () => ({ token: 'token' }),
         signOut: async () => {},
       };
-      const delayedApiRef = createApiRef<{ value: string }>().with({
+      const delayedApiRef = createApiRef<{ value: string }>({
         id: 'test.delayed-api',
       });
       const featureFlagsApi = {

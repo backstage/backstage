@@ -26,6 +26,11 @@ export type ApiRefConfig = {
   id: string;
 };
 
+type ApiRefBuilderConfig<TId extends string> = {
+  id: TId;
+  pluginId?: string;
+};
+
 function validateId(id: string): void {
   const valid = id
     .split('.')
@@ -36,6 +41,19 @@ function validateId(id: string): void {
       `API id must only contain period separated lowercase alphanum tokens with dashes, got '${id}'`,
     );
   }
+}
+
+function makeApiRef<T, TId extends string>(
+  config: ApiRefBuilderConfig<TId>,
+): ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' } {
+  return OpaqueApiRef.createInstance('v1', {
+    id: config.id,
+    ...(config.pluginId ? { pluginId: config.pluginId } : {}),
+    T: null as unknown as T,
+    toString() {
+      return `apiRef{${config.id}}`;
+    },
+  }) as ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' };
 }
 
 /**
@@ -59,6 +77,31 @@ function validateId(id: string): void {
  * });
  * ```
  *
+ * The legacy way to create an API reference is:
+ *
+ * ```ts
+ * const myApiRef = createApiRef<MyApi>({ id: 'plugin.my.api' });
+ * ```
+ *
+ * @public
+ */
+/**
+ * Creates a reference to an API.
+ *
+ * @deprecated Use `createApiRef<T>().with(...)` instead.
+ * @public
+ */
+export function createApiRef<T>(
+  config: ApiRefConfig,
+): ApiRef<T> & { readonly $$type: '@backstage/ApiRef' };
+/**
+ * Creates a reference to an API.
+ *
+ * @remarks
+ *
+ * Returns a builder with a `.with()` method for providing the API reference
+ * configuration.
+ *
  * @public
  */
 export function createApiRef<T>(): {
@@ -67,20 +110,26 @@ export function createApiRef<T>(): {
   ): ApiRef<T, TId> & {
     readonly $$type: '@backstage/ApiRef';
   };
-} {
+};
+export function createApiRef<T>(config?: ApiRefConfig):
+  | (ApiRef<T> & { readonly $$type: '@backstage/ApiRef' })
+  | {
+      with<const TId extends string>(
+        config: ApiRefConfig & { id: TId; pluginId?: string },
+      ): ApiRef<T, TId> & {
+        readonly $$type: '@backstage/ApiRef';
+      };
+    } {
+  if (config) {
+    validateId(config.id);
+    return makeApiRef<T, string>(config);
+  }
   return {
     with<const TId extends string>(
       withConfig: ApiRefConfig & { id: TId; pluginId?: string },
     ): ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' } {
       validateId(withConfig.id);
-      return OpaqueApiRef.createInstance('v1', {
-        id: withConfig.id,
-        ...(withConfig.pluginId ? { pluginId: withConfig.pluginId } : {}),
-        T: null as unknown as T,
-        toString() {
-          return `apiRef{${withConfig.id}}`;
-        },
-      }) as ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' };
+      return makeApiRef<T, TId>(withConfig);
     },
   };
 }

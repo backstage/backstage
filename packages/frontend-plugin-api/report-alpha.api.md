@@ -428,6 +428,8 @@ export interface FrontendPlugin<
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
   readonly icon?: IconElement;
+  // @deprecated
+  readonly id: string;
   info(): Promise<FrontendPluginInfo>;
   readonly pluginId: string;
   // (undocumented)

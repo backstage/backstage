@@ -156,6 +156,12 @@ export interface FrontendPlugin<
    */
   readonly pluginId: string;
   /**
+   * Deprecated alias for `pluginId`.
+   *
+   * @deprecated Use `pluginId` instead.
+   */
+  readonly id: string;
+  /**
    * The display title of the plugin, used in page headers and navigation.
    * Falls back to the plugin ID if not provided.
    */
