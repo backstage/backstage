@@ -149,22 +149,7 @@ const alertIcon = iconsApi.icon('alert');
 This is useful when you have an icon that you want to render in several
 locations within a plugin.
 
-### Prefer icon elements
-
-Use `IconElement` and `IconsApi.icon` for element-based icon rendering. Render
-the returned element directly:
-
-```tsx
-const icon = iconsApi.icon('alert');
-return <span>{icon}</span>;
-```
-
-An unknown key returns `undefined`; the consuming component decides whether to
-show a fallback icon. A registered `null` icon renders nothing.
-When registering icons, prefer JSX elements such as `<MyIcon />` rather than
-component references such as `MyIcon`. For Material UI icons, pass
-`fontSize="inherit"` to let the surrounding UI control their size.
-
-The deprecated `IconComponent` type and `IconsApi.getIcon` method remain
-available for existing consumers. Plugins can adopt element-based icons
-independently of migrating between frontend systems.
+:::note
+If an icon key is not available as a default icon or one you have added, a
+fallback icon is used instead.
+:::
