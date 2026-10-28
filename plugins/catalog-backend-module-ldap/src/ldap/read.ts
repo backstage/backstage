@@ -25,12 +25,26 @@ import {
   LDAP_RDN_ANNOTATION,
   LDAP_UUID_ANNOTATION,
 } from './constants';
+import { JsonValue } from '@backstage/types';
 import { LdapVendor } from './vendors';
 import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import { resolveOrgRelations } from './relations';
+
+function applyConfigSet(
+  entity: object,
+  set: { [path: string]: JsonValue } | undefined,
+) {
+  if (!set) {
+    return;
+  }
+  const snapshot = cloneDeep(set);
+  for (const [path, value] of Object.entries(snapshot)) {
+    lodashSet(entity, path, value);
+  }
+}
 
 /**
  * The default implementation of the transformation from an LDAP entry to a
@@ -58,11 +72,7 @@ export async function defaultUserTransformer(
     },
   };
 
-  if (set) {
-    for (const [path, value] of Object.entries(set)) {
-      lodashSet(entity, path, cloneDeep(value));
-    }
-  }
+  applyConfigSet(entity, set);
 
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
@@ -177,11 +187,7 @@ export async function defaultGroupTransformer(
     },
   };
 
-  if (set) {
-    for (const [path, value] of Object.entries(set)) {
-      lodashSet(entity, path, cloneDeep(value));
-    }
-  }
+  applyConfigSet(entity, set);
 
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
@@ -303,6 +309,7 @@ export async function readLdapOrg(
   groupConfig: GroupConfig[],
   vendorConfig: VendorConfig | undefined,
   options: {
+    groupClient?: LdapClient;
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
     logger: LoggerService;
@@ -314,20 +321,37 @@ export async function readLdapOrg(
   // Invokes the above "raw" read functions and stitches together the results
   // with all relations etc filled in.
 
-  const { users, userMemberOf } = await readLdapUsers(
-    client,
-    userConfig,
-    vendorConfig,
-    {
-      transformer: options?.userTransformer,
-    },
-  );
-  const { groups, groupMemberOf, groupMember } = await readLdapGroups(
-    client,
-    groupConfig,
-    vendorConfig,
-    { transformer: options?.groupTransformer },
-  );
+  const groupClient = options.groupClient ?? client;
+  const [usersResult, groupsResult] =
+    groupClient === client
+      ? [
+          await readLdapUsers(client, userConfig, vendorConfig, {
+            transformer: options?.userTransformer,
+          }),
+          await readLdapGroups(groupClient, groupConfig, vendorConfig, {
+            transformer: options?.groupTransformer,
+          }),
+        ]
+      : await (async () => {
+          const [usersRead, groupsRead] = await Promise.allSettled([
+            readLdapUsers(client, userConfig, vendorConfig, {
+              transformer: options?.userTransformer,
+            }),
+            readLdapGroups(groupClient, groupConfig, vendorConfig, {
+              transformer: options?.groupTransformer,
+            }),
+          ]);
+          if (usersRead.status === 'rejected') {
+            throw usersRead.reason;
+          }
+          if (groupsRead.status === 'rejected') {
+            throw groupsRead.reason;
+          }
+          return [usersRead.value, groupsRead.value] as const;
+        })();
+
+  const { users, userMemberOf } = usersResult;
+  const { groups, groupMemberOf, groupMember } = groupsResult;
 
   await resolveOrgRelations(groups, users, {
     userMemberOf,
