@@ -628,6 +628,380 @@ wasted scanning entries before a deep cursor.
 
 ---
 
+## Scenarios 15-19: Conditional permission filters
+
+Scenarios 15-19 cover the filters produced by conditional permission policies
+for catalog reads. `AuthorizedEntitiesCatalog` converts the conditional
+decision into a predicate and combines it with any request filter as
+`{ $all: [permission, requestFilter] }`. The scenarios call
+`DefaultEntitiesCatalog` directly with the combined predicate.
+
+They all use this permission predicate, which combines the built-in ownership
+rule with a custom rule: entities without an optional readers annotation are
+readable by everyone, and entities with it are readable only by the listed
+users and groups. The two `kind = 'template'` rules apply to a single kind only.
+
+```ts
+const claims = ['user:default/someone', 'group:default/team-a' /* ... */];
+
+const permission = {
+  $all: [
+    {
+      $any: [
+        { 'relations.ownedBy': { $in: claims } },
+        { 'metadata.annotations.example.com/readers': { $in: claims } },
+        {
+          $not: {
+            'metadata.annotations.example.com/readers': { $exists: true },
+          },
+        },
+      ],
+    },
+    { $any: [{ 'spec.custom': 'x' }, { $not: { kind: 'template' } }] },
+    {
+      $any: [
+        { $not: { 'spec.a': { $exists: true } } },
+        { $not: { 'spec.b': { $exists: true } } },
+        { $not: { kind: 'template' } },
+      ],
+    },
+  ],
+};
+```
+
+Compiled today, `<permission>` in the reference SQL below stands for:
+
+```sql
+(
+  EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'relations.ownedby' AND s.value = ANY(:claims)
+  )
+  OR EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'metadata.annotations.example.com/readers'
+      AND s.value = ANY(:claims)
+  )
+  OR NOT EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'metadata.annotations.example.com/readers'
+  )
+)
+AND (
+  EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'spec.custom' AND s.value = 'x'
+  )
+  OR NOT EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'kind' AND s.value = 'template'
+  )
+)
+AND (
+  NOT EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id AND s.key = 'spec.a'
+  )
+  OR NOT EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id AND s.key = 'spec.b'
+  )
+  OR NOT EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'kind' AND s.value = 'template'
+  )
+)
+```
+
+**How to measure these scenarios**:
+
+- **Use real claims.** Take one realistic user, typically a few dozen user and
+  group references, and repeat with a large list of 100 or more. A correlated
+  `s.value = ANY(:claims)` probe reads a single index page, but each time the
+  index scan restarts it sorts the array again with collation-aware
+  comparisons. On the measured
+  replica, a probe took about 0.016 ms with 2 values, 0.33 ms with 40 values
+  and 1.1 ms with 173 values.
+- **Repeat with `work_mem = '4MB'`**, the PostgreSQL default, as well as with
+  the server setting. A hashed set that fits in `hash_mem` on a large server can
+  fall back to scanning a list once per row on a smaller one.
+- **Use an annotation that few entities have as the readers key.**
+- **When evaluating a change to how these filters are compiled, also add a
+  claim that owns a large share of the catalog**, such as a group that owns
+  100,000 entities. Building such a set up front costs time even in queries
+  that only need a few entities.
+
+---
+
+## 15. Catalog list, count, and kind facets as a permission-filtered user
+
+**User action**: Opening the catalog page as a user whose read access comes
+from the conditional permission policy above. The request has no filter of its
+own, so the permission conditions are the whole filter. The kind picker loads
+facets, and the table loads its first page and the total count.
+
+**Method calls**:
+
+```ts
+catalog.facets({ filter: permission, facets: ['kind'], credentials });
+
+catalog.queryEntities({
+  filter: permission,
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  limit: 20,
+  credentials,
+});
+// The count is the totalItems field in the response.
+```
+
+**Reference SQL** (the facets query and the count portion; the list portion is
+scenario 1 with `<permission>` in place of the kind condition):
+
+```sql
+SELECT search.key AS facet, search.original_value AS value, count(*) AS count
+FROM search
+INNER JOIN (
+  SELECT final_entities.entity_id
+  FROM final_entities
+  WHERE final_entities.final_entity IS NOT NULL
+    AND <permission>
+) AS filtered_entities ON search.entity_id = filtered_entities.entity_id
+WHERE search.key IN ('kind')
+  AND search.original_value IS NOT NULL
+GROUP BY search.key, search.original_value
+ORDER BY search.key, search.original_value;
+
+SELECT count(*) AS count
+FROM final_entities
+WHERE final_entities.final_entity IS NOT NULL
+  AND EXISTS (
+    SELECT 1 FROM search
+    WHERE search.entity_id = final_entities.entity_id
+      AND search.key = 'metadata.name' AND search.value IS NOT NULL
+  )
+  AND <permission>;
+```
+
+**Healthy plan**: The list walks `metadata.name` in order and stops after 21
+rows. The facets and count queries evaluate each permission condition once
+for the whole query (hashed, or as a join), not once per entity. Their
+execution time is close to an unfiltered facets query or count (scenario 10),
+and does not grow with the number of claims.
+
+**Anti-patterns**:
+
+- `EXISTS` / `NOT EXISTS` SubPlans with a loop count close to the number of
+  entities, typically attached to a `final_entities_pkey` lookup under a
+  Nested Loop or Memoize node. The planner chooses per-row SubPlans there
+  because it expects one row per loop.
+- Execution time that grows with the number of claims.
+- Facets or count execution time an order of magnitude above the unfiltered
+  equivalent.
+
+---
+
+## 16. Permission filter combined with a selective request filter
+
+**User action**: Selecting the Component kind on the catalog page as the
+same user. The type picker loads facets, and the table loads a page and the
+total count.
+
+**Method calls**:
+
+```ts
+const filter = { $all: [permission, { kind: 'component' }] };
+
+catalog.facets({ filter, facets: ['spec.type'], credentials });
+
+catalog.queryEntities({
+  filter,
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  limit: 20,
+  credentials,
+});
+```
+
+**Reference SQL**: Scenarios 5, 1 and 2 with `AND <permission>` added next to
+the `kind = 'component'` condition.
+
+**Healthy plan**: Each permission condition is evaluated once for the whole
+query, or once per entity of the requested kind with a cost that does not
+depend on the number of claims. Execution time stays within a small factor of
+scenarios 5, 1 and 2.
+
+**Anti-patterns**:
+
+- A Nested Loop driven by the `kind = 'component'` index scan into a
+  `final_entities_pkey` lookup (often behind Memoize) whose filter runs the
+  `s.value = ANY(:claims)` SubPlan once per row. The semi-join for the
+  selective request filter creates this shape, including inside a
+  materialized CTE.
+- Facets, page, or count times that grow with the number of claims. On the
+  measured replica, all three exceeded the timeout with 173 claims at
+  `work_mem = 32MB`.
+
+---
+
+## 17. Permission-filtered facets for a rare facet key
+
+**User action**: A facet picker for a field that only a few hundred entities
+have, such as an annotation, shown to the same user.
+
+**Method call**:
+
+```ts
+catalog.facets({
+  filter: permission,
+  facets: ['metadata.annotations.example.com/readers'],
+  credentials,
+});
+```
+
+**Reference SQL**: Scenario 15's facets query with
+`search.key IN ('metadata.annotations.example.com/readers')`.
+
+**Healthy plan**: Driven by the facet rows for the rare key, through
+`search_facets_covering_idx`. The permission conditions are only checked for
+the entities that have the key. Execution time is in the low tens of
+milliseconds.
+
+**Anti-patterns**:
+
+- Work proportional to the whole catalog. For example, a full scan of
+  `final_entities`, or materializing the complete filtered entity set before
+  joining it to the few facet rows.
+
+---
+
+## 18. Negated disjunction
+
+**User action**: A filter that excludes entities matching either of two
+conditions. For example, entities the user does not own and that carry no
+readers restriction. Permission rules built with `not` and `anyOf` produce
+this shape.
+
+**Method calls**:
+
+```ts
+const filter = {
+  $not: {
+    $any: [
+      { 'relations.ownedBy': { $in: claims } },
+      { 'metadata.annotations.example.com/readers': { $exists: true } },
+    ],
+  },
+};
+
+catalog.facets({ filter, facets: ['kind'], credentials });
+
+catalog.queryEntities({
+  filter,
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  limit: 20,
+  credentials,
+});
+```
+
+**Reference SQL** (the count portion):
+
+```sql
+SELECT count(*) AS count
+FROM final_entities
+WHERE final_entities.final_entity IS NOT NULL
+  AND EXISTS (
+    SELECT 1 FROM search
+    WHERE search.entity_id = final_entities.entity_id
+      AND search.key = 'metadata.name' AND search.value IS NOT NULL
+  )
+  AND NOT (
+    EXISTS (
+      SELECT 1 FROM search AS s
+      WHERE s.entity_id = final_entities.entity_id
+        AND s.key = 'relations.ownedby' AND s.value = ANY(:claims)
+    )
+    OR EXISTS (
+      SELECT 1 FROM search AS s
+      WHERE s.entity_id = final_entities.entity_id
+        AND s.key = 'metadata.annotations.example.com/readers'
+    )
+  );
+```
+
+**Healthy plan**: Evaluated like `NOT EXISTS a AND NOT EXISTS b`, with each
+condition as an anti-join or a hashed SubPlan that runs once.
+
+**Anti-patterns**:
+
+- Correlated SubPlans with loop counts close to the number of entities.
+  PostgreSQL does not turn `NOT (EXISTS a OR EXISTS b)` into anti-joins itself.
+  It pushes the negation down only after `EXISTS` conditions have been pulled
+  up into joins.
+
+---
+
+## 19. Paginated query with a large `$in` under `$any`
+
+**User action**: Listing entities that match either a broad condition or a
+narrow one. Here that's one of several common kinds, or owned by the user.
+This guards LIMIT short-circuiting against compiling `$in` conditions into
+pre-built sets.
+
+**Method call**:
+
+```ts
+catalog.queryEntities({
+  filter: {
+    $any: [
+      { kind: { $in: ['component', 'api', 'resource', 'subcomponent'] } },
+      { 'relations.ownedBy': { $in: claims } },
+    ],
+  },
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  limit: 20,
+  credentials,
+});
+```
+
+**Reference SQL**: Scenario 1 with this condition in place of the kind
+condition:
+
+```sql
+(
+  EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'kind'
+      AND s.value = ANY('{component,api,resource,subcomponent}')
+  )
+  OR EXISTS (
+    SELECT 1 FROM search AS s
+    WHERE s.entity_id = final_entities.entity_id
+      AND s.key = 'relations.ownedby' AND s.value = ANY(:claims)
+  )
+)
+```
+
+**Healthy plan**: Walks `metadata.name` in order and stops after 21 rows.
+Most candidates match the broad branch, so only a few per-row checks are
+needed. Execution time is in the low tens of milliseconds.
+
+**Anti-patterns**:
+
+- Building a set of all entities that match the broad branch (hundreds of
+  thousands) before the first row is returned, for example by compiling `$in`
+  as an uncorrelated `entity_id IN (SELECT ...)`. That form is hashed in full,
+  so LIMIT cannot stop early. With a small `work_mem` the set no longer fits in
+  `hash_mem`, and PostgreSQL falls back to scanning it once per row.
+- The same applies to a negated large `$in` compiled to `NOT IN (SELECT ...)`.
+
+---
+
 ## Global anti-patterns
 
 These should NEVER appear in any of the above queries:
@@ -643,3 +1017,13 @@ These should NEVER appear in any of the above queries:
    Indicates the query is materializing a large intermediate result.
 5. **Nested Loop with Seq Scan inner** — Usually means a missing index
    on the inner table's join column.
+6. **Per-row `= ANY(array)` SubPlans over many rows** — A correlated
+   `EXISTS (... s.value = ANY(:values))` with a loop count in the tens of
+   thousands. Each time the index scan restarts, it sorts the array again with
+   collation-aware comparisons, so the cost per loop grows with the length of the array even
+   though only one index page is read.
+
+Facets and count queries (scenarios 15-18) have no LIMIT and must visit the
+whole filtered set. For those queries, a bounded spill of an intermediate set
+at a small `work_mem` is acceptable. Per-row work that grows with the number of
+entities times the number of claims is not.
