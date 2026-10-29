@@ -211,6 +211,37 @@ describe('embedded Postgres process lifecycle', () => {
       }
     }, 30_000);
 
+    it('releases CLI output streams without waiting for a stopped PostgreSQL process', async () => {
+      const { exit } = await start(true);
+      const closed = once(parent, 'close');
+      const eventsPath = resolvePath(dir, 'events');
+      await waitFor(async () =>
+        (
+          await fs.readFile(eventsPath, 'utf8').catch(() => '')
+        ).includes('ready:'),
+      );
+      const databaseDir = (await fs.readFile(eventsPath, 'utf8')).match(
+        /database:(.+)/,
+      )![1];
+      const pid = Number(
+        (
+          await fs.readFile(resolvePath(databaseDir, 'postmaster.pid'), 'utf8')
+        ).split('\n')[0],
+      );
+      process.kill(pid, 'SIGSTOP');
+      try {
+        process.kill(parent.pid!, 'SIGINT');
+        expect(
+          await Promise.race([closed, delay(3000).then(() => 'timed out')]),
+        ).toEqual([0, null]);
+        expect(await exit).toEqual([0, null]);
+        expect(await fs.pathExists(databaseDir)).toBe(true);
+      } finally {
+        process.kill(pid, 'SIGCONT');
+      }
+      await waitFor(async () => !(await fs.pathExists(databaseDir)));
+    }, 30_000);
+
     it('interrupts a blocked backend during startup', async () => {
       const { exit } = await start(true, '', { TEST_BLOCK_STARTUP: '1' });
       const eventsPath = resolvePath(dir, 'events');

@@ -120,7 +120,14 @@ export function embeddedPostgresProcess(
         postgresFlags: options.flags?.postgres ?? [],
         initdbFlags: options.flags?.initdb ?? [],
         onError(messageOrError) {
-          console.error('[embedded-postgres]', messageOrError);
+          if (process.connected) {
+            process.send?.(
+              { log: String(messageOrError) },
+              undefined,
+              undefined,
+              () => {},
+            );
+          }
         },
         onLog() {},
       });

@@ -121,9 +121,14 @@ async function startEmbeddedDbInternal(
     {
       detached: true,
       windowsHide: true,
-      stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
+      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     },
   );
+  child.on('message', (message: { log?: string }) => {
+    if (message.log) {
+      console.error('[embedded-postgres]', message.log);
+    }
+  });
   const disconnect = () => {
     child.unref();
     if (child.connected) {
@@ -152,20 +157,22 @@ async function startEmbeddedDbInternal(
   exitPromise.catch(error => console.error(error));
 
   let aborted: () => void;
+  let ready: (message: { ready?: boolean; error?: string }) => void;
   await new Promise<void>((resolve, reject) => {
     aborted = () => reject(signal?.reason);
+    ready = message => {
+      if (message.error) {
+        reject(new Error(message.error));
+      } else if (message.ready) {
+        resolve();
+      }
+    };
+    child.on('message', ready);
     signal?.addEventListener('abort', aborted, { once: true });
     if (signal?.aborted) {
       aborted();
       return;
     }
-    child.once('message', (message: { error?: string }) => {
-      if (message.error) {
-        reject(new Error(message.error));
-      } else {
-        resolve();
-      }
-    });
     exitPromise.then(
       () =>
         reject(new Error('Embedded Postgres helper exited before starting')),
@@ -182,7 +189,10 @@ async function startEmbeddedDbInternal(
       }
       throw error;
     })
-    .finally(() => signal?.removeEventListener('abort', aborted));
+    .finally(() => {
+      signal?.removeEventListener('abort', aborted);
+      child.removeListener('message', ready);
+    });
 
   child.unref();
 
