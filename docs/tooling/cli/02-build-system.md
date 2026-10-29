@@ -556,6 +556,9 @@ automatically detect and use `src/setupTests.ts` if it exists, and provides a
 coverage configuration that works well with our selected transpilers. The configuration
 will also detect the appropriate Jest environment for each package role, running
 `web-libraries` with the `"jsdom"` environment, `node-libraries` with `"node"`, and so on.
+In the `"node"` environment, it also removes the `localStorage` global that Node.js 25 and
+later define, because that global only works with the `--localstorage-file` option. If you
+set that option on the command line or in `NODE_OPTIONS`, the global stays.
 
 The configuration also takes a project-wide approach, with the expectation most
 if not all packages within a monorepo will use the same base configuration. This
