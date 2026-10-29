@@ -47,6 +47,11 @@
       "name": "onboard-to-openapi-server",
       "description": "Use this skill when the user wants to migrate an existing Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling. Optionally, can also add typed client generation and migrate router tests to the OpenAPI test wrapper.",
       "files": ["SKILL.md"]
+    },
+    {
+      "name": "backend-plugin-testing",
+      "description": "Write tests for Backstage backend plugins, modules, services, and routers with `@backstage/backend-test-utils`. Use this skill when adding or changing backend tests, mocking core services or credentials, testing against real databases or caches, or testing code that reads the filesystem or calls remote services.",
+      "files": ["SKILL.md"]
     }
   ]
 }

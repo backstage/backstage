@@ -73,3 +73,7 @@ Never make changes to the release notes in `/docs/releases` unless explicitly as
 ## Repository Structure
 
 See `/docs/contribute/project-structure.md` for a detailed description of the repository structure.
+
+## Skills
+
+Agent skills live in `/.claude/skills` (also linked as `/.agents/skills`), each in a `<name>/SKILL.md` file. Skills published to adopters are authored in `/docs/.well-known/skills` and symlinked into `/.claude/skills`.

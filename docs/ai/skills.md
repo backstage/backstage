@@ -87,6 +87,14 @@ Add an entry to `docs/.well-known/skills/index.json`:
 
 If your skill includes additional supporting files, list each one in the `files` array.
 
+### Making the skill available in the monorepo
+
+To let AI assistants working in the Backstage repository use the skill, add a symbolic link to it in `.claude/skills/`, which is also available as `.agents/skills/`:
+
+```bash
+ln -s ../../docs/.well-known/skills/<skill-name> .claude/skills/<skill-name>
+```
+
 ### Review process
 
 All changes to skills go through the standard Backstage pull request process. When authoring or reviewing a skill, consider:
