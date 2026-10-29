@@ -19,11 +19,13 @@ import { screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   createFrontendPlugin,
-  ExtensionFragment,
-  FragmentBlueprint,
   PageBlueprint,
   useAppNode,
 } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionFragment,
+  FragmentBlueprint,
+} from '@backstage/frontend-plugin-api/alpha';
 
 it('collects fragments across plugins and renders them in the host page', async () => {
   const HostContext = createContext('default');
@@ -61,13 +63,13 @@ it('collects fragments across plugins and renders them in the host page', async 
               path: '/',
               loader: async () => (
                 <HostContext.Provider value="host">
-                  <ExtensionFragment extensionId="deployments/summary" />
+                  <ExtensionFragment fragmentId="deployments/summary" />
                   <ExtensionFragment
-                    extensionId="deployments/disabled"
+                    fragmentId="deployments/disabled"
                     fallback={<div>Disabled fallback</div>}
                   />
                   <ExtensionFragment
-                    extensionId="missing"
+                    fragmentId="missing"
                     fallback={<div>Missing fallback</div>}
                   />
                 </HostContext.Provider>

@@ -23,4 +23,3 @@ export {
   PluginWrapperBlueprint,
   type PluginWrapperDefinition,
 } from './PluginWrapperBlueprint';
-export { FragmentBlueprint } from './FragmentBlueprint';

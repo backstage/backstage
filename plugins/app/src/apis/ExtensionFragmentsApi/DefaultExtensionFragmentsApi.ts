@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExtensionFragmentsApi } from '@backstage/frontend-plugin-api';
+import { ExtensionFragmentsApi } from '@backstage/frontend-plugin-api/alpha';
 import { JSX } from 'react';
 
 /** @internal */

@@ -22,7 +22,7 @@ import { coreExtensionData, createExtensionBlueprint } from '../wiring';
  * Creates a React fragment that can be rendered by {@link ExtensionFragment}
  * in another plugin without a custom extension input or blueprint.
  *
- * @public
+ * @alpha
  */
 export const FragmentBlueprint = createExtensionBlueprint({
   kind: 'fragment',

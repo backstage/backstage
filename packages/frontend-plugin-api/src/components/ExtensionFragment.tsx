@@ -21,11 +21,11 @@ import { useApi } from '../apis/system';
 /**
  * Props for {@link ExtensionFragment}.
  *
- * @public
+ * @alpha
  */
 export interface ExtensionFragmentProps {
   /** The fragment namespace and optional name, for example `deployments/summary`. Omit the `fragment:` kind. */
-  extensionId: string;
+  fragmentId: string;
   /** Rendered when the fragment is missing, disabled, or excluded by a predicate. */
   fallback?: ReactNode;
 }
@@ -34,16 +34,16 @@ export interface ExtensionFragmentProps {
  * Renders one fragment in the host's React context.
  * Missing fragments render the fallback, or nothing.
  *
- * @public
+ * @alpha
  */
 export function ExtensionFragment(props: ExtensionFragmentProps): JSX.Element {
   const api = useApi(extensionFragmentsApiRef);
-  if (!/^[^:/]+(?:\/[^:/]+)?$/.test(props.extensionId)) {
+  if (!/^[^:/]+(?:\/[^:/]+)?$/.test(props.fragmentId)) {
     throw new Error(
-      `Invalid fragment ID '${props.extensionId}', expected a namespace and optional name without the 'fragment:' kind`,
+      `Invalid fragment ID '${props.fragmentId}', expected a namespace and optional name without the 'fragment:' kind`,
     );
   }
   return (
-    <>{api.getFragment(`fragment:${props.extensionId}`) ?? props.fallback}</>
+    <>{api.getFragment(`fragment:${props.fragmentId}`) ?? props.fallback}</>
   );
 }

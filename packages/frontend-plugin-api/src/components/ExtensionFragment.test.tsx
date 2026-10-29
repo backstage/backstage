@@ -17,37 +17,35 @@
 import { render, screen } from '@testing-library/react';
 import {
   renderInTestApp,
-  mockApis,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils/alpha';
 import { withLogCollector } from '@backstage/test-utils';
 import { extensionFragmentsApiRef } from '../apis/definitions/ExtensionFragmentsApi';
 import { ExtensionFragment } from './ExtensionFragment';
 
 it('looks up named and unnamed fragments and renders fallback or nothing for missing content', async () => {
-  const getFragment = jest.fn((id: string) => {
-    if (id === 'fragment:deployments/summary') {
-      return <div>Deployment summary</div>;
-    }
-    if (id === 'fragment:ownership') {
-      return <div>Owner</div>;
-    }
-    return undefined;
+  const fragments = mockApis.extensionFragments({
+    fragments: {
+      'deployments/summary': <div>Deployment summary</div>,
+      ownership: <div>Owner</div>,
+    },
   });
+  const getFragment = jest.spyOn(fragments, 'getFragment');
   renderInTestApp(
     <>
       <ExtensionFragment
-        extensionId="deployments/summary"
+        fragmentId="deployments/summary"
         fallback="Unused fallback"
       />
-      <ExtensionFragment extensionId="ownership" />
+      <ExtensionFragment fragmentId="ownership" />
       <ExtensionFragment
-        extensionId="missing"
+        fragmentId="missing"
         fallback={<div>No summary</div>}
       />
-      <ExtensionFragment extensionId="absent" />
+      <ExtensionFragment fragmentId="absent" />
     </>,
-    { apis: [mockApis.extensionFragments.mock({ getFragment })] },
+    { apis: [fragments] },
   );
   expect(await screen.findByText('Deployment summary')).toBeVisible();
   expect(screen.getByText('Owner')).toBeVisible();
@@ -69,13 +67,13 @@ it.each([
   '/summary',
   'deployments/',
   'a/b/c',
-])('rejects invalid fragment ID %j', extensionId => {
+])('rejects invalid fragment ID %j', fragmentId => {
   const getFragment = jest.fn();
   withLogCollector(['error'], () => {
     expect(() =>
       render(
         <TestApiProvider apis={[[extensionFragmentsApiRef, { getFragment }]]}>
-          <ExtensionFragment extensionId={extensionId} />
+          <ExtensionFragment fragmentId={fragmentId} />
         </TestApiProvider>,
       ),
     ).toThrow('expected a namespace and optional name');

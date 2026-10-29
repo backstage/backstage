@@ -24,7 +24,7 @@ import { createApiRef } from '../system';
  * Fragments inherit React context from the location where they are rendered.
  * Looking up a fragment does not invoke its loader or render it.
  *
- * @public
+ * @alpha
  */
 export interface ExtensionFragmentsApi {
   /**
@@ -37,7 +37,7 @@ export interface ExtensionFragmentsApi {
 /**
  * The API reference for {@link ExtensionFragmentsApi}.
  *
- * @public
+ * @alpha
  */
 export const extensionFragmentsApiRef =
   createApiRef<ExtensionFragmentsApi>().with({

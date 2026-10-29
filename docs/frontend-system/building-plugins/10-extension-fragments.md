@@ -7,19 +7,21 @@ description: Embedding React content from another plugin
 
 # Extension fragments
 
+Extension fragments are an **alpha** feature. Import the APIs from `@backstage/frontend-plugin-api/alpha` and the fragment test helpers from `@backstage/frontend-test-utils/alpha`. These APIs may change before becoming stable.
+
 Extension fragments let a plugin render a piece of React content provided by another installed plugin. They are useful for lightweight integration within an internal app, where the plugins can agree on a fragment ID without defining a custom blueprint and extension input.
+
+Fragments are also useful for open source plugins that provide a freeform component for other plugins to render. When the caller does not need to pass props, prefer a fragment over directly exporting the component: the providing plugin retains control of its implementation, extension configuration, and any child extensions. The fragment itself can be configurable or extensible, but its caller cannot pass props. Use a regular exported component when caller-provided props are part of the contract.
 
 Initializing a fragment extension and looking it up in the registry do not load or render its content. The loader runs only when the fragment is rendered. Use a dedicated blueprint and input when you need a richer contract, typed data exchange, or a collection of contributions.
 
 ## Providing a fragment
 
-Create a fragment with `FragmentBlueprint` from `@backstage/frontend-plugin-api` and register it in your plugin:
+Create a fragment with `FragmentBlueprint` from `@backstage/frontend-plugin-api/alpha` and register it in your plugin:
 
 ```tsx
-import {
-  createFrontendPlugin,
-  FragmentBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { FragmentBlueprint } from '@backstage/frontend-plugin-api/alpha';
 
 const summary = FragmentBlueprint.make({
   name: 'summary',
@@ -44,15 +46,15 @@ The extension ID is `fragment:deployments/summary`. Omitting `name` creates the 
 Render `ExtensionFragment` at the desired location in the consuming page:
 
 ```tsx
-import { ExtensionFragment } from '@backstage/frontend-plugin-api';
+import { ExtensionFragment } from '@backstage/frontend-plugin-api/alpha';
 
 <ExtensionFragment
-  extensionId="deployments/summary"
+  fragmentId="deployments/summary"
   fallback={<p>No deployment summary available</p>}
 />;
 ```
 
-Always provide the namespace and optional name, without the `fragment:` kind prefix. For an unnamed fragment, use `extensionId="deployments"`.
+Always provide the namespace and optional name, without the `fragment:` kind prefix. For an unnamed fragment, use `fragmentId="deployments"`.
 
 If the fragment is missing, disabled, or excluded by an extension predicate, the component renders `fallback`, or nothing if no fallback was provided. Loading and rendering errors use the fragment's normal extension boundary; they do not select the missing-content fallback.
 
@@ -68,7 +70,7 @@ app:
     - fragment:deployments/summary: false
 ```
 
-The app plugin collects enabled fragments through its `api:app/extension-fragments` extension, exposed as `coreApis.extensionFragments`.
+The app plugin collects enabled fragments through its `api:app/extension-fragments` extension, exposed as `extensionFragmentsApiRef` from `@backstage/frontend-plugin-api/alpha`.
 
 The registry follows the normal Utility API lifecycle. Without extension predicates in its subtree, it can initialize during bootstrap. If the subtree contains a predicate, the entire registry is deferred until app finalization, when the session's predicate context is available. Sign-in pages and other bootstrap UI must not depend on the registry in that case.
 
@@ -91,23 +93,22 @@ Supply any Utility API mocks through `renderInTestApp`'s `apis` option. If the f
 Inject the fragment registry without importing the contributing plugin:
 
 ```tsx
-import { mockApis, renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils/alpha';
 
 renderInTestApp(<DeploymentPage />, {
   apis: [
-    [
-      coreApis.extensionFragments,
-      {
-        getFragment: id =>
-          id === 'fragment:deployments/summary' ? (
-            <div>Test deployment summary</div>
-          ) : undefined,
+    mockApis.extensionFragments({
+      fragments: {
+        'deployments/summary': <div>Test deployment summary</div>,
       },
-    ],
+    }),
   ],
 });
 ```
 
-The Utility API accepts full extension IDs. `ExtensionFragment` adds the `fragment:` prefix to the namespace and optional name supplied by the consumer. Return `undefined` from the mock to test missing-content behavior.
+The fake accepts React elements keyed by fragment ID, without the `fragment:` prefix, just like `ExtensionFragment`'s `fragmentId` prop. Calling `mockApis.extensionFragments()` without options creates an empty registry, which is useful for testing missing-content fallbacks.
+
+For assertions on lookup calls, use `mockApis.extensionFragments.mock()` with an optional `getFragment` implementation. The underlying Utility API accepts full extension IDs; `ExtensionFragment` adds the `fragment:` prefix before looking up the element.
 
 For integration tests, use `renderTestApp` with the actual producer and consumer plugins in `features`. The test app includes the default fragment registry.

@@ -18,11 +18,14 @@ import {
   ApiBlueprint,
   coreApis,
   coreExtensionData,
-  ExtensionFragment,
   createFrontendModule,
   createFrontendPlugin,
-  FragmentBlueprint,
 } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionFragment,
+  FragmentBlueprint,
+  extensionFragmentsApiRef,
+} from '@backstage/frontend-plugin-api/alpha';
 import appPlugin from '@backstage/plugin-app';
 import { render, screen } from '@testing-library/react';
 import { prepareSpecializedApp } from './prepareSpecializedApp';
@@ -54,7 +57,7 @@ it.each([undefined, false, true])(
               factory: () => [
                 coreExtensionData.reactElement(
                   <ExtensionFragment
-                    extensionId="deployments"
+                    fragmentId="deployments"
                     fallback={<div>No summary</div>}
                   />,
                 ),
@@ -88,7 +91,7 @@ it.each([undefined, false, true])(
       ],
     });
     const bootstrap = prepared.getBootstrapApp();
-    const bootstrapRegistry = bootstrap.apis.get(coreApis.extensionFragments);
+    const bootstrapRegistry = bootstrap.apis.get(extensionFragmentsApiRef);
     expect(bootstrapRegistry !== undefined).toBe(flagActive === undefined);
     expect(
       bootstrapRegistry?.getFragment('fragment:deployments') !== undefined,
@@ -98,7 +101,7 @@ it.each([undefined, false, true])(
     expect(loader).not.toHaveBeenCalled();
 
     const finalized = prepared.finalize();
-    const registry = finalized.apis.get(coreApis.extensionFragments)!;
+    const registry = finalized.apis.get(extensionFragmentsApiRef)!;
     expect(registry).toBeDefined();
     expect(registry.getFragment('fragment:deployments') !== undefined).toBe(
       flagActive !== false,

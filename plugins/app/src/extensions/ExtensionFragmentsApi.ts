@@ -18,8 +18,8 @@ import {
   ApiBlueprint,
   coreExtensionData,
   createExtensionInput,
-  coreApis,
 } from '@backstage/frontend-plugin-api';
+import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/alpha';
 import { DefaultExtensionFragmentsApi } from '../apis/ExtensionFragmentsApi/DefaultExtensionFragmentsApi';
 
 export const ExtensionFragmentsApi = ApiBlueprint.makeWithOverrides({
@@ -30,7 +30,7 @@ export const ExtensionFragmentsApi = ApiBlueprint.makeWithOverrides({
   factory: (originalFactory, { inputs }) =>
     originalFactory(defineParams =>
       defineParams({
-        api: coreApis.extensionFragments,
+        api: extensionFragmentsApiRef,
         deps: {},
         factory: () =>
           new DefaultExtensionFragmentsApi(
