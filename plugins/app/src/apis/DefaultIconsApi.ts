@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { createElement, isValidElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { createIconComponentLookup } from '../../../../../core-plugin-api/src/icons/createIconComponentLookup';
+import { createIconComponentLookup } from '../../../../packages/core-plugin-api/src/icons/createIconComponentLookup';
 
 /**
  * Implementation for the {@link IconsApi}

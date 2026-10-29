@@ -78,8 +78,7 @@ import {
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
 import { legacyDialogApiRef, legacyIconsApiRef } from './apis/legacyApiRefs';
 import { LegacyDialogApi } from './apis/LegacyDialogApi';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { DefaultIconsApi } from '../../../packages/frontend-app-api/src/apis/implementations/IconsApi';
+import { DefaultIconsApi } from './apis/DefaultIconsApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
