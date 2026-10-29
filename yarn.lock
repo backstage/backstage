@@ -2171,6 +2171,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.151"
     "@types/npm-packlist": "npm:^3.0.0"
     "@types/shell-quote": "npm:^1.7.5"
+    async-exit-hook: "npm:^2.0.1"
     bfj: "npm:^9.0.2"
     buffer: "npm:^6.0.3"
     chalk: "npm:^4.0.0"
@@ -2178,7 +2179,6 @@ __metadata:
     cleye: "npm:^2.6.0"
     cross-spawn: "npm:^7.0.3"
     css-loader: "npm:^6.5.1"
-    ctrlc-windows: "npm:^2.1.0"
     embedded-postgres: "npm:18.3.0-beta.17"
     esbuild-loader: "npm:^4.0.0"
     eslint-rspack-plugin: "npm:^4.2.1"
@@ -25307,13 +25307,6 @@ __metadata:
   version: 5.6.5
   resolution: "csv-stringify@npm:5.6.5"
   checksum: 10/efed94869b8426e6a983f2237bd74eff15953e2e27affee9c1324f66a67dabe948573c4c21a8661a79aa20b58efbcafcf11c34e80bdd532a43f35e9cde5985b9
-  languageName: node
-  linkType: hard
-
-"ctrlc-windows@npm:^2.1.0":
-  version: 2.2.0
-  resolution: "ctrlc-windows@npm:2.2.0"
-  checksum: 10/3d044eda5aa8c58d35e34b05249f9330e7258bec88999e50f25fd21807c2bedabbcab28e10a24e60c15748267ef0ebf9a915d4e430f484d5ce2ec5c75663c352
   languageName: node
   linkType: hard
 

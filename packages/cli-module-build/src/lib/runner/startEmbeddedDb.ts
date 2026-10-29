@@ -54,6 +54,7 @@ const connectionSchema: z.ZodType<EmbeddedDbConnectionConfig> = z.object({
 export interface StartEmbeddedDbOptions {
   configPaths?: string[];
   targetDir?: string;
+  signal?: AbortSignal;
 }
 
 /**
@@ -69,19 +70,22 @@ export async function startEmbeddedDb(options: StartEmbeddedDbOptions): Promise<
     }
   | undefined
 > {
+  options.signal?.throwIfAborted();
   const dbConfig = await readDatabaseConfig(
     options.configPaths,
     options.targetDir,
   );
+  options.signal?.throwIfAborted();
   if (dbConfig?.client !== 'embedded-postgres') {
     return undefined;
   }
 
-  return startEmbeddedDbInternal(dbConfig.connection);
+  return startEmbeddedDbInternal(dbConfig.connection, options.signal);
 }
 
 async function startEmbeddedDbInternal(
   userConfig?: EmbeddedDbConnectionConfig,
+  signal?: AbortSignal,
 ) {
   console.warn(
     chalk.yellow(
@@ -110,6 +114,8 @@ async function startEmbeddedDbInternal(
       '--eval',
       `(${embeddedPostgresProcess.toString()})(${JSON.stringify(
         embeddedPostgresPath,
+      )}, ${JSON.stringify(
+        require.resolve('async-exit-hook', { paths: [embeddedPostgresPath] }),
       )})`,
     ],
     {
@@ -118,6 +124,16 @@ async function startEmbeddedDbInternal(
       stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
     },
   );
+  const disconnect = () => {
+    child.unref();
+    if (child.connected) {
+      child.disconnect();
+    }
+  };
+  signal?.addEventListener('abort', disconnect, { once: true });
+  if (signal?.aborted) {
+    disconnect();
+  }
   const exitPromise = new Promise<void>((resolve, reject) => {
     child.once('error', reject);
     child.once('exit', code => {
@@ -128,10 +144,21 @@ async function startEmbeddedDbInternal(
       }
     });
   });
+  exitPromise.then(
+    () => signal?.removeEventListener('abort', disconnect),
+    () => signal?.removeEventListener('abort', disconnect),
+  );
   // Observe failures even while the backend is running.
   exitPromise.catch(error => console.error(error));
 
+  let aborted: () => void;
   await new Promise<void>((resolve, reject) => {
+    aborted = () => reject(signal?.reason);
+    signal?.addEventListener('abort', aborted, { once: true });
+    if (signal?.aborted) {
+      aborted();
+      return;
+    }
     child.once('message', (message: { error?: string }) => {
       if (message.error) {
         reject(new Error(message.error));
@@ -145,13 +172,19 @@ async function startEmbeddedDbInternal(
       reject,
     );
     child.send({ user, password, port, flags: userConfig?.flags });
-  }).catch(async error => {
-    if (child.connected) {
-      child.disconnect();
-    }
-    await exitPromise.catch(() => {});
-    throw error;
-  });
+  })
+    .catch(async error => {
+      if (child.connected) {
+        child.disconnect();
+      }
+      if (!signal?.aborted) {
+        await exitPromise.catch(() => {});
+      }
+      throw error;
+    })
+    .finally(() => signal?.removeEventListener('abort', aborted));
+
+  child.unref();
 
   const configOverride: Record<string, unknown> = {
     client: 'pg',
@@ -176,6 +209,7 @@ async function startEmbeddedDbInternal(
   return {
     configOverride,
     async close() {
+      child.ref();
       if (child.connected) {
         child.disconnect();
       }

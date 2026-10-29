@@ -23,6 +23,13 @@ runCli({
 
 The caller owns module selection. The runner does not discover modules or apply module overrides.
 
+## Development backend loading
+
+The Node transform loader used by the development CLI exits immediately on
+Ctrl-C in CLI-managed backend processes. SIGTERM remains available for graceful
+restarts. Loading application code outside the development CLI does not install
+this interrupt handler.
+
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)

@@ -18,6 +18,15 @@
 const { Client } = require('pg');
 const fs = require('node:fs');
 
+if (process.env.TEST_RELOAD_FILE) {
+  require(process.env.TEST_RELOAD_FILE);
+}
+
+if (process.env.TEST_BLOCK_STARTUP) {
+  fs.appendFileSync(process.env.TEST_EVENTS, 'booting\n');
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10_000);
+}
+
 const config = JSON.parse(process.env.APP_CONFIG_backend_database);
 const client = new Client({
   ...config.connection,
@@ -31,6 +40,7 @@ async function stop() {
     return;
   }
   stopping = true;
+  fs.appendFileSync(process.env.TEST_EVENTS, 'draining\n');
   // Query throughout a deliberately slow plugin shutdown hook.
   for (let i = 0; i < 10; i++) {
     await new Promise(resolve => setTimeout(resolve, 100));

@@ -22,6 +22,7 @@ jest.mock('chokidar', () => ({
   watch: jest.fn(() => ({
     on: jest.fn().mockReturnThis(),
     add: jest.fn(),
+    close: jest.fn().mockResolvedValue(undefined),
   })),
 }));
 
@@ -43,10 +44,6 @@ jest.mock('../ipc', () => ({
   ServerDataStore: {
     bind: jest.fn(),
   },
-}));
-
-jest.mock('ctrlc-windows', () => ({
-  ctrlc: jest.fn(),
 }));
 
 const mockStartEmbeddedDb = jest.fn();
@@ -86,8 +83,33 @@ describe('runBackend', () => {
       value: originalPlatform,
     });
 
+    jest.restoreAllMocks();
     jest.clearAllMocks();
     jest.useRealTimers();
+  });
+
+  it('cancels startup and scheduled restarts on interrupt before a backend is spawned', async () => {
+    mockStartEmbeddedDb.mockImplementationOnce(() => new Promise(() => {}));
+    const starting = runBackend({ entry: 'src/index' });
+    const interrupt = (process.once as jest.Mock).mock.calls.find(
+      ([event]) => event === 'SIGINT',
+    )![1];
+    interrupt();
+    const waitForExit = await starting;
+    await waitForExit();
+    await jest.advanceTimersByTimeAsync(100);
+    expect(mockStartEmbeddedDb.mock.calls[0][0].signal.aborted).toBe(true);
+    expect(mockSpawn).not.toHaveBeenCalled();
+
+    (process.once as jest.Mock).mockClear();
+    mockStartEmbeddedDb.mockResolvedValueOnce(undefined);
+    const waitForScheduledExit = await runBackend({ entry: 'src/index' });
+    (process.once as jest.Mock).mock.calls.find(
+      ([event]) => event === 'SIGINT',
+    )![1]();
+    await waitForScheduledExit();
+    await jest.advanceTimersByTimeAsync(100);
+    expect(mockSpawn).not.toHaveBeenCalled();
   });
 
   describe('embedded-postgres support', () => {
@@ -111,6 +133,7 @@ describe('runBackend', () => {
       expect(mockStartEmbeddedDb).toHaveBeenCalledWith({
         configPaths: undefined,
         targetDir: undefined,
+        signal: expect.any(AbortSignal),
       });
       expect(mockSpawn.mock.calls[0][1]).not.toContain('--no-node-snapshot');
       const spawnEnv = mockSpawn.mock.calls[0][2]?.env as Record<
@@ -140,6 +163,7 @@ describe('runBackend', () => {
       expect(mockStartEmbeddedDb).toHaveBeenCalledWith({
         configPaths: ['../../config/local.yaml'],
         targetDir: '/root/packages/backend',
+        signal: expect.any(AbortSignal),
       });
     });
 

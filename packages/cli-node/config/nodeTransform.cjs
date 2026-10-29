@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+// Development interrupts exit immediately; restart requests run shutdown hooks.
+if (process.env.BACKSTAGE_CLI_CHANNEL === '1') {
+  process.on('SIGINT', () => process.exit(130));
+  process.on('message', message => {
+    if (message?.type === '@backstage/cli/channel/shutdown') {
+      if (!process.emit('SIGTERM', 'SIGTERM')) {
+        process.exit(0);
+      }
+    }
+  });
+}
+
 const { pathToFileURL } = require('node:url');
 const { transformSync } = require('@swc/core');
 const { addHook } = require('pirates');

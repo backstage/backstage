@@ -17,6 +17,12 @@
 const { runBackend } = require('../runBackend');
 const { startEmbeddedDb } = require('../startEmbeddedDb');
 
+process.on('message', message => {
+  if (message === 'terminate') {
+    process.emit('SIGTERM', 'SIGTERM');
+  }
+});
+
 async function main() {
   if (process.env.TEST_BACKEND) {
     const waitForExit = await runBackend({

@@ -18,7 +18,10 @@ import type { EmbeddedDbConnectionConfig } from './startEmbeddedDb';
 
 // This function is serialized into a separate Node process. Keep all runtime
 // dependencies and helpers inside its body.
-export function embeddedPostgresProcess(modulePath: string) {
+export function embeddedPostgresProcess(
+  modulePath: string,
+  exitHookPath: string,
+) {
   const os = require('node:os') as typeof import('node:os');
   const fs = require('node:fs/promises') as typeof import('node:fs/promises');
   const { resolve: resolvePath } =
@@ -28,20 +31,63 @@ export function embeddedPostgresProcess(modulePath: string) {
 
   // Older CLI versions sweep backstage-dev-db-* directories without PID markers.
   const TEMP_DIR_PREFIX = 'backstage-embedded-db-';
+  let stopping = !process.connected;
+  let requestStop: () => void;
+  const stopped = new Promise<void>(resolve => {
+    requestStop = () => {
+      stopping = true;
+      resolve();
+    };
+  });
+  process.once('disconnect', requestStop!);
+  for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+    process.on(signal, requestStop!);
+  }
+  async function stopPostgres(pg: { stop(): Promise<void> }, tmpDir: string) {
+    const rawPid = await fs
+      .readFile(resolvePath(tmpDir, 'postmaster.pid'), 'utf8')
+      .catch(error => {
+        if (error.code !== 'ENOENT') {
+          throw error;
+        }
+        return '';
+      });
+    const pid = Number(rawPid.split('\n')[0]);
+    if (Number.isSafeInteger(pid) && pid > 0) {
+      // stop() can wait forever if PostgreSQL exited before it attached
+      // its exit listener. Also watch the OS process and bound shutdown.
+      const stop = pg.stop().catch(error => console.error(error));
+      const deadline = Date.now() + 10_000;
+      for (;;) {
+        try {
+          process.kill(pid, Date.now() < deadline ? 0 : 'SIGKILL');
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code === 'ESRCH') {
+            break;
+          }
+          throw error;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      await Promise.race([
+        stop,
+        new Promise(resolve => setTimeout(resolve, 50)),
+      ]);
+    }
+  }
+
   async function main() {
-    // Register before starting: the parent may disappear during initialization.
-    const disconnected = once(process, 'disconnect');
-    const message = await Promise.race([
-      once(process, 'message'),
-      disconnected,
-    ]);
-    if (!process.connected) {
+    if (stopping) {
+      return;
+    }
+    const message = await Promise.race([once(process, 'message'), stopped]);
+    if (stopping) {
       return;
     }
     const [options] = message as [EmbeddedDbConnectionConfig];
     let pg;
     let tmpDir;
-    let started = false;
+
     try {
       const { default: EmbeddedPostgres } = (await import(
         pathToFileURL(modulePath).href
@@ -52,6 +98,18 @@ export function embeddedPostgresProcess(modulePath: string) {
             `as an explicit dependency in your project: ${error.message}`,
         );
       })) as typeof import('embedded-postgres');
+      // The helper owns shutdown. Disable the library's competing signal and
+      // beforeExit handlers through its public exit-hook API.
+      const exitHook = require(exitHookPath) as {
+        hookedEvents(): string[];
+        unhookEvent(event: string): void;
+      };
+      for (const event of exitHook.hookedEvents()) {
+        exitHook.unhookEvent(event);
+      }
+      if (stopping) {
+        return;
+      }
       tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), TEMP_DIR_PREFIX));
       pg = new EmbeddedPostgres({
         databaseDir: tmpDir,
@@ -67,36 +125,41 @@ export function embeddedPostgresProcess(modulePath: string) {
         onLog() {},
       });
       await pg.initialise();
+      if (stopping) {
+        return;
+      }
       await pg.start();
-      started = true;
-      if (process.connected) {
+      if (!stopping && process.connected) {
         // A concurrent parent exit is handled by the disconnect listener.
         process.send?.({ ready: true }, undefined, undefined, () => {});
       }
-      await disconnected;
+      await stopped;
     } finally {
-      try {
-        if (started && pg) {
-          await pg.stop();
-        }
-      } finally {
-        if (tmpDir) {
-          await fs.rm(tmpDir, { recursive: true, force: true });
-        }
+      if (pg && tmpDir) {
+        await stopPostgres(pg, tmpDir);
+      }
+      if (tmpDir) {
+        await fs.rm(tmpDir, { recursive: true, force: true });
       }
     }
   }
 
-  main().catch(error => {
-    process.exitCode = 1;
-    if (process.connected) {
-      process.send?.({ error: String(error) }, undefined, undefined, () => {
-        if (process.connected) {
-          process.disconnect?.();
-        }
-      });
-    } else {
-      console.error(error);
-    }
-  });
+  main()
+    .then(() => {
+      if (process.connected) {
+        process.disconnect?.();
+      }
+    })
+    .catch(error => {
+      process.exitCode = 1;
+      if (process.connected) {
+        process.send?.({ error: String(error) }, undefined, undefined, () => {
+          if (process.connected) {
+            process.disconnect?.();
+          }
+        });
+      } else {
+        console.error(error);
+      }
+    });
 }

@@ -80,7 +80,7 @@ describe('embeddedPostgresProcess', () => {
           '--eval',
           `(${source})(${JSON.stringify(
             require.resolve('embedded-postgres'),
-          )})`,
+          )}, ${JSON.stringify(require.resolve('async-exit-hook'))})`,
         ],
         {
           env: {
@@ -119,7 +119,9 @@ describe('embeddedPostgresProcess', () => {
             .sort(),
         ).toEqual(Object.keys(otherDatabases).sort());
       } finally {
-        if (child.connected) {
+        if (minify && process.platform !== 'win32' && child.connected) {
+          child.kill('SIGTERM');
+        } else if (child.connected) {
           child.disconnect();
         }
         const result = await exit;
