@@ -573,7 +573,7 @@ export type PluginWrapperApi = {
     | undefined;
 };
 
-// @public
+// @public @deprecated
 export const pluginWrapperApiRef: ApiRef_2<
   PluginWrapperApi,
   'core.plugin-wrapper'

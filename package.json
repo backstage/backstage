@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.56.0",
+  "version": "1.57.0-next.0",
   "backstage": {
     "cli": {
       "new": {
@@ -174,7 +174,7 @@
     "vite": "^7.1.5",
     "zod": "^3.25.76 || ^4.0.0"
   },
-  "packageManager": "yarn@4.18.0",
+  "packageManager": "yarn@4.18.1",
   "engines": {
     "node": "22 || 24"
   },

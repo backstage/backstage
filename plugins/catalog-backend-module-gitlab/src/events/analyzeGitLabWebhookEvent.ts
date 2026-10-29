@@ -17,7 +17,7 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import { CatalogScmEvent } from '@backstage/plugin-catalog-node/alpha';
-import { WebhookPushEventSchema } from '@gitbeaker/rest';
+import type { WebhookPushEventSchema } from '@gitbeaker/rest';
 
 type StringRecord = Record<string, unknown>;
 

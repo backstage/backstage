@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.43-next.0
+
+### Patch Changes
+
+- ca14116: Moved `kubernetes-models` and `@kubernetes-models/apimachinery` to dev dependencies, since they are only used for types. Backends no longer install `kubernetes-models` through `@backstage/plugin-kubernetes-common`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.15-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-kubernetes-react@0.6.2-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
 ## 0.0.42
 
 ### Patch Changes

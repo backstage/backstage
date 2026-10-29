@@ -1,0 +1,11 @@
+---
+title: Asyntai AI Assistant
+author: Asyntai
+authorUrl: https://asyntai.com
+category: Productivity
+description: AI assistant page and home card that answer your engineers' questions from your docs, runbooks and guides, with links to the right page.
+documentation: https://asyntai.com/documentation/integrations/backstage/
+iconUrl: /img/asyntai.png
+npmPackageName: '@asyntai/backstage-plugin-ai-assistant'
+addedDate: '2026-10-14'
+status: active

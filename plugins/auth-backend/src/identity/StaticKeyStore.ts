@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { AnyJWK, KeyStore, StoredKey } from './types';
-import { exportJWK, importPKCS8, importSPKI, JWK } from 'jose';
-import { KeyLike } from 'jose';
+import { CryptoKey, exportJWK, importPKCS8, importSPKI, JWK } from 'jose';
 import { promises as fs } from 'node:fs';
 import { Config } from '@backstage/config';
 
@@ -165,10 +164,14 @@ export class StaticKeyStore implements KeyStore {
     path: string,
     keyId: string,
     algorithm: string,
-    importer: (content: string, algorithm: string) => Promise<KeyLike>,
+    importer: (
+      content: string,
+      algorithm: string,
+      options?: { extractable?: boolean },
+    ) => Promise<CryptoKey>,
   ): Promise<JWK> {
     const content = await fs.readFile(path, { encoding: 'utf8', flag: 'r' });
-    const key = await importer(content, algorithm);
+    const key = await importer(content, algorithm, { extractable: true });
     const jwk = await exportJWK(key);
     jwk.kid = keyId;
     jwk.alg = algorithm;

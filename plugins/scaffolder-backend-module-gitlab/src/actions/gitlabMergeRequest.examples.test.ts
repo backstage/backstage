@@ -102,6 +102,9 @@ const mockGitlabClient = {
       };
     }),
   },
+  Repositories: {
+    allRepositoryTrees: jest.fn(async () => []),
+  },
   Users: {
     current: jest.fn(),
     all: jest.fn(async (userOptions: { username: string }) => {

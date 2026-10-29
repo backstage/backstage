@@ -26,6 +26,19 @@
       "files": ["SKILL.md"]
     },
     {
+      "name": "frontend-plugin-development",
+      "description": "Reference for building, wiring, running, and testing Backstage frontend plugins on the new frontend system. Use this skill when writing or changing a plugin built with `createFrontendPlugin`, adding entity page content, setting up a plugin's dev app or tests, wiring a plugin into an app, or debugging why a plugin, page, tab, API, or feature flag does not show up or fails at startup.",
+      "files": [
+        "SKILL.md",
+        "references/plugin-packaging.md",
+        "references/app-integration.md",
+        "references/entity-content.md",
+        "references/dev-app.md",
+        "references/testing.md",
+        "references/troubleshooting.md"
+      ]
+    },
+    {
       "name": "plugin-analytics-instrumentation",
       "description": "Instrument a Backstage frontend plugin with analytics events using the Backstage Analytics API. Use this skill when adding, reviewing, or extending event capture (captureEvent, AnalyticsContext) in plugin components, deciding whether an interaction warrants an event, or writing tests for analytics behavior.",
       "files": ["SKILL.md"]

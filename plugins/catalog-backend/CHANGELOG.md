@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3-next.0
+
+### Patch Changes
+
+- 7d765b6: Improved repository validation for catalog entity placeholders. Placeholder-driven reads, including `$openapi` and `$asyncapi` document references, are now restricted to the entity's own repository on SCM hosts; cross-repository references are rejected.
+- 2a9f08b: Match URL locations in catalog rules in canonical form.
+
+  URL locations are now matched against catalog rules in a canonical form of the URL, so that rule decisions agree with how the location target is resolved when its content is fetched. URL patterns that relied on percent-encoded characters being matched as written, or on default ports being kept, no longer match and should be updated.
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+
+## 4.0.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 4.0.1
 
 ### Patch Changes

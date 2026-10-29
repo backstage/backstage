@@ -1,5 +1,13 @@
 # @backstage/backend-plugin-api
 
+## 1.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+
 ## 1.11.0
 
 ### Minor Changes

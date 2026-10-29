@@ -23,4 +23,5 @@
 export interface RequestRejectionDetails {
   status: number;
   payload: unknown;
+  contentType?: 'application/json' | 'text/plain';
 }

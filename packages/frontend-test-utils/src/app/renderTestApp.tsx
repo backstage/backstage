@@ -31,12 +31,12 @@ import {
   type ApiRef,
 } from '@backstage/frontend-plugin-api';
 import { render, type RenderResult } from '@testing-library/react';
-import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { MemoryRouter } from 'react-router-dom';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
+import { createTestAppPlugin } from './testAppPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -93,7 +93,9 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
 
   /**
-   * API overrides to provide to the test app. Use `mockApis` helpers
+   * API overrides to provide to the test app. In-memory fakes are provided by
+   * default for alerts, errors, OAuth requests, storage, and toasts.
+   * Explicit overrides take precedence. Use `mockApis` helpers
    * from `@backstage/frontend-test-utils` to create mock implementations.
    *
    * @example
@@ -109,13 +111,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
-const appPluginOverride = appPlugin.withOverrides({
-  extensions: [
-    appPlugin.getExtension('sign-in-page:app').override({
-      disabled: true,
-    }),
-  ],
-});
+const testAppPlugin = createTestAppPlugin();
 
 /**
  * Renders the provided extensions inside a Backstage app, returning the same
@@ -199,7 +195,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
       pluginId: 'test',
       extensions,
     }),
-    appPluginOverride,
+    testAppPlugin,
   ];
 
   if (options?.features) {

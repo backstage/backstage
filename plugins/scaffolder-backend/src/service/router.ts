@@ -425,10 +425,13 @@ export async function createRouter(
   const isTemplateAuthorized = createConditionAuthorizer(
     Object.values(templateRules),
   );
-  const isTaskAuthorized = createConditionAuthorizer(Object.values(taskRules));
+  const taskRuleset = permissionsRegistry.getPermissionRuleset(
+    scaffolderTaskPermissionResourceRef,
+  );
+  const isTaskAuthorized = createConditionAuthorizer(taskRuleset);
 
   const taskTransformConditions: ConditionTransformer<TaskFilters> =
-    createConditionTransformer(Object.values(taskRules));
+    createConditionTransformer(taskRuleset);
 
   permissionsRegistry.addResourceType({
     resourceRef: scaffolderTemplatePermissionResourceRef,

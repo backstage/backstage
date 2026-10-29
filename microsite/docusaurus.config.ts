@@ -16,13 +16,16 @@
 
 // @ts-check
 
+// Adds the devServer option to the webpack config that plugins can return
+/// <reference types="webpack-dev-server" />
+
 /** @type{import('prism-react-renderer').PrismTheme} **/
 // @ts-ignore
 import { themes } from 'prism-react-renderer';
 import { cpSync, existsSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import type * as Preset from '@docusaurus/preset-classic';
-import { Config } from '@docusaurus/types';
+import { Config, Plugin } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
 import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
@@ -36,18 +39,25 @@ const wellKnownPublicPath = '/.well-known';
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
-const PatchedRedirectPlugin: typeof RedirectPlugin = (ctx, opts) => {
-  const plugin = RedirectPlugin(ctx, opts);
+const PatchedRedirectPlugin = (
+  ...[ctx, opts]: Parameters<typeof RedirectPlugin>
+): Plugin | null => {
+  // The redirect plugin returns Plugin<void>, which the plugins option doesn't accept
+  const plugin = RedirectPlugin(ctx, opts) as Plugin | null;
+  if (!plugin) {
+    return null;
+  }
 
   return {
     ...plugin,
     async postBuild(...args) {
       try {
-        await plugin.postBuild(...args);
+        await plugin.postBuild?.(...args);
       } catch (error) {
         if (
+          error instanceof Error &&
           error.message ===
-          'The redirect plugin is not supposed to override existing files.'
+            'The redirect plugin is not supposed to override existing files.'
         ) {
           // Bit of a hack to make sure all remaining redirects are written, since the write uses Promise.all
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -165,7 +175,6 @@ const config: Config = {
   presets: [
     [
       '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
       {
         docs: {
           editUrl: ({ docPath }) => {
@@ -210,7 +219,7 @@ const config: Config = {
         gtag: {
           trackingID: 'G-KSEVGGNCJW',
         },
-      },
+      } satisfies Preset.Options,
     ],
   ],
   markdown: {

@@ -38,8 +38,8 @@ const plugins: IPluginsList = pluginsContext.keys().reduce(
   { corePlugins: [], otherPlugins: [] } as IPluginsList,
 );
 
-plugins.corePlugins.sort((a, b) => a.order - b.order);
-plugins.otherPlugins.sort((a, b) => a.order - b.order);
+plugins.corePlugins.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+plugins.otherPlugins.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
 const Plugins = () => {
   const allCategoriesSet = new Set(

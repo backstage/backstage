@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.4.22-next.0
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.30.3-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
 ## 0.4.21
 
 ### Patch Changes

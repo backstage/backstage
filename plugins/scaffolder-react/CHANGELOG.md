@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-react
 
+## 3.0.0-next.0
+
+### Minor Changes
+
+- 3fe82f6: Added a `ScaffolderTemplateFilterBlueprint` that lets apps filter the new frontend system's template list using identity, catalog, or other viewer-specific state.
+
+### Patch Changes
+
+- 1c461ca: Fixed BUI array item headings to use the item schema title and honor an explicit item `ui:title` without adding a numeric suffix. Untitled items retain the numbered fallback.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/frontend-test-utils@0.7.0-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
 ## 2.1.1
 
 ### Patch Changes

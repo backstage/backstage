@@ -24,12 +24,19 @@ import {
   useRouteRef,
   identityApiRef,
   useApi,
+  coreApis,
   ApiBlueprint,
+  createFrontendModule,
   createFrontendPlugin,
-  discoveryApiRef,
+  type FrontendFeature,
+  coreExtensionData,
+  createExtension,
+  type StorageApi,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
+import { renderTestApp } from './renderTestApp';
+import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 describe('renderInTestApp', () => {
   it('should throw for app errors that would show the error page', () => {
@@ -40,7 +47,7 @@ describe('renderInTestApp', () => {
           name: 'discovery',
           params: defineParams =>
             defineParams({
-              api: discoveryApiRef,
+              api: coreApis.discovery,
               deps: {},
               factory: () => ({ getBaseUrl: async () => '' }),
             }),
@@ -65,6 +72,100 @@ describe('renderInTestApp', () => {
 
     expect(screen.getByText('rendered')).toBeInTheDocument();
   });
+
+  it.each(['component', 'extensions'])(
+    'uses isolated fake defaults with explicit overrides for %s rendering',
+    async mode => {
+      let toast: ReturnType<typeof mockApis.toast>;
+      let storage: StorageApi;
+      function Probe() {
+        toast = useApi(coreApis.toast) as ReturnType<typeof mockApis.toast>;
+        storage = useApi(coreApis.storage);
+        const analytics = useAnalytics();
+        return (
+          <button
+            onClick={() => {
+              toast.post({ title: 'Saved' });
+              analytics.captureEvent('click', 'Save');
+            }}
+          >
+            Save
+          </button>
+        );
+      }
+      function renderProbe(
+        apis: Array<ReturnType<typeof mockApis.toast.mock>> = [],
+        features: FrontendFeature[] = [],
+      ) {
+        if (mode === 'component') {
+          return renderInTestApp(<Probe />, { apis, features });
+        }
+        return renderTestApp({
+          extensions: [
+            createExtension({
+              name: 'probe',
+              attachTo: { id: 'app/root', input: 'elements' },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<Probe />)],
+            }),
+          ],
+          apis,
+          features,
+        });
+      }
+
+      const first = renderProbe();
+      fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(toast!.getToasts()).toEqual([{ title: 'Saved' }]);
+      expect(screen.queryByText('Saved')).not.toBeInTheDocument();
+      await storage!.set('saved', true);
+      expect(storage!.snapshot('saved').value).toBe(true);
+      first.unmount();
+
+      const second = renderProbe();
+      await screen.findByRole('button', { name: 'Save' });
+      expect(toast!.getToasts()).toEqual([]);
+      expect(storage!.snapshot('saved').value).toBeUndefined();
+      second.unmount();
+
+      const captureEvent = jest.fn();
+      const featureToast = mockApis.toast.mock();
+      const feature = createFrontendModule({
+        pluginId: 'app',
+        extensions: [
+          ApiBlueprint.make({
+            name: 'toast',
+            params: defineParams =>
+              defineParams({
+                api: coreApis.toast,
+                deps: {},
+                factory: () => featureToast,
+              }),
+          }),
+          AnalyticsImplementationBlueprint.make({
+            name: 'test',
+            params: defineParams =>
+              defineParams({ deps: {}, factory: () => ({ captureEvent }) }),
+          }),
+        ],
+      });
+      const third = renderProbe([], [feature]);
+      fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(toast!).toBe(featureToast);
+      expect(featureToast.post).toHaveBeenCalledTimes(1);
+      expect(captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'click', subject: 'Save' }),
+      );
+      third.unmount();
+
+      const override = mockApis.toast.mock();
+      renderProbe([override], [feature]);
+      fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(toast!).toBe(override);
+      expect(override.post).toHaveBeenCalledWith({ title: 'Saved' });
+      expect(featureToast.post).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('should render the given component in a page', async () => {
     const IndexPage = () => <div>Index Page</div>;

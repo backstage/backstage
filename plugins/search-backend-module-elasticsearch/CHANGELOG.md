@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 2.0.2-next.0
+
+### Patch Changes
+
+- 8da9c23: Internal changes for TypeScript 7 compatibility. There are no changes to behavior or the public API.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.10-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
 ## 2.0.1
 
 ### Patch Changes

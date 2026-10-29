@@ -64,6 +64,7 @@ export interface RouteResolutionApi {
  * The `ApiRef` of {@link RouteResolutionApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.routeResolution} instead.
  */
 export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
   id: 'core.route-resolution',
