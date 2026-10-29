@@ -1,0 +1,112 @@
+[
+  {
+    "id": "tp_debug_r3_001",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+    "instruction": "Fix `plugins/catalog-backend/src/service/createRouter.test.ts` for these problems, changing only what they need, following the conventions in the shared brief:\n1. yarn tsc: plugins/catalog-backend/src/service/createRouter.test.ts:922:9 - error TS2741: Property 'resolveFormerEntityRef' is missing in type '{ entities: jest.Mock; entitiesBatch: jest.Mock; queryEntities: jest.Mock; removeEntityByUid: jest.Mock; entityAncestry: jest.Mock; facets: jest.Mock; }' but required in type 'EntitiesCatalog'. Same error TS2322 at 1436:5 (entitiesCatalog = { ... } assigned to jest.Mocked<EntitiesCatalog>) and TS2741 at 1691:9. Add `resolveFormerEntityRef: jest.fn()` to each of these three EntitiesCatalog mock objects (and any other EntitiesCatalog mock literal in the file), matching the surrounding style. Do not change any test behaviour.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"plugins/catalog-backend/src/service/createRouter.test.ts\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"plugins/catalog-backend/src/service/createRouter.test.ts\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U16.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "plugins/catalog-backend/src/catalog/types.ts",
+        "reason": "named beside the failure"
+      },
+      {
+        "path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        },
+        {
+          "id": "eslint",
+          "run": "yarn eslint '{path}'",
+          "fix": "yarn eslint --fix '{path}'"
+        },
+        {
+          "id": "jest",
+          "run": "BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 600,
+      "max_retries": 2
+    }
+  },
+  {
+    "id": "tp_debug_r3_002",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+    "instruction": "Fix `plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts` for these problems, changing only what they need, following the conventions in the shared brief:\n1. yarn tsc: plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts:399:14 - error TS2769: No overload matches this call. The last overload gave the following error. Argument of type 'string' is not assignable to parameter of type 'Raw<any>'. 399       .where('final_entities.entity_id', '=', claimantRows[0].entity_id). The value passed is not typed as a string (the claimant query's row type is not inferred). Type the claimant query / its rows the way the rest of this file types its knex queries (e.g. the DbSearchRow / DbFinalEntitiesRow generics from ../database/tables, or Pick<DbSearchRow, 'entity_id'>), so that entity_id is a string, without changing the query's behaviour.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U08.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "plugins/catalog-backend/src/database/tables.ts",
+        "reason": "named beside the failure"
+      },
+      {
+        "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        },
+        {
+          "id": "eslint",
+          "run": "yarn eslint '{path}'",
+          "fix": "yarn eslint --fix '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 120,
+      "max_retries": 2
+    }
+  }
+]

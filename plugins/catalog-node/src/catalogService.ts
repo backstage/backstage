@@ -90,6 +90,20 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<Entity | undefined>;
 
+  /**
+   * Gets the entity that currently declares the given entity ref as one of its
+   * former refs. See {@link @backstage/catalog-client#CatalogApi.getEntityByFormerRef}.
+   *
+   * @remarks
+   *
+   * This method is optional, so callers must check that it exists before
+   * calling it.
+   */
+  getEntityByFormerRef?(
+    entityRef: string | CompoundEntityRef,
+    options: CatalogServiceRequestOptions,
+  ): Promise<Entity | undefined>;
+
   removeEntityByUid(
     uid: string,
     options: CatalogServiceRequestOptions,
@@ -228,6 +242,19 @@ class DefaultCatalogService implements CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<Entity | undefined> {
     return this.#catalogApi.getEntityByRef(
+      entityRef,
+      await this.#getOptions(options),
+    );
+  }
+
+  async getEntityByFormerRef(
+    entityRef: string | CompoundEntityRef,
+    options: CatalogServiceRequestOptions,
+  ): Promise<Entity | undefined> {
+    if (!this.#catalogApi.getEntityByFormerRef) {
+      return undefined;
+    }
+    return this.#catalogApi.getEntityByFormerRef(
       entityRef,
       await this.#getOptions(options),
     );

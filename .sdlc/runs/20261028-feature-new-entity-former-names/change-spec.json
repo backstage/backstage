@@ -1,0 +1,1840 @@
+{
+  "header": {
+    "conventions": [
+      "TypeScript monorepo (Yarn workspaces). Match the conventions of the file and package you are in; consistency inside a package beats consistency across the repo.",
+      "Every new .ts/.tsx file starts with the Apache 2.0 header exactly as in the stack profile, with 'Copyright 2026 The Backstage Authors'. Never touch the header year of an existing file.",
+      "Formatting is the repo Prettier config (single quotes, trailing commas, 2-space indent, 80 columns); the prettier fix runs before the check, so do not hand-align.",
+      "Imports: relative paths inside a package, '@backstage/*' package names across packages, 'node:' prefix for Node built-ins; keep the import grouping the file already uses; add no new package dependency to any package.json.",
+      "Never hand-edit anything under src/schema/openapi/generated/ in catalog-backend or catalog-client: those files come only from the tooling units that run the repo's OpenAPI generator.",
+      "Every new exported symbol gets a TSDoc block and a release tag: '@public' in catalog-model, catalog-client and catalog-node public API; existing translation refs keep their current tag. Internal helpers get no release tag.",
+      "UI strings come from the package's translation ref via useTranslationRef (catalogTranslationRef in plugins/catalog, techdocsTranslationRef in plugins/techdocs); no hard-coded English in components.",
+      "Tests are Jest, co-located '*.test.ts(x)' files, nested describe + it, fewer thorough cases with several expect calls each. React tests use React Testing Library with screen and findBy* queries, no test IDs, and waitFor only where the file already relies on it for hooks.",
+      "Do not change any existing public signature; new interface members are optional where the decisions say so.",
+      "Docs follow docs/contribute/doc-style-guide.md: sentence-case headings, short paragraphs, second person, YAML examples in fenced blocks, no marketing words.",
+      "Changesets are hand-written '.changeset/<kebab-name>.md' files with a YAML front matter of package names to bump types, then a plain-language adopter-facing message; never edit an existing changeset."
+    ],
+    "decisions": [
+      {
+        "topic": "Annotation constant and parsing helper names (catalog-model)",
+        "choice": "Constant ANNOTATION_FORMER_NAMES = 'backstage.io/former-names' in src/entity/constants.ts; helper getEntityFormerRefs(entity: Entity): string[] in new file src/entity/formerNames.ts, exported from src/entity/index.ts, both @public.",
+        "rejected": [
+          "parseFormerNamesAnnotation(value: string)",
+          "putting the helper in src/location/helpers.ts"
+        ],
+        "reason": "The helper needs the entity for kind/namespace defaults and self-ref removal, and constants.ts is where generic metadata annotations live."
+      },
+      {
+        "topic": "Former-ref entry validity",
+        "choice": "An entry is parsed with parseEntityRef(entry, { defaultKind: entity.kind, defaultNamespace: entity.metadata.namespace || DEFAULT_NAMESPACE }); it is skipped when parsing throws or when any of kind, namespace or name contains ':', '/' or whitespace; results are stringifyEntityRef output (lower-cased), deduplicated in first-seen order, and the entity's own ref is dropped.",
+        "rejected": [
+          "throwing on a malformed entry",
+          "keeping the original casing"
+        ],
+        "reason": "FR-2 requires never throwing and normalized refs; parseEntityRef alone accepts 'a:b/c/d' as name 'c/d', which is not a valid ref."
+      },
+      {
+        "topic": "Search row key for former refs",
+        "choice": "One row per former ref under key 'former_entity_ref' (constant FORMER_ENTITY_REF_SEARCH_KEY exported from plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts), pushed only when the ref length is at most MAX_VALUE_LENGTH (200).",
+        "rejected": [
+          "reusing key 'metadata.annotations.backstage.io/former-names' with one row per entry",
+          "a new table or column"
+        ],
+        "reason": "Entity.schema.json forbids extra top-level properties, so a dot-free key outside apiVersion/kind/metadata/spec/relations/status can never collide with a real field path, and no migration is allowed."
+      },
+      {
+        "topic": "REST endpoint",
+        "choice": "GET /entities/by-former-name/{kind}/{namespace}/{name}, operationId GetEntityByFormerName (generated client method getEntityByFormerName), 200 returns the Entity schema, every miss returns 404 through writeSingleEntityResponse with the message `No current entity found for former entity ref '<ref>'` where <ref> is the stringified requested ref.",
+        "rejected": [
+          "GET /entities/by-name/{kind}/{namespace}/{name}/former",
+          "a query flag on the by-name endpoint"
+        ],
+        "reason": "A separate path keeps the by-name route untouched (FR-9) and avoids clashing with the by-name sub-resource routes."
+      },
+      {
+        "topic": "Backend resolver shape and permission split",
+        "choice": "EntitiesCatalog.resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse> with request { formerEntityRef, filter?, fields?, credentials }. DefaultEntitiesCatalog runs the real-name check and the claimant count without any filter, then reads the single claimant through this.entitiesBatch with request.filter. AuthorizedEntitiesCatalog applies catalog.entity.read exactly like its entitiesBatch (DENY gives one null item without delegating, CONDITIONAL delegates with the permission predicate as filter, ALLOW delegates unchanged).",
+        "rejected": [
+          "returning only the target ref and reading it in the router",
+          "a permission check per claimant"
+        ],
+        "reason": "FR-6/FR-7 must ignore permissions while FR-8 must apply them, and reusing the entitiesBatch permission pattern keeps one tested code path for reads."
+      },
+      {
+        "topic": "Resolver query budget",
+        "choice": "Three indexed queries plus the entitiesBatch read: final_entities by entity_ref (real-name check), search by key and value selecting distinct entity_id with limit 2 (claimants), final_entities by entity_id (target ref). No query against final_entity JSON and no full scans.",
+        "reason": "NFR-4 asks for a small fixed number of indexed queries; limit 2 is enough to detect a conflict."
+      },
+      {
+        "topic": "Client API method",
+        "choice": "Optional member getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options?: CatalogRequestOptions): Promise<Entity | undefined> on CatalogApi; CatalogClient, InMemoryCatalogClient and both mocks implement it; callers guard with catalogApi.getEntityByFormerRef before calling.",
+        "rejected": ["a required method", "a separate FormerRefsApi"],
+        "reason": "FR-11/NFR-3: existing CatalogApi implementers must compile unchanged."
+      },
+      {
+        "topic": "catalog-node CatalogService",
+        "choice": "CatalogService mirrors CatalogApi, so it gains optional getEntityByFormerRef?(entityRef, options: CatalogServiceRequestOptions); DefaultCatalogService implements it and returns undefined when the wrapped CatalogApi lacks the method; CatalogServiceMock and catalogServiceMock.mock list it.",
+        "reason": "FR-13 applies wherever the interface mirrors CatalogApi, and it does."
+      },
+      {
+        "topic": "Frontend redirect hand-off",
+        "choice": "On a hit, the page calls navigate(newUrl, { replace: true, state: { formerEntityRef } }) where formerEntityRef is stringifyEntityRef of the URL's kind/namespace/name and newUrl is the current entity's base route plus the sub-path after the old base route, plus location.search and location.hash. The notice components read formerEntityRef from useLocation().state; dismissing only hides the notice (local state).",
+        "rejected": ["a query parameter like ?renamedFrom=", "sessionStorage"],
+        "reason": "History state survives the replace, never shows on a freshly opened URL, and keeps the visible URL clean."
+      },
+      {
+        "topic": "Catalog rename notice UI",
+        "choice": "New component EntityRenamedNotice (plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx) rendering '@material-ui/lab/Alert' severity 'info' with onClose and closeText from translations, used by both the old CatalogEntityPage and the alpha CatalogEntityPage directly inside AsyncEntityProvider before the layout.",
+        "rejected": [
+          "editing the three EntityLayout variants",
+          "@backstage/ui Alert without a close action"
+        ],
+        "reason": "Both systems already funnel through useEntityFromUrl and the two CatalogEntityPage components, so two small edits cover FR-18."
+      },
+      {
+        "topic": "TechDocs rename notice UI",
+        "choice": "TechDocsRedirectNotification gains an optional actionLabel prop (defaults to the existing 'Redirect now' text); new internal component TechDocsRenamedNotice renders it with the renamed message, actionLabel 'Dismiss', a no-op handleButtonClick and autoHideDuration 15000; TechDocsReaderPage renders it in both return branches. The alpha reader page reuses TechDocsReaderPage through TechDocsReaderRouter, so no alpha edit is needed.",
+        "reason": "FR-20 asks to reuse the existing redirect-notice component."
+      },
+      {
+        "topic": "Translation keys",
+        "choice": "catalogTranslationRef entityPage.renamedNotice = 'This entity was renamed from {{formerEntityRef}}' and entityPage.renamedNoticeDismiss = 'Dismiss'; techdocsTranslationRef redirectNotification.renamedFrom = 'This entity was renamed from {{formerEntityRef}}' and redirectNotification.dismiss = 'Dismiss'.",
+        "reason": "FR-16/FR-20 need translated text; the keys sit next to the existing not-found and redirect strings."
+      },
+      {
+        "topic": "Generated OpenAPI code and API reports",
+        "choice": "Two tooling units run the repo's generator from plugins/catalog-backend (server with --server, client with --client-package packages/catalog-client); one tooling unit runs 'yarn build:api-reports' limited to the seven touched package paths after all code is typed.",
+        "rejected": [
+          "hand-editing generated files",
+          "running build:api-reports for the whole repo"
+        ],
+        "reason": "NFR-6 and FR-26; split generator runs let each written file be recorded for revert."
+      },
+      {
+        "topic": "Changesets",
+        "choice": "Five new files, all 'minor': entity-former-names-model (catalog-model), entity-former-names-backend (plugin-catalog-backend), entity-former-names-client (catalog-client, plugin-catalog-node, plugin-catalog-react), entity-former-names-catalog (plugin-catalog), entity-former-names-techdocs (plugin-techdocs).",
+        "reason": "FR-25: every package is at or above 1.0.0 and gets a new non-breaking feature; packages with different adopter messages get separate files."
+      },
+      {
+        "topic": "Catalog query performance battery",
+        "choice": "No change to src/tests/performance/query-battery: no existing query changes shape, and the resolver only runs after a by-name miss.",
+        "reason": "plugins/catalog-backend/CLAUDE.md asks for battery updates only when existing queries, indexes or schema change."
+      }
+    ],
+    "file_checks": [
+      {
+        "id": "prettier",
+        "run": "yarn prettier --check {path}",
+        "fix": "yarn prettier --write {path}",
+        "timeout_s": 60
+      },
+      {
+        "id": "eslint",
+        "run": "yarn eslint {path}",
+        "fix": "yarn eslint --fix {path}",
+        "timeout_s": 120
+      },
+      {
+        "id": "jest",
+        "run": "BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test {path}",
+        "timeout_s": 600
+      }
+    ],
+    "project_checks": [
+      {
+        "id": "openapi-validate",
+        "run": "yarn backstage-repo-tools repo schema openapi validate plugins/catalog-backend"
+      },
+      {
+        "id": "tsc",
+        "run": "yarn tsc"
+      },
+      {
+        "id": "test-catalog-backend",
+        "run": "CI=1 yarn test plugins/catalog-backend"
+      },
+      {
+        "id": "test-other-packages",
+        "run": "CI=1 yarn test packages/catalog-model packages/catalog-client plugins/catalog-node plugins/catalog-react plugins/catalog plugins/techdocs"
+      }
+    ]
+  },
+  "units": [
+    {
+      "id": "U01",
+      "path": "packages/catalog-model/src/entity/constants.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Adds the public ANNOTATION_FORMER_NAMES constant for the 'backstage.io/former-names' annotation next to the view/edit URL annotations.",
+      "rules": [
+        "1. Insert after ANNOTATION_EDIT_URL: a blank line, a TSDoc block shaped like its neighbours ('Annotation for declaring the former entity refs of an entity, as a comma-separated list of entity refs.' plus a '@remarks' line saying short refs take the entity's own kind and namespace, then '@public'), then `export const ANNOTATION_FORMER_NAMES = 'backstage.io/former-names';`.",
+        "2. Change nothing else in the file; src/entity/index.ts already re-exports everything from './constants'."
+      ],
+      "exports": [
+        {
+          "name": "ANNOTATION_FORMER_NAMES",
+          "kind": "const",
+          "params": [],
+          "returns": "'backstage.io/former-names'"
+        }
+      ],
+      "import_line": "import { ANNOTATION_FORMER_NAMES } from '@backstage/catalog-model';",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 36,
+          "to": 36,
+          "first_line": "export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';",
+          "rule": "Insert the documented ANNOTATION_FORMER_NAMES constant (rule 1) after this line."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-1"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U02",
+      "path": "packages/catalog-model/src/entity/formerNames.ts",
+      "action": "create",
+      "phase": "codegen",
+      "behaviour": "Parses an entity's backstage.io/former-names annotation into a deduplicated list of normalized, fully-qualified former entity refs, never throwing.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Import DEFAULT_NAMESPACE and ANNOTATION_FORMER_NAMES from './constants', parseEntityRef and stringifyEntityRef from './ref', and the Entity type from './Entity'.",
+        "2. Read the value with optional chaining: entity.metadata?.annotations?.[ANNOTATION_FORMER_NAMES]; if it is not a string, return [].",
+        "3. Compute the entity's own ref once with stringifyEntityRef({ kind: entity.kind, namespace: entity.metadata.namespace || DEFAULT_NAMESPACE, name: entity.metadata.name }).",
+        "4. Split the value on ',', trim each entry, and skip empty entries.",
+        "5. Parse each entry with parseEntityRef(entry, { defaultKind: entity.kind, defaultNamespace: entity.metadata.namespace || DEFAULT_NAMESPACE }) inside try/catch; a thrown error skips the entry.",
+        "6. Skip the entry when any of the parsed kind, namespace or name contains ':', '/' or whitespace (test with one regex such as /[:/\\s]/).",
+        "7. Normalize with stringifyEntityRef(parsed); skip it when it equals the own ref or was already returned; otherwise append it, keeping first-seen order.",
+        "8. TSDoc on the exported function: summary line, a '@remarks' paragraph describing the comma-separated format, the short-ref defaults, and that malformed entries, duplicates and the entity's own ref are dropped; '@public', '@param entity - The entity to read the annotation from', '@returns A list of lower-cased, fully-qualified entity refs'."
+      ],
+      "exports": [
+        {
+          "name": "getEntityFormerRefs",
+          "kind": "function",
+          "params": [
+            {
+              "name": "entity",
+              "type": "Entity"
+            }
+          ],
+          "returns": "string[]"
+        }
+      ],
+      "import_line": "import { getEntityFormerRefs } from '@backstage/catalog-model';",
+      "style_from": {
+        "path": "packages/catalog-model/src/location/helpers.ts",
+        "reason": "Same package's annotation-reading helper: header, imports from sibling modules, optional chaining on annotations, TSDoc shape."
+      },
+      "uses": [
+        {
+          "path": "packages/catalog-model/src/entity/ref.ts",
+          "lines": [17, 159],
+          "reason": "parseEntityRef and stringifyEntityRef signatures and their throwing behaviour."
+        }
+      ],
+      "depends_on": ["U01"],
+      "covers": ["FR-2", "AC-10", "NFR-2"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U03",
+      "path": "packages/catalog-model/src/entity/index.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Re-exports getEntityFormerRefs from the entity barrel so it becomes part of the package's public API.",
+      "rules": [
+        "1. Add exactly one line, `export { getEntityFormerRefs } from './formerNames';`, keeping the file's alphabetical order by module path (after './EntityEnvelope', before './policies')."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 20,
+          "to": 20,
+          "first_line": "export type { EntityEnvelope } from './EntityEnvelope';",
+          "rule": "Insert `export { getEntityFormerRefs } from './formerNames';` after this line."
+        }
+      ],
+      "depends_on": ["U02"],
+      "covers": ["FR-2"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U04",
+      "path": "packages/catalog-model/src/entity/formerNames.test.ts",
+      "action": "create",
+      "phase": "tests",
+      "behaviour": "Unit tests for getEntityFormerRefs covering full and short refs, whitespace and empty entries, malformed entries, duplicates, self-ref and a missing annotation.",
+      "rules": [
+        "1. Start with the 2026 Apache header; import getEntityFormerRefs from './formerNames', ANNOTATION_FORMER_NAMES from './constants' and the Entity type from './Entity'.",
+        "2. Build entities with a small local factory taking the annotation value and optional namespace; use kind 'Component' and name 'current'.",
+        "3. One describe('getEntityFormerRefs') with a few it blocks, each holding several expect(...).toEqual([...]) assertions on exact arrays."
+      ],
+      "style_from": {
+        "path": "packages/catalog-model/src/entity/ref.test.ts",
+        "reason": "Package test shape: nested describe, plain it, several expects per it."
+      },
+      "tests": [
+        {
+          "name": "returns normalized full refs",
+          "given": "annotation 'Component:Other/Old-Name, api:default/old-api'",
+          "expect": "['component:other/old-name', 'api:default/old-api']"
+        },
+        {
+          "name": "defaults kind and namespace for short refs",
+          "given": "entity in namespace 'team-a' with 'old-name, legacy/older' and an entity without namespace with 'old-name'",
+          "expect": "['component:team-a/old-name', 'component:legacy/older'] and ['component:default/old-name']"
+        },
+        {
+          "name": "ignores whitespace, empty and malformed entries",
+          "given": "' , old-name ,, :bad, a:b/c/d, x/y:z, na me '",
+          "expect": "only ['component:default/old-name']"
+        },
+        {
+          "name": "removes duplicates and the entity's own ref",
+          "given": "'old-name, component:default/OLD-NAME, current, component:default/current'",
+          "expect": "['component:default/old-name']"
+        },
+        {
+          "name": "returns an empty list without a usable annotation",
+          "given": "no annotations, an empty string value, and only commas",
+          "expect": "[] in each case"
+        }
+      ],
+      "depends_on": ["U02"],
+      "covers": ["AC-1"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U05",
+      "path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Writes one search row per declared former entity ref under the dedicated 'former_entity_ref' key while building an entity's search rows at stitch time.",
+      "rules": [
+        "1. Add getEntityFormerRefs to the existing '@backstage/catalog-model' import.",
+        "2. After MAX_VALUE_LENGTH, export a documented constant: a short comment saying the key holds former entity refs from the backstage.io/former-names annotation and cannot collide with entity field paths, then `export const FORMER_ENTITY_REF_SEARCH_KEY = 'former_entity_ref';`.",
+        "3. After the relations loop and before the case-collision check, loop over getEntityFormerRefs(entity) and push { key: FORMER_ENTITY_REF_SEARCH_KEY, value: formerRef } only when formerRef.length <= MAX_VALUE_LENGTH, so an over-long ref is skipped instead of becoming a null row; precede the loop with a one-line comment.",
+        "4. Do not touch traverse, mapToRows, SPECIAL_KEYS or the dedup logic; rows are replaced on every restitch by the existing sync, so stale former refs disappear automatically."
+      ],
+      "exports": [
+        {
+          "name": "FORMER_ENTITY_REF_SEARCH_KEY",
+          "kind": "const",
+          "params": [],
+          "returns": "'former_entity_ref'"
+        }
+      ],
+      "import_line": "import { FORMER_ENTITY_REF_SEARCH_KEY } from '../database/operations/stitcher/buildEntitySearch';",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 17,
+          "to": 17,
+          "first_line": "import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';",
+          "rule": "Import DEFAULT_NAMESPACE, Entity and getEntityFormerRefs from '@backstage/catalog-model'."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 39,
+          "to": 39,
+          "first_line": "const MAX_VALUE_LENGTH = 200;",
+          "rule": "Insert a blank line, the comment and the exported FORMER_ENTITY_REF_SEARCH_KEY constant (rule 2)."
+        },
+        {
+          "id": "S3",
+          "at": "insert_after",
+          "from": 212,
+          "to": 212,
+          "first_line": "}",
+          "rule": "After the relations loop's closing brace, insert a blank line, the comment and the former-ref loop (rule 3)."
+        }
+      ],
+      "uses": [
+        {
+          "path": "packages/catalog-model/src/location/helpers.ts",
+          "lines": [17, 40],
+          "reason": "Shows how catalog-model helpers are imported and called from consumers."
+        }
+      ],
+      "depends_on": ["U03"],
+      "covers": ["FR-3", "FR-4", "FR-5", "NFR-1"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U06",
+      "path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.test.ts",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds buildEntitySearch cases proving former refs become 'former_entity_ref' rows, short and malformed values are handled, over-long refs are skipped, and rows vanish when the annotation is removed.",
+      "rules": [
+        "1. Add the new it blocks inside describe('buildEntitySearch') (the inner one), after the 'rejects duplicate keys' case.",
+        "2. Use the string literals 'backstage.io/former-names' and 'former_entity_ref' in the tests so they pin the annotation key and the row key; filter rows with rows.filter(r => r.key === 'former_entity_ref').",
+        "3. Keep the file's style: pure function calls, expect(...).toEqual([...]) on row objects with entity_id, key, original_value and value."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 344,
+          "to": 344,
+          "first_line": "});",
+          "rule": "Insert the new it blocks (listed in tests) before the closing of the inner describe('buildEntitySearch')."
+        }
+      ],
+      "tests": [
+        {
+          "name": "adds former entity refs as search rows",
+          "given": "kind 'Component', namespace 'ns', annotation 'old-name, other/older, api:x/y'",
+          "expect": "exactly three 'former_entity_ref' rows with values 'component:ns/old-name', 'component:other/older', 'api:x/y' and matching original_value"
+        },
+        {
+          "name": "skips malformed and over-long former refs without failing",
+          "given": "annotation ':bad, a:b/c/d, ' plus a 250-character name entry, and a valid 'old-name'",
+          "expect": "buildEntitySearch does not throw and only the 'component:default/old-name' row exists, with no null-valued 'former_entity_ref' row"
+        },
+        {
+          "name": "omits former entity ref rows when the annotation is removed",
+          "given": "the same entity built once with the annotation and once without it",
+          "expect": "first result has 'former_entity_ref' rows, second has none, and all other rows are identical"
+        }
+      ],
+      "depends_on": ["U05"],
+      "covers": ["AC-2"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U07",
+      "path": "plugins/catalog-backend/src/catalog/types.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Declares the ResolveFormerEntityRefRequest shape and the resolveFormerEntityRef method on the internal EntitiesCatalog interface.",
+      "rules": [
+        "1. Before `export interface EntitiesCatalog`, add `export interface ResolveFormerEntityRefRequest` with a TSDoc line 'The request shape for {@link EntitiesCatalog.resolveFormerEntityRef}.' and documented members: formerEntityRef: string (the normalized former entity ref to resolve), filter?: FilterPredicate (applied only when reading the resolved entity; entities that do not match give a null item), fields?: (entity: Entity) => Entity, credentials: BackstageCredentials. Mirror the member TSDoc style of EntitiesBatchRequest.",
+        "2. After facets(...) inside EntitiesCatalog, add `resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>;` with TSDoc: resolves a former entity ref declared through the backstage.io/former-names annotation to the entity that currently claims it; the response holds exactly one item, which is null when an entity currently has that ref, when zero or several entities claim it, or when the claimant does not match the filter.",
+        "3. No other changes; the interface is internal (not in report.api.md)."
+      ],
+      "exports": [
+        {
+          "name": "ResolveFormerEntityRefRequest",
+          "kind": "interface",
+          "params": [],
+          "returns": "{ formerEntityRef: string; filter?: FilterPredicate; fields?: (entity: Entity) => Entity; credentials: BackstageCredentials }"
+        },
+        {
+          "name": "EntitiesCatalog.resolveFormerEntityRef",
+          "kind": "method",
+          "params": [
+            {
+              "name": "request",
+              "type": "ResolveFormerEntityRefRequest"
+            }
+          ],
+          "returns": "Promise<EntitiesBatchResponse>"
+        }
+      ],
+      "import_line": "import { ResolveFormerEntityRefRequest } from '../catalog/types';",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 149,
+          "to": 149,
+          "first_line": "export interface EntitiesCatalog {",
+          "rule": "Insert the documented ResolveFormerEntityRefRequest interface followed by a blank line (rule 1)."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 195,
+          "to": 195,
+          "first_line": "facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;",
+          "rule": "Insert a blank line and the documented resolveFormerEntityRef method signature (rule 2)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-9"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U08",
+      "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Implements resolveFormerEntityRef with the real-name-wins and single-claimant rules over indexed final_entities and search rows, then reads the claimant through entitiesBatch with the request filter.",
+      "rules": [
+        "1. Add ResolveFormerEntityRefRequest to the '../catalog/types' import and import FORMER_ENTITY_REF_SEARCH_KEY from '../database/operations/stitcher/buildEntitySearch'.",
+        "2. Add `async resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>` right after entitiesBatch.",
+        "3. Define the miss result once as { items: { type: 'object', entities: [null] } } and return it for every miss.",
+        "4. Real-name check, ignoring request.filter: query final_entities where entity_ref equals request.formerEntityRef, select entity_id, limit 1; if a row exists return the miss.",
+        "5. Claimant check, ignoring request.filter: query search where key equals FORMER_ENTITY_REF_SEARCH_KEY and value equals request.formerEntityRef, select distinct entity_id, limit 2; if the row count is not exactly 1 return the miss.",
+        "6. Look up final_entities by that entity_id selecting entity_ref; if there is no row or no entity_ref return the miss.",
+        "7. Return this.entitiesBatch({ entityRefs: [thatRef], filter: request.filter, fields: request.fields, credentials: request.credentials }).",
+        "8. Never log anything in this method (no names, refs or counts of claimants); use typed knex calls (this.database<DbFinalEntitiesRow>('final_entities'), this.database<DbSearchRow>('search')) like the rest of the file."
+      ],
+      "exports": [
+        {
+          "name": "DefaultEntitiesCatalog.resolveFormerEntityRef",
+          "kind": "method",
+          "params": [
+            {
+              "name": "request",
+              "type": "ResolveFormerEntityRefRequest"
+            }
+          ],
+          "returns": "Promise<EntitiesBatchResponse>"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 34,
+          "to": 34,
+          "first_line": "QueryEntitiesResponse,",
+          "rule": "Insert `ResolveFormerEntityRefRequest,` into the '../catalog/types' import list."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 45,
+          "to": 45,
+          "first_line": "import { markForStitching } from '../database/operations/stitcher/markForStitching';",
+          "rule": "Insert `import { FORMER_ENTITY_REF_SEARCH_KEY } from '../database/operations/stitcher/buildEntitySearch';`."
+        },
+        {
+          "id": "S3",
+          "at": "insert_after",
+          "from": 367,
+          "to": 367,
+          "first_line": "}",
+          "rule": "After entitiesBatch's closing brace, insert a blank line and the resolveFormerEntityRef method (rules 2-8)."
+        }
+      ],
+      "style_from": {
+        "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+        "lines": [733, 745],
+        "reason": "Typed knex lookup on final_entities inside a method of the same class."
+      },
+      "uses": [
+        {
+          "path": "plugins/catalog-backend/src/database/tables.ts",
+          "reason": "DbFinalEntitiesRow and DbSearchRow column names."
+        }
+      ],
+      "depends_on": ["U05", "U07"],
+      "covers": ["FR-6", "FR-7", "FR-9", "NFR-4", "NFR-5"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U09",
+      "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Applies the catalog.entity.read permission to the resolved entity exactly as entitiesBatch does, so an unreadable claimant gives the same null item as no claim.",
+      "rules": [
+        "1. Add ResolveFormerEntityRefRequest to the '../catalog/types' import.",
+        "2. Add `async resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>` right after entitiesBatch.",
+        "3. Call this.permissionApi.authorizeConditional([{ permission: catalogEntityReadPermission }], { credentials: request.credentials }) and take the first decision.",
+        "4. DENY: return { items: { type: 'object', entities: [null] } } without calling the wrapped catalog.",
+        "5. CONDITIONAL: return this.entitiesCatalog.resolveFormerEntityRef({ ...request, filter: this.permissionPredicate(authorizeDecision.conditions, request.filter) }).",
+        "6. ALLOW: return this.entitiesCatalog.resolveFormerEntityRef(request).",
+        "7. Add a one-line comment that the real-name and claimant checks of the wrapped catalog intentionally ignore permissions, and only the read of the resolved entity is filtered."
+      ],
+      "exports": [
+        {
+          "name": "AuthorizedEntitiesCatalog.resolveFormerEntityRef",
+          "kind": "method",
+          "params": [
+            {
+              "name": "request",
+              "type": "ResolveFormerEntityRefRequest"
+            }
+          ],
+          "returns": "Promise<EntitiesBatchResponse>"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 36,
+          "to": 36,
+          "first_line": "QueryEntitiesResponse,",
+          "rule": "Insert `ResolveFormerEntityRefRequest,` into the '../catalog/types' import list."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 130,
+          "to": 130,
+          "first_line": "}",
+          "rule": "After entitiesBatch's closing brace, insert a blank line and the resolveFormerEntityRef method (rules 2-7)."
+        }
+      ],
+      "style_from": {
+        "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts",
+        "lines": [104, 130],
+        "reason": "entitiesBatch is the exact permission pattern to mirror."
+      },
+      "depends_on": ["U07"],
+      "covers": ["FR-8"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U10",
+      "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds database-backed resolveFormerEntityRef tests for the single-claimant hit, real-name precedence, conflicts, filtered claimants and re-stitching without the annotation.",
+      "rules": [
+        "1. Add a describe('resolveFormerEntityRef') block before describe('removeEntityByUid'); every it calls await createDatabase() first and inserts entities with the existing addEntity(entity, []) helper, which builds search rows through buildEntitySearch.",
+        "2. Build the catalog with new DefaultEntitiesCatalog({ database: knex, logger: mockServices.logger.mock() }) and call resolveFormerEntityRef({ formerEntityRef, credentials: mockCredentials.none() }); read results with entitiesResponseToObjects(result.items).",
+        "3. Use kind 'Component', namespace 'default', and the annotation key literal 'backstage.io/former-names'; filters are FilterPredicate objects such as { 'metadata.name': 'new-name' }.",
+        "4. For the re-stitch case, delete the claimant's rows from 'search' by entity_id (addEntity returns the id) and insert buildEntitySearch(id, entityWithoutAnnotation) rows, mirroring what stitching does."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 2211,
+          "to": 2211,
+          "first_line": "describe('removeEntityByUid', () => {",
+          "rule": "Insert the describe('resolveFormerEntityRef') block and a blank line before this describe."
+        }
+      ],
+      "tests": [
+        {
+          "name": "resolves a single claimant",
+          "given": "entity 'new-name' with annotation 'old-name'",
+          "expect": "resolving 'component:default/old-name' returns [new-name entity] and resolving 'component:default/unknown' returns [null]"
+        },
+        {
+          "name": "lets a real name win over a claim, even when the real entity is filtered out",
+          "given": "entity 'old-name' exists and entity 'new-name' claims 'old-name'",
+          "expect": "[null] without a filter and [null] with filter { 'metadata.name': 'new-name' }"
+        },
+        {
+          "name": "refuses ambiguous claims",
+          "given": "entities 'a' and 'b' both claim 'old-name'",
+          "expect": "[null]"
+        },
+        {
+          "name": "returns null when the claimant does not match the filter",
+          "given": "single claimant 'new-name' and filter { 'metadata.name': 'something-else' }",
+          "expect": "[null]"
+        },
+        {
+          "name": "stops resolving after the annotation is removed and the entity is restitched",
+          "given": "claimant 'new-name' whose search rows are rebuilt without the annotation",
+          "expect": "first call returns the entity, second call returns [null]"
+        }
+      ],
+      "depends_on": ["U08"],
+      "covers": ["AC-2", "AC-3", "AC-8"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U11",
+      "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.test.ts",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds AuthorizedEntitiesCatalog tests showing resolveFormerEntityRef is denied, conditionally filtered or passed through like entitiesBatch.",
+      "rules": [
+        "1. Add `resolveFormerEntityRef: jest.fn(),` to the fakeCatalog object so it still satisfies EntitiesCatalog.",
+        "2. Add describe('resolveFormerEntityRef') before describe('facets'), mirroring the three entitiesBatch cases, with formerEntityRef 'component:default/old-name' and mockCredentials.none()."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 38,
+          "to": 38,
+          "first_line": "queryEntities: jest.fn(),",
+          "rule": "Insert `resolveFormerEntityRef: jest.fn(),`."
+        },
+        {
+          "id": "S2",
+          "at": "insert_before",
+          "from": 630,
+          "to": 630,
+          "first_line": "describe('facets', () => {",
+          "rule": "Insert the describe('resolveFormerEntityRef') block and a blank line."
+        }
+      ],
+      "tests": [
+        {
+          "name": "returns a null item on DENY",
+          "given": "authorizeConditional resolves DENY",
+          "expect": "result equals { items: { type: 'object', entities: [null] } } and fakeCatalog.resolveFormerEntityRef was not called"
+        },
+        {
+          "name": "passes the permission filter on CONDITIONAL",
+          "given": "CONDITIONAL with IS_ENTITY_KIND kinds ['b'] and createCatalog(isEntityKind)",
+          "expect": "fakeCatalog.resolveFormerEntityRef called with formerEntityRef, credentials and filter { kind: 'b' }"
+        },
+        {
+          "name": "delegates unchanged on ALLOW",
+          "given": "authorizeConditional resolves ALLOW",
+          "expect": "fakeCatalog.resolveFormerEntityRef called with exactly the original request"
+        }
+      ],
+      "depends_on": ["U09"],
+      "covers": ["AC-3"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U12",
+      "path": "plugins/catalog-backend/src/schema/openapi.yaml",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Declares GET /entities/by-former-name/{kind}/{namespace}/{name} (operationId GetEntityByFormerName) in the catalog OpenAPI spec.",
+      "rules": [
+        "1. Add the path between the by-name ancestry path and /entities/by-refs, copying the GetEntityByName block's structure and indentation.",
+        "2. get.operationId: GetEntityByFormerName; tags: [Entity]; description: 'Get the entity that currently declares the given entity ref as a former name through the backstage.io/former-names annotation.'",
+        "3. responses: '200' with description Ok and application/json schema $ref '#/components/schemas/Entity'; '400', '404' and default all $ref '#/components/responses/ErrorResponse'.",
+        "4. security: the same two entries as GetEntityByName ({} and JWT: []); parameters: $ref '#/components/parameters/kind', '#/components/parameters/namespace', '#/components/parameters/name'."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 1023,
+          "to": 1023,
+          "first_line": "/entities/by-refs:",
+          "rule": "Insert the new path item (rules 1-4) at the same indentation as the surrounding paths."
+        }
+      ],
+      "style_from": {
+        "path": "plugins/catalog-backend/src/schema/openapi.yaml",
+        "lines": [975, 998],
+        "reason": "The GetEntityByName path item to copy."
+      },
+      "depends_on": [],
+      "covers": ["FR-10"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U13",
+      "path": "plugins/catalog-backend/src/schema/openapi/generated/router.ts",
+      "action": "tooling",
+      "phase": "codegen",
+      "behaviour": "Regenerates the catalog-backend OpenAPI server files (router.ts, apis/, models/) from openapi.yaml with the repo's generator.",
+      "run": "yarn backstage-repo-tools package schema openapi generate --server",
+      "cwd": "plugins/catalog-backend",
+      "depends_on": ["U12"],
+      "covers": ["FR-10", "NFR-6"]
+    },
+    {
+      "id": "U14",
+      "path": "packages/catalog-client/src/schema/openapi/generated/apis/Api.client.ts",
+      "action": "tooling",
+      "phase": "codegen",
+      "behaviour": "Regenerates the catalog-client OpenAPI client files (apis/Api.client.ts, models/) from catalog-backend's openapi.yaml, adding getEntityByFormerName.",
+      "run": "yarn backstage-repo-tools package schema openapi generate --client-package packages/catalog-client",
+      "cwd": "plugins/catalog-backend",
+      "depends_on": ["U12"],
+      "covers": ["FR-12", "NFR-6", "AC-9"]
+    },
+    {
+      "id": "U15",
+      "path": "plugins/catalog-backend/src/service/createRouter.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Wires GET /entities/by-former-name/:kind/:namespace/:name to entitiesCatalog.resolveFormerEntityRef with the same auditing and credentials handling as the by-name route.",
+      "rules": [
+        "1. Chain a new .get('/entities/by-former-name/:kind/:namespace/:name', async (req, res) => {...}) after the by-name ancestry route and before .post('/entities/by-refs').",
+        "2. Read kind, namespace and name from req.params and compute formerEntityRef = stringifyEntityRef({ kind, namespace, name }).",
+        "3. Create the auditor event with eventId 'entity-fetch', request: req and meta { queryType: 'by-former-name', entityRef: formerEntityRef }.",
+        "4. In try: const { items } = await entitiesCatalog.resolveFormerEntityRef({ formerEntityRef, credentials: await httpAuth.credentials(req) }); await auditorEvent?.success() with no meta; then writeSingleEntityResponse(res, items, `No current entity found for former entity ref '${formerEntityRef}'`).",
+        "5. In catch: await auditorEvent?.fail({ error: err }) and rethrow, as the by-name route does.",
+        "6. Do not change the by-name, by-ref or by-uid routes."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 497,
+          "to": 497,
+          "first_line": ".post('/entities/by-refs', async (req, res) => {",
+          "rule": "Insert the chained .get route for /entities/by-former-name/:kind/:namespace/:name (rules 1-5)."
+        }
+      ],
+      "style_from": {
+        "path": "plugins/catalog-backend/src/service/createRouter.ts",
+        "lines": [423, 455],
+        "reason": "The by-name route: auditor event, credentials, writeSingleEntityResponse, fail and rethrow."
+      },
+      "depends_on": ["U07", "U13"],
+      "covers": ["FR-10", "NFR-5"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U16",
+      "path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds router tests showing the former-name endpoint returns 200 with the entity on a hit and an identical 404 error for every miss.",
+      "rules": [
+        "1. Add `resolveFormerEntityRef: jest.fn(),` to the entitiesCatalog mock literal in beforeEach.",
+        "2. Add describe('GET /entities/by-former-name/:kind/:namespace/:name') after the by-name describe, using request(app) and mockCredentials.user() like the by-name tests.",
+        "3. Misses are mocked as { items: { type: 'object', entities: [null] } }; compare response.body.error across misses for the same URL to show the shape is identical."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 71,
+          "to": 71,
+          "first_line": "queryEntities: jest.fn(),",
+          "rule": "Insert `resolveFormerEntityRef: jest.fn(),`."
+        },
+        {
+          "id": "S2",
+          "at": "insert_before",
+          "from": 557,
+          "to": 557,
+          "first_line": "describe('DELETE /entities/by-uid/:uid', () => {",
+          "rule": "Insert the new describe block and a blank line."
+        }
+      ],
+      "tests": [
+        {
+          "name": "returns the current entity for a former name",
+          "given": "resolveFormerEntityRef resolves one entity for GET /entities/by-former-name/k/ns/old",
+          "expect": "called once with { formerEntityRef: 'k:ns/old', credentials: mockCredentials.user() }, status 200, body contains the entity"
+        },
+        {
+          "name": "responds with the same 404 for every kind of miss",
+          "given": "resolveFormerEntityRef resolves a null item on three consecutive requests to the same URL (standing in for unknown ref, real-name match, conflict and unreadable target)",
+          "expect": "every response has status 404, error name 'NotFoundError', and response.body.error is equal across the three responses"
+        }
+      ],
+      "depends_on": ["U15"],
+      "covers": ["AC-4"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U17",
+      "path": "packages/catalog-client/src/types/api.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Adds the optional getEntityByFormerRef method to the public CatalogApi interface, right after getEntityByRef.",
+      "rules": [
+        "1. Declare it optional with a question mark so existing implementers compile unchanged.",
+        "2. TSDoc like getEntityByRef: 'Gets the entity that currently declares the given entity ref as one of its former refs, through the `backstage.io/former-names` annotation.'; a '@remarks' paragraph saying it returns undefined when an entity currently has that ref, when no or several entities claim it, or when the caller may not read the claiming entity, and that implementations may omit the method so callers must check for it first; '@param entityRef - A former entity ref, either on string or compound form'; '@param options - Additional options'; '@returns The current entity, or undefined if the ref could not be resolved'."
+      ],
+      "exports": [
+        {
+          "name": "CatalogApi.getEntityByFormerRef",
+          "kind": "optional method",
+          "params": [
+            {
+              "name": "entityRef",
+              "type": "string | CompoundEntityRef"
+            },
+            {
+              "name": "options",
+              "type": "CatalogRequestOptions | undefined"
+            }
+          ],
+          "returns": "Promise<Entity | undefined>"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 699,
+          "to": 699,
+          "first_line": "): Promise<Entity | undefined>;",
+          "rule": "After getEntityByRef's signature, insert a blank line and the documented optional getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options?: CatalogRequestOptions): Promise<Entity | undefined>;"
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-11", "NFR-3"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U18",
+      "path": "packages/catalog-client/src/CatalogClient.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Implements getEntityByFormerRef in CatalogClient through the regenerated OpenAPI client, mapping a 404 to undefined.",
+      "rules": [
+        "1. Add the method right after getEntityByRef with the TSDoc `{@inheritdoc CatalogApi.getEntityByFormerRef}`.",
+        "2. Signature: async getEntityByFormerRef(entityRef: string | CompoundEntityRef, options?: CatalogRequestOptions): Promise<Entity | undefined>.",
+        "3. Body: return this.requestOptional(await this.apiClient.getEntityByFormerName({ path: parseEntityRef(entityRef) }, options)); exactly the getEntityByRef shape, no hand-written fetch.",
+        "4. No import changes are needed (CompoundEntityRef, Entity, parseEntityRef and CatalogRequestOptions are already imported)."
+      ],
+      "exports": [
+        {
+          "name": "CatalogClient.getEntityByFormerRef",
+          "kind": "method",
+          "params": [
+            {
+              "name": "entityRef",
+              "type": "string | CompoundEntityRef"
+            },
+            {
+              "name": "options",
+              "type": "CatalogRequestOptions | undefined"
+            }
+          ],
+          "returns": "Promise<Entity | undefined>"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 480,
+          "to": 480,
+          "first_line": "}",
+          "rule": "After getEntityByRef's closing brace, insert a blank line and the documented getEntityByFormerRef method (rules 1-3)."
+        }
+      ],
+      "style_from": {
+        "path": "packages/catalog-client/src/CatalogClient.ts",
+        "lines": [465, 480],
+        "reason": "getEntityByRef is the exact shape to copy."
+      },
+      "depends_on": ["U14", "U17"],
+      "covers": ["FR-12"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U19",
+      "path": "packages/catalog-client/src/CatalogClient.test.ts",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds msw-based tests showing getEntityByFormerRef calls the by-former-name endpoint and returns undefined on 404.",
+      "rules": [
+        "1. Add describe('getEntityByFormerRef') after describe('getEntityByRef'), registering http.get handlers for `${mockBaseUrl}/entities/by-former-name/customkind/default/old-name` (JSON entity) and `.../missing` (404) in beforeEach.",
+        "2. Mirror the getEntityByRef cases, including the compound-ref form."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 1172,
+          "to": 1172,
+          "first_line": "describe('getLocations', () => {",
+          "rule": "Insert describe('getEntityByFormerRef') and a blank line."
+        }
+      ],
+      "tests": [
+        {
+          "name": "resolves a former ref by string and compound form",
+          "given": "the by-former-name handler for customkind:default/old-name returns the current entity",
+          "expect": "both getEntityByFormerRef('customkind:default/old-name') and the compound form resolve to that entity"
+        },
+        {
+          "name": "returns undefined for 404s",
+          "given": "the handler for customkind:default/missing returns 404",
+          "expect": "string and compound calls both resolve to undefined"
+        }
+      ],
+      "depends_on": ["U18"],
+      "covers": ["AC-5"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U20",
+      "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Implements getEntityByFormerRef in the in-memory client with the real-name-wins and single-claimant rules, without a permission model.",
+      "rules": [
+        "1. Add getEntityFormerRefs to the '@backstage/catalog-model' import.",
+        "2. Add async getEntityByFormerRef(entityRef: string | CompoundEntityRef): Promise<Entity | undefined> right after getEntityByRef.",
+        "3. Normalize with const ref = stringifyEntityRef(parseEntityRef(entityRef)); if this.#createEntityRefMap().has(ref) return undefined.",
+        "4. Collect this.#entities whose getEntityFormerRefs(entity) includes ref; return the single match when there is exactly one, otherwise undefined."
+      ],
+      "exports": [
+        {
+          "name": "InMemoryCatalogClient.getEntityByFormerRef",
+          "kind": "method",
+          "params": [
+            {
+              "name": "entityRef",
+              "type": "string | CompoundEntityRef"
+            }
+          ],
+          "returns": "Promise<Entity | undefined>"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 44,
+          "to": 44,
+          "first_line": "Entity,",
+          "rule": "Insert `getEntityFormerRefs,` into the '@backstage/catalog-model' import list."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 623,
+          "to": 623,
+          "first_line": "}",
+          "rule": "After getEntityByRef's closing brace, insert a blank line and getEntityByFormerRef (rules 2-4)."
+        }
+      ],
+      "style_from": {
+        "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts",
+        "lines": [617, 623],
+        "reason": "getEntityByRef shape and the #createEntityRefMap helper."
+      },
+      "depends_on": ["U03", "U17"],
+      "covers": ["FR-13"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U21",
+      "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds in-memory client tests for getEntityByFormerRef covering a hit, the real-name rule, conflicts and unknown refs.",
+      "rules": [
+        "1. Add describe('getEntityByFormerRef') as the last block inside describe('InMemoryCatalogClient'), defining its own entities with kind 'Component' and the annotation key literal 'backstage.io/former-names'.",
+        "2. Construct clients with new InMemoryCatalogClient({ entities: [...] })."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 1291,
+          "to": 1291,
+          "first_line": "});",
+          "rule": "Insert a blank line and describe('getEntityByFormerRef') before the closing of the top-level describe."
+        }
+      ],
+      "tests": [
+        {
+          "name": "resolves a single claimant by string and compound ref",
+          "given": "entity 'new-name' annotated 'old-name'",
+          "expect": "'component:default/old-name' and { kind: 'Component', namespace: 'default', name: 'old-name' } both resolve to it; 'component:default/unknown' resolves to undefined"
+        },
+        {
+          "name": "applies the real-name and conflict rules",
+          "given": "one client where entity 'old-name' exists and 'new-name' claims it, and another where 'a' and 'b' both claim 'old-name'",
+          "expect": "undefined in both cases"
+        }
+      ],
+      "depends_on": ["U20"],
+      "covers": ["AC-5"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U22",
+      "path": "plugins/catalog-node/src/catalogService.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Mirrors the optional getEntityByFormerRef on CatalogService and implements it in DefaultCatalogService by delegating to the wrapped CatalogApi.",
+      "rules": [
+        "1. In the CatalogService interface, after getEntityByRef, add optional getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options: CatalogServiceRequestOptions): Promise<Entity | undefined>; with a short TSDoc pointing to CatalogApi.getEntityByFormerRef and noting it is optional.",
+        "2. In DefaultCatalogService, after getEntityByRef, add async getEntityByFormerRef(entityRef, options): if this.#catalogApi.getEntityByFormerRef is missing return undefined; otherwise return this.#catalogApi.getEntityByFormerRef(entityRef, await this.#getOptions(options))."
+      ],
+      "exports": [
+        {
+          "name": "CatalogService.getEntityByFormerRef",
+          "kind": "optional method",
+          "params": [
+            {
+              "name": "entityRef",
+              "type": "string | CompoundEntityRef"
+            },
+            {
+              "name": "options",
+              "type": "CatalogServiceRequestOptions"
+            }
+          ],
+          "returns": "Promise<Entity | undefined>"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 91,
+          "to": 91,
+          "first_line": "): Promise<Entity | undefined>;",
+          "rule": "Insert a blank line and the documented optional interface member (rule 1)."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 234,
+          "to": 234,
+          "first_line": "}",
+          "rule": "After DefaultCatalogService.getEntityByRef's closing brace, insert a blank line and the delegating method (rule 2)."
+        }
+      ],
+      "style_from": {
+        "path": "plugins/catalog-node/src/catalogService.ts",
+        "lines": [226, 234],
+        "reason": "getEntityByRef delegation with #getOptions."
+      },
+      "depends_on": ["U17"],
+      "covers": ["FR-13"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U23",
+      "path": "plugins/catalog-node/src/testUtils/types.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Redeclares the optional getEntityByFormerRef on CatalogServiceMock with the union options type so CatalogService and CatalogApi merge cleanly.",
+      "rules": [
+        "1. After getEntityByRef in CatalogServiceMock, add getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options?: CatalogServiceRequestOptions | CatalogRequestOptions): Promise<Entity | undefined>; matching the neighbours' formatting."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 85,
+          "to": 85,
+          "first_line": "): Promise<Entity | undefined>;",
+          "rule": "Insert a blank line and the optional getEntityByFormerRef member (rule 1)."
+        }
+      ],
+      "depends_on": ["U22"],
+      "covers": ["FR-13"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U24",
+      "path": "plugins/catalog-node/src/testUtils/catalogServiceMock.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Lists getEntityByFormerRef as a jest.fn in catalogServiceMock.mock.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 68,
+          "to": 68,
+          "first_line": "getEntityByRef: jest.fn(),",
+          "rule": "Insert `getEntityByFormerRef: jest.fn(),`."
+        }
+      ],
+      "depends_on": ["U23"],
+      "covers": ["FR-13"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U25",
+      "path": "plugins/catalog-react/src/testUtils/catalogApiMock.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Lists getEntityByFormerRef as a jest.fn in catalogApiMock.mock.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 70,
+          "to": 70,
+          "first_line": "getEntityByRef: jest.fn(),",
+          "rule": "Insert `getEntityByFormerRef: jest.fn(),`."
+        }
+      ],
+      "depends_on": ["U17"],
+      "covers": ["FR-13"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U26",
+      "path": "plugins/catalog/src/alpha/translation.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Adds the rename notice strings to catalogTranslationRef under entityPage.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 30,
+          "to": 30,
+          "first_line": "notFoundLinkText: 'kind, namespace, and name',",
+          "rule": "Insert `renamedNotice: 'This entity was renamed from {{formerEntityRef}}',` and `renamedNoticeDismiss: 'Dismiss',` as two lines at the same indentation."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-16"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U27",
+      "path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+      "action": "create",
+      "phase": "codegen",
+      "behaviour": "Shows a dismissible 'This entity was renamed from <old ref>' notice when the current location carries a formerEntityRef state from a rename redirect.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Internal component, no release tag, not exported from the package index.",
+        "2. Read const location = useLocation() from 'react-router-dom' and take formerEntityRef from location.state only when it is an object whose formerEntityRef is a non-empty string.",
+        "3. Keep const [dismissed, setDismissed] = useState(false); return null when there is no formerEntityRef or when dismissed.",
+        "4. Render Alert from '@material-ui/lab/Alert' with severity 'info', onClose={() => setDismissed(true)} and closeText={t('entityPage.renamedNoticeDismiss')}; the content is t('entityPage.renamedNotice', { formerEntityRef }).",
+        "5. Get t from useTranslationRef(catalogTranslationRef) ('@backstage/core-plugin-api/alpha' and '../../alpha/translation')."
+      ],
+      "exports": [
+        {
+          "name": "EntityRenamedNotice",
+          "kind": "function component",
+          "params": [],
+          "returns": "JSX.Element | null"
+        }
+      ],
+      "import_line": "import { EntityRenamedNotice } from './EntityRenamedNotice';",
+      "style_from": {
+        "path": "plugins/catalog/src/components/EntityLinksCard/EntityLinksCard.tsx",
+        "reason": "Small plugin-catalog component using useTranslationRef with catalogTranslationRef."
+      },
+      "depends_on": ["U26"],
+      "covers": ["FR-16", "AC-10"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U28",
+      "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "After a by-name miss, asks the optional former-ref lookup once, keeps the page loading, and on a hit replaces the URL with the current entity's route, keeping the sub-route, query and hash, and passing the former ref in location state.",
+      "rules": [
+        "1. Imports: add stringifyEntityRef from '@backstage/catalog-model', useRouteRef from '@backstage/core-plugin-api', entityRouteParams from '@backstage/plugin-catalog-react', and useLocation from 'react-router-dom'; keep the existing imports.",
+        "2. Add const location = useLocation() and const entityRoute = useRouteRef(entityRouteRef) next to the existing hooks.",
+        "3. The useAsyncRetry callback becomes async: const entity = await catalogApi.getEntityByRef({ kind, namespace, name }); if entity is set or catalogApi.getEntityByFormerRef is missing, return { entity, renamedTo: undefined }; errors from getEntityByRef still propagate.",
+        "4. Otherwise call catalogApi.getEntityByFormerRef({ kind, namespace, name }) once, treat a rejection as undefined, and return { entity: undefined, renamedTo }. Keep the dependency list [catalogApi, kind, namespace, name].",
+        "5. Add a useEffect on the result: when value?.renamedTo is set, compute oldBase = entityRoute({ kind, namespace, name }), newBase = entityRoute(entityRouteParams(value.renamedTo)), rest = location.pathname.startsWith(oldBase) ? location.pathname.slice(oldBase.length) : '', then navigate(`${newBase}${rest}${location.search}${location.hash}`, { replace: true, state: { formerEntityRef: stringifyEntityRef({ kind, namespace, name }) } }).",
+        "6. Keep the existing no-name useEffect unchanged.",
+        "7. Return { entity: value?.entity, loading: loading || Boolean(value?.renamedTo), error, refresh } so the page never shows 'Entity not found' while redirecting; on a miss the result is exactly today's (entity undefined, loading false)."
+      ],
+      "exports": [
+        {
+          "name": "useEntityFromUrl",
+          "kind": "hook",
+          "params": [],
+          "returns": "EntityLoadingStatus"
+        }
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 17,
+          "to": 29,
+          "first_line": "import {",
+          "last_line": "import useAsyncRetry from 'react-use/esm/useAsyncRetry';",
+          "rule": "Rewrite the import block per rule 1."
+        },
+        {
+          "id": "S2",
+          "at": "replace",
+          "from": 31,
+          "to": 55,
+          "first_line": "export const useEntityFromUrl = (): EntityLoadingStatus => {",
+          "last_line": "};",
+          "rule": "Rewrite the hook per rules 2-7."
+        }
+      ],
+      "uses": [
+        {
+          "path": "plugins/catalog-react/src/routes.ts",
+          "lines": [40, 95],
+          "reason": "entityRouteParams lower-cases kind and namespace for the route function."
+        },
+        {
+          "path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+          "lines": [52, 64],
+          "reason": "The new-system page's matchesRoute guard that relies on entity staying undefined while redirecting."
+        }
+      ],
+      "depends_on": ["U17", "U25"],
+      "covers": ["FR-14", "FR-15", "FR-17"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U29",
+      "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Renders EntityRenamedNotice above the routed entity layout in the old frontend system's catalog entity page.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 19,
+          "to": 19,
+          "first_line": "import { useEntityFromUrl } from './useEntityFromUrl';",
+          "rule": "Insert `import { EntityRenamedNotice } from './EntityRenamedNotice';`."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 24,
+          "to": 24,
+          "first_line": "<AsyncEntityProvider {...useEntityFromUrl()}>",
+          "rule": "Insert `<EntityRenamedNotice />` as the first child, before <Outlet />."
+        }
+      ],
+      "depends_on": ["U27", "U28"],
+      "covers": ["FR-18"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U30",
+      "path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Renders EntityRenamedNotice above the layout in the new frontend system's catalog entity page.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 28,
+          "to": 28,
+          "first_line": "import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';",
+          "rule": "Insert `import { EntityRenamedNotice } from '../../components/CatalogEntityPage/EntityRenamedNotice';`."
+        },
+        {
+          "id": "S2",
+          "at": "replace",
+          "from": 99,
+          "to": 99,
+          "first_line": "<AsyncEntityProvider {...entityProviderProps}>{layout}</AsyncEntityProvider>",
+          "rule": "Render <AsyncEntityProvider {...entityProviderProps}> with <EntityRenamedNotice /> followed by {layout} as children (multi-line JSX as Prettier formats it)."
+        }
+      ],
+      "depends_on": ["U27", "U28"],
+      "covers": ["FR-18"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U31",
+      "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx",
+      "action": "create",
+      "phase": "tests",
+      "behaviour": "jsdom tests for the old frontend system: an old entity URL redirects to the renamed entity keeping the tab, shows a dismissible rename notice, and an unknown name still shows 'Entity not found'.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Use renderInTestApp and TestApiRegistry from '@backstage/test-utils', ApiProvider from '@backstage/core-app-api', catalogApiMock from '@backstage/plugin-catalog-react/testUtils' (real in-memory client), and the same alert, starred-entities and permission APIs as EntityLayout.test.tsx.",
+        "2. Render <Routes><Route path=\"/catalog/:namespace/:kind/:name/*\" element={<CatalogEntityPage />}> with a child <Route path=\"*\"> whose element is an EntityLayout with an Overview route at '/' and a Docs route at '/docs' (distinct text content), using routeEntries and mountedRoutes { '/catalog/:namespace/:kind/:name': entityRouteRef, '/catalog': rootRouteRef }.",
+        "3. The current entity is kind 'Component', namespace 'default', name 'new-name', annotation 'backstage.io/former-names': 'old-name'.",
+        "4. Use screen.findBy* for async assertions and userEvent or fireEvent to click the notice's 'Dismiss' button; no test IDs."
+      ],
+      "style_from": {
+        "path": "plugins/catalog/src/components/EntityLayout/EntityLayout.test.tsx",
+        "lines": [17, 90],
+        "reason": "Old-system RTL setup for the entity page: API registry, renderInTestApp and mounted routes."
+      },
+      "uses": [
+        {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+          "reason": "Component under test."
+        }
+      ],
+      "tests": [
+        {
+          "name": "redirects an old entity URL to the renamed entity and shows a dismissible notice",
+          "given": "routeEntries ['/catalog/default/component/old-name/docs'] and the renamed entity in the catalog mock",
+          "expect": "the Docs tab content and 'new-name' header render, the text 'This entity was renamed from component:default/old-name' is shown, and clicking 'Dismiss' removes it"
+        },
+        {
+          "name": "still shows Entity not found for an unknown name",
+          "given": "routeEntries ['/catalog/default/component/unknown']",
+          "expect": "'Entity not found' is shown and no rename notice is rendered"
+        }
+      ],
+      "depends_on": ["U20", "U29"],
+      "covers": ["AC-6", "NFR-7"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U32",
+      "path": "plugins/catalog/src/alpha/pages.test.tsx",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds new-frontend-system entity page tests: an old URL redirects to the renamed entity with the notice, and an unknown name shows 'Entity not found'.",
+      "rules": [
+        "1. Add describe('Entity Page renames') inside describe('Entity page'), before describe('Entity Page Context Menu').",
+        "2. Use createExtensionTester(Object.assign({ namespace: 'catalog' }, catalogEntityPage)).add(overviewEntityContent) and renderInTestApp with apis [catalogApiMock({ entities: [renamedEntity] }), [starredEntitiesApiRef, mockStarredEntitiesApi]], mountPath '/catalog/:namespace/:kind/:name' and the same mountedRoutes as the existing tests.",
+        "3. renamedEntity is kind 'Component', namespace 'default', name 'new-name', annotation 'backstage.io/former-names': 'old-name', with spec owner and lifecycle like entityMock.",
+        "4. Use screen.findBy* and userEvent.click on the 'Dismiss' button."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 1026,
+          "to": 1026,
+          "first_line": "describe('Entity Page Context Menu', () => {",
+          "rule": "Insert describe('Entity Page renames') and a blank line."
+        }
+      ],
+      "tests": [
+        {
+          "name": "redirects an old entity URL and shows the rename notice",
+          "given": "initialRouteEntries ['/catalog/default/component/old-name/overview']",
+          "expect": "'Mock Overview content' renders for new-name, 'This entity was renamed from component:default/old-name' is shown, and clicking 'Dismiss' hides it"
+        },
+        {
+          "name": "shows Entity not found for an unknown name",
+          "given": "initialRouteEntries ['/catalog/default/component/unknown']",
+          "expect": "'Entity not found' is shown and no rename notice is rendered"
+        }
+      ],
+      "depends_on": ["U20", "U30"],
+      "covers": ["AC-6"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U33",
+      "path": "plugins/techdocs/src/translation.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Adds the rename notice strings to techdocsTranslationRef under redirectNotification.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 51,
+          "to": 51,
+          "first_line": "redirectNow: 'Redirect now',",
+          "rule": "Insert `renamedFrom: 'This entity was renamed from {{formerEntityRef}}',` and `dismiss: 'Dismiss',` as two lines at the same indentation."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-20"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U34",
+      "path": "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Lets callers of the redirect notification override its action button label, defaulting to the existing 'Redirect now' text.",
+      "rules": [
+        "1. Add `actionLabel?: string;` to TechDocsRedirectNotificationProps.",
+        "2. Destructure actionLabel in the component's parameter list.",
+        "3. The button text becomes {actionLabel ?? t('redirectNotification.redirectNow')}; nothing else changes, so handleMetaRedirects keeps its current behaviour."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 24,
+          "to": 28,
+          "first_line": "type TechDocsRedirectNotificationProps = {",
+          "last_line": "};",
+          "rule": "Add the optional actionLabel prop (rule 1)."
+        },
+        {
+          "id": "S2",
+          "at": "replace",
+          "from": 37,
+          "to": 41,
+          "first_line": "export const TechDocsRedirectNotification = ({",
+          "last_line": "}: TechDocsRedirectNotificationProps) => {",
+          "rule": "Destructure actionLabel alongside the existing props (rule 2)."
+        },
+        {
+          "id": "S3",
+          "at": "replace",
+          "from": 65,
+          "to": 65,
+          "first_line": "{t('redirectNotification.redirectNow')}",
+          "rule": "Render {actionLabel ?? t('redirectNotification.redirectNow')} (rule 3)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-20"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U35",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.tsx",
+      "action": "create",
+      "phase": "codegen",
+      "behaviour": "Shows the TechDocs redirect notification with 'This entity was renamed from <old ref>' and a Dismiss action when the location carries a formerEntityRef state from a rename redirect.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Internal component: TSDoc with '@internal', not exported from the package index.",
+        "2. Read const location = useLocation() from 'react-router-dom'; take formerEntityRef from location.state only when it is an object whose formerEntityRef is a non-empty string; otherwise return null.",
+        "3. Get t from useTranslationRef(techdocsTranslationRef) ('@backstage/core-plugin-api/alpha' and '../../../translation').",
+        "4. Render <TechDocsRedirectNotification key={formerEntityRef} message={t('redirectNotification.renamedFrom', { formerEntityRef })} actionLabel={t('redirectNotification.dismiss')} handleButtonClick={() => {}} autoHideDuration={15000} />, importing it from '../TechDocsRedirectNotification'."
+      ],
+      "exports": [
+        {
+          "name": "TechDocsRenamedNotice",
+          "kind": "function component",
+          "params": [],
+          "returns": "JSX.Element | null"
+        }
+      ],
+      "import_line": "import { TechDocsRenamedNotice } from './TechDocsRenamedNotice';",
+      "style_from": {
+        "path": "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx",
+        "reason": "Same package's notification component: imports, translation hook, arrow-function component export."
+      },
+      "depends_on": ["U33", "U34"],
+      "covers": ["FR-20", "AC-10"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U36",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "When the reader's entity lookup finds no entity, asks the optional former-ref lookup and on a hit replaces the URL with the same docs sub-path, query and anchor under the current entity, passing the former ref in location state.",
+      "rules": [
+        "1. Import useLocation alongside useNavigate from 'react-router-dom'.",
+        "2. Extend the TSDoc: the hook also follows entity renames declared through the backstage.io/former-names annotation; keep '@internal' and the existing params/returns wording.",
+        "3. Add const location = useLocation() after const navigate = useNavigate().",
+        "4. The useAsync callback returns { url: string; formerEntityRef?: string } | undefined. Inside the existing try: when the entity has the external annotation, build url with buildTechDocsURL(catalogEntity, viewTechdocLink) and return { url } when it is defined.",
+        "5. Still inside try: when catalogEntity is undefined and catalogApi.getEntityByFormerRef exists, call it with entityRef; on a hit compute newBase = buildTechDocsURL(current, viewTechdocLink) and oldBase = viewTechdocLink({ namespace: entityRef.namespace, kind: entityRef.kind, name: entityRef.name }); when newBase is defined set rest = location.pathname.startsWith(oldBase) ? location.pathname.slice(oldBase.length) : '' and return { url: `${newBase}${rest}${location.search}${location.hash}`, formerEntityRef: stringifyEntityRef(entityRef) }.",
+        "6. Keep the catch that ignores errors and the final return undefined; keep the dependency list [entityKey, catalogApi].",
+        "7. In the useEffect: when not loading and a value exists, call navigate(value.url, { replace: true, state: { formerEntityRef: value.formerEntityRef } }) when formerEntityRef is set, otherwise navigate(value.url, { replace: true }) exactly as today.",
+        "8. Keep the checkedEntityRef guard, shouldShowProgress formula and return shape unchanged (value truthiness still drives shouldShowProgress)."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 18,
+          "to": 18,
+          "first_line": "import { useNavigate } from 'react-router-dom';",
+          "rule": "Import useLocation and useNavigate from 'react-router-dom'."
+        },
+        {
+          "id": "S2",
+          "at": "replace",
+          "from": 30,
+          "to": 104,
+          "first_line": "/**",
+          "last_line": "}",
+          "rule": "Rewrite the TSDoc and the useExternalRedirect function per rules 2-8."
+        }
+      ],
+      "uses": [
+        {
+          "path": "plugins/techdocs-react/src/helpers.ts",
+          "lines": [60, 111],
+          "reason": "buildTechDocsURL builds the current entity's docs root, including external-entity redirects."
+        }
+      ],
+      "depends_on": ["U17", "U25"],
+      "covers": ["FR-19", "FR-21"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U37",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsReaderPage.tsx",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Renders TechDocsRenamedNotice in both reader page render branches, which covers the old system and the alpha reader page that reuses this component.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 43,
+          "to": 43,
+          "first_line": "import { useExternalRedirect } from './useExternalRedirect';",
+          "rule": "Insert `import { TechDocsRenamedNotice } from './TechDocsRenamedNotice';`."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 230,
+          "to": 230,
+          "first_line": "<ThemeProvider theme={readerPageTheme}>",
+          "rule": "Insert `<TechDocsRenamedNotice />` as the first child of ThemeProvider in the no-children branch."
+        },
+        {
+          "id": "S3",
+          "at": "insert_after",
+          "from": 242,
+          "to": 242,
+          "first_line": "<ThemeProvider theme={readerPageTheme}>",
+          "rule": "Insert `<TechDocsRenamedNotice />` as the first child of ThemeProvider in the children branch."
+        }
+      ],
+      "depends_on": ["U35", "U36"],
+      "covers": ["FR-20", "FR-21"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U38",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds hook tests showing a renamed entity's old docs URL is replaced with the new docs URL keeping sub-path, query and anchor, and that misses or an absent method do not navigate.",
+      "rules": [
+        "1. Replace the module mocks: keep mockNavigate; make mockViewTechdocLink a jest.fn taking optional { namespace, kind, name } and returning `/docs/${namespace}/${kind}/${name}` when given params, '/docs' otherwise; add `let mockLocation = { pathname: '/docs', search: '', hash: '' };` and add useLocation: () => mockLocation to the react-router-dom mock; keep the core-plugin-api mock.",
+        "2. New cases go at the end of describe('useExternalRedirect'); each sets mockLocation for the old URL, e.g. { pathname: '/docs/default/component/old-name/guides/setup', search: '?v=1', hash: '#install' }.",
+        "3. New cases use their own API object { getEntityByRef: jest.fn(), getEntityByFormerRef: jest.fn() } in a TestApiProvider wrapper; the existing cases keep mockCatalogApi without the method.",
+        "4. Keep the file's renderHook + waitFor style."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 23,
+          "to": 34,
+          "first_line": "const mockNavigate = jest.fn();",
+          "last_line": "}));",
+          "rule": "Rewrite the module-level mocks per rule 1."
+        },
+        {
+          "id": "S2",
+          "at": "insert_before",
+          "from": 282,
+          "to": 282,
+          "first_line": "});",
+          "rule": "Insert a blank line and the new it cases (listed in tests) before the closing of describe('useExternalRedirect')."
+        }
+      ],
+      "tests": [
+        {
+          "name": "redirects a former entity ref to the renamed entity's docs keeping sub-path, query and anchor",
+          "given": "getEntityByRef resolves undefined and getEntityByFormerRef resolves an entity with kind 'component', namespace 'default', name 'new-name' (lower-case kind so the mocked route function output is predictable), for entityRef { kind: 'component', namespace: 'default', name: 'old-name' }",
+          "expect": "mockNavigate called with '/docs/default/component/new-name/guides/setup?v=1#install' and { replace: true, state: { formerEntityRef: 'component:default/old-name' } }, and shouldShowProgress is true"
+        },
+        {
+          "name": "does not navigate when the former ref cannot be resolved",
+          "given": "getEntityByRef and getEntityByFormerRef both resolve undefined",
+          "expect": "getEntityByFormerRef called once, mockNavigate not called, shouldShowProgress false"
+        },
+        {
+          "name": "does not ask for former refs when the entity exists or the method is absent",
+          "given": "an existing entity without external annotation, and separately the original mockCatalogApi without getEntityByFormerRef resolving undefined",
+          "expect": "getEntityByFormerRef never called and mockNavigate not called"
+        }
+      ],
+      "depends_on": ["U36"],
+      "covers": ["AC-7"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U39",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.test.tsx",
+      "action": "create",
+      "phase": "tests",
+      "behaviour": "jsdom tests showing the TechDocs rename notice renders from location state, can be dismissed, and stays hidden without that state.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Mock 'react-router-dom' useLocation (jest.requireActual spread) to return { pathname: '/docs/default/component/new-name/guides', search: '', hash: '#install', state: mockLocationState } where `let mockLocationState: unknown` is set per test.",
+        "2. Render with renderInTestApp(<TechDocsRenamedNotice />) from '@backstage/test-utils'; use screen.findByText and fireEvent or userEvent on the 'Dismiss' button."
+      ],
+      "style_from": {
+        "path": "plugins/techdocs/src/reader/components/TechDocsNotFound.test.tsx",
+        "reason": "Same package's RTL test that mocks useLocation and renders with renderInTestApp."
+      },
+      "tests": [
+        {
+          "name": "shows the rename notice and hides it when dismissed",
+          "given": "mockLocationState { formerEntityRef: 'component:default/old-name' }",
+          "expect": "'This entity was renamed from component:default/old-name' is shown with a 'Dismiss' button, and after clicking it the text is gone"
+        },
+        {
+          "name": "renders nothing without a former entity ref in the location state",
+          "given": "mockLocationState undefined, then { formerEntityRef: 42 }",
+          "expect": "no rename text and no 'Dismiss' button in either case"
+        }
+      ],
+      "depends_on": ["U35"],
+      "covers": ["AC-7", "FR-20"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U40",
+      "path": "docs/features/software-catalog/well-known-annotations.md",
+      "action": "edit",
+      "phase": "docs",
+      "behaviour": "Documents the backstage.io/former-names annotation: format, short-ref defaults, the real-name and conflict rules, permissions and when it takes effect.",
+      "rules": [
+        "1. New section `### backstage.io/former-names` between the view-url/edit-url section and the source-location section, shaped like its neighbours: a fenced yaml '# Example:' block, then prose.",
+        "2. The example shows metadata.name 'new-name' with `backstage.io/former-names: old-name, legacy-team/older-name, component:other/renamed-service`.",
+        "3. Prose covers: the value is a comma-separated list of entity refs; a short ref takes the entity's own kind, and its own namespace when none is given; malformed entries are ignored; when someone opens the old catalog entity page or TechDocs URL, Backstage redirects to the entity's current page and shows a notice.",
+        "4. A short list of rules: an entity that currently has the old ref is always served instead of redirecting; when several entities declare the same former ref, no redirect happens; the redirect only happens for users allowed to read the current entity, and otherwise they see the usual not-found page; API calls by entity name are not redirected.",
+        "5. End with a sentence that the annotation takes effect once the catalog has processed the entity again, and link the endpoint section of the API docs ([catalog API](api.md#get-entitiesby-former-namekindnamespacename))."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 147,
+          "to": 147,
+          "first_line": "### backstage.io/source-location",
+          "rule": "Insert the new section and a trailing blank line (rules 1-5)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-22", "AC-12"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U41",
+      "path": "docs/features/software-catalog/api.md",
+      "action": "edit",
+      "phase": "docs",
+      "behaviour": "Documents the GET /entities/by-former-name/<kind>/<namespace>/<name> endpoint next to the by-name endpoints.",
+      "rules": [
+        "1. New section titled with the backticked path `GET /entities/by-former-name/<kind>/<namespace>/<name>`, placed after the by-name ancestry section and before `POST /entities/by-refs`.",
+        "2. Explain that it returns the entity that declares the given ref in its `backstage.io/former-names` annotation (link to well-known-annotations.md#backstageioformer-names), as a single Entity JSON object.",
+        "3. State that it responds 404 when no entity declares the ref, when an entity currently has that ref, when more than one entity declares it, or when the caller may not read the declaring entity, and that these cases cannot be told apart; the regular by-name endpoint is unchanged and keeps returning 404 for old names."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 676,
+          "to": 676,
+          "first_line": "### `POST /entities/by-refs`",
+          "rule": "Insert the new endpoint section and a trailing blank line (rules 1-3)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-23", "AC-12"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U42",
+      "path": "docs/features/techdocs/how-to-guides.md",
+      "action": "edit",
+      "phase": "docs",
+      "behaviour": "Adds a how-to section on keeping TechDocs links working after an entity is renamed, using the former-names annotation.",
+      "rules": [
+        "1. New section `## How to keep TechDocs links working after renaming an entity` after the moved-or-renamed-pages section and before `## Create download links for static assets`.",
+        "2. Explain adding `backstage.io/former-names` to the renamed entity with a short yaml example (name 'new-name', annotation 'old-name'), and link the annotation docs (../software-catalog/well-known-annotations.md#backstageioformer-names).",
+        "3. Describe the behaviour: opening /docs/<namespace>/<kind>/<old-name>/<page>#<anchor> replaces the URL with the same page and anchor under the current entity and shows a dismissible notice; unknown names keep showing the not-found page; already-built documentation is not moved or rebuilt."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 791,
+          "to": 791,
+          "first_line": "## Create download links for static assets",
+          "rule": "Insert the new section and a trailing blank line (rules 1-3)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-24", "AC-12"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U43",
+      "path": ".changeset/entity-former-names-model.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/catalog-model as minor for the new former-names annotation constant and helper.",
+      "rules": [
+        "1. Front matter exactly: '---', `'@backstage/catalog-model': minor`, '---', then a blank line.",
+        "2. Message: one summary sentence that the new `backstage.io/former-names` well-known annotation lets an entity list the entity refs it was previously known by, then a sentence that `ANNOTATION_FORMER_NAMES` and `getEntityFormerRefs` were added to read it as normalized entity refs (short refs default to the entity's own kind and namespace)."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U44",
+      "path": ".changeset/entity-former-names-backend.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/plugin-catalog-backend as minor for former-ref indexing and the new endpoint.",
+      "rules": [
+        "1. Front matter: `'@backstage/plugin-catalog-backend': minor`.",
+        "2. Message: summary sentence that the catalog now resolves former entity refs declared in the `backstage.io/former-names` annotation through the new `GET /entities/by-former-name/{kind}/{namespace}/{name}` endpoint; a paragraph that it returns 404 when an entity currently has the ref, when several entities declare it, or when the caller may not read the declaring entity, and that existing entities pick up the annotation the next time they are processed. No database migration is involved; say nothing about internal classes."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U45",
+      "path": ".changeset/entity-former-names-client.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/catalog-client, @backstage/plugin-catalog-node and @backstage/plugin-catalog-react as minor for the optional getEntityByFormerRef method and its mocks.",
+      "rules": [
+        "1. Front matter lists `'@backstage/catalog-client': minor`, `'@backstage/plugin-catalog-node': minor`, `'@backstage/plugin-catalog-react': minor`.",
+        "2. Message: the catalog API and the catalog service gained an optional `getEntityByFormerRef` method that finds the entity currently declaring a given former entity ref; the in-memory catalog client and the catalog test mocks support it; custom implementations of the catalog API do not need to implement it."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U46",
+      "path": ".changeset/entity-former-names-catalog.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/plugin-catalog as minor for the entity page rename redirect and notice.",
+      "rules": [
+        "1. Front matter: `'@backstage/plugin-catalog': minor`.",
+        "2. Message: when an entity page URL points at a name that no longer exists and exactly one entity lists that ref in its `backstage.io/former-names` annotation, the entity page redirects to the current entity, keeping the selected tab, query and anchor, and shows a dismissible notice; this works in both the old and the new frontend system and needs a catalog backend that supports former names."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U47",
+      "path": ".changeset/entity-former-names-techdocs.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/plugin-techdocs as minor for the TechDocs reader rename redirect and notice.",
+      "rules": [
+        "1. Front matter: `'@backstage/plugin-techdocs': minor`.",
+        "2. Message: the TechDocs reader page now follows entity renames declared with the `backstage.io/former-names` annotation, redirecting an old docs URL to the same page and anchor under the current entity and showing a dismissible notice; unknown names keep showing the not-found page."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U48",
+      "path": ".gitignore",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Appends a .sdlc/ ignore line at the end of the root .gitignore without changing existing lines.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 193,
+          "to": 193,
+          "first_line": ".claude/worktrees/",
+          "rule": "Insert a blank line, the comment `# Pipeline run artifacts`, and the line `.sdlc/`."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-27", "AC-12"]
+    },
+    {
+      "id": "U49",
+      "path": "packages/catalog-model/report.api.md",
+      "action": "tooling",
+      "phase": "codegen",
+      "behaviour": "Regenerates the API reports (report*.api.md) of the seven touched packages with the repo's api-reports command after all source changes are in.",
+      "run": "yarn build:api-reports packages/catalog-model packages/catalog-client plugins/catalog-backend plugins/catalog-node plugins/catalog-react plugins/catalog plugins/techdocs",
+      "depends_on": [
+        "U03",
+        "U05",
+        "U08",
+        "U09",
+        "U15",
+        "U18",
+        "U20",
+        "U22",
+        "U23",
+        "U24",
+        "U25",
+        "U29",
+        "U30",
+        "U37"
+      ],
+      "covers": ["FR-26", "AC-9"]
+    }
+  ]
+}

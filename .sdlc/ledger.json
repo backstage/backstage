@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "run_id": "20261028-feature-new-entity-former-names",
+      "intent": "feature-new",
+      "title": "Entity former names and rename redirects",
+      "status": "accepted",
+      "policy": "opus55-plus-sonnet55",
+      "auth_mode": "estimated",
+      "started_at": "2026-10-28T15:51:02.729Z",
+      "ended_at": "2026-10-28T17:59:00.143Z",
+      "dispatched_cost_usd": 2.703661,
+      "true_total_cost_usd": 18.928893,
+      "cost_provisional": true,
+      "files_changed": 59,
+      "tests": {
+        "passed": 7317,
+        "failed": 0,
+        "skipped": 64
+      },
+      "base_commit": "f20fd9b598285c88401406b3812fe00d7708136c",
+      "committed": false
+    }
+  ]
+}

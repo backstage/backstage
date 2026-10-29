@@ -1,0 +1,144 @@
+[
+  {
+    "id": "tp_debug_r4_001",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+    "instruction": "Fix `plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts` for these problems, changing only what they need, following the conventions in the shared brief:\n1. major (line 55): The redirect guard `handledFormerRef` (a useRef holding the former ref string) is never reset. After one redirect from old-name to new-name, the page component stays mounted because only the route params change. If the user then follows any in-app link to the old URL again, the lookup returns renamedTo, the guard sees the same formerKey and skips navigate. The hook keeps returning `loading: loading || Boolean(renamedTo)`, which stays true, so the page shows a spinner forever. The guard is also unnecessary: the existing `stringifyEntityRef(renamedTo) === current ref` check already handles the stale value that react-use keeps while the next lookup loads. This is a confident finding based on how the hook works; no test covers this path. — fix: Guard on the identity of the async result instead of the ref string, for example `if (handled.current === value) return; handled.current = value;` with `useRef<typeof value>()`. Alternatively, drop the useRef and rely on the self-ref check. Add a test that navigates to the old URL a second time in the same render and expects a second redirect.\n2. major (line 49): `catalogApi.getEntityByFormerRef(formerRef).catch(() => undefined)` assumes the method returns a promise. In this same run, `catalogApiMock.mock()` (plugins/catalog-react/src/testUtils/catalogApiMock.ts) now provides `getEntityByFormerRef: jest.fn()`, which returns `undefined`. In any test that uses `catalogApiMock.mock()` with `getEntityByRef` resolving undefined (the usual 'entity not found' setup in adopter and plugin tests), `.catch` throws a TypeError. useAsyncRetry then reports an error and the page shows an error instead of 'Entity not found'. This changes behaviour for existing consumers of a published test util. — fix: Use `try { renamedTo = await catalogApi.getEntityByFormerRef(formerRef); } catch { renamedTo = undefined; }` so a non-promise return value is tolerated, as useExternalRedirect.ts already does with `await` inside try.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U28.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        },
+        {
+          "id": "eslint",
+          "run": "yarn eslint '{path}'",
+          "fix": "yarn eslint --fix '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 120,
+      "max_retries": 2
+    }
+  },
+  {
+    "id": "tp_debug_r4_002",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+    "instruction": "Fix `plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx` for these problems, changing only what they need, following the conventions in the shared brief:\n1. minor (line 26): `dismissed` is plain local state that is never reset. CatalogEntityPage stays mounted across entity-to-entity navigation, so after the user dismisses one notice, a later rename redirect within the same page instance never shows its notice. The TechDocs counterpart avoids this with `key={formerEntityRef}`. — fix: Store the dismissed ref (`useState<string>()`) and hide the notice only when `dismissedRef === formerEntityRef`, or reset `dismissed` when formerEntityRef changes.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U27.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        },
+        {
+          "id": "eslint",
+          "run": "yarn eslint '{path}'",
+          "fix": "yarn eslint --fix '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 120,
+      "max_retries": 2
+    }
+  },
+  {
+    "id": "tp_debug_r4_003",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": ".changeset/entity-former-names-techdocs.md",
+    "instruction": "Fix `.changeset/entity-former-names-techdocs.md` for these problems, changing only what they need, following the conventions in the shared brief:\n1. minor (line 5): 'Names that no entity has ever used still show the not-found page' is inaccurate. The not-found page also appears for a former name declared by several entities, for one declared by an entity the user cannot read, and for any old name that is not listed in `backstage.io/former-names`. The plan's wording was 'unknown names keep showing the not-found page'. — fix: Reword to: 'Names that cannot be resolved to a single current entity still show the not-found page.'\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \".changeset/entity-former-names-techdocs.md\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \".changeset/entity-former-names-techdocs.md\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U47.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": ".changeset/entity-former-names-techdocs.md",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 60,
+      "max_retries": 2
+    }
+  }
+]

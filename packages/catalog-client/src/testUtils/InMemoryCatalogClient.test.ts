@@ -1062,6 +1062,72 @@ describe('InMemoryCatalogClient', () => {
       ).rejects.toThrow('not implemented');
     });
   });
+
+  describe('getEntityByFormerRef', () => {
+    const makeEntity = (name: string, formerNames?: string): Entity => ({
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name,
+        namespace: 'default',
+        ...(formerNames
+          ? { annotations: { 'backstage.io/former-names': formerNames } }
+          : {}),
+      },
+    });
+
+    it('resolves a single claimant by string and compound ref', async () => {
+      const claimant = makeEntity('new-name', 'old-name');
+      const client = new InMemoryCatalogClient({
+        entities: [claimant, makeEntity('other')],
+      });
+
+      await expect(
+        client.getEntityByFormerRef('component:default/old-name'),
+      ).resolves.toEqual(claimant);
+      await expect(
+        client.getEntityByFormerRef({
+          kind: 'Component',
+          namespace: 'default',
+          name: 'old-name',
+        }),
+      ).resolves.toEqual(claimant);
+      await expect(
+        client.getEntityByFormerRef('component:default/unknown'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('applies the real-name and conflict rules', async () => {
+      const realName = new InMemoryCatalogClient({
+        entities: [makeEntity('old-name'), makeEntity('new-name', 'old-name')],
+      });
+      await expect(
+        realName.getEntityByFormerRef('component:default/old-name'),
+      ).resolves.toBeUndefined();
+
+      const conflict = new InMemoryCatalogClient({
+        entities: [makeEntity('a', 'old-name'), makeEntity('b', 'old-name')],
+      });
+      await expect(
+        conflict.getEntityByFormerRef('component:default/old-name'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('resolves short-form entries in the annotation', async () => {
+      const claimant = makeEntity(
+        'new-name',
+        'old-one, component:default/old-two',
+      );
+      const client = new InMemoryCatalogClient({ entities: [claimant] });
+
+      await expect(
+        client.getEntityByFormerRef('component:default/old-one'),
+      ).resolves.toEqual(claimant);
+      await expect(
+        client.getEntityByFormerRef('component:default/old-two'),
+      ).resolves.toEqual(claimant);
+    });
+  });
 });
 
 describe('relation query predicates', () => {

@@ -1,0 +1,434 @@
+{
+  "pass": "20261028-feature-new-entity-former-names",
+  "policy_name": "opus55-plus-sonnet55",
+  "started_at": "2026-10-28T15:51:02.729Z",
+  "ended_at": "2026-10-28T17:59:00.143Z",
+  "duration_sec": 7677,
+  "total_cost_usd": 2.703661,
+  "total_input_tokens": 12530,
+  "total_input_tokens_cached": 410102,
+  "total_input_tokens_cache_write": 686770,
+  "total_output_tokens": 59364,
+  "orchestrator_overhead": {
+    "cost_usd": 16.84975,
+    "input_tokens": 618,
+    "input_tokens_cached": 30993722,
+    "input_tokens_cache_write": 870696,
+    "input_tokens_cache_write_1h": 325498,
+    "output_tokens": 265928,
+    "events": 1,
+    "provenance": "transcript",
+    "pricing_basis": "each message at its own model's list price on its own day (price list verified 2026-09-14)",
+    "cost_source": "transcript (no receipt; unverified)",
+    "transcript_cost_usd": 16.84975,
+    "receipt_cost_usd": null,
+    "receipt_path": null,
+    "per_model": [
+      {
+        "model": "claude-opus-5-5",
+        "role": "session",
+        "reported_as": ["claude-opus-5-5"],
+        "price_basis": "list",
+        "price_period": {
+          "from": "2026-01-01",
+          "to": null,
+          "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+          "verified": "2026-09-26"
+        },
+        "applied_modifiers": {
+          "speed": "standard",
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "multiplier": 1,
+          "defaulted": []
+        },
+        "rates": {
+          "input": 4,
+          "input_cached": 0.2,
+          "input_cache_write": 5,
+          "input_cache_write_1h": 8,
+          "output": 20
+        },
+        "messages": 33,
+        "tokens": {
+          "input": 90,
+          "input_cached": 2596995,
+          "input_cache_write_5m": 0,
+          "input_cache_write_1h": 137543,
+          "output": 21907
+        },
+        "cost_usd": 2.058243
+      },
+      {
+        "model": "claude-opus-5-5",
+        "role": "helper",
+        "reported_as": ["claude-opus-5-5"],
+        "price_basis": "list",
+        "price_period": {
+          "from": "2026-01-01",
+          "to": null,
+          "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+          "verified": "2026-09-26"
+        },
+        "applied_modifiers": {
+          "speed": "standard",
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "multiplier": 1,
+          "defaulted": []
+        },
+        "rates": {
+          "input": 4,
+          "input_cached": 0.2,
+          "input_cache_write": 5,
+          "input_cache_write_1h": 8,
+          "output": 20
+        },
+        "messages": 259,
+        "tokens": {
+          "input": 528,
+          "input_cached": 28396727,
+          "input_cache_write_5m": 545198,
+          "input_cache_write_1h": 187955,
+          "output": 244021
+        },
+        "cost_usd": 14.791507
+      }
+    ],
+    "unpriced": [],
+    "pricing_complete": true,
+    "price_list_verified": "2026-09-14",
+    "receipt_cli_usd": null,
+    "booked_cost_usd": null,
+    "unlogged_billed": null,
+    "attribution_complete": true,
+    "missing_helper_ids": [],
+    "unreferenced_helper_files": [],
+    "dispatched_in_session_cost_usd": 0.1102,
+    "dispatched_in_session_events": 2,
+    "window": {
+      "start": "2026-10-28T15:42:41.581Z",
+      "end": null,
+      "start_anchor": "command turn",
+      "end_anchor": "end of session",
+      "exact": true,
+      "lower_bound": false,
+      "session_id": "ee0e73f7-4187-46bc-93d5-7f147e1bc7c8",
+      "source": "manifest"
+    }
+  },
+  "true_total_cost_usd": 19.443211,
+  "model_breakdown": {
+    "claude-opus-5-5": {
+      "calls": 6,
+      "cost_usd": 0.574002,
+      "input_tokens": 12408,
+      "output_tokens": 10536
+    },
+    "claude-sonnet-5-5": {
+      "calls": 61,
+      "cost_usd": 2.129659,
+      "input_tokens": 122,
+      "output_tokens": 48828
+    }
+  },
+  "phase_breakdown": {
+    "preflight": {
+      "calls": 2,
+      "cost_usd": 0.012622,
+      "models": ["claude-opus-5-5", "claude-sonnet-5-5"],
+      "input_tokens": 4,
+      "input_tokens_cached": 1298,
+      "output_tokens": 42,
+      "by_model": {
+        "claude-opus-5-5": {
+          "calls": 1,
+          "cost_usd": 0.008363,
+          "input_tokens": 2,
+          "input_tokens_cached": 649,
+          "output_tokens": 21
+        },
+        "claude-sonnet-5-5": {
+          "calls": 1,
+          "cost_usd": 0.004259,
+          "input_tokens": 2,
+          "input_tokens_cached": 649,
+          "output_tokens": 21
+        }
+      }
+    },
+    "requirements_analysis": {
+      "calls": 1,
+      "cost_usd": 0.1102,
+      "models": ["claude-opus-5-5"],
+      "input_tokens": 12400,
+      "input_tokens_cached": 0,
+      "output_tokens": 3030,
+      "by_model": {
+        "claude-opus-5-5": {
+          "calls": 1,
+          "cost_usd": 0.1102,
+          "input_tokens": 12400,
+          "input_tokens_cached": 0,
+          "output_tokens": 3030
+        }
+      }
+    },
+    "plan_task_packets": {
+      "calls": 1,
+      "cost_usd": 0,
+      "models": ["claude-opus-5-5"],
+      "input_tokens": 0,
+      "input_tokens_cached": 0,
+      "output_tokens": 0,
+      "by_model": {
+        "claude-opus-5-5": {
+          "calls": 1,
+          "cost_usd": 0,
+          "input_tokens": 0,
+          "input_tokens_cached": 0,
+          "output_tokens": 0
+        }
+      }
+    },
+    "codegen": {
+      "calls": 27,
+      "cost_usd": 0.696847,
+      "models": ["claude-sonnet-5-5"],
+      "input_tokens": 54,
+      "input_tokens_cached": 172053,
+      "output_tokens": 14242,
+      "by_model": {
+        "claude-sonnet-5-5": {
+          "calls": 27,
+          "cost_usd": 0.696847,
+          "input_tokens": 54,
+          "input_tokens_cached": 172053,
+          "output_tokens": 14242
+        }
+      }
+    },
+    "tests": {
+      "calls": 18,
+      "cost_usd": 1.296008,
+      "models": ["claude-sonnet-5-5", "claude-opus-5-5"],
+      "input_tokens": 36,
+      "input_tokens_cached": 114702,
+      "output_tokens": 31391,
+      "by_model": {
+        "claude-sonnet-5-5": {
+          "calls": 15,
+          "cost_usd": 0.840569,
+          "input_tokens": 30,
+          "input_tokens_cached": 105381,
+          "output_tokens": 23906
+        },
+        "claude-opus-5-5": {
+          "calls": 3,
+          "cost_usd": 0.455439,
+          "input_tokens": 6,
+          "input_tokens_cached": 9321,
+          "output_tokens": 7485
+        }
+      }
+    },
+    "docs": {
+      "calls": 8,
+      "cost_usd": 0.126074,
+      "models": ["claude-sonnet-5-5"],
+      "input_tokens": 16,
+      "input_tokens_cached": 64040,
+      "output_tokens": 2281,
+      "by_model": {
+        "claude-sonnet-5-5": {
+          "calls": 8,
+          "cost_usd": 0.126074,
+          "input_tokens": 16,
+          "input_tokens_cached": 64040,
+          "output_tokens": 2281
+        }
+      }
+    },
+    "debug": {
+      "calls": 10,
+      "cost_usd": 0.46191,
+      "models": ["claude-sonnet-5-5"],
+      "input_tokens": 20,
+      "input_tokens_cached": 58009,
+      "output_tokens": 8378,
+      "by_model": {
+        "claude-sonnet-5-5": {
+          "calls": 10,
+          "cost_usd": 0.46191,
+          "input_tokens": 20,
+          "input_tokens_cached": 58009,
+          "output_tokens": 8378
+        }
+      }
+    },
+    "architecture_design": {
+      "calls": 112,
+      "cost_usd": 6.757309,
+      "models": ["claude-opus-5-5"],
+      "input_tokens": 226,
+      "input_tokens_cached": 15794424,
+      "output_tokens": 115422,
+      "by_model": {
+        "claude-opus-5-5": {
+          "calls": 112,
+          "cost_usd": 6.757309,
+          "input_tokens": 226,
+          "input_tokens_cached": 15794424,
+          "output_tokens": 115422
+        }
+      },
+      "measured": {
+        "source": "helper transcripts",
+        "cost_usd": 6.757309,
+        "messages": 112,
+        "files": 1,
+        "agent_types": ["mmo:brownfield-architect"],
+        "per_model": {
+          "claude-opus-5-5": {
+            "messages": 112,
+            "cost_usd": 6.757309,
+            "input_tokens": 226,
+            "input_tokens_cached": 15794424,
+            "input_tokens_cache_write": 257816,
+            "output_tokens": 115422
+          }
+        },
+        "pricing_complete": true,
+        "replaced_estimate_usd": 0,
+        "replaced_estimate_events": 0
+      }
+    },
+    "senior_code_review": {
+      "calls": 8,
+      "cost_usd": 0.885355,
+      "models": ["claude-opus-5-5"],
+      "input_tokens": 16,
+      "input_tokens_cached": 346757,
+      "output_tokens": 13006,
+      "by_model": {
+        "claude-opus-5-5": {
+          "calls": 8,
+          "cost_usd": 0.885355,
+          "input_tokens": 16,
+          "input_tokens_cached": 346757,
+          "output_tokens": 13006
+        }
+      },
+      "measured": {
+        "source": "helper transcripts",
+        "cost_usd": 0.885355,
+        "messages": 8,
+        "files": 1,
+        "agent_types": ["mmo:brownfield-senior-reviewer"],
+        "per_model": {
+          "claude-opus-5-5": {
+            "messages": 8,
+            "cost_usd": 0.885355,
+            "input_tokens": 16,
+            "input_tokens_cached": 346757,
+            "input_tokens_cache_write": 111164,
+            "output_tokens": 13006
+          }
+        },
+        "pricing_complete": true,
+        "replaced_estimate_usd": 0,
+        "replaced_estimate_events": 0
+      }
+    },
+    "security_review": {
+      "calls": 7,
+      "cost_usd": 0.433628,
+      "models": ["claude-opus-5-5"],
+      "input_tokens": 14,
+      "input_tokens_cached": 165635,
+      "output_tokens": 9218,
+      "by_model": {
+        "claude-opus-5-5": {
+          "calls": 7,
+          "cost_usd": 0.433628,
+          "input_tokens": 14,
+          "input_tokens_cached": 165635,
+          "output_tokens": 9218
+        }
+      },
+      "measured": {
+        "source": "helper transcripts",
+        "cost_usd": 0.433628,
+        "messages": 7,
+        "files": 1,
+        "agent_types": ["mmo:brownfield-security-reviewer"],
+        "per_model": {
+          "claude-opus-5-5": {
+            "messages": 7,
+            "cost_usd": 0.433628,
+            "input_tokens": 14,
+            "input_tokens_cached": 165635,
+            "input_tokens_cache_write": 43217,
+            "output_tokens": 9218
+          }
+        },
+        "pricing_complete": true,
+        "replaced_estimate_usd": 0,
+        "replaced_estimate_events": 0
+      }
+    }
+  },
+  "module_breakdown": {
+    "preflight": {
+      "calls": 2,
+      "cost_usd": 0.012622
+    },
+    "spec": {
+      "calls": 65,
+      "cost_usd": 2.691039
+    }
+  },
+  "task_type_breakdown": {
+    "typist_probe": {
+      "calls": 2,
+      "cost_usd": 0.012622
+    },
+    "requirements": {
+      "calls": 1,
+      "cost_usd": 0.1102
+    },
+    "decomposition": {
+      "calls": 1,
+      "cost_usd": 0
+    },
+    "": {
+      "calls": 63,
+      "cost_usd": 2.580839
+    }
+  },
+  "artifacts": {
+    "files": 65,
+    "loc": 34089
+  },
+  "run_id": "20261028-feature-new-entity-former-names",
+  "gates": [
+    {
+      "gate": "gate-1",
+      "response": "approved",
+      "at": "2026-10-28T16:00:55.235Z"
+    },
+    {
+      "gate": "gate-2",
+      "response": "approved",
+      "at": "2026-10-28T16:40:37.151Z"
+    },
+    {
+      "gate": "gate-3",
+      "response": "approved",
+      "at": "2026-10-28T17:58:48.902Z"
+    }
+  ],
+  "status": "accepted",
+  "written_by": "plugin/scripts/write-manifest.mjs",
+  "written_at": "2026-10-28T18:00:14.044Z"
+}

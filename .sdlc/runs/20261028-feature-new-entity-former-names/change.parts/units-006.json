@@ -1,0 +1,203 @@
+{
+  "section": "units",
+  "source": "units-006.json",
+  "value": [
+    {
+      "id": "U40",
+      "path": "docs/features/software-catalog/well-known-annotations.md",
+      "action": "edit",
+      "phase": "docs",
+      "behaviour": "Documents the backstage.io/former-names annotation: format, short-ref defaults, the real-name and conflict rules, permissions and when it takes effect.",
+      "rules": [
+        "1. New section `### backstage.io/former-names` between the view-url/edit-url section and the source-location section, shaped like its neighbours: a fenced yaml '# Example:' block, then prose.",
+        "2. The example shows metadata.name 'new-name' with `backstage.io/former-names: old-name, legacy-team/older-name, component:other/renamed-service`.",
+        "3. Prose covers: the value is a comma-separated list of entity refs; a short ref takes the entity's own kind, and its own namespace when none is given; malformed entries are ignored; when someone opens the old catalog entity page or TechDocs URL, Backstage redirects to the entity's current page and shows a notice.",
+        "4. A short list of rules: an entity that currently has the old ref is always served instead of redirecting; when several entities declare the same former ref, no redirect happens; the redirect only happens for users allowed to read the current entity, and otherwise they see the usual not-found page; API calls by entity name are not redirected.",
+        "5. End with a sentence that the annotation takes effect once the catalog has processed the entity again, and link the endpoint section of the API docs ([catalog API](api.md#get-entitiesby-former-namekindnamespacename))."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 147,
+          "to": 147,
+          "first_line": "### backstage.io/source-location",
+          "rule": "Insert the new section and a trailing blank line (rules 1-5)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-22", "AC-12"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U41",
+      "path": "docs/features/software-catalog/api.md",
+      "action": "edit",
+      "phase": "docs",
+      "behaviour": "Documents the GET /entities/by-former-name/<kind>/<namespace>/<name> endpoint next to the by-name endpoints.",
+      "rules": [
+        "1. New section titled with the backticked path `GET /entities/by-former-name/<kind>/<namespace>/<name>`, placed after the by-name ancestry section and before `POST /entities/by-refs`.",
+        "2. Explain that it returns the entity that declares the given ref in its `backstage.io/former-names` annotation (link to well-known-annotations.md#backstageioformer-names), as a single Entity JSON object.",
+        "3. State that it responds 404 when no entity declares the ref, when an entity currently has that ref, when more than one entity declares it, or when the caller may not read the declaring entity, and that these cases cannot be told apart; the regular by-name endpoint is unchanged and keeps returning 404 for old names."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 676,
+          "to": 676,
+          "first_line": "### `POST /entities/by-refs`",
+          "rule": "Insert the new endpoint section and a trailing blank line (rules 1-3)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-23", "AC-12"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U42",
+      "path": "docs/features/techdocs/how-to-guides.md",
+      "action": "edit",
+      "phase": "docs",
+      "behaviour": "Adds a how-to section on keeping TechDocs links working after an entity is renamed, using the former-names annotation.",
+      "rules": [
+        "1. New section `## How to keep TechDocs links working after renaming an entity` after the moved-or-renamed-pages section and before `## Create download links for static assets`.",
+        "2. Explain adding `backstage.io/former-names` to the renamed entity with a short yaml example (name 'new-name', annotation 'old-name'), and link the annotation docs (../software-catalog/well-known-annotations.md#backstageioformer-names).",
+        "3. Describe the behaviour: opening /docs/<namespace>/<kind>/<old-name>/<page>#<anchor> replaces the URL with the same page and anchor under the current entity and shows a dismissible notice; unknown names keep showing the not-found page; already-built documentation is not moved or rebuilt."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_before",
+          "from": 791,
+          "to": 791,
+          "first_line": "## Create download links for static assets",
+          "rule": "Insert the new section and a trailing blank line (rules 1-3)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-24", "AC-12"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U43",
+      "path": ".changeset/entity-former-names-model.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/catalog-model as minor for the new former-names annotation constant and helper.",
+      "rules": [
+        "1. Front matter exactly: '---', `'@backstage/catalog-model': minor`, '---', then a blank line.",
+        "2. Message: one summary sentence that the new `backstage.io/former-names` well-known annotation lets an entity list the entity refs it was previously known by, then a sentence that `ANNOTATION_FORMER_NAMES` and `getEntityFormerRefs` were added to read it as normalized entity refs (short refs default to the entity's own kind and namespace)."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U44",
+      "path": ".changeset/entity-former-names-backend.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/plugin-catalog-backend as minor for former-ref indexing and the new endpoint.",
+      "rules": [
+        "1. Front matter: `'@backstage/plugin-catalog-backend': minor`.",
+        "2. Message: summary sentence that the catalog now resolves former entity refs declared in the `backstage.io/former-names` annotation through the new `GET /entities/by-former-name/{kind}/{namespace}/{name}` endpoint; a paragraph that it returns 404 when an entity currently has the ref, when several entities declare it, or when the caller may not read the declaring entity, and that existing entities pick up the annotation the next time they are processed. No database migration is involved; say nothing about internal classes."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U45",
+      "path": ".changeset/entity-former-names-client.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/catalog-client, @backstage/plugin-catalog-node and @backstage/plugin-catalog-react as minor for the optional getEntityByFormerRef method and its mocks.",
+      "rules": [
+        "1. Front matter lists `'@backstage/catalog-client': minor`, `'@backstage/plugin-catalog-node': minor`, `'@backstage/plugin-catalog-react': minor`.",
+        "2. Message: the catalog API and the catalog service gained an optional `getEntityByFormerRef` method that finds the entity currently declaring a given former entity ref; the in-memory catalog client and the catalog test mocks support it; custom implementations of the catalog API do not need to implement it."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U46",
+      "path": ".changeset/entity-former-names-catalog.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/plugin-catalog as minor for the entity page rename redirect and notice.",
+      "rules": [
+        "1. Front matter: `'@backstage/plugin-catalog': minor`.",
+        "2. Message: when an entity page URL points at a name that no longer exists and exactly one entity lists that ref in its `backstage.io/former-names` annotation, the entity page redirects to the current entity, keeping the selected tab, query and anchor, and shows a dismissible notice; this works in both the old and the new frontend system and needs a catalog backend that supports former names."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U47",
+      "path": ".changeset/entity-former-names-techdocs.md",
+      "action": "create",
+      "phase": "docs",
+      "behaviour": "Changeset bumping @backstage/plugin-techdocs as minor for the TechDocs reader rename redirect and notice.",
+      "rules": [
+        "1. Front matter: `'@backstage/plugin-techdocs': minor`.",
+        "2. Message: the TechDocs reader page now follows entity renames declared with the `backstage.io/former-names` annotation, redirecting an old docs URL to the same page and anchor under the current entity and showing a dismissible notice; unknown names keep showing the not-found page."
+      ],
+      "depends_on": [],
+      "covers": ["FR-25", "AC-11"],
+      "checks": ["prettier"]
+    },
+    {
+      "id": "U48",
+      "path": ".gitignore",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Appends a .sdlc/ ignore line at the end of the root .gitignore without changing existing lines.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 193,
+          "to": 193,
+          "first_line": ".claude/worktrees/",
+          "rule": "Insert a blank line, the comment `# Pipeline run artifacts`, and the line `.sdlc/`."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-27", "AC-12"]
+    },
+    {
+      "id": "U49",
+      "path": "packages/catalog-model/report.api.md",
+      "action": "tooling",
+      "phase": "codegen",
+      "behaviour": "Regenerates the API reports (report*.api.md) of the seven touched packages with the repo's api-reports command after all source changes are in.",
+      "run": "yarn build:api-reports packages/catalog-model packages/catalog-client plugins/catalog-backend plugins/catalog-node plugins/catalog-react plugins/catalog plugins/techdocs",
+      "depends_on": [
+        "U03",
+        "U05",
+        "U08",
+        "U09",
+        "U15",
+        "U18",
+        "U20",
+        "U22",
+        "U23",
+        "U24",
+        "U25",
+        "U29",
+        "U30",
+        "U37"
+      ],
+      "covers": ["FR-26", "AC-9"]
+    }
+  ],
+  "hashes": {
+    "docs/features/software-catalog/well-known-annotations.md": "54830e31062a9c54be6be2fa703f61b944f4916fc9579e5ed7190923eda01056",
+    "docs/features/software-catalog/api.md": "ec934fc7bf0d9e7ccfadd9dfe7034e7a7c6f5c77892095f7e7e49404917c0587",
+    "docs/features/techdocs/how-to-guides.md": "0d19d25e8fc067048fc14408052e29d41c0c6a6411286c605caa647ece44ce33",
+    ".gitignore": "8ba83d2a79973faef40691131335781b0353cd056c893651bc4bd9d359dc8c74"
+  }
+}

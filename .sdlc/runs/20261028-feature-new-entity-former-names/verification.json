@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "tool": "brownfield-verify",
+  "pick": "BS-NF-12",
+  "repo": "backstage",
+  "run_id": "20261028-feature-new-entity-former-names",
+  "branch": "BS-NF-12/opus55-plus-sonnet55",
+  "started_at": "2026-10-29T05:10:39.673Z",
+  "finished_at": "2026-10-29T05:16:28.456Z",
+  "partial": false,
+  "check": "CI=true BACKSTAGE_TEST_DISABLE_DOCKER=1 yarn test plugins/catalog-backend plugins/catalog plugins/techdocs && yarn tsc && yarn lint:all",
+  "head": {
+    "commit": "f20fd9b598285c88401406b3812fe00d7708136c",
+    "dirty": true,
+    "commands": [
+      {
+        "cmd": "CI=true BACKSTAGE_TEST_DISABLE_DOCKER=1 yarn test plugins/catalog-backend plugins/catalog plugins/techdocs",
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_ms": 92029,
+        "log": ".sdlc/runs/20261028-feature-new-entity-former-names/verification-logs/head-1.log"
+      },
+      {
+        "cmd": "yarn tsc",
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_ms": 12568,
+        "log": ".sdlc/runs/20261028-feature-new-entity-former-names/verification-logs/head-2.log"
+      },
+      {
+        "cmd": "yarn lint:all",
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_ms": 15570,
+        "log": ".sdlc/runs/20261028-feature-new-entity-former-names/verification-logs/head-3.log"
+      }
+    ],
+    "tests": {
+      "passed": 3213,
+      "failed": 0,
+      "skipped": 39,
+      "total": 3252,
+      "format": "jest"
+    }
+  },
+  "base": {
+    "commit": "f20fd9b598285c88401406b3812fe00d7708136c",
+    "cached": false,
+    "commands": [
+      {
+        "cmd": "CI=true BACKSTAGE_TEST_DISABLE_DOCKER=1 yarn test plugins/catalog-backend plugins/catalog plugins/techdocs",
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_ms": 85903,
+        "log": ".sdlc/runs/20261028-feature-new-entity-former-names/verification-logs/base-1.log"
+      },
+      {
+        "cmd": "yarn tsc",
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_ms": 63840,
+        "log": ".sdlc/runs/20261028-feature-new-entity-former-names/verification-logs/base-2.log"
+      },
+      {
+        "cmd": "yarn lint:all",
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_ms": 15883,
+        "log": ".sdlc/runs/20261028-feature-new-entity-former-names/verification-logs/base-3.log"
+      }
+    ],
+    "tests": {
+      "passed": 3191,
+      "failed": 0,
+      "skipped": 39,
+      "total": 3230,
+      "format": "jest"
+    }
+  },
+  "tests_added": 22,
+  "verdict": "pass",
+  "verdict_reason": "every check command exited 0"
+}

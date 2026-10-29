@@ -36,6 +36,18 @@ export const ANNOTATION_VIEW_URL = 'backstage.io/view-url';
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
 
 /**
+ * Annotation for declaring the former entity refs of an entity, as a
+ * comma-separated list of entity refs.
+ *
+ * @remarks
+ *
+ * Short refs take the kind and namespace of the entity itself.
+ *
+ * @public
+ */
+export const ANNOTATION_FORMER_NAMES = 'backstage.io/former-names';
+
+/**
  * Annotation for specifying the API server of a Kubernetes cluster
  *
  * @deprecated Import this constant from `@backstage/plugin-kubernetes-common` instead

@@ -673,6 +673,23 @@ error if there was no entity with that reference triplet.
 
 Get an entity's ancestry by entity ref.
 
+### `GET /entities/by-former-name/<kind>/<namespace>/<name>`
+
+Gets the entity that declares the given reference in its
+[`backstage.io/former-names`](./well-known-annotations.md#backstageioformer-names)
+annotation. Use it to find the current entity for a reference that was used
+before the entity was renamed or moved.
+
+The return type is JSON, as a single [`Entity`](descriptor-format.md) object.
+
+The endpoint responds with a 404 error when no entity declares the reference,
+when an entity currently has that reference, when more than one entity declares
+it, or when the caller may not read the declaring entity. These cases cannot be
+told apart from the response.
+
+The regular `GET /entities/by-name/<kind>/<namespace>/<name>` endpoint is
+unchanged, and keeps returning a 404 error for old names.
+
 ### `POST /entities/by-refs`
 
 Gets a batch of entities by their entity refs. This is useful in contexts where

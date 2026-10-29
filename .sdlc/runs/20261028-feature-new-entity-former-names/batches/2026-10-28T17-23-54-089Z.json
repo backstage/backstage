@@ -1,0 +1,196 @@
+{
+  "status": "applied",
+  "counts": {
+    "applied": 4
+  },
+  "cost_usd": 0.23331400000000002,
+  "duration_ms": 61396,
+  "max_parallel": 4,
+  "items": [
+    {
+      "id": "tp_codegen_U15",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/createRouter.ts",
+      "cost_usd": 0.052786,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/createRouter.ts",
+          "bytes": 27097,
+          "lines": 993,
+          "sha16": "9154056d064af92d",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2376
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U15",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.052786,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 484
+        },
+        "cost_usd": 0.052786,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U16",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+      "cost_usd": 0.0755,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+          "bytes": 58327,
+          "lines": 1872,
+          "sha16": "25a5d00b43b4a404",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 10108
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U16",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.0755,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1335
+        },
+        "cost_usd": 0.0755,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U18",
+      "status": "applied",
+      "artifact_path": "packages/catalog-client/src/CatalogClient.ts",
+      "cost_usd": 0.049043,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "packages/catalog-client/src/CatalogClient.ts",
+          "bytes": 22214,
+          "lines": 826,
+          "sha16": "07b9c280bf9b9b97",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2455
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U18",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.049043,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 360
+        },
+        "cost_usd": 0.049043,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U19",
+      "status": "applied",
+      "artifact_path": "packages/catalog-client/src/CatalogClient.test.ts",
+      "cost_usd": 0.055985,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "packages/catalog-client/src/CatalogClient.test.ts",
+          "bytes": 46854,
+          "lines": 1680,
+          "sha16": "b03e109c87b9ebe4",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 4967
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U19",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.055985,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 689
+        },
+        "cost_usd": 0.055985,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": []
+}

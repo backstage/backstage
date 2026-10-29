@@ -545,12 +545,13 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'table.actions.addToFavorites': 'Add to favorites';
     readonly 'table.actions.removeFromFavorites': 'Remove from favorites';
     readonly 'table.actions.copyDocsUrl': 'Click to copy documentation link to clipboard';
-    readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.emptyState.title': 'No documents to show';
     readonly 'table.emptyState.description': 'Create your own document. Check out our Getting Started Information';
     readonly 'table.emptyState.docsButton': 'DOCS';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
+    readonly 'reader.settings': 'Settings';
     readonly 'buildLogs.title': 'Build Details';
     readonly 'buildLogs.closeDrawer': 'Close the drawer';
     readonly 'buildLogs.showBuildLogs': 'Show Build Logs';
@@ -560,14 +561,15 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'stateIndicator.contentStaleReady.message': 'A newer version of this documentation is now available, please refresh to view.';
     readonly 'stateIndicator.contentStaleReady.refreshButton': 'Refresh';
     readonly 'stateIndicator.contentStaleError.message': 'Building a newer version of this documentation failed.';
+    readonly 'redirectNotification.dismiss': 'Dismiss';
     readonly 'redirectNotification.redirectNow': 'Redirect now';
+    readonly 'redirectNotification.renamedFrom': 'This entity was renamed from {{formerEntityRef}}';
     readonly 'readerPageHeader.source': 'Source';
-    readonly 'readerPageHeader.owner': 'Owner';
     readonly 'readerPageHeader.lifecycle': 'Lifecycle';
+    readonly 'readerPageHeader.owner': 'Owner';
     readonly 'pageWrapper.title': 'Documentation';
     readonly 'pageWrapper.subtitle': 'Documentation available in {{orgName}}';
     readonly 'entityContent.title': 'TechDocs';
-    readonly 'reader.settings': 'Settings';
   }
 >;
 

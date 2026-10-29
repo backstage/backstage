@@ -1,0 +1,425 @@
+{
+  "schema_version": 1,
+  "plugin_version": "0.9.3",
+  "built_at": "2026-10-28T15:44:10Z",
+  "run_id": "20261028-feature-new-entity-former-names",
+  "git": {
+    "head": "f20fd9b598285c88401406b3812fe00d7708136c",
+    "branch": "BS-NF-12/opus55-plus-sonnet55",
+    "dirty": true,
+    "dirty_note": "Only untracked .sdlc/ (plugin-owned); no user source changes.",
+    "is_worktree": true,
+    "remotes": [
+      {
+        "name": "origin",
+        "url": "https://github.com/tl-ai-labs/backstage.git"
+      },
+      {
+        "name": "upstream",
+        "url": "https://github.com/backstage/backstage.git"
+      }
+    ]
+  },
+  "gitignore_covers_sdlc": false,
+  "topology": {
+    "top_level_dirs": [
+      ".changeset",
+      ".claude",
+      ".cursor",
+      ".devcontainer",
+      ".github",
+      ".husky",
+      ".lighthouseci",
+      ".patches",
+      ".storybook",
+      ".yarn",
+      "beps",
+      "contrib",
+      "docs",
+      "docs-ui",
+      "microsite",
+      "packages",
+      "plugins",
+      "scripts",
+      "workspaces",
+      "dist-types"
+    ],
+    "entry_points": [
+      "packages/app (new frontend system example app)",
+      "packages/app-legacy (old frontend system example app)",
+      "packages/backend (example backend)"
+    ],
+    "tracked_files": 12364
+  },
+  "stacks": [
+    {
+      "manifest": "package.json",
+      "stack": "node-typescript",
+      "detected_frameworks": [
+        "backstage",
+        "react",
+        "backstage-backend-system (express-based)",
+        "yarn-workspaces"
+      ],
+      "runtime": "node 22 || 24",
+      "package_manager": "yarn@4.18.1",
+      "typescript": "~5.7.0",
+      "test_runner": "jest 30 via backstage-cli repo test"
+    }
+  ],
+  "test_command_proposed": "CI=1 yarn test <path>",
+  "test_command_source": "CLAUDE.md#Development Flow (package.json#scripts.test = backstage-cli repo test)",
+  "test_command_note": "Always pass a path; never run the full suite.",
+  "typecheck_command_proposed": "yarn tsc",
+  "typecheck_command_source": "CLAUDE.md#Development Flow (run from repo root, no options)",
+  "format_command_proposed": "yarn prettier --write <changed paths>",
+  "lint_command_proposed": "yarn lint --fix",
+  "api_reports_command": "yarn build:api-reports",
+  "forbidden_commands": [
+    "yarn build",
+    "yarn changesets version",
+    "yarn release"
+  ],
+  "docs_present": [
+    {
+      "path": "README.md",
+      "kind": "readme"
+    },
+    {
+      "path": "README-fr_FR.md",
+      "kind": "readme"
+    },
+    {
+      "path": "README-ja_JP.md",
+      "kind": "readme"
+    },
+    {
+      "path": "README-ko_kr.md",
+      "kind": "readme"
+    },
+    {
+      "path": "README-zh_Hans.md",
+      "kind": "readme"
+    },
+    {
+      "path": ".claude/CLAUDE.md",
+      "kind": "claude-instructions"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "agents-instructions"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "kind": "contributing"
+    },
+    {
+      "path": "STYLE.md",
+      "kind": "style-guide"
+    },
+    {
+      "path": "REVIEWING.md",
+      "kind": "review-guide"
+    },
+    {
+      "path": "SECURITY.md",
+      "kind": "security"
+    },
+    {
+      "path": "docs/architecture-decisions/",
+      "kind": "adr"
+    },
+    {
+      "path": "docs/contribute/doc-style-guide.md",
+      "kind": "doc-style-guide"
+    },
+    {
+      "path": "docs/contribute/project-structure.md",
+      "kind": "project-structure"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "kind": "pr-template"
+    }
+  ],
+  "ai_configs_detected": [
+    {
+      "path": ".claude/",
+      "type": "claude-code"
+    },
+    {
+      "path": ".claude/CLAUDE.md",
+      "type": "claude-instructions"
+    },
+    {
+      "path": ".claude/settings.local.json",
+      "type": "claude-code-settings"
+    },
+    {
+      "path": ".claude/skills/",
+      "type": "claude-code-skills"
+    },
+    {
+      "path": ".cursor/rules/",
+      "type": "cursor"
+    },
+    {
+      "path": "AGENTS.md",
+      "type": "agents-instructions"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "type": "copilot"
+    }
+  ],
+  "env_keys_by_file": {},
+  "env_keys_all": [],
+  "env_keys_referenced_in_code": [
+    "__FAKE_FS_O_FILENAME__",
+    "__MINIMATCH_TESTING_PLATFORM__",
+    "ACTIONS_ID_TOKEN_REQUEST_TOKEN",
+    "ACTIONS_ID_TOKEN_REQUEST_URL",
+    "APP_CONFIG",
+    "APPDATA",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_CONFIG_FILE",
+    "AWS_CREDENTIAL_EXPIRATION",
+    "AWS_DEFAULT_REGION",
+    "AWS_REGION",
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_SESSION_TOKEN",
+    "AWS_SHARED_CREDENTIALS_FILE",
+    "AZURE_CLIENT_ID",
+    "AZURE_CLIENT_SECRET",
+    "AZURE_TENANT_ID",
+    "BACKSTAGE_APP_NAME",
+    "BACKSTAGE_CLI_BUILD_PARALLEL",
+    "BACKSTAGE_CLI_CHANNEL",
+    "BACKSTAGE_CLI_CONCURRENCY",
+    "BACKSTAGE_CLI_LINKED_WORKSPACE",
+    "BACKSTAGE_ENV",
+    "BACKSTAGE_MANIFEST_FILE",
+    "BACKSTAGE_OLD_TESTS",
+    "BACKSTAGE_TEST_DISABLE_DOCKER",
+    "BACKSTAGE_TEST_DOCKER_REGISTRY",
+    "BACKSTAGE_VERSIONS_BASE_URL",
+    "BUILD_INFO",
+    "C",
+    "CI",
+    "CIRCLECI",
+    "COMMIT_SHA_BEFORE",
+    "COREPACK_ROOT",
+    "CUSTOM_VAR",
+    "DEBUG",
+    "DEBUG_CLI",
+    "DOTENV_KEY",
+    "EXPERIMENTAL_LAZY_COMPILATION",
+    "EXPERIMENTAL_TRIM_NEXT_ENTRY",
+    "FORCE_COLOR",
+    "FOSSA_API_KEY",
+    "FUNCTION_TARGET",
+    "GIT_SSH",
+    "GIT_SSH_COMMAND",
+    "GITHUB_ACTIONS",
+    "GITHUB_BASE_REF",
+    "GITHUB_EVENT_PATH",
+    "GITHUB_OUTPUT",
+    "GITHUB_REF",
+    "GITHUB_TOKEN",
+    "GITLAB_CI",
+    "GOLDEN_PATH",
+    "GOOGLE_RUNTIME",
+    "HAS_REACT_DOM_CLIENT",
+    "HOME",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "HOSTNAME",
+    "KONSOLE_VERSION",
+    "KUBERNETES_CA_FILE_PATH",
+    "KUBERNETES_SERVICE_HOST",
+    "KUBERNETES_SERVICE_PORT",
+    "LEGACY_WEBPACK_BUILD",
+    "LOCALAPPDATA",
+    "LOG_LEVEL",
+    "MY_SECRET",
+    "MYSQL_CONNECTION",
+    "NM_DEBUG_LEVEL",
+    "NO_COLOR",
+    "NODE_DEBUG",
+    "NODE_ENV",
+    "NODE_OPTIONS",
+    "NODE_PATH",
+    "NODE_TLS_REJECT_UNAUTHORIZED",
+    "NPM_ID_TOKEN",
+    "OSTYPE",
+    "PATCH_RELEASE_BRANCH",
+    "PATH",
+    "PATHEXT",
+    "PERFORMANCE_TEST",
+    "PERFORMANCE_TRACE",
+    "PLAYWRIGHT_URL",
+    "PNP_ALWAYS_WARN_ON_FALLBACK",
+    "PNP_DEBUG_LEVEL",
+    "PORT",
+    "POSTGRES_HOST",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_PORT",
+    "POSTGRES_USER",
+    "PSM",
+    "Q",
+    "READABLE_STREAM",
+    "RUNNER_TEMP",
+    "SIGSTORE_ID_TOKEN",
+    "STORYBOOK_STORY_SET",
+    "SUBSTITUTE_ME",
+    "TECHDOCS_TEST_SECRET",
+    "TERM_PROGRAM",
+    "TESTING_TAR_FAKE_PLATFORM",
+    "TZ",
+    "USER",
+    "WATCH_REPORT_DEPENDENCIES",
+    "WEBSITE_AUTH_DEFAULT_PROVIDER",
+    "WEBSITE_AUTH_ENABLED",
+    "WEBSITE_AUTH_TOKEN_STORE",
+    "WEBSITE_SKU",
+    "WT_SESSION",
+    "XDG_CONFIG_HOME",
+    "XDG_DATA_HOME",
+    "YARN_CACHE_CHECKPOINT_OVERRIDE",
+    "YARN_CACHE_VERSION_OVERRIDE",
+    "YARN_CPU_OVERRIDE",
+    "YARN_ENABLE_IMMUTABLE_INSTALLS",
+    "YARN_IGNORE_NODE",
+    "YARN_IGNORE_PATH",
+    "YARN_INJECT_NPM_2FA_TOKEN",
+    "YARN_IS_TEST_ENV",
+    "YARN_LIBC_OVERRIDE",
+    "YARN_LOCKFILE_VERSION_OVERRIDE",
+    "YARN_OS_OVERRIDE",
+    "YARN_PLUGINS",
+    "YARN_ZIP_DATA_EPILOGUE"
+  ],
+  "env_keys_referenced_note": "process.env.* names from tracked JS/TS (includes .yarn bundled release and test fixtures). Names only.",
+  "monorepo": {
+    "type": "yarn-workspaces",
+    "workspace_globs": ["packages/*", "plugins/*"],
+    "package_counts": {
+      "packages": 74,
+      "plugins": 162
+    },
+    "per_package_test_command": "CI=1 yarn test <package-path>",
+    "packages_relevant_to_job": [
+      {
+        "name": "@backstage/catalog-model",
+        "root": "packages/catalog-model",
+        "version": "1.10.2"
+      },
+      {
+        "name": "@backstage/catalog-client",
+        "root": "packages/catalog-client",
+        "version": "1.16.3"
+      },
+      {
+        "name": "@backstage/plugin-catalog-backend",
+        "root": "plugins/catalog-backend",
+        "version": "4.0.3-next.0"
+      },
+      {
+        "name": "@backstage/plugin-catalog-node",
+        "root": "plugins/catalog-node",
+        "version": "2.2.7-next.0"
+      },
+      {
+        "name": "@backstage/plugin-catalog",
+        "root": "plugins/catalog",
+        "version": "2.0.11-next.0"
+      },
+      {
+        "name": "@backstage/plugin-catalog-react",
+        "root": "plugins/catalog-react",
+        "version": "4.0.0-next.0"
+      },
+      {
+        "name": "@backstage/plugin-techdocs",
+        "root": "plugins/techdocs",
+        "version": "1.19.1-next.0"
+      },
+      {
+        "name": "@backstage/plugin-techdocs-react",
+        "root": "plugins/techdocs-react",
+        "version": "1.4.1-next.0"
+      },
+      {
+        "name": "@backstage/plugin-techdocs-backend",
+        "root": "plugins/techdocs-backend",
+        "version": "2.4.1-next.0"
+      }
+    ]
+  },
+  "submodules": [],
+  "lfs": false,
+  "lfs_patterns": [],
+  "infra_hints": {
+    "dockerfile": false,
+    "docker_compose": true,
+    "docker_compose_files": ["docker-compose.deps.yml"],
+    "terraform": false,
+    "github_workflows": true,
+    "github_workflows_count": 49,
+    "gitlab_ci": false,
+    "circleci": false,
+    "jenkins": false,
+    "devcontainer": true
+  },
+  "regulated_repo_signals": [
+    {
+      "kind": "security-policy",
+      "path": "SECURITY.md"
+    }
+  ],
+  "regulated_repo_warning_required": true,
+  "regulated_repo_note": "SECURITY.md is a standard OSS vulnerability-reporting policy; no HIPAA/PCI/SOC2/GDPR/compliance dirs or CODEOWNERS security/compliance/legal teams found. Likely low real risk.",
+  "adaptive_profile": {
+    "triggered": true,
+    "trigger": "stack-without-adapter",
+    "reason": "Primary stack is TypeScript/React + Backstage backend system; shipped adapters are generic.md, nest.md, python.md only.",
+    "profile_built": false,
+    "profile_path": ".sdlc/baseline/stack-profile.md",
+    "note": "Tier 2b not run by Tier 1 discovery; orchestrator should invoke it. CLAUDE.md says match per-package conventions, so sampling should target the job packages."
+  },
+  "off_limits_proposed": [
+    ".env",
+    ".env.*",
+    ".envrc",
+    ".claude/**",
+    ".cursor/**",
+    ".mcp.json",
+    "AGENTS.md",
+    ".github/copilot-instructions.md",
+    "routing-policy.yaml",
+    "node_modules/**",
+    "dist/**",
+    "dist-types/**",
+    "dist-workspace/**",
+    "dist-storybook/**",
+    "build/**",
+    ".next/**",
+    "target/**",
+    "vendor/**",
+    "third_party/**",
+    "**/src/schema/openapi/generated/**",
+    ".yarn/**",
+    "docs/releases/**",
+    ".git/**",
+    ".sdlc/**"
+  ],
+  "generated_paths_note": "11 tracked */generated/ dirs, including plugins/catalog-backend/src/schema/openapi/generated and packages/catalog-client/src/schema/openapi/generated (AUTOGENERATED from openapi.yaml; regenerate, do not hand-edit). API report files (report*.api.md) are generated by yarn build:api-reports.",
+  "coexistence_notes": [
+    "Cursor rules detected at .cursor/rules/ - untouched by default.",
+    "Claude Code project config at .claude/ (CLAUDE.md, settings.local.json, skills/) - untouched by default.",
+    "GitHub Copilot instructions at .github/copilot-instructions.md - untouched.",
+    "No .mcp.json, Aider, Continue, Roo, routing-policy.yaml or gemini config found.",
+    ".gitignore does not cover .sdlc/ - Gate 0 should offer to add it to the allowlist."
+  ],
+  "job_relevant_locations": "see discovery.md ## Job-relevant locations"
+}

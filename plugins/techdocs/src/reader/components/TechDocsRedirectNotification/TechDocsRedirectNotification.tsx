@@ -25,6 +25,7 @@ type TechDocsRedirectNotificationProps = {
   handleButtonClick: () => void;
   message: string;
   autoHideDuration: number;
+  actionLabel?: string;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -38,6 +39,7 @@ export const TechDocsRedirectNotification = ({
   message,
   handleButtonClick,
   autoHideDuration,
+  actionLabel,
 }: TechDocsRedirectNotificationProps) => {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
@@ -62,7 +64,7 @@ export const TechDocsRedirectNotification = ({
             handleButtonClick();
           }}
         >
-          {t('redirectNotification.redirectNow')}
+          {actionLabel ?? t('redirectNotification.redirectNow')}
         </Button>
       }
     />

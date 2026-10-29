@@ -42,6 +42,7 @@ import {
 import {
   CompoundEntityRef,
   Entity,
+  getEntityFormerRefs,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -620,6 +621,19 @@ export class InMemoryCatalogClient implements CatalogApi {
     return this.#createEntityRefMap().get(
       stringifyEntityRef(parseEntityRef(entityRef)),
     );
+  }
+
+  async getEntityByFormerRef(
+    entityRef: string | CompoundEntityRef,
+  ): Promise<Entity | undefined> {
+    const ref = stringifyEntityRef(parseEntityRef(entityRef));
+    if (this.#createEntityRefMap().has(ref)) {
+      return undefined;
+    }
+    const claimants = this.#entities.filter(entity =>
+      getEntityFormerRefs(entity).includes(ref),
+    );
+    return claimants.length === 1 ? claimants[0] : undefined;
   }
 
   async removeEntityByUid(uid: string): Promise<void> {

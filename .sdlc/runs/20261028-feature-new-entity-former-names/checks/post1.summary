@@ -1,0 +1,4 @@
+openapi-validate exit=0
+tsc exit=0
+test-catalog-backend exit=0
+test-other-packages exit=0

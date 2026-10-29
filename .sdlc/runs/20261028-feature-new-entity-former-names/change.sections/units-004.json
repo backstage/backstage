@@ -1,0 +1,244 @@
+[
+  {
+    "id": "U26",
+    "path": "plugins/catalog/src/alpha/translation.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Adds the rename notice strings to catalogTranslationRef under entityPage.",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 30,
+        "to": 30,
+        "first_line": "notFoundLinkText: 'kind, namespace, and name',",
+        "rule": "Insert `renamedNotice: 'This entity was renamed from {{formerEntityRef}}',` and `renamedNoticeDismiss: 'Dismiss',` as two lines at the same indentation."
+      }
+    ],
+    "depends_on": [],
+    "covers": ["FR-16"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U27",
+    "path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+    "action": "create",
+    "phase": "codegen",
+    "behaviour": "Shows a dismissible 'This entity was renamed from <old ref>' notice when the current location carries a formerEntityRef state from a rename redirect.",
+    "rules": [
+      "1. Start with the 2026 Apache header. Internal component, no release tag, not exported from the package index.",
+      "2. Read const location = useLocation() from 'react-router-dom' and take formerEntityRef from location.state only when it is an object whose formerEntityRef is a non-empty string.",
+      "3. Keep const [dismissed, setDismissed] = useState(false); return null when there is no formerEntityRef or when dismissed.",
+      "4. Render Alert from '@material-ui/lab/Alert' with severity 'info', onClose={() => setDismissed(true)} and closeText={t('entityPage.renamedNoticeDismiss')}; the content is t('entityPage.renamedNotice', { formerEntityRef }).",
+      "5. Get t from useTranslationRef(catalogTranslationRef) ('@backstage/core-plugin-api/alpha' and '../../alpha/translation')."
+    ],
+    "exports": [
+      {
+        "name": "EntityRenamedNotice",
+        "kind": "function component",
+        "params": [],
+        "returns": "JSX.Element | null"
+      }
+    ],
+    "import_line": "import { EntityRenamedNotice } from './EntityRenamedNotice';",
+    "style_from": {
+      "path": "plugins/catalog/src/components/EntityLinksCard/EntityLinksCard.tsx",
+      "reason": "Small plugin-catalog component using useTranslationRef with catalogTranslationRef."
+    },
+    "depends_on": ["U26"],
+    "covers": ["FR-16", "AC-10"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U28",
+    "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "After a by-name miss, asks the optional former-ref lookup once, keeps the page loading, and on a hit replaces the URL with the current entity's route, keeping the sub-route, query and hash, and passing the former ref in location state.",
+    "rules": [
+      "1. Imports: add stringifyEntityRef from '@backstage/catalog-model', useRouteRef from '@backstage/core-plugin-api', entityRouteParams from '@backstage/plugin-catalog-react', and useLocation from 'react-router-dom'; keep the existing imports.",
+      "2. Add const location = useLocation() and const entityRoute = useRouteRef(entityRouteRef) next to the existing hooks.",
+      "3. The useAsyncRetry callback becomes async: const entity = await catalogApi.getEntityByRef({ kind, namespace, name }); if entity is set or catalogApi.getEntityByFormerRef is missing, return { entity, renamedTo: undefined }; errors from getEntityByRef still propagate.",
+      "4. Otherwise call catalogApi.getEntityByFormerRef({ kind, namespace, name }) once, treat a rejection as undefined, and return { entity: undefined, renamedTo }. Keep the dependency list [catalogApi, kind, namespace, name].",
+      "5. Add a useEffect on the result: when value?.renamedTo is set, compute oldBase = entityRoute({ kind, namespace, name }), newBase = entityRoute(entityRouteParams(value.renamedTo)), rest = location.pathname.startsWith(oldBase) ? location.pathname.slice(oldBase.length) : '', then navigate(`${newBase}${rest}${location.search}${location.hash}`, { replace: true, state: { formerEntityRef: stringifyEntityRef({ kind, namespace, name }) } }).",
+      "6. Keep the existing no-name useEffect unchanged.",
+      "7. Return { entity: value?.entity, loading: loading || Boolean(value?.renamedTo), error, refresh } so the page never shows 'Entity not found' while redirecting; on a miss the result is exactly today's (entity undefined, loading false)."
+    ],
+    "exports": [
+      {
+        "name": "useEntityFromUrl",
+        "kind": "hook",
+        "params": [],
+        "returns": "EntityLoadingStatus"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "replace",
+        "from": 17,
+        "to": 29,
+        "first_line": "import {",
+        "last_line": "import useAsyncRetry from 'react-use/esm/useAsyncRetry';",
+        "rule": "Rewrite the import block per rule 1."
+      },
+      {
+        "id": "S2",
+        "at": "replace",
+        "from": 31,
+        "to": 55,
+        "first_line": "export const useEntityFromUrl = (): EntityLoadingStatus => {",
+        "last_line": "};",
+        "rule": "Rewrite the hook per rules 2-7."
+      }
+    ],
+    "uses": [
+      {
+        "path": "plugins/catalog-react/src/routes.ts",
+        "lines": [40, 95],
+        "reason": "entityRouteParams lower-cases kind and namespace for the route function."
+      },
+      {
+        "path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+        "lines": [52, 64],
+        "reason": "The new-system page's matchesRoute guard that relies on entity staying undefined while redirecting."
+      }
+    ],
+    "depends_on": ["U17", "U25"],
+    "covers": ["FR-14", "FR-15", "FR-17"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U29",
+    "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Renders EntityRenamedNotice above the routed entity layout in the old frontend system's catalog entity page.",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 19,
+        "to": 19,
+        "first_line": "import { useEntityFromUrl } from './useEntityFromUrl';",
+        "rule": "Insert `import { EntityRenamedNotice } from './EntityRenamedNotice';`."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 24,
+        "to": 24,
+        "first_line": "<AsyncEntityProvider {...useEntityFromUrl()}>",
+        "rule": "Insert `<EntityRenamedNotice />` as the first child, before <Outlet />."
+      }
+    ],
+    "depends_on": ["U27", "U28"],
+    "covers": ["FR-18"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U30",
+    "path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Renders EntityRenamedNotice above the layout in the new frontend system's catalog entity page.",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 28,
+        "to": 28,
+        "first_line": "import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';",
+        "rule": "Insert `import { EntityRenamedNotice } from '../../components/CatalogEntityPage/EntityRenamedNotice';`."
+      },
+      {
+        "id": "S2",
+        "at": "replace",
+        "from": 99,
+        "to": 99,
+        "first_line": "<AsyncEntityProvider {...entityProviderProps}>{layout}</AsyncEntityProvider>",
+        "rule": "Render <AsyncEntityProvider {...entityProviderProps}> with <EntityRenamedNotice /> followed by {layout} as children (multi-line JSX as Prettier formats it)."
+      }
+    ],
+    "depends_on": ["U27", "U28"],
+    "covers": ["FR-18"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U31",
+    "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx",
+    "action": "create",
+    "phase": "tests",
+    "behaviour": "jsdom tests for the old frontend system: an old entity URL redirects to the renamed entity keeping the tab, shows a dismissible rename notice, and an unknown name still shows 'Entity not found'.",
+    "rules": [
+      "1. Start with the 2026 Apache header. Use renderInTestApp and TestApiRegistry from '@backstage/test-utils', ApiProvider from '@backstage/core-app-api', catalogApiMock from '@backstage/plugin-catalog-react/testUtils' (real in-memory client), and the same alert, starred-entities and permission APIs as EntityLayout.test.tsx.",
+      "2. Render <Routes><Route path=\"/catalog/:namespace/:kind/:name/*\" element={<CatalogEntityPage />}> with a child <Route path=\"*\"> whose element is an EntityLayout with an Overview route at '/' and a Docs route at '/docs' (distinct text content), using routeEntries and mountedRoutes { '/catalog/:namespace/:kind/:name': entityRouteRef, '/catalog': rootRouteRef }.",
+      "3. The current entity is kind 'Component', namespace 'default', name 'new-name', annotation 'backstage.io/former-names': 'old-name'.",
+      "4. Use screen.findBy* for async assertions and userEvent or fireEvent to click the notice's 'Dismiss' button; no test IDs."
+    ],
+    "style_from": {
+      "path": "plugins/catalog/src/components/EntityLayout/EntityLayout.test.tsx",
+      "lines": [17, 90],
+      "reason": "Old-system RTL setup for the entity page: API registry, renderInTestApp and mounted routes."
+    },
+    "uses": [
+      {
+        "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+        "reason": "Component under test."
+      }
+    ],
+    "tests": [
+      {
+        "name": "redirects an old entity URL to the renamed entity and shows a dismissible notice",
+        "given": "routeEntries ['/catalog/default/component/old-name/docs'] and the renamed entity in the catalog mock",
+        "expect": "the Docs tab content and 'new-name' header render, the text 'This entity was renamed from component:default/old-name' is shown, and clicking 'Dismiss' removes it"
+      },
+      {
+        "name": "still shows Entity not found for an unknown name",
+        "given": "routeEntries ['/catalog/default/component/unknown']",
+        "expect": "'Entity not found' is shown and no rename notice is rendered"
+      }
+    ],
+    "depends_on": ["U20", "U29"],
+    "covers": ["AC-6", "NFR-7"],
+    "checks": ["prettier", "eslint", "jest"]
+  },
+  {
+    "id": "U32",
+    "path": "plugins/catalog/src/alpha/pages.test.tsx",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds new-frontend-system entity page tests: an old URL redirects to the renamed entity with the notice, and an unknown name shows 'Entity not found'.",
+    "rules": [
+      "1. Add describe('Entity Page renames') inside describe('Entity page'), before describe('Entity Page Context Menu').",
+      "2. Use createExtensionTester(Object.assign({ namespace: 'catalog' }, catalogEntityPage)).add(overviewEntityContent) and renderInTestApp with apis [catalogApiMock({ entities: [renamedEntity] }), [starredEntitiesApiRef, mockStarredEntitiesApi]], mountPath '/catalog/:namespace/:kind/:name' and the same mountedRoutes as the existing tests.",
+      "3. renamedEntity is kind 'Component', namespace 'default', name 'new-name', annotation 'backstage.io/former-names': 'old-name', with spec owner and lifecycle like entityMock.",
+      "4. Use screen.findBy* and userEvent.click on the 'Dismiss' button."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 1026,
+        "to": 1026,
+        "first_line": "describe('Entity Page Context Menu', () => {",
+        "rule": "Insert describe('Entity Page renames') and a blank line."
+      }
+    ],
+    "tests": [
+      {
+        "name": "redirects an old entity URL and shows the rename notice",
+        "given": "initialRouteEntries ['/catalog/default/component/old-name/overview']",
+        "expect": "'Mock Overview content' renders for new-name, 'This entity was renamed from component:default/old-name' is shown, and clicking 'Dismiss' hides it"
+      },
+      {
+        "name": "shows Entity not found for an unknown name",
+        "given": "initialRouteEntries ['/catalog/default/component/unknown']",
+        "expect": "'Entity not found' is shown and no rename notice is rendered"
+      }
+    ],
+    "depends_on": ["U20", "U30"],
+    "covers": ["AC-6"],
+    "checks": ["prettier", "eslint", "jest"]
+  }
+]

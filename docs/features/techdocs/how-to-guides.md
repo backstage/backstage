@@ -788,6 +788,28 @@ metadata:
 TechDocs supports using the [mkdocs-redirects](https://github.com/mkdocs/mkdocs-redirects/tree/master) plugin to create a redirect map for any TechDocs site. This allows broken links from renamed or moved pages in your site to be redirected to their specified replacement.
 TechDocs will notify the user that the page they are trying to access is no longer maintained. Then, they will be redirected. External site redirects are not supported. If an external redirect is provided, the user will instead be redirected to the index page of the documentation site.
 
+## How to keep TechDocs links working after renaming an entity
+
+When you rename an entity, links to its documentation under the old name stop working. To keep those links working, add the old name to the `backstage.io/former-names` annotation of the renamed entity.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: new-name
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/former-names: old-name
+```
+
+For the accepted values and how they are parsed, see the [`backstage.io/former-names` annotation](../software-catalog/well-known-annotations.md#backstageioformer-names).
+
+When someone opens `/docs/<namespace>/<kind>/<old-name>/<page>#<anchor>`, TechDocs replaces the URL with the same page and anchor under the current entity. It then shows a notice that the entity was renamed, which you can dismiss.
+
+If no current entity claims the name, TechDocs keeps showing the not-found page.
+
+The annotation only affects how links are resolved. Documentation that is already built is not moved or rebuilt.
+
 ## Create download links for static assets
 
 You may want to make files available for download by your users such as PDF

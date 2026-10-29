@@ -34,6 +34,7 @@ import {
   EntityFacetsResponse,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  ResolveFormerEntityRefRequest,
 } from '../catalog/types';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { basicEntityFilter, entityFilterToFilterPredicate } from './request';
@@ -127,6 +128,34 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     return this.entitiesCatalog.entitiesBatch(request);
+  }
+
+  async resolveFormerEntityRef(
+    request: ResolveFormerEntityRefRequest,
+  ): Promise<EntitiesBatchResponse> {
+    // The real-name and claimant checks of the wrapped catalog intentionally ignore permissions, only the read of the resolved entity is filtered
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials: request.credentials },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return { items: { type: 'object', entities: [null] } };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      return this.entitiesCatalog.resolveFormerEntityRef({
+        ...request,
+        filter: this.permissionPredicate(
+          authorizeDecision.conditions,
+          request.filter,
+        ),
+      });
+    }
+
+    return this.entitiesCatalog.resolveFormerEntityRef(request);
   }
 
   async queryEntities(

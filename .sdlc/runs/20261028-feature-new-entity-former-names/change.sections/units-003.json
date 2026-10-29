@@ -1,0 +1,311 @@
+[
+  {
+    "id": "U17",
+    "path": "packages/catalog-client/src/types/api.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Adds the optional getEntityByFormerRef method to the public CatalogApi interface, right after getEntityByRef.",
+    "rules": [
+      "1. Declare it optional with a question mark so existing implementers compile unchanged.",
+      "2. TSDoc like getEntityByRef: 'Gets the entity that currently declares the given entity ref as one of its former refs, through the `backstage.io/former-names` annotation.'; a '@remarks' paragraph saying it returns undefined when an entity currently has that ref, when no or several entities claim it, or when the caller may not read the claiming entity, and that implementations may omit the method so callers must check for it first; '@param entityRef - A former entity ref, either on string or compound form'; '@param options - Additional options'; '@returns The current entity, or undefined if the ref could not be resolved'."
+    ],
+    "exports": [
+      {
+        "name": "CatalogApi.getEntityByFormerRef",
+        "kind": "optional method",
+        "params": [
+          { "name": "entityRef", "type": "string | CompoundEntityRef" },
+          { "name": "options", "type": "CatalogRequestOptions | undefined" }
+        ],
+        "returns": "Promise<Entity | undefined>"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 699,
+        "to": 699,
+        "first_line": "): Promise<Entity | undefined>;",
+        "rule": "After getEntityByRef's signature, insert a blank line and the documented optional getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options?: CatalogRequestOptions): Promise<Entity | undefined>;"
+      }
+    ],
+    "depends_on": [],
+    "covers": ["FR-11", "NFR-3"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U18",
+    "path": "packages/catalog-client/src/CatalogClient.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Implements getEntityByFormerRef in CatalogClient through the regenerated OpenAPI client, mapping a 404 to undefined.",
+    "rules": [
+      "1. Add the method right after getEntityByRef with the TSDoc `{@inheritdoc CatalogApi.getEntityByFormerRef}`.",
+      "2. Signature: async getEntityByFormerRef(entityRef: string | CompoundEntityRef, options?: CatalogRequestOptions): Promise<Entity | undefined>.",
+      "3. Body: return this.requestOptional(await this.apiClient.getEntityByFormerName({ path: parseEntityRef(entityRef) }, options)); exactly the getEntityByRef shape, no hand-written fetch.",
+      "4. No import changes are needed (CompoundEntityRef, Entity, parseEntityRef and CatalogRequestOptions are already imported)."
+    ],
+    "exports": [
+      {
+        "name": "CatalogClient.getEntityByFormerRef",
+        "kind": "method",
+        "params": [
+          { "name": "entityRef", "type": "string | CompoundEntityRef" },
+          { "name": "options", "type": "CatalogRequestOptions | undefined" }
+        ],
+        "returns": "Promise<Entity | undefined>"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 480,
+        "to": 480,
+        "first_line": "}",
+        "rule": "After getEntityByRef's closing brace, insert a blank line and the documented getEntityByFormerRef method (rules 1-3)."
+      }
+    ],
+    "style_from": {
+      "path": "packages/catalog-client/src/CatalogClient.ts",
+      "lines": [465, 480],
+      "reason": "getEntityByRef is the exact shape to copy."
+    },
+    "depends_on": ["U14", "U17"],
+    "covers": ["FR-12"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U19",
+    "path": "packages/catalog-client/src/CatalogClient.test.ts",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds msw-based tests showing getEntityByFormerRef calls the by-former-name endpoint and returns undefined on 404.",
+    "rules": [
+      "1. Add describe('getEntityByFormerRef') after describe('getEntityByRef'), registering http.get handlers for `${mockBaseUrl}/entities/by-former-name/customkind/default/old-name` (JSON entity) and `.../missing` (404) in beforeEach.",
+      "2. Mirror the getEntityByRef cases, including the compound-ref form."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 1172,
+        "to": 1172,
+        "first_line": "describe('getLocations', () => {",
+        "rule": "Insert describe('getEntityByFormerRef') and a blank line."
+      }
+    ],
+    "tests": [
+      {
+        "name": "resolves a former ref by string and compound form",
+        "given": "the by-former-name handler for customkind:default/old-name returns the current entity",
+        "expect": "both getEntityByFormerRef('customkind:default/old-name') and the compound form resolve to that entity"
+      },
+      {
+        "name": "returns undefined for 404s",
+        "given": "the handler for customkind:default/missing returns 404",
+        "expect": "string and compound calls both resolve to undefined"
+      }
+    ],
+    "depends_on": ["U18"],
+    "covers": ["AC-5"],
+    "checks": ["prettier", "eslint", "jest"]
+  },
+  {
+    "id": "U20",
+    "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Implements getEntityByFormerRef in the in-memory client with the real-name-wins and single-claimant rules, without a permission model.",
+    "rules": [
+      "1. Add getEntityFormerRefs to the '@backstage/catalog-model' import.",
+      "2. Add async getEntityByFormerRef(entityRef: string | CompoundEntityRef): Promise<Entity | undefined> right after getEntityByRef.",
+      "3. Normalize with const ref = stringifyEntityRef(parseEntityRef(entityRef)); if this.#createEntityRefMap().has(ref) return undefined.",
+      "4. Collect this.#entities whose getEntityFormerRefs(entity) includes ref; return the single match when there is exactly one, otherwise undefined."
+    ],
+    "exports": [
+      {
+        "name": "InMemoryCatalogClient.getEntityByFormerRef",
+        "kind": "method",
+        "params": [
+          { "name": "entityRef", "type": "string | CompoundEntityRef" }
+        ],
+        "returns": "Promise<Entity | undefined>"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 44,
+        "to": 44,
+        "first_line": "Entity,",
+        "rule": "Insert `getEntityFormerRefs,` into the '@backstage/catalog-model' import list."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 623,
+        "to": 623,
+        "first_line": "}",
+        "rule": "After getEntityByRef's closing brace, insert a blank line and getEntityByFormerRef (rules 2-4)."
+      }
+    ],
+    "style_from": {
+      "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts",
+      "lines": [617, 623],
+      "reason": "getEntityByRef shape and the #createEntityRefMap helper."
+    },
+    "depends_on": ["U03", "U17"],
+    "covers": ["FR-13"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U21",
+    "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds in-memory client tests for getEntityByFormerRef covering a hit, the real-name rule, conflicts and unknown refs.",
+    "rules": [
+      "1. Add describe('getEntityByFormerRef') as the last block inside describe('InMemoryCatalogClient'), defining its own entities with kind 'Component' and the annotation key literal 'backstage.io/former-names'.",
+      "2. Construct clients with new InMemoryCatalogClient({ entities: [...] })."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 1291,
+        "to": 1291,
+        "first_line": "});",
+        "rule": "Insert a blank line and describe('getEntityByFormerRef') before the closing of the top-level describe."
+      }
+    ],
+    "tests": [
+      {
+        "name": "resolves a single claimant by string and compound ref",
+        "given": "entity 'new-name' annotated 'old-name'",
+        "expect": "'component:default/old-name' and { kind: 'Component', namespace: 'default', name: 'old-name' } both resolve to it; 'component:default/unknown' resolves to undefined"
+      },
+      {
+        "name": "applies the real-name and conflict rules",
+        "given": "one client where entity 'old-name' exists and 'new-name' claims it, and another where 'a' and 'b' both claim 'old-name'",
+        "expect": "undefined in both cases"
+      }
+    ],
+    "depends_on": ["U20"],
+    "covers": ["AC-5"],
+    "checks": ["prettier", "eslint", "jest"]
+  },
+  {
+    "id": "U22",
+    "path": "plugins/catalog-node/src/catalogService.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Mirrors the optional getEntityByFormerRef on CatalogService and implements it in DefaultCatalogService by delegating to the wrapped CatalogApi.",
+    "rules": [
+      "1. In the CatalogService interface, after getEntityByRef, add optional getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options: CatalogServiceRequestOptions): Promise<Entity | undefined>; with a short TSDoc pointing to CatalogApi.getEntityByFormerRef and noting it is optional.",
+      "2. In DefaultCatalogService, after getEntityByRef, add async getEntityByFormerRef(entityRef, options): if this.#catalogApi.getEntityByFormerRef is missing return undefined; otherwise return this.#catalogApi.getEntityByFormerRef(entityRef, await this.#getOptions(options))."
+    ],
+    "exports": [
+      {
+        "name": "CatalogService.getEntityByFormerRef",
+        "kind": "optional method",
+        "params": [
+          { "name": "entityRef", "type": "string | CompoundEntityRef" },
+          { "name": "options", "type": "CatalogServiceRequestOptions" }
+        ],
+        "returns": "Promise<Entity | undefined>"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 91,
+        "to": 91,
+        "first_line": "): Promise<Entity | undefined>;",
+        "rule": "Insert a blank line and the documented optional interface member (rule 1)."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 234,
+        "to": 234,
+        "first_line": "}",
+        "rule": "After DefaultCatalogService.getEntityByRef's closing brace, insert a blank line and the delegating method (rule 2)."
+      }
+    ],
+    "style_from": {
+      "path": "plugins/catalog-node/src/catalogService.ts",
+      "lines": [226, 234],
+      "reason": "getEntityByRef delegation with #getOptions."
+    },
+    "depends_on": ["U17"],
+    "covers": ["FR-13"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U23",
+    "path": "plugins/catalog-node/src/testUtils/types.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Redeclares the optional getEntityByFormerRef on CatalogServiceMock with the union options type so CatalogService and CatalogApi merge cleanly.",
+    "rules": [
+      "1. After getEntityByRef in CatalogServiceMock, add getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options?: CatalogServiceRequestOptions | CatalogRequestOptions): Promise<Entity | undefined>; matching the neighbours' formatting."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 85,
+        "to": 85,
+        "first_line": "): Promise<Entity | undefined>;",
+        "rule": "Insert a blank line and the optional getEntityByFormerRef member (rule 1)."
+      }
+    ],
+    "depends_on": ["U22"],
+    "covers": ["FR-13"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U24",
+    "path": "plugins/catalog-node/src/testUtils/catalogServiceMock.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Lists getEntityByFormerRef as a jest.fn in catalogServiceMock.mock.",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 68,
+        "to": 68,
+        "first_line": "getEntityByRef: jest.fn(),",
+        "rule": "Insert `getEntityByFormerRef: jest.fn(),`."
+      }
+    ],
+    "depends_on": ["U23"],
+    "covers": ["FR-13"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U25",
+    "path": "plugins/catalog-react/src/testUtils/catalogApiMock.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Lists getEntityByFormerRef as a jest.fn in catalogApiMock.mock.",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 70,
+        "to": 70,
+        "first_line": "getEntityByRef: jest.fn(),",
+        "rule": "Insert `getEntityByFormerRef: jest.fn(),`."
+      }
+    ],
+    "depends_on": ["U17"],
+    "covers": ["FR-13"],
+    "checks": ["prettier", "eslint"]
+  }
+]

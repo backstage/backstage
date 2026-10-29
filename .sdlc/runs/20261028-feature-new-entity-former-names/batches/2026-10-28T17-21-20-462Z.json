@@ -1,0 +1,2055 @@
+{
+  "status": "partial",
+  "counts": {
+    "applied": 39,
+    "blocked": 4,
+    "no_content": 1,
+    "verify_failed": 2
+  },
+  "cost_usd": 1.810129,
+  "duration_ms": 2007318,
+  "max_parallel": 4,
+  "verify_deferred": [
+    "yarn backstage-repo-tools repo schema openapi validate plugins/catalog-backend",
+    "yarn tsc",
+    "CI=1 yarn test plugins/catalog-backend",
+    "CI=1 yarn test packages/catalog-model packages/catalog-client plugins/catalog-node plugins/catalog-react plugins/catalog plugins/techdocs"
+  ],
+  "tooling_steps": [
+    {
+      "id": "tooling_U13",
+      "instruction": "Orchestrator shell step, no model (unit U13): in one Bash call, write-provenance.mjs --before --run-id=20261028-feature-new-entity-former-names --packet-id=tooling_U13 for `plugins/catalog-backend/src/schema/openapi/generated/router.ts` and every other file the step writes, then `yarn backstage-repo-tools package schema openapi generate --server` in `plugins/catalog-backend`, then write-provenance.mjs --after --run-id=20261028-feature-new-entity-former-names for each of them, whether the step succeeded or not (brownfield-runs.md, Phase 5). Regenerates the catalog-backend OpenAPI server files (router.ts, apis/, models/) from openapi.yaml with the repo's generator."
+    },
+    {
+      "id": "tooling_U14",
+      "instruction": "Orchestrator shell step, no model (unit U14): in one Bash call, write-provenance.mjs --before --run-id=20261028-feature-new-entity-former-names --packet-id=tooling_U14 for `packages/catalog-client/src/schema/openapi/generated/apis/Api.client.ts` and every other file the step writes, then `yarn backstage-repo-tools package schema openapi generate --client-package packages/catalog-client` in `plugins/catalog-backend`, then write-provenance.mjs --after --run-id=20261028-feature-new-entity-former-names for each of them, whether the step succeeded or not (brownfield-runs.md, Phase 5). Regenerates the catalog-client OpenAPI client files (apis/Api.client.ts, models/) from catalog-backend's openapi.yaml, adding getEntityByFormerName."
+    },
+    {
+      "id": "tooling_U49",
+      "instruction": "Orchestrator shell step, no model (unit U49): in one Bash call, write-provenance.mjs --before --run-id=20261028-feature-new-entity-former-names --packet-id=tooling_U49 for `packages/catalog-model/report.api.md` and every other file the step writes, then `yarn build:api-reports packages/catalog-model packages/catalog-client plugins/catalog-backend plugins/catalog-node plugins/catalog-react plugins/catalog plugins/techdocs`, then write-provenance.mjs --after --run-id=20261028-feature-new-entity-former-names for each of them, whether the step succeeded or not (brownfield-runs.md, Phase 5). Regenerates the API reports (report*.api.md) of the seven touched packages with the repo's api-reports command after all source changes are in.",
+      "blocked_by": ["tp_codegen_U15", "tp_codegen_U18"]
+    }
+  ],
+  "items": [
+    {
+      "id": "tp_codegen_U01",
+      "status": "applied",
+      "artifact_path": "packages/catalog-model/src/entity/constants.ts",
+      "cost_usd": 0.026716,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "packages/catalog-model/src/entity/constants.ts",
+          "bytes": 2150,
+          "lines": 75,
+          "sha16": "da68d9d7670f12a5",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2635
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U01",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.026716,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 239
+        },
+        "cost_usd": 0.026716,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U02",
+      "status": "applied",
+      "artifact_path": "packages/catalog-model/src/entity/formerNames.ts",
+      "cost_usd": 0.026928,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "packages/catalog-model/src/entity/formerNames.ts",
+          "bytes": 2443,
+          "lines": 85,
+          "sha16": "76afe614b9026fb0",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2454
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U02",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.026928,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1123
+        },
+        "cost_usd": 0.026928,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U03",
+      "status": "applied",
+      "artifact_path": "packages/catalog-model/src/entity/index.ts",
+      "cost_usd": 0.009078,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "packages/catalog-model/src/entity/index.ts",
+          "bytes": 971,
+          "lines": 28,
+          "sha16": "bba06a62cd91c633",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2566
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U03",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.009078,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 119
+        },
+        "cost_usd": 0.009078,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U04",
+      "status": "applied",
+      "artifact_path": "packages/catalog-model/src/entity/formerNames.test.ts",
+      "cost_usd": 0.027483,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "packages/catalog-model/src/entity/formerNames.test.ts",
+          "bytes": 2705,
+          "lines": 82,
+          "sha16": "819eff773ae5ad66",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 4852
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U04",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.027483,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1235
+        },
+        "cost_usd": 0.027483,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U05",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts",
+      "cost_usd": 0.020608,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts",
+          "bytes": 7505,
+          "lines": 260,
+          "sha16": "a337f07d0802420a",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2634
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U05",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.020608,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 493
+        },
+        "cost_usd": 0.020608,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U06",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.test.ts",
+      "cost_usd": 0.038575,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.test.ts",
+          "bytes": 13522,
+          "lines": 445,
+          "sha16": "740b95e31bee287b",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 5406
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U06",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.038575,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 2006
+        },
+        "cost_usd": 0.038575,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U07",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/catalog/types.ts",
+      "cost_usd": 0.038673,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/catalog/types.ts",
+          "bytes": 10005,
+          "lines": 385,
+          "sha16": "f25c90b574edd9fc",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2518
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U07",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.038673,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 644
+        },
+        "cost_usd": 0.038673,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U08",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+      "cost_usd": 0.054965,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+          "bytes": 31127,
+          "lines": 937,
+          "sha16": "36b456b6c9b9bc23",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2637
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U08",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.054965,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 943
+        },
+        "cost_usd": 0.054965,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U09",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts",
+      "cost_usd": 0.02518,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts",
+          "bytes": 11880,
+          "lines": 380,
+          "sha16": "9e6c8e57c93bd0d8",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2488
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U09",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.02518,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 601
+        },
+        "cost_usd": 0.02518,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U10",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts",
+      "cost_usd": 0.118213,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts",
+          "bytes": 96492,
+          "lines": 2957,
+          "sha16": "56554aa3c08c2e0b",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 7187
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U10",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.118213,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 2334
+        },
+        "cost_usd": 0.118213,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U11",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.test.ts",
+      "cost_usd": 0.038912,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.test.ts",
+          "bytes": 22926,
+          "lines": 748,
+          "sha16": "df0e0f67105ed6f0",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 5769
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U11",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.038912,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 998
+        },
+        "cost_usd": 0.038912,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U12",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/schema/openapi.yaml",
+      "cost_usd": 0.062506,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/schema/openapi.yaml",
+          "bytes": 50665,
+          "lines": 1604,
+          "sha16": "37684ca58005da31",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 919
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U12",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.062506,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 419
+        },
+        "cost_usd": 0.062506,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U15",
+      "status": "blocked",
+      "artifact_path": "plugins/catalog-backend/src/service/createRouter.ts",
+      "cost_usd": 0,
+      "attempts": 0,
+      "blocked_by": ["tooling_U13"]
+    },
+    {
+      "id": "tp_tests_U16",
+      "status": "blocked",
+      "artifact_path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+      "cost_usd": 0,
+      "attempts": 0,
+      "blocked_by": ["tp_codegen_U15"]
+    },
+    {
+      "id": "tp_codegen_U17",
+      "status": "applied",
+      "artifact_path": "packages/catalog-client/src/types/api.ts",
+      "cost_usd": 0.050501,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "packages/catalog-client/src/types/api.ts",
+          "bytes": 24061,
+          "lines": 930,
+          "sha16": "dc32d16af9f3bcba",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2570
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U17",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.050501,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 471
+        },
+        "cost_usd": 0.050501,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U18",
+      "status": "blocked",
+      "artifact_path": "packages/catalog-client/src/CatalogClient.ts",
+      "cost_usd": 0,
+      "attempts": 0,
+      "blocked_by": ["tooling_U14"]
+    },
+    {
+      "id": "tp_tests_U19",
+      "status": "blocked",
+      "artifact_path": "packages/catalog-client/src/CatalogClient.test.ts",
+      "cost_usd": 0,
+      "attempts": 0,
+      "blocked_by": ["tp_codegen_U18"]
+    },
+    {
+      "id": "tp_codegen_U20",
+      "status": "applied",
+      "artifact_path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts",
+      "cost_usd": 0.03536,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts",
+          "bytes": 23189,
+          "lines": 769,
+          "sha16": "38a6e2a027b757f5",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2644
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U20",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.03536,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 465
+        },
+        "cost_usd": 0.03536,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U21",
+      "status": "no_content",
+      "artifact_path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+      "cost_usd": 0.28192300000000003,
+      "attempts": 3,
+      "outcome": {
+        "status": "no_content",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U21",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.060003,
+            "failure": "the answer changes lines outside its sites: new lines after 1064; change only the planned sites"
+          },
+          {
+            "id": "tp_tests_U21",
+            "retry_count": 1,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.06289,
+            "failure": "the answer changes lines outside its sites: new lines after 1064; change only the planned sites"
+          },
+          {
+            "id": "tp_tests_U21",
+            "retry_count": 2,
+            "model_id": "opus",
+            "dispatch_ok": false,
+            "cost_usd": 0.15903,
+            "failure": "the reply was not one JSON object in the {path, edits} or {path, content} contract"
+          }
+        ],
+        "tokens": {
+          "input": 6,
+          "input_cached": 16668,
+          "output": 3742
+        },
+        "cost_usd": 0.28192300000000003,
+        "terminal_reason": "invalid_answer",
+        "events_written": 3
+      }
+    },
+    {
+      "id": "tp_codegen_U22",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-node/src/catalogService.ts",
+      "cost_usd": 0.02632,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-node/src/catalogService.ts",
+          "bytes": 11384,
+          "lines": 449,
+          "sha16": "71c70b5b7b8d2914",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2514
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U22",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.02632,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 798
+        },
+        "cost_usd": 0.02632,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U23",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-node/src/testUtils/types.ts",
+      "cost_usd": 0.014753,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-node/src/testUtils/types.ts",
+          "bytes": 5132,
+          "lines": 169,
+          "sha16": "1ef8129c1188154e",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2464
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U23",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.014753,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 295
+        },
+        "cost_usd": 0.014753,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U24",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-node/src/testUtils/catalogServiceMock.ts",
+      "cost_usd": 0.009382,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-node/src/testUtils/catalogServiceMock.ts",
+          "bytes": 2932,
+          "lines": 88,
+          "sha16": "66f1f87fe8afb370",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2478
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U24",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.009382,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 113
+        },
+        "cost_usd": 0.009382,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U25",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-react/src/testUtils/catalogApiMock.ts",
+      "cost_usd": 0.009922,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog-react/src/testUtils/catalogApiMock.ts",
+          "bytes": 2971,
+          "lines": 90,
+          "sha16": "6cbd6c9cf4f98653",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2570
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U25",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.009922,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 112
+        },
+        "cost_usd": 0.009922,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U26",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/alpha/translation.ts",
+      "cost_usd": 0.012783,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog/src/alpha/translation.ts",
+          "bytes": 6494,
+          "lines": 204,
+          "sha16": "8ddaf3a96bdbe64c",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2580
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U26",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.012783,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 150
+        },
+        "cost_usd": 0.012783,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U27",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+      "cost_usd": 0.01507,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+          "bytes": 1638,
+          "lines": 51,
+          "sha16": "705736790cd7704e",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2621
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U27",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.01507,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 759
+        },
+        "cost_usd": 0.01507,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U28",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+      "cost_usd": 0.02866,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+          "bytes": 2778,
+          "lines": 88,
+          "sha16": "78e0cd247844f8cc",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2594
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U28",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.02866,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1586
+        },
+        "cost_usd": 0.02866,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U29",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+      "cost_usd": 0.01178,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+          "bytes": 1032,
+          "lines": 31,
+          "sha16": "ebdb36353980335e",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2592
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U29",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.01178,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 191
+        },
+        "cost_usd": 0.01178,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U30",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+      "cost_usd": 0.01598,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+          "bytes": 3682,
+          "lines": 106,
+          "sha16": "a38e11a73df6171e",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2788
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U30",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.01598,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 297
+        },
+        "cost_usd": 0.01598,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U31",
+      "status": "verify_failed",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx",
+      "cost_usd": 0.244871,
+      "attempts": 3,
+      "outcome": {
+        "status": "verify_failed",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx",
+          "bytes": 4223,
+          "lines": 123,
+          "sha16": "ff2dabb770444959",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": false,
+          "ran": 3,
+          "failed_command": "BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx'",
+          "exit_code": null,
+          "timed_out": true,
+          "output_tail": "[timed out after 600s]\nityRef({ kind\u001b[33m,\u001b[39m namespace\u001b[33m,\u001b[39m name }) }\u001b[33m,\u001b[39m\n     \u001b[90m 78 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\n      at printWarning (../../../node_modules/react-dom/cjs/react-dom.development.js:86:30)\n      at error (../../../node_modules/react-dom/cjs/react-dom.development.js:60:7)\n      at checkForNestedUpdates (../../../node_modules/react-dom/cjs/react-dom.development.js:27339:7)\n      at scheduleUpdateOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:25514:3)\n      at dispatchSetState (../../../node_modules/react-dom/cjs/react-dom.development.js:16708:7)\n      at setStateImpl (../../../node_modules/react-router/dist/umd/react-router.development.js:1120:103)\n      at listener (../../../node_modules/@remix-run/router/dist/router.cjs.js:183:9)\n      at ../../../node_modules/react-router/dist/umd/react-router.development.js:263:61\n      at navigate (components/CatalogEntityPage/useEntityFromUrl.ts:75:5)\n      at commitHookEffectListMount (../../../node_modules/react-dom/cjs/react-dom.development.js:23189:26)\n      at commitPassiveMountOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:24970:11)\n      at commitPassiveMountEffects_complete (../../../node_modules/react-dom/cjs/react-dom.development.js:24930:9)\n      at commitPassiveMountEffects_begin (../../../node_modules/react-dom/cjs/react-dom.development.js:24917:7)\n      at commitPassiveMountEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:24905:3)\n      at flushPassiveEffectsImpl (../../../node_modules/react-dom/cjs/react-dom.development.js:27078:3)\n      at flushPassiveEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:27023:14)\n      at ../../../node_modules/react-dom/cjs/react-dom.development.js:26808:9\n      at flushActQueue (../../../node_modules/react/cjs/react.development.js:2667:24)\n      at recursivelyFlushAsyncActWork (../../../node_modules/react/cjs/react.development.js:2633:9)\n      at Immediate._onImmediate (../../../node_modules/react/cjs/react.development.js:2641:13)",
+          "duration_ms": 602469
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U31",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.03008,
+            "verify_ok": false,
+            "failure": "verify failed: BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx' (timed out)\n[timed out after 600s]\nityRef({ kind\u001b[33m,\u001b[39m namespace\u001b[33m,\u001b[39m name }) }\u001b[33m,\u001b[39m\n     \u001b[90m 78 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\n      at printWarning (../../../node_modules/react-dom/cjs/react-dom.development.js:86:30)\n      at error (../../../node_modules/react-dom/cjs/react-dom.development.js:60:7)\n      at checkForNestedUpdates (../../../node_modules/react-dom/cjs/react-dom.development.js:27339:7)\n      at scheduleUpdateOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:25514:3)\n      at dispatchSetState (../../../node_modules/react-dom/cjs/react-dom.development.js:16708:7)\n      at setStateImpl (../../../node_modules/react-router/dist/umd/react-router.development.js:1120:103)\n      at listener (../../../node_modules/@remix-run/router/dist/router.cjs.js:183:9)\n      at ../../../node_modules/react-router/dist/umd/react-router.development.js:263:61\n      at navigate (components/CatalogEntityPage/useEntityFromUrl.ts:75:5)\n      at commitHookEffectListMount (../../../node_modules/react-dom/cjs/react-dom.development.js:23189:26)\n      at commitPassiveMountOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:24970:11)\n      at commitPassiveMountEffects_complete (../../../node_modules/react-dom/cjs/react-dom.development.js:24930:9)\n      at commitPassiveMountEffects_begin (../../../node_modules/react-dom/cjs/react-dom.development.js:24917:7)\n      at commitPassiveMountEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:24905:3)\n      at flushPassiveEffectsImpl (../../../node_modules/react-dom/cjs/react-dom.development.js:27078:3)\n      at flushPassiveEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:27023:14)\n      at ../../../node_modules/react-dom/cjs/react-dom.development.js:26808:9\n      at flushActQueue (../../../node_modules/react/cjs/react.development.js:2667:24)\n      at recursivelyFlushAsyncActWork (../../../node_modules/react/cjs/react.development.js:2633:9)\n      at Immediate._onImmediate (../../../node_modules/react/cjs/react.development.js:2641:13)"
+          },
+          {
+            "id": "tp_tests_U31",
+            "retry_count": 1,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.061311,
+            "verify_ok": false,
+            "failure": "verify failed: BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx' (timed out)\n[timed out after 600s]\nityRef({ kind\u001b[33m,\u001b[39m namespace\u001b[33m,\u001b[39m name }) }\u001b[33m,\u001b[39m\n     \u001b[90m 78 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\n      at printWarning (../../../node_modules/react-dom/cjs/react-dom.development.js:86:30)\n      at error (../../../node_modules/react-dom/cjs/react-dom.development.js:60:7)\n      at checkForNestedUpdates (../../../node_modules/react-dom/cjs/react-dom.development.js:27339:7)\n      at scheduleUpdateOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:25514:3)\n      at dispatchSetState (../../../node_modules/react-dom/cjs/react-dom.development.js:16708:7)\n      at setStateImpl (../../../node_modules/react-router/dist/umd/react-router.development.js:1120:103)\n      at listener (../../../node_modules/@remix-run/router/dist/router.cjs.js:183:9)\n      at ../../../node_modules/react-router/dist/umd/react-router.development.js:263:61\n      at navigate (components/CatalogEntityPage/useEntityFromUrl.ts:75:5)\n      at commitHookEffectListMount (../../../node_modules/react-dom/cjs/react-dom.development.js:23189:26)\n      at commitPassiveMountOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:24970:11)\n      at commitPassiveMountEffects_complete (../../../node_modules/react-dom/cjs/react-dom.development.js:24930:9)\n      at commitPassiveMountEffects_begin (../../../node_modules/react-dom/cjs/react-dom.development.js:24917:7)\n      at commitPassiveMountEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:24905:3)\n      at flushPassiveEffectsImpl (../../../node_modules/react-dom/cjs/react-dom.development.js:27078:3)\n      at flushPassiveEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:27023:14)\n      at ../../../node_modules/react-dom/cjs/react-dom.development.js:26808:9\n      at flushActQueue (../../../node_modules/react/cjs/react.development.js:2667:24)\n      at recursivelyFlushAsyncActWork (../../../node_modules/react/cjs/react.development.js:2633:9)\n      at Immediate._onImmediate (../../../node_modules/react/cjs/react.development.js:2641:13)"
+          },
+          {
+            "id": "tp_tests_U31",
+            "retry_count": 2,
+            "model_id": "opus",
+            "dispatch_ok": true,
+            "cost_usd": 0.15348,
+            "verify_ok": false,
+            "failure": "verify failed: BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx' (timed out)\n[timed out after 600s]\nityRef({ kind\u001b[33m,\u001b[39m namespace\u001b[33m,\u001b[39m name }) }\u001b[33m,\u001b[39m\n     \u001b[90m 78 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m\n\n      at printWarning (../../../node_modules/react-dom/cjs/react-dom.development.js:86:30)\n      at error (../../../node_modules/react-dom/cjs/react-dom.development.js:60:7)\n      at checkForNestedUpdates (../../../node_modules/react-dom/cjs/react-dom.development.js:27339:7)\n      at scheduleUpdateOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:25514:3)\n      at dispatchSetState (../../../node_modules/react-dom/cjs/react-dom.development.js:16708:7)\n      at setStateImpl (../../../node_modules/react-router/dist/umd/react-router.development.js:1120:103)\n      at listener (../../../node_modules/@remix-run/router/dist/router.cjs.js:183:9)\n      at ../../../node_modules/react-router/dist/umd/react-router.development.js:263:61\n      at navigate (components/CatalogEntityPage/useEntityFromUrl.ts:75:5)\n      at commitHookEffectListMount (../../../node_modules/react-dom/cjs/react-dom.development.js:23189:26)\n      at commitPassiveMountOnFiber (../../../node_modules/react-dom/cjs/react-dom.development.js:24970:11)\n      at commitPassiveMountEffects_complete (../../../node_modules/react-dom/cjs/react-dom.development.js:24930:9)\n      at commitPassiveMountEffects_begin (../../../node_modules/react-dom/cjs/react-dom.development.js:24917:7)\n      at commitPassiveMountEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:24905:3)\n      at flushPassiveEffectsImpl (../../../node_modules/react-dom/cjs/react-dom.development.js:27078:3)\n      at flushPassiveEffects (../../../node_modules/react-dom/cjs/react-dom.development.js:27023:14)\n      at ../../../node_modules/react-dom/cjs/react-dom.development.js:26808:9\n      at flushActQueue (../../../node_modules/react/cjs/react.development.js:2667:24)\n      at recursivelyFlushAsyncActWork (../../../node_modules/react/cjs/react.development.js:2633:9)\n      at Immediate._onImmediate (../../../node_modules/react/cjs/react.development.js:2641:13)"
+          }
+        ],
+        "tokens": {
+          "input": 6,
+          "input_cached": 9321,
+          "output": 9179
+        },
+        "cost_usd": 0.244871,
+        "terminal_reason": "success",
+        "events_written": 3
+      }
+    },
+    {
+      "id": "tp_tests_U32",
+      "status": "verify_failed",
+      "artifact_path": "plugins/catalog/src/alpha/pages.test.tsx",
+      "cost_usd": 0.271937,
+      "attempts": 3,
+      "outcome": {
+        "status": "verify_failed",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog/src/alpha/pages.test.tsx",
+          "bytes": 43383,
+          "lines": 1354,
+          "sha16": "9cb1bcc5f488f9d9",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": false,
+          "ran": 3,
+          "failed_command": "BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/alpha/pages.test.tsx'",
+          "exit_code": 1,
+          "output_tail": "g, code that resolves suspended data should be wrapped into act(...):\n    \n    act(() => {\n      /* finish loading suspended data */\n    });\n    /* assert on the output */\n    \n    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act\n\n      at printWarning (../../../node_modules/react-dom/cjs/react-dom.development.js:86:30)\n      at error (../../../node_modules/react-dom/cjs/react-dom.development.js:60:7)\n      at warnIfSuspenseResolutionNotWrappedWithActDEV (../../../node_modules/react-dom/cjs/react-dom.development.js:27643:7)\n      at pingSuspendedRoot (../../../node_modules/react-dom/cjs/react-dom.development.js:27228:3)\n\nFAIL @backstage/plugin-catalog plugins/catalog/src/alpha/pages.test.tsx (5.242 s)\n  ● Entity page › Entity Page renames › redirects an old entity URL and shows the rename notice\n\n    expect(element).toHaveTextContent()\n\n    Expected element to have text content:\n      /old-name/\n    Received:\n      This entity was renamed from component:default/new-name\n\n    \u001b[0m \u001b[90m 1068 |\u001b[39m       \u001b[36mconst\u001b[39m notice \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m screen\u001b[33m.\u001b[39mfindByRole(\u001b[32m'alert'\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m 1069 |\u001b[39m       expect(notice)\u001b[33m.\u001b[39mtoHaveTextContent(\u001b[35m/This entity was renamed from/\u001b[39m)\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1070 |\u001b[39m       expect(notice)\u001b[33m.\u001b[39mtoHaveTextContent(\u001b[35m/old-name/\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m      |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 1071 |\u001b[39m\n     \u001b[90m 1072 |\u001b[39m       \u001b[36mawait\u001b[39m userEvent\u001b[33m.\u001b[39mclick(\n     \u001b[90m 1073 |\u001b[39m         within(notice)\u001b[33m.\u001b[39mgetByRole(\u001b[32m'button'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Dismiss'\u001b[39m })\u001b[33m,\u001b[39m\u001b[0m\n\n      at Object.toHaveTextContent (alpha/pages.test.tsx:1070:22)\n\nTest Suites: 1 failed, 1 total\nTests:       1 failed, 26 passed, 27 total\nSnapshots:   0 total\nTime:        5.716 s, estimated 9 s\nRan all test suites matching plugins/catalog/src/alpha/pages.test.tsx.",
+          "duration_ms": 9833
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U32",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.058698,
+            "verify_ok": false,
+            "failure": "verify failed: BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/alpha/pages.test.tsx' (exit 1)\nNavItem bui-HeaderNavItem\"\u001b[39m\n                      \u001b[33mdata-react-aria-pressable\u001b[39m=\u001b[32m\"true\"\u001b[39m\n                      \u001b[33mhref\u001b[39m=\u001b[32m\"/catalog/default/component/new-name/overview\"\u001b[39m\n                      \u001b[33mtabindex\u001b[39m=\u001b[32m\"0\"\u001b[39m\n                    \u001b[36m>\u001b[39m\n                      \u001b[0mOverview\u001b[0m\n                    \u001b[36m</a>\u001b[39m\n                  \u001b[36m</li>\u001b[39m\n                \u001b[36m</ul>\u001b[39m\n                \u001b[36m<div\u001b[39m\n                  \u001b[33mclass\u001b[39m=\u001b[32m\"bui-HeaderNavActive bui-HeaderNavActive\"\u001b[39m\n                \u001b[36m/>\u001b[39m\n                \u001b[36m<div\u001b[39m\n                  \u001b[33mclass\u001b[39m=\u001b[32m\"bui-HeaderNavHovered bui-HeaderNavHovered\"\u001b[39m\n                \u001b[36m/>\u001b[39m\n              \u001b[36m</nav>\u001b[39m\n            \u001b[36m</div>\u001b[39m\n          \u001b[36m</div>\u001b[39m\n          \u001b[36m<div\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"bui-Container bui-Container\"\u001b[39m\n          \u001b[36m>\u001b[39m\n            \u001b[36m<div>\u001b[39m\n              \u001b[0mMock Overview content\u001b[0m\n            \u001b[36m</div>\u001b[39m\n          \u001b[36m</div>\u001b[39m\n        \u001b[36m</main>\u001b[39m\n      \u001b[36m</div>\u001b[39m\n    \u001b[36m</body>\u001b[39m\n\n    \u001b[0m \u001b[90m 1075 |\u001b[39m       )\u001b[33m.\u001b[39mtoBeInTheDocument()\u001b[33m;\u001b[39m\n     \u001b[90m 1076 |\u001b[39m       expect(\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1077 |\u001b[39m         \u001b[36mawait\u001b[39m screen\u001b[33m.\u001b[39mfindByText(\n     \u001b[90m      |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 1078 |\u001b[39m           \u001b[32m'This entity was renamed from component:default/old-name'\u001b[39m\u001b[33m,\u001b[39m\n     \u001b[90m 1079 |\u001b[39m         )\u001b[33m,\u001b[39m\n     \u001b[90m 1080 |\u001b[39m       )\u001b[33m.\u001b[39mtoBeInTheDocument()\u001b[33m;\u001b[39m\u001b[0m\n\n      at waitForWrapper (../../../node_modules/@testing-library/dom/dist/wait-for.js:163:27)\n      at ../../../node_modules/@testing-library/dom/dist/query-helpers.js:86:33\n      at Object.findByText (alpha/pages.test.tsx:1077:22)\n\nTest Suites: 1 failed, 1 total\nTests:       1 failed, 26 passed, 27 total\nSnapshots:   0 total\nTime:        8.917 s\nRan all test suites matching plugins/catalog/src/alpha/pages.test.tsx."
+          },
+          {
+            "id": "tp_tests_U32",
+            "retry_count": 1,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.07031,
+            "verify_ok": false,
+            "failure": "verify failed: BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/alpha/pages.test.tsx' (exit 1)\navItem bui-HeaderNavItem\"\u001b[39m\n                      \u001b[33mdata-react-aria-pressable\u001b[39m=\u001b[32m\"true\"\u001b[39m\n                      \u001b[33mhref\u001b[39m=\u001b[32m\"/catalog/default/component/new-name/overview\"\u001b[39m\n                      \u001b[33mtabindex\u001b[39m=\u001b[32m\"0\"\u001b[39m\n                    \u001b[36m>\u001b[39m\n                      \u001b[0mOverview\u001b[0m\n                    \u001b[36m</a>\u001b[39m\n                  \u001b[36m</li>\u001b[39m\n                \u001b[36m</ul>\u001b[39m\n                \u001b[36m<div\u001b[39m\n                  \u001b[33mclass\u001b[39m=\u001b[32m\"bui-HeaderNavActive bui-HeaderNavActive\"\u001b[39m\n                \u001b[36m/>\u001b[39m\n                \u001b[36m<div\u001b[39m\n                  \u001b[33mclass\u001b[39m=\u001b[32m\"bui-HeaderNavHovered bui-HeaderNavHovered\"\u001b[39m\n                \u001b[36m/>\u001b[39m\n              \u001b[36m</nav>\u001b[39m\n            \u001b[36m</div>\u001b[39m\n          \u001b[36m</div>\u001b[39m\n          \u001b[36m<div\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"bui-Container bui-Container\"\u001b[39m\n          \u001b[36m>\u001b[39m\n            \u001b[36m<div>\u001b[39m\n              \u001b[0mMock Overview content\u001b[0m\n            \u001b[36m</div>\u001b[39m\n          \u001b[36m</div>\u001b[39m\n        \u001b[36m</main>\u001b[39m\n      \u001b[36m</div>\u001b[39m\n    \u001b[36m</body>\u001b[39m\n\n    \u001b[0m \u001b[90m 1075 |\u001b[39m       )\u001b[33m.\u001b[39mtoBeInTheDocument()\u001b[33m;\u001b[39m\n     \u001b[90m 1076 |\u001b[39m       expect(\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1077 |\u001b[39m         \u001b[36mawait\u001b[39m screen\u001b[33m.\u001b[39mfindByText(\n     \u001b[90m      |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 1078 |\u001b[39m           \u001b[35m/This entity was renamed from component:default.+old-name/\u001b[39m\u001b[33m,\u001b[39m\n     \u001b[90m 1079 |\u001b[39m         )\u001b[33m,\u001b[39m\n     \u001b[90m 1080 |\u001b[39m       )\u001b[33m.\u001b[39mtoBeInTheDocument()\u001b[33m;\u001b[39m\u001b[0m\n\n      at waitForWrapper (../../../node_modules/@testing-library/dom/dist/wait-for.js:163:27)\n      at ../../../node_modules/@testing-library/dom/dist/query-helpers.js:86:33\n      at Object.findByText (alpha/pages.test.tsx:1077:22)\n\nTest Suites: 1 failed, 1 total\nTests:       1 failed, 26 passed, 27 total\nSnapshots:   0 total\nTime:        9.117 s\nRan all test suites matching plugins/catalog/src/alpha/pages.test.tsx."
+          },
+          {
+            "id": "tp_tests_U32",
+            "retry_count": 2,
+            "model_id": "opus",
+            "dispatch_ok": true,
+            "cost_usd": 0.142929,
+            "verify_ok": false,
+            "failure": "verify failed: BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test 'plugins/catalog/src/alpha/pages.test.tsx' (exit 1)\ng, code that resolves suspended data should be wrapped into act(...):\n    \n    act(() => {\n      /* finish loading suspended data */\n    });\n    /* assert on the output */\n    \n    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act\n\n      at printWarning (../../../node_modules/react-dom/cjs/react-dom.development.js:86:30)\n      at error (../../../node_modules/react-dom/cjs/react-dom.development.js:60:7)\n      at warnIfSuspenseResolutionNotWrappedWithActDEV (../../../node_modules/react-dom/cjs/react-dom.development.js:27643:7)\n      at pingSuspendedRoot (../../../node_modules/react-dom/cjs/react-dom.development.js:27228:3)\n\nFAIL @backstage/plugin-catalog plugins/catalog/src/alpha/pages.test.tsx (5.242 s)\n  ● Entity page › Entity Page renames › redirects an old entity URL and shows the rename notice\n\n    expect(element).toHaveTextContent()\n\n    Expected element to have text content:\n      /old-name/\n    Received:\n      This entity was renamed from component:default/new-name\n\n    \u001b[0m \u001b[90m 1068 |\u001b[39m       \u001b[36mconst\u001b[39m notice \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m screen\u001b[33m.\u001b[39mfindByRole(\u001b[32m'alert'\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m 1069 |\u001b[39m       expect(notice)\u001b[33m.\u001b[39mtoHaveTextContent(\u001b[35m/This entity was renamed from/\u001b[39m)\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1070 |\u001b[39m       expect(notice)\u001b[33m.\u001b[39mtoHaveTextContent(\u001b[35m/old-name/\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m      |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 1071 |\u001b[39m\n     \u001b[90m 1072 |\u001b[39m       \u001b[36mawait\u001b[39m userEvent\u001b[33m.\u001b[39mclick(\n     \u001b[90m 1073 |\u001b[39m         within(notice)\u001b[33m.\u001b[39mgetByRole(\u001b[32m'button'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Dismiss'\u001b[39m })\u001b[33m,\u001b[39m\u001b[0m\n\n      at Object.toHaveTextContent (alpha/pages.test.tsx:1070:22)\n\nTest Suites: 1 failed, 1 total\nTests:       1 failed, 26 passed, 27 total\nSnapshots:   0 total\nTime:        5.716 s, estimated 9 s\nRan all test suites matching plugins/catalog/src/alpha/pages.test.tsx."
+          }
+        ],
+        "tokens": {
+          "input": 6,
+          "input_cached": 24015,
+          "output": 4868
+        },
+        "cost_usd": 0.271937,
+        "terminal_reason": "success",
+        "events_written": 3
+      }
+    },
+    {
+      "id": "tp_codegen_U33",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/translation.ts",
+      "cost_usd": 0.009045,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/translation.ts",
+          "bytes": 3323,
+          "lines": 119,
+          "sha16": "54adac2d85f15602",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2538
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U33",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.009045,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 126
+        },
+        "cost_usd": 0.009045,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U34",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx",
+      "cost_usd": 0.012145,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx",
+          "bytes": 2086,
+          "lines": 73,
+          "sha16": "68f285533b307031",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2599
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U34",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.012145,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 408
+        },
+        "cost_usd": 0.012145,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U35",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.tsx",
+      "cost_usd": 0.016175,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.tsx",
+          "bytes": 1736,
+          "lines": 55,
+          "sha16": "ca2a9220f9ccd11f",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2603
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U35",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.016175,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 794
+        },
+        "cost_usd": 0.016175,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U36",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.ts",
+      "cost_usd": 0.02893,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.ts",
+          "bytes": 5378,
+          "lines": 138,
+          "sha16": "5d2c35c068b36bed",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2616
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U36",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.02893,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1506
+        },
+        "cost_usd": 0.02893,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U37",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsReaderPage.tsx",
+      "cost_usd": 0.024885,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsReaderPage.tsx",
+          "bytes": 8738,
+          "lines": 268,
+          "sha16": "e3caf83b0ae23f4b",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2743
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U37",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.024885,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 668
+        },
+        "cost_usd": 0.024885,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_tests_U38",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx",
+      "cost_usd": 0.046043,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx",
+          "bytes": 11914,
+          "lines": 436,
+          "sha16": "c9eccf94d878f59a",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2763
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U38",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.046043,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 2831
+        },
+        "cost_usd": 0.046043,
+        "terminal_reason": "success",
+        "events_written": 1,
+        "set_aside": [
+          {
+            "id": "jest",
+            "run": "BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test '{path}'",
+            "output": "exit 1: dist/umd/react-router.development.js:154:36)\n      at useExternalRedirect (reader/components/TechDocsReaderPage/useExternalRedirect.ts:47:31)\n      at wrapper.wrapper (reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx:252:45)\n      at renderCallback (../../../node_modules/@testing-library/react/dist/pure.js:339:27)\n      at renderWithHooks (../../../node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n      at mountIndeterminateComponent (../../../node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n      at beginWork (../../../node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n      at beginWork$1 (../../../node_modules/react-dom/cjs/react-dom.development.js:27465:14)\n      at performUnitOfWork (../../../node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n      at workLoopSync (../../../node_modules/react-dom/cjs/react-dom.development.js:26505:5)\n      at renderRootSync (../../../node_modules/react-dom/cjs/react-dom.development.js:26473:7)\n      at recoverFromConcurrentError (../../../node_modules/react-dom/cjs/react-dom.development.js:25889:20)\n      at performConcurrentWorkOnRoot (../../../node_modules/react-dom/cjs/react-dom.development.js:25789:22)\n      at flushActQueue (../../../node_modules/react/cjs/react.development.js:2667:24)\n      at act (../../../node_modules/react/cjs/react.development.js:2582:11)\n      at ../../../node_modules/@testing-library/react/dist/act-compat.js:46:25\n      at renderRoot (../../../node_modules/@testing-library/react/dist/pure.js:198:24)\n      at renderRoot (../../../node_modules/@testing-library/react/dist/pure.js:300:10)\n      at render (../../../node_modules/@testing-library/react/dist/pure.js:348:7)\n      at Object.<anonymous> (reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx:251:36)\n\nTest Suites: 1 failed, 1 total\nTests:       7 failed, 7 total\nSnapshots:   0 total\nTime:        2.077 s\nRan all test suites matching plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx."
+          }
+        ]
+      }
+    },
+    {
+      "id": "tp_tests_U39",
+      "status": "applied",
+      "artifact_path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.test.tsx",
+      "cost_usd": 0.02108,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.test.tsx",
+          "bytes": 2597,
+          "lines": 85,
+          "sha16": "49291a9f88b0ddbc",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 6009
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U39",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.02108,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1137
+        },
+        "cost_usd": 0.02108,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U40",
+      "status": "applied",
+      "artifact_path": "docs/features/software-catalog/well-known-annotations.md",
+      "cost_usd": 0.025333,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": "docs/features/software-catalog/well-known-annotations.md",
+          "bytes": 17771,
+          "lines": 513,
+          "sha16": "f08d66937c3ca0a5",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 1001
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U40",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.025333,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 508
+        },
+        "cost_usd": 0.025333,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U41",
+      "status": "applied",
+      "artifact_path": "docs/features/software-catalog/api.md",
+      "cost_usd": 0.033135,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": "docs/features/software-catalog/api.md",
+          "bytes": 27747,
+          "lines": 911,
+          "sha16": "4ae80c9f0e341515",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 980
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U41",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.033135,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 378
+        },
+        "cost_usd": 0.033135,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U42",
+      "status": "applied",
+      "artifact_path": "docs/features/techdocs/how-to-guides.md",
+      "cost_usd": 0.03746,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": "docs/features/techdocs/how-to-guides.md",
+          "bytes": 30503,
+          "lines": 832,
+          "sha16": "05916a22ea1c949f",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 1069
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U42",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.03746,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 475
+        },
+        "cost_usd": 0.03746,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U43",
+      "status": "applied",
+      "artifact_path": ".changeset/entity-former-names-model.md",
+      "cost_usd": 0.005765,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": ".changeset/entity-former-names-model.md",
+          "bytes": 340,
+          "lines": 6,
+          "sha16": "e3849a1b30ff0782",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 888
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U43",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.005765,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 160
+        },
+        "cost_usd": 0.005765,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U44",
+      "status": "applied",
+      "artifact_path": ".changeset/entity-former-names-backend.md",
+      "cost_usd": 0.006433,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": ".changeset/entity-former-names-backend.md",
+          "bytes": 535,
+          "lines": 8,
+          "sha16": "c48352af748d479a",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 801
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U44",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.006433,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 216
+        },
+        "cost_usd": 0.006433,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U45",
+      "status": "applied",
+      "artifact_path": ".changeset/entity-former-names-client.md",
+      "cost_usd": 0.006135,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": ".changeset/entity-former-names-client.md",
+          "bytes": 434,
+          "lines": 8,
+          "sha16": "586bdb6a4514a44d",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 870
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U45",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.006135,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 187
+        },
+        "cost_usd": 0.006135,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U46",
+      "status": "applied",
+      "artifact_path": ".changeset/entity-former-names-catalog.md",
+      "cost_usd": 0.00606,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": ".changeset/entity-former-names-catalog.md",
+          "bytes": 496,
+          "lines": 6,
+          "sha16": "6298eb12ee9f0db2",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 878
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U46",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.00606,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 191
+        },
+        "cost_usd": 0.00606,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_docs_U47",
+      "status": "applied",
+      "artifact_path": ".changeset/entity-former-names-techdocs.md",
+      "cost_usd": 0.005753,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 5 (phase=\"docs\")",
+          "ruleIndex": 5
+        },
+        "apply": {
+          "path": ".changeset/entity-former-names-techdocs.md",
+          "bytes": 401,
+          "lines": 6,
+          "sha16": "bbc22b13a73867a5",
+          "existed_before": false,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 879
+        },
+        "attempts": [
+          {
+            "id": "tp_docs_U47",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.005753,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 166
+        },
+        "cost_usd": 0.005753,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_codegen_U48",
+      "status": "applied",
+      "artifact_path": ".gitignore",
+      "cost_usd": 0.008673,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 3 (phase=\"codegen\")",
+          "ruleIndex": 3
+        },
+        "apply": {
+          "path": ".gitignore",
+          "bytes": 2973,
+          "lines": 197,
+          "sha16": "7edc54fc1218c67e",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 0,
+          "duration_ms": 0
+        },
+        "attempts": [
+          {
+            "id": "tp_codegen_U48",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.008673,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 78
+        },
+        "cost_usd": 0.008673,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": ["tooling_U13", "tooling_U14", "tooling_U49"]
+}

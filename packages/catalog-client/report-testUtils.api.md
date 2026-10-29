@@ -48,6 +48,10 @@ export class InMemoryCatalogClient implements CatalogApi {
     request: GetEntityAncestorsRequest,
   ): Promise<GetEntityAncestorsResponse>;
   // (undocumented)
+  getEntityByFormerRef(
+    entityRef: string | CompoundEntityRef,
+  ): Promise<Entity | undefined>;
+  // (undocumented)
   getEntityByRef(
     entityRef: string | CompoundEntityRef,
   ): Promise<Entity | undefined>;

@@ -1,0 +1,150 @@
+{
+  "status": "applied",
+  "counts": {
+    "applied": 3
+  },
+  "cost_usd": 0.059904,
+  "duration_ms": 23642,
+  "max_parallel": 4,
+  "items": [
+    {
+      "id": "tp_debug_r4_001",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+      "cost_usd": 0.043576,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+          "bytes": 3281,
+          "lines": 113,
+          "sha16": "24a48770d068d202",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2499
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r4_001",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.043576,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 1318
+        },
+        "cost_usd": 0.043576,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_debug_r4_002",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+      "cost_usd": 0.010213,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+          "bytes": 1684,
+          "lines": 51,
+          "sha16": "89a8518a6142efd9",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2334
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r4_002",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.010213,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 227
+        },
+        "cost_usd": 0.010213,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_debug_r4_003",
+      "status": "applied",
+      "artifact_path": ".changeset/entity-former-names-techdocs.md",
+      "cost_usd": 0.006115,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": ".changeset/entity-former-names-techdocs.md",
+          "bytes": 423,
+          "lines": 6,
+          "sha16": "c6ed5adb69fc9fcb",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 862
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r4_003",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.006115,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 87
+        },
+        "cost_usd": 0.006115,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": []
+}

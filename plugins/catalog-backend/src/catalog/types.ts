@@ -146,6 +146,30 @@ export interface EntityFacetsResponse {
   facets: Record<string, Array<{ value: string; count: number }>>;
 }
 
+/**
+ * The request shape for {@link EntitiesCatalog.resolveFormerEntityRef}.
+ */
+export interface ResolveFormerEntityRefRequest {
+  /**
+   * The normalized former entity ref to resolve.
+   */
+  formerEntityRef: string;
+  /**
+   * Filters to apply when reading the resolved entity. An entity that does not
+   * match the filter results in a null item in the response, as if it did not
+   * exist.
+   */
+  filter?: FilterPredicate;
+  /**
+   * Strips out only the parts of the entity body to include in the response.
+   */
+  fields?: (entity: Entity) => Entity;
+  /**
+   * The credentials that authorizes the action.
+   */
+  credentials: BackstageCredentials;
+}
+
 export interface EntitiesCatalog {
   /**
    * Fetch entities.
@@ -193,6 +217,21 @@ export interface EntitiesCatalog {
    * @param request - Request options
    */
   facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
+
+  /**
+   * Resolves a former entity ref, declared through the
+   * backstage.io/former-names annotation, to the entity that currently claims
+   * it.
+   *
+   * The response holds exactly one item. The item is null when an entity
+   * currently has that ref, when zero or several entities claim it, or when
+   * the claimant does not match the filter.
+   *
+   * @param request - Request options
+   */
+  resolveFormerEntityRef(
+    request: ResolveFormerEntityRefRequest,
+  ): Promise<EntitiesBatchResponse>;
 }
 
 /**

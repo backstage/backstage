@@ -1,0 +1,1180 @@
+➤ YN0000: · Yarn 4.18.1
+➤ YN0000: ┌ Resolution step
+➤ YN0000: └ Completed in 0s 889ms
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p001e19), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p021b79), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p076e26), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p0b2d77), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p0d7a96), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p0efd38), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p0f39ae), which doesn't satisfy what @material-ui/core (via @backstage/dev-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p0fe495), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p103ef7), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p10f8b9), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p12ad18), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p1306c4), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p1900ef), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p214eea), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p21bfc5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p270ae1), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p2abe47), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p2ba289), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p338596), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p368027), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p386049), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p39fffa), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p3a4154), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p3bc519), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p3e2227), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p3ea774), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p42880f), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p4325d5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p49e408), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p4bb6d4), which doesn't satisfy what @material-ui/core (via @backstage/dev-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p54e410), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p563619), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p5b5df4), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p5bc72d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p60fbfe), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p618b47), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p6601d0), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p676d40), which doesn't satisfy what @material-ui/icons and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p69c8cd), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p69f1f8), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p6a808e), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p73a90f), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p7589a7), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p75f490), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p7d7618), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p836e59), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p83f847), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p84942e), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p84f6c4), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p86cd02), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p86f341), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p8b0555), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p993383), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (p9f53ff), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pa41621), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pa788e5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pa8af57), which doesn't satisfy what @material-ui/core (via @backstage/plugin-app) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (paaf45d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pabf383), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pabfca4), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pac0f2c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (paf4994), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pb8470f), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pbb9ddd), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pbbac9d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pbf2427), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pc46d68), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pc6b24c), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pc961ea), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pd0d195), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pd23cad), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pd47944), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pd512d8), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pd7a009), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pdb6015), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pddda1a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pdfbb74), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pe10c33), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pe410da), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pe48a59), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pee22cd), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pee2569), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pef98a9), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pefe26e), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pf01a8e), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pf139d5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pfa850d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pfe074d), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pfe0a60), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pfe11e2), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ @types/react is listed by your project with version 18.3.23 (pff2610), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p1773c1), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p18695b), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p2c875f), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p2e6679), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p35db19), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p3e76e6), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p4f778c), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p4fe5db), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p505644), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p55bcf8), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p5a9d79), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p732072), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (p89e13d), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (pa1b531), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (pa91b38), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (pb7a16f), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (pd64bb8), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ eslint-plugin-react-hooks is listed by your project with version 5.2.0 (pebf6a2), which doesn't satisfy what @spotify/eslint-config-react requests (^4.0.0).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p07c5ff), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p0beeee), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p121ca0), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p13d177), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p148c20), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p16cdd0), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p170edb), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p17536d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p18741c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p19c776), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p1a5a46), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p1e2fe3), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p24d13b), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p291a6c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p30faa1), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p322eea), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p35cd4b), which doesn't satisfy what @material-ui/core (via @backstage/dev-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p36c6eb), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p376116), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p381e00), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p39f8d5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p3e44ee), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p3e8d3d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p3f3fea), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p40c195), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p4567cf), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p499d27), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p4b9d7b), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p4d7ebf), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p522448), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p524ee4), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p52fe9e), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p58c961), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p58f507), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p5a5c80), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p5b3b98), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p5d7708), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p5f02f3), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p64133c), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p651740), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p6c940a), which doesn't satisfy what @material-ui/core (via @backstage/dev-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p710468), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p711f7b), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7481a6), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7517e5), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p754d68), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p783f2a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7928d6), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7ad3af), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7af411), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7e7893), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p7f3efa), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p802841), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p80e753), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p8776e6), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p8826c9), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p8b9e66), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p8dffdd), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p903c14), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p92bbcc), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p9addf4), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p9bef2a), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p9cab6b), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (p9e11ea), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pa2982b), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pa56a4a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pa7054c), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pa83b08), which doesn't satisfy what @material-ui/core (via @backstage/plugin-app) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pb09c30), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pb6273a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pb6b530), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pb7d69f), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pbea55d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pc44338), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pc4f569), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pc50da0), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pc8f3b7), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pcd661c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pd3fe5a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pd82ac1), which doesn't satisfy what @material-ui/icons and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pdbdfe3), which doesn't satisfy what grpc-docs and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pe59940), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pe59d95), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pe5d84f), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pe83a90), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pf0d6de), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pf17d4f), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pf65361), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pf7349c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pf86cf4), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pf8de0b), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react is listed by your project with version 18.3.1 (pfed098), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p03d4fa), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p09c3e5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p0f255a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p14e340), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p187eb4), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p191573), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p1b3a24), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p1d4241), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p1d559d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p1e7195), which doesn't satisfy what @material-ui/icons and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p285836), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p2cdc8a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p30283d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p3125ce), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p34bf6a), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p3690ec), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p3fc149), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p43067f), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p451a1d), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p4ee177), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p4f8752), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p53a06e), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6109f5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p629678), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p63252c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6358c6), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p65fe9d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6bb20b), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6ca4b7), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6d0455), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6e741c), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p6e9c72), which doesn't satisfy what @material-ui/core (via @backstage/plugin-app) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p7293f6), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p7559c6), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p797161), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p7b89ad), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p816830), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p81b41d), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p833d22), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p84070a), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p84bff9), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p893961), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p8aaa35), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p8ba85b), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p8ddc54), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p9358c4), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p9ad296), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (p9fe835), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa01a19), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa03ba3), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa0ea79), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa16466), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa7f3f5), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa80b51), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa88cb7), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pa8b375), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pabd6e7), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pac84ce), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pad2b40), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pae8d80), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (paf341b), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (paf3c0e), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pb0d0ca), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pb2e712), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pb8ff9c), which doesn't satisfy what @material-ui/core (via @backstage/dev-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pba1d77), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pbbe3d4), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pbe4f27), which doesn't satisfy what @testing-library/react-hooks and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pc3ca97), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pc702bc), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pcc3911), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pccc3f0), which doesn't satisfy what @material-ui/core (via @backstage/dev-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pcd4eb9), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pd2bc12), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pd8fea5), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pd96733), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pdae8d1), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pdc4834), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pe23bc5), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pe3de61), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pe585a0), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pe89454), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pead74b), which doesn't satisfy what @testing-library/react-hooks (via @backstage/core-app-api) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pf18b6a), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pf35aec), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pf37c63), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pf53dc6), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pfa76ac), which doesn't satisfy what @material-ui/core (via @backstage/core-components) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pfc328a), which doesn't satisfy what @material-ui/core (via @backstage/test-utils) and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pfc3429), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0060: │ react-dom is listed by your project with version 18.3.1 (pfd361f), which doesn't satisfy what @material-ui/core and other dependencies request (but they have non-overlapping ranges!).
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [0e329] doesn't provide @types/jsdom (p543f8f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [11fe3] doesn't provide @types/jsdom (p09d249), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [3404c] doesn't provide @types/jsdom (p45e98e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [6b930] doesn't provide @types/jsdom (p8b4547), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [9bf6e] doesn't provide @types/jsdom (p57e0a8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [b00a6] doesn't provide @types/jsdom (p87baae), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [bc0e5] doesn't provide @types/jsdom (pa0de9e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [d7080] doesn't provide @types/jsdom (p5198cf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [d7193] doesn't provide @types/jsdom (p826079), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [e79b9] doesn't provide @types/jsdom (pb08be1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults [f2c68] doesn't provide @types/jsdom (p5923b1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/app-defaults@workspace:packages/app-defaults doesn't provide @types/jsdom (pf15926), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-app-api@workspace:packages/backend-app-api doesn't provide @types/jsdom (pbfe444), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults [05476] doesn't provide @types/jsdom (pbdc5dd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults [05476] doesn't provide @types/node (pb633be), requested by mysql2 and other dependencies.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults [25612] doesn't provide @types/jsdom (p199a55), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults [25612] doesn't provide @types/node (pf05d6b), requested by mysql2 and other dependencies.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults [4f5ba] doesn't provide @types/jsdom (pfb36eb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults [4f5ba] doesn't provide @types/node (p239409), requested by mysql2 and other dependencies.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults doesn't provide @types/jsdom (pbd04d1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-defaults@workspace:packages/backend-defaults doesn't provide @types/node (p61392f), requested by mysql2 and other dependencies.
+➤ YN0002: │ @backstage/backend-dev-utils@workspace:packages/backend-dev-utils doesn't provide @types/jsdom (p0a6d30), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service doesn't provide @microsoft/api-extractor-model (p61e8bc), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service doesn't provide @microsoft/tsdoc (p7ee36f), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service doesn't provide @microsoft/tsdoc-config (pa92255), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service doesn't provide @types/jsdom (p5b96bf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service doesn't provide prettier (p3f77fc), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service doesn't provide typescript (p0fb466), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils doesn't provide @testing-library/dom (p719847), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils doesn't provide @testing-library/react (p38f864), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils doesn't provide @types/jsdom (p388635), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-plugin-api@workspace:packages/backend-plugin-api doesn't provide @types/jsdom (pd1a4bb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils [2690a] doesn't provide @types/jsdom (p0bd48b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils [2690a] doesn't provide @types/node (p93185d), requested by mysql2.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils [74b9f] doesn't provide @types/jsdom (pdd2854), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils [74b9f] doesn't provide @types/node (p12b658), requested by mysql2.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils [cc3bc] doesn't provide @types/jsdom (p67be4d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils [cc3bc] doesn't provide @types/node (peaa204), requested by mysql2.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils doesn't provide @types/jsdom (pacf817), requested by @backstage/cli.
+➤ YN0002: │ @backstage/backend-test-utils@workspace:packages/backend-test-utils doesn't provide @types/node (pdbf155), requested by mysql2.
+➤ YN0002: │ @backstage/catalog-client@workspace:packages/catalog-client doesn't provide @types/jsdom (p04baed), requested by @backstage/cli.
+➤ YN0002: │ @backstage/catalog-model@workspace:packages/catalog-model doesn't provide @types/jsdom (p8e5f35), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-common@workspace:packages/cli-common doesn't provide @types/jsdom (p35cd0f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-defaults@workspace:packages/cli-defaults doesn't provide @types/jsdom (p361ef9), requested by @backstage/cli-module-test-jest and other dependencies.
+➤ YN0002: │ @backstage/cli-defaults@workspace:packages/cli-defaults doesn't provide jest (p33b64a), requested by @backstage/cli-module-test-jest.
+➤ YN0002: │ @backstage/cli-module-actions@workspace:packages/cli-module-actions doesn't provide @types/jsdom (p7d2803), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-auth@workspace:packages/cli-module-auth doesn't provide @types/jsdom (pcd6c1e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide @emotion/react (p4ea917), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide @material-ui/core (p8ffe8f), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide @material-ui/styles (p56513a), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide @mui/material (p37cb00), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide @types/jsdom (pca1bcc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide esbuild (p85a106), requested by rollup-plugin-esbuild.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide eslint (p23cb9b), requested by eslint-rspack-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide react-router (pd83e75), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [0f10e] doesn't provide typescript (p2f341d), requested by @module-federation/enhanced and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide @emotion/react (pf57c49), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide @material-ui/core (pf4ec06), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide @material-ui/styles (p38ac32), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide @mui/material (p4df298), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide @types/jsdom (pd19cc0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide esbuild (p54c26d), requested by rollup-plugin-esbuild.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide eslint (p9dee70), requested by eslint-rspack-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide react-router (pa512ba), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [34b96] doesn't provide typescript (pd4472e), requested by @module-federation/enhanced and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide @emotion/react (p04cf6c), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide @material-ui/core (p9eefd5), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide @material-ui/styles (pb4c1e9), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide @mui/material (p43ca2d), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide @types/jsdom (pfad24e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide esbuild (pf39563), requested by rollup-plugin-esbuild.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide eslint (p46adf3), requested by eslint-rspack-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide react-router (p291eb6), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [47de1] doesn't provide typescript (p85c337), requested by @module-federation/enhanced and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide @emotion/react (p00a382), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide @material-ui/core (p51ba4c), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide @material-ui/styles (pd136aa), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide @mui/material (p330652), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide @types/jsdom (p9879de), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide esbuild (pfdfd5b), requested by rollup-plugin-esbuild.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide eslint (pe0b634), requested by eslint-rspack-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide react-router (p32e239), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build [74b9f] doesn't provide typescript (p56519d), requested by @module-federation/enhanced and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide @emotion/react (p66e70f), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide @material-ui/core (pa8f6bd), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide @material-ui/styles (p23b979), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide @mui/material (p9c9417), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide @types/jsdom (pd3da12), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide esbuild (pcb9899), requested by rollup-plugin-esbuild.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide eslint (p1a63e2), requested by eslint-rspack-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide react-router (p39481b), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/cli-module-build@workspace:packages/cli-module-build doesn't provide typescript (p423afc), requested by @module-federation/enhanced and other dependencies.
+➤ YN0002: │ @backstage/cli-module-catalog@workspace:packages/cli-module-catalog doesn't provide @types/jsdom (pd68fba), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-config@workspace:packages/cli-module-config doesn't provide @types/jsdom (p4e1b07), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-config@workspace:packages/cli-module-config doesn't provide typescript (pb0603c), requested by react-dev-utils.
+➤ YN0002: │ @backstage/cli-module-config@workspace:packages/cli-module-config doesn't provide webpack (pb8c8e9), requested by react-dev-utils.
+➤ YN0002: │ @backstage/cli-module-github@workspace:packages/cli-module-github doesn't provide @types/jsdom (p618cce), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-github@workspace:packages/cli-module-github doesn't provide typescript (p9bf691), requested by react-dev-utils.
+➤ YN0002: │ @backstage/cli-module-github@workspace:packages/cli-module-github doesn't provide webpack (p559b9a), requested by react-dev-utils.
+➤ YN0002: │ @backstage/cli-module-info@workspace:packages/cli-module-info doesn't provide @types/jsdom (pe8308f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-lint@workspace:packages/cli-module-lint doesn't provide @types/jsdom (pba110e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance doesn't provide @types/jsdom (pee9694), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance doesn't provide @typescript-eslint/parser (pb7d6a9), requested by @typescript-eslint/eslint-plugin.
+➤ YN0002: │ @backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance doesn't provide typescript (p5d10ad), requested by @typescript-eslint/eslint-plugin.
+➤ YN0002: │ @backstage/cli-module-migrate@workspace:packages/cli-module-migrate doesn't provide @testing-library/dom (p29d0e4), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-module-migrate@workspace:packages/cli-module-migrate doesn't provide @testing-library/react (p3f33f0), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-module-migrate@workspace:packages/cli-module-migrate doesn't provide @types/jsdom (pc576a6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-new@workspace:packages/cli-module-new doesn't provide @testing-library/dom (p891479), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-module-new@workspace:packages/cli-module-new doesn't provide @testing-library/react (p1fd0cd), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-module-new@workspace:packages/cli-module-new doesn't provide @types/jsdom (pc33f73), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-package-manager-yarn@workspace:packages/cli-module-package-manager-yarn [f0f09] doesn't provide @types/jsdom (pabd9fd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-package-manager-yarn@workspace:packages/cli-module-package-manager-yarn doesn't provide @types/jsdom (pd325f6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder doesn't provide @types/jsdom (p5e817d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-search@workspace:packages/cli-module-search doesn't provide @types/jsdom (pbff73c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-test-jest@workspace:packages/cli-module-test-jest doesn't provide @types/jsdom (p8a15f9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-module-translations@workspace:packages/cli-module-translations doesn't provide @types/jsdom (p6d3046), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [0f10e] doesn't provide @testing-library/dom (pc8f836), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [0f10e] doesn't provide @testing-library/react (p7f6877), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [0f10e] doesn't provide @types/jsdom (p702c37), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [31e7e] doesn't provide @testing-library/dom (pe5051e), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [31e7e] doesn't provide @testing-library/react (p961689), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [31e7e] doesn't provide @types/jsdom (p167997), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [47de1] doesn't provide @testing-library/dom (p5f07d3), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [47de1] doesn't provide @testing-library/react (p42d597), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [47de1] doesn't provide @types/jsdom (p0e579c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [4dbb3] doesn't provide @testing-library/dom (pbdd105), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [4dbb3] doesn't provide @testing-library/react (pdbdcb8), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [4dbb3] doesn't provide @types/jsdom (p59247f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [74b9f] doesn't provide @testing-library/dom (p6fa0a4), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [74b9f] doesn't provide @testing-library/react (pb5550c), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [74b9f] doesn't provide @types/jsdom (p6186c6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [a4c08] doesn't provide @testing-library/dom (pe1e6ec), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [a4c08] doesn't provide @testing-library/react (p1b9c6d), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [a4c08] doesn't provide @types/jsdom (p3dcf43), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [ccea4] doesn't provide @testing-library/dom (p6a9b9b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [ccea4] doesn't provide @testing-library/react (pfeeb88), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node [ccea4] doesn't provide @types/jsdom (p679ab3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node doesn't provide @testing-library/dom (pc3c7f1), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node doesn't provide @testing-library/react (pc4d9a8), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli-node@workspace:packages/cli-node doesn't provide @types/jsdom (pe64e94), requested by @backstage/cli.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [05476] doesn't provide @material-ui/core (p25d0af), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [05476] doesn't provide @testing-library/dom (p359a01), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [05476] doesn't provide @testing-library/react (p16eeae), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [05476] doesn't provide typescript (p7ceee2), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [07278] doesn't provide @material-ui/core (pff64e7), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [07278] doesn't provide @testing-library/dom (pfde65e), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [07278] doesn't provide @testing-library/react (p97790f), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [07278] doesn't provide typescript (p81bce9), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [11fe3] doesn't provide @material-ui/core (p058b74), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [11fe3] doesn't provide @testing-library/dom (p7c0ba1), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [11fe3] doesn't provide @testing-library/react (p31aa2c), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [11fe3] doesn't provide typescript (p8f8521), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [2b7e4] doesn't provide @material-ui/core (pf9c320), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [2b7e4] doesn't provide @testing-library/dom (p1fcd4e), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [2b7e4] doesn't provide @testing-library/react (p31a218), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [2b7e4] doesn't provide typescript (p35ef66), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [31634] doesn't provide @material-ui/core (p5ae36a), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [31634] doesn't provide @testing-library/dom (p1c404f), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [31634] doesn't provide @testing-library/react (p8d4537), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [31634] doesn't provide typescript (pefcbdf), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [36a01] doesn't provide @material-ui/core (pebdff5), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [36a01] doesn't provide @testing-library/dom (p68e2c2), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [36a01] doesn't provide @testing-library/react (pfacf46), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [36a01] doesn't provide typescript (pc43951), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [39bca] doesn't provide @material-ui/core (p59ed68), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [39bca] doesn't provide @testing-library/dom (p1cae1f), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [39bca] doesn't provide @testing-library/react (pa20ef7), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [39bca] doesn't provide typescript (p6daaf0), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [3dc81] doesn't provide @material-ui/core (p21ceb1), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [3dc81] doesn't provide @testing-library/dom (pf5f7d1), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [3dc81] doesn't provide @testing-library/react (p958de6), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [3dc81] doesn't provide typescript (pc6d803), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [45488] doesn't provide @material-ui/core (p9e906d), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [45488] doesn't provide @testing-library/dom (pd5893d), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [45488] doesn't provide @testing-library/react (pd4e97d), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [45488] doesn't provide typescript (p026fc7), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [4a883] doesn't provide @material-ui/core (p9979d5), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [4a883] doesn't provide @testing-library/dom (pff685b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [4a883] doesn't provide @testing-library/react (pb2697b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [4a883] doesn't provide typescript (p3a22f7), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [58a6c] doesn't provide @material-ui/core (pa6c021), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [58a6c] doesn't provide @testing-library/dom (p101b4e), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [58a6c] doesn't provide @testing-library/react (p100ded), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [58a6c] doesn't provide typescript (p406c86), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [63ab5] doesn't provide @material-ui/core (p366073), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [63ab5] doesn't provide @testing-library/dom (pcec69b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [63ab5] doesn't provide @testing-library/react (p921e7e), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [63ab5] doesn't provide typescript (paca121), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [70735] doesn't provide @material-ui/core (p55875f), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [70735] doesn't provide @testing-library/dom (pd2baf6), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [70735] doesn't provide @testing-library/react (p21f098), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [70735] doesn't provide typescript (pa2d09d), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [8ffab] doesn't provide @material-ui/core (p27a6c2), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [8ffab] doesn't provide @testing-library/dom (p9954b1), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [8ffab] doesn't provide @testing-library/react (p937702), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [8ffab] doesn't provide typescript (p77b00a), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [b9c15] doesn't provide @material-ui/core (pdbe922), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [b9c15] doesn't provide @testing-library/dom (p3fe1fd), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [b9c15] doesn't provide @testing-library/react (pd165aa), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [b9c15] doesn't provide typescript (pdc5148), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [f959f] doesn't provide @material-ui/core (p38bfa0), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [f959f] doesn't provide @testing-library/dom (p5ff16d), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [f959f] doesn't provide @testing-library/react (pefeba7), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [f959f] doesn't provide typescript (pde423c), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [fce73] doesn't provide @material-ui/core (pee3671), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [fce73] doesn't provide @testing-library/dom (p456da1), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [fce73] doesn't provide @testing-library/react (pe13632), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli [fce73] doesn't provide typescript (p20628c), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli doesn't provide @material-ui/core (p62408f), requested by @backstage/theme.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli doesn't provide @testing-library/dom (p2c068b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli doesn't provide @testing-library/react (p1a45b9), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli doesn't provide @types/jsdom (pb34524), requested by @backstage/cli-module-test-jest and other dependencies.
+➤ YN0002: │ @backstage/cli@workspace:packages/cli doesn't provide typescript (pf6f5c3), requested by @typescript-eslint/eslint-plugin and other dependencies.
+➤ YN0002: │ @backstage/config-loader@workspace:packages/config-loader doesn't provide @types/jsdom (p069463), requested by @backstage/cli.
+➤ YN0002: │ @backstage/config@workspace:packages/config doesn't provide @testing-library/dom (p899c75), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/config@workspace:packages/config doesn't provide @testing-library/react (p921b1d), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/config@workspace:packages/config doesn't provide @types/jsdom (p675c9f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/connections-node@workspace:packages/connections-node doesn't provide @types/jsdom (pd25b5e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/connections@workspace:packages/connections doesn't provide @types/jsdom (pff8d57), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [05bbf] doesn't provide @types/jsdom (p0a92c1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [39bca] doesn't provide @types/jsdom (p4abd54), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [47de1] doesn't provide @types/jsdom (p5d41fc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [4dbb3] doesn't provide @types/jsdom (p366e94), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [670ac] doesn't provide @types/jsdom (pcc806d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [74b9f] doesn't provide @types/jsdom (p0e8a73), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [a5422] doesn't provide @types/jsdom (pfbcb03), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [b00a6] doesn't provide @types/jsdom (p5babdf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [b9c15] doesn't provide @types/jsdom (p2fed04), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [bcdb0] doesn't provide @types/jsdom (p1039c2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [cfa06] doesn't provide @types/jsdom (p368758), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [e79b9] doesn't provide @types/jsdom (p539175), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api [f8805] doesn't provide @types/jsdom (p7d25b5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-app-api@workspace:packages/core-app-api doesn't provide @types/jsdom (p8c8754), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [4df1e] doesn't provide @types/jsdom (p9b50ed), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [5660f] doesn't provide @types/jsdom (p7e84aa), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [5eb46] doesn't provide @types/jsdom (p4fa90e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [622d1] doesn't provide @types/jsdom (p7b5b79), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [62534] doesn't provide @types/jsdom (p1f753e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [79681] doesn't provide @types/jsdom (p0745c0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [a9027] doesn't provide @types/jsdom (pbd11ed), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [b3f6c] doesn't provide @types/jsdom (p81010d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [d01cf] doesn't provide @types/jsdom (p5575f6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [d1fd7] doesn't provide @types/jsdom (p58bda2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api [f04ba] doesn't provide @types/jsdom (p849a4a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-compat-api@workspace:packages/core-compat-api doesn't provide @types/jsdom (p07fd2a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [16e38] doesn't provide @types/jsdom (p9b41e3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [24516] doesn't provide @types/jsdom (p7ac45c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [2fb78] doesn't provide @types/jsdom (p96410a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [3396f] doesn't provide @types/jsdom (pc03480), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [3d9e3] doesn't provide @types/jsdom (p6a5fd4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [41fd0] doesn't provide @types/jsdom (p553964), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [45934] doesn't provide @types/jsdom (pef737a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [47de1] doesn't provide @types/jsdom (pde5b03), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [4d53f] doesn't provide @types/jsdom (p66457f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [4dbb3] doesn't provide @types/jsdom (p69bda5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [670ac] doesn't provide @types/jsdom (pc5a3ed), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [71810] doesn't provide @types/jsdom (pb60175), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [74b9f] doesn't provide @types/jsdom (p4e7059), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [946db] doesn't provide @types/jsdom (pd1dbc8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [c17a4] doesn't provide @types/jsdom (p69f791), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [d117a] doesn't provide @types/jsdom (pf3f20f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [fa2a2] doesn't provide @types/jsdom (p8ce246), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components [fa2df] doesn't provide @types/jsdom (p540426), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-components@workspace:packages/core-components doesn't provide @types/jsdom (pf686c6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [07278] doesn't provide @types/jsdom (p12e224), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [1bdc2] doesn't provide @types/jsdom (p883fb8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [3d9e3] doesn't provide @types/jsdom (p99e101), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [47de1] doesn't provide @types/jsdom (p9222f2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [4dbb3] doesn't provide @types/jsdom (p11ee42), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [6fd20] doesn't provide @types/jsdom (pe3366a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [74b9f] doesn't provide @types/jsdom (p8f154d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [79ab3] doesn't provide @types/jsdom (p4414fb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [7dcea] doesn't provide @types/jsdom (pa069aa), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [930ca] doesn't provide @types/jsdom (pc8880f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [a5422] doesn't provide @types/jsdom (p98f125), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [b00a6] doesn't provide @types/jsdom (paf2412), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [b9c15] doesn't provide @types/jsdom (p5e86e9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [ba177] doesn't provide @types/jsdom (pf37246), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [c2f2f] doesn't provide @types/jsdom (p245352), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [cfa06] doesn't provide @types/jsdom (pe31fd6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [e79b9] doesn't provide @types/jsdom (p21e088), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api [f4e19] doesn't provide @types/jsdom (pf8ebb8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/core-plugin-api@workspace:packages/core-plugin-api doesn't provide @types/jsdom (p398f3d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/create-app@workspace:packages/create-app doesn't provide @types/jsdom (p821384), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [145ab] doesn't provide @types/jsdom (p1496ad), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [3595a] doesn't provide @types/jsdom (p162773), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [3d9e3] doesn't provide @types/jsdom (pba3f98), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [46888] doesn't provide @types/jsdom (p5bf814), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [47de1] doesn't provide @types/jsdom (p650ecc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [4825b] doesn't provide @types/jsdom (pe7c289), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [4dbb3] doesn't provide @types/jsdom (pffe183), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [4dd4f] doesn't provide @types/jsdom (p0eba29), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [53bd1] doesn't provide @types/jsdom (pa2b53c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [5bc4f] doesn't provide @types/jsdom (pe7233f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [670ac] doesn't provide @types/jsdom (pa0fbc7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [74b9f] doesn't provide @types/jsdom (p0b3953), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [a2a3a] doesn't provide @types/jsdom (pc3a7df), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [b0d6f] doesn't provide @types/jsdom (p8db6ac), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [c87aa] doesn't provide @types/jsdom (p71a787), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [d117a] doesn't provide @types/jsdom (p2819dd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [d774d] doesn't provide @types/jsdom (p728e5d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [dd924] doesn't provide @types/jsdom (p9f61ef), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils [e032b] doesn't provide @types/jsdom (pda317c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/dev-utils@workspace:packages/dev-utils doesn't provide @types/jsdom (p0c14cb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/e2e-test-utils@workspace:packages/e2e-test-utils [36a01] doesn't provide @types/jsdom (pe973d2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/e2e-test-utils@workspace:packages/e2e-test-utils doesn't provide @types/jsdom (p54e7c2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/errors@workspace:packages/errors doesn't provide @types/jsdom (p63111b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/eslint-plugin@workspace:packages/eslint-plugin doesn't provide @types/jsdom (pac20f0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/filter-predicates@workspace:packages/filter-predicates doesn't provide @types/jsdom (p4cdf2f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [1faf1] doesn't provide @types/jsdom (p6eac69), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [200fd] doesn't provide @types/jsdom (pd82141), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [21354] doesn't provide @types/jsdom (p3c310c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [28fd0] doesn't provide @types/jsdom (pc1ab55), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [54cfe] doesn't provide @types/jsdom (p25ea07), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [70667] doesn't provide @types/jsdom (p1220f7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [8ed05] doesn't provide @types/jsdom (pc2f66e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [95058] doesn't provide @types/jsdom (p3d5142), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [9a3df] doesn't provide @types/jsdom (p413f4c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [ab763] doesn't provide @types/jsdom (p7dee5d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [bc257] doesn't provide @types/jsdom (p0a8b6c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [bc4c3] doesn't provide @types/jsdom (p48f573), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [bd588] doesn't provide @types/jsdom (p22b21b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api [f5826] doesn't provide @types/jsdom (p849907), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-app-api@workspace:packages/frontend-app-api doesn't provide @types/jsdom (p95821a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [14f31] doesn't provide @types/jsdom (pab6165), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [18add] doesn't provide @types/jsdom (p988421), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [2399a] doesn't provide @types/jsdom (p19eae8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [37bf6] doesn't provide @types/jsdom (p4bb2aa), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [3d78b] doesn't provide @types/jsdom (p7c6258), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [78900] doesn't provide @types/jsdom (pfb96d2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [930ca] doesn't provide @types/jsdom (pfdaca8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [b15d1] doesn't provide @types/jsdom (p18124d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [c5926] doesn't provide @types/jsdom (pd7bc93), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [d4ea1] doesn't provide @types/jsdom (p076fb6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [e0be1] doesn't provide @types/jsdom (pda8ad5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults [f64f8] doesn't provide @types/jsdom (p8cda03), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-defaults@workspace:packages/frontend-defaults doesn't provide @types/jsdom (p8eea42), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-dev-utils@workspace:packages/frontend-dev-utils [32bdc] doesn't provide @types/jsdom (p180164), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-dev-utils@workspace:packages/frontend-dev-utils [bb04b] doesn't provide @types/jsdom (p460246), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-dev-utils@workspace:packages/frontend-dev-utils doesn't provide @types/jsdom (p99bbe8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide @emotion/react (p714232), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide @material-ui/core (p8d650d), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide @material-ui/styles (p08c7fc), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide @mui/material (p2528e2), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide @types/jsdom (pfacf0b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide react-router (p2c2119), requested by @backstage/module-federation-common.
+➤ YN0002: │ @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader doesn't provide typescript (p8188dd), requested by @module-federation/enhanced and other dependencies.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [05bbf] doesn't provide @types/jsdom (padabb5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [200fd] doesn't provide @types/jsdom (p376e2a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [27b85] doesn't provide @types/jsdom (p9bd00f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [27b89] doesn't provide @types/jsdom (pc7412a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [3396f] doesn't provide @types/jsdom (pc16dd0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [776b5] doesn't provide @types/jsdom (p99920e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [78900] doesn't provide @types/jsdom (p5ccdb8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [a9f40] doesn't provide @types/jsdom (p6c0f3f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [ca710] doesn't provide @types/jsdom (p703ab4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api [f8805] doesn't provide @types/jsdom (pf3c946), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api doesn't provide @types/jsdom (p0c8811), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [1faf1] doesn't provide @types/jsdom (p62410d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [21354] doesn't provide @types/jsdom (p68ce4e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [2a028] doesn't provide @types/jsdom (pa177fe), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [3d78b] doesn't provide @types/jsdom (pac8d0c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [4df1e] doesn't provide @types/jsdom (p34c8c1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [54cfe] doesn't provide @types/jsdom (p9e14a5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [5eb46] doesn't provide @types/jsdom (p76fc7e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [78900] doesn't provide @types/jsdom (pf4cd77), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [8ed05] doesn't provide @types/jsdom (pa3ab3d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [9a3df] doesn't provide @types/jsdom (p49a553), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [ab763] doesn't provide @types/jsdom (pb9f1d4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [bc257] doesn't provide @types/jsdom (p6aad43), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [bc4c3] doesn't provide @types/jsdom (p5d937d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils [f5826] doesn't provide @types/jsdom (p8f7d65), requested by @backstage/cli.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils doesn't provide @testing-library/dom (p83a705), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils doesn't provide @testing-library/react (pb75536), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/frontend-test-utils@workspace:packages/frontend-test-utils doesn't provide @types/jsdom (p7fcfbf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-aws-node@workspace:packages/integration-aws-node doesn't provide @testing-library/dom (pc4fb5f), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-aws-node@workspace:packages/integration-aws-node doesn't provide @testing-library/react (pc1164d), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-aws-node@workspace:packages/integration-aws-node doesn't provide @types/jsdom (pf9a64e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [46888] doesn't provide @testing-library/react (p46fd16), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [46888] doesn't provide @types/jsdom (p2f4dec), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [4825b] doesn't provide @testing-library/react (p28802c), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [4825b] doesn't provide @types/jsdom (p528711), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [4dd4f] doesn't provide @testing-library/react (pb86bd1), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [4dd4f] doesn't provide @types/jsdom (pcc3eac), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [4e744] doesn't provide @testing-library/react (p8d04dc), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [4e744] doesn't provide @types/jsdom (pbc323e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [70735] doesn't provide @testing-library/react (p09857b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [70735] doesn't provide @types/jsdom (p3d8e04), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [7ce9b] doesn't provide @testing-library/react (pa0d557), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [7ce9b] doesn't provide @types/jsdom (p6bb27d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [a2a3a] doesn't provide @testing-library/react (pdd2745), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [a2a3a] doesn't provide @types/jsdom (p8b601b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [c87aa] doesn't provide @testing-library/react (p740148), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [c87aa] doesn't provide @types/jsdom (p686c95), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [d774d] doesn't provide @testing-library/react (pe03b9f), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [d774d] doesn't provide @types/jsdom (pc26431), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [e032b] doesn't provide @testing-library/react (pfb9b41), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react [e032b] doesn't provide @types/jsdom (pa165d1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react doesn't provide @testing-library/react (pd7f17c), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/integration-react@workspace:packages/integration-react doesn't provide @types/jsdom (peafc5d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/integration@workspace:packages/integration doesn't provide @types/jsdom (p3898c1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [0d9ea] doesn't provide @testing-library/dom (p75798a), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [0d9ea] doesn't provide @testing-library/react (pbf1f19), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [0d9ea] doesn't provide @types/jsdom (p689959), requested by @backstage/cli.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [97f68] doesn't provide @testing-library/dom (pa3aaa6), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [97f68] doesn't provide @testing-library/react (p91ef4b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [97f68] doesn't provide @types/jsdom (p619d10), requested by @backstage/cli.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [e206c] doesn't provide @testing-library/dom (p712717), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [e206c] doesn't provide @testing-library/react (pfdca03), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common [e206c] doesn't provide @types/jsdom (p7ddba0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common doesn't provide @testing-library/dom (pa5bb48), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common doesn't provide @testing-library/react (p2e6651), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/module-federation-common@workspace:packages/module-federation-common doesn't provide @types/jsdom (p6371e8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-api-docs-module-protoc-gen-doc@workspace:plugins/api-docs-module-protoc-gen-doc doesn't provide @types/jsdom (p75f271), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-api-docs@workspace:plugins/api-docs [d47fc] doesn't provide @types/jsdom (pda3d52), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-api-docs@workspace:plugins/api-docs doesn't provide @types/jsdom (p89f4e3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-backend@workspace:plugins/app-backend doesn't provide @types/jsdom (p0cf313), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-module-user-settings@workspace:plugins/app-module-user-settings doesn't provide @types/jsdom (pfc688d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-node@workspace:plugins/app-node doesn't provide @types/jsdom (p7fe469), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [200fd] doesn't provide @types/jsdom (p772acd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [74fe6] doesn't provide @types/jsdom (pd56b72), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [763ae] doesn't provide @types/jsdom (p021569), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [8e146] doesn't provide @types/jsdom (p122d01), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [946db] doesn't provide @types/jsdom (pda8a73), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [95058] doesn't provide @types/jsdom (pa84f71), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [b5ee5] doesn't provide @types/jsdom (p437197), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [b9274] doesn't provide @types/jsdom (p943d6d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [c17a4] doesn't provide @types/jsdom (p875050), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react [d60de] doesn't provide @types/jsdom (p0e0710), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-react@workspace:plugins/app-react doesn't provide @types/jsdom (p13ce0e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-visualizer@workspace:plugins/app-visualizer [d47fc] doesn't provide @types/jsdom (p64efdf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app-visualizer@workspace:plugins/app-visualizer doesn't provide @types/jsdom (p3fc5fc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [14f31] doesn't provide @types/jsdom (pc78e99), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [18add] doesn't provide @types/jsdom (p16eb39), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [200fd] doesn't provide @types/jsdom (ped81bb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [2399a] doesn't provide @types/jsdom (p9300db), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [37bf6] doesn't provide @types/jsdom (pae076e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [8f075] doesn't provide @types/jsdom (p1b53aa), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [930ca] doesn't provide @types/jsdom (p490381), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [b15d1] doesn't provide @types/jsdom (p069878), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [bd588] doesn't provide @types/jsdom (pa17964), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [c5926] doesn't provide @types/jsdom (p83ea88), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [d4ea1] doesn't provide @types/jsdom (p46fc56), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app [e0be1] doesn't provide @types/jsdom (p2088bc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-app@workspace:plugins/app doesn't provide @types/jsdom (p1ffc8f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider doesn't provide @types/jsdom (p44458c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-auth0-provider@workspace:plugins/auth-backend-module-auth0-provider doesn't provide @types/jsdom (p38e8ca), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider doesn't provide @types/jsdom (pda90ae), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider doesn't provide @types/jsdom (p9caed4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-bitbucket-provider@workspace:plugins/auth-backend-module-bitbucket-provider doesn't provide @types/jsdom (pb14efc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-bitbucket-server-provider@workspace:plugins/auth-backend-module-bitbucket-server-provider doesn't provide @types/jsdom (pabf977), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider doesn't provide @types/jsdom (pb8fb81), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider doesn't provide @types/jsdom (p4307c0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-github-provider@workspace:plugins/auth-backend-module-github-provider doesn't provide @types/jsdom (p030ec4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-gitlab-provider@workspace:plugins/auth-backend-module-gitlab-provider doesn't provide @types/jsdom (p11e91d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-google-provider@workspace:plugins/auth-backend-module-google-provider doesn't provide @types/jsdom (p056314), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-guest-provider@workspace:plugins/auth-backend-module-guest-provider doesn't provide @types/jsdom (p020ee7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider doesn't provide @types/jsdom (pf92275), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-oauth2-provider@workspace:plugins/auth-backend-module-oauth2-provider doesn't provide @types/jsdom (p37b7f3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider doesn't provide @types/jsdom (p03f0cd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-oidc-provider@workspace:plugins/auth-backend-module-oidc-provider doesn't provide @types/jsdom (p3a7ab0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider doesn't provide @types/jsdom (p742350), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-onelogin-provider@workspace:plugins/auth-backend-module-onelogin-provider doesn't provide @types/jsdom (pa51cde), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-openshift-provider@workspace:plugins/auth-backend-module-openshift-provider doesn't provide @types/jsdom (p17ee14), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider doesn't provide @types/jsdom (p3367c3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend-module-vmware-cloud-provider@workspace:plugins/auth-backend-module-vmware-cloud-provider doesn't provide @types/jsdom (pccd34f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-backend@workspace:plugins/auth-backend doesn't provide @types/jsdom (pef4f93), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-node@workspace:plugins/auth-node doesn't provide @types/jsdom (pc58481), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-react@workspace:plugins/auth-react [59e92] doesn't provide @types/jsdom (pbcdc9a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-react@workspace:plugins/auth-react [d47fc] doesn't provide @types/jsdom (p2c3cb6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth-react@workspace:plugins/auth-react doesn't provide @types/jsdom (p2f7ab3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth@workspace:plugins/auth [d47fc] doesn't provide @material-ui/core (p36e67e), requested by @backstage/theme.
+➤ YN0002: │ @backstage/plugin-auth@workspace:plugins/auth [d47fc] doesn't provide @types/jsdom (p221e5e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-auth@workspace:plugins/auth doesn't provide @material-ui/core (p7269e6), requested by @backstage/theme.
+➤ YN0002: │ @backstage/plugin-auth@workspace:plugins/auth doesn't provide @types/jsdom (p473384), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-bitbucket-cloud-common@workspace:plugins/bitbucket-cloud-common doesn't provide @types/jsdom (pca3785), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-ai-model@workspace:plugins/catalog-backend-module-ai-model doesn't provide @types/jsdom (pa3bee7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws doesn't provide @types/jsdom (pdd28c0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-azure@workspace:plugins/catalog-backend-module-azure doesn't provide @types/jsdom (pbf0ebc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-backstage-openapi@workspace:plugins/catalog-backend-module-backstage-openapi doesn't provide @types/jsdom (pf1d1dd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-bitbucket-cloud@workspace:plugins/catalog-backend-module-bitbucket-cloud doesn't provide @types/jsdom (p168546), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-bitbucket-server@workspace:plugins/catalog-backend-module-bitbucket-server doesn't provide @types/jsdom (pb1fb0b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-gcp@workspace:plugins/catalog-backend-module-gcp doesn't provide @types/jsdom (p3ba7ce), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-gerrit@workspace:plugins/catalog-backend-module-gerrit doesn't provide @types/jsdom (p7002ec), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-gitea@workspace:plugins/catalog-backend-module-gitea doesn't provide @types/jsdom (p11d91b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org doesn't provide @types/jsdom (p371f97), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github doesn't provide @types/jsdom (p9d6d67), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-gitlab-org@workspace:plugins/catalog-backend-module-gitlab-org doesn't provide @types/jsdom (pd44d39), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-gitlab@workspace:plugins/catalog-backend-module-gitlab doesn't provide @types/jsdom (p47efa9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion doesn't provide @types/jsdom (p7f0a61), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-ldap@workspace:plugins/catalog-backend-module-ldap doesn't provide @types/jsdom (p327d48), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-logs@workspace:plugins/catalog-backend-module-logs doesn't provide @types/jsdom (p0ba92d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-msgraph-incremental@workspace:plugins/catalog-backend-module-msgraph-incremental doesn't provide @types/jsdom (pbf4624), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-msgraph@workspace:plugins/catalog-backend-module-msgraph doesn't provide @types/jsdom (pa9ced5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi doesn't provide @types/jsdom (p0aa70a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi doesn't provide @types/json-schema (p700b2e), requested by @apidevtools/json-schema-ref-parser.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-puppetdb@workspace:plugins/catalog-backend-module-puppetdb doesn't provide @types/jsdom (p3e8226), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-scaffolder-entity-model@workspace:plugins/catalog-backend-module-scaffolder-entity-model doesn't provide @types/jsdom (p2efcdd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed doesn't provide @types/jsdom (p38f7e9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend doesn't provide @microsoft/api-extractor-model (p0cc28f), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend doesn't provide @microsoft/tsdoc (p0c6a0b), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend doesn't provide @microsoft/tsdoc-config (p73f7bf), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend doesn't provide @types/jsdom (pb9857b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend doesn't provide prettier (p218cad), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend doesn't provide typescript (p8ab1de), requested by @backstage/repo-tools and other dependencies.
+➤ YN0002: │ @backstage/plugin-catalog-common@workspace:plugins/catalog-common doesn't provide @types/jsdom (p3f043c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-graph@workspace:plugins/catalog-graph [d47fc] doesn't provide @types/jsdom (p9bc1be), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-graph@workspace:plugins/catalog-graph doesn't provide @types/jsdom (pc7b6f5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-import@workspace:plugins/catalog-import [d47fc] doesn't provide @types/jsdom (pd1aefd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-import@workspace:plugins/catalog-import doesn't provide @types/jsdom (p1b4b0c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-node@workspace:plugins/catalog-node [0ac2f] doesn't provide @types/jsdom (p00f13d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-node@workspace:plugins/catalog-node [74b9f] doesn't provide @types/jsdom (pf81d2f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-node@workspace:plugins/catalog-node [de123] doesn't provide @types/jsdom (p9c8d5b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-node@workspace:plugins/catalog-node doesn't provide @types/jsdom (p905328), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [1f2f0] doesn't provide @types/jsdom (pd59dd1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [23f15] doesn't provide @types/jsdom (p73ad55), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [24eaf] doesn't provide @types/jsdom (p300456), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [2b04f] doesn't provide @types/jsdom (pa70ad4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [37932] doesn't provide @types/jsdom (pabbe6d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [4918c] doesn't provide @types/jsdom (p45ef00), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [4e744] doesn't provide @types/jsdom (pf70129), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [54149] doesn't provide @types/jsdom (p03d12b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [641cb] doesn't provide @types/jsdom (p20a04b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [6bcd3] doesn't provide @types/jsdom (pf615a0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [6c9c1] doesn't provide @types/jsdom (pf8f5ac), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [70667] doesn't provide @types/jsdom (pbdc95a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [7ce9b] doesn't provide @types/jsdom (pd25d47), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [95058] doesn't provide @types/jsdom (p581189), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [9fc13] doesn't provide @types/jsdom (pd124f9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [a5b42] doesn't provide @types/jsdom (p8ec27b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [a89b2] doesn't provide @types/jsdom (p7a0428), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [c6204] doesn't provide @types/jsdom (pf677b8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [d4a80] doesn't provide @types/jsdom (p321d76), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [eb3ef] doesn't provide @types/jsdom (p99a225), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react [fbcf6] doesn't provide @types/jsdom (p9e48af), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-react@workspace:plugins/catalog-react doesn't provide @types/jsdom (p0da3ff), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-unprocessed-entities-common@workspace:plugins/catalog-unprocessed-entities-common doesn't provide @types/jsdom (pe8c716), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-unprocessed-entities@workspace:plugins/catalog-unprocessed-entities [d47fc] doesn't provide @types/jsdom (p1b1083), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog-unprocessed-entities@workspace:plugins/catalog-unprocessed-entities doesn't provide @types/jsdom (pc17057), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [24eaf] doesn't provide @types/jsdom (p3eddbb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [4918c] doesn't provide @types/jsdom (p8aa5fd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [70667] doesn't provide @types/jsdom (pa3db52), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [95058] doesn't provide @types/jsdom (p1d97ee), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [a5b42] doesn't provide @types/jsdom (pa606af), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [a89b2] doesn't provide @types/jsdom (pde1b63), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [c6204] doesn't provide @types/jsdom (p48d962), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [d4a80] doesn't provide @types/jsdom (p69c272), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [eb3ef] doesn't provide @types/jsdom (pfca181), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [f8498] doesn't provide @types/jsdom (pc33cc2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog [fbcf6] doesn't provide @types/jsdom (pc35913), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-catalog@workspace:plugins/catalog doesn't provide @types/jsdom (p00d007), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-config-schema@workspace:plugins/config-schema doesn't provide @types/jsdom (p8ef530), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-connections-example-backend-module-gitlab@workspace:plugins/connections-example-backend-module-gitlab doesn't provide @types/jsdom (p218f5f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-connections-example-backend@workspace:plugins/connections-example-backend doesn't provide @types/jsdom (pd6259e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-devtools-backend@workspace:plugins/devtools-backend doesn't provide @types/jsdom (pbcdf69), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-devtools-common@workspace:plugins/devtools-common doesn't provide @types/jsdom (pde7d4f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-devtools-react@workspace:plugins/devtools-react doesn't provide @types/jsdom (p20e469), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-devtools@workspace:plugins/devtools [d47fc] doesn't provide @types/jsdom (p422c5d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-devtools@workspace:plugins/devtools doesn't provide @types/jsdom (pc1c376), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-aws-sqs@workspace:plugins/events-backend-module-aws-sqs doesn't provide @types/jsdom (p2f9db8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-azure@workspace:plugins/events-backend-module-azure doesn't provide @types/jsdom (p72e3b0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-bitbucket-cloud@workspace:plugins/events-backend-module-bitbucket-cloud doesn't provide @types/jsdom (p2603a2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-bitbucket-server@workspace:plugins/events-backend-module-bitbucket-server doesn't provide @types/jsdom (p8a3644), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-gerrit@workspace:plugins/events-backend-module-gerrit doesn't provide @types/jsdom (p99e4c1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-github@workspace:plugins/events-backend-module-github doesn't provide @types/jsdom (p539870), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-gitlab@workspace:plugins/events-backend-module-gitlab doesn't provide @types/jsdom (pf6b5c5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-google-pubsub@workspace:plugins/events-backend-module-google-pubsub doesn't provide @types/jsdom (peda2de), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-module-kafka@workspace:plugins/events-backend-module-kafka doesn't provide @types/jsdom (p0b6801), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils doesn't provide @types/jsdom (pd276af), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend@workspace:plugins/events-backend doesn't provide @microsoft/api-extractor-model (pb09e5e), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-events-backend@workspace:plugins/events-backend doesn't provide @microsoft/tsdoc (p85b12e), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-events-backend@workspace:plugins/events-backend doesn't provide @microsoft/tsdoc-config (p346205), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-events-backend@workspace:plugins/events-backend doesn't provide @types/jsdom (p6881f9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-events-backend@workspace:plugins/events-backend doesn't provide prettier (pf53ddb), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-events-backend@workspace:plugins/events-backend doesn't provide typescript (pce7ba5), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-events-node@workspace:plugins/events-node doesn't provide @types/jsdom (p2cb6e8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-gateway-backend@workspace:plugins/gateway-backend doesn't provide @types/jsdom (p9a5bd5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-home-react@workspace:plugins/home-react [38cb1] doesn't provide @testing-library/dom (p43e66c), requested by @backstage/test-utils and other dependencies.
+➤ YN0002: │ @backstage/plugin-home-react@workspace:plugins/home-react [38cb1] doesn't provide @types/jsdom (p83e52a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-home-react@workspace:plugins/home-react [d47fc] doesn't provide @testing-library/dom (p0c4e91), requested by @backstage/test-utils and other dependencies.
+➤ YN0002: │ @backstage/plugin-home-react@workspace:plugins/home-react [d47fc] doesn't provide @types/jsdom (p3813c9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-home-react@workspace:plugins/home-react doesn't provide @testing-library/dom (pc30a83), requested by @backstage/test-utils and other dependencies.
+➤ YN0002: │ @backstage/plugin-home-react@workspace:plugins/home-react doesn't provide @types/jsdom (peb5b57), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-home@workspace:plugins/home [d47fc] doesn't provide @types/jsdom (pe8432b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-home@workspace:plugins/home doesn't provide @types/jsdom (p746e56), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-backend@workspace:plugins/kubernetes-backend doesn't provide @types/jsdom (p339362), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-cluster@workspace:plugins/kubernetes-cluster [d47fc] doesn't provide @types/jsdom (p9b1205), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-cluster@workspace:plugins/kubernetes-cluster doesn't provide @types/jsdom (pf4f7f4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-common@workspace:plugins/kubernetes-common doesn't provide @types/jsdom (p1089c9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node doesn't provide @types/jsdom (paae713), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react [0f5f2] doesn't provide @types/jsdom (p1836ba), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react [178a8] doesn't provide @types/jsdom (p975b31), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react doesn't provide @types/jsdom (p00e268), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes@workspace:plugins/kubernetes [d47fc] doesn't provide @types/jsdom (p8c6b3c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-kubernetes@workspace:plugins/kubernetes doesn't provide @types/jsdom (p144564), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-mcp-actions-backend@workspace:plugins/mcp-actions-backend doesn't provide @types/jsdom (pf16936), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-mui-to-bui@workspace:plugins/mui-to-bui [0fb6a] doesn't provide @material-ui/core (p46103e), requested by @backstage/theme.
+➤ YN0002: │ @backstage/plugin-mui-to-bui@workspace:plugins/mui-to-bui [0fb6a] doesn't provide @types/jsdom (pfe4bcb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-mui-to-bui@workspace:plugins/mui-to-bui doesn't provide @material-ui/core (pb98604), requested by @backstage/theme.
+➤ YN0002: │ @backstage/plugin-mui-to-bui@workspace:plugins/mui-to-bui doesn't provide @types/jsdom (pc789be), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications-backend-module-email@workspace:plugins/notifications-backend-module-email doesn't provide @types/jsdom (p709500), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications-backend-module-slack@workspace:plugins/notifications-backend-module-slack doesn't provide @testing-library/dom (p3eb2b9), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-notifications-backend-module-slack@workspace:plugins/notifications-backend-module-slack doesn't provide @testing-library/react (pc13daf), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-notifications-backend-module-slack@workspace:plugins/notifications-backend-module-slack doesn't provide @types/jsdom (p307615), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend doesn't provide @microsoft/api-extractor-model (p67af2f), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend doesn't provide @microsoft/tsdoc (pf9fa7a), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend doesn't provide @microsoft/tsdoc-config (p81529c), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend doesn't provide @types/jsdom (pbd0a36), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend doesn't provide prettier (pbc755c), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend doesn't provide typescript (p479ddf), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-notifications-common@workspace:plugins/notifications-common doesn't provide @types/jsdom (p4eecdb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications-node@workspace:plugins/notifications-node doesn't provide @testing-library/dom (p02c64e), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-notifications-node@workspace:plugins/notifications-node doesn't provide @testing-library/react (p473c9b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-notifications-node@workspace:plugins/notifications-node doesn't provide @types/jsdom (p254723), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications@workspace:plugins/notifications [d47fc] doesn't provide @material-ui/core (p7baf7d), requested by @backstage/theme.
+➤ YN0002: │ @backstage/plugin-notifications@workspace:plugins/notifications [d47fc] doesn't provide @types/jsdom (p92c616), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-notifications@workspace:plugins/notifications doesn't provide @material-ui/core (p7cd522), requested by @backstage/theme.
+➤ YN0002: │ @backstage/plugin-notifications@workspace:plugins/notifications doesn't provide @types/jsdom (p10e352), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-org-react@workspace:plugins/org-react doesn't provide @types/jsdom (pd4b95c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-org@workspace:plugins/org [4b9d6] doesn't provide @types/jsdom (p7465e1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-org@workspace:plugins/org [d47fc] doesn't provide @types/jsdom (p776531), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-org@workspace:plugins/org doesn't provide @types/jsdom (p02974d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-backend-module-allow-all-policy@workspace:plugins/permission-backend-module-policy-allow-all doesn't provide @types/jsdom (pd13e07), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-backend@workspace:plugins/permission-backend doesn't provide @types/jsdom (p8be3da), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-common@workspace:plugins/permission-common doesn't provide @types/jsdom (p4b4502), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-node@workspace:plugins/permission-node doesn't provide @types/jsdom (pedaaab), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react [27b85] doesn't provide @types/jsdom (p670af3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react [a5422] doesn't provide @types/jsdom (pbb8265), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react [a9f40] doesn't provide @types/jsdom (p0fd85d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react [b9c15] doesn't provide @types/jsdom (p5828b2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react [cfa06] doesn't provide @types/jsdom (p4b7a41), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react [fa2df] doesn't provide @types/jsdom (pd2bd39), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-permission-react@workspace:plugins/permission-react doesn't provide @types/jsdom (pd7a6ee), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-proxy-backend@workspace:plugins/proxy-backend doesn't provide @types/jsdom (p550619), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-proxy-node@workspace:plugins/proxy-node doesn't provide @types/jsdom (p301a44), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure doesn't provide @types/jsdom (p3813d3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud doesn't provide @types/jsdom (p0cbe93), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server doesn't provide @types/jsdom (p7f0b22), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown doesn't provide @types/jsdom (p258ff7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter doesn't provide @types/jsdom (p77bfda), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-gcp@workspace:plugins/scaffolder-backend-module-gcp doesn't provide @types/jsdom (p9ad3fc), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit doesn't provide @types/jsdom (p899ee6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-gitea@workspace:plugins/scaffolder-backend-module-gitea doesn't provide @types/jsdom (p761777), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github doesn't provide @types/jsdom (p5f9bc6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab doesn't provide @types/jsdom (pc98abb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-notifications@workspace:plugins/scaffolder-backend-module-notifications doesn't provide @types/jsdom (pd32b31), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails doesn't provide @types/jsdom (p0f8217), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-sentry@workspace:plugins/scaffolder-backend-module-sentry doesn't provide @types/jsdom (p7969b5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database doesn't provide @types/jsdom (p362af2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman doesn't provide @types/jsdom (pa99d9f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend doesn't provide @microsoft/api-extractor-model (pa6144c), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend doesn't provide @microsoft/tsdoc (pb4e25b), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend doesn't provide @microsoft/tsdoc-config (pfca69e), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend doesn't provide @types/jsdom (pb1f8ef), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend doesn't provide prettier (p5cd96e), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend doesn't provide typescript (pd88995), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-scaffolder-common@workspace:plugins/scaffolder-common doesn't provide @testing-library/dom (p21cc5a), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-scaffolder-common@workspace:plugins/scaffolder-common doesn't provide @testing-library/react (p3f0be6), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-scaffolder-common@workspace:plugins/scaffolder-common doesn't provide @types/jsdom (p61566f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils [0f10e] doesn't provide @types/jsdom (pa86ee4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils [47de1] doesn't provide @types/jsdom (pfaa02f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils [74b9f] doesn't provide @types/jsdom (p6eddcd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils [7c3ca] doesn't provide @types/jsdom (p6fbd58), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils doesn't provide @types/jsdom (p1277e3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node@workspace:plugins/scaffolder-node [47de1] doesn't provide @types/jsdom (p07d466), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node@workspace:plugins/scaffolder-node [74b9f] doesn't provide @types/jsdom (p9f012a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node@workspace:plugins/scaffolder-node [87952] doesn't provide @types/jsdom (p94e1f2), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-node@workspace:plugins/scaffolder-node doesn't provide @types/jsdom (p07a3a6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-react@workspace:plugins/scaffolder-react [1bdae] doesn't provide @types/jsdom (paf0ae1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-react@workspace:plugins/scaffolder-react [cb124] doesn't provide @types/jsdom (pc673f6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-react@workspace:plugins/scaffolder-react [d47fc] doesn't provide @types/jsdom (pa43665), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-react@workspace:plugins/scaffolder-react [e1917] doesn't provide @types/jsdom (p0be260), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder-react@workspace:plugins/scaffolder-react doesn't provide @types/jsdom (pdca23d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder@workspace:plugins/scaffolder [d47fc] doesn't provide @types/jsdom (pe05862), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder@workspace:plugins/scaffolder [d47fc] doesn't provide react-router (pacef73), requested by @backstage/plugin-scaffolder-react.
+➤ YN0002: │ @backstage/plugin-scaffolder@workspace:plugins/scaffolder doesn't provide @types/jsdom (p759607), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-scaffolder@workspace:plugins/scaffolder doesn't provide react-router (p20adcf), requested by @backstage/plugin-scaffolder-react.
+➤ YN0002: │ @backstage/plugin-search-backend-module-catalog@workspace:plugins/search-backend-module-catalog doesn't provide @types/jsdom (p03b242), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch doesn't provide @types/jsdom (pdff85a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore doesn't provide @types/jsdom (p82dece), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg doesn't provide @types/jsdom (pc259c1), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator doesn't provide @types/jsdom (p2cb34a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs doesn't provide @types/jsdom (pbb2ad7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend-node@workspace:plugins/search-backend-node doesn't provide @types/jsdom (pfa38b8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend@workspace:plugins/search-backend doesn't provide @microsoft/api-extractor-model (p2157c2), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-search-backend@workspace:plugins/search-backend doesn't provide @microsoft/tsdoc (p4d465d), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-search-backend@workspace:plugins/search-backend doesn't provide @microsoft/tsdoc-config (p92b2b4), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-search-backend@workspace:plugins/search-backend doesn't provide @types/jsdom (p7afb16), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-backend@workspace:plugins/search-backend doesn't provide prettier (p23d990), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-search-backend@workspace:plugins/search-backend doesn't provide typescript (p9724f9), requested by @backstage/repo-tools.
+➤ YN0002: │ @backstage/plugin-search-common@workspace:plugins/search-common doesn't provide @types/jsdom (p62dd0c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [048ae] doesn't provide @types/jsdom (pf7f2f3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [26630] doesn't provide @types/jsdom (p3d53f3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [70357] doesn't provide @types/jsdom (pa9f2b0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [874a2] doesn't provide @types/jsdom (pb766bb), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [af215] doesn't provide @types/jsdom (p6f89a3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [dd924] doesn't provide @types/jsdom (pe5ab63), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [e6a8c] doesn't provide @types/jsdom (pe77265), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [f01ad] doesn't provide @types/jsdom (pef5eb7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react [fd713] doesn't provide @types/jsdom (p51d2b5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search-react@workspace:plugins/search-react doesn't provide @types/jsdom (pf88722), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search@workspace:plugins/search [d47fc] doesn't provide @types/jsdom (p148b5e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-search@workspace:plugins/search doesn't provide @types/jsdom (p765512), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals-backend@workspace:plugins/signals-backend doesn't provide @types/jsdom (p9ccc13), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals-node@workspace:plugins/signals-node doesn't provide @types/jsdom (p5a5623), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals-react@workspace:plugins/signals-react [33507] doesn't provide @types/jsdom (p2433af), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals-react@workspace:plugins/signals-react [776b5] doesn't provide @types/jsdom (pa5895d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals-react@workspace:plugins/signals-react [a31a0] doesn't provide @types/jsdom (p71f030), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals-react@workspace:plugins/signals-react doesn't provide @types/jsdom (p0d43b4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals@workspace:plugins/signals [381fd] doesn't provide @types/jsdom (pfc4396), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals@workspace:plugins/signals [d47fc] doesn't provide @types/jsdom (pbdbdba), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-signals@workspace:plugins/signals doesn't provide @types/jsdom (pe83e98), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils [ba171] doesn't provide @types/jsdom (p86218f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils [ca4f4] doesn't provide @types/jsdom (p9a5eda), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils doesn't provide @testing-library/react (pb6011b), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils doesn't provide @types/jsdom (pf30a92), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-backend-module-zensical@workspace:plugins/techdocs-backend-module-zensical doesn't provide @types/jsdom (pcc4452), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend doesn't provide @types/jsdom (p15455b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-common@workspace:plugins/techdocs-common doesn't provide @types/jsdom (p019086), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib [59e92] doesn't provide @types/jsdom (pa067bd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib [d47fc] doesn't provide @types/jsdom (pb59854), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib doesn't provide @types/jsdom (pf75213), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-node@workspace:plugins/techdocs-node doesn't provide @types/jsdom (p1a545f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [048ae] doesn't provide @types/jsdom (p56149c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [26630] doesn't provide @types/jsdom (pd35f5d), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [70357] doesn't provide @types/jsdom (p800362), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [874a2] doesn't provide @types/jsdom (pb97c67), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [af215] doesn't provide @types/jsdom (p88408f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [e6a8c] doesn't provide @types/jsdom (p415f7e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [f01ad] doesn't provide @types/jsdom (pdc178c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react [fd713] doesn't provide @types/jsdom (p227fae), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react doesn't provide @types/jsdom (pcefa2e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs@workspace:plugins/techdocs [d47fc] doesn't provide @types/jsdom (pc71aee), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs@workspace:plugins/techdocs [e1917] doesn't provide @types/jsdom (p1278d9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-techdocs@workspace:plugins/techdocs doesn't provide @types/jsdom (p0d36e4), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend doesn't provide @types/jsdom (p6b9fee), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-user-settings-common@workspace:plugins/user-settings-common doesn't provide @types/jsdom (p017ed3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-user-settings@workspace:plugins/user-settings [776b5] doesn't provide @types/jsdom (p998b18), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-user-settings@workspace:plugins/user-settings [d47fc] doesn't provide @types/jsdom (p3fed3e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/plugin-user-settings@workspace:plugins/user-settings doesn't provide @types/jsdom (p581cc9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/release-manifests@workspace:packages/release-manifests doesn't provide @testing-library/dom (p672286), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/release-manifests@workspace:packages/release-manifests doesn't provide @testing-library/react (p4caa46), requested by @backstage/test-utils.
+➤ YN0002: │ @backstage/release-manifests@workspace:packages/release-manifests doesn't provide @types/jsdom (p022291), requested by @backstage/cli.
+➤ YN0002: │ @backstage/repo-tools@workspace:packages/repo-tools [36a01] doesn't provide @types/jsdom (pcf9ad0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/repo-tools@workspace:packages/repo-tools [3e975] doesn't provide @types/jsdom (pf1a1a7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/repo-tools@workspace:packages/repo-tools doesn't provide @types/jsdom (p060228), requested by @backstage/cli.
+➤ YN0002: │ @backstage/repo-tools@workspace:packages/repo-tools doesn't provide prettier (p286e2f), requested by @prettier/sync.
+➤ YN0002: │ @backstage/repo-tools@workspace:packages/repo-tools doesn't provide typescript (p58b3de), requested by knip and other dependencies.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [05bbf] doesn't provide @types/jsdom (ped989a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [07278] doesn't provide @types/jsdom (pa6c2f3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [0d844] doesn't provide @types/jsdom (p85ccbd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [0e329] doesn't provide @types/jsdom (pc5a7d9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [18a06] doesn't provide @types/jsdom (pe40347), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [1cc88] doesn't provide @types/jsdom (p551a60), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [32f53] doesn't provide @types/jsdom (p2a7de8), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [39bca] doesn't provide @types/jsdom (p402314), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [3d9e3] doesn't provide @types/jsdom (p7b8cdf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [4029b] doesn't provide @types/jsdom (p4ed440), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [482ca] doesn't provide @types/jsdom (p9e2ec7), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [4a00f] doesn't provide @types/jsdom (pc2630b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [4fe2f] doesn't provide @types/jsdom (p73bc0c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [53bd1] doesn't provide @types/jsdom (pb2b3b3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [670ac] doesn't provide @types/jsdom (p594b41), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [6845f] doesn't provide @types/jsdom (pad1607), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [68ad4] doesn't provide @types/jsdom (paea1be), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [6fd20] doesn't provide @types/jsdom (pd603e9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [74b9f] doesn't provide @types/jsdom (p4623b5), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [79ab3] doesn't provide @types/jsdom (p460c41), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [7dcea] doesn't provide @types/jsdom (pebaf40), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [9b744] doesn't provide @types/jsdom (pf84f92), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [b00a6] doesn't provide @types/jsdom (p3ce98a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [bc4c3] doesn't provide @types/jsdom (pf7765a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [d117a] doesn't provide @types/jsdom (p5a737f), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [d72bf] doesn't provide @types/jsdom (p7108c0), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [ddcaf] doesn't provide @types/jsdom (p3b942b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [e79b9] doesn't provide @types/jsdom (p26a8c6), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [ed9e0] doesn't provide @types/jsdom (pf4d91b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [f4e19] doesn't provide @types/jsdom (p486077), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [f5f10] doesn't provide @types/jsdom (p70d3ce), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [f8805] doesn't provide @types/jsdom (pe69403), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils [ff402] doesn't provide @types/jsdom (p083279), requested by @backstage/cli.
+➤ YN0002: │ @backstage/test-utils@workspace:packages/test-utils doesn't provide @types/jsdom (p6abafd), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [47de1] doesn't provide @types/jsdom (pb8164b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [74b9f] doesn't provide @types/jsdom (pb80623), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [9bf6e] doesn't provide @types/jsdom (p53b23e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [9f61c] doesn't provide @types/jsdom (p1a203c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [a5422] doesn't provide @types/jsdom (p6e0c2e), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [b00a6] doesn't provide @types/jsdom (p764669), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [cfa06] doesn't provide @types/jsdom (p797adf), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [d4123] doesn't provide @types/jsdom (p5e16ec), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [d7193] doesn't provide @types/jsdom (pd5094a), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme [e79b9] doesn't provide @types/jsdom (pc6e126), requested by @backstage/cli.
+➤ YN0002: │ @backstage/theme@workspace:packages/theme doesn't provide @types/jsdom (pf0b2f9), requested by @backstage/cli.
+➤ YN0002: │ @backstage/types@workspace:packages/types doesn't provide @types/jsdom (pf90e30), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [11fe3] doesn't provide @types/jsdom (pe6ad55), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [11fe3] doesn't provide eslint (p68433a), requested by eslint-plugin-storybook.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [11fe3] doesn't provide vite (p2b0a51), requested by @storybook/react-vite.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [482ca] doesn't provide @types/jsdom (p070557), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [482ca] doesn't provide eslint (pb3d8e5), requested by eslint-plugin-storybook.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [482ca] doesn't provide vite (pfcde33), requested by @storybook/react-vite.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [68ad4] doesn't provide @types/jsdom (pae964c), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [68ad4] doesn't provide eslint (pc2d2fa), requested by eslint-plugin-storybook.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [68ad4] doesn't provide vite (p05567d), requested by @storybook/react-vite.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [ba177] doesn't provide @types/jsdom (pff5893), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [ba177] doesn't provide eslint (p522d51), requested by eslint-plugin-storybook.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [ba177] doesn't provide vite (p50ba94), requested by @storybook/react-vite.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [c2f2f] doesn't provide @types/jsdom (p842539), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [c2f2f] doesn't provide eslint (p3aecc2), requested by eslint-plugin-storybook.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui [c2f2f] doesn't provide vite (pa72c63), requested by @storybook/react-vite.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui doesn't provide @types/jsdom (p8d192b), requested by @backstage/cli.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui doesn't provide eslint (pf77a28), requested by eslint-plugin-storybook.
+➤ YN0002: │ @backstage/ui@workspace:packages/ui doesn't provide vite (pcf091f), requested by @storybook/react-vite.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [05bbf] doesn't provide @types/jsdom (p675b83), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [24516] doesn't provide @types/jsdom (p59f8e3), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [2fb78] doesn't provide @types/jsdom (pa9db62), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [482ca] doesn't provide @types/jsdom (p4dac45), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [68ad4] doesn't provide @types/jsdom (p970f43), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [bc4c3] doesn't provide @types/jsdom (pe97414), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge [f8805] doesn't provide @types/jsdom (p2f0774), requested by @backstage/cli.
+➤ YN0002: │ @backstage/version-bridge@workspace:packages/version-bridge doesn't provide @types/jsdom (pe5f87c), requested by @backstage/cli.
+➤ YN0002: │ @internal/backend@workspace:packages/backend-internal doesn't provide @types/jsdom (pbe5747), requested by @backstage/cli.
+➤ YN0002: │ @internal/cli@workspace:packages/cli-internal doesn't provide @types/jsdom (p111590), requested by @backstage/cli.
+➤ YN0002: │ @internal/frontend@workspace:packages/frontend-internal doesn't provide @types/jsdom (p1982be), requested by @backstage/cli.
+➤ YN0002: │ @internal/frontend@workspace:packages/frontend-internal doesn't provide react (p2ffba0), requested by @testing-library/react.
+➤ YN0002: │ @internal/frontend@workspace:packages/frontend-internal doesn't provide react-dom (pa883ee), requested by @testing-library/react.
+➤ YN0002: │ @internal/opaque@workspace:packages/opaque-internal doesn't provide @types/jsdom (pb9f42f), requested by @backstage/cli.
+➤ YN0002: │ @internal/opaque@workspace:packages/opaque-internal doesn't provide react (p78761c), requested by @testing-library/react.
+➤ YN0002: │ @internal/opaque@workspace:packages/opaque-internal doesn't provide react-dom (p98e172), requested by @testing-library/react.
+➤ YN0002: │ @internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend doesn't provide @types/jsdom (p91f034), requested by @backstage/cli.
+➤ YN0002: │ @internal/plugin-todo-list-common@workspace:plugins/example-todo-list-common doesn't provide @types/jsdom (p15c7f8), requested by @backstage/cli.
+➤ YN0002: │ @internal/plugin-todo-list@workspace:plugins/example-todo-list doesn't provide @types/jsdom (p4c460d), requested by @backstage/cli.
+➤ YN0002: │ @internal/scaffolder@workspace:packages/scaffolder-internal doesn't provide @types/jsdom (p3f4857), requested by @backstage/cli.
+➤ YN0002: │ @internal/scaffolder@workspace:packages/scaffolder-internal doesn't provide react-router (pfec6c5), requested by @backstage/plugin-scaffolder-react.
+➤ YN0002: │ @internal/techdocs-zensical@workspace:plugins/techdocs-zensical-internal doesn't provide @types/jsdom (p7ff8ae), requested by @backstage/cli.
+➤ YN0002: │ @techdocs/cli@workspace:packages/techdocs-cli doesn't provide @types/jsdom (p40ab43), requested by @backstage/cli.
+➤ YN0002: │ @techdocs/cli@workspace:packages/techdocs-cli doesn't provide typescript (pd63b71), requested by react-dev-utils.
+➤ YN0002: │ @techdocs/cli@workspace:packages/techdocs-cli doesn't provide webpack (p55cee9), requested by react-dev-utils.
+➤ YN0002: │ app-example-plugin@workspace:packages/app-example-plugin doesn't provide @material-ui/core (pf5b6c3), requested by @material-ui/icons.
+➤ YN0002: │ app-example-plugin@workspace:packages/app-example-plugin doesn't provide @types/jsdom (p2db79a), requested by @backstage/cli.
+➤ YN0002: │ e2e-test@workspace:packages/e2e-test doesn't provide @types/jsdom (p585227), requested by @backstage/cli.
+➤ YN0002: │ example-app-legacy@workspace:packages/app-legacy doesn't provide @types/jsdom (pb0b155), requested by @backstage/cli.
+➤ YN0002: │ example-app@workspace:packages/app doesn't provide @types/jsdom (p4b824f), requested by @backstage/cli.
+➤ YN0002: │ example-backend@workspace:packages/backend doesn't provide @types/jsdom (p69cfe1), requested by @backstage/cli.
+➤ YN0002: │ root@workspace:. doesn't provide @microsoft/api-extractor-model (pe6a013), requested by @backstage/repo-tools.
+➤ YN0002: │ root@workspace:. doesn't provide @microsoft/tsdoc (pcf8439), requested by @backstage/repo-tools.
+➤ YN0002: │ root@workspace:. doesn't provide @microsoft/tsdoc-config (p444a6f), requested by @backstage/repo-tools.
+➤ YN0002: │ root@workspace:. doesn't provide @types/react (pac8464), requested by @storybook/addon-docs and other dependencies.
+➤ YN0002: │ root@workspace:. doesn't provide @typescript-eslint/parser (p5cfdc3), requested by @spotify/eslint-plugin.
+➤ YN0002: │ root@workspace:. doesn't provide react (p44cfef), requested by @storybook/addon-links and other dependencies.
+➤ YN0002: │ root@workspace:. doesn't provide react-dom (pec1ab5), requested by @storybook/react-vite.
+➤ YN0002: │ techdocs-cli-embedded-app@workspace:packages/techdocs-cli-embedded-app doesn't provide @types/jsdom (pb29c04), requested by @backstage/cli.
+➤ YN0002: │ yarn-plugin-backstage@workspace:packages/yarn-plugin doesn't provide @types/jsdom (p2fd260), requested by @backstage/cli.
+➤ YN0002: │ yarn-plugin-backstage@workspace:packages/yarn-plugin doesn't provide @yarnpkg/cli (p70b73d), requested by @yarnpkg/plugin-essentials and other dependencies.
+➤ YN0002: │ yarn-plugin-backstage@workspace:packages/yarn-plugin doesn't provide @yarnpkg/plugin-git (p3891ce), requested by @yarnpkg/plugin-essentials.
+➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0000: └ Completed in 0s 454ms
+➤ YN0000: ┌ Link step
+➤ YN0007: │ msw@npm:2.15.0 [cc3bc] must be built because it never has been before or the last one failed
+➤ YN0007: │ esbuild@npm:0.28.2 must be built because it never has been before or the last one failed
+➤ YN0007: │ better-sqlite3@npm:12.11.1 must be built because it never has been before or the last one failed
+➤ YN0007: │ msw@npm:2.15.0 [ef6b4] must be built because it never has been before or the last one failed
+➤ YN0007: │ @swc/core@npm:1.16.2 [47de1] must be built because it never has been before or the last one failed
+➤ YN0007: │ keytar@npm:7.9.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @openapitools/openapi-generator-cli@npm:2.41.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ core-js@npm:3.50.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ protobufjs@npm:7.6.6 must be built because it never has been before or the last one failed
+➤ YN0007: │ core-js-pure@npm:3.45.1 must be built because it never has been before or the last one failed
+➤ YN0007: │ @embedded-postgres/darwin-arm64@npm:18.3.0-beta.17 must be built because it never has been before or the last one failed
+➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @parcel/watcher@npm:2.6.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ unrs-resolver@npm:1.12.2 must be built because it never has been before or the last one failed
+➤ YN0007: │ core-js@npm:2.6.12 must be built because it never has been before or the last one failed
+➤ YN0007: │ tree-sitter@npm:0.22.4 must be built because it never has been before or the last one failed
+➤ YN0007: │ cpu-features@npm:0.0.10 must be built because it never has been before or the last one failed
+➤ YN0007: │ tree-sitter@npm:0.21.1 must be built because it never has been before or the last one failed
+➤ YN0007: │ ssh2@npm:1.15.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @tree-sitter-grammars/tree-sitter-yaml@npm:0.7.1 [c2cf0] must be built because it never has been before or the last one failed
+➤ YN0007: │ tree-sitter-json@npm:0.24.8 [b5c6f] must be built because it never has been before or the last one failed
+➤ YN0007: │ root@workspace:. must be built because it never has been before or the last one failed
+➤ YN0000: └ Completed in 34s 518ms
+➤ YN0000: · Done with warnings in 36s 491ms

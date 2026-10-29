@@ -26,6 +26,7 @@ import {
   type EntityHeaderLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
 import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';
+import { EntityRenamedNotice } from '../../components/CatalogEntityPage/EntityRenamedNotice';
 import { EntityLayout } from './EntityLayout';
 import { EntityLayoutBui } from './EntityLayout/EntityLayoutBui';
 import type { EntityLayoutRoute } from './EntityLayout/entityLayoutRoutes';
@@ -96,6 +97,9 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     );
 
   return (
-    <AsyncEntityProvider {...entityProviderProps}>{layout}</AsyncEntityProvider>
+    <AsyncEntityProvider {...entityProviderProps}>
+      <EntityRenamedNotice />
+      {layout}
+    </AsyncEntityProvider>
   );
 }

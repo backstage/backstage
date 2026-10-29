@@ -1,0 +1,112 @@
+{
+  "status": "applied",
+  "counts": {
+    "applied": 2
+  },
+  "cost_usd": 0.224716,
+  "duration_ms": 44331,
+  "max_parallel": 4,
+  "items": [
+    {
+      "id": "tp_debug_r3_001",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+      "cost_usd": 0.176393,
+      "attempts": 2,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+          "bytes": 58458,
+          "lines": 1875,
+          "sha16": "9d461635e95da645",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 12879
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r3_001",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.085903,
+            "failure": "the edits could not be applied: edit 1: its search text appears 2 times in the current text (it must appear exactly once); the file was left unchanged"
+          },
+          {
+            "id": "tp_debug_r3_001",
+            "retry_count": 1,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.09049,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 4,
+          "input_cached": 16010,
+          "output": 2880
+        },
+        "cost_usd": 0.176393,
+        "terminal_reason": "success",
+        "events_written": 2
+      }
+    },
+    {
+      "id": "tp_debug_r3_002",
+      "status": "applied",
+      "artifact_path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+      "cost_usd": 0.048323,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+          "bytes": 31161,
+          "lines": 937,
+          "sha16": "0aa0d4071c030a52",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2613
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r3_002",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.048323,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 127
+        },
+        "cost_usd": 0.048323,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": []
+}

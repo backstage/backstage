@@ -1,0 +1,53 @@
+{
+  "module": "entity-former-names (catalog-model, catalog-backend, catalog-client, catalog-node, catalog-react, catalog, techdocs)",
+  "mode": "brownfield",
+  "intent": "feature-new",
+  "verdict": "needs_changes",
+  "tool_calls": 8,
+  "findings": [
+    {
+      "severity": "major",
+      "file": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+      "line": 55,
+      "issue": "The redirect guard `handledFormerRef` (a useRef holding the former ref string) is never reset. After one redirect from old-name to new-name, the page component stays mounted because only the route params change. If the user then follows any in-app link to the old URL again, the lookup returns renamedTo, the guard sees the same formerKey and skips navigate. The hook keeps returning `loading: loading || Boolean(renamedTo)`, which stays true, so the page shows a spinner forever. The guard is also unnecessary: the existing `stringifyEntityRef(renamedTo) === current ref` check already handles the stale value that react-use keeps while the next lookup loads. This is a confident finding based on how the hook works; no test covers this path.",
+      "fix": "Guard on the identity of the async result instead of the ref string, for example `if (handled.current === value) return; handled.current = value;` with `useRef<typeof value>()`. Alternatively, drop the useRef and rely on the self-ref check. Add a test that navigates to the old URL a second time in the same render and expects a second redirect."
+    },
+    {
+      "severity": "major",
+      "file": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+      "line": 49,
+      "issue": "`catalogApi.getEntityByFormerRef(formerRef).catch(() => undefined)` assumes the method returns a promise. In this same run, `catalogApiMock.mock()` (plugins/catalog-react/src/testUtils/catalogApiMock.ts) now provides `getEntityByFormerRef: jest.fn()`, which returns `undefined`. In any test that uses `catalogApiMock.mock()` with `getEntityByRef` resolving undefined (the usual 'entity not found' setup in adopter and plugin tests), `.catch` throws a TypeError. useAsyncRetry then reports an error and the page shows an error instead of 'Entity not found'. This changes behaviour for existing consumers of a published test util.",
+      "fix": "Use `try { renamedTo = await catalogApi.getEntityByFormerRef(formerRef); } catch { renamedTo = undefined; }` so a non-promise return value is tolerated, as useExternalRedirect.ts already does with `await` inside try."
+    },
+    {
+      "severity": "minor",
+      "file": "plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx",
+      "line": 26,
+      "issue": "`dismissed` is plain local state that is never reset. CatalogEntityPage stays mounted across entity-to-entity navigation, so after the user dismisses one notice, a later rename redirect within the same page instance never shows its notice. The TechDocs counterpart avoids this with `key={formerEntityRef}`.",
+      "fix": "Store the dismissed ref (`useState<string>()`) and hide the notice only when `dismissedRef === formerEntityRef`, or reset `dismissed` when formerEntityRef changes."
+    },
+    {
+      "severity": "minor",
+      "file": ".changeset/entity-former-names-techdocs.md",
+      "line": 5,
+      "issue": "'Names that no entity has ever used still show the not-found page' is inaccurate. The not-found page also appears for a former name declared by several entities, for one declared by an entity the user cannot read, and for any old name that is not listed in `backstage.io/former-names`. The plan's wording was 'unknown names keep showing the not-found page'.",
+      "fix": "Reword to: 'Names that cannot be resolved to a single current entity still show the not-found page.'"
+    },
+    {
+      "severity": "minor",
+      "file": "plugins/catalog-react/report.api.md",
+      "issue": "The regenerated API reports contain unrelated churn. Translation-key entries are reordered in plugins/catalog-react/report.api.md and report-alpha.api.md, which have no API change in this run because the mock change does not affect them. The same kind of reordering appears in plugins/catalog/report*.api.md. plugins/techdocs/report-alpha.api.md also gains a 'reader.settings' key that predates this run. This makes the PR diff noisy and may reflect unstable report ordering.",
+      "fix": "Check whether `yarn build:api-reports --ci` for these packages accepts the original ordering. If it does, revert the reorder-only hunks and keep only the added keys and symbols (catalog: renamedNotice and renamedNoticeDismiss; techdocs: renamedFrom and dismiss). If CI requires the new ordering, keep it as is."
+    }
+  ],
+  "passing": [
+    "Correctness vs change_plan: model helper, search indexing, resolver (real-name wins, limit-2 claimant check, entitiesBatch read with filter), router, OpenAPI path, client, in-memory client, node service and mocks all match the plan; the useEntityFromUrl redirect logic is the exception (see findings)",
+    "Authz: route uses httpAuth.credentials; AuthorizedEntitiesCatalog mirrors entitiesBatch DENY/CONDITIONAL/ALLOW; every miss gives an identical 404, so nothing leaks",
+    "Type safety: no any; location.state casts are followed by runtime narrowing",
+    "Error handling: router fails the auditor event and rethrows; backend resolver adds no logging",
+    "Tests: happy path, permission-denied/conditional, conflict, real-name, filter and restitch cases covered on the backend; UI redirect and notice covered in both frontend systems",
+    "Headers, TSDoc and release tags, translations, docs anchors and changeset bump levels are correct; the .gitignore edit is append-only as planned",
+    "Env fixture: not applicable, since this is a Backstage monorepo with no module-level validating config schema introduced"
+  ],
+  "refinement_packets": []
+}

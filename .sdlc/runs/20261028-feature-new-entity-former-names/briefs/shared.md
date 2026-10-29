@@ -1,0 +1,94 @@
+## Conventions
+
+- TypeScript monorepo (Yarn workspaces). Match the conventions of the file and package you are in; consistency inside a package beats consistency across the repo.
+- Every new .ts/.tsx file starts with the Apache 2.0 header exactly as in the stack profile, with 'Copyright 2026 The Backstage Authors'. Never touch the header year of an existing file.
+- Formatting is the repo Prettier config (single quotes, trailing commas, 2-space indent, 80 columns); the prettier fix runs before the check, so do not hand-align.
+- Imports: relative paths inside a package, '@backstage/\*' package names across packages, 'node:' prefix for Node built-ins; keep the import grouping the file already uses; add no new package dependency to any package.json.
+- Never hand-edit anything under src/schema/openapi/generated/ in catalog-backend or catalog-client: those files come only from the tooling units that run the repo's OpenAPI generator.
+- Every new exported symbol gets a TSDoc block and a release tag: '@public' in catalog-model, catalog-client and catalog-node public API; existing translation refs keep their current tag. Internal helpers get no release tag.
+- UI strings come from the package's translation ref via useTranslationRef (catalogTranslationRef in plugins/catalog, techdocsTranslationRef in plugins/techdocs); no hard-coded English in components.
+- Tests are Jest, co-located '_.test.ts(x)' files, nested describe + it, fewer thorough cases with several expect calls each. React tests use React Testing Library with screen and findBy_ queries, no test IDs, and waitFor only where the file already relies on it for hooks.
+- Do not change any existing public signature; new interface members are optional where the decisions say so.
+- Docs follow docs/contribute/doc-style-guide.md: sentence-case headings, short paragraphs, second person, YAML examples in fenced blocks, no marketing words.
+- Changesets are hand-written '.changeset/<kebab-name>.md' files with a YAML front matter of package names to bump types, then a plain-language adopter-facing message; never edit an existing changeset.
+
+## Decisions
+
+- Annotation constant and parsing helper names (catalog-model): Constant ANNOTATION_FORMER_NAMES = 'backstage.io/former-names' in src/entity/constants.ts; helper getEntityFormerRefs(entity: Entity): string[] in new file src/entity/formerNames.ts, exported from src/entity/index.ts, both @public. (not parseFormerNamesAnnotation(value: string); not putting the helper in src/location/helpers.ts) — The helper needs the entity for kind/namespace defaults and self-ref removal, and constants.ts is where generic metadata annotations live.
+- Former-ref entry validity: An entry is parsed with parseEntityRef(entry, { defaultKind: entity.kind, defaultNamespace: entity.metadata.namespace || DEFAULT_NAMESPACE }); it is skipped when parsing throws or when any of kind, namespace or name contains ':', '/' or whitespace; results are stringifyEntityRef output (lower-cased), deduplicated in first-seen order, and the entity's own ref is dropped. (not throwing on a malformed entry; not keeping the original casing) — FR-2 requires never throwing and normalized refs; parseEntityRef alone accepts 'a:b/c/d' as name 'c/d', which is not a valid ref.
+- Search row key for former refs: One row per former ref under key 'former_entity_ref' (constant FORMER_ENTITY_REF_SEARCH_KEY exported from plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts), pushed only when the ref length is at most MAX_VALUE_LENGTH (200). (not reusing key 'metadata.annotations.backstage.io/former-names' with one row per entry; not a new table or column) — Entity.schema.json forbids extra top-level properties, so a dot-free key outside apiVersion/kind/metadata/spec/relations/status can never collide with a real field path, and no migration is allowed.
+- REST endpoint: GET /entities/by-former-name/{kind}/{namespace}/{name}, operationId GetEntityByFormerName (generated client method getEntityByFormerName), 200 returns the Entity schema, every miss returns 404 through writeSingleEntityResponse with the message `No current entity found for former entity ref '<ref>'` where <ref> is the stringified requested ref. (not GET /entities/by-name/{kind}/{namespace}/{name}/former; not a query flag on the by-name endpoint) — A separate path keeps the by-name route untouched (FR-9) and avoids clashing with the by-name sub-resource routes.
+- Backend resolver shape and permission split: EntitiesCatalog.resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse> with request { formerEntityRef, filter?, fields?, credentials }. DefaultEntitiesCatalog runs the real-name check and the claimant count without any filter, then reads the single claimant through this.entitiesBatch with request.filter. AuthorizedEntitiesCatalog applies catalog.entity.read exactly like its entitiesBatch (DENY gives one null item without delegating, CONDITIONAL delegates with the permission predicate as filter, ALLOW delegates unchanged). (not returning only the target ref and reading it in the router; not a permission check per claimant) — FR-6/FR-7 must ignore permissions while FR-8 must apply them, and reusing the entitiesBatch permission pattern keeps one tested code path for reads.
+- Resolver query budget: Three indexed queries plus the entitiesBatch read: final_entities by entity_ref (real-name check), search by key and value selecting distinct entity_id with limit 2 (claimants), final_entities by entity_id (target ref). No query against final_entity JSON and no full scans. — NFR-4 asks for a small fixed number of indexed queries; limit 2 is enough to detect a conflict.
+- Client API method: Optional member getEntityByFormerRef?(entityRef: string | CompoundEntityRef, options?: CatalogRequestOptions): Promise<Entity | undefined> on CatalogApi; CatalogClient, InMemoryCatalogClient and both mocks implement it; callers guard with catalogApi.getEntityByFormerRef before calling. (not a required method; not a separate FormerRefsApi) — FR-11/NFR-3: existing CatalogApi implementers must compile unchanged.
+- catalog-node CatalogService: CatalogService mirrors CatalogApi, so it gains optional getEntityByFormerRef?(entityRef, options: CatalogServiceRequestOptions); DefaultCatalogService implements it and returns undefined when the wrapped CatalogApi lacks the method; CatalogServiceMock and catalogServiceMock.mock list it. — FR-13 applies wherever the interface mirrors CatalogApi, and it does.
+- Frontend redirect hand-off: On a hit, the page calls navigate(newUrl, { replace: true, state: { formerEntityRef } }) where formerEntityRef is stringifyEntityRef of the URL's kind/namespace/name and newUrl is the current entity's base route plus the sub-path after the old base route, plus location.search and location.hash. The notice components read formerEntityRef from useLocation().state; dismissing only hides the notice (local state). (not a query parameter like ?renamedFrom=; not sessionStorage) — History state survives the replace, never shows on a freshly opened URL, and keeps the visible URL clean.
+- Catalog rename notice UI: New component EntityRenamedNotice (plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx) rendering '@material-ui/lab/Alert' severity 'info' with onClose and closeText from translations, used by both the old CatalogEntityPage and the alpha CatalogEntityPage directly inside AsyncEntityProvider before the layout. (not editing the three EntityLayout variants; not @backstage/ui Alert without a close action) — Both systems already funnel through useEntityFromUrl and the two CatalogEntityPage components, so two small edits cover FR-18.
+- TechDocs rename notice UI: TechDocsRedirectNotification gains an optional actionLabel prop (defaults to the existing 'Redirect now' text); new internal component TechDocsRenamedNotice renders it with the renamed message, actionLabel 'Dismiss', a no-op handleButtonClick and autoHideDuration 15000; TechDocsReaderPage renders it in both return branches. The alpha reader page reuses TechDocsReaderPage through TechDocsReaderRouter, so no alpha edit is needed. — FR-20 asks to reuse the existing redirect-notice component.
+- Translation keys: catalogTranslationRef entityPage.renamedNotice = 'This entity was renamed from {{formerEntityRef}}' and entityPage.renamedNoticeDismiss = 'Dismiss'; techdocsTranslationRef redirectNotification.renamedFrom = 'This entity was renamed from {{formerEntityRef}}' and redirectNotification.dismiss = 'Dismiss'. — FR-16/FR-20 need translated text; the keys sit next to the existing not-found and redirect strings.
+- Generated OpenAPI code and API reports: Two tooling units run the repo's generator from plugins/catalog-backend (server with --server, client with --client-package packages/catalog-client); one tooling unit runs 'yarn build:api-reports' limited to the seven touched package paths after all code is typed. (not hand-editing generated files; not running build:api-reports for the whole repo) — NFR-6 and FR-26; split generator runs let each written file be recorded for revert.
+- Changesets: Five new files, all 'minor': entity-former-names-model (catalog-model), entity-former-names-backend (plugin-catalog-backend), entity-former-names-client (catalog-client, plugin-catalog-node, plugin-catalog-react), entity-former-names-catalog (plugin-catalog), entity-former-names-techdocs (plugin-techdocs). — FR-25: every package is at or above 1.0.0 and gets a new non-breaking feature; packages with different adopter messages get separate files.
+- Catalog query performance battery: No change to src/tests/performance/query-battery: no existing query changes shape, and the resolver only runs after a by-name miss. — plugins/catalog-backend/CLAUDE.md asks for battery updates only when existing queries, indexes or schema change.
+
+## Files of this change
+
+- `packages/catalog-model/src/entity/constants.ts` (U01, edit) — import: `import { ANNOTATION_FORMER_NAMES } from '@backstage/catalog-model';`
+  - `const ANNOTATION_FORMER_NAMES(): 'backstage.io/former-names'`
+- `packages/catalog-model/src/entity/formerNames.ts` (U02, create) — import: `import { getEntityFormerRefs } from '@backstage/catalog-model';`
+  - `function getEntityFormerRefs(entity: Entity): string[]`
+- `packages/catalog-model/src/entity/index.ts` (U03, edit)
+- `packages/catalog-model/src/entity/formerNames.test.ts` (U04, create)
+- `plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts` (U05, edit) — import: `import { FORMER_ENTITY_REF_SEARCH_KEY } from '../database/operations/stitcher/buildEntitySearch';`
+  - `const FORMER_ENTITY_REF_SEARCH_KEY(): 'former_entity_ref'`
+- `plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.test.ts` (U06, edit)
+- `plugins/catalog-backend/src/catalog/types.ts` (U07, edit) — import: `import { ResolveFormerEntityRefRequest } from '../catalog/types';`
+  - `interface ResolveFormerEntityRefRequest(): { formerEntityRef: string; filter?: FilterPredicate; fields?: (entity: Entity) => Entity; credentials: BackstageCredentials }`
+  - `method EntitiesCatalog.resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>`
+- `plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts` (U08, edit)
+  - `method DefaultEntitiesCatalog.resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>`
+- `plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts` (U09, edit)
+  - `method AuthorizedEntitiesCatalog.resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>`
+- `plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts` (U10, edit)
+- `plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.test.ts` (U11, edit)
+- `plugins/catalog-backend/src/schema/openapi.yaml` (U12, edit)
+- `plugins/catalog-backend/src/service/createRouter.ts` (U15, edit)
+- `plugins/catalog-backend/src/service/createRouter.test.ts` (U16, edit)
+- `packages/catalog-client/src/types/api.ts` (U17, edit)
+  - `optional method CatalogApi.getEntityByFormerRef(entityRef: string | CompoundEntityRef, options: CatalogRequestOptions | undefined): Promise<Entity | undefined>`
+- `packages/catalog-client/src/CatalogClient.ts` (U18, edit)
+  - `method CatalogClient.getEntityByFormerRef(entityRef: string | CompoundEntityRef, options: CatalogRequestOptions | undefined): Promise<Entity | undefined>`
+- `packages/catalog-client/src/CatalogClient.test.ts` (U19, edit)
+- `packages/catalog-client/src/testUtils/InMemoryCatalogClient.ts` (U20, edit)
+  - `method InMemoryCatalogClient.getEntityByFormerRef(entityRef: string | CompoundEntityRef): Promise<Entity | undefined>`
+- `packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts` (U21, edit)
+- `plugins/catalog-node/src/catalogService.ts` (U22, edit)
+  - `optional method CatalogService.getEntityByFormerRef(entityRef: string | CompoundEntityRef, options: CatalogServiceRequestOptions): Promise<Entity | undefined>`
+- `plugins/catalog-node/src/testUtils/types.ts` (U23, edit)
+- `plugins/catalog-node/src/testUtils/catalogServiceMock.ts` (U24, edit)
+- `plugins/catalog-react/src/testUtils/catalogApiMock.ts` (U25, edit)
+- `plugins/catalog/src/alpha/translation.ts` (U26, edit)
+- `plugins/catalog/src/components/CatalogEntityPage/EntityRenamedNotice.tsx` (U27, create) — import: `import { EntityRenamedNotice } from './EntityRenamedNotice';`
+  - `function component EntityRenamedNotice(): JSX.Element | null`
+- `plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts` (U28, edit)
+  - `hook useEntityFromUrl(): EntityLoadingStatus`
+- `plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx` (U29, edit)
+- `plugins/catalog/src/alpha/components/CatalogEntityPage.tsx` (U30, edit)
+- `plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx` (U31, create)
+- `plugins/catalog/src/alpha/pages.test.tsx` (U32, edit)
+- `plugins/techdocs/src/translation.ts` (U33, edit)
+- `plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx` (U34, edit)
+- `plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.tsx` (U35, create) — import: `import { TechDocsRenamedNotice } from './TechDocsRenamedNotice';`
+  - `function component TechDocsRenamedNotice(): JSX.Element | null`
+- `plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.ts` (U36, edit)
+- `plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsReaderPage.tsx` (U37, edit)
+- `plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx` (U38, edit)
+- `plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.test.tsx` (U39, create)
+- `docs/features/software-catalog/well-known-annotations.md` (U40, edit)
+- `docs/features/software-catalog/api.md` (U41, edit)
+- `docs/features/techdocs/how-to-guides.md` (U42, edit)
+- `.changeset/entity-former-names-model.md` (U43, create)
+- `.changeset/entity-former-names-backend.md` (U44, create)
+- `.changeset/entity-former-names-client.md` (U45, create)
+- `.changeset/entity-former-names-catalog.md` (U46, create)
+- `.changeset/entity-former-names-techdocs.md` (U47, create)
+- `.gitignore` (U48, edit)

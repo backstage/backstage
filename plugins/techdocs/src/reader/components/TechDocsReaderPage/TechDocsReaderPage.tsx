@@ -41,6 +41,7 @@ import {
   useTheme,
 } from '@material-ui/core/styles';
 import { useExternalRedirect } from './useExternalRedirect';
+import { TechDocsRenamedNotice } from './TechDocsRenamedNotice';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -228,6 +229,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   if (!children) {
     return (
       <ThemeProvider theme={readerPageTheme}>
+        <TechDocsRenamedNotice />
         <CookieAuthRefreshProvider pluginId="techdocs">
           <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
             {(page as JSX.Element) || <TechDocsReaderLayout />}
@@ -240,6 +242,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   // As explained above, a render function is configuration 3 and React element is 2
   return (
     <ThemeProvider theme={readerPageTheme}>
+      <TechDocsRenamedNotice />
       <CookieAuthRefreshProvider pluginId="techdocs">
         <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
           {({ metadata, entityMetadata, onReady }) => (

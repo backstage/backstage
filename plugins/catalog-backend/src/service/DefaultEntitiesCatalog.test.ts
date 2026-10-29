@@ -2208,6 +2208,132 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    describe('resolveFormerEntityRef', () => {
+      function componentFrom(name: string, formerNames?: string): Entity {
+        return {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name,
+            namespace: 'default',
+            ...(formerNames && {
+              annotations: { 'backstage.io/former-names': formerNames },
+            }),
+          },
+          spec: {},
+        };
+      }
+
+      function createCatalog() {
+        return new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+      }
+
+      it('resolves a single claimant', async () => {
+        await createDatabase();
+
+        const entity = componentFrom('new-name', 'old-name');
+        await addEntity(entity, []);
+        const catalog = createCatalog();
+
+        const hit = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(hit.items)).toEqual([entity]);
+
+        const miss = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/unknown',
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(miss.items)).toEqual([null]);
+      });
+
+      it('lets a real name win over a claim, even when the real entity is filtered out', async () => {
+        await createDatabase();
+
+        await addEntity(componentFrom('old-name'), []);
+        await addEntity(componentFrom('new-name', 'old-name'), []);
+        const catalog = createCatalog();
+
+        const unfiltered = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(unfiltered.items)).toEqual([null]);
+
+        const filtered = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          filter: { 'metadata.name': 'new-name' },
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(filtered.items)).toEqual([null]);
+      });
+
+      it('refuses ambiguous claims', async () => {
+        await createDatabase();
+
+        await addEntity(componentFrom('a', 'old-name'), []);
+        await addEntity(componentFrom('b', 'old-name'), []);
+        const catalog = createCatalog();
+
+        const result = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(result.items)).toEqual([null]);
+      });
+
+      it('returns null when the claimant does not match the filter', async () => {
+        await createDatabase();
+
+        const entity = componentFrom('new-name', 'old-name');
+        await addEntity(entity, []);
+        const catalog = createCatalog();
+
+        const filtered = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          filter: { 'metadata.name': 'something-else' },
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(filtered.items)).toEqual([null]);
+
+        const matching = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          filter: { 'metadata.name': 'new-name' },
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(matching.items)).toEqual([entity]);
+      });
+
+      it('stops resolving after the annotation is removed and the entity is restitched', async () => {
+        await createDatabase();
+
+        const entity = componentFrom('new-name', 'old-name');
+        const id = await addEntity(entity, []);
+        const catalog = createCatalog();
+
+        const before = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(before.items)).toEqual([entity]);
+
+        await knex<DbSearchRow>('search').where({ entity_id: id }).delete();
+        await knex<DbSearchRow>('search').insert(
+          await buildEntitySearch(id, componentFrom('new-name')),
+        );
+
+        const after = await catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(after.items)).toEqual([null]);
+      });
+    });
+
     describe('removeEntityByUid', () => {
       it('also clears parent hashes', async () => {
         await createDatabase();

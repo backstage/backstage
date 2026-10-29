@@ -144,6 +144,55 @@ URL should point to the source file for the metadata. In the example above,
 `my-org` generates its catalog data from Jsonnet files in a monorepo, so the
 view and edit links need changing.
 
+### backstage.io/former-names
+
+```yaml
+# Example:
+metadata:
+  name: new-name
+  annotations:
+    backstage.io/former-names: old-name, legacy-team/older-name, component:other/renamed-service
+```
+
+The value of this annotation is a comma-separated list of entity refs that the
+entity used to have. A short ref takes the kind of the entity itself, and also
+its namespace when none is given. Malformed entries are ignored.
+
+When someone opens the catalog entity page or the TechDocs URL of an old ref,
+Backstage redirects to the current page of the entity and shows a notice that
+the entity was renamed.
+
+The following rules apply:
+
+- An entity that currently has the old ref is always served instead of
+  redirecting.
+- When several entities declare the same former ref, no redirect happens.
+- The redirect only happens for users who are allowed to read the current
+  entity. Other users see the usual not-found page.
+- API calls by entity name are not redirected.
+
+Security considerations:
+
+- **Existence of hidden entities.** To stop a claim from taking over a name you
+  cannot see, the lookup checks whether an entity currently has the requested
+  name, and how many entities claim it. These checks cover all entities,
+  including ones the user cannot read. As a result, someone who can register or
+  edit an entity's annotations could declare a former name and use the redirect
+  lookup to learn whether an entity they cannot see exists at that ref. If
+  entity existence is sensitive in your deployment, restrict who can register or
+  edit catalog locations.
+- **Claims across namespaces and kinds.** Any entity can claim a former name in
+  any kind or namespace. Anyone who can register an entity could therefore claim
+  the old name of a deleted or renamed entity and receive its old entity page
+  and TechDocs links. Redirects stay inside Backstage and always show the
+  "renamed from" notice. When two entities claim the same name, no redirect
+  happens, so the real owner can block a takeover by also declaring the name. We
+  recommend that you review former-names annotations in catalog changes.
+
+The annotation takes effect once the catalog has processed the entity again. To
+resolve a former ref through the API, see the
+[catalog API](api.md#get-entitiesby-former-namekindnamespacename).
+
 ### backstage.io/source-location
 
 ```yaml

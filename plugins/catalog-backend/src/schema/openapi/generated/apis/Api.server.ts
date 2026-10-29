@@ -95,6 +95,17 @@ export type GetEntityAncestryByName = {
 /**
  * @public
  */
+export type GetEntityByFormerName = {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+  response: Entity | Error | Error | Error;
+};
+/**
+ * @public
+ */
 export type GetEntityByName = {
   path: {
     kind: string;
@@ -241,6 +252,8 @@ export type EndpointMap = {
   '#post|/entities/by-refs': GetEntitiesByRefs;
 
   '#get|/entities/by-name/{kind}/{namespace}/{name}/ancestry': GetEntityAncestryByName;
+
+  '#get|/entities/by-former-name/{kind}/{namespace}/{name}': GetEntityByFormerName;
 
   '#get|/entities/by-name/{kind}/{namespace}/{name}': GetEntityByName;
 

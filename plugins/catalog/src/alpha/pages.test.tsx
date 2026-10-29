@@ -1023,6 +1023,83 @@ describe('Entity page', () => {
     });
   });
 
+  describe('Entity Page renames', () => {
+    const renamedEntity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'new-name',
+        annotations: {
+          'backstage.io/former-names': 'old-name',
+        },
+      },
+      spec: {
+        type: 'service',
+        lifecycle: 'experimental',
+        owner: 'team-a',
+      },
+    };
+
+    async function renderAt(route: string) {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(overviewEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          catalogApiMock({ entities: [renamedEntity] }),
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [route],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+    }
+
+    it('redirects an old entity URL and shows the rename notice', async () => {
+      await renderAt('/catalog/default/component/old-name/overview');
+
+      expect(
+        await screen.findByText('Mock Overview content'),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          'This entity was renamed from component:default/old-name',
+        ),
+      ).toBeInTheDocument();
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Dismiss' }),
+      );
+
+      expect(
+        screen.queryByText(
+          'This entity was renamed from component:default/old-name',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows Entity not found for an unknown name', async () => {
+      await renderAt('/catalog/default/component/unknown');
+
+      expect(await screen.findByText(/Entity not found/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/This entity was renamed from/),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   describe('Entity Page Context Menu', () => {
     const onClickMock = jest.fn();
     beforeEach(() => {

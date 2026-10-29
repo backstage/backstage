@@ -494,6 +494,42 @@ export async function createRouter(
         }
       },
     )
+    .get(
+      '/entities/by-former-name/:kind/:namespace/:name',
+      async (req, res) => {
+        const { kind, namespace, name } = req.params;
+        const formerEntityRef = stringifyEntityRef({ kind, namespace, name });
+
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-former-name',
+            entityRef: formerEntityRef,
+          },
+        });
+
+        try {
+          const { items } = await entitiesCatalog.resolveFormerEntityRef({
+            formerEntityRef,
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          writeSingleEntityResponse(
+            res,
+            items,
+            `No current entity found for former entity ref '${formerEntityRef}'`,
+          );
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
+      },
+    )
     .post('/entities/by-refs', async (req, res) => {
       const auditorEvent = await auditor.createEvent({
         eventId: 'entity-fetch',

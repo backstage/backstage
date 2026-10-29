@@ -1,0 +1,404 @@
+[
+  {
+    "id": "U07",
+    "path": "plugins/catalog-backend/src/catalog/types.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Declares the ResolveFormerEntityRefRequest shape and the resolveFormerEntityRef method on the internal EntitiesCatalog interface.",
+    "rules": [
+      "1. Before `export interface EntitiesCatalog`, add `export interface ResolveFormerEntityRefRequest` with a TSDoc line 'The request shape for {@link EntitiesCatalog.resolveFormerEntityRef}.' and documented members: formerEntityRef: string (the normalized former entity ref to resolve), filter?: FilterPredicate (applied only when reading the resolved entity; entities that do not match give a null item), fields?: (entity: Entity) => Entity, credentials: BackstageCredentials. Mirror the member TSDoc style of EntitiesBatchRequest.",
+      "2. After facets(...) inside EntitiesCatalog, add `resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>;` with TSDoc: resolves a former entity ref declared through the backstage.io/former-names annotation to the entity that currently claims it; the response holds exactly one item, which is null when an entity currently has that ref, when zero or several entities claim it, or when the claimant does not match the filter.",
+      "3. No other changes; the interface is internal (not in report.api.md)."
+    ],
+    "exports": [
+      {
+        "name": "ResolveFormerEntityRefRequest",
+        "kind": "interface",
+        "params": [],
+        "returns": "{ formerEntityRef: string; filter?: FilterPredicate; fields?: (entity: Entity) => Entity; credentials: BackstageCredentials }"
+      },
+      {
+        "name": "EntitiesCatalog.resolveFormerEntityRef",
+        "kind": "method",
+        "params": [
+          { "name": "request", "type": "ResolveFormerEntityRefRequest" }
+        ],
+        "returns": "Promise<EntitiesBatchResponse>"
+      }
+    ],
+    "import_line": "import { ResolveFormerEntityRefRequest } from '../catalog/types';",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 149,
+        "to": 149,
+        "first_line": "export interface EntitiesCatalog {",
+        "rule": "Insert the documented ResolveFormerEntityRefRequest interface followed by a blank line (rule 1)."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 195,
+        "to": 195,
+        "first_line": "facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;",
+        "rule": "Insert a blank line and the documented resolveFormerEntityRef method signature (rule 2)."
+      }
+    ],
+    "depends_on": [],
+    "covers": ["FR-9"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U08",
+    "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Implements resolveFormerEntityRef with the real-name-wins and single-claimant rules over indexed final_entities and search rows, then reads the claimant through entitiesBatch with the request filter.",
+    "rules": [
+      "1. Add ResolveFormerEntityRefRequest to the '../catalog/types' import and import FORMER_ENTITY_REF_SEARCH_KEY from '../database/operations/stitcher/buildEntitySearch'.",
+      "2. Add `async resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>` right after entitiesBatch.",
+      "3. Define the miss result once as { items: { type: 'object', entities: [null] } } and return it for every miss.",
+      "4. Real-name check, ignoring request.filter: query final_entities where entity_ref equals request.formerEntityRef, select entity_id, limit 1; if a row exists return the miss.",
+      "5. Claimant check, ignoring request.filter: query search where key equals FORMER_ENTITY_REF_SEARCH_KEY and value equals request.formerEntityRef, select distinct entity_id, limit 2; if the row count is not exactly 1 return the miss.",
+      "6. Look up final_entities by that entity_id selecting entity_ref; if there is no row or no entity_ref return the miss.",
+      "7. Return this.entitiesBatch({ entityRefs: [thatRef], filter: request.filter, fields: request.fields, credentials: request.credentials }).",
+      "8. Never log anything in this method (no names, refs or counts of claimants); use typed knex calls (this.database<DbFinalEntitiesRow>('final_entities'), this.database<DbSearchRow>('search')) like the rest of the file."
+    ],
+    "exports": [
+      {
+        "name": "DefaultEntitiesCatalog.resolveFormerEntityRef",
+        "kind": "method",
+        "params": [
+          { "name": "request", "type": "ResolveFormerEntityRefRequest" }
+        ],
+        "returns": "Promise<EntitiesBatchResponse>"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 34,
+        "to": 34,
+        "first_line": "QueryEntitiesResponse,",
+        "rule": "Insert `ResolveFormerEntityRefRequest,` into the '../catalog/types' import list."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 45,
+        "to": 45,
+        "first_line": "import { markForStitching } from '../database/operations/stitcher/markForStitching';",
+        "rule": "Insert `import { FORMER_ENTITY_REF_SEARCH_KEY } from '../database/operations/stitcher/buildEntitySearch';`."
+      },
+      {
+        "id": "S3",
+        "at": "insert_after",
+        "from": 367,
+        "to": 367,
+        "first_line": "}",
+        "rule": "After entitiesBatch's closing brace, insert a blank line and the resolveFormerEntityRef method (rules 2-8)."
+      }
+    ],
+    "style_from": {
+      "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts",
+      "lines": [733, 745],
+      "reason": "Typed knex lookup on final_entities inside a method of the same class."
+    },
+    "uses": [
+      {
+        "path": "plugins/catalog-backend/src/database/tables.ts",
+        "reason": "DbFinalEntitiesRow and DbSearchRow column names."
+      }
+    ],
+    "depends_on": ["U05", "U07"],
+    "covers": ["FR-6", "FR-7", "FR-9", "NFR-4", "NFR-5"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U09",
+    "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Applies the catalog.entity.read permission to the resolved entity exactly as entitiesBatch does, so an unreadable claimant gives the same null item as no claim.",
+    "rules": [
+      "1. Add ResolveFormerEntityRefRequest to the '../catalog/types' import.",
+      "2. Add `async resolveFormerEntityRef(request: ResolveFormerEntityRefRequest): Promise<EntitiesBatchResponse>` right after entitiesBatch.",
+      "3. Call this.permissionApi.authorizeConditional([{ permission: catalogEntityReadPermission }], { credentials: request.credentials }) and take the first decision.",
+      "4. DENY: return { items: { type: 'object', entities: [null] } } without calling the wrapped catalog.",
+      "5. CONDITIONAL: return this.entitiesCatalog.resolveFormerEntityRef({ ...request, filter: this.permissionPredicate(authorizeDecision.conditions, request.filter) }).",
+      "6. ALLOW: return this.entitiesCatalog.resolveFormerEntityRef(request).",
+      "7. Add a one-line comment that the real-name and claimant checks of the wrapped catalog intentionally ignore permissions, and only the read of the resolved entity is filtered."
+    ],
+    "exports": [
+      {
+        "name": "AuthorizedEntitiesCatalog.resolveFormerEntityRef",
+        "kind": "method",
+        "params": [
+          { "name": "request", "type": "ResolveFormerEntityRefRequest" }
+        ],
+        "returns": "Promise<EntitiesBatchResponse>"
+      }
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 36,
+        "to": 36,
+        "first_line": "QueryEntitiesResponse,",
+        "rule": "Insert `ResolveFormerEntityRefRequest,` into the '../catalog/types' import list."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 130,
+        "to": 130,
+        "first_line": "}",
+        "rule": "After entitiesBatch's closing brace, insert a blank line and the resolveFormerEntityRef method (rules 2-7)."
+      }
+    ],
+    "style_from": {
+      "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.ts",
+      "lines": [104, 130],
+      "reason": "entitiesBatch is the exact permission pattern to mirror."
+    },
+    "depends_on": ["U07"],
+    "covers": ["FR-8"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U10",
+    "path": "plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds database-backed resolveFormerEntityRef tests for the single-claimant hit, real-name precedence, conflicts, filtered claimants and re-stitching without the annotation.",
+    "rules": [
+      "1. Add a describe('resolveFormerEntityRef') block before describe('removeEntityByUid'); every it calls await createDatabase() first and inserts entities with the existing addEntity(entity, []) helper, which builds search rows through buildEntitySearch.",
+      "2. Build the catalog with new DefaultEntitiesCatalog({ database: knex, logger: mockServices.logger.mock() }) and call resolveFormerEntityRef({ formerEntityRef, credentials: mockCredentials.none() }); read results with entitiesResponseToObjects(result.items).",
+      "3. Use kind 'Component', namespace 'default', and the annotation key literal 'backstage.io/former-names'; filters are FilterPredicate objects such as { 'metadata.name': 'new-name' }.",
+      "4. For the re-stitch case, delete the claimant's rows from 'search' by entity_id (addEntity returns the id) and insert buildEntitySearch(id, entityWithoutAnnotation) rows, mirroring what stitching does."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 2211,
+        "to": 2211,
+        "first_line": "describe('removeEntityByUid', () => {",
+        "rule": "Insert the describe('resolveFormerEntityRef') block and a blank line before this describe."
+      }
+    ],
+    "tests": [
+      {
+        "name": "resolves a single claimant",
+        "given": "entity 'new-name' with annotation 'old-name'",
+        "expect": "resolving 'component:default/old-name' returns [new-name entity] and resolving 'component:default/unknown' returns [null]"
+      },
+      {
+        "name": "lets a real name win over a claim, even when the real entity is filtered out",
+        "given": "entity 'old-name' exists and entity 'new-name' claims 'old-name'",
+        "expect": "[null] without a filter and [null] with filter { 'metadata.name': 'new-name' }"
+      },
+      {
+        "name": "refuses ambiguous claims",
+        "given": "entities 'a' and 'b' both claim 'old-name'",
+        "expect": "[null]"
+      },
+      {
+        "name": "returns null when the claimant does not match the filter",
+        "given": "single claimant 'new-name' and filter { 'metadata.name': 'something-else' }",
+        "expect": "[null]"
+      },
+      {
+        "name": "stops resolving after the annotation is removed and the entity is restitched",
+        "given": "claimant 'new-name' whose search rows are rebuilt without the annotation",
+        "expect": "first call returns the entity, second call returns [null]"
+      }
+    ],
+    "depends_on": ["U08"],
+    "covers": ["AC-2", "AC-3", "AC-8"],
+    "checks": ["prettier", "eslint", "jest"]
+  },
+  {
+    "id": "U11",
+    "path": "plugins/catalog-backend/src/service/AuthorizedEntitiesCatalog.test.ts",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds AuthorizedEntitiesCatalog tests showing resolveFormerEntityRef is denied, conditionally filtered or passed through like entitiesBatch.",
+    "rules": [
+      "1. Add `resolveFormerEntityRef: jest.fn(),` to the fakeCatalog object so it still satisfies EntitiesCatalog.",
+      "2. Add describe('resolveFormerEntityRef') before describe('facets'), mirroring the three entitiesBatch cases, with formerEntityRef 'component:default/old-name' and mockCredentials.none()."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 38,
+        "to": 38,
+        "first_line": "queryEntities: jest.fn(),",
+        "rule": "Insert `resolveFormerEntityRef: jest.fn(),`."
+      },
+      {
+        "id": "S2",
+        "at": "insert_before",
+        "from": 630,
+        "to": 630,
+        "first_line": "describe('facets', () => {",
+        "rule": "Insert the describe('resolveFormerEntityRef') block and a blank line."
+      }
+    ],
+    "tests": [
+      {
+        "name": "returns a null item on DENY",
+        "given": "authorizeConditional resolves DENY",
+        "expect": "result equals { items: { type: 'object', entities: [null] } } and fakeCatalog.resolveFormerEntityRef was not called"
+      },
+      {
+        "name": "passes the permission filter on CONDITIONAL",
+        "given": "CONDITIONAL with IS_ENTITY_KIND kinds ['b'] and createCatalog(isEntityKind)",
+        "expect": "fakeCatalog.resolveFormerEntityRef called with formerEntityRef, credentials and filter { kind: 'b' }"
+      },
+      {
+        "name": "delegates unchanged on ALLOW",
+        "given": "authorizeConditional resolves ALLOW",
+        "expect": "fakeCatalog.resolveFormerEntityRef called with exactly the original request"
+      }
+    ],
+    "depends_on": ["U09"],
+    "covers": ["AC-3"],
+    "checks": ["prettier", "eslint", "jest"]
+  },
+  {
+    "id": "U12",
+    "path": "plugins/catalog-backend/src/schema/openapi.yaml",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Declares GET /entities/by-former-name/{kind}/{namespace}/{name} (operationId GetEntityByFormerName) in the catalog OpenAPI spec.",
+    "rules": [
+      "1. Add the path between the by-name ancestry path and /entities/by-refs, copying the GetEntityByName block's structure and indentation.",
+      "2. get.operationId: GetEntityByFormerName; tags: [Entity]; description: 'Get the entity that currently declares the given entity ref as a former name through the backstage.io/former-names annotation.'",
+      "3. responses: '200' with description Ok and application/json schema $ref '#/components/schemas/Entity'; '400', '404' and default all $ref '#/components/responses/ErrorResponse'.",
+      "4. security: the same two entries as GetEntityByName ({} and JWT: []); parameters: $ref '#/components/parameters/kind', '#/components/parameters/namespace', '#/components/parameters/name'."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 1023,
+        "to": 1023,
+        "first_line": "/entities/by-refs:",
+        "rule": "Insert the new path item (rules 1-4) at the same indentation as the surrounding paths."
+      }
+    ],
+    "style_from": {
+      "path": "plugins/catalog-backend/src/schema/openapi.yaml",
+      "lines": [975, 998],
+      "reason": "The GetEntityByName path item to copy."
+    },
+    "depends_on": [],
+    "covers": ["FR-10"],
+    "checks": ["prettier"]
+  },
+  {
+    "id": "U13",
+    "path": "plugins/catalog-backend/src/schema/openapi/generated/router.ts",
+    "action": "tooling",
+    "phase": "codegen",
+    "behaviour": "Regenerates the catalog-backend OpenAPI server files (router.ts, apis/, models/) from openapi.yaml with the repo's generator.",
+    "run": "yarn backstage-repo-tools package schema openapi generate --server",
+    "cwd": "plugins/catalog-backend",
+    "depends_on": ["U12"],
+    "covers": ["FR-10", "NFR-6"]
+  },
+  {
+    "id": "U14",
+    "path": "packages/catalog-client/src/schema/openapi/generated/apis/Api.client.ts",
+    "action": "tooling",
+    "phase": "codegen",
+    "behaviour": "Regenerates the catalog-client OpenAPI client files (apis/Api.client.ts, models/) from catalog-backend's openapi.yaml, adding getEntityByFormerName.",
+    "run": "yarn backstage-repo-tools package schema openapi generate --client-package packages/catalog-client",
+    "cwd": "plugins/catalog-backend",
+    "depends_on": ["U12"],
+    "covers": ["FR-12", "NFR-6", "AC-9"]
+  },
+  {
+    "id": "U15",
+    "path": "plugins/catalog-backend/src/service/createRouter.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Wires GET /entities/by-former-name/:kind/:namespace/:name to entitiesCatalog.resolveFormerEntityRef with the same auditing and credentials handling as the by-name route.",
+    "rules": [
+      "1. Chain a new .get('/entities/by-former-name/:kind/:namespace/:name', async (req, res) => {...}) after the by-name ancestry route and before .post('/entities/by-refs').",
+      "2. Read kind, namespace and name from req.params and compute formerEntityRef = stringifyEntityRef({ kind, namespace, name }).",
+      "3. Create the auditor event with eventId 'entity-fetch', request: req and meta { queryType: 'by-former-name', entityRef: formerEntityRef }.",
+      "4. In try: const { items } = await entitiesCatalog.resolveFormerEntityRef({ formerEntityRef, credentials: await httpAuth.credentials(req) }); await auditorEvent?.success() with no meta; then writeSingleEntityResponse(res, items, `No current entity found for former entity ref '${formerEntityRef}'`).",
+      "5. In catch: await auditorEvent?.fail({ error: err }) and rethrow, as the by-name route does.",
+      "6. Do not change the by-name, by-ref or by-uid routes."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 497,
+        "to": 497,
+        "first_line": ".post('/entities/by-refs', async (req, res) => {",
+        "rule": "Insert the chained .get route for /entities/by-former-name/:kind/:namespace/:name (rules 1-5)."
+      }
+    ],
+    "style_from": {
+      "path": "plugins/catalog-backend/src/service/createRouter.ts",
+      "lines": [423, 455],
+      "reason": "The by-name route: auditor event, credentials, writeSingleEntityResponse, fail and rethrow."
+    },
+    "depends_on": ["U07", "U13"],
+    "covers": ["FR-10", "NFR-5"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U16",
+    "path": "plugins/catalog-backend/src/service/createRouter.test.ts",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds router tests showing the former-name endpoint returns 200 with the entity on a hit and an identical 404 error for every miss.",
+    "rules": [
+      "1. Add `resolveFormerEntityRef: jest.fn(),` to the entitiesCatalog mock literal in beforeEach.",
+      "2. Add describe('GET /entities/by-former-name/:kind/:namespace/:name') after the by-name describe, using request(app) and mockCredentials.user() like the by-name tests.",
+      "3. Misses are mocked as { items: { type: 'object', entities: [null] } }; compare response.body.error across misses for the same URL to show the shape is identical."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 71,
+        "to": 71,
+        "first_line": "queryEntities: jest.fn(),",
+        "rule": "Insert `resolveFormerEntityRef: jest.fn(),`."
+      },
+      {
+        "id": "S2",
+        "at": "insert_before",
+        "from": 557,
+        "to": 557,
+        "first_line": "describe('DELETE /entities/by-uid/:uid', () => {",
+        "rule": "Insert the new describe block and a blank line."
+      }
+    ],
+    "tests": [
+      {
+        "name": "returns the current entity for a former name",
+        "given": "resolveFormerEntityRef resolves one entity for GET /entities/by-former-name/k/ns/old",
+        "expect": "called once with { formerEntityRef: 'k:ns/old', credentials: mockCredentials.user() }, status 200, body contains the entity"
+      },
+      {
+        "name": "responds with the same 404 for every kind of miss",
+        "given": "resolveFormerEntityRef resolves a null item on three consecutive requests to the same URL (standing in for unknown ref, real-name match, conflict and unreadable target)",
+        "expect": "every response has status 404, error name 'NotFoundError', and response.body.error is equal across the three responses"
+      }
+    ],
+    "depends_on": ["U15"],
+    "covers": ["AC-4"],
+    "checks": ["prettier", "eslint", "jest"]
+  }
+]

@@ -61,6 +61,11 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<GetEntityAncestorsResponse>;
   // (undocumented)
+  getEntityByFormerRef?(
+    entityRef: string | CompoundEntityRef,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<Entity | undefined>;
+  // (undocumented)
   getEntityByRef(
     entityRef: string | CompoundEntityRef,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,

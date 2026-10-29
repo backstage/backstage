@@ -18,6 +18,7 @@ export * from './conditions';
 export * from './constants';
 export type { Entity, EntityLink, EntityMeta, EntityRelation } from './Entity';
 export type { EntityEnvelope } from './EntityEnvelope';
+export { getEntityFormerRefs } from './formerNames';
 export * from './policies';
 export {
   getCompoundEntityRef,

@@ -119,6 +119,16 @@ export type GetEntityAncestryByName = {
 /**
  * @public
  */
+export type GetEntityByFormerName = {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+};
+/**
+ * @public
+ */
 export type GetEntityByName = {
   path: {
     kind: string;
@@ -377,6 +387,36 @@ export class DefaultApiClient {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
     const uriTemplate = `/entities/by-name/{kind}/{namespace}/{name}/ancestry`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      kind: request.path.kind,
+      namespace: request.path.namespace,
+      name: request.path.name,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Get the entity that currently declares the given entity ref as a former name through the backstage.io/former-names annotation.
+   * @param kind -
+   * @param namespace -
+   * @param name -
+   */
+  public async getEntityByFormerName(
+    // @ts-ignore
+    request: GetEntityByFormerName,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<Entity>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/by-former-name/{kind}/{namespace}/{name}`;
 
     const uri = parser.parse(uriTemplate).expand({
       kind: request.path.kind,

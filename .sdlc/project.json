@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "default_policy": "opus55-plus-sonnet55",
+  "off_limits_default": [
+    ".env",
+    ".env.*",
+    ".mcp.json",
+    ".cursor/rules/**",
+    ".claude/settings.local.json",
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    ".next/**",
+    ".sdlc/**",
+    ".git/**"
+  ],
+  "last_updated_at": "2026-10-28T12:38:15.323Z"
+}

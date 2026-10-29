@@ -36,6 +36,7 @@ describe('AuthorizedEntitiesCatalog', () => {
     refresh: jest.fn(),
     listAncestors: jest.fn(),
     queryEntities: jest.fn(),
+    resolveFormerEntityRef: jest.fn(),
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
@@ -623,6 +624,67 @@ describe('AuthorizedEntitiesCatalog', () => {
             parentEntityRefs: [],
           },
         ],
+      });
+    });
+  });
+
+  describe('resolveFormerEntityRef', () => {
+    it('returns a null item on DENY', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = createCatalog();
+
+      await expect(
+        catalog.resolveFormerEntityRef({
+          formerEntityRef: 'component:default/old-name',
+          credentials: mockCredentials.none(),
+        }),
+      ).resolves.toEqual({
+        items: { type: 'object', entities: [null] },
+      });
+
+      expect(fakeCatalog.resolveFormerEntityRef).not.toHaveBeenCalled();
+    });
+
+    it('passes the permission filter on CONDITIONAL', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            params: { kinds: ['b'] },
+          },
+        },
+      ]);
+      const catalog = createCatalog(isEntityKind);
+
+      await catalog.resolveFormerEntityRef({
+        formerEntityRef: 'component:default/old-name',
+        credentials: mockCredentials.none(),
+      });
+
+      expect(fakeCatalog.resolveFormerEntityRef).toHaveBeenCalledWith({
+        formerEntityRef: 'component:default/old-name',
+        credentials: mockCredentials.none(),
+        filter: { kind: 'b' },
+      });
+    });
+
+    it('delegates unchanged on ALLOW', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const catalog = createCatalog();
+
+      await catalog.resolveFormerEntityRef({
+        formerEntityRef: 'component:default/old-name',
+        credentials: mockCredentials.none(),
+      });
+
+      expect(fakeCatalog.resolveFormerEntityRef).toHaveBeenCalledWith({
+        formerEntityRef: 'component:default/old-name',
+        credentials: mockCredentials.none(),
       });
     });
   });

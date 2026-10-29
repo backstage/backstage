@@ -1,0 +1,104 @@
+{
+  "status": "applied",
+  "counts": {
+    "applied": 2
+  },
+  "cost_usd": 0.102506,
+  "duration_ms": 20862,
+  "max_parallel": 4,
+  "items": [
+    {
+      "id": "tp_debug_r1_001",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+      "cost_usd": 0.040213,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+          "bytes": 3219,
+          "lines": 109,
+          "sha16": "0ff529836ef2d1ac",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 2,
+          "duration_ms": 2474
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r1_001",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.040213,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1802
+        },
+        "cost_usd": 0.040213,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    },
+    {
+      "id": "tp_debug_r1_002",
+      "status": "applied",
+      "artifact_path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+      "cost_usd": 0.062293,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+          "bytes": 45675,
+          "lines": 1358,
+          "sha16": "6a21609a7d3eb593",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 4851
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r1_002",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.062293,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 8005,
+          "output": 1328
+        },
+        "cost_usd": 0.062293,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": []
+}

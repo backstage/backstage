@@ -1,0 +1,58 @@
+{
+  "status": "applied",
+  "counts": {
+    "applied": 1
+  },
+  "cost_usd": 0.043926,
+  "duration_ms": 7915,
+  "max_parallel": 4,
+  "items": [
+    {
+      "id": "tp_debug_r5_001",
+      "status": "applied",
+      "artifact_path": "docs/features/software-catalog/well-known-annotations.md",
+      "cost_usd": 0.043926,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 9 (phase=\"debug\")",
+          "ruleIndex": 9
+        },
+        "apply": {
+          "path": "docs/features/software-catalog/well-known-annotations.md",
+          "bytes": 18914,
+          "lines": 531,
+          "sha16": "b84a4dbf0b0133a9",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 1,
+          "duration_ms": 929
+        },
+        "attempts": [
+          {
+            "id": "tp_debug_r5_001",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.043926,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 486
+        },
+        "cost_usd": 0.043926,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": []
+}

@@ -1,0 +1,116 @@
+[
+  {
+    "id": "tp_debug_r1_001",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+    "instruction": "Fix `plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts` for these problems, changing only what they need, following the conventions in the shared brief:\n1. The rename redirect re-runs after it navigates. (1) Old frontend system: CatalogEntityPage.test.tsx times out after 600s with React 'Maximum update depth exceeded' (checkForNestedUpdates -> dispatchSetState -> react-router setStateImpl/listener) pointing at the navigate(..., { replace: true, state: { formerEntityRef: stringifyEntityRef({ kind, namespace, name }) } }) call near line 78: navigate is called repeatedly. (2) New frontend system: alpha/pages.test.tsx 'Entity page > Entity Page renames > redirects an old entity URL and shows the rename notice' fails at expect(notice).toHaveTextContent(/old-name/) — Received: 'This entity was renamed from component:default/new-name'. So after the first redirect, the effect runs again with the NEW url's kind/namespace/name and navigates again with formerEntityRef set to the new ref. Fix: call the former-ref lookup only after a by-name miss for the current URL ref; capture the former ref (the URL's kind/namespace/name at lookup time) together with the lookup result; navigate exactly once per resolved result (e.g. guard with a ref keyed by the former ref), never when the resolved entity's ref equals the current URL ref, and never re-run the lookup/navigate when the URL already points at the resolved entity. Keep sub-route, search and hash; keep the loading state while the lookup runs; on a miss or when getEntityByFormerRef is absent keep today's not-found behaviour.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U28.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.test.tsx",
+        "reason": "named beside the failure"
+      },
+      {
+        "path": "plugins/catalog/src/components/CatalogEntityPage/CatalogEntityPage.tsx",
+        "reason": "named beside the failure"
+      },
+      {
+        "path": "plugins/catalog/src/alpha/components/CatalogEntityPage.tsx",
+        "reason": "named beside the failure"
+      },
+      {
+        "path": "plugins/catalog/src/components/CatalogEntityPage/useEntityFromUrl.ts",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        },
+        {
+          "id": "eslint",
+          "run": "yarn eslint '{path}'",
+          "fix": "yarn eslint --fix '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 120,
+      "max_retries": 2
+    }
+  },
+  {
+    "id": "tp_debug_r1_002",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+    "instruction": "Fix `packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts` for these problems, changing only what they need, following the conventions in the shared brief:\n1. Unit U21's planned test cases for getEntityByFormerRef were never applied: two Sonnet attempts were rejected with 'the answer changes lines outside its sites: new lines after 1064; change only the planned sites', and the Opus attempt replied with something other than one JSON object in the {path, edits} / {path, content} contract. Add the planned cases from the unit brief (former ref resolves to the single claimant; a real-name entity wins; two claimants give undefined; short-form refs; unknown ref gives undefined) inside the file's existing describe block, matching the file's style, and answer with exactly one JSON object.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U21.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "packages/catalog-client/src/testUtils/InMemoryCatalogClient.test.ts",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        },
+        {
+          "id": "eslint",
+          "run": "yarn eslint '{path}'",
+          "fix": "yarn eslint --fix '{path}'"
+        },
+        {
+          "id": "jest",
+          "run": "BACKSTAGE_TEST_DISABLE_DOCKER=1 CI=1 yarn test '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 600,
+      "max_retries": 2
+    }
+  }
+]

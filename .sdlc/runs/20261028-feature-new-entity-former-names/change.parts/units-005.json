@@ -1,0 +1,271 @@
+{
+  "section": "units",
+  "source": "units-005.json",
+  "value": [
+    {
+      "id": "U33",
+      "path": "plugins/techdocs/src/translation.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Adds the rename notice strings to techdocsTranslationRef under redirectNotification.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 51,
+          "to": 51,
+          "first_line": "redirectNow: 'Redirect now',",
+          "rule": "Insert `renamedFrom: 'This entity was renamed from {{formerEntityRef}}',` and `dismiss: 'Dismiss',` as two lines at the same indentation."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-20"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U34",
+      "path": "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Lets callers of the redirect notification override its action button label, defaulting to the existing 'Redirect now' text.",
+      "rules": [
+        "1. Add `actionLabel?: string;` to TechDocsRedirectNotificationProps.",
+        "2. Destructure actionLabel in the component's parameter list.",
+        "3. The button text becomes {actionLabel ?? t('redirectNotification.redirectNow')}; nothing else changes, so handleMetaRedirects keeps its current behaviour."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 24,
+          "to": 28,
+          "first_line": "type TechDocsRedirectNotificationProps = {",
+          "last_line": "};",
+          "rule": "Add the optional actionLabel prop (rule 1)."
+        },
+        {
+          "id": "S2",
+          "at": "replace",
+          "from": 37,
+          "to": 41,
+          "first_line": "export const TechDocsRedirectNotification = ({",
+          "last_line": "}: TechDocsRedirectNotificationProps) => {",
+          "rule": "Destructure actionLabel alongside the existing props (rule 2)."
+        },
+        {
+          "id": "S3",
+          "at": "replace",
+          "from": 65,
+          "to": 65,
+          "first_line": "{t('redirectNotification.redirectNow')}",
+          "rule": "Render {actionLabel ?? t('redirectNotification.redirectNow')} (rule 3)."
+        }
+      ],
+      "depends_on": [],
+      "covers": ["FR-20"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U35",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.tsx",
+      "action": "create",
+      "phase": "codegen",
+      "behaviour": "Shows the TechDocs redirect notification with 'This entity was renamed from <old ref>' and a Dismiss action when the location carries a formerEntityRef state from a rename redirect.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Internal component: TSDoc with '@internal', not exported from the package index.",
+        "2. Read const location = useLocation() from 'react-router-dom'; take formerEntityRef from location.state only when it is an object whose formerEntityRef is a non-empty string; otherwise return null.",
+        "3. Get t from useTranslationRef(techdocsTranslationRef) ('@backstage/core-plugin-api/alpha' and '../../../translation').",
+        "4. Render <TechDocsRedirectNotification key={formerEntityRef} message={t('redirectNotification.renamedFrom', { formerEntityRef })} actionLabel={t('redirectNotification.dismiss')} handleButtonClick={() => {}} autoHideDuration={15000} />, importing it from '../TechDocsRedirectNotification'."
+      ],
+      "exports": [
+        {
+          "name": "TechDocsRenamedNotice",
+          "kind": "function component",
+          "params": [],
+          "returns": "JSX.Element | null"
+        }
+      ],
+      "import_line": "import { TechDocsRenamedNotice } from './TechDocsRenamedNotice';",
+      "style_from": {
+        "path": "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx",
+        "reason": "Same package's notification component: imports, translation hook, arrow-function component export."
+      },
+      "depends_on": ["U33", "U34"],
+      "covers": ["FR-20", "AC-10"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U36",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.ts",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "When the reader's entity lookup finds no entity, asks the optional former-ref lookup and on a hit replaces the URL with the same docs sub-path, query and anchor under the current entity, passing the former ref in location state.",
+      "rules": [
+        "1. Import useLocation alongside useNavigate from 'react-router-dom'.",
+        "2. Extend the TSDoc: the hook also follows entity renames declared through the backstage.io/former-names annotation; keep '@internal' and the existing params/returns wording.",
+        "3. Add const location = useLocation() after const navigate = useNavigate().",
+        "4. The useAsync callback returns { url: string; formerEntityRef?: string } | undefined. Inside the existing try: when the entity has the external annotation, build url with buildTechDocsURL(catalogEntity, viewTechdocLink) and return { url } when it is defined.",
+        "5. Still inside try: when catalogEntity is undefined and catalogApi.getEntityByFormerRef exists, call it with entityRef; on a hit compute newBase = buildTechDocsURL(current, viewTechdocLink) and oldBase = viewTechdocLink({ namespace: entityRef.namespace, kind: entityRef.kind, name: entityRef.name }); when newBase is defined set rest = location.pathname.startsWith(oldBase) ? location.pathname.slice(oldBase.length) : '' and return { url: `${newBase}${rest}${location.search}${location.hash}`, formerEntityRef: stringifyEntityRef(entityRef) }.",
+        "6. Keep the catch that ignores errors and the final return undefined; keep the dependency list [entityKey, catalogApi].",
+        "7. In the useEffect: when not loading and a value exists, call navigate(value.url, { replace: true, state: { formerEntityRef: value.formerEntityRef } }) when formerEntityRef is set, otherwise navigate(value.url, { replace: true }) exactly as today.",
+        "8. Keep the checkedEntityRef guard, shouldShowProgress formula and return shape unchanged (value truthiness still drives shouldShowProgress)."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 18,
+          "to": 18,
+          "first_line": "import { useNavigate } from 'react-router-dom';",
+          "rule": "Import useLocation and useNavigate from 'react-router-dom'."
+        },
+        {
+          "id": "S2",
+          "at": "replace",
+          "from": 30,
+          "to": 104,
+          "first_line": "/**",
+          "last_line": "}",
+          "rule": "Rewrite the TSDoc and the useExternalRedirect function per rules 2-8."
+        }
+      ],
+      "uses": [
+        {
+          "path": "plugins/techdocs-react/src/helpers.ts",
+          "lines": [60, 111],
+          "reason": "buildTechDocsURL builds the current entity's docs root, including external-entity redirects."
+        }
+      ],
+      "depends_on": ["U17", "U25"],
+      "covers": ["FR-19", "FR-21"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U37",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsReaderPage.tsx",
+      "action": "edit",
+      "phase": "codegen",
+      "behaviour": "Renders TechDocsRenamedNotice in both reader page render branches, which covers the old system and the alpha reader page that reuses this component.",
+      "sites": [
+        {
+          "id": "S1",
+          "at": "insert_after",
+          "from": 43,
+          "to": 43,
+          "first_line": "import { useExternalRedirect } from './useExternalRedirect';",
+          "rule": "Insert `import { TechDocsRenamedNotice } from './TechDocsRenamedNotice';`."
+        },
+        {
+          "id": "S2",
+          "at": "insert_after",
+          "from": 230,
+          "to": 230,
+          "first_line": "<ThemeProvider theme={readerPageTheme}>",
+          "rule": "Insert `<TechDocsRenamedNotice />` as the first child of ThemeProvider in the no-children branch."
+        },
+        {
+          "id": "S3",
+          "at": "insert_after",
+          "from": 242,
+          "to": 242,
+          "first_line": "<ThemeProvider theme={readerPageTheme}>",
+          "rule": "Insert `<TechDocsRenamedNotice />` as the first child of ThemeProvider in the children branch."
+        }
+      ],
+      "depends_on": ["U35", "U36"],
+      "covers": ["FR-20", "FR-21"],
+      "checks": ["prettier", "eslint"]
+    },
+    {
+      "id": "U38",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx",
+      "action": "edit",
+      "phase": "tests",
+      "behaviour": "Adds hook tests showing a renamed entity's old docs URL is replaced with the new docs URL keeping sub-path, query and anchor, and that misses or an absent method do not navigate.",
+      "rules": [
+        "1. Replace the module mocks: keep mockNavigate; make mockViewTechdocLink a jest.fn taking optional { namespace, kind, name } and returning `/docs/${namespace}/${kind}/${name}` when given params, '/docs' otherwise; add `let mockLocation = { pathname: '/docs', search: '', hash: '' };` and add useLocation: () => mockLocation to the react-router-dom mock; keep the core-plugin-api mock.",
+        "2. New cases go at the end of describe('useExternalRedirect'); each sets mockLocation for the old URL, e.g. { pathname: '/docs/default/component/old-name/guides/setup', search: '?v=1', hash: '#install' }.",
+        "3. New cases use their own API object { getEntityByRef: jest.fn(), getEntityByFormerRef: jest.fn() } in a TestApiProvider wrapper; the existing cases keep mockCatalogApi without the method.",
+        "4. Keep the file's renderHook + waitFor style."
+      ],
+      "sites": [
+        {
+          "id": "S1",
+          "at": "replace",
+          "from": 23,
+          "to": 34,
+          "first_line": "const mockNavigate = jest.fn();",
+          "last_line": "}));",
+          "rule": "Rewrite the module-level mocks per rule 1."
+        },
+        {
+          "id": "S2",
+          "at": "insert_before",
+          "from": 282,
+          "to": 282,
+          "first_line": "});",
+          "rule": "Insert a blank line and the new it cases (listed in tests) before the closing of describe('useExternalRedirect')."
+        }
+      ],
+      "tests": [
+        {
+          "name": "redirects a former entity ref to the renamed entity's docs keeping sub-path, query and anchor",
+          "given": "getEntityByRef resolves undefined and getEntityByFormerRef resolves an entity with kind 'component', namespace 'default', name 'new-name' (lower-case kind so the mocked route function output is predictable), for entityRef { kind: 'component', namespace: 'default', name: 'old-name' }",
+          "expect": "mockNavigate called with '/docs/default/component/new-name/guides/setup?v=1#install' and { replace: true, state: { formerEntityRef: 'component:default/old-name' } }, and shouldShowProgress is true"
+        },
+        {
+          "name": "does not navigate when the former ref cannot be resolved",
+          "given": "getEntityByRef and getEntityByFormerRef both resolve undefined",
+          "expect": "getEntityByFormerRef called once, mockNavigate not called, shouldShowProgress false"
+        },
+        {
+          "name": "does not ask for former refs when the entity exists or the method is absent",
+          "given": "an existing entity without external annotation, and separately the original mockCatalogApi without getEntityByFormerRef resolving undefined",
+          "expect": "getEntityByFormerRef never called and mockNavigate not called"
+        }
+      ],
+      "depends_on": ["U36"],
+      "covers": ["AC-7"],
+      "checks": ["prettier", "eslint", "jest"]
+    },
+    {
+      "id": "U39",
+      "path": "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsRenamedNotice.test.tsx",
+      "action": "create",
+      "phase": "tests",
+      "behaviour": "jsdom tests showing the TechDocs rename notice renders from location state, can be dismissed, and stays hidden without that state.",
+      "rules": [
+        "1. Start with the 2026 Apache header. Mock 'react-router-dom' useLocation (jest.requireActual spread) to return { pathname: '/docs/default/component/new-name/guides', search: '', hash: '#install', state: mockLocationState } where `let mockLocationState: unknown` is set per test.",
+        "2. Render with renderInTestApp(<TechDocsRenamedNotice />) from '@backstage/test-utils'; use screen.findByText and fireEvent or userEvent on the 'Dismiss' button."
+      ],
+      "style_from": {
+        "path": "plugins/techdocs/src/reader/components/TechDocsNotFound.test.tsx",
+        "reason": "Same package's RTL test that mocks useLocation and renders with renderInTestApp."
+      },
+      "tests": [
+        {
+          "name": "shows the rename notice and hides it when dismissed",
+          "given": "mockLocationState { formerEntityRef: 'component:default/old-name' }",
+          "expect": "'This entity was renamed from component:default/old-name' is shown with a 'Dismiss' button, and after clicking it the text is gone"
+        },
+        {
+          "name": "renders nothing without a former entity ref in the location state",
+          "given": "mockLocationState undefined, then { formerEntityRef: 42 }",
+          "expect": "no rename text and no 'Dismiss' button in either case"
+        }
+      ],
+      "depends_on": ["U35"],
+      "covers": ["AC-7", "FR-20"],
+      "checks": ["prettier", "eslint", "jest"]
+    }
+  ],
+  "hashes": {
+    "plugins/techdocs/src/translation.ts": "c24dada25e678926c3daa5957dde10534e6e15e29f7f4023f06d7ff7ff70499c",
+    "plugins/techdocs/src/reader/components/TechDocsRedirectNotification/TechDocsRedirectNotification.tsx": "032b837f83cad115ea4dc4ff176456c65a355e74596266f1533e38ef591f7f29",
+    "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.ts": "bdc05b9ee057fe5b3efc5e10b7f0a3fc14adcc375137ca24f65d8887fdda8af1",
+    "plugins/techdocs-react/src/helpers.ts": "15a1c3c938a72d298b1b6815d06415d4a0bf1703bc7d18321c10ba1889f1a93e",
+    "plugins/techdocs/src/reader/components/TechDocsReaderPage/TechDocsReaderPage.tsx": "99e696efcf13a98aa446135088dce6048957abb7dfc6d685b5232d47caa5661c",
+    "plugins/techdocs/src/reader/components/TechDocsReaderPage/useExternalRedirect.test.tsx": "5f2227eec2ee7d7263c723bc1a7d43773b186553a951750d810f08b02646da4f",
+    "plugins/techdocs/src/reader/components/TechDocsNotFound.test.tsx": "6754fb8816f853976dbf51472b4da2f9b5bee99db43958c410141ef10b725f65"
+  }
+}

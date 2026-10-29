@@ -1,0 +1,58 @@
+{
+  "status": "applied",
+  "counts": {
+    "applied": 1
+  },
+  "cost_usd": 0.075486,
+  "duration_ms": 31805,
+  "max_parallel": 4,
+  "items": [
+    {
+      "id": "tp_tests_U32",
+      "status": "applied",
+      "artifact_path": "plugins/catalog/src/alpha/pages.test.tsx",
+      "cost_usd": 0.075486,
+      "attempts": 1,
+      "outcome": {
+        "status": "applied",
+        "decision": {
+          "modelId": "sonnet",
+          "reason": "matched rule 4 (phase=\"tests\")",
+          "ruleIndex": 4
+        },
+        "apply": {
+          "path": "plugins/catalog/src/alpha/pages.test.tsx",
+          "bytes": 43451,
+          "lines": 1367,
+          "sha16": "6acc87464affadb7",
+          "existed_before": true,
+          "provenance": "recorded"
+        },
+        "verify": {
+          "ok": true,
+          "ran": 3,
+          "duration_ms": 9365
+        },
+        "attempts": [
+          {
+            "id": "tp_tests_U32",
+            "retry_count": 0,
+            "model_id": "sonnet",
+            "dispatch_ok": true,
+            "cost_usd": 0.075486,
+            "verify_ok": true
+          }
+        ],
+        "tokens": {
+          "input": 2,
+          "input_cached": 658,
+          "output": 1037
+        },
+        "cost_usd": 0.075486,
+        "terminal_reason": "success",
+        "events_written": 1
+      }
+    }
+  ],
+  "skipped_no_apply": []
+}

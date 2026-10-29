@@ -66,6 +66,7 @@ export namespace catalogServiceMock {
       queryEntities: jest.fn(),
       getEntityAncestors: jest.fn(),
       getEntityByRef: jest.fn(),
+      getEntityByFormerRef: jest.fn(),
       removeEntityByUid: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityFacets: jest.fn(),

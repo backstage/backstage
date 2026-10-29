@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  getEntityFormerRefs,
+} from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { DbSearchRow } from '../../tables';
 import { NULL_SENTINEL } from './util';
@@ -37,6 +41,10 @@ const SPECIAL_KEYS = [
 // postgres will balk after 8191 byte line sizes.
 const MAX_KEY_LENGTH = 200;
 const MAX_VALUE_LENGTH = 200;
+
+// This key holds the former entity refs from the backstage.io/former-names
+// annotation. It has no dots, so it cannot collide with any entity field path.
+export const FORMER_ENTITY_REF_SEARCH_KEY = 'former_entity_ref';
 
 type Kv = {
   key: string;
@@ -209,6 +217,13 @@ export function buildEntitySearch(
       key: `relations.${relation.type}`,
       value: relation.targetRef,
     });
+  }
+
+  // Index former entity refs, skipping over-long ones instead of storing nulls
+  for (const formerRef of getEntityFormerRefs(entity)) {
+    if (formerRef.length <= MAX_VALUE_LENGTH) {
+      raw.push({ key: FORMER_ENTITY_REF_SEARCH_KEY, value: formerRef });
+    }
   }
 
   // This validates that there are no keys that vary only in casing, such

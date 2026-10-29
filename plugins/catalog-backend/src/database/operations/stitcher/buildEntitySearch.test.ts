@@ -341,5 +341,104 @@ describe('buildEntitySearch', () => {
         `Entity has duplicate keys that vary only in casing, 'spec.owner', 'spec.lifecycle'`,
       );
     });
+
+    it('adds former entity refs as search rows', () => {
+      const rows = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'Component',
+        metadata: {
+          name: 'n',
+          namespace: 'ns',
+          annotations: {
+            'backstage.io/former-names': 'old-name, other/older, api:x/y',
+          },
+        },
+      });
+      expect(rows.filter(r => r.key === 'former_entity_ref')).toEqual([
+        {
+          entity_id: 'eid',
+          key: 'former_entity_ref',
+          original_value: 'component:ns/old-name',
+          value: 'component:ns/old-name',
+        },
+        {
+          entity_id: 'eid',
+          key: 'former_entity_ref',
+          original_value: 'component:other/older',
+          value: 'component:other/older',
+        },
+        {
+          entity_id: 'eid',
+          key: 'former_entity_ref',
+          original_value: 'api:x/y',
+          value: 'api:x/y',
+        },
+      ]);
+    });
+
+    it('skips malformed and over-long former refs without failing', () => {
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'Component',
+        metadata: {
+          name: 'n',
+          annotations: {
+            'backstage.io/former-names': `:bad, a:b/c/d, , ${'x'.repeat(
+              250,
+            )}, old-name`,
+          },
+        },
+      };
+      expect(() => buildEntitySearch('eid', entity)).not.toThrow();
+      const formerRows = buildEntitySearch('eid', entity).filter(
+        r => r.key === 'former_entity_ref',
+      );
+      expect(formerRows).toEqual([
+        {
+          entity_id: 'eid',
+          key: 'former_entity_ref',
+          original_value: 'component:default/old-name',
+          value: 'component:default/old-name',
+        },
+      ]);
+      expect(formerRows.some(r => r.value === null)).toBe(false);
+    });
+
+    it('omits former entity ref rows when the annotation is removed', () => {
+      const withAnnotation = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'Component',
+        metadata: {
+          name: 'n',
+          annotations: { 'backstage.io/former-names': 'old-name' },
+        },
+      });
+      const withoutAnnotation = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'Component',
+        metadata: { name: 'n' },
+      });
+
+      expect(withAnnotation.filter(r => r.key === 'former_entity_ref')).toEqual(
+        [
+          {
+            entity_id: 'eid',
+            key: 'former_entity_ref',
+            original_value: 'component:default/old-name',
+            value: 'component:default/old-name',
+          },
+        ],
+      );
+      expect(
+        withoutAnnotation.filter(r => r.key === 'former_entity_ref'),
+      ).toEqual([]);
+
+      const isUnrelated = (r: { key: string }) =>
+        r.key !== 'former_entity_ref' &&
+        r.key !== 'metadata.annotations.backstage.io/former-names';
+      expect(withAnnotation.filter(isUnrelated)).toEqual(
+        withoutAnnotation.filter(isUnrelated),
+      );
+    });
   });
 });

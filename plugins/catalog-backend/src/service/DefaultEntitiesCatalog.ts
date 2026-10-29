@@ -32,6 +32,7 @@ import {
   EntityPagination,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  ResolveFormerEntityRefRequest,
   TotalItemsMode,
 } from '../catalog/types';
 import {
@@ -43,6 +44,7 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { markForStitching } from '../database/operations/stitcher/markForStitching';
+import { FORMER_ENTITY_REF_SEARCH_KEY } from '../database/operations/stitcher/buildEntitySearch';
 
 import {
   isQueryEntitiesCursorRequest,
@@ -364,6 +366,48 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
 
     return { items: await processRawEntitiesResult(items, request.fields) };
+  }
+
+  async resolveFormerEntityRef(
+    request: ResolveFormerEntityRefRequest,
+  ): Promise<EntitiesBatchResponse> {
+    const miss: EntitiesBatchResponse = {
+      items: { type: 'object', entities: [null] },
+    };
+
+    // An entity that currently has the ref always wins over former names
+    const realRows = await this.database<DbFinalEntitiesRow>('final_entities')
+      .where('final_entities.entity_ref', '=', request.formerEntityRef)
+      .select('final_entities.entity_id')
+      .limit(1);
+    if (realRows.length > 0) {
+      return miss;
+    }
+
+    const claimantRows = await this.database<DbSearchRow>('search')
+      .where('search.key', '=', FORMER_ENTITY_REF_SEARCH_KEY)
+      .andWhere('search.value', '=', request.formerEntityRef)
+      .distinct<Pick<DbSearchRow, 'entity_id'>[]>('search.entity_id')
+      .limit(2);
+    if (claimantRows.length !== 1) {
+      return miss;
+    }
+
+    const [targetRow] = await this.database<DbFinalEntitiesRow>(
+      'final_entities',
+    )
+      .where('final_entities.entity_id', '=', claimantRows[0].entity_id)
+      .select('final_entities.entity_ref');
+    if (!targetRow?.entity_ref) {
+      return miss;
+    }
+
+    return this.entitiesBatch({
+      entityRefs: [targetRow.entity_ref],
+      filter: request.filter,
+      fields: request.fields,
+      credentials: request.credentials,
+    });
   }
 
   async queryEntities(

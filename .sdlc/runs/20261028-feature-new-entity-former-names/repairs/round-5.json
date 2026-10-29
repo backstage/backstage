@@ -1,0 +1,46 @@
+[
+  {
+    "id": "tp_debug_r5_001",
+    "phase": "debug",
+    "task_type": "",
+    "module": "spec",
+    "intent": "feature-new",
+    "pass_id": "20261028-feature-new-entity-former-names",
+    "artifact_path": "docs/features/software-catalog/well-known-annotations.md",
+    "instruction": "Fix `docs/features/software-catalog/well-known-annotations.md` for these problems, changing only what they need, following the conventions in the shared brief:\n1. Gate 3 security review: the person accepted two findings as documented trade-offs; add them to the existing backstage.io/former-names section of this page (a short 'Security considerations' paragraph or list inside that section, following docs/contribute/doc-style-guide.md: plain language, second person, no internal code symbols). (1) Existence of hidden entities (Medium, accepted): to stop a claim from taking over a name the user cannot see, the lookup checks whether an entity currently has the requested name, and how many entities claim it, across all entities, including ones the user cannot read. As a result, someone who can register or edit an entity's annotations could declare a former name and use the redirect lookup to learn whether an entity they cannot see exists at that ref. If entity existence is sensitive in your deployment, restrict who can register or edit catalog locations. (2) Claims across namespaces and kinds (Low, accepted): any entity can claim a former name in any kind or namespace, so anyone who can register an entity could claim the old name of a deleted or renamed entity and receive its old entity-page and TechDocs links. Redirects stay inside Backstage and always show the 'renamed from' notice; when two entities claim the same name no redirect happens, so the real owner can block a takeover by also declaring the name. Recommend reviewing former-names annotations in catalog changes. Change nothing else in the file.\n\nThe file's current text is under Inputs, marked \"current text\"; your edits apply to exactly that text.\n\n## Answer\nReturn ONLY a JSON object {\"path\": \"docs/features/software-catalog/well-known-annotations.md\", \"edits\": [{\"search\": \"<text copied exactly from the current text>\", \"replace\": \"<its replacement>\"}]} with no other text. Each search must appear exactly once in the current text; the edits apply in order.\nIf the file does not exist yet, or the change rewrites most of it, return {\"path\": \"docs/features/software-catalog/well-known-annotations.md\", \"content\": \"<the complete file>\"} instead.",
+    "inputs": [
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/shared.md",
+        "reason": "shared brief: conventions, decisions, the files of this change (stable run record)"
+      },
+      {
+        "path": ".sdlc/runs/20261028-feature-new-entity-former-names/briefs/U40.md",
+        "reason": "this file's brief and the files it depends on"
+      },
+      {
+        "path": "docs/features/software-catalog/well-known-annotations.md",
+        "reason": "current text"
+      }
+    ],
+    "acceptance": [],
+    "budget": {
+      "maxInputTokens": 400000,
+      "maxOutputTokens": 8192
+    },
+    "retry_count": 0,
+    "apply": {
+      "write": true,
+      "mode": "edits",
+      "checks": [
+        {
+          "id": "prettier",
+          "run": "yarn prettier --check '{path}'",
+          "fix": "yarn prettier --write '{path}'"
+        }
+      ],
+      "baseline": false,
+      "verify_timeout_sec": 60,
+      "max_retries": 2
+    }
+  }
+]

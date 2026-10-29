@@ -1,0 +1,244 @@
+[
+  {
+    "id": "U01",
+    "path": "packages/catalog-model/src/entity/constants.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Adds the public ANNOTATION_FORMER_NAMES constant for the 'backstage.io/former-names' annotation next to the view/edit URL annotations.",
+    "rules": [
+      "1. Insert after ANNOTATION_EDIT_URL: a blank line, a TSDoc block shaped like its neighbours ('Annotation for declaring the former entity refs of an entity, as a comma-separated list of entity refs.' plus a '@remarks' line saying short refs take the entity's own kind and namespace, then '@public'), then `export const ANNOTATION_FORMER_NAMES = 'backstage.io/former-names';`.",
+      "2. Change nothing else in the file; src/entity/index.ts already re-exports everything from './constants'."
+    ],
+    "exports": [
+      {
+        "name": "ANNOTATION_FORMER_NAMES",
+        "kind": "const",
+        "params": [],
+        "returns": "'backstage.io/former-names'"
+      }
+    ],
+    "import_line": "import { ANNOTATION_FORMER_NAMES } from '@backstage/catalog-model';",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 36,
+        "to": 36,
+        "first_line": "export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';",
+        "rule": "Insert the documented ANNOTATION_FORMER_NAMES constant (rule 1) after this line."
+      }
+    ],
+    "depends_on": [],
+    "covers": ["FR-1"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U02",
+    "path": "packages/catalog-model/src/entity/formerNames.ts",
+    "action": "create",
+    "phase": "codegen",
+    "behaviour": "Parses an entity's backstage.io/former-names annotation into a deduplicated list of normalized, fully-qualified former entity refs, never throwing.",
+    "rules": [
+      "1. Start with the 2026 Apache header. Import DEFAULT_NAMESPACE and ANNOTATION_FORMER_NAMES from './constants', parseEntityRef and stringifyEntityRef from './ref', and the Entity type from './Entity'.",
+      "2. Read the value with optional chaining: entity.metadata?.annotations?.[ANNOTATION_FORMER_NAMES]; if it is not a string, return [].",
+      "3. Compute the entity's own ref once with stringifyEntityRef({ kind: entity.kind, namespace: entity.metadata.namespace || DEFAULT_NAMESPACE, name: entity.metadata.name }).",
+      "4. Split the value on ',', trim each entry, and skip empty entries.",
+      "5. Parse each entry with parseEntityRef(entry, { defaultKind: entity.kind, defaultNamespace: entity.metadata.namespace || DEFAULT_NAMESPACE }) inside try/catch; a thrown error skips the entry.",
+      "6. Skip the entry when any of the parsed kind, namespace or name contains ':', '/' or whitespace (test with one regex such as /[:/\\s]/).",
+      "7. Normalize with stringifyEntityRef(parsed); skip it when it equals the own ref or was already returned; otherwise append it, keeping first-seen order.",
+      "8. TSDoc on the exported function: summary line, a '@remarks' paragraph describing the comma-separated format, the short-ref defaults, and that malformed entries, duplicates and the entity's own ref are dropped; '@public', '@param entity - The entity to read the annotation from', '@returns A list of lower-cased, fully-qualified entity refs'."
+    ],
+    "exports": [
+      {
+        "name": "getEntityFormerRefs",
+        "kind": "function",
+        "params": [{ "name": "entity", "type": "Entity" }],
+        "returns": "string[]"
+      }
+    ],
+    "import_line": "import { getEntityFormerRefs } from '@backstage/catalog-model';",
+    "style_from": {
+      "path": "packages/catalog-model/src/location/helpers.ts",
+      "reason": "Same package's annotation-reading helper: header, imports from sibling modules, optional chaining on annotations, TSDoc shape."
+    },
+    "uses": [
+      {
+        "path": "packages/catalog-model/src/entity/ref.ts",
+        "lines": [17, 159],
+        "reason": "parseEntityRef and stringifyEntityRef signatures and their throwing behaviour."
+      }
+    ],
+    "depends_on": ["U01"],
+    "covers": ["FR-2", "AC-10", "NFR-2"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U03",
+    "path": "packages/catalog-model/src/entity/index.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Re-exports getEntityFormerRefs from the entity barrel so it becomes part of the package's public API.",
+    "rules": [
+      "1. Add exactly one line, `export { getEntityFormerRefs } from './formerNames';`, keeping the file's alphabetical order by module path (after './EntityEnvelope', before './policies')."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_after",
+        "from": 20,
+        "to": 20,
+        "first_line": "export type { EntityEnvelope } from './EntityEnvelope';",
+        "rule": "Insert `export { getEntityFormerRefs } from './formerNames';` after this line."
+      }
+    ],
+    "depends_on": ["U02"],
+    "covers": ["FR-2"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U04",
+    "path": "packages/catalog-model/src/entity/formerNames.test.ts",
+    "action": "create",
+    "phase": "tests",
+    "behaviour": "Unit tests for getEntityFormerRefs covering full and short refs, whitespace and empty entries, malformed entries, duplicates, self-ref and a missing annotation.",
+    "rules": [
+      "1. Start with the 2026 Apache header; import getEntityFormerRefs from './formerNames', ANNOTATION_FORMER_NAMES from './constants' and the Entity type from './Entity'.",
+      "2. Build entities with a small local factory taking the annotation value and optional namespace; use kind 'Component' and name 'current'.",
+      "3. One describe('getEntityFormerRefs') with a few it blocks, each holding several expect(...).toEqual([...]) assertions on exact arrays."
+    ],
+    "style_from": {
+      "path": "packages/catalog-model/src/entity/ref.test.ts",
+      "reason": "Package test shape: nested describe, plain it, several expects per it."
+    },
+    "tests": [
+      {
+        "name": "returns normalized full refs",
+        "given": "annotation 'Component:Other/Old-Name, api:default/old-api'",
+        "expect": "['component:other/old-name', 'api:default/old-api']"
+      },
+      {
+        "name": "defaults kind and namespace for short refs",
+        "given": "entity in namespace 'team-a' with 'old-name, legacy/older' and an entity without namespace with 'old-name'",
+        "expect": "['component:team-a/old-name', 'component:legacy/older'] and ['component:default/old-name']"
+      },
+      {
+        "name": "ignores whitespace, empty and malformed entries",
+        "given": "' , old-name ,, :bad, a:b/c/d, x/y:z, na me '",
+        "expect": "only ['component:default/old-name']"
+      },
+      {
+        "name": "removes duplicates and the entity's own ref",
+        "given": "'old-name, component:default/OLD-NAME, current, component:default/current'",
+        "expect": "['component:default/old-name']"
+      },
+      {
+        "name": "returns an empty list without a usable annotation",
+        "given": "no annotations, an empty string value, and only commas",
+        "expect": "[] in each case"
+      }
+    ],
+    "depends_on": ["U02"],
+    "covers": ["AC-1"],
+    "checks": ["prettier", "eslint", "jest"]
+  },
+  {
+    "id": "U05",
+    "path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.ts",
+    "action": "edit",
+    "phase": "codegen",
+    "behaviour": "Writes one search row per declared former entity ref under the dedicated 'former_entity_ref' key while building an entity's search rows at stitch time.",
+    "rules": [
+      "1. Add getEntityFormerRefs to the existing '@backstage/catalog-model' import.",
+      "2. After MAX_VALUE_LENGTH, export a documented constant: a short comment saying the key holds former entity refs from the backstage.io/former-names annotation and cannot collide with entity field paths, then `export const FORMER_ENTITY_REF_SEARCH_KEY = 'former_entity_ref';`.",
+      "3. After the relations loop and before the case-collision check, loop over getEntityFormerRefs(entity) and push { key: FORMER_ENTITY_REF_SEARCH_KEY, value: formerRef } only when formerRef.length <= MAX_VALUE_LENGTH, so an over-long ref is skipped instead of becoming a null row; precede the loop with a one-line comment.",
+      "4. Do not touch traverse, mapToRows, SPECIAL_KEYS or the dedup logic; rows are replaced on every restitch by the existing sync, so stale former refs disappear automatically."
+    ],
+    "exports": [
+      {
+        "name": "FORMER_ENTITY_REF_SEARCH_KEY",
+        "kind": "const",
+        "params": [],
+        "returns": "'former_entity_ref'"
+      }
+    ],
+    "import_line": "import { FORMER_ENTITY_REF_SEARCH_KEY } from '../database/operations/stitcher/buildEntitySearch';",
+    "sites": [
+      {
+        "id": "S1",
+        "at": "replace",
+        "from": 17,
+        "to": 17,
+        "first_line": "import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';",
+        "rule": "Import DEFAULT_NAMESPACE, Entity and getEntityFormerRefs from '@backstage/catalog-model'."
+      },
+      {
+        "id": "S2",
+        "at": "insert_after",
+        "from": 39,
+        "to": 39,
+        "first_line": "const MAX_VALUE_LENGTH = 200;",
+        "rule": "Insert a blank line, the comment and the exported FORMER_ENTITY_REF_SEARCH_KEY constant (rule 2)."
+      },
+      {
+        "id": "S3",
+        "at": "insert_after",
+        "from": 212,
+        "to": 212,
+        "first_line": "}",
+        "rule": "After the relations loop's closing brace, insert a blank line, the comment and the former-ref loop (rule 3)."
+      }
+    ],
+    "uses": [
+      {
+        "path": "packages/catalog-model/src/location/helpers.ts",
+        "lines": [17, 40],
+        "reason": "Shows how catalog-model helpers are imported and called from consumers."
+      }
+    ],
+    "depends_on": ["U03"],
+    "covers": ["FR-3", "FR-4", "FR-5", "NFR-1"],
+    "checks": ["prettier", "eslint"]
+  },
+  {
+    "id": "U06",
+    "path": "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.test.ts",
+    "action": "edit",
+    "phase": "tests",
+    "behaviour": "Adds buildEntitySearch cases proving former refs become 'former_entity_ref' rows, short and malformed values are handled, over-long refs are skipped, and rows vanish when the annotation is removed.",
+    "rules": [
+      "1. Add the new it blocks inside describe('buildEntitySearch') (the inner one), after the 'rejects duplicate keys' case.",
+      "2. Use the string literals 'backstage.io/former-names' and 'former_entity_ref' in the tests so they pin the annotation key and the row key; filter rows with rows.filter(r => r.key === 'former_entity_ref').",
+      "3. Keep the file's style: pure function calls, expect(...).toEqual([...]) on row objects with entity_id, key, original_value and value."
+    ],
+    "sites": [
+      {
+        "id": "S1",
+        "at": "insert_before",
+        "from": 344,
+        "to": 344,
+        "first_line": "});",
+        "rule": "Insert the new it blocks (listed in tests) before the closing of the inner describe('buildEntitySearch')."
+      }
+    ],
+    "tests": [
+      {
+        "name": "adds former entity refs as search rows",
+        "given": "kind 'Component', namespace 'ns', annotation 'old-name, other/older, api:x/y'",
+        "expect": "exactly three 'former_entity_ref' rows with values 'component:ns/old-name', 'component:other/older', 'api:x/y' and matching original_value"
+      },
+      {
+        "name": "skips malformed and over-long former refs without failing",
+        "given": "annotation ':bad, a:b/c/d, ' plus a 250-character name entry, and a valid 'old-name'",
+        "expect": "buildEntitySearch does not throw and only the 'component:default/old-name' row exists, with no null-valued 'former_entity_ref' row"
+      },
+      {
+        "name": "omits former entity ref rows when the annotation is removed",
+        "given": "the same entity built once with the annotation and once without it",
+        "expect": "first result has 'former_entity_ref' rows, second has none, and all other rows are identical"
+      }
+    ],
+    "depends_on": ["U05"],
+    "covers": ["AC-2"],
+    "checks": ["prettier", "eslint", "jest"]
+  }
+]
