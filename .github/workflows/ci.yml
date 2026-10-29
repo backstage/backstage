@@ -138,6 +138,9 @@ jobs:
       - name: verify plugin directory
         run: node scripts/verify-plugin-directory.js
 
+      - name: verify agent skills
+        run: node scripts/verify-skills.js
+
       - name: test release scripts
         run: yarn node --test scripts/*.test.js
 

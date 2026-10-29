@@ -9,6 +9,7 @@ on:
       - 'mkdocs.yml'
       - 'mkdocs-ci.yml'
       - 'docs/**'
+      - '.agents/skills/**'
 
 permissions:
   contents: read

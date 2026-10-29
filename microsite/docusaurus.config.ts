@@ -22,7 +22,7 @@
 /** @type{import('prism-react-renderer').PrismTheme} **/
 // @ts-ignore
 import { themes } from 'prism-react-renderer';
-import { cpSync, existsSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import type * as Preset from '@docusaurus/preset-classic';
 import { Config, Plugin } from '@docusaurus/types';
@@ -34,8 +34,10 @@ const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
 const useVersionedDocs = existsSync('versions.json');
-const wellKnownDocsPath = resolvePath(__dirname, '../docs/.well-known');
-const wellKnownPublicPath = '/.well-known';
+// Agent skills live in the repo root so that agents working in the repo find
+// them. Only the skills listed in index.json are published.
+const skillsPath = resolvePath(__dirname, '../.agents/skills');
+const skillsPublicPath = '/.well-known/skills';
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
@@ -294,12 +296,12 @@ const config: Config = {
       },
     }),
     () => ({
-      name: 'publish-well-known-docs',
+      name: 'publish-skills',
       getPathsToWatch() {
-        return [wellKnownDocsPath];
+        return [skillsPath];
       },
       configureWebpack() {
-        if (!existsSync(wellKnownDocsPath)) {
+        if (!existsSync(skillsPath)) {
           return undefined;
         }
 
@@ -307,8 +309,8 @@ const config: Config = {
           devServer: {
             static: [
               {
-                publicPath: wellKnownPublicPath,
-                directory: wellKnownDocsPath,
+                publicPath: skillsPublicPath,
+                directory: skillsPath,
                 staticOptions: {
                   dotfiles: 'allow',
                 },
@@ -318,13 +320,23 @@ const config: Config = {
         };
       },
       async postBuild({ outDir }: { outDir: string }) {
-        if (!existsSync(wellKnownDocsPath)) {
+        const indexPath = resolvePath(skillsPath, 'index.json');
+        if (!existsSync(indexPath)) {
           return;
         }
 
-        cpSync(wellKnownDocsPath, resolvePath(outDir, '.well-known'), {
-          recursive: true,
-        });
+        // Only publish the skills listed in index.json. Other skills in the
+        // folder are for working on this repository only.
+        const targetPath = resolvePath(outDir, `.${skillsPublicPath}`);
+        const { skills }: { skills: { name: string }[] } = JSON.parse(
+          readFileSync(indexPath, 'utf8'),
+        );
+        cpSync(indexPath, resolvePath(targetPath, 'index.json'));
+        for (const { name } of skills) {
+          cpSync(resolvePath(skillsPath, name), resolvePath(targetPath, name), {
+            recursive: true,
+          });
+        }
       },
     }),
     ctx =>
