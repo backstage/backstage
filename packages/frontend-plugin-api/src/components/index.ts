@@ -30,7 +30,3 @@ export {
   type PageLayoutProps,
   type PageLayoutTab,
 } from './PageLayout';
-export {
-  ExtensionFragment,
-  type ExtensionFragmentProps,
-} from './ExtensionFragment';
