@@ -54,7 +54,7 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-yaml": "^4.0.0",
-    "@rspack/core": "^2.2.2",
+    "@rspack/core": "^2.3.0",
     "@rspack/dev-server": "^2.2.1",
     "@rspack/plugin-react-refresh": "^2.0.2",
     "@swc/core": "^1.15.6",
