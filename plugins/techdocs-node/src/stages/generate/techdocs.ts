@@ -44,9 +44,11 @@ import {
   GeneratorOptions,
   GeneratorRunInType,
   GeneratorRunOptions,
+  KubernetesOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
+import { KubernetesJobRunner } from './KubernetesJobRunner';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from './types';
 
@@ -91,7 +93,19 @@ export class TechdocsGenerator implements GeneratorBase {
   }) {
     this.logger = options.logger;
     this.options = readGeneratorConfig(options.config, options.logger);
-    this.containerRunner = options.containerRunner;
+    if (!options.containerRunner && this.options.runIn === 'kubernetes') {
+      if (!this.options.kubernetes) {
+        throw new Error(
+          `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
+        );
+      }
+      this.containerRunner = new KubernetesJobRunner(
+        this.options.kubernetes,
+        this.logger,
+      );
+    } else {
+      this.containerRunner = options.containerRunner;
+    }
     this.scmIntegrations = options.scmIntegrations;
   }
 
@@ -202,6 +216,7 @@ export class TechdocsGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
+        case 'kubernetes':
         case 'docker': {
           const containerRunner =
             this.containerRunner || new DockerContainerRunner();
@@ -283,16 +298,22 @@ export function readGeneratorConfig(
     );
   }
 
+  const runIn =
+    legacyGeneratorType ??
+    (config.getOptionalString('techdocs.generator.runIn') as
+      | GeneratorRunInType
+      | undefined) ??
+    'docker';
+
   return {
-    runIn:
-      legacyGeneratorType ??
-      config.getOptionalString('techdocs.generator.runIn') ??
-      'docker',
+    runIn,
     dockerImage: config.getOptionalString('techdocs.generator.dockerImage'),
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
     pullOptions: config.getOptional<ContainerRunnerPullOptions>(
       'techdocs.generator.pullOptions',
     ),
+    kubernetes:
+      runIn === 'kubernetes' ? readKubernetesOptions(config) : undefined,
     omitTechdocsCoreMkdocsPlugin: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
     ),
@@ -312,4 +333,56 @@ export function readGeneratorConfig(
       'techdocs.generator.mkdocs.disableExternalFonts',
     ),
   };
+}
+
+const NODE_AFFINITIES = ['preferred', 'required', 'none'];
+
+// Backend config isn't validated against its schema at runtime, so check the types here
+function readKubernetesOptions(config: Config): KubernetesOptions | undefined {
+  const kubernetes = config.getOptionalConfig('techdocs.generator.kubernetes');
+  if (!kubernetes) {
+    return undefined;
+  }
+  const nodeAffinity = kubernetes.getOptionalString('nodeAffinity');
+  if (nodeAffinity !== undefined && !NODE_AFFINITIES.includes(nodeAffinity)) {
+    throw new Error(
+      `Invalid config value "${nodeAffinity}" provided in 'techdocs.generator.kubernetes.nodeAffinity', expected one of ${NODE_AFFINITIES.join(
+        ', ',
+      )}`,
+    );
+  }
+  const resources = kubernetes.getOptionalConfig('resources');
+  return {
+    namespace: kubernetes.getOptionalString('namespace'),
+    volumeClaimName: kubernetes.getString('volumeClaimName'),
+    workRoot: kubernetes.getString('workRoot'),
+    nodeName: kubernetes.getOptionalString('nodeName'),
+    nodeAffinity: nodeAffinity as KubernetesOptions['nodeAffinity'],
+    imagePullSecrets: kubernetes.getOptionalStringArray('imagePullSecrets'),
+    activeDeadlineSeconds: kubernetes.getOptionalNumber(
+      'activeDeadlineSeconds',
+    ),
+    ttlSecondsAfterFinished: kubernetes.getOptionalNumber(
+      'ttlSecondsAfterFinished',
+    ),
+    cleanupIntervalSeconds: kubernetes.getOptionalNumber(
+      'cleanupIntervalSeconds',
+    ),
+    resources: resources && {
+      requests: readQuantities(resources, 'requests'),
+      limits: readQuantities(resources, 'limits'),
+    },
+  };
+}
+
+function readQuantities(
+  config: Config,
+  key: string,
+): Record<string, string> | undefined {
+  const quantities = config.getOptionalConfig(key);
+  return quantities
+    ? Object.fromEntries(
+        quantities.keys().map(name => [name, quantities.getString(name)]),
+      )
+    : undefined;
 }

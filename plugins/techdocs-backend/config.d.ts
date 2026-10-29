@@ -37,7 +37,7 @@ export interface Config {
       /**
        * Where to run the techdocs (mkdocs) generator
        */
-      runIn: 'local' | 'docker';
+      runIn: 'local' | 'docker' | 'kubernetes';
 
       /**
        * Override the default techdocs docker image
@@ -61,6 +61,60 @@ export interface Config {
        * Must match a registered generator. Defaults to "mkdocs".
        */
       defaultEngine?: string;
+
+      /**
+       * Settings for kubernetes runner
+       */
+      kubernetes?: {
+        /**
+         * the namespace in which the job is run (typically "backstage")
+         */
+        namespace?: string;
+        /**
+         * Name of the shared PVC claim between Backstage and K8s
+         */
+        volumeClaimName: string;
+        /**
+         * must match where the PVC is mounted in the Backstage pod, which is normally backend.workingDirectory.
+         */
+        workRoot: string;
+        /**
+         * Name of the node Backstage runs on, used to schedule build Jobs next to it.
+         * Usually set from the pod's spec.nodeName through the downward API.
+         */
+        nodeName?: string;
+        /**
+         * How strongly build Jobs are scheduled onto nodeName. "required" is needed for
+         * ReadWriteOnce volumes on network block storage. Defaults to "preferred", and has
+         * no effect without nodeName.
+         */
+        nodeAffinity?: 'preferred' | 'required' | 'none';
+        /**
+         * Names of Secrets used to pull the build image from a private registry.
+         * pullOptions is not used when runIn is "kubernetes".
+         */
+        imagePullSecrets?: string[];
+        /**
+         * Maximum duration of a build before it is stopped. Defaults to 600.
+         */
+        activeDeadlineSeconds?: number;
+        /**
+         * How long finished build Jobs are kept before Kubernetes deletes them. Defaults to 300.
+         */
+        ttlSecondsAfterFinished?: number;
+        /**
+         * Minimum time between checks for build directories left on the shared volume
+         * by interrupted builds. Defaults to 600.
+         */
+        cleanupIntervalSeconds?: number;
+        /**
+         * Resource requests and limits for the build container.
+         */
+        resources?: {
+          requests?: { [name: string]: string };
+          limits?: { [name: string]: string };
+        };
+      };
 
       /**
        * Override behavior for mkdocs.yml-based builds. Unless noted otherwise,
