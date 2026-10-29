@@ -22,8 +22,21 @@ import { GitHubRepoOwnerPicker } from './GitHubRepoOwnerPicker';
 import { act, fireEvent, waitFor, screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = useScaffolderTheme as jest.Mock;
 
 describe('GitHubRepoOwnerPicker', () => {
+  beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
+  });
+
   const scaffolderApiMock: Partial<ScaffolderApi> = {
     autocomplete: jest
       .fn()
@@ -145,5 +158,118 @@ describe('GitHubRepoOwnerPicker', () => {
     // Verify that the excluded owners are not shown
     await waitFor(() => expect(getByText('owner2')).toBeInTheDocument());
     expect(screen.queryByText('owner1')).not.toBeInTheDocument();
+  });
+
+  describe('with bui theme', () => {
+    beforeEach(() => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+    });
+
+    it('renders a combobox and calls onChange when selecting an option', async () => {
+      const onChange = jest.fn();
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitHubRepoOwnerPicker
+            onChange={onChange}
+            state={{
+              host: 'github.com',
+              owner: '',
+            }}
+            rawErrors={[]}
+            accessToken="token"
+          />
+        </TestApiProvider>,
+      );
+
+      const combobox = getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
+
+      await userEvent.click(combobox);
+      await waitFor(() => expect(getByText('owner1')).toBeInTheDocument());
+
+      await userEvent.click(getByText('owner1'));
+      expect(onChange).toHaveBeenCalledWith({ owner: 'owner1' });
+    });
+
+    const ControlledOwnerPicker = ({
+      onStateChange,
+    }: {
+      onStateChange?: (state: { owner: string }) => void;
+    }) => {
+      const [state, setState] = useState({
+        host: 'github.com',
+        owner: '',
+      });
+
+      return (
+        <GitHubRepoOwnerPicker
+          onChange={changes => {
+            setState(prev => {
+              const next = { ...prev, ...changes };
+              onStateChange?.(next);
+              return next;
+            });
+          }}
+          state={state}
+          rawErrors={[]}
+          accessToken="token"
+        />
+      );
+    };
+
+    it('preserves custom text when selecting an option, typing a suffix, and tabbing out', async () => {
+      const onStateChange = jest.fn();
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <ControlledOwnerPicker onStateChange={onStateChange} />
+        </TestApiProvider>,
+      );
+
+      const combobox = getByRole('combobox');
+      await userEvent.click(combobox);
+      await waitFor(() => expect(getByText('owner1')).toBeInTheDocument());
+
+      await userEvent.click(getByText('owner1'));
+      expect(onStateChange).toHaveBeenCalledWith(
+        expect.objectContaining({ owner: 'owner1' }),
+      );
+
+      await userEvent.type(combobox, '-custom');
+      await userEvent.tab();
+
+      expect(combobox).toHaveValue('owner1-custom');
+      expect(onStateChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ owner: 'owner1-custom' }),
+      );
+    });
+
+    it('clears selection when user clears input and tabs out', async () => {
+      const onStateChange = jest.fn();
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <ControlledOwnerPicker onStateChange={onStateChange} />
+        </TestApiProvider>,
+      );
+
+      const combobox = getByRole('combobox');
+      await userEvent.click(combobox);
+      await waitFor(() => expect(getByText('owner1')).toBeInTheDocument());
+
+      await userEvent.click(getByText('owner1'));
+      expect(onStateChange).toHaveBeenCalledWith(
+        expect.objectContaining({ owner: 'owner1' }),
+      );
+
+      await userEvent.clear(combobox);
+      await userEvent.tab();
+
+      expect(combobox).toHaveValue('');
+      expect(onStateChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ owner: '' }),
+      );
+    });
   });
 });

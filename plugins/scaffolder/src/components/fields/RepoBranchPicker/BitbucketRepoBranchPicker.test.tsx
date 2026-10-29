@@ -26,10 +26,23 @@ import {
   waitFor,
   screen,
 } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = useScaffolderTheme as jest.Mock;
 
 describe('BitbucketRepoBranchPicker', () => {
+  beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
+  });
+
   const scaffolderApiMock: Partial<ScaffolderApi> = {
     autocomplete: jest.fn().mockResolvedValue({ results: [{ id: 'branch1' }] }),
   };
@@ -124,6 +137,123 @@ describe('BitbucketRepoBranchPicker', () => {
     await userEvent.click(getByText('branch1'));
     expect(onChange).toHaveBeenCalledWith({
       branch: 'branch1',
+    });
+  });
+
+  describe('with bui theme', () => {
+    beforeEach(() => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+    });
+
+    it('renders a combobox and calls onChange when selecting an option', async () => {
+      const onChange = jest.fn();
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoBranchPicker
+            onChange={onChange}
+            state={{
+              host: 'bitbucket.org',
+              branch: '',
+              workspace: 'foo',
+              repository: 'bar',
+            }}
+            rawErrors={[]}
+            accessToken="token"
+          />
+        </TestApiProvider>,
+      );
+
+      const combobox = getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
+
+      await userEvent.click(combobox);
+      await waitFor(() => expect(getByText('branch1')).toBeInTheDocument());
+
+      await userEvent.click(getByText('branch1'));
+      expect(onChange).toHaveBeenCalledWith({ branch: 'branch1' });
+    });
+
+    const ControlledBranchPicker = ({
+      onStateChange,
+    }: {
+      onStateChange?: (state: { branch: string }) => void;
+    }) => {
+      const [state, setState] = useState({
+        host: 'bitbucket.org',
+        workspace: 'foo',
+        repository: 'bar',
+        branch: '',
+      });
+
+      return (
+        <BitbucketRepoBranchPicker
+          onChange={changes => {
+            setState(prev => {
+              const next = { ...prev, ...changes };
+              onStateChange?.(next);
+              return next;
+            });
+          }}
+          state={state}
+          rawErrors={[]}
+          accessToken="token"
+        />
+      );
+    };
+
+    it('preserves custom text when selecting an option, typing a suffix, and tabbing out', async () => {
+      const onStateChange = jest.fn();
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <ControlledBranchPicker onStateChange={onStateChange} />
+        </TestApiProvider>,
+      );
+
+      const combobox = getByRole('combobox');
+      await userEvent.click(combobox);
+      await waitFor(() => expect(getByText('branch1')).toBeInTheDocument());
+
+      await userEvent.click(getByText('branch1'));
+      expect(onStateChange).toHaveBeenCalledWith(
+        expect.objectContaining({ branch: 'branch1' }),
+      );
+
+      await userEvent.type(combobox, '-custom');
+      await userEvent.tab();
+
+      expect(combobox).toHaveValue('branch1-custom');
+      expect(onStateChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ branch: 'branch1-custom' }),
+      );
+    });
+
+    it('clears selection when user clears input and tabs out', async () => {
+      const onStateChange = jest.fn();
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <ControlledBranchPicker onStateChange={onStateChange} />
+        </TestApiProvider>,
+      );
+
+      const combobox = getByRole('combobox');
+      await userEvent.click(combobox);
+      await waitFor(() => expect(getByText('branch1')).toBeInTheDocument());
+
+      await userEvent.click(getByText('branch1'));
+      expect(onStateChange).toHaveBeenCalledWith(
+        expect.objectContaining({ branch: 'branch1' }),
+      );
+
+      await userEvent.clear(combobox);
+      await userEvent.tab();
+
+      expect(combobox).toHaveValue('');
+      expect(onStateChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ branch: '' }),
+      );
     });
   });
 });

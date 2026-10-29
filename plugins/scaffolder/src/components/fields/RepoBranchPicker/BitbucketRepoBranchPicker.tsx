@@ -92,6 +92,8 @@ export const BitbucketRepoBranchPicker = ({
         onSelectionChange={(key: Key | null) => {
           if (key !== null) {
             onChange({ branch: String(key) });
+          } else if (!branch?.trim()) {
+            onChange({ branch: '' });
           }
         }}
         options={options}
