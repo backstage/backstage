@@ -25,24 +25,17 @@ const {
 } = require('node:path');
 
 /**
- * This script checks that agent skills are set up consistently:
+ * This script checks that the agent skills in .agents/skills are consistent:
+ * each skill's SKILL.md name matches its directory, and each skill listed in
+ * index.json, which are the ones published to backstage.io, has the same
+ * description and files as its directory. Unlisted skills are only used
+ * within this repository.
  *
- * - Every published skill in docs/.well-known/skills has a SKILL.md whose
- *   name matches its directory, and an up-to-date entry in index.json.
- * - Every published skill is symlinked into .claude/skills, so that agents
- *   working in this repo can find it, and there are no stale symlinks.
- * - Every skill in .claude/skills is a <name>/SKILL.md directory.
- * - .agents/skills is a symlink to .claude/skills.
- *
- * It can be run with a `--fix` flag to automatically fix the symlinks and
- * index.json.
+ * It can be run with a `--fix` flag to automatically fix index.json.
  */
 
-const rootDir = resolvePath(__dirname, '..');
-const publishedDir = joinPath(rootDir, 'docs/.well-known/skills');
-const indexPath = joinPath(publishedDir, 'index.json');
-const repoSkillsDir = joinPath(rootDir, '.claude/skills');
-const agentsSkillsLink = joinPath(rootDir, '.agents/skills');
+const skillsDir = resolvePath(__dirname, '../.agents/skills');
+const indexPath = joinPath(skillsDir, 'index.json');
 
 function readFrontMatter(skillFile) {
   const content = fs.readFileSync(skillFile, 'utf8');
@@ -50,57 +43,40 @@ function readFrontMatter(skillFile) {
   return match ? parseYaml(match[1]) ?? {} : {};
 }
 
-function listFiles(dir) {
-  return fs
-    .readdirSync(dir, { recursive: true, withFileTypes: true })
-    .filter(entry => entry.isFile())
-    .map(entry =>
-      relativePath(dir, joinPath(entry.parentPath, entry.name)).replaceAll(
-        '\\',
-        '/',
-      ),
-    );
-}
-
-function readLink(path) {
-  try {
-    return fs.readlinkSync(path).replaceAll('\\', '/');
-  } catch {
-    return undefined;
-  }
-}
-
 async function main(args) {
   const shouldFix = args.includes('--fix');
   const errors = [];
   const fixable = [];
 
-  // Published skills
-  const published = fs
-    .readdirSync(publishedDir, { withFileTypes: true })
-    .filter(entry => entry.isDirectory())
-    .map(entry => entry.name)
-    .sort();
-
   const skills = new Map();
-  for (const name of published) {
-    const skillFile = joinPath(publishedDir, name, 'SKILL.md');
+  for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const name = entry.name;
+    const skillFile = joinPath(skillsDir, name, 'SKILL.md');
     if (!fs.existsSync(skillFile)) {
-      errors.push(`docs/.well-known/skills/${name} has no SKILL.md`);
+      errors.push(`.agents/skills/${name} has no SKILL.md`);
       continue;
     }
     const frontMatter = readFrontMatter(skillFile);
-    if (frontMatter.name !== name) {
+    if (frontMatter.name !== name || !frontMatter.description) {
       errors.push(
-        `docs/.well-known/skills/${name}/SKILL.md has name '${frontMatter.name}', expected '${name}'`,
+        `.agents/skills/${name}/SKILL.md must have name '${name}' and a description`,
       );
     }
-    if (!frontMatter.description) {
-      errors.push(
-        `docs/.well-known/skills/${name}/SKILL.md has no description`,
+    const files = fs
+      .readdirSync(joinPath(skillsDir, name), {
+        recursive: true,
+        withFileTypes: true,
+      })
+      .filter(file => file.isFile())
+      .map(file =>
+        relativePath(
+          joinPath(skillsDir, name),
+          joinPath(file.parentPath, file.name),
+        ).replaceAll('\\', '/'),
       );
-    }
-    const files = listFiles(joinPath(publishedDir, name));
     skills.set(name, {
       description: String(frontMatter.description ?? '')
         .replace(/\s+/g, ' ')
@@ -109,95 +85,40 @@ async function main(args) {
     });
   }
 
-  // index.json
   const index = await fs.readJson(indexPath);
-  const entries = index.skills.filter(entry => {
+  index.skills = index.skills.filter(entry => {
     if (skills.has(entry.name)) {
       return true;
     }
     fixable.push(`index.json lists '${entry.name}', which does not exist`);
     return false;
   });
-  for (const [name, skill] of skills) {
-    const entry = entries.find(e => e.name === name);
-    if (!entry) {
-      fixable.push(`index.json is missing '${name}'`);
-      entries.push({ name, ...skill });
-      continue;
-    }
+  for (const entry of index.skills) {
+    const skill = skills.get(entry.name);
     if (entry.description !== skill.description) {
       fixable.push(
-        `index.json description for '${name}' does not match its SKILL.md`,
+        `index.json description for '${entry.name}' does not match its SKILL.md`,
       );
       entry.description = skill.description;
     }
-    const sameFiles =
-      entry.files.length === skill.files.length &&
-      skill.files.every(f => entry.files.includes(f));
-    if (!sameFiles) {
-      fixable.push(`index.json files for '${name}' do not match its directory`);
+    const files = entry.files ?? [];
+    if (
+      files.length !== skill.files.length ||
+      !skill.files.every(f => files.includes(f))
+    ) {
+      fixable.push(
+        `index.json files for '${entry.name}' do not match its directory`,
+      );
       entry.files = skill.files;
     }
   }
 
-  // .claude/skills
-  for (const entry of fs.readdirSync(repoSkillsDir, { withFileTypes: true })) {
-    const path = joinPath(repoSkillsDir, entry.name);
-    const link = readLink(path);
-    if (link) {
-      const target = `../../docs/.well-known/skills/${entry.name}`;
-      if (link !== target || !skills.has(entry.name)) {
-        fixable.push(
-          `.claude/skills/${entry.name} links to '${link}', which is not a published skill`,
-        );
-        if (shouldFix) {
-          fs.removeSync(path);
-        }
-      }
-    } else if (!entry.isDirectory()) {
-      errors.push(
-        `.claude/skills/${entry.name} must be a directory with a SKILL.md file`,
-      );
-    } else if (!fs.existsSync(joinPath(path, 'SKILL.md'))) {
-      errors.push(`.claude/skills/${entry.name} has no SKILL.md`);
-    } else if (skills.has(entry.name)) {
-      errors.push(
-        `.claude/skills/${entry.name} has the same name as a published skill`,
-      );
-    } else if (
-      readFrontMatter(joinPath(path, 'SKILL.md')).name !== entry.name
-    ) {
-      errors.push(
-        `.claude/skills/${entry.name}/SKILL.md name does not match its directory`,
-      );
-    }
-  }
-  for (const name of skills.keys()) {
-    const path = joinPath(repoSkillsDir, name);
-    const target = `../../docs/.well-known/skills/${name}`;
-    if (readLink(path) !== target && !fs.existsSync(path)) {
-      fixable.push(`.claude/skills/${name} is missing a symlink to ${target}`);
-      if (shouldFix) {
-        fs.symlinkSync(target, path, 'dir');
-      }
-    }
-  }
-
-  // .agents/skills
-  if (readLink(agentsSkillsLink) !== '../.claude/skills') {
-    fixable.push('.agents/skills must be a symlink to ../.claude/skills');
-    if (shouldFix) {
-      fs.removeSync(agentsSkillsLink);
-      fs.ensureDirSync(joinPath(rootDir, '.agents'));
-      fs.symlinkSync('../.claude/skills', agentsSkillsLink, 'dir');
-    }
-  }
-
   if (shouldFix && fixable.length) {
-    const json = JSON.stringify({ ...index, skills: entries }, null, 2);
     await fs.writeFile(
       indexPath,
-      await prettier.format(json, { filepath: indexPath }),
+      await prettier.format(JSON.stringify(index, null, 2), {
+        filepath: indexPath,
+      }),
     );
   }
 

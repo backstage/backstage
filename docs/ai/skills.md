@@ -36,13 +36,13 @@ guidance without running a codemod."
 
 ## Contributing New Skills
 
-Skills are authored in the Backstage monorepo at `docs/.well-known/skills/`. Each skill lives in its own subdirectory and must include a `SKILL.md` file as the primary entry point.
+Skills are authored in the Backstage monorepo at `.agents/skills/`. Each skill lives in its own subdirectory and must include a `SKILL.md` file as the primary entry point. AI assistants working in the Backstage repository load every skill in this folder. `.claude/skills/` links to the same folder for Claude Code.
 
 ### Skill directory layout
 
 ```text
-docs/.well-known/skills/
-  index.json                        # Published index of all skills
+.agents/skills/
+  index.json                        # Skills published to backstage.io
   <skill-name>/
     SKILL.md                        # Primary skill entry point (required)
     <optional-supporting-files>
@@ -69,15 +69,25 @@ The `name` must match the directory name. The `description` is shown to users wh
 
 Keep skills focused on a single, well-defined task. A skill that tries to cover too many scenarios is harder to use effectively. Prefer concrete, step-by-step guidance, working code examples, and explicit notes about common pitfalls.
 
-### Registering the skill
+### Publishing the skill
 
-After adding, renaming, or removing a skill, or changing its description or files, run:
+Only the skills listed in `.agents/skills/index.json` are published to `backstage.io` and can be installed with `npx skills add`. Leave a skill out of the index if it is only useful for working on the Backstage repository itself, such as release tooling.
+
+To publish a skill, add an entry with its name to the index:
+
+```json
+{
+  "skills": [{ "name": "<skill-name>" }]
+}
+```
+
+Then fill in its description and files from the skill folder:
 
 ```bash
 node scripts/verify-skills.js --fix
 ```
 
-This updates `docs/.well-known/skills/index.json` from the skill's `SKILL.md` front matter and files. It also adds a symbolic link to the skill in `.claude/skills/`, also available as `.agents/skills/`, so AI assistants working in the Backstage repository can use it. CI runs the same script without `--fix` and fails if anything is out of date.
+Run the same command after renaming or removing a published skill, or changing its description or files. CI runs the script without `--fix` and fails if the index is out of date.
 
 ### Review process
 
