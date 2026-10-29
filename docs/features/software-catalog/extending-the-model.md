@@ -370,6 +370,55 @@ and have a source and target that have to be an
 have to make any changes to the catalog backend in order to accept new relation
 types.
 
+### Relations to custom kinds with catalog model layers
+
+When a catalog model source is registered, the catalog uses model-based
+processing for built-in kinds. The model emits an inverse relation only when a
+relation pair declares the source kind, target kind, and relation type. For
+example, the default model declares `dependsOn` and `dependencyOf` between
+Components and Resources, but does not include custom target kinds.
+
+If a Component or Resource depends on a custom `Technology` entity and the
+catalog should expose the inverse `dependencyOf` relation, add a relation pair
+to a catalog model layer and register that layer as a model source:
+
+```ts
+const technologyRelations = createCatalogModelLayer({
+  layerId: 'example.com/technology-relations',
+  builder: model => {
+    model.addRelationPair({
+      fromKind: ['Component', 'Resource'],
+      toKind: 'Technology',
+      description: 'A component or resource depends on a technology.',
+      forward: { type: 'dependsOn', title: 'depends on' },
+      reverse: { type: 'dependencyOf', title: 'dependency of' },
+    });
+    model.addRelationPair({
+      fromKind: ['Component', 'Resource'],
+      toKind: 'Technology',
+      description: 'A technology is depended on by a component or resource.',
+      forward: { type: 'dependencyOf', title: 'dependency of' },
+      reverse: { type: 'dependsOn', title: 'depends on' },
+    });
+  },
+});
+```
+
+The second pair in this example is needed when a Component or Resource also
+uses `spec.dependencyOf` to reference a Technology; each pair describes the
+relation type emitted by the entity's field.
+
+Register the layer with `provideStaticCatalogModel({ layers: [...] })` or
+through the catalog model extension point. The custom kind can continue to be
+validated and processed by its existing catalog processor; it does not need to
+be declared as a model kind solely for the relation pair.
+
+Relation pairs do not override a relation field's `allowedKinds`. If a field
+restricts its targets, custom kinds must be permitted by that field definition
+before either direction of the relation is emitted. Without a model source,
+the legacy built-in processor continues to emit inverse relations for these
+custom targets.
+
 At the time of writing this, we do not have any namespacing/prefixing scheme for
 relation types. The type is also not validated to contain only some particular
 set of characters. Until rules for this are settled, you should stick to using
