@@ -164,12 +164,16 @@ The Backstage project uses [Node.js](https://nodejs.org/) for both its developme
 tooling and backend runtime. In order for expectations to be clear we use the
 following schedule for determining the [Node.js releases](https://nodejs.org/en/about/previous-releases) that we support:
 
-- At any given point in time we support exactly two adjacent even-numbered
-  releases of Node.js, for example v12 and v14.
-- Once a new Node.js release becomes _Active LTS_ we switch to support that
-  release and the previous one. The switch is not immediate but done as soon
-  as possible. You can find the Node.js version supported by each release
-  in the `engines` field in the root `package.json` of a new app.
+- At any given point in time we support the two most recent Node.js releases
+  that have reached Long Term Support (LTS).
+- Once a new Node.js release enters LTS we switch to support that release and
+  the previous LTS release. The switch is not immediate but done as soon as
+  possible.
+- For each supported release we require a minimum version, which is at least
+  the first LTS version of that release and can be higher when dependencies
+  need it. You can find the minimum versions in the `engines` field in the
+  root `package.json` of a new app, and `@backstage/create-app` checks them
+  before creating an app.
 
 When we say _Supporting_ a Node.js release, that means the following:
 
