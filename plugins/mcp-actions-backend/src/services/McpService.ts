@@ -19,13 +19,12 @@ import {
   AuditorService,
 } from '@backstage/backend-plugin-api';
 import type { Request } from 'express';
-import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 import {
-  ListToolsRequestSchema,
-  CallToolRequestSchema,
+  Server as McpServer,
+  specTypeSchemas,
+  StandardSchemaV1,
   Tool,
-  ToolSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+} from '@modelcontextprotocol/server';
 import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
@@ -41,6 +40,19 @@ import { performance } from 'node:perf_hooks';
 import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
 import { FilterRule, McpServerConfig } from '../config';
+
+function describeIssues(issues: readonly StandardSchemaV1.Issue[]): string {
+  return issues
+    .map(issue => {
+      const path = (issue.path ?? [])
+        .map(segment =>
+          String(typeof segment === 'object' ? segment.key : segment),
+        )
+        .join('.');
+      return path ? `${path}: ${issue.message}` : issue.message;
+    })
+    .join(', ');
+}
 
 function safeStringify(value: unknown): string {
   try {
@@ -170,7 +182,7 @@ export class McpService {
       },
     );
 
-    server.setRequestHandler(ListToolsRequestSchema, async () => {
+    server.setRequestHandler('tools/list', async () => {
       const startTime = performance.now();
       let errorType: string | undefined;
 
@@ -205,18 +217,20 @@ export class McpService {
           // Validate each tool against the MCP Tool schema so that a single
           // malformed action (e.g. an inputSchema that isn't a JSON Schema
           // object at the root) doesn't poison the whole tools/list response.
-          const parsed = ToolSchema.safeParse(tool);
-          if (!parsed.success) {
+          const parsed = specTypeSchemas.Tool['~standard'].validate(tool);
+          if (parsed.issues) {
             if (!this.warnedSkippedActionIds.has(action.id)) {
               this.warnedSkippedActionIds.add(action.id);
               this.logger?.warn(
-                `Skipping MCP tool for action "${action.id}": ${parsed.error.message}`,
+                `Skipping MCP tool for action "${action.id}": ${describeIssues(
+                  parsed.issues,
+                )}`,
               );
             }
             continue;
           }
 
-          tools.push(parsed.data);
+          tools.push(parsed.value);
         }
 
         await auditorEvent.success({ meta: { toolCount: tools.length } });
@@ -238,7 +252,7 @@ export class McpService {
       }
     });
 
-    server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
+    server.setRequestHandler('tools/call', async ({ params }) => {
       const startTime = performance.now();
       let errorType: string | undefined;
       let isError = false;

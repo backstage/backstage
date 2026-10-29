@@ -21,7 +21,7 @@ import {
   serializeError,
 } from '@backstage/errors';
 
-import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
+import type { CallToolResult } from '@modelcontextprotocol/server';
 
 const knownErrors = new Set([
   'InputError',
@@ -67,17 +67,14 @@ function describeError(err: unknown): string {
   throw err;
 }
 
-type RequestResultType = ReturnType<
-  Parameters<McpServer['setRequestHandler']>[1]
->;
 /**
  * Wraps a request function with an error handler that turns known Backstage
  * errors into user-friendly messages, instead of failing the request
  * generically with a 500.
  */
 export async function handleErrors(
-  fn: () => RequestResultType | Promise<RequestResultType>,
-): Promise<RequestResultType> {
+  fn: () => Promise<CallToolResult>,
+): Promise<CallToolResult> {
   try {
     return await fn();
   } catch (err) {
