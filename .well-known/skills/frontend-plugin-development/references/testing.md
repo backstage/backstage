@@ -2,6 +2,8 @@
 
 Read when adding a plugin smoke test, or when components and hooks under test need APIs. For the general testing utilities, see [Testing frontend plugins](https://backstage.io/docs/frontend-system/building-plugins/testing) and [Testing with utility APIs](https://backstage.io/docs/frontend-system/utility-apis/testing).
 
+Import test helpers from `@backstage/frontend-test-utils`, not `@backstage/test-utils`, which is for the old frontend system. Use its `mockApis`, `TestApiProvider`, `renderInTestApp`, and `renderTestApp` instead of writing API mocks or app wrappers by hand.
+
 ## Add a plugin smoke test
 
 A smoke test installs the plugin in a test app, opens its main page, and checks that the page's content renders. It catches a missing default export, duplicate extension names, and APIs the page needs but nobody provides.
