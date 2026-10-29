@@ -9,7 +9,7 @@ description: Embedding React content from another plugin
 
 Extension fragments let a plugin render a piece of React content provided by another installed plugin. They are useful for lightweight integration within an internal app, where the plugins can agree on a fragment ID without defining a custom blueprint and extension input.
 
-Fragments are available after the app session boundary, in ordinary app pages. They are not available to sign-in pages or other bootstrap UI. Use a dedicated blueprint and input when you need a richer contract, typed data exchange, or a collection of contributions.
+Initializing a fragment extension and looking it up in the registry do not load or render its content. The loader runs only when the fragment is rendered. Use a dedicated blueprint and input when you need a richer contract, typed data exchange, or a collection of contributions.
 
 ## Providing a fragment
 
@@ -68,7 +68,9 @@ app:
     - fragment:deployments/summary: false
 ```
 
-The app plugin collects enabled fragments through its `api:app/extension-fragments` extension. The registry and its fragment extensions initialize during app finalization, so fragment predicates are evaluated with the session's predicate context. The registry is exposed as `coreApis.extensionFragments`.
+The app plugin collects enabled fragments through its `api:app/extension-fragments` extension, exposed as `coreApis.extensionFragments`.
+
+The registry follows the normal Utility API lifecycle. Without extension predicates in its subtree, it can initialize during bootstrap. If the subtree contains a predicate, the entire registry is deferred until app finalization, when the session's predicate context is available. Sign-in pages and other bootstrap UI must not depend on the registry in that case.
 
 ## Testing fragments
 
