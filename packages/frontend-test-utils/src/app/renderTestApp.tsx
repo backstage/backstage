@@ -15,7 +15,10 @@
  */
 
 import { Fragment } from 'react';
-import { prepareSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  type AppError,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
 import {
   coreExtensionData,
   createApiFactory,
@@ -42,6 +45,7 @@ import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
+import { throwOnAppErrors } from './throwOnAppErrors';
 import { OpaqueExternalRouteRef } from '@internal/frontend';
 
 const DEFAULT_MOCK_CONFIG = {
@@ -108,6 +112,19 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
    * ```
    */
   apis?: readonly [...TestApiPairs<TApiPairs>];
+
+  /**
+   * Decides whether an error reported while creating the test app is
+   * expected. By default every app error fails the test.
+   *
+   * @example
+   * ```ts
+   * isExpectedError: error =>
+   *   error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
+   *   error.context.node.spec.id === 'page:my-plugin'
+   * ```
+   */
+  isExpectedError?: (error: AppError) => boolean;
 };
 
 const testAppPlugin = createTestAppPlugin();
@@ -225,6 +242,11 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
           }
         : undefined,
   } as CreateSpecializedAppInternalOptions).finalize();
+
+  throwOnAppErrors(app.errors, {
+    description: 'Failed to create the test app',
+    isExpectedError: options?.isExpectedError,
+  });
 
   if (identityOverrideFactory) {
     // identityApiRef always resolves to the app's internal AppIdentityProxy
