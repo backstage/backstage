@@ -36,7 +36,7 @@ guidance without running a codemod."
 
 ## Contributing New Skills
 
-Skills are authored in the Backstage monorepo at `.agents/skills/`. Each skill lives in its own subdirectory and must include a `SKILL.md` file as the primary entry point. AI assistants working in the Backstage repository load every skill in this folder. `.claude/skills/` links to the same folder for Claude Code.
+Skills are authored in the Backstage monorepo at `.agents/skills/`. Each skill lives in its own subdirectory and must include a `SKILL.md` file as the primary entry point. AI assistants working in the Backstage repository load every skill in this folder. `.claude/skills/` links to the same folder for Claude Code. On Windows, Claude Code only sees these skills if Git checks out symbolic links, which requires Developer Mode and `git config core.symlinks true`.
 
 ### Skill directory layout
 
