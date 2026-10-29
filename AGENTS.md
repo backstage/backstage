@@ -76,4 +76,4 @@ See `/docs/contribute/project-structure.md` for a detailed description of the re
 
 ## Skills
 
-Agent skills live in `/.claude/skills` (also linked as `/.agents/skills`), each in a `<name>/SKILL.md` file. Skills published to adopters are authored in `/docs/.well-known/skills` and symlinked into `/.claude/skills`.
+Agent skills live in `/.claude/skills` (also linked as `/.agents/skills`), each in a `<name>/SKILL.md` file. Skills published to adopters are authored in `/docs/.well-known/skills` and symlinked into `/.claude/skills`. After adding, renaming, or removing a skill, run `node scripts/verify-skills.js --fix`.

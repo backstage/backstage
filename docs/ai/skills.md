@@ -69,31 +69,15 @@ The `name` must match the directory name. The `description` is shown to users wh
 
 Keep skills focused on a single, well-defined task. A skill that tries to cover too many scenarios is harder to use effectively. Prefer concrete, step-by-step guidance, working code examples, and explicit notes about common pitfalls.
 
-### Registering the skill in the index
+### Registering the skill
 
-Add an entry to `docs/.well-known/skills/index.json`:
-
-```json
-{
-  "skills": [
-    {
-      "name": "<skill-name>",
-      "description": "<same description as in SKILL.md front matter>",
-      "files": ["SKILL.md"]
-    }
-  ]
-}
-```
-
-If your skill includes additional supporting files, list each one in the `files` array.
-
-### Making the skill available in the monorepo
-
-To let AI assistants working in the Backstage repository use the skill, add a symbolic link to it in `.claude/skills/`, which is also available as `.agents/skills/`:
+After adding, renaming, or removing a skill, or changing its description or files, run:
 
 ```bash
-ln -s ../../docs/.well-known/skills/<skill-name> .claude/skills/<skill-name>
+node scripts/verify-skills.js --fix
 ```
+
+This updates `docs/.well-known/skills/index.json` from the skill's `SKILL.md` front matter and files. It also adds a symbolic link to the skill in `.claude/skills/`, also available as `.agents/skills/`, so AI assistants working in the Backstage repository can use it. CI runs the same script without `--fix` and fails if anything is out of date.
 
 ### Review process
 

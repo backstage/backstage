@@ -1,9 +1,6 @@
----
-name: backend-plugin-testing
-description: Write tests for Backstage backend plugins, modules, services, and routers with `@backstage/backend-test-utils`. Use this skill when adding or changing backend tests, mocking core services or credentials, testing against real databases or caches, or testing code that reads the filesystem or calls remote services.
----
+# Testing
 
-# Backend Plugin Testing
+Read when adding or changing tests for a backend plugin, module, service, or router.
 
 `@backstage/backend-test-utils` has a helper for almost everything a backend test needs. Use it before writing a mock, a test database, a temporary directory, or an Express setup by hand. Hand-written mocks drift from the real service interfaces and miss behavior such as credential checks.
 

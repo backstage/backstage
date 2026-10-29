@@ -40,7 +40,7 @@
     },
     {
       "name": "plugin-analytics-instrumentation",
-      "description": "Instrument a Backstage frontend plugin with analytics events using the Backstage Analytics API. Use this skill when adding, reviewing, or extending event capture (captureEvent, AnalyticsContext) in plugin components, deciding whether an interaction warrants an event, or writing tests for analytics behavior.",
+      "description": "Instrument a Backstage frontend plugin with analytics events using the Backstage Analytics API. Use this skill when adding, reviewing, or extending event capture (`captureEvent`, `AnalyticsContext`) in plugin components, deciding whether an interaction warrants an event, or writing tests for analytics behavior.",
       "files": ["SKILL.md"]
     },
     {
@@ -49,9 +49,9 @@
       "files": ["SKILL.md"]
     },
     {
-      "name": "backend-plugin-testing",
-      "description": "Write tests for Backstage backend plugins, modules, services, and routers with `@backstage/backend-test-utils`. Use this skill when adding or changing backend tests, mocking core services or credentials, testing against real databases or caches, or testing code that reads the filesystem or calls remote services.",
-      "files": ["SKILL.md"]
+      "name": "backend-plugin-development",
+      "description": "Reference for developing Backstage backend plugins and modules on the new backend system. Use this skill when writing or changing tests for a backend plugin, module, service, or router, including mocking core services and credentials and testing against real databases, caches, the filesystem, or remote services.",
+      "files": ["SKILL.md", "references/testing.md"]
     }
   ]
 }
