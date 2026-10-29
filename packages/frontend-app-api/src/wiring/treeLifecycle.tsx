@@ -112,12 +112,7 @@ export function classifyBootstrapTree(options: {
 }): BootstrapClassification {
   const apiNodes = options.tree.root.edges.attachments.get('apis') ?? [];
   const deferredApiRoots = new Set(
-    apiNodes.filter(
-      apiNode =>
-        // Fragments are page content and must not be instantiated before the session boundary.
-        apiNode.spec.id === 'api:app/extension-fragments' ||
-        subtreeContainsPredicate(apiNode),
-    ),
+    apiNodes.filter(apiNode => subtreeContainsPredicate(apiNode)),
   );
   const appRootElementNodes =
     getAppRootNode(options.tree)?.edges.attachments.get('elements') ?? [];

@@ -21,8 +21,8 @@ import { createApiRef } from '../system';
  * Looks up React fragments contributed by installed plugins.
  *
  * @remarks
- * Available after the app session boundary. Fragments inherit React context
- * from the location where they are rendered.
+ * Fragments inherit React context from the location where they are rendered.
+ * Looking up a fragment does not invoke its loader or render it.
  *
  * @public
  */

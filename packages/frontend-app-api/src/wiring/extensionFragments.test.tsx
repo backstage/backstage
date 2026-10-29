@@ -17,16 +17,19 @@
 import {
   ApiBlueprint,
   coreApis,
+  coreExtensionData,
+  ExtensionFragment,
   createFrontendModule,
   createFrontendPlugin,
   FragmentBlueprint,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
+import { render, screen } from '@testing-library/react';
 import { prepareSpecializedApp } from './prepareSpecializedApp';
 
 it.each([undefined, false, true])(
-  'defers the fragment registry until finalization (flag active: %s)',
-  flagActive => {
+  'loads fragments only when rendered, respecting predicates (flag active: %s)',
+  async flagActive => {
     const factory = jest.fn();
     const loader = jest.fn(async () => <div>Summary</div>);
     const fragment = FragmentBlueprint.make({
@@ -47,6 +50,16 @@ it.each([undefined, false, true])(
             appPlugin
               .getExtension('sign-in-page:app')
               .override({ disabled: true }),
+            appPlugin.getExtension('app/layout').override({
+              factory: () => [
+                coreExtensionData.reactElement(
+                  <ExtensionFragment
+                    extensionId="deployments"
+                    fallback={<div>No summary</div>}
+                  />,
+                ),
+              ],
+            }),
           ],
         }),
         createFrontendPlugin({
@@ -75,8 +88,13 @@ it.each([undefined, false, true])(
       ],
     });
     const bootstrap = prepared.getBootstrapApp();
-    expect(bootstrap.apis.get(coreApis.extensionFragments)).toBeUndefined();
-    expect(factory).not.toHaveBeenCalled();
+    const bootstrapRegistry = bootstrap.apis.get(coreApis.extensionFragments);
+    expect(bootstrapRegistry !== undefined).toBe(flagActive === undefined);
+    expect(
+      bootstrapRegistry?.getFragment('fragment:deployments') !== undefined,
+    ).toBe(flagActive === undefined);
+    expect(bootstrapRegistry?.getFragment('fragment:missing')).toBeUndefined();
+    expect(factory.mock.calls.length > 0).toBe(flagActive === undefined);
     expect(loader).not.toHaveBeenCalled();
 
     const finalized = prepared.finalize();
@@ -86,9 +104,13 @@ it.each([undefined, false, true])(
       flagActive !== false,
     );
     expect(registry.getFragment('fragment:missing')).toBeUndefined();
-    // API factories are collected in an isolated tree before the live tree is instantiated.
-    expect(factory).toHaveBeenCalledTimes(flagActive === false ? 0 : 2);
     expect(loader).not.toHaveBeenCalled();
     expect(finalized.errors).toBeUndefined();
+
+    render(finalized.element);
+    const expectedContent = flagActive === false ? 'No summary' : 'Summary';
+    expect(await screen.findByText(expectedContent)).toBeVisible();
+    expect(factory.mock.calls.length > 0).toBe(flagActive !== false);
+    expect(loader).toHaveBeenCalledTimes(flagActive === false ? 0 : 1);
   },
 );

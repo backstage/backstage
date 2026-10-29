@@ -31,8 +31,8 @@ export interface ExtensionFragmentProps {
 }
 
 /**
- * Renders one fragment in the host's React context. Available after the app
- * session boundary. Missing fragments render the fallback, or nothing.
+ * Renders one fragment in the host's React context.
+ * Missing fragments render the fallback, or nothing.
  *
  * @public
  */
