@@ -31,9 +31,7 @@ exported with a name of the pattern `*ApiRef`, for example
 
 To access one of the Utility APIs inside a React component, use the
 [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html) hook exported by
-[`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html), or the
-[`withApis`](https://backstage.io/api/stable/functions/_backstage_core-plugin-api.index.withApis.html) HOC from `@backstage/core-plugin-api` if you prefer class
-components. For example, the
+[`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html). For example, the
 [`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html) can be accessed like this:
 
 ```tsx
@@ -56,6 +54,18 @@ Note that there is no explicit type given for
 [`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.errorApiRef.html) has the type
 embedded, and [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html) is able to infer
 the type.
+
+For class components, use a function component to pass the API as a prop:
+
+```tsx
+import { errorApiRef, useApi } from '@backstage/frontend-plugin-api';
+import { MyClassComponent, MyClassComponentProps } from './MyClassComponent';
+
+export function MyComponent(props: Omit<MyClassComponentProps, 'errorApi'>) {
+  const errorApi = useApi(errorApiRef);
+  return <MyClassComponent {...props} errorApi={errorApi} />;
+}
+```
 
 Also note that consuming Utility APIs is not limited to plugins; it can be done
 from any component inside Backstage, including the ones in

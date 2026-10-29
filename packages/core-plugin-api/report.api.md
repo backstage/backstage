@@ -582,7 +582,7 @@ export function useRouteRefParams<Params extends AnyParams>(
 
 export { vmwareCloudAuthApiRef };
 
-// @public
+// @public @deprecated
 export function withApis<T extends {}>(
   apis: TypesToApiRefs<T>,
 ): <TProps extends T>(
