@@ -2,4 +2,4 @@
 '@backstage/frontend-test-utils': patch
 ---
 
-Added `mockApis.extensionFragments.mock()` for testing pages that consume extension fragments without installing the contributing plugin.
+Added alpha fragment test helpers in `@backstage/frontend-test-utils/alpha`. Use `mockApis.extensionFragments()` to provide React elements keyed by fragment ID, with an empty registry by default, or `mockApis.extensionFragments.mock()` for Jest assertions on lookup calls.

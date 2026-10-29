@@ -61,3 +61,14 @@ export {
   type PluginWrapperApi,
   pluginWrapperApiRef,
 } from './apis/definitions/PluginWrapperApi';
+
+// Experimental fragment APIs.
+export { FragmentBlueprint } from './blueprints/FragmentBlueprint';
+export {
+  ExtensionFragment,
+  type ExtensionFragmentProps,
+} from './components/ExtensionFragment';
+export {
+  extensionFragmentsApiRef,
+  type ExtensionFragmentsApi,
+} from './apis/definitions/ExtensionFragmentsApi';
