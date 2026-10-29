@@ -365,11 +365,12 @@ describe('McpService', () => {
 
   it('should return an error when the action is not found', async () => {
     const mockMetrics = metricsServiceMock.mock();
+    const mockAuditor = mockServices.auditor.mock();
     const mcpService = await McpService.create({
       actions: actionsRegistryServiceMock(),
       metrics: mockMetrics,
       tracingService: tracingServiceMock.mock(),
-      auditor: mockServices.auditor.mock(),
+      auditor: mockAuditor,
     });
 
     const server = mcpService.getServer({
@@ -417,6 +418,20 @@ describe('McpService', () => {
         'error.type': 'tool_error',
       }),
     );
+
+    // The audit event records the cause the client received.
+    const toolExecutionEvent = await mockAuditor.createEvent.mock.results.find(
+      (_: unknown, i: number) =>
+        mockAuditor.createEvent.mock.calls[i]?.[0]?.eventId ===
+        'tool-execution',
+    )?.value;
+    expect(toolExecutionEvent?.fail).toHaveBeenCalledWith({
+      error: expect.objectContaining({
+        message: expect.stringMatching(
+          /^NotFoundError: Action "nonexistent-action" not found/,
+        ),
+      }),
+    });
   });
 
   it('should record metrics with error.type when tool invocation throws', async () => {
