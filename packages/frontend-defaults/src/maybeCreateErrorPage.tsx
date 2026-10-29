@@ -17,7 +17,17 @@
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JSX, useEffect, useState } from 'react';
 import { AppError, AppErrorTypes } from '@backstage/frontend-app-api';
-import { DEFAULT_WARNING_CODES } from './defaultWarningCodes';
+
+const DEFAULT_WARNING_CODES: Array<keyof AppErrorTypes> = [
+  'EXTENSION_IGNORED',
+  'INVALID_EXTENSION_CONFIG_KEY',
+  'EXTENSION_INPUT_DATA_IGNORED',
+  'EXTENSION_INPUT_INTERNAL_IGNORED',
+  'EXTENSION_OUTPUT_IGNORED',
+  'EXTENSION_BOOTSTRAP_PREDICATE_IGNORED',
+  'EXTENSION_BOOTSTRAP_API_UNAVAILABLE',
+  'FEATURE_FLAG_INVALID',
+];
 
 function AppErrorItem(props: { error: AppError }): JSX.Element {
   const { context } = props.error;

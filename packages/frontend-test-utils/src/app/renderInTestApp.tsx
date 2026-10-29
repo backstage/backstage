@@ -16,7 +16,10 @@
 
 import { Fragment } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { prepareSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  type AppError,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -122,6 +125,19 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * ```
    */
   apis?: readonly [...TestApiPairs<TApiPairs>];
+
+  /**
+   * Decides whether an error reported while creating the test app is
+   * expected. By default every app error fails the test.
+   *
+   * @example
+   * ```ts
+   * isExpectedError: error =>
+   *   error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
+   *   error.context.node.spec.id === 'page:my-plugin'
+   * ```
+   */
+  isExpectedError?: (error: AppError) => boolean;
 };
 
 const testAppPlugin = createTestAppPlugin([
@@ -264,7 +280,10 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         : undefined,
   } as CreateSpecializedAppInternalOptions).finalize();
 
-  throwOnAppErrors(app);
+  throwOnAppErrors(app.errors, {
+    description: 'Failed to create the test app',
+    isExpectedError: options?.isExpectedError,
+  });
 
   if (identityOverrideFactory) {
     // identityApiRef always resolves to the app's internal AppIdentityProxy

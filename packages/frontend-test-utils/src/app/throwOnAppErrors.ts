@@ -15,24 +15,26 @@
  */
 
 import { AppError } from '@backstage/frontend-app-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { DEFAULT_WARNING_CODES } from '../../../frontend-defaults/src/defaultWarningCodes';
-
-// Uses the same list as `createApp`, so a test fails exactly when the app
-// would show its error page.
-const WARNING_CODES = new Set(DEFAULT_WARNING_CODES);
 
 /**
- * Throws for app errors that would replace a real app with its error page,
- * so that tests fail instead of rendering an app that could never start.
+ * Throws for every app error that `isExpectedError` does not accept, so that
+ * tests fail instead of rendering an app that is broken.
  */
-export function throwOnAppErrors(app: { errors?: AppError[] }): void {
-  const errors = app.errors?.filter(e => !WARNING_CODES.has(e.code));
-  if (errors?.length) {
-    throw new Error(
-      `Failed to create the test app: ${errors
-        .map(e => `${e.code}: ${e.message}`)
-        .join(', ')}`,
-    );
+export function throwOnAppErrors(
+  errors: AppError[] | undefined,
+  options: {
+    description: string;
+    isExpectedError?: (error: AppError) => boolean;
+  },
+): void {
+  const unexpected = errors?.filter(e => !options.isExpectedError?.(e));
+  if (!unexpected?.length) {
+    return;
   }
+  throw new Error(
+    `${options.description}: ${unexpected
+      .map(e => e.message)
+      .join(', ')}\nIf an error is expected, allow it with the ` +
+      `isExpectedError option, for example: error => error.code === '${unexpected[0].code}'`,
+  );
 }

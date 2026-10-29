@@ -9,6 +9,7 @@ import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { AppError } from '@backstage/frontend-app-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
 import { AppLifecycleApi } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
@@ -100,6 +101,7 @@ export function createExtensionTester<
   options?: {
     config?: T['configInput'];
     apis?: readonly [...TestApiPairs<TApiPairs>];
+    isExpectedError?: (error: AppError) => boolean;
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
@@ -547,6 +549,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
     [path: string]: RouteRef | ExternalRouteRef;
   };
   apis?: readonly [...TestApiPairs<TApiPairs>];
+  isExpectedError?: (error: AppError) => boolean;
 };
 
 // @public
@@ -580,6 +583,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountPath?: string;
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
+  isExpectedError?: (error: AppError) => boolean;
 };
 
 export { withLogCollector };
