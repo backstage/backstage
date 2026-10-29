@@ -18,9 +18,9 @@ export type ApiMock<TApi> = {
 
 // @alpha
 export namespace mockApis {
-  export function extensionFragments(options?: {
-    fragments?: Record<string, JSX_2.Element>;
-  }): MockWithApiFactory<ExtensionFragmentsApi>;
+  export function extensionFragments(
+    fragments?: Record<string, JSX_2.Element>,
+  ): MockWithApiFactory<ExtensionFragmentsApi>;
   export namespace extensionFragments {
     const mock: (
       partialImpl?: Partial<ExtensionFragmentsApi> | undefined,

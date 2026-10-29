@@ -11,7 +11,7 @@ Extension fragments are an **alpha** feature. Import the APIs from `@backstage/f
 
 Extension fragments let a plugin render a piece of React content provided by another installed plugin. They are useful for lightweight integration within an internal app, where the plugins can agree on a fragment ID without defining a custom blueprint and extension input.
 
-Fragments are also useful for open source plugins that provide a freeform component for other plugins to render. When the caller does not need to pass props, prefer a fragment over directly exporting the component: the providing plugin retains control of its implementation, extension configuration, and any child extensions. The fragment itself can be configurable or extensible, but its caller cannot pass props. Use a regular exported component when caller-provided props are part of the contract.
+Fragments are also useful when publishing a plugin that provides a freeform component for other plugins to render. When the caller does not need to pass props, prefer a fragment over directly exporting the component: the providing plugin retains control of its implementation, extension configuration, and any child extensions. The fragment itself can be configurable or extensible, but its caller cannot pass props. Use a regular exported component when caller-provided props are part of the contract.
 
 Initializing a fragment extension and looking it up in the registry do not load or render its content. The loader runs only when the fragment is rendered. Use a dedicated blueprint and input when you need a richer contract, typed data exchange, or a collection of contributions.
 
@@ -99,15 +99,13 @@ import { mockApis } from '@backstage/frontend-test-utils/alpha';
 renderInTestApp(<DeploymentPage />, {
   apis: [
     mockApis.extensionFragments({
-      fragments: {
-        'deployments/summary': <div>Test deployment summary</div>,
-      },
+      'deployments/summary': <div>Test deployment summary</div>,
     }),
   ],
 });
 ```
 
-The fake accepts React elements keyed by fragment ID, without the `fragment:` prefix, just like `ExtensionFragment`'s `fragmentId` prop. Calling `mockApis.extensionFragments()` without options creates an empty registry, which is useful for testing missing-content fallbacks.
+The fake accepts React elements keyed by fragment ID, without the `fragment:` prefix, just like `ExtensionFragment`'s `fragmentId` prop. Calling `mockApis.extensionFragments()` without arguments creates an empty registry, which is useful for testing missing-content fallbacks.
 
 For assertions on lookup calls, use `mockApis.extensionFragments.mock()` with an optional `getFragment` implementation. The underlying Utility API accepts full extension IDs; `ExtensionFragment` adds the `fragment:` prefix before looking up the element.
 

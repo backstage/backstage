@@ -26,10 +26,8 @@ import { ExtensionFragment } from './ExtensionFragment';
 
 it('looks up named and unnamed fragments and renders fallback or nothing for missing content', async () => {
   const fragments = mockApis.extensionFragments({
-    fragments: {
-      'deployments/summary': <div>Deployment summary</div>,
-      ownership: <div>Owner</div>,
-    },
+    'deployments/summary': <div>Deployment summary</div>,
+    ownership: <div>Owner</div>,
   });
   const getFragment = jest.spyOn(fragments, 'getFragment');
   renderInTestApp(

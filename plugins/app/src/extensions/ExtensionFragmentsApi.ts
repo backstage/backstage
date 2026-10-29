@@ -20,7 +20,6 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/alpha';
-import { DefaultExtensionFragmentsApi } from '../apis/ExtensionFragmentsApi/DefaultExtensionFragmentsApi';
 
 export const ExtensionFragmentsApi = ApiBlueprint.makeWithOverrides({
   name: 'extension-fragments',
@@ -32,15 +31,17 @@ export const ExtensionFragmentsApi = ApiBlueprint.makeWithOverrides({
       defineParams({
         api: extensionFragmentsApiRef,
         deps: {},
-        factory: () =>
-          new DefaultExtensionFragmentsApi(
-            new Map(
-              inputs.fragments.map(fragment => [
-                fragment.node.spec.id,
-                fragment.get(coreExtensionData.reactElement),
-              ]),
-            ),
-          ),
+        factory: () => {
+          const fragments = new Map(
+            inputs.fragments.map(fragment => [
+              fragment.node.spec.id,
+              fragment.get(coreExtensionData.reactElement),
+            ]),
+          );
+          return {
+            getFragment: (extensionId: string) => fragments.get(extensionId),
+          };
+        },
       }),
     ),
 });
