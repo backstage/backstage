@@ -602,6 +602,29 @@ describe('ConfigReader with fallback', () => {
       "Invalid type in config for key 'a.b' in 's2-override', got number, wanted object",
     );
   });
+
+  it('should preserve nested type errors across unrelated sibling configs', () => {
+    const bottom = new ConfigReader({ a: { b: { c: 'hello' } } }, 'bottom');
+    const middle = new ConfigReader({ a: { b: 1 } }, 'middle', bottom);
+    const top = new ConfigReader({ a: { unrelated: true } }, 'top', middle);
+
+    expect(() => top.getOptionalString('a.b.c')).toThrow(
+      "Invalid type in config for key 'a.b' in 'middle', got number, wanted object",
+    );
+    expect(() => top.getString('a.b.c')).toThrow(
+      "Invalid type in config for key 'a.b' in 'middle', got number, wanted object",
+    );
+  });
+
+  it('should block fallback traversal beneath intermediate primitive values', () => {
+    const bottom = new ConfigReader({ x: { z: 2 } }, 'bottom');
+    const middle = new ConfigReader({ x: 1 }, 'middle', bottom);
+    const top = new ConfigReader({ x: { y: 1 } }, 'top', middle);
+
+    expect(top.getOptionalNumber('x.z')).toBeUndefined();
+    expect(top.getOptional('x.z')).toBeUndefined();
+    expect(top.getOptional()).toEqual({ x: { y: 1 } });
+  });
 });
 
 describe('ConfigReader.get()', () => {
