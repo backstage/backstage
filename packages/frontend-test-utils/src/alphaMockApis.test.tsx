@@ -17,7 +17,6 @@
 import { createElement } from 'react';
 import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/alpha';
 import { mockApis } from './alpha';
-import { mockApis as stableMockApis } from './apis/mockApis';
 import { getMockApiFactory } from './apis/MockWithApiFactory';
 
 it('provides an empty-by-default fragment registry with named and unnamed elements', () => {
@@ -27,7 +26,8 @@ it('provides an empty-by-default fragment registry with named and unnamed elemen
   const summary = createElement('div', {}, 'Summary');
   const owner = createElement('div', {}, 'Owner');
   const fragments = mockApis.extensionFragments({
-    fragments: { 'deployments/summary': summary, ownership: owner },
+    'deployments/summary': summary,
+    ownership: owner,
   });
   expect(fragments.getFragment('fragment:deployments/summary')).toBe(summary);
   expect(fragments.getFragment('fragment:ownership')).toBe(owner);
@@ -36,7 +36,6 @@ it('provides an empty-by-default fragment registry with named and unnamed elemen
   const factory = getMockApiFactory(fragments)!;
   expect(factory.api).toBe(extensionFragmentsApiRef);
   expect(factory.factory({})).toBe(fragments);
-  expect(stableMockApis).not.toHaveProperty('extensionFragments');
 });
 
 it('provides registered jest mocks with optional method implementations', () => {

@@ -37,11 +37,11 @@ export namespace mockApis {
    *
    * @alpha
    */
-  export function extensionFragments(options?: {
-    fragments?: Record<string, JSX.Element>;
-  }): MockWithApiFactory<ExtensionFragmentsApi> {
-    const fragments = new Map(
-      Object.entries(options?.fragments ?? {}).map(([id, element]) => [
+  export function extensionFragments(
+    fragments: Record<string, JSX.Element> = {},
+  ): MockWithApiFactory<ExtensionFragmentsApi> {
+    const fragmentsById = new Map(
+      Object.entries(fragments).map(([id, element]) => [
         `fragment:${id}`,
         element,
       ]),
@@ -49,7 +49,7 @@ export namespace mockApis {
     return attachMockApiFactory<ExtensionFragmentsApi>(
       extensionFragmentsApiRef,
       {
-        getFragment: extensionId => fragments.get(extensionId),
+        getFragment: extensionId => fragmentsById.get(extensionId),
       },
     );
   }
