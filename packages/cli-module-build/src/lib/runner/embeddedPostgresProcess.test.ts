@@ -20,14 +20,56 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { targetPaths } from '@backstage/cli-common';
 import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { readdirSync } from 'node:fs';
+import { readdirSync, writeFileSync } from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
 import { getPortPromise } from 'portfinder';
 import { OutputOptions, rollup } from 'rollup';
 import { makeRollupConfigs } from '../builder/config';
 import { Output } from '../builder/types';
 
+const describeUnix = process.platform === 'win32' ? describe.skip : describe;
+
 describe('embeddedPostgresProcess', () => {
   const mockDir = createMockDirectory();
+
+  async function compileSource(minify: boolean) {
+    const [config] = await makeRollupConfigs({
+      targetDir: targetPaths.resolveRoot('packages/cli-module-build'),
+      outputs: new Set([Output.cjs]),
+      minify,
+      packageJson: {
+        name: 'test',
+        version: '0.0.0',
+        exports: { '.': './src/lib/runner/embeddedPostgresProcess.ts' },
+      },
+      workspacePackages: [],
+    });
+    const bundle = await rollup(config);
+    let source: string;
+    try {
+      const { output } = await bundle.generate(
+        (config.output as OutputOptions[])[0],
+      );
+      const entry = output.find(
+        chunk => chunk.type === 'chunk' && chunk.isEntry,
+      );
+      if (entry?.type !== 'chunk') {
+        throw new Error('Missing database helper module');
+      }
+      source = execFileSync(
+        process.execPath,
+        [
+          '--eval',
+          `${entry.code};process.stdout.write(module.exports.embeddedPostgresProcess.toString());`,
+        ],
+        { encoding: 'utf8', timeout: 10_000 },
+      );
+    } finally {
+      await bundle.close();
+    }
+
+    return source;
+  }
 
   it('can be stringified and run in isolation after normal and minified builds', async () => {
     for (const minify of [false, true]) {
@@ -39,40 +81,7 @@ describe('embeddedPostgresProcess', () => {
         },
       };
       mockDir.setContent(otherDatabases);
-      const [config] = await makeRollupConfigs({
-        targetDir: targetPaths.resolveRoot('packages/cli-module-build'),
-        outputs: new Set([Output.cjs]),
-        minify,
-        packageJson: {
-          name: 'test',
-          version: '0.0.0',
-          exports: { '.': './src/lib/runner/embeddedPostgresProcess.ts' },
-        },
-        workspacePackages: [],
-      });
-      const bundle = await rollup(config);
-      let source: string;
-      try {
-        const { output } = await bundle.generate(
-          (config.output as OutputOptions[])[0],
-        );
-        const entry = output.find(
-          chunk => chunk.type === 'chunk' && chunk.isEntry,
-        );
-        if (entry?.type !== 'chunk') {
-          throw new Error('Missing database helper module');
-        }
-        source = execFileSync(
-          process.execPath,
-          [
-            '--eval',
-            `${entry.code};process.stdout.write(module.exports.embeddedPostgresProcess.toString());`,
-          ],
-          { encoding: 'utf8', timeout: 10_000 },
-        );
-      } finally {
-        await bundle.close();
-      }
+      const source = await compileSource(minify);
 
       const child = spawn(
         process.execPath,
@@ -133,4 +142,80 @@ describe('embeddedPostgresProcess', () => {
       }
     }
   }, 30_000);
+
+  describeUnix('cleanup deadline', () => {
+    it('terminates only its own group when initialization or shutdown hangs', async () => {
+      const source = await compileSource(true);
+      for (const initializing of [false, true]) {
+        const unrelated = spawn(
+          process.execPath,
+          ['--eval', 'setInterval(() => {}, 1000)'],
+          {
+            stdio: 'ignore',
+            detached: true,
+          },
+        );
+        const unrelatedExit = once(unrelated, 'exit');
+        const fakeModule = resolvePath(mockDir.path, 'fake-postgres.mjs');
+        writeFileSync(
+          fakeModule,
+          `
+          import { writeFile } from 'node:fs/promises';
+          export default class {
+            constructor(options) { this.dir = options.databaseDir; }
+            async initialise() {
+              if (${initializing}) {
+                process.send({ initializing: true });
+                await new Promise(() => setInterval(() => {}, 1000));
+              }
+            }
+            async start() {
+              await writeFile(this.dir + '/postmaster.pid', ${JSON.stringify(
+                String(unrelated.pid),
+              )});
+            }
+            stop() { return new Promise(() => {}); }
+          }
+        `,
+        );
+        const helper = spawn(
+          process.execPath,
+          [
+            '--eval',
+            `(${source})(${JSON.stringify(fakeModule)}, ${JSON.stringify(
+              require.resolve('async-exit-hook'),
+            )})`,
+          ],
+          {
+            env: { ...process.env, TMPDIR: mockDir.path },
+            stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+            detached: true,
+          },
+        );
+        const helperExit = once(helper, 'exit');
+        try {
+          const ready = once(helper, 'message');
+          helper.send({
+            user: 'postgres',
+            password: 'postgres',
+            port: 20000,
+          });
+          expect(await ready).toEqual([
+            initializing ? { initializing: true } : { ready: true },
+          ]);
+          helper.disconnect();
+          expect(await helperExit).toEqual([null, 'SIGKILL']);
+          expect(() => process.kill(unrelated.pid!, 0)).not.toThrow();
+        } finally {
+          if (helper.exitCode === null && helper.signalCode === null) {
+            process.kill(-helper.pid!, 'SIGKILL');
+            await helperExit;
+          }
+          unrelated.kill('SIGKILL');
+          await unrelatedExit;
+          mockDir.clear();
+        }
+      }
+    }, 45_000);
+  });
 });

@@ -31,11 +31,29 @@ export function embeddedPostgresProcess(
 
   // Older CLI versions sweep backstage-dev-db-* directories without PID markers.
   const TEMP_DIR_PREFIX = 'backstage-embedded-db-';
+  // Bound cleanup even if initialization or the library's stop promise hangs.
+  // The live helper owns this entire process group/tree, so escalation cannot
+  // target an unrelated process through a reused PostgreSQL PID.
+  function forceStop() {
+    if (process.platform === 'win32') {
+      const { spawnSync } =
+        require('node:child_process') as typeof import('node:child_process');
+      spawnSync('taskkill', ['/pid', String(process.pid), '/f', '/t'], {
+        stdio: 'ignore',
+        windowsHide: true,
+      });
+    } else {
+      process.kill(-process.pid, 'SIGKILL');
+    }
+  }
+  let forceStopTimer: NodeJS.Timeout | undefined;
   let stopping = !process.connected;
   let requestStop: () => void;
   const stopped = new Promise<void>(resolve => {
     requestStop = () => {
       stopping = true;
+      forceStopTimer ??= setTimeout(forceStop, 10_000);
+      forceStopTimer.unref();
       resolve();
     };
   });
@@ -55,12 +73,17 @@ export function embeddedPostgresProcess(
     const pid = Number(rawPid.split('\n')[0]);
     if (Number.isSafeInteger(pid) && pid > 0) {
       // stop() can wait forever if PostgreSQL exited before it attached
-      // its exit listener. Also watch the OS process and bound shutdown.
-      const stop = pg.stop().catch(error => console.error(error));
-      const deadline = Date.now() + 10_000;
-      for (;;) {
+      // its exit listener. Also watch for the OS process disappearing.
+      let finished = false;
+      const stop = pg
+        .stop()
+        .then(() => {
+          finished = true;
+        })
+        .catch(error => console.error(error));
+      while (!finished) {
         try {
-          process.kill(pid, Date.now() < deadline ? 0 : 'SIGKILL');
+          process.kill(pid, 0);
         } catch (error) {
           if ((error as NodeJS.ErrnoException).code === 'ESRCH') {
             break;
@@ -153,11 +176,13 @@ export function embeddedPostgresProcess(
 
   main()
     .then(() => {
+      clearTimeout(forceStopTimer);
       if (process.connected) {
         process.disconnect?.();
       }
     })
     .catch(error => {
+      requestStop!();
       process.exitCode = 1;
       if (process.connected) {
         process.send?.({ error: String(error) }, undefined, undefined, () => {
