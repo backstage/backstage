@@ -15,7 +15,7 @@
  */
 
 // Development interrupts exit immediately; restart requests run shutdown hooks.
-if (process.env.BACKSTAGE_CLI_CHANNEL === '1') {
+if (process.env.BACKSTAGE_CLI_BACKEND_LIFECYCLE === '1') {
   process.on('SIGINT', () => process.exit(130));
   process.on('message', message => {
     if (message?.type === '@backstage/cli/channel/shutdown') {

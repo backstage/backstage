@@ -210,6 +210,7 @@ export async function runBackend(options: RunBackendOptions) {
           ...extraEnv,
           BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
+          BACKSTAGE_CLI_BACKEND_LIFECYCLE: '1',
           ESBK_TSCONFIG_PATH: targetPaths.resolveRoot('tsconfig.json'),
         },
         serialization: 'advanced',

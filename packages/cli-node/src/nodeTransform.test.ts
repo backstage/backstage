@@ -18,8 +18,12 @@
 
 import { spawnSync } from 'node:child_process';
 
-it('exits immediately on development interrupts but preserves graceful restart and standalone signal handlers', () => {
-  for (const channel of ['1', '']) {
+it('exits immediately on development interrupts but preserves graceful restart and legacy and standalone signal handlers', () => {
+  for (const [channel, lifecycle] of [
+    ['1', '1'],
+    ['1', ''],
+    ['', ''],
+  ]) {
     for (const event of ['SIGINT', 'SIGTERM', 'restart']) {
       const result = spawnSync(
         process.execPath,
@@ -46,17 +50,21 @@ it('exits immediately on development interrupts but preserves graceful restart a
         ],
         {
           encoding: 'utf8',
-          env: { ...process.env, BACKSTAGE_CLI_CHANNEL: channel },
+          env: {
+            ...process.env,
+            BACKSTAGE_CLI_CHANNEL: channel,
+            BACKSTAGE_CLI_BACKEND_LIFECYCLE: lifecycle,
+          },
           timeout: 10_000,
         },
       );
       expect(result.error).toBeUndefined();
       expect(result.stderr).toBe('');
       expect(result.status).toBe(
-        channel === '1' && event === 'SIGINT' ? 130 : 0,
+        lifecycle === '1' && event === 'SIGINT' ? 130 : 0,
       );
       expect(result.stdout.includes('shutdown hook')).toBe(
-        channel === '1' ? event !== 'SIGINT' : event !== 'restart',
+        lifecycle === '1' ? event !== 'SIGINT' : event !== 'restart',
       );
     }
   }
