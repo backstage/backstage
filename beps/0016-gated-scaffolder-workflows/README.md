@@ -128,7 +128,7 @@ Nothing prunes task rows today, so suspensions live as long as their tasks. `pay
 
 ### Resume is replay, not continuation
 
-There is no coroutine mechanism in the workflow runner. Resume builds on the step-state persistence added in #35224: when `scaffolder.taskRecovery` is enabled, the runner records each completed step's output in task state, and on a rerun it restores those outputs, skips the completed steps and re-enters the first unfinished one. A gated task needs that skip, so `ctx.suspend` requires task recovery to be enabled and throws a configuration error when it is not; a task parked without it would replay every step on resume. On resume the suspended step's handler executes from the top. Therefore:
+There is no coroutine mechanism in the workflow runner. Resume builds on the step-state persistence added in #35224: when `scaffolder.taskRecovery` is enabled, the runner records each completed step's output in task state, and on a rerun it restores those outputs, skips the completed steps and re-enters the first unfinished one. A gated task needs that skip and a place to keep its files. `ctx.suspend` therefore requires task recovery to be enabled and a workspace provider to be configured, and throws a configuration error when either is missing. Without recovery the task would replay every step on resume, and without a provider the files written before the park would be lost. On resume the suspended step's handler executes from the top. Therefore:
 
 - `ctx.suspend` is itself a checkpoint: first execution parks the task; the replay after resume returns the stored payload.
 - All side-effecting work before `suspend` must be wrapped in `ctx.checkpoint` (or be naturally idempotent), because it re-runs on replay. The idempotency discipline applies to code before the suspend point, not after it.
@@ -196,6 +196,8 @@ Because an action author could ignore `timedOut` and continue provisioning after
 
 With task recovery enabled, which gated tasks require, #35224 keeps task secrets in the database until the task reaches a terminal state instead of clearing them at claim. A task parked in `waiting` for hours or days therefore holds its secrets for the whole wait, and the tokens they carry may be dead by the time approval lands. This BEP does not solve secret longevity, but it must not pretend the problem away. The stance: secrets captured before a suspend must not be assumed valid after resume; a gated action should re-acquire credentials on resume (the replay model already re-runs the handler, so re-auth fits naturally) rather than rely on a secret captured before the wait. Where re-auth is impossible, the limitation is documented and the timeout should be set below the shortest relevant credential lifetime.
 
+The two kinds of secret behave differently across a wait. User-supplied `${{ secrets.* }}` are captured when the task is created, so they can expire before the gate opens. Gated tasks depend on `${{ environment.secrets.* }}` being read when the step executes, not when the task starts, so a step after the gate gets the value that is current at resume. The same applies to external secret providers behind `environment.secrets` (#32600). Steps after a gate should use integration credentials through `environment.secrets`, or re-acquire credentials on resume, and not a user secret captured before the wait.
+
 ### Observability
 
 Resume emits its own event type rather than reusing `recovered`: `retryTask` inserts `recovered` to tell the frontend to reset, and `trimEventsTillLastRecovery` trims the log at that marker, so reusing it would discard a resumed task's pre-suspend log. Suspension is also not a failure - the suspend path records a `waiting` result on the step tracker and no terminal outcome on the task counter, so a parked task emits no failed-step event and increments no failure metric.
@@ -238,7 +240,7 @@ Downgrade is the operationally important case, because this feature deliberately
 - A handler that swallows the suspend signal and throws its own error fails the step with no suspension written, and the task is never `waiting`.
 - A timed-out replay that notifies again and parks on a new key waits normally and is not forced to fail.
 - A resumed task keeps its pre-suspend log: resume does not emit the event type that trims the frontend view.
-- With task recovery disabled, `ctx.suspend` throws a configuration error and the task does not park.
+- With task recovery disabled, or with no workspace provider configured, `ctx.suspend` throws a configuration error and the task does not park.
 
 ## Release Plan
 
@@ -277,3 +279,4 @@ Buildable today against public extension points and the pragmatic answer for ado
 - Beefed-up `debug:wait` that polls a flag inside a long-running action. Holds a worker slot for days, does not survive restarts cleanly, and does not scale past a few concurrent gates - the exact anti-pattern freben rejected on #24846. Rejected here too.
 - Full workflow-orchestration engine (#23967) up front. Much larger surface and design risk; linear suspend/resume is the minimal primitive that unblocks the concrete asks, and orchestration can layer on later.
 - External durable-workflow engine driving scaffolder from outside (the model Red Hat's Orchestrator plugin takes, on SonataFlow). Powerful but pushes a heavy operator/dependency and a second execution model onto every adopter; keeping the primitive in the task engine keeps one mental model.
+- Action-declared suspend capability, where an action declares that it can suspend and the runner saves step state only for tasks that use it. This would remove the task recovery requirement, but it adds a new action API, so it is a possible follow-up to A1.
