@@ -37,41 +37,6 @@ const moduleTypeTable = {
   '.js': undefined,
 };
 
-/**
- * Synchronous hooks for use with `module.registerHooks()`.
- *
- * Unlike the asynchronous hooks, these also see `require()` calls. Those are
- * left to the default implementation, since CommonJS is transformed by the
- * `require` hooks in `nodeTransform.cjs`.
- */
-export const syncHooks = {
-  /** @type {import('module').ResolveHookSync} */
-  resolve(specifier, context, nextResolve) {
-    if (isRequire(context)) {
-      return nextResolve(specifier, context);
-    }
-    return resolveSync(specifier, context, nextResolve);
-  },
-  /** @type {import('module').LoadHookSync} */
-  load(url, context, nextLoad) {
-    if (isRequire(context)) {
-      return nextLoad(url, context);
-    }
-    return loadImpl(url, context, nextLoad);
-  },
-};
-
-/**
- * Custom conditions, e.g. `--conditions=require`, are added to both `import`
- * and `require()` calls, so we check for the absence of `import` as well.
- *
- * @param {{ conditions?: readonly string[] }} context
- */
-function isRequire(context) {
-  const conditions = context.conditions ?? [];
-  return conditions.includes('require') && !conditions.includes('import');
-}
-
 /** @type {import('module').ResolveHookSync} */
 function resolveSync(specifier, context, nextResolve) {
   // Built-in modules are handled by the default resolver
@@ -132,56 +97,6 @@ function resolveSync(specifier, context, nextResolve) {
     }
 
     // Unexpected error or no resolution found
-    throw error;
-  }
-}
-
-/**
- * Asynchronous resolve hook for use with `module.register()`, on Node.js
- * versions that don't support `module.registerHooks()`. It mirrors
- * `resolveSync`, except that `nextResolve` returns a promise.
- *
- * Together with `load`, this is also re-exported as a public entry point by
- * `@backstage/cli/config/nodeTransformHooks.mjs`, so it needs to stay in
- * place even once all supported Node.js versions have `module.registerHooks()`.
- *
- * @type {import('module').ResolveHook}
- */
-export async function resolve(specifier, context, nextResolve) {
-  if (isBuiltin(specifier)) {
-    return nextResolve(specifier, context);
-  }
-
-  const ext = extname(specifier);
-
-  if (ext === '.json' && !context.importAttributes?.type) {
-    return {
-      ...(await nextResolve(specifier, context)),
-      format: 'commonjs',
-      importAttributes: { type: 'json' },
-    };
-  }
-
-  if (ext !== '' || !specifier.startsWith('.')) {
-    return withDetectedModuleType(await nextResolve(specifier, context));
-  }
-
-  try {
-    return await nextResolve(specifier, context);
-  } catch (error) {
-    if (error.code === 'ERR_UNSUPPORTED_DIR_IMPORT') {
-      const spec = `${specifier}${specifier.endsWith('/') ? '' : '/'}index`;
-      const resolved = await resolveWithoutExt(spec, context, nextResolve);
-      if (resolved) {
-        return withDetectedModuleType(resolved);
-      }
-    } else if (error.code === 'ERR_MODULE_NOT_FOUND') {
-      const resolved = await resolveWithoutExt(specifier, context, nextResolve);
-      if (resolved) {
-        return withDetectedModuleType(resolved);
-      }
-    }
-
     throw error;
   }
 }
@@ -276,34 +191,6 @@ function resolveWithoutExtSync(specifier, context, nextResolve) {
     }
   }
   return undefined;
-}
-
-/** @type {import('module').ResolveHook} */
-async function resolveWithoutExt(specifier, context, nextResolve) {
-  for (const tryExt of SRC_EXTS) {
-    try {
-      const resolved = await nextResolve(specifier + tryExt, {
-        ...context,
-        format: 'commonjs',
-      });
-      return {
-        ...resolved,
-        format: moduleTypeTable[tryExt] ?? resolved.format,
-      };
-    } catch {
-      /* ignore */
-    }
-  }
-  return undefined;
-}
-
-/**
- * Asynchronous load hook for use with `module.register()`, see `resolve`.
- *
- * @type {import('module').LoadHook}
- */
-export async function load(url, context, nextLoad) {
-  return loadImpl(url, context, nextLoad);
 }
 
 /**
@@ -408,4 +295,117 @@ function loadImpl(url, context, nextLoad) {
     format,
     responseURL: url,
   };
+}
+
+/**
+ * Synchronous hooks for use with `module.registerHooks()`.
+ *
+ * Unlike the asynchronous hooks, these also see `require()` calls. Those are
+ * left to the default implementation, since CommonJS is transformed by the
+ * `require` hooks in `nodeTransform.cjs`.
+ */
+export const syncHooks = {
+  /** @type {import('module').ResolveHookSync} */
+  resolve(specifier, context, nextResolve) {
+    if (isRequire(context)) {
+      return nextResolve(specifier, context);
+    }
+    return resolveSync(specifier, context, nextResolve);
+  },
+  /** @type {import('module').LoadHookSync} */
+  load(url, context, nextLoad) {
+    if (isRequire(context)) {
+      return nextLoad(url, context);
+    }
+    return loadImpl(url, context, nextLoad);
+  },
+};
+
+/**
+ * Custom conditions, e.g. `--conditions=require`, are added to both `import`
+ * and `require()` calls, so we check for the absence of `import` as well.
+ *
+ * @param {{ conditions?: readonly string[] }} context
+ */
+function isRequire(context) {
+  const conditions = context.conditions ?? [];
+  return conditions.includes('require') && !conditions.includes('import');
+}
+
+/**
+ * Asynchronous resolve hook for use with `module.register()`, on Node.js
+ * versions that don't support `module.registerHooks()`. It mirrors
+ * `resolveSync`, except that `nextResolve` returns a promise.
+ *
+ * Together with `load`, this is also re-exported as a public entry point by
+ * `@backstage/cli/config/nodeTransformHooks.mjs`, so it needs to stay in
+ * place even once all supported Node.js versions have `module.registerHooks()`.
+ *
+ * @type {import('module').ResolveHook}
+ */
+export async function resolve(specifier, context, nextResolve) {
+  if (isBuiltin(specifier)) {
+    return nextResolve(specifier, context);
+  }
+
+  const ext = extname(specifier);
+
+  if (ext === '.json' && !context.importAttributes?.type) {
+    return {
+      ...(await nextResolve(specifier, context)),
+      format: 'commonjs',
+      importAttributes: { type: 'json' },
+    };
+  }
+
+  if (ext !== '' || !specifier.startsWith('.')) {
+    return withDetectedModuleType(await nextResolve(specifier, context));
+  }
+
+  try {
+    return await nextResolve(specifier, context);
+  } catch (error) {
+    if (error.code === 'ERR_UNSUPPORTED_DIR_IMPORT') {
+      const spec = `${specifier}${specifier.endsWith('/') ? '' : '/'}index`;
+      const resolved = await resolveWithoutExt(spec, context, nextResolve);
+      if (resolved) {
+        return withDetectedModuleType(resolved);
+      }
+    } else if (error.code === 'ERR_MODULE_NOT_FOUND') {
+      const resolved = await resolveWithoutExt(specifier, context, nextResolve);
+      if (resolved) {
+        return withDetectedModuleType(resolved);
+      }
+    }
+
+    throw error;
+  }
+}
+
+/** @type {import('module').ResolveHook} */
+async function resolveWithoutExt(specifier, context, nextResolve) {
+  for (const tryExt of SRC_EXTS) {
+    try {
+      const resolved = await nextResolve(specifier + tryExt, {
+        ...context,
+        format: 'commonjs',
+      });
+      return {
+        ...resolved,
+        format: moduleTypeTable[tryExt] ?? resolved.format,
+      };
+    } catch {
+      /* ignore */
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Asynchronous load hook for use with `module.register()`, see `resolve`.
+ *
+ * @type {import('module').LoadHook}
+ */
+export async function load(url, context, nextLoad) {
+  return loadImpl(url, context, nextLoad);
 }
