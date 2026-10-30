@@ -283,6 +283,8 @@ describe('IncrementalIngestionEngine - repeated entity refs', () => {
 
   it('keeps the last candidate for each ref and warns, in bursts and events', async () => {
     mockPerformanceNow.mockReturnValue(1000);
+    let now = 1_000_000;
+    jest.spyOn(Date, 'now').mockImplementation(() => now);
     const { engine, provider, manager, connection, logger } = setup();
 
     provider.next.mockResolvedValueOnce({
@@ -311,14 +313,19 @@ describe('IncrementalIngestionEngine - repeated entity refs', () => {
     );
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn.mock.calls[0][0]).toContain(
-      "Ingestion 'ingestion': 2 entity refs were emitted more than once",
+      'test-provider emitted 2 entity refs more than once within the same batch, in 1 batches',
+    );
+    expect(logger.warn.mock.calls[0][0]).toContain(
+      'Examples: component:default/a, component:default/b',
     );
 
-    provider.eventHandler.onEvent.mockResolvedValueOnce({
+    // Within the warning interval, repeats are only logged at debug level
+    const event = (name: string) => ({
       type: 'delta',
-      added: [component('d', 1), component('d', 2)],
+      added: [component(name, 1), component(name, 2)],
       removed: [],
     });
+    provider.eventHandler.onEvent.mockResolvedValueOnce(event('d'));
     await engine.onEvent({ topic: 'test-topic', eventPayload: {} });
 
     expect(names(manager.createMarkEntities.mock.calls[1][1])).toEqual([
@@ -327,6 +334,23 @@ describe('IncrementalIngestionEngine - repeated entity refs', () => {
     expect(names(connection.applyMutation.mock.calls[1][0].added)).toEqual([
       ['d', { version: '2' }],
     ]);
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.debug).toHaveBeenCalledWith(
+      "incremental-engine: test-provider event from 'test-topic': 1 entity refs were emitted more than once in the same batch",
+    );
+
+    // Once the interval has passed, the next warning summarizes everything
+    // since the previous one
+    now += 10 * 60 * 1000;
+    provider.eventHandler.onEvent.mockResolvedValueOnce(event('e'));
+    await engine.onEvent({ topic: 'test-topic', eventPayload: {} });
+
     expect(logger.warn).toHaveBeenCalledTimes(2);
+    expect(logger.warn.mock.calls[1][0]).toContain(
+      'test-provider emitted 2 entity refs more than once within the same batch, in 2 batches',
+    );
+    expect(logger.warn.mock.calls[1][0]).toContain(
+      'Examples: component:default/d, component:default/e',
+    );
   });
 });
