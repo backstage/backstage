@@ -23,7 +23,6 @@ import {
   ConfigApi,
   coreExtensionData,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   IdentityApi,
   identityApiRef,
@@ -71,6 +70,7 @@ import {
   type ExtensionPredicateContext,
 } from './predicates';
 import { FrontendApiRegistry } from './FrontendApiRegistry';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   ApiFactoryEntry,
   collectApiFactoryEntries,
