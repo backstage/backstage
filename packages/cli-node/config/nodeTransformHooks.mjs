@@ -77,11 +77,13 @@ function resolveSync(specifier, context, nextResolve) {
 
   const ext = extname(specifier);
 
-  // Unless there's an explicit import attribute, JSON files are loaded with our custom loader that's defined below.
+  // Unless there's an explicit import attribute, JSON files are loaded with the
+  // native JSON format. The CommonJS workaround in the load hook is only needed
+  // for the asynchronous hooks.
   if (ext === '.json' && !context.importAttributes?.type) {
     return {
       ...nextResolve(specifier, context),
-      format: 'commonjs',
+      format: 'json',
       importAttributes: { type: 'json' },
     };
   }

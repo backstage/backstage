@@ -50,10 +50,11 @@ const expectedExports = {
   }),
 };
 
-function loadFixture(fixture: string) {
+function loadFixture(fixture: string, nodeArgs: string[] = []) {
   const output = execFileSync(
     'node',
     [
+      ...nodeArgs,
       '--import',
       require.resolve('@backstage/cli-node/config/nodeTransform.cjs'),
       resolvePath(__dirname, `__fixtures__/${fixture}`),
@@ -99,6 +100,19 @@ describe('node runtime module transforms', () => {
       dep: exportValues.all,
       dyn: exportValues.all,
     });
+  });
+
+  it('should load JSON files', async () => {
+    const expected = {
+      static: { value: 'json' },
+      dynamic: { value: 'json' },
+      require: { value: 'json' },
+    };
+    expect(loadFixture('json/print.mts')).toEqual(expected);
+    // Falls back to the asynchronous hooks when require(esm) is disabled
+    expect(
+      loadFixture('json/print.mts', ['--no-experimental-require-module']),
+    ).toEqual(expected);
   });
 });
 

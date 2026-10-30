@@ -86,8 +86,9 @@ addHook(
 // handled be the CommonJS hooks in this file if what it points to is CommonJS.
 //
 // The synchronous hooks API runs in the same thread and is used when available,
-// since Node.js 26 deprecates Module.register().
-if (Module.registerHooks) {
+// since Node.js 26 deprecates Module.register(). It requires loading the hooks
+// module with require(), which can be disabled with --no-experimental-require-module.
+if (Module.registerHooks && process.features.require_module) {
   Module.registerHooks(require('./nodeTransformHooks.mjs').syncHooks);
 } else {
   Module.register('./nodeTransformHooks.mjs', pathToFileURL(__filename));
