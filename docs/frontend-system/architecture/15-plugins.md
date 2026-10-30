@@ -34,6 +34,10 @@ export default createFrontendPlugin({
 
 ### `pluginId` option
 
+Read the ID of a plugin instance using `plugin.pluginId`. The deprecated
+`plugin.id` alias is no longer part of the public `FrontendPlugin` interface.
+Older plugin instances that expose only `id` remain supported by the app.
+
 Each plugin needs an ID, which is used to uniquely identify the plugin within an entire Backstage system. The ID does not have to be globally unique across all of the NPM ecosystem, although you generally want to strive for that. It is not possible to install multiple plugins with the same ID in a single Backstage app.
 
 The plugin ID should generally be part of the of the package name and use kebab-case. See both the [frontend naming patterns section](./50-naming-patterns.md), as well as the [package metadata section](../../tooling/package-metadata.md#name) for more information.
