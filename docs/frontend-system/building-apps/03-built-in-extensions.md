@@ -194,14 +194,14 @@ You can configure redirects for the `app/routes` extension to automatically redi
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - app/routes:
-        config:
-          redirects:
-            - from: /old-path
-              to: /new-path
-            - from: /legacy/page
-              to: /updated/page
+  extension:
+    app/routes:
+      config:
+        redirects:
+          - from: /old-path
+            to: /new-path
+          - from: /legacy/page
+            to: /updated/page
 ```
 
 Redirects are matched before any regular routes and use the [`replace`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) strategy, so the old path will not appear in the browser history.

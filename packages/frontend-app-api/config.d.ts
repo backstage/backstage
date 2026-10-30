@@ -70,7 +70,7 @@ export interface Config {
       [extensionId: string]:
         | boolean
         | {
-            attachTo?: { id?: string; input?: string };
+            attachTo?: { id: string; input: string };
             disabled?: boolean;
             config?: unknown;
           };

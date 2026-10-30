@@ -73,7 +73,7 @@ function makeExtDef(
 }
 
 describe('resolveAppNodeSpecs', () => {
-  it('layers map settings over the ordered list without changing registration order', () => {
+  it('replaces list config with layered map config without changing order', () => {
     const shared = {
       app: {
         extensions: [
@@ -87,12 +87,13 @@ describe('resolveAppNodeSpecs', () => {
               },
             },
           },
-          'a',
+          { a: { config: { retained: true } } },
         ],
         extension: {
           c: {
             config: {
-              nested: { shared: true, remove: true },
+              nested: { shared: true, remove: true, keep: 2 },
+              typed: 'from-map',
               fallback: 'from-map',
             },
           },
@@ -104,9 +105,10 @@ describe('resolveAppNodeSpecs', () => {
       app: {
         extension: {
           d: false,
+          a: { disabled: false },
           c: {
             disabled: false,
-            attachTo: { input: 'other' },
+            attachTo: { id: 'root', input: 'other' },
             config: {
               nested: { replace: [3], remove: null, shared: false },
               typed: { value: 1 },
@@ -142,18 +144,30 @@ describe('resolveAppNodeSpecs', () => {
     expect(result[0]).toMatchObject({
       attachTo: { id: 'root', input: 'other' },
       disabled: false,
-      config: {
-        nested: { keep: 1, replace: [3], shared: false },
-        typed: { value: 1 },
-        fallback: 'from-list',
-      },
     });
-    expect(result[0].config).not.toHaveProperty('nested.remove');
+    expect(result[0].config).toEqual({
+      nested: { keep: 2, replace: [3], shared: false },
+      typed: { value: 1 },
+    });
+    expect(result[1]).toMatchObject({
+      disabled: false,
+      config: { retained: true },
+    });
     expect(result[2]).toMatchObject({
       disabled: true,
       config: { keepDisabled: true },
     });
     expect(result[3].disabled).toBe(true);
+    expect(resolve({ c: { config: {} } })[0]).toMatchObject({
+      disabled: true,
+      config: {},
+    });
+    expect(resolve({ c: false })[0].config).toEqual({
+      nested: { keep: 1, replace: [1, 2] },
+      typed: 'old',
+      fallback: 'from-list',
+    });
+
     const reversed = resolve(
       Object.fromEntries(Object.entries(overrides).reverse()),
     );
@@ -199,6 +213,12 @@ describe('resolveAppNodeSpecs', () => {
         collector,
       }),
     ).toThrow('app.extension[a].config, must be an object');
+    expect(() =>
+      resolveAppNodeSpecs({
+        overrides: { a: { attachTo: { input: 'other' } } },
+        collector,
+      }),
+    ).toThrow('app.extension[a].attachTo.id, must be a non-empty string');
     const result = resolveAppNodeSpecs({
       builtinExtensions: [makeExt('a')],
       overrides: { missing: true, a: false },

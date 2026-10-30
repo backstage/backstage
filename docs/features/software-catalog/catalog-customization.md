@@ -19,22 +19,22 @@ The catalog index page can be configured through extensions in `app-config.yaml`
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - page:catalog:
-        config:
-          pagination: true
+  extension:
+    page:catalog:
+      config:
+        pagination: true
 ```
 
 You can also configure pagination with additional options:
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - page:catalog:
-        config:
-          pagination:
-            mode: offset
-            limit: 20
+  extension:
+    page:catalog:
+      config:
+        pagination:
+          mode: offset
+          limit: 20
 ```
 
 ### Configuring Catalog Export
@@ -49,13 +49,13 @@ To enable catalog export, add the following configuration:
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - page:catalog:
-        config:
-          exportSettings:
-            enabled: true
-            # Optional: hide the built-in CSV and JSON formats, showing only your own supplied exporters
-            disableBuiltinExporters: false
+  extension:
+    page:catalog:
+      config:
+        exportSettings:
+          enabled: true
+          # Optional: hide the built-in CSV and JSON formats, showing only your own supplied exporters
+          disableBuiltinExporters: false
 ```
 
 This will display an "Export selection" button on the catalog index page that allows users to export the currently filtered catalog entities in CSV or JSON format.
@@ -140,20 +140,20 @@ The catalog index page includes a set of default filters (kind, type, owner, lif
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - catalog-filter:catalog/kind:
-        config:
-          initialFilter: domain
+  extension:
+    catalog-filter:catalog/kind:
+      config:
+        initialFilter: domain
 ```
 
 To set the initial list filter to "all" instead of "owned":
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - catalog-filter:catalog/list:
-        config:
-          initialFilter: all
+  extension:
+    catalog-filter:catalog/list:
+      config:
+        initialFilter: all
 ```
 
 ### Custom filters
@@ -207,10 +207,10 @@ Default filters can be disabled through `app-config.yaml` by setting them to `fa
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - catalog-filter:catalog/lifecycle: false
-    - catalog-filter:catalog/tag: false
-    - catalog-filter:catalog/processing-status: false
+  extension:
+    catalog-filter:catalog/lifecycle: false
+    catalog-filter:catalog/tag: false
+    catalog-filter:catalog/processing-status: false
 ```
 
 ## Customizing columns, actions, and table options
@@ -513,24 +513,24 @@ You can define and customize the tab groups that appear on the entity page, as w
 
 ```yaml
 app:
-  extensions:
+  extension:
     # Entity page (new frontend system)
-    - page:catalog/entity:
-        config:
-          # Show icons next to group and tab titles
-          showNavItemIcons: true
+    page:catalog/entity:
+      config:
+        # Show icons next to group and tab titles
+        showNavItemIcons: true
 
-          # Optionally override default groups and their icons
-          groups:
-            - overview:
-                title: Overview
-                icon: dashboard
-            - quality:
-                title: Quality
-                icon: verified
-            - documentation:
-                title: Docs
-                icon: description
+        # Optionally override default groups and their icons
+        groups:
+          - overview:
+              title: Overview
+              icon: dashboard
+          - quality:
+              title: Quality
+              icon: verified
+          - documentation:
+              title: Docs
+              icon: description
 ```
 
 Notes:
@@ -549,17 +549,17 @@ A page-level `defaultContentOrder` sets the default for all groups, and individu
 
 ```yaml
 app:
-  extensions:
-    - page:catalog/entity:
-        config:
-          # Default content order for all groups
-          defaultContentOrder: title
+  extension:
+    page:catalog/entity:
+      config:
+        # Default content order for all groups
+        defaultContentOrder: title
 
-          groups:
-            - documentation:
-                title: Docs
-                # Override: keep natural order for this group
-                contentOrder: natural
+        groups:
+          - documentation:
+              title: Docs
+              # Override: keep natural order for this group
+              contentOrder: natural
 ```
 
 Note that content ordering only applies to content items within groups. Ungrouped tabs (those not matching any group definition) always retain their natural order.
@@ -570,15 +570,15 @@ Groups can declare `aliases` — a list of other group IDs that should be treate
 
 ```yaml
 app:
-  extensions:
-    - page:catalog/entity:
-        config:
-          groups:
-            - develop:
-                title: Develop
-                # Content targeting 'development' will appear in this group
-                aliases:
-                  - development
+  extension:
+    page:catalog/entity:
+      config:
+        groups:
+          - develop:
+              title: Develop
+              # Content targeting 'development' will appear in this group
+              aliases:
+                - development
 ```
 
 ### Overriding or disabling a tab's group (per extension)
@@ -587,20 +587,20 @@ Each entity content extension (tabs on the entity page) can declare a default `g
 
 ```yaml
 app:
-  extensions:
+  extension:
     # ...
     # Example entity content extension instance id
-    - entity-content:example/my-content:
-        config:
-          # Move this tab to a custom group you defined above
-          group: custom
-          # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
-          icon: my-icon
+    entity-content:example/my-content:
+      config:
+        # Move this tab to a custom group you defined above
+        group: custom
+        # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
+        icon: my-icon
 
     # Disassociate from any group and show as a standalone tab
-    - entity-content:example/another-content:
-        config:
-          group: false
+    entity-content:example/another-content:
+      config:
+        group: false
 ```
 
 ### Tab icons for entity content

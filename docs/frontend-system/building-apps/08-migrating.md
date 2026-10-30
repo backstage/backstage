@@ -827,12 +827,12 @@ If your old routes include `<Redirect>` elements to forward users from one path 
 
 ```yaml title="app-config.yaml"
 app:
-  extensions:
-    - app/routes:
-        config:
-          redirects:
-            - from: /old-path
-              to: /new-path
+  extension:
+    app/routes:
+      config:
+        redirects:
+          - from: /old-path
+            to: /new-path
 ```
 
 See the [`app/routes` built-in extension documentation](./03-built-in-extensions.md#configuring-redirects) for more details.

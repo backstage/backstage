@@ -25,7 +25,6 @@ import {
   ExtensionParameters,
   expandShorthandExtensionParameters,
 } from './readAppExtensionsConfig';
-import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -292,38 +291,11 @@ export function resolveAppNodeSpecs(options: {
   ];
 
   // Apply map entries after ordering so their property order has no effect on
-  // extension ordering. Merge through the config reader to retain normal config
-  // semantics for nested objects, arrays, and explicit false values.
+  // extension ordering.
   for (const [id, value] of Object.entries(overrides)) {
     const existing = orderedExtensions.find(e => e.extension.id === id);
-    let settings: JsonObject;
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      settings = value;
-    } else {
-      const { id: _id, ...expanded } = expandShorthandExtensionParameters(
-        { [id]: value },
-        'app.extension',
-      );
-      settings = expanded as JsonObject;
-    }
-    const merged = ConfigReader.fromConfigs([
-      {
-        context: 'extension defaults and app.extensions',
-        data: {
-          settings: {
-            attachTo: existing?.params.attachTo,
-            disabled: existing?.params.disabled,
-            config: existing?.params.config,
-          } as JsonObject,
-        },
-      },
-      {
-        context: 'app.extension',
-        data: { settings },
-      },
-    ]).get<JsonObject>('settings');
     const params = expandShorthandExtensionParameters(
-      { [id]: merged },
+      { [id]: value },
       'app.extension',
     );
     if (forbidden.has(id)) {
@@ -339,9 +311,9 @@ export function resolveAppNodeSpecs(options: {
         context: { extensionId: id },
       });
     } else {
-      existing.params.attachTo = params.attachTo ?? existing.extension.attachTo;
-      existing.params.disabled = params.disabled ?? existing.extension.disabled;
-      existing.params.config = params.config;
+      existing.params.attachTo = params.attachTo ?? existing.params.attachTo;
+      existing.params.disabled = params.disabled ?? existing.params.disabled;
+      existing.params.config = params.config ?? existing.params.config;
     }
   }
 

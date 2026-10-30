@@ -299,13 +299,13 @@ Installing translation extensions makes the translated messages available, but t
 
 ```yaml
 app:
-  extensions:
-    - api:app/app-language:
-        config:
-          availableLanguages:
-            - en
-            - zh
-          defaultLanguage: en
+  extension:
+    api:app/app-language:
+      config:
+        availableLanguages:
+          - en
+          - zh
+        defaultLanguage: en
 ```
 
 The `availableLanguages` array controls which languages appear as options in the Settings page. The `defaultLanguage` sets the language used before the user makes a selection, and defaults to `en` if not specified. If you configure `availableLanguages`, the `defaultLanguage` must be one of those entries — if you omit `defaultLanguage`, make sure `en` is included in `availableLanguages`, otherwise the app can fail to start.
