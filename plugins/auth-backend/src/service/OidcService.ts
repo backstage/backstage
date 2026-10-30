@@ -482,12 +482,13 @@ export class OidcService {
   }
 
   public async exchangeCodeForToken(params: {
+    clientId: string;
     code: string;
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
   }) {
-    const { code, redirectUri, codeVerifier, grantType } = params;
+    const { clientId, code, redirectUri, codeVerifier, grantType } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
@@ -512,6 +513,10 @@ export class OidcService {
 
     if (!session) {
       throw new NotFoundError('Invalid authorization session');
+    }
+
+    if (clientId !== session.clientId) {
+      throw new AuthenticationError('Client ID mismatch');
     }
 
     if (session.redirectUri !== redirectUri) {

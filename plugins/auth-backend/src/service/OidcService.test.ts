@@ -741,7 +741,19 @@ describe('OidcService', () => {
 
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
+        await expect(
+          service.exchangeCodeForToken({
+            clientId: 'https://example.com/other-client.json',
+            code,
+            redirectUri: 'http://localhost:8080/callback',
+            grantType: 'authorization_code',
+            codeVerifier: 'test-code-verifier',
+          }),
+        ).rejects.toThrow('Client ID mismatch');
+        expect(mocks.tokenIssuer.issueToken).not.toHaveBeenCalled();
+
         const tokenResult = await service.exchangeCodeForToken({
+          clientId: client.clientId,
           codeVerifier: 'test-code-verifier',
           code,
           redirectUri: 'http://localhost:8080/callback',
@@ -762,6 +774,7 @@ describe('OidcService', () => {
 
         await expect(
           service.exchangeCodeForToken({
+            clientId: 'https://example.com/client.json',
             codeVerifier: 'test-code-verifier',
             code: 'test-code',
             redirectUri: 'http://localhost:8080/callback',
@@ -802,6 +815,7 @@ describe('OidcService', () => {
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         const tokenResult = await service.exchangeCodeForToken({
+          clientId: client.clientId,
           code,
           redirectUri: 'http://localhost:8080/callback',
           grantType: 'authorization_code',
@@ -837,6 +851,7 @@ describe('OidcService', () => {
 
         await expect(
           service.exchangeCodeForToken({
+            clientId: client.clientId,
             code,
             redirectUri: 'http://localhost:8080/callback',
             grantType: 'authorization_code',
@@ -881,6 +896,7 @@ describe('OidcService', () => {
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         const tokenResult = await service.exchangeCodeForToken({
+          clientId: client.clientId,
           codeVerifier: 'test-code-verifier',
           code,
           redirectUri: 'http://localhost:8080/callback',
@@ -1663,6 +1679,7 @@ describe('OidcService', () => {
             'code',
           )!;
           const tokenResult = await service.exchangeCodeForToken({
+            clientId: cimdClientId,
             code,
             redirectUri: 'http://localhost:8080/callback',
             grantType: 'authorization_code',
@@ -1720,6 +1737,7 @@ describe('OidcService', () => {
             'code',
           )!;
           const tokenResult = await service.exchangeCodeForToken({
+            clientId: cimdClientId,
             code,
             redirectUri: 'http://localhost:8080/callback',
             grantType: 'authorization_code',
