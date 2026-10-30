@@ -116,6 +116,24 @@ describe('GerritIntegration', () => {
       host: 'gerrit-review.example.com',
       gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
     } as any);
+    it('preserves repository names that contain the original path', () => {
+      for (const ref of [
+        'HEAD',
+        '157f862803d45b9d269f0e390f88aece1ded51e8',
+        'refs/heads/docs',
+        'refs/tags/docs',
+      ]) {
+        const root = `https://gerrit-review.example.com/a/gitiles/docs-service/+/${ref}`;
+        for (const suffix of ['/docs', '/docs/']) {
+          expect(
+            integration.resolveUrl({
+              url: '/catalog-info.yaml',
+              base: `${root}${suffix}`,
+            }),
+          ).toBe(`${root}/catalog-info.yaml`);
+        }
+      }
+    });
     it('works for valid urls pointing to a branch', () => {
       expect(
         integration.resolveUrl({
