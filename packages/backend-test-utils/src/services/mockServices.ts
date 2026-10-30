@@ -403,7 +403,7 @@ export const mockServices = Object.freeze({
 
   /**
    * Creates a mock implementation of the
-   * {@link @backstage/backend-plugin-api#coreServices}.database. Just returns
+   * {@link @backstage/backend-plugin-api#coreServices | coreServices.database}. Just returns
    * the given `knex` instance, which is useful in combination with the
    * {@link TestDatabases} facility.
    */
@@ -411,7 +411,7 @@ export const mockServices = Object.freeze({
     Object.assign(mockDatabase, {
       /**
        * Creates a mock factory for the
-       * {@link @backstage/backend-plugin-api#coreServices}.database. Just returns
+       * {@link @backstage/backend-plugin-api#coreServices | coreServices.database}. Just returns
        * the given `knex` instance if you supply one, which is useful in
        * combination with the {@link TestDatabases} facility. Otherwise, it
        * returns the regular default database factory which reads config settings.
@@ -426,7 +426,7 @@ export const mockServices = Object.freeze({
           : databaseServiceFactory,
       /**
        * Creates a mock of the
-       * {@link @backstage/backend-plugin-api#coreServices}.database, optionally
+       * {@link @backstage/backend-plugin-api#coreServices | coreServices.database}, optionally
        * with some given method implementations.
        */
       mock: createServiceMock(coreServices.database, () => ({
@@ -479,7 +479,7 @@ export const mockServices = Object.freeze({
     Object.assign(mockPermissions, {
       /**
        * Creates a mock factory for the
-       * {@link @backstage/backend-plugin-api#coreServices}.permissions. Just
+       * {@link @backstage/backend-plugin-api#coreServices | coreServices.permissions}. Just
        * returns the given `result` if you supply one. Otherwise, it returns the
        * regular default permissions factory.
        */
@@ -495,7 +495,7 @@ export const mockServices = Object.freeze({
           : permissionsServiceFactory,
       /**
        * Creates a mock of the
-       * {@link @backstage/backend-plugin-api#coreServices}.permissions,
+       * {@link @backstage/backend-plugin-api#coreServices | coreServices.permissions},
        * optionally with some given method implementations.
        */
       mock: createServiceMock(coreServices.permissions, () => ({
