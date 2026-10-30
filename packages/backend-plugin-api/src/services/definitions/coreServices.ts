@@ -15,6 +15,28 @@
  */
 
 import { createServiceRef, ServiceRef } from '../system';
+import type { AuditorService } from './AuditorService';
+import type { AuthService } from './AuthService';
+import type { CacheService } from './CacheService';
+import type { DatabaseService } from './DatabaseService';
+import type { DiscoveryService } from './DiscoveryService';
+import type { HttpAuthService } from './HttpAuthService';
+import type { HttpRouterService } from './HttpRouterService';
+import type { LifecycleService } from './LifecycleService';
+import type { LoggerService } from './LoggerService';
+import type { PermissionsRegistryService } from './PermissionsRegistryService';
+import type { PermissionsService } from './PermissionsService';
+import type { PluginMetadataService } from './PluginMetadataService';
+import type { RootConfigService } from './RootConfigService';
+import type { RootHealthService } from './RootHealthService';
+import type { RootHttpRouterService } from './RootHttpRouterService';
+import type { RootInstanceMetadataService } from './RootInstanceMetadataService';
+import type { RootLifecycleService } from './RootLifecycleService';
+import type { RootLoggerService } from './RootLoggerService';
+import type { RootSystemMetadataService } from './RootSystemMetadataService';
+import type { SchedulerService } from './SchedulerService';
+import type { UrlReaderService } from './UrlReaderService';
+import type { UserInfoService } from './UserInfoService';
 
 /**
  * The type of {@link coreServices}, with references to all core services.
@@ -31,11 +53,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly auth: ServiceRef<
-    import('./AuthService').AuthService,
-    'plugin',
-    'singleton'
-  >;
+  readonly auth: ServiceRef<AuthService, 'plugin', 'singleton'>;
 
   /**
    * Authenticated user information retrieval.
@@ -46,11 +64,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly userInfo: ServiceRef<
-    import('./UserInfoService').UserInfoService,
-    'plugin',
-    'singleton'
-  >;
+  readonly userInfo: ServiceRef<UserInfoService, 'plugin', 'singleton'>;
 
   /**
    * Key-value store for caching data.
@@ -61,11 +75,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly cache: ServiceRef<
-    import('./CacheService').CacheService,
-    'plugin',
-    'singleton'
-  >;
+  readonly cache: ServiceRef<CacheService, 'plugin', 'singleton'>;
 
   /**
    * Access to static configuration.
@@ -76,11 +86,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly rootConfig: ServiceRef<
-    import('./RootConfigService').RootConfigService,
-    'root',
-    'singleton'
-  >;
+  readonly rootConfig: ServiceRef<RootConfigService, 'root', 'singleton'>;
 
   /**
    * Database access and management via `knex`.
@@ -91,11 +97,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly database: ServiceRef<
-    import('./DatabaseService').DatabaseService,
-    'plugin',
-    'singleton'
-  >;
+  readonly database: ServiceRef<DatabaseService, 'plugin', 'singleton'>;
 
   /**
    * Service discovery for inter-plugin communication.
@@ -106,20 +108,12 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly discovery: ServiceRef<
-    import('./DiscoveryService').DiscoveryService,
-    'plugin',
-    'singleton'
-  >;
+  readonly discovery: ServiceRef<DiscoveryService, 'plugin', 'singleton'>;
 
   /**
    * The service reference for the plugin scoped {@link RootHealthService}.
    */
-  readonly rootHealth: ServiceRef<
-    import('./RootHealthService').RootHealthService,
-    'root',
-    'singleton'
-  >;
+  readonly rootHealth: ServiceRef<RootHealthService, 'root', 'singleton'>;
 
   /**
    * Authentication of HTTP requests.
@@ -130,11 +124,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly httpAuth: ServiceRef<
-    import('./HttpAuthService').HttpAuthService,
-    'plugin',
-    'singleton'
-  >;
+  readonly httpAuth: ServiceRef<HttpAuthService, 'plugin', 'singleton'>;
 
   /**
    * HTTP route registration for plugins.
@@ -145,11 +135,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly httpRouter: ServiceRef<
-    import('./HttpRouterService').HttpRouterService,
-    'plugin',
-    'singleton'
-  >;
+  readonly httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
 
   /**
    * Registration of plugin startup and shutdown lifecycle hooks.
@@ -160,11 +146,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly lifecycle: ServiceRef<
-    import('./LifecycleService').LifecycleService,
-    'plugin',
-    'singleton'
-  >;
+  readonly lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
 
   /**
    * Plugin-level logging.
@@ -175,11 +157,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly logger: ServiceRef<
-    import('./LoggerService').LoggerService,
-    'plugin',
-    'singleton'
-  >;
+  readonly logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
 
   /**
    * Plugin-level auditing.
@@ -190,11 +168,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly auditor: ServiceRef<
-    import('./AuditorService').AuditorService,
-    'plugin',
-    'singleton'
-  >;
+  readonly auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
 
   /**
    * Permission system integration for authorization of user actions.
@@ -205,11 +179,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly permissions: ServiceRef<
-    import('./PermissionsService').PermissionsService,
-    'plugin',
-    'singleton'
-  >;
+  readonly permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
 
   /**
    * Permission system integration for registering resources and permissions.
@@ -221,7 +191,7 @@ export interface CoreServices {
    * @public
    */
   readonly permissionsRegistry: ServiceRef<
-    import('./PermissionsRegistryService').PermissionsRegistryService,
+    PermissionsRegistryService,
     'plugin',
     'singleton'
   >;
@@ -236,7 +206,7 @@ export interface CoreServices {
    * @public
    */
   readonly pluginMetadata: ServiceRef<
-    import('./PluginMetadataService').PluginMetadataService,
+    PluginMetadataService,
     'plugin',
     'singleton'
   >;
@@ -251,7 +221,7 @@ export interface CoreServices {
    * @public
    */
   readonly rootHttpRouter: ServiceRef<
-    import('./RootHttpRouterService').RootHttpRouterService,
+    RootHttpRouterService,
     'root',
     'singleton'
   >;
@@ -265,11 +235,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly rootLifecycle: ServiceRef<
-    import('./RootLifecycleService').RootLifecycleService,
-    'root',
-    'singleton'
-  >;
+  readonly rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
 
   /**
    * Root-level logging.
@@ -280,11 +246,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly rootLogger: ServiceRef<
-    import('./RootLoggerService').RootLoggerService,
-    'root',
-    'singleton'
-  >;
+  readonly rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
 
   /**
    * Scheduling of distributed background tasks.
@@ -295,11 +257,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly scheduler: ServiceRef<
-    import('./SchedulerService').SchedulerService,
-    'plugin',
-    'singleton'
-  >;
+  readonly scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
 
   /**
    * Reading content from external systems.
@@ -310,11 +268,7 @@ export interface CoreServices {
    *
    * @public
    */
-  readonly urlReader: ServiceRef<
-    import('./UrlReaderService').UrlReaderService,
-    'plugin',
-    'singleton'
-  >;
+  readonly urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
 
   /**
    * Information about the current Backstage instance.
@@ -322,7 +276,7 @@ export interface CoreServices {
    * @public
    */
   readonly rootInstanceMetadata: ServiceRef<
-    import('./RootInstanceMetadataService').RootInstanceMetadataService,
+    RootInstanceMetadataService,
     'root',
     'singleton'
   >;
@@ -333,7 +287,7 @@ export interface CoreServices {
    * @public
    */
   readonly rootSystemMetadata: ServiceRef<
-    import('./RootSystemMetadataService').RootSystemMetadataService,
+    RootSystemMetadataService,
     'root',
     'singleton'
   >;
@@ -345,70 +299,73 @@ export interface CoreServices {
  * @public
  */
 export const coreServices: CoreServices = Object.freeze({
-  auth: createServiceRef<import('./AuthService').AuthService>({
+  auth: createServiceRef<AuthService>({
     id: 'core.auth',
   }),
-  userInfo: createServiceRef<import('./UserInfoService').UserInfoService>({
+  userInfo: createServiceRef<UserInfoService>({
     id: 'core.userInfo',
   }),
-  cache: createServiceRef<import('./CacheService').CacheService>({
+  cache: createServiceRef<CacheService>({
     id: 'core.cache',
   }),
-  rootConfig: createServiceRef<import('./RootConfigService').RootConfigService>(
-    { id: 'core.rootConfig', scope: 'root' },
-  ),
-  database: createServiceRef<import('./DatabaseService').DatabaseService>({
+  rootConfig: createServiceRef<RootConfigService>({
+    id: 'core.rootConfig',
+    scope: 'root',
+  }),
+  database: createServiceRef<DatabaseService>({
     id: 'core.database',
   }),
-  discovery: createServiceRef<import('./DiscoveryService').DiscoveryService>({
+  discovery: createServiceRef<DiscoveryService>({
     id: 'core.discovery',
   }),
-  rootHealth: createServiceRef<import('./RootHealthService').RootHealthService>(
-    { id: 'core.rootHealth', scope: 'root' },
-  ),
-  httpAuth: createServiceRef<import('./HttpAuthService').HttpAuthService>({
+  rootHealth: createServiceRef<RootHealthService>({
+    id: 'core.rootHealth',
+    scope: 'root',
+  }),
+  httpAuth: createServiceRef<HttpAuthService>({
     id: 'core.httpAuth',
   }),
-  httpRouter: createServiceRef<import('./HttpRouterService').HttpRouterService>(
-    { id: 'core.httpRouter' },
-  ),
-  lifecycle: createServiceRef<import('./LifecycleService').LifecycleService>({
+  httpRouter: createServiceRef<HttpRouterService>({ id: 'core.httpRouter' }),
+  lifecycle: createServiceRef<LifecycleService>({
     id: 'core.lifecycle',
   }),
-  logger: createServiceRef<import('./LoggerService').LoggerService>({
+  logger: createServiceRef<LoggerService>({
     id: 'core.logger',
   }),
-  auditor: createServiceRef<import('./AuditorService').AuditorService>({
+  auditor: createServiceRef<AuditorService>({
     id: 'core.auditor',
   }),
-  permissions: createServiceRef<
-    import('./PermissionsService').PermissionsService
-  >({ id: 'core.permissions' }),
-  permissionsRegistry: createServiceRef<
-    import('./PermissionsRegistryService').PermissionsRegistryService
-  >({ id: 'core.permissionsRegistry' }),
-  pluginMetadata: createServiceRef<
-    import('./PluginMetadataService').PluginMetadataService
-  >({ id: 'core.pluginMetadata' }),
-  rootHttpRouter: createServiceRef<
-    import('./RootHttpRouterService').RootHttpRouterService
-  >({ id: 'core.rootHttpRouter', scope: 'root' }),
-  rootLifecycle: createServiceRef<
-    import('./RootLifecycleService').RootLifecycleService
-  >({ id: 'core.rootLifecycle', scope: 'root' }),
-  rootLogger: createServiceRef<import('./RootLoggerService').RootLoggerService>(
-    { id: 'core.rootLogger', scope: 'root' },
-  ),
-  scheduler: createServiceRef<import('./SchedulerService').SchedulerService>({
+  permissions: createServiceRef<PermissionsService>({ id: 'core.permissions' }),
+  permissionsRegistry: createServiceRef<PermissionsRegistryService>({
+    id: 'core.permissionsRegistry',
+  }),
+  pluginMetadata: createServiceRef<PluginMetadataService>({
+    id: 'core.pluginMetadata',
+  }),
+  rootHttpRouter: createServiceRef<RootHttpRouterService>({
+    id: 'core.rootHttpRouter',
+    scope: 'root',
+  }),
+  rootLifecycle: createServiceRef<RootLifecycleService>({
+    id: 'core.rootLifecycle',
+    scope: 'root',
+  }),
+  rootLogger: createServiceRef<RootLoggerService>({
+    id: 'core.rootLogger',
+    scope: 'root',
+  }),
+  scheduler: createServiceRef<SchedulerService>({
     id: 'core.scheduler',
   }),
-  urlReader: createServiceRef<import('./UrlReaderService').UrlReaderService>({
+  urlReader: createServiceRef<UrlReaderService>({
     id: 'core.urlReader',
   }),
-  rootInstanceMetadata: createServiceRef<
-    import('./RootInstanceMetadataService').RootInstanceMetadataService
-  >({ id: 'core.rootInstanceMetadata', scope: 'root' }),
-  rootSystemMetadata: createServiceRef<
-    import('./RootSystemMetadataService').RootSystemMetadataService
-  >({ id: 'core.rootSystemMetadata', scope: 'root' }),
+  rootInstanceMetadata: createServiceRef<RootInstanceMetadataService>({
+    id: 'core.rootInstanceMetadata',
+    scope: 'root',
+  }),
+  rootSystemMetadata: createServiceRef<RootSystemMetadataService>({
+    id: 'core.rootSystemMetadata',
+    scope: 'root',
+  }),
 });

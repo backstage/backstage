@@ -45,6 +45,74 @@ import {
 } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
+// When declarations share a name that only differs in case, or have the same
+// name but different kinds, such as a variable and an interface or namespace,
+// API Documenter generates the same filename for them, and the pages overwrite
+// each other. The kind that comes first in this list keeps the plain filename,
+// while the others get a suffix with their kind.
+const FILENAME_KIND_PRIORITY: string[] = [
+  ApiItemKind.Class,
+  ApiItemKind.Function,
+  ApiItemKind.Variable,
+  ApiItemKind.Enum,
+  ApiItemKind.Namespace,
+  ApiItemKind.Interface,
+  ApiItemKind.TypeAlias,
+];
+
+// These kinds don't contribute a segment to the filename
+const SKIPPED_FILENAME_KINDS: string[] = [
+  ApiItemKind.Model,
+  ApiItemKind.EntryPoint,
+  ApiItemKind.EnumMember,
+  ApiItemKind.Package,
+];
+
+function getKindPriority(kind: string) {
+  const index = FILENAME_KIND_PRIORITY.indexOf(kind);
+  return index === -1 ? FILENAME_KIND_PRIORITY.length : index;
+}
+
+// Returns a suffix for the item if it shares its filename with a sibling of a
+// different kind that takes precedence over it
+function getCollisionSuffix(item: ApiItem): string {
+  const name = item.displayName.toLowerCase();
+  const siblings: readonly ApiItem[] = item.parent?.members ?? [];
+  const winner = siblings
+    .filter(
+      sibling =>
+        sibling.displayName.toLowerCase() === name &&
+        sibling.kind !== item.kind,
+    )
+    .reduce<ApiItem>(
+      (best, sibling) =>
+        getKindPriority(sibling.kind) < getKindPriority(best.kind)
+          ? sibling
+          : best,
+      item,
+    );
+  return winner === item ? '' : `-${item.kind.toLowerCase()}`;
+}
+
+export function disambiguateFilename(
+  filename: string,
+  apiItem: ApiItem,
+): string {
+  const segments = filename.slice(0, -'.md'.length).split('.');
+  const items = apiItem
+    .getHierarchy()
+    .filter(item => !SKIPPED_FILENAME_KINDS.includes(item.kind));
+
+  // The first segment is the package name, followed by one for each item
+  if (segments.length !== items.length + 1) {
+    return filename;
+  }
+  items.forEach((item, index) => {
+    segments[index + 1] += getCollisionSuffix(item);
+  });
+  return `${segments.join('.')}.md`;
+}
+
 /*
 WARNING: Bring a blanket if you're gonna read the code below
 
@@ -445,7 +513,11 @@ export async function buildDocs({
     }
 
     private _getFilenameForApiItem(apiItem: ApiItem): string {
-      const filename: string = super._getFilenameForApiItem(apiItem);
+      let filename: string = super._getFilenameForApiItem(apiItem);
+
+      if (filename !== 'index.md') {
+        filename = disambiguateFilename(filename, apiItem);
+      }
 
       if (filename.includes('.html.')) {
         return filename.replace(/\.html\./g, '._html.');
