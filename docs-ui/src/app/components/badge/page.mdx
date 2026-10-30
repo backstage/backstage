@@ -1,9 +1,26 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, WithIcon, Sizes } from './components';
+import {
+  Default,
+  WithIcon,
+  Sizes,
+  StatusVariants,
+  StatusVariantsWithoutIcon,
+  StatusVariantsWithCustomIcon,
+  Pending,
+} from './components';
 import { badgePropDefs } from './props-definition';
-import { usage, preview, withIcons, sizes } from './snippets';
+import {
+  usage,
+  preview,
+  withIcons,
+  sizes,
+  statusVariants,
+  statusVariantsWithoutIcon,
+  statusVariantsWithCustomIcon,
+  pending,
+} from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { BadgeDefinition } from '../../../utils/definitions';
@@ -35,6 +52,51 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 ### Sizes
 
 <Snippet align="center" py={4} open preview={<Sizes />} code={sizes} />
+
+### Status variants
+
+Use the `status` prop to change the colors of the badge. Each status shows the
+same icon as the `Alert` component with that status. Without a status the badge
+uses neutral colors and has no icon.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<StatusVariants />}
+  code={statusVariants}
+/>
+
+### Status variants without icon
+
+Pass `icon={false}` to show a status badge without an icon.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<StatusVariantsWithoutIcon />}
+  code={statusVariantsWithoutIcon}
+/>
+
+### Status variants with a custom icon
+
+A custom `icon` replaces the default status icon.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<StatusVariantsWithCustomIcon />}
+  code={statusVariantsWithCustomIcon}
+/>
+
+### Pending state
+
+Set `isPending` to show a spinning loading indicator after the badge text. The
+`icon` and status colors stay as they are.
+
+<Snippet align="center" py={4} open preview={<Pending />} code={pending} />
 
 <Theming definition={BadgeDefinition} />
 
