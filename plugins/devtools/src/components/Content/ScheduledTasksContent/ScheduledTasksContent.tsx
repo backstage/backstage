@@ -296,36 +296,16 @@ export const ScheduledTasksContent = () => {
         )}
       />
 
-      {loading && !scheduledTasks && <Progress />}
+      {loading && <Progress />}
 
-      {error && (
+      {!loading && error && (
         <ErrorPanel
-          error={new Error(`No scheduled tasks found for "${selectedPlugin}"`)}
-          title="No Scheduled Tasks Found"
-        >
-          <Typography variant="body2">
-            The plugin ID "{selectedPlugin}" doesn't have any scheduled tasks or
-            may contain a typo.
-          </Typography>
-          <Typography variant="body2" style={{ marginTop: 8 }}>
-            Please verify:
-          </Typography>
-          <ul>
-            <li>
-              <Typography variant="body2">
-                The plugin ID is spelled correctly
-              </Typography>
-            </li>
-            <li>
-              <Typography variant="body2">
-                The plugin has registered scheduled tasks
-              </Typography>
-            </li>
-          </ul>
-        </ErrorPanel>
+          error={typeof error === 'string' ? new Error(error) : error}
+          title="Error Loading Scheduled Tasks"
+        />
       )}
 
-      {scheduledTasks && (
+      {!loading && !error && scheduledTasks && (
         <Table
           title={`Scheduled Tasks (${selectedPlugin})`}
           options={{
