@@ -483,7 +483,7 @@ export class OidcService {
   }
 
   public async exchangeCodeForToken(params: {
-    clientId: string;
+    clientId?: string;
     code: string;
     redirectUri: string;
     codeVerifier?: string;
@@ -516,7 +516,7 @@ export class OidcService {
       throw new NotFoundError('Invalid authorization session');
     }
 
-    if (clientId !== session.clientId) {
+    if (clientId && clientId !== session.clientId) {
       throw new AuthenticationError('Client ID mismatch');
     }
 
@@ -546,6 +546,12 @@ export class OidcService {
       ) {
         throw new AuthenticationError('Invalid code verifier');
       }
+    }
+
+    if (!clientId) {
+      this.logger.warn(
+        'Authorization-code exchange without client_id is deprecated and will be rejected in a future release. Update the client to include client_id.',
+      );
     }
 
     await this.oidc.updateAuthorizationCode({

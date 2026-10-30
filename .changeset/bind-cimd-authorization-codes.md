@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': patch
 ---
 
-Fixed authorization-code exchanges to require a client ID matching the client that obtained the code. Missing client IDs return `invalid_request`, and mismatched client IDs return `invalid_grant`. These rejections do not consume the code. Public CIMD clients must include their metadata document URL as `client_id`, in addition to the PKCE verifier. Upgrade `@backstage/cli-module-auth` when using the Backstage CLI to sign in.
+Fixed authorization-code exchanges to reject supplied client IDs that do not match the client that obtained the code. These requests return `invalid_grant` without consuming the code. Exchanges that omit `client_id` remain supported for older clients but now log a deprecation warning; a future release will require it.
