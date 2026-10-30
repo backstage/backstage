@@ -62,10 +62,14 @@ export const syncHooks = {
 };
 
 /**
+ * Custom conditions, e.g. `--conditions=require`, are added to both `import`
+ * and `require()` calls, so we check for the absence of `import` as well.
+ *
  * @param {{ conditions?: readonly string[] }} context
  */
 function isRequire(context) {
-  return context.conditions?.includes('require') ?? false;
+  const conditions = context.conditions ?? [];
+  return conditions.includes('require') && !conditions.includes('import');
 }
 
 /** @type {import('module').ResolveHookSync} */
@@ -137,8 +141,9 @@ function resolveSync(specifier, context, nextResolve) {
  * versions that don't support `module.registerHooks()`. It mirrors
  * `resolveSync`, except that `nextResolve` returns a promise.
  *
- * TODO: Remove this along with `load` and `resolveWithoutExt` once the minimum
- * supported Node.js version is 22.15.0 or later.
+ * Together with `load`, this is also re-exported as a public entry point by
+ * `@backstage/cli/config/nodeTransformHooks.mjs`, so it needs to stay in
+ * place even once all supported Node.js versions have `module.registerHooks()`.
  *
  * @type {import('module').ResolveHook}
  */
@@ -314,9 +319,8 @@ function loadImpl(url, context, nextLoad) {
   }
 
   // JSON files loaded as CommonJS are handled by this custom loader, because
-  // the default one doesn't work. For JSON loading to work we'd need the
-  // synchronous hooks that aren't supported yet, or avoid using the CommonJS
-  // compatibility.
+  // the default one doesn't work. This is only used by the asynchronous hooks,
+  // the synchronous ones load JSON files using the native JSON format.
   if (
     context.format === 'commonjs' &&
     context.importAttributes?.type === 'json'
