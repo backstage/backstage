@@ -16,7 +16,7 @@
 
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 import type { KindValidator } from './types';
 import type { JsonObject } from '@backstage/types';
 import defaultJsonSchema from '../schema/kinds/AiResource.v1alpha1.schema.json';
@@ -145,7 +145,7 @@ export type AiResourceEntityV1alpha1 =
  * @alpha
  */
 export const aiResourceEntityV1alpha1Validator: KindValidator =
-  ajvCompiledJsonSchemaValidator(defaultJsonSchema);
+  lazyKindSchemaValidator(defaultJsonSchema);
 
 /**
  * Entity data validator for {@link SkillAiResourceEntityV1alpha1}.
@@ -153,7 +153,7 @@ export const aiResourceEntityV1alpha1Validator: KindValidator =
  * @alpha
  */
 export const skillAiResourceEntityV1alpha1Validator: KindValidator =
-  ajvCompiledJsonSchemaValidator(skillJsonSchema);
+  lazyKindSchemaValidator(skillJsonSchema);
 
 /**
  * Type guard for {@link AiResourceEntityV1alpha1}.
@@ -211,7 +211,7 @@ export const isMarketplaceAiResourceEntity = (
  * @alpha
  */
 export const ruleAiResourceEntityV1alpha1Validator: KindValidator =
-  ajvCompiledJsonSchemaValidator(ruleJsonSchema);
+  lazyKindSchemaValidator(ruleJsonSchema);
 
 /**
  * Entity data validator for {@link PluginAiResourceEntityV1alpha1}.
@@ -219,7 +219,7 @@ export const ruleAiResourceEntityV1alpha1Validator: KindValidator =
  * @alpha
  */
 export const pluginAiResourceEntityV1alpha1Validator: KindValidator =
-  ajvCompiledJsonSchemaValidator(pluginJsonSchema);
+  lazyKindSchemaValidator(pluginJsonSchema);
 
 /**
  * Entity data validator for {@link MarketplaceAiResourceEntityV1alpha1}.
@@ -227,7 +227,7 @@ export const pluginAiResourceEntityV1alpha1Validator: KindValidator =
  * @alpha
  */
 export const marketplaceAiResourceEntityV1alpha1Validator: KindValidator =
-  ajvCompiledJsonSchemaValidator(marketplaceJsonSchema);
+  lazyKindSchemaValidator(marketplaceJsonSchema);
 
 const baseRelationFields = [
   {
