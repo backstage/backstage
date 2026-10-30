@@ -133,8 +133,6 @@ shared extension order is preserved. Other shared map entries and unspecified
 map settings are retained. To enable the scaffolder page again, set
 `disabled: false` in a higher-priority configuration file.
 
-Configuration files are merged before the map settings are applied to
-extensions. Setting a map field to `null` removes that field from the map. If you
-remove the entire `config` field, the array's `config` or the extension default
-applies instead. Removing a field inside the map's `config` does not restore
-that field from the array's `config`.
+Frontend configuration filtering removes `null` values before configuration files
+are merged. Do not rely on `null` to clear a setting from a lower-priority file;
+set the desired values explicitly instead.
