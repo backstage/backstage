@@ -27,6 +27,7 @@ import { useTheme } from '@material-ui/core/styles';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -34,6 +35,7 @@ import {
   useShadowDomStylesLoading,
 } from '@backstage/plugin-techdocs-react';
 
+import { techdocsTranslationRef } from '../../../translation';
 import { useTechDocsReader } from '../TechDocsReaderProvider';
 
 import {
@@ -103,6 +105,7 @@ export const useTechDocsReaderDom = (
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
   const analytics = useAnalytics();
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -237,7 +240,13 @@ export const useTechDocsReaderDom = (
   const postRender = useCallback(
     async (transformedElement: Element) =>
       transformer(transformedElement, [
-        handleMetaRedirects(navigate, entityRef.name),
+        // The notification renders in its own React root, outside the app's
+        // API context, so the label is resolved here rather than inside it.
+        handleMetaRedirects(
+          navigate,
+          entityRef.name,
+          t('redirectNotification.redirectNow'),
+        ),
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
@@ -316,7 +325,7 @@ export const useTechDocsReaderDom = (
         }),
         addNavLinkKeyboardToggle(),
       ]),
-    [theme, navigate, analytics, entityRef.name, configApi],
+    [theme, navigate, analytics, entityRef.name, configApi, t],
   );
 
   useEffect(() => {
