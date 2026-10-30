@@ -352,15 +352,16 @@ export class OidcRouter {
         try {
           // Handle authorization_code grant type
           if (grantType === 'authorization_code') {
-            if (!code || !redirectUri) {
+            if (!code || !redirectUri || !bodyClientId) {
               throw new OidcError(
                 'invalid_request',
-                'Missing code or redirect_uri parameters for authorization_code grant',
+                'Missing code, redirect_uri or client_id parameters for authorization_code grant',
                 400,
               );
             }
 
             const result = await this.oidc.exchangeCodeForToken({
+              clientId: bodyClientId,
               code,
               redirectUri,
               codeVerifier,

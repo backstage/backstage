@@ -679,14 +679,49 @@ describe('OidcRouter', () => {
 
         expect(authorizationCode).toBeDefined();
 
+        const tokenRequest = {
+          grant_type: 'authorization_code',
+          code: authorizationCode,
+          redirect_uri: 'https://example.com/callback',
+          code_verifier: 'test-code-verifier',
+          client_id: client.clientId,
+        };
+        for (const clientId of [undefined, '']) {
+          const response = await request(server)
+            .post('/api/auth/v1/token')
+            .send({ ...tokenRequest, client_id: clientId })
+            .expect(400);
+          expect(response.body.error).toBe('invalid_request');
+        }
+        for (const clientId of [
+          'https://example.com/other-client.json',
+          'legacy-client-id',
+        ]) {
+          const response = await request(server)
+            .post('/api/auth/v1/token')
+            .send({ ...tokenRequest, client_id: clientId })
+            .expect(400);
+          expect(response.body).toEqual({
+            error: 'invalid_grant',
+            error_description: 'Client ID mismatch',
+          });
+        }
+        for (const invalidParams of [
+          { code_verifier: undefined },
+          { code_verifier: 'wrong-verifier' },
+          { redirect_uri: 'https://example.com/other-callback' },
+        ]) {
+          const response = await request(server)
+            .post('/api/auth/v1/token')
+            .send({ ...tokenRequest, ...invalidParams })
+            .expect(400);
+          expect(response.body.error).toBe('invalid_grant');
+        }
+        expect(tokenIssuer.issueToken).not.toHaveBeenCalled();
+
         const tokenResponse = await request(server)
           .post('/api/auth/v1/token')
-          .send({
-            grant_type: 'authorization_code',
-            code_verifier: 'test-code-verifier',
-            code: authorizationCode,
-            redirect_uri: 'https://example.com/callback',
-          })
+          .send(tokenRequest)
           .expect(200);
 
         expect(tokenResponse.body).toEqual({
@@ -702,6 +737,12 @@ describe('OidcRouter', () => {
             sub: MOCK_USER_ENTITY_REF,
           },
         });
+        const replayResponse = await request(server)
+          .post('/api/auth/v1/token')
+          .send(tokenRequest)
+          .expect(400);
+        expect(replayResponse.body.error).toBe('invalid_grant');
+        expect(tokenIssuer.issueToken).toHaveBeenCalledTimes(1);
       });
 
       it('should exchange authorization code for tokens with PKCE', async () => {
@@ -776,6 +817,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: client.clientId,
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
@@ -824,6 +866,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: 'https://example.com/client.json',
             code_verifier: 'test-code-verifier',
             code: 'invalid-code',
             redirect_uri: 'https://example.com/callback',
@@ -911,6 +954,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: client.clientId,
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
@@ -1004,6 +1048,7 @@ describe('OidcRouter', () => {
         .post('/api/auth/v1/token')
         .send({
           grant_type: 'authorization_code',
+          client_id: client.clientId,
           code_verifier: 'test-code-verifier',
           code: authorizationCode,
           redirect_uri: 'https://example.com/callback',
@@ -1328,6 +1373,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: cimdClientId,
             code: authorizationCode,
             redirect_uri: 'http://localhost:8080/callback',
             code_verifier: codeVerifier,
