@@ -172,271 +172,204 @@ export function mockErrorHandler(
 >;
 
 // @public
-export namespace mockServices {
-  // (undocumented)
-  export namespace auditor {
-    const // (undocumented)
-      factory: () => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<AuditorService> | undefined,
-      ) => ServiceMock<AuditorService>;
-  }
-  // (undocumented)
-  export function auth(options?: {
+export const mockServices: Readonly<{
+  rootConfig: ((
+    options?: mockServices.rootConfig.Options,
+  ) => RootConfigService & {
+    update(options: { data: JsonObject }): void;
+  }) & {
+    factory: (
+      options?: mockServices.rootConfig.Options | undefined,
+    ) => ServiceFactory<RootConfigService, 'root', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<RootConfigService> | undefined,
+    ) => ServiceMock<RootConfigService>;
+  };
+  rootLogger: ((
+    options?: mockServices.rootLogger.Options,
+  ) => RootLoggerService) & {
+    factory: (
+      options?: mockServices.rootLogger.Options | undefined,
+    ) => ServiceFactory<RootLoggerService, 'root', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<RootLoggerService> | undefined,
+    ) => ServiceMock<RootLoggerService>;
+  };
+  auditor: {
+    factory: () => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<AuditorService> | undefined,
+    ) => ServiceMock<AuditorService>;
+  };
+  auth: ((options?: {
     pluginId?: string;
     disableDefaultAuthPolicy?: boolean;
-  }): AuthService;
-  // (undocumented)
-  export namespace auth {
-    const // (undocumented)
-      factory: () => ServiceFactory<AuthService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<AuthService> | undefined,
-      ) => ServiceMock<AuthService>;
-  }
-  // (undocumented)
-  export namespace cache {
-    const // (undocumented)
-      factory: () => ServiceFactory<CacheService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<CacheService> | undefined,
-      ) => ServiceMock<CacheService>;
-  }
-  export function database(options: {
+  }) => AuthService) & {
+    factory: () => ServiceFactory<AuthService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<AuthService> | undefined,
+    ) => ServiceMock<AuthService>;
+  };
+  discovery: (() => DiscoveryService) & {
+    factory: () => ServiceFactory<DiscoveryService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<DiscoveryService> | undefined,
+    ) => ServiceMock<DiscoveryService>;
+  };
+  httpAuth: ((options?: {
+    pluginId?: string;
+    defaultCredentials?: BackstageCredentials;
+  }) => HttpAuthService) & {
+    factory: (options?: {
+      defaultCredentials?: BackstageCredentials;
+    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<HttpAuthService> | undefined,
+    ) => ServiceMock<HttpAuthService>;
+  };
+  userInfo: ((customInfo?: Partial<BackstageUserInfo>) => UserInfoService) & {
+    factory: () => ServiceFactory<UserInfoService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<UserInfoService> | undefined,
+    ) => ServiceMock<UserInfoService>;
+  };
+  cache: {
+    factory: () => ServiceFactory<CacheService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<CacheService> | undefined,
+    ) => ServiceMock<CacheService>;
+  };
+  database: ((options: {
     knex: Knex;
     migrations?: {
       skip?: boolean;
     };
-  }): DatabaseService;
-  // (undocumented)
-  export namespace database {
-    const factory: (options?: {
+  }) => DatabaseService) & {
+    factory: (options?: {
       knex: Knex;
       migrations?: {
         skip?: boolean;
       };
     }) => ServiceFactory<DatabaseService, 'plugin', 'singleton'>;
-    const mock: (
+    mock: (
       partialImpl?: Partial<DatabaseService> | undefined,
     ) => ServiceMock<DatabaseService>;
-  }
-  // (undocumented)
-  export function discovery(): DiscoveryService;
-  // (undocumented)
-  export namespace discovery {
-    const // (undocumented)
-      factory: () => ServiceFactory<DiscoveryService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<DiscoveryService> | undefined,
-      ) => ServiceMock<DiscoveryService>;
-  }
-  export function events(): EventsService;
-  // (undocumented)
-  export namespace events {
-    const factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
-    const mock: (
-      partialImpl?: Partial<EventsService> | undefined,
-    ) => ServiceMock<EventsService>;
-  }
-  export function httpAuth(options?: {
-    pluginId?: string;
-    defaultCredentials?: BackstageCredentials;
-  }): HttpAuthService;
-  // (undocumented)
-  export namespace httpAuth {
-    const factory: (options?: {
-      defaultCredentials?: BackstageCredentials;
-    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<HttpAuthService> | undefined,
-      ) => ServiceMock<HttpAuthService>;
-  }
-  // (undocumented)
-  export namespace httpRouter {
-    const // (undocumented)
-      factory: () => ServiceFactory<HttpRouterService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<HttpRouterService> | undefined,
-      ) => ServiceMock<HttpRouterService>;
-  }
-  // (undocumented)
-  export namespace lifecycle {
-    const // (undocumented)
-      factory: () => ServiceFactory<LifecycleService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<LifecycleService> | undefined,
-      ) => ServiceMock<LifecycleService>;
-  }
-  // (undocumented)
-  export namespace logger {
-    const // (undocumented)
-      factory: () => ServiceFactory<LoggerService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<LoggerService> | undefined,
-      ) => ServiceMock<LoggerService>;
-  }
-  export function permissions(options?: {
+  };
+  rootHealth: {
+    factory: () => ServiceFactory<RootHealthService, 'root', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<RootHealthService> | undefined,
+    ) => ServiceMock<RootHealthService>;
+  };
+  httpRouter: {
+    factory: () => ServiceFactory<HttpRouterService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<HttpRouterService> | undefined,
+    ) => ServiceMock<HttpRouterService>;
+  };
+  rootHttpRouter: {
+    factory: () => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<RootHttpRouterService> | undefined,
+    ) => ServiceMock<RootHttpRouterService>;
+  };
+  lifecycle: {
+    factory: () => ServiceFactory<LifecycleService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<LifecycleService> | undefined,
+    ) => ServiceMock<LifecycleService>;
+  };
+  logger: {
+    factory: () => ServiceFactory<LoggerService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<LoggerService> | undefined,
+    ) => ServiceMock<LoggerService>;
+  };
+  permissions: ((options?: {
     result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-  }): PermissionsService;
-  // (undocumented)
-  export namespace permissions {
-    const factory: (options?: {
+  }) => PermissionsService) & {
+    factory: (options?: {
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }) => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
-    const mock: (
+    mock: (
       partialImpl?: Partial<PermissionsService> | undefined,
     ) => ServiceMock<PermissionsService>;
-  }
-  // (undocumented)
-  export namespace permissionsRegistry {
-    const // (undocumented)
-      factory: () => ServiceFactory<
-        PermissionsRegistryService,
-        'plugin',
-        'singleton'
-      >;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<PermissionsRegistryService> | undefined,
-      ) => ServiceMock<PermissionsRegistryService>;
-  }
-  // (undocumented)
-  export function rootConfig(
-    options?: rootConfig.Options,
-  ): RootConfigService & {
-    update(options: { data: JsonObject }): void;
   };
+  permissionsRegistry: {
+    factory: () => ServiceFactory<
+      PermissionsRegistryService,
+      'plugin',
+      'singleton'
+    >;
+    mock: (
+      partialImpl?: Partial<PermissionsRegistryService> | undefined,
+    ) => ServiceMock<PermissionsRegistryService>;
+  };
+  rootLifecycle: {
+    factory: () => ServiceFactory<RootLifecycleService, 'root', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<RootLifecycleService> | undefined,
+    ) => ServiceMock<RootLifecycleService>;
+  };
+  scheduler: (() => SchedulerService) & {
+    factory: (options?: {
+      skipTaskRunOnStartup?: boolean;
+      includeManualTasksOnStartup?: boolean;
+      includeInitialDelayedTasksOnStartup?: boolean;
+    }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<SchedulerService> | undefined,
+    ) => ServiceMock<SchedulerService>;
+  };
+  urlReader: {
+    factory: () => ServiceFactory<UrlReaderService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<UrlReaderService> | undefined,
+    ) => ServiceMock<UrlReaderService>;
+  };
+  events: (() => EventsService) & {
+    factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
+    mock: (
+      partialImpl?: Partial<EventsService> | undefined,
+    ) => ServiceMock<EventsService>;
+  };
+  rootInstanceMetadata: (() => RootInstanceMetadataService) & {
+    mock: (
+      partialImpl?: Partial<RootInstanceMetadataService> | undefined,
+    ) => ServiceMock<RootInstanceMetadataService>;
+    factory: () => ServiceFactory<
+      RootInstanceMetadataService,
+      'root',
+      'singleton'
+    >;
+  };
+  rootSystemMetadata: (() => RootSystemMetadataService) & {
+    mock: (
+      partialImpl?: Partial<RootSystemMetadataService> | undefined,
+    ) => ServiceMock<RootSystemMetadataService>;
+    factory: () => ServiceFactory<
+      RootSystemMetadataService,
+      'root',
+      'singleton'
+    >;
+  };
+}>;
+
+// @public
+export namespace mockServices {
   // (undocumented)
   export namespace rootConfig {
     // (undocumented)
     export type Options = {
       data?: JsonObject;
     };
-    const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<RootConfigService, 'root', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootConfigService> | undefined,
-      ) => ServiceMock<RootConfigService>;
   }
-  // (undocumented)
-  export namespace rootHealth {
-    const // (undocumented)
-      factory: () => ServiceFactory<RootHealthService, 'root', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootHealthService> | undefined,
-      ) => ServiceMock<RootHealthService>;
-  }
-  // (undocumented)
-  export namespace rootHttpRouter {
-    const // (undocumented)
-      factory: () => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootHttpRouterService> | undefined,
-      ) => ServiceMock<RootHttpRouterService>;
-  }
-  // (undocumented)
-  export function rootInstanceMetadata(): RootInstanceMetadataService;
-  // (undocumented)
-  export namespace rootInstanceMetadata {
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootInstanceMetadataService> | undefined,
-      ) => ServiceMock<RootInstanceMetadataService>;
-    const // (undocumented)
-      factory: () => ServiceFactory<
-        RootInstanceMetadataService,
-        'root',
-        'singleton'
-      >;
-  }
-  // (undocumented)
-  export namespace rootLifecycle {
-    const // (undocumented)
-      factory: () => ServiceFactory<RootLifecycleService, 'root', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootLifecycleService> | undefined,
-      ) => ServiceMock<RootLifecycleService>;
-  }
-  // (undocumented)
-  export function rootLogger(options?: rootLogger.Options): RootLoggerService;
   // (undocumented)
   export namespace rootLogger {
     // (undocumented)
     export type Options = {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
-    const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<RootLoggerService, 'root', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootLoggerService> | undefined,
-      ) => ServiceMock<RootLoggerService>;
-  }
-  // (undocumented)
-  export function rootSystemMetadata(): RootSystemMetadataService;
-  // (undocumented)
-  export namespace rootSystemMetadata {
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<RootSystemMetadataService> | undefined,
-      ) => ServiceMock<RootSystemMetadataService>;
-    const // (undocumented)
-      factory: () => ServiceFactory<
-        RootSystemMetadataService,
-        'root',
-        'singleton'
-      >;
-  }
-  // (undocumented)
-  export function scheduler(): SchedulerService;
-  // (undocumented)
-  export namespace scheduler {
-    const // (undocumented)
-      factory: (options?: {
-        skipTaskRunOnStartup?: boolean;
-        includeManualTasksOnStartup?: boolean;
-        includeInitialDelayedTasksOnStartup?: boolean;
-      }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<SchedulerService> | undefined,
-      ) => ServiceMock<SchedulerService>;
-  }
-  // (undocumented)
-  export namespace urlReader {
-    const // (undocumented)
-      factory: () => ServiceFactory<UrlReaderService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<UrlReaderService> | undefined,
-      ) => ServiceMock<UrlReaderService>;
-  }
-  export function userInfo(
-    customInfo?: Partial<BackstageUserInfo>,
-  ): UserInfoService;
-  // (undocumented)
-  export namespace userInfo {
-    const factory: () => ServiceFactory<UserInfoService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<UserInfoService> | undefined,
-      ) => ServiceMock<UserInfoService>;
   }
 }
 
