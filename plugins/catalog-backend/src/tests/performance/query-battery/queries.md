@@ -891,7 +891,9 @@ catalog.queryEntities({
 **Reference SQL**: The page is scenario 1 with `AND <permission>` added next
 to the `kind = 'component'` condition. The facets and count queries are
 scenario 15's, with the `kind = 'component'` condition in the set. In place of
-the `NOT EXISTS` against `<denied set>`, they use:
+the `NOT EXISTS` against `<denied set>`, they use the following, where
+`<entity id>` is `search.entity_id` in the facets query and
+`final_entities.entity_id` in the count query:
 
 ```sql
 EXISTS (
@@ -902,7 +904,7 @@ EXISTS (
     )
     EXCEPT <denied set>
   ) AS fset
-  WHERE fset.entity_id COLLATE "default" = search.entity_id
+  WHERE fset.entity_id COLLATE "default" = <entity id>
 )
 ```
 
