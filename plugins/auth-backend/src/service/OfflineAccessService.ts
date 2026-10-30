@@ -21,17 +21,24 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
 import { readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
+import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { randomUUID as uuid } from 'node:crypto';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
   generateRefreshToken,
   getRefreshTokenId,
   verifyRefreshToken,
 } from '../lib/refreshToken';
+import {
+  canonicalizeEntityRef,
+  getDefaultOwnershipEntityRefs,
+} from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 
 /**
@@ -44,6 +51,8 @@ export class OfflineAccessService {
   readonly #dangerouslyDisableCatalogPresenceCheck: boolean;
   readonly #catalog: CatalogService;
   readonly #auth: AuthService;
+  readonly #userInfo: UserInfoDatabase;
+  readonly #ownershipResolver?: AuthOwnershipResolver;
 
   static async create(options: {
     config: RootConfigService;
@@ -52,6 +61,8 @@ export class OfflineAccessService {
     lifecycle: LifecycleService;
     catalog: CatalogService;
     auth: AuthService;
+    userInfo: UserInfoDatabase;
+    ownershipResolver?: AuthOwnershipResolver;
   }): Promise<OfflineAccessService> {
     const { config, database, logger, lifecycle } = options;
 
@@ -153,6 +164,8 @@ export class OfflineAccessService {
       dangerouslyDisableCatalogPresenceCheck,
       options.catalog,
       options.auth,
+      options.userInfo,
+      options.ownershipResolver,
     );
   }
 
@@ -162,6 +175,8 @@ export class OfflineAccessService {
     dangerouslyDisableCatalogPresenceCheck: boolean,
     catalog: CatalogService,
     auth: AuthService,
+    userInfo: UserInfoDatabase,
+    ownershipResolver?: AuthOwnershipResolver,
   ) {
     this.#offlineSessionDb = offlineSessionDb;
     this.#logger = logger;
@@ -169,6 +184,8 @@ export class OfflineAccessService {
       dangerouslyDisableCatalogPresenceCheck;
     this.#catalog = catalog;
     this.#auth = auth;
+    this.#userInfo = userInfo;
+    this.#ownershipResolver = ownershipResolver;
   }
 
   /**
@@ -237,30 +254,68 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
+    let ownershipEntityRefs: string[] | undefined;
     if (!this.#dangerouslyDisableCatalogPresenceCheck) {
+      let entity: Entity | undefined;
       try {
-        const entity = await this.#catalog.getEntityByRef(
-          session.userEntityRef,
-          { credentials: await this.#auth.getOwnServiceCredentials() },
-        );
-        if (!entity) {
-          this.#logger.info(
-            `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
-          );
-          await this.#offlineSessionDb.deleteSession(sessionId);
-          throw new AuthenticationError(
-            'User entity no longer exists in the catalog',
-          );
-        }
+        entity = await this.#catalog.getEntityByRef(session.userEntityRef, {
+          credentials: await this.#auth.getOwnServiceCredentials(),
+        });
       } catch (error) {
-        if (error.name === 'AuthenticationError') {
-          throw error;
-        }
         this.#logger.warn(
           `Failed to validate catalog user existence for ${session.userEntityRef}, rejecting refresh`,
           error,
         );
         throw new AuthenticationError('Unable to validate user existence');
+      }
+
+      if (!entity) {
+        this.#logger.info(
+          `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
+        );
+        await this.#offlineSessionDb.deleteSession(sessionId);
+        throw new AuthenticationError(
+          'User entity no longer exists in the catalog',
+        );
+      }
+
+      try {
+        ({ ownershipEntityRefs } = await this.#resolveOwnershipEntityRefs(
+          entity,
+        ));
+      } catch (error) {
+        this.#logger.warn(
+          `Failed to resolve ownership for ${session.userEntityRef}, rejecting refresh`,
+          error,
+        );
+        throw new AuthenticationError('Unable to resolve user ownership');
+      }
+    }
+
+    const claims = {
+      sub: session.userEntityRef,
+      ...(ownershipEntityRefs !== undefined
+        ? { ent: ownershipEntityRefs }
+        : {}),
+    };
+
+    if (ownershipEntityRefs !== undefined) {
+      try {
+        const existingUserInfo = await this.#userInfo.getUserInfo(
+          session.userEntityRef,
+        );
+        await this.#userInfo.addUserInfo({
+          claims: {
+            ...existingUserInfo?.claims,
+            ...claims,
+          },
+        });
+      } catch (error) {
+        this.#logger.warn(
+          `Failed to update user info for ${session.userEntityRef} during token refresh`,
+          error,
+        );
+        throw new AuthenticationError('Unable to update user information');
       }
     }
 
@@ -279,9 +334,7 @@ export class OfflineAccessService {
     }
 
     const { token: accessToken } = await tokenIssuer.issueToken({
-      claims: {
-        sub: rotatedSession.userEntityRef,
-      },
+      claims,
     });
 
     this.#logger.debug(
@@ -289,6 +342,20 @@ export class OfflineAccessService {
     );
 
     return { accessToken, refreshToken: newRefreshToken };
+  }
+
+  async #resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }> {
+    const { ownershipEntityRefs } = this.#ownershipResolver
+      ? await this.#ownershipResolver.resolveOwnershipEntityRefs(entity)
+      : { ownershipEntityRefs: getDefaultOwnershipEntityRefs(entity) };
+
+    return {
+      ownershipEntityRefs: Array.from(
+        new Set(ownershipEntityRefs.map(canonicalizeEntityRef)),
+      ),
+    };
   }
 
   /**

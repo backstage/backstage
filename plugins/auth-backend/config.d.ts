@@ -139,7 +139,8 @@ export interface Config {
        * Backstage instances that allow sign-in without a corresponding
        * catalog user entity. Without the check, refresh tokens for
        * removed or offboarded users remain valid until they naturally
-       * expire.
+       * expire, and user ownership claims are not re-resolved from the
+       * catalog on token refresh.
        * @default false
        * @visibility backend
        */
