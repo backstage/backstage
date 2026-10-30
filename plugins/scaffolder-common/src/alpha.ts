@@ -16,3 +16,4 @@
 
 export * from './permissions';
 export { scaffolderCatalogModelLayer } from './catalogModel';
+export { templateEntityV1beta3Schema } from './TemplateEntityV1beta3';

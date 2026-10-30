@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import Ajv, { ValidateFunction } from 'ajv';
 import entitySchema from '../../schema/Entity.schema.json';
-import entityMetaSchema from '../../schema/EntityMeta.schema.json';
-import commonSchema from '../../schema/shared/common.schema.json';
 import { Entity } from '../Entity';
 import { EntityPolicy } from './types';
+import { compileSchema } from '../../validation/compileSchema';
+import { cfworkerSchemaEngine } from '../../validation/engine/cfworkerSchemaEngine';
+import { CompiledSchema, SchemaEngine } from '../../validation/engine/types';
+
+// Lets internal code pick the engine for a policy, without exposing engines
+// in the public constructor
+const policyEngines = new WeakMap<SchemaValidEntityPolicy, SchemaEngine>();
 
 /**
  * Ensures that the entity spec is valid according to a schema.
@@ -33,22 +37,23 @@ import { EntityPolicy } from './types';
  * @public
  */
 export class SchemaValidEntityPolicy implements EntityPolicy {
-  private validate: ValidateFunction<Entity> | undefined;
+  private validate: CompiledSchema | undefined;
 
   async enforce(entity: Entity): Promise<Entity> {
     if (!this.validate) {
-      const ajv = new Ajv({ allowUnionTypes: true });
-      this.validate = ajv
-        .addSchema([commonSchema, entityMetaSchema], undefined, undefined, true)
-        .compile<Entity>(entitySchema);
+      this.validate = compileSchema(
+        policyEngines.get(this) ?? cfworkerSchemaEngine,
+        entitySchema,
+        { allErrors: false },
+      );
     }
 
-    const result = this.validate(entity);
-    if (result === true) {
+    const errors = this.validate(entity);
+    if (!errors) {
       return entity;
     }
 
-    const [error] = this.validate.errors || [];
+    const [error] = errors;
     if (!error) {
       throw new Error(`Malformed envelope, Unknown error`);
     }
@@ -57,4 +62,12 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
       `Malformed envelope, ${error.instancePath || '<root>'} ${error.message}`,
     );
   }
+}
+
+export function createSchemaValidEntityPolicy(
+  engine: SchemaEngine,
+): SchemaValidEntityPolicy {
+  const policy = new SchemaValidEntityPolicy();
+  policyEngines.set(policy, engine);
+  return policy;
 }

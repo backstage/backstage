@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Schema } from 'ajv';
 import { Entity } from '../entity/Entity';
-import { compileAjvSchema, throwAjvError } from './ajv';
+import { compileSchema, throwSchemaError } from './compileSchema';
+import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
+import { SchemaEngine } from './engine/types';
 
 /**
  * Creates a validation function that takes some arbitrary data, and either
@@ -63,26 +64,33 @@ import { compileAjvSchema, throwAjvError } from './ajv';
 export function entityKindSchemaValidator<T extends Entity>(
   schema: unknown,
 ): (data: unknown) => T | false {
-  const validate = compileAjvSchema(schema as Schema);
+  return createEntityKindSchemaValidator<T>(cfworkerSchemaEngine, schema);
+}
+
+export function createEntityKindSchemaValidator<T extends Entity>(
+  engine: SchemaEngine,
+  schema: unknown,
+): (data: unknown) => T | false {
+  const validate = compileSchema(engine, schema as object);
 
   return data => {
-    const result = validate(data);
-    if (result === true) {
+    const errors = validate(data);
+    if (!errors) {
       return data as T;
     }
 
     // Only in the case where kind and/or apiVersion have enum mismatches AND
     // have NO other errors, we call it a soft error.
-    const softCandidates = validate.errors?.filter(e =>
+    const softCandidates = errors.filter(e =>
       ['/kind', '/apiVersion'].includes(e.instancePath),
     );
     if (
-      softCandidates?.length &&
+      softCandidates.length &&
       softCandidates.every(e => e.keyword === 'enum')
     ) {
       return false;
     }
 
-    throw throwAjvError(validate.errors);
+    throw throwSchemaError(errors);
   };
 }

@@ -527,7 +527,8 @@ entity might look like:
 ```ts
 import { CatalogProcessor, CatalogProcessorEmit, processingResult } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common'
-import { Entity, entityKindSchemaValidator } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { createAjvEntityValidators } from '@backstage/catalog-model/ajv';
 
 // For an example of the JSONSchema format and how to use $ref markers to the
 // base definitions, see:
@@ -540,8 +541,11 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
   // convenient pattern.
   private readonly validators = [
     // This is where we use the JSONSchema that we export from our isomorphic
-    // package
-    entityKindSchemaValidator(foobarEntityV1alpha1Schema),
+    // package. Processors validate every entity they handle, so we use the
+    // faster validators that compile the schema into code.
+    createAjvEntityValidators().entityKindSchemaValidator(
+      foobarEntityV1alpha1Schema,
+    ),
   ];
 
   // Return processor name
@@ -586,6 +590,8 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
   }
 }
 ```
+
+The validators exported from `@backstage/catalog-model` itself work in both frontend and backend code. They interpret the JSON Schema without generating code at runtime, so they work under a strict Content Security Policy without `'unsafe-eval'`. The ones from `@backstage/catalog-model/ajv`, used above, are backed by [ajv](https://ajv.js.org) and compile schemas into code, which makes them considerably faster. Only use those in backend code. The two word their error messages differently, so don't rely on the exact text.
 
 #### New Backend
 
