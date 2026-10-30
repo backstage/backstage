@@ -15,6 +15,43 @@
  */
 
 import type { Handler } from 'express';
+import type { IncomingMessage } from 'node:http';
+import type { Duplex } from 'node:stream';
+import type { BackstageCredentials } from './AuthService';
+
+/**
+ * Request, transport, and credentials available to a WebSocket upgrade handler.
+ *
+ * @public
+ */
+export interface HttpRouterServiceWebSocketContext {
+  request: IncomingMessage;
+  socket: Duplex;
+  head: Buffer;
+  credentials: BackstageCredentials;
+  /** The offered protocol value that authenticated the caller, if any. */
+  authProtocol?: string;
+}
+
+/**
+ * Options for {@link HttpRouterService.addWebSocketHandler}.
+ *
+ * @public
+ */
+export interface HttpRouterServiceWebSocketHandler {
+  /** An exact path relative to the plugin base URL. Use `/` for the base URL. */
+  path: string;
+  /**
+   * Handles an authenticated upgrade or forwards it upstream. The request retains
+   * its full URL. Take ownership of the socket or close it before resolving.
+   */
+  handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
+  /**
+   * Requires token authentication by default. Set to `unauthenticated` to handle
+   * authentication in the handler. Cookie authentication is not supported.
+   */
+  authPolicy?: 'unauthenticated';
+}
 
 /**
  * Options for {@link HttpRouterService.addAuthPolicy}.
@@ -39,6 +76,20 @@ export interface HttpRouterService {
    * typically makes its base path `/api/<plugin-id>`.
    */
   use(handler: Handler): void;
+
+  /**
+   * Registers a WebSocket upgrade handler at an exact plugin-relative path.
+   * Paths must start with `/`. Matching is case-sensitive, ignores the query
+   * string, and treats a trailing slash as significant. Patterns are not supported.
+   *
+   * The handler receives the raw upgrade request, socket, and buffered data.
+   * The framework waits for plugin startup and authenticates before invoking the
+   * handler, rejecting upgrades during shutdown. The handler owns the handshake
+   * or forwarding, including protocol selection. HTTP middleware
+   * and path-based auth policies do not apply.
+   * The framework destroys upgraded sockets when the backend shuts down.
+   */
+  addWebSocketHandler(options: HttpRouterServiceWebSocketHandler): void;
 
   /**
    * Adds an auth policy to the router. This is used to allow unauthenticated or
