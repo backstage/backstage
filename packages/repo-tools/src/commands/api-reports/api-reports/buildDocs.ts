@@ -73,25 +73,46 @@ function getKindPriority(kind: string) {
   return index === -1 ? FILENAME_KIND_PRIORITY.length : index;
 }
 
-// Returns a suffix for the item if it shares its filename with a sibling of a
-// different kind that takes precedence over it
+// Orders declarations that share a filename, the first one keeps the plain
+// filename. Same-kind declarations whose names only differ in case are ordered
+// by name, so that the result is stable.
+function compareCollidingItems(a: ApiItem, b: ApiItem) {
+  const byKind = getKindPriority(a.kind) - getKindPriority(b.kind);
+  if (byKind !== 0) {
+    return byKind;
+  }
+  if (a.displayName === b.displayName) {
+    return 0;
+  }
+  return a.displayName < b.displayName ? -1 : 1;
+}
+
+// Returns a suffix for the item if it shares its filename with a sibling that
+// takes precedence over it. Overloads have the same name and kind, and are
+// already handled by API Documenter.
 function getCollisionSuffix(item: ApiItem): string {
   const name = item.displayName.toLowerCase();
   const siblings: readonly ApiItem[] = item.parent?.members ?? [];
-  const winner = siblings
+  const colliding = siblings
     .filter(
       sibling =>
-        sibling.displayName.toLowerCase() === name &&
-        sibling.kind !== item.kind,
+        sibling === item ||
+        (sibling.displayName.toLowerCase() === name &&
+          (sibling.kind !== item.kind ||
+            sibling.displayName !== item.displayName)),
     )
-    .reduce<ApiItem>(
-      (best, sibling) =>
-        getKindPriority(sibling.kind) < getKindPriority(best.kind)
-          ? sibling
-          : best,
-      item,
-    );
-  return winner === item ? '' : `-${item.kind.toLowerCase()}`;
+    .sort(compareCollidingItems);
+  if (colliding[0] === item) {
+    return '';
+  }
+
+  // Declarations of the same kind get a number instead
+  const sameKind = colliding.filter(sibling => sibling.kind === item.kind);
+  const kindSuffix =
+    colliding[0].kind === item.kind ? '' : `-${item.kind.toLowerCase()}`;
+  const index = sameKind.indexOf(item);
+  const isFirstOfKind = index === 0 && kindSuffix !== '';
+  return isFirstOfKind ? kindSuffix : `${kindSuffix}-${index + 1}`;
 }
 
 export function disambiguateFilename(

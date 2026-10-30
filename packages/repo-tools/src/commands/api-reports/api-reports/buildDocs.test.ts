@@ -85,4 +85,28 @@ describe('disambiguateFilename', () => {
       'backend-test-utils.mockerrorhandler.md',
     );
   });
+
+  it('should give same-kind declarations that only differ in case separate filenames', () => {
+    const pkg = item(ApiItemKind.Package, '@backstage/test');
+    const entryPoint = item(ApiItemKind.EntryPoint, '', pkg);
+    const variable = item(ApiItemKind.Variable, 'foo', entryPoint);
+    const upperIface = item(ApiItemKind.Interface, 'Foo', entryPoint);
+    const shoutIface = item(ApiItemKind.Interface, 'FOO', entryPoint);
+    const overloadA = item(ApiItemKind.Function, 'bar', entryPoint);
+    const overloadB = item(ApiItemKind.Function, 'bar', entryPoint);
+
+    const disambiguate = (filename: string, apiItem: FakeItem) =>
+      disambiguateFilename(filename, apiItem as unknown as ApiItem);
+
+    expect(disambiguate('test.foo.md', variable)).toBe('test.foo.md');
+    expect(disambiguate('test.foo.md', shoutIface)).toBe(
+      'test.foo-interface.md',
+    );
+    expect(disambiguate('test.foo.md', upperIface)).toBe(
+      'test.foo-interface-2.md',
+    );
+    // Overloads are numbered by API Documenter itself
+    expect(disambiguate('test.bar.md', overloadA)).toBe('test.bar.md');
+    expect(disambiguate('test.bar_1.md', overloadB)).toBe('test.bar_1.md');
+  });
 });
