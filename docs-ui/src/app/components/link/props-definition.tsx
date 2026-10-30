@@ -17,8 +17,23 @@ export const linkPropDefs: Record<string, PropDef> = {
     values: ['_self', '_blank', '_parent', '_top'],
     description: (
       <>
-        Where to open the link. Use <Chip>_blank</Chip> for external links that
-        open in new tabs.
+        Where to open the link. Ignored when <Chip>external</Chip> is set, as
+        external links always open in a new tab.
+      </>
+    ),
+  },
+  external: {
+    type: 'enum',
+    values: ['auto', 'always', 'no', 'true', 'false'],
+    default: 'auto',
+    description: (
+      <>
+        Whether the link leads outside of the application. External links show
+        an external link icon after the link text and always open in a new tab
+        with <Chip>rel="noopener noreferrer"</Chip>. <Chip>auto</Chip> treats{' '}
+        <Chip>http://</Chip> and <Chip>https://</Chip> destinations as external.{' '}
+        <Chip>always</Chip> (or <Chip>true</Chip>) forces it and <Chip>no</Chip>{' '}
+        (or <Chip>false</Chip>) disables it.
       </>
     ),
   },
