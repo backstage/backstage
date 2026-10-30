@@ -408,3 +408,77 @@ The page takes 2.7 ms with 40 claims and 15.5 ms with 173 claims, at both
 `work_mem` settings. This is the reference for future changes to how `$in` is
 compiled. Compiling the broad `kind` branch into a pre-built set would prevent
 LIMIT from stopping early.
+
+## Set operations for facets and counts (2026-10-30)
+
+On PostgreSQL, facets and count queries now compile filters that contain a
+disjunction or a negation, after negations are pushed down, into set
+operations on entity IDs. Each field condition is a set of `search.entity_id`
+values under `COLLATE "C"`, so sorting IDs and removing duplicates is a byte
+comparison, and the set is joined back under the default collation so that
+the `entity_id` indexes can be used. Paginated queries and filters without a
+disjunction or negation keep their SQL.
+
+### Staging replica
+
+Measured on the staging replica described above (PostgreSQL 18.6, about 710k
+entities, 17.5M `search` rows) with SQL captured from `DefaultEntitiesCatalog`.
+Medians of three warm runs at `work_mem = 32MB`; master was a single run after
+a warm-up in the same session. Within a single `REPEATABLE READ` snapshot, every
+changed facets and count query returned the same result as master, except
+where master did not finish. No query timed out at 32MB or 4MB.
+
+| Query                                               | master           | this change      |
+| --------------------------------------------------- | ---------------- | ---------------- |
+| 15 kind facets, 40 claims                           | 10.7 s           | 1.58 s \*        |
+| 15 lifecycle facets, 40 / 173 claims                | 15.2 s / >30 s   | 1.28 / 1.28 s \* |
+| 15 count, 40 / 173 claims                           | 24.1 s / >30 s   | 1.45 / 1.45 s \* |
+| 16 component facets, 40 / 173 claims                | 2.10 s / >30 s   | 1.03 / 1.00 s \* |
+| 16 component count, 40 / 173 claims                 | 1.95 s / >30 s   | 1.02 / 1.01 s \* |
+| 17 rare facet, 40 / 173 claims                      | 30.5 ms / 1.07 s | 5.8 / 10.6 ms \* |
+| 18 negated facets, 40 claims                        | 10.8 s           | 0.60 s \*        |
+| 18 negated count, 40 / 173 claims                   | 17.7 s / >30 s   | 1.61 / 1.66 s \* |
+| 19 large `$in` under `$any`, count, 40 / 173 claims | 18.6 s / >30 s   | 2.69 / 2.64 s    |
+| permission + `kind=template` facets, 40 claims      | 0.4 ms           | 3.5 ms           |
+| permission + owned by claims facets, 40 claims      | 17.4 ms          | 15.9 ms          |
+| `$not` of `kind $in` (subcomponent, api), facets    | 0.90 s           | 0.83 s \*        |
+| `$not` of a two-field condition, count              | 2.25 s           | 1.47 s \*        |
+| scenario 12's `$any` filter, with `totalItems`      | 6.50 s           | 0.81 s           |
+
+\* Measured with leaf sets built from `search` before the collation change was
+added. With the collation change, these stayed within run-to-run variation.
+
+With a claim for a group that owns 116k entities, broad facets and counts take
+1.5-2.9 s, where master took 7 s or timed out. Selective queries pay for
+building that group's set: permission + `kind=template` facets and the rare
+facet take about 145 ms. Scenario 18's facets with 173 claims take 1.6 s
+because of a different join order. Scenario 19's count for that user took
+6.8 s in one run at 32MB, from the existing sort-key `EXISTS` in the count
+query rather than from the set.
+
+### Local synthetic catalog
+
+These measurements come from a synthetic catalog in a local PostgreSQL 17.11
+Docker container: 75,100 entities and 1,308,204 `search` rows. 1,479 entities
+have the readers annotation, which scenario 17 also uses as its rare facet
+key. The 40 claims match 3,182 owned entities. JIT was disabled. Each figure is
+the median of three warm runs after one warm-up, shown as master / this change.
+
+| Query                                      | 32MB: time      | 32MB: shared hits | 4MB: time        | 4MB: shared hits |
+| ------------------------------------------ | --------------- | ----------------- | ---------------- | ---------------- |
+| 15 permission kind facets                  | 417.7 / 57.6 ms | 588,815 / 8,857   | 397.8 / 56.2 ms  | 588,815 / 8,857  |
+| 15 permission list page                    | 1.2 / 1.2 ms    | 434 / 434         | 1.1 / 1.2 ms     | 434 / 434        |
+| 15 permission list count                   | 525.4 / 69.9 ms | 589,349 / 9,391   | 506.8 / 75.5 ms  | 589,349 / 9,391  |
+| 16 permission component facets             | 365.6 / 57.5 ms | 536,549 / 9,296   | 375.2 / 66.0 ms  | 536,549 / 9,296  |
+| 16 permission component page               | 64.0 / 61.6 ms  | 80,875 / 80,875   | 67.7 / 69.3 ms   | 80,875 / 80,875  |
+| 16 permission component count              | 208.0 / 78.0 ms | 353,349 / 9,769   | 210.9 / 81.8 ms  | 353,349 / 9,769  |
+| 17 permission rare facet                   | 10.3 / 3.3 ms   | 11,759 / 704      | 11.6 / 3.2 ms    | 11,759 / 704     |
+| 18 negated disjunction facets              | 380.2 / 58.3 ms | 601,866 / 8,767   | 370.0 / 50.4 ms  | 601,866 / 8,767  |
+| 18 negated disjunction count               | 485.7 / 30.9 ms | 602,400 / 9,752   | 520.7 / 29.8 ms  | 602,400 / 9,751  |
+| 19 large in under or page                  | 0.2 / 0.1 ms    | 174 / 174         | 0.1 / 0.1 ms     | 174 / 174        |
+| 19 large in under or count                 | 513.1 / 63.9 ms | 602,400 / 12,074  | 469.5 / 115.3 ms | 602,400 / 10,075 |
+| permission + `kind=template` facets        | 1.4 / 3.4 ms    | 1,258 / 537       | 1.5 / 3.5 ms     | 1,258 / 537      |
+| `$not` of `kind $in` (system, api), facets | 49.3 / 50.8 ms  | 8,805 / 8,805     | 52.2 / 51.9 ms   | 8,805 / 8,805    |
+
+The page queries run the same SQL before and after, so their timing
+differences are run-to-run variation.

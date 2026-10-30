@@ -669,7 +669,8 @@ const permission = {
 };
 ```
 
-Compiled today, `<permission>` in the reference SQL below stands for:
+In page queries, and in all queries on other databases, `<permission>` in the
+reference SQL below stands for:
 
 ```sql
 (
@@ -719,6 +720,60 @@ AND (
 )
 ```
 
+On PostgreSQL, facets and count queries compile a filter that contains a
+disjunction or a negation into set operations on entity IDs instead. Here the
+result is every entity except `<denied set>`, which stands for:
+
+```sql
+(
+  (
+    (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'metadata.annotations.example.com/readers'
+    )
+    EXCEPT (
+      (
+        SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+        WHERE s.key = 'relations.ownedby' AND s.value = ANY(:claims)
+      )
+      UNION (
+        SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+        WHERE s.key = 'metadata.annotations.example.com/readers'
+          AND s.value = ANY(:claims)
+      )
+    )
+  )
+  UNION (
+    (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'kind' AND s.value = 'template'
+    )
+    EXCEPT (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'spec.custom' AND s.value = 'x'
+    )
+  )
+  UNION (
+    (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'spec.a'
+    )
+    INTERSECT (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'spec.b'
+    )
+    INTERSECT (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'kind' AND s.value = 'template'
+    )
+  )
+)
+```
+
+The `COLLATE "C"` makes sorting the IDs and removing duplicates a byte
+comparison. The set is joined back with `COLLATE "default"`, so that the
+`entity_id` indexes can be used.
+
 **How to measure these scenarios**:
 
 - **Use real claims.** Take one realistic user, typically a few dozen user and
@@ -766,14 +821,17 @@ scenario 1 with `<permission>` in place of the kind condition):
 ```sql
 SELECT search.key AS facet, search.original_value AS value, count(*) AS count
 FROM search
-INNER JOIN (
-  SELECT final_entities.entity_id
-  FROM final_entities
-  WHERE final_entities.final_entity IS NOT NULL
-    AND <permission>
-) AS filtered_entities ON search.entity_id = filtered_entities.entity_id
 WHERE search.key IN ('kind')
   AND search.original_value IS NOT NULL
+  AND EXISTS (
+    SELECT 1 FROM final_entities
+    WHERE final_entities.entity_id = search.entity_id
+      AND final_entities.final_entity IS NOT NULL
+  )
+  AND NOT EXISTS (
+    SELECT 1 FROM <denied set> AS fset
+    WHERE fset.entity_id COLLATE "default" = search.entity_id
+  )
 GROUP BY search.key, search.original_value
 ORDER BY search.key, search.original_value;
 
@@ -785,7 +843,10 @@ WHERE final_entities.final_entity IS NOT NULL
     WHERE search.entity_id = final_entities.entity_id
       AND search.key = 'metadata.name' AND search.value IS NOT NULL
   )
-  AND <permission>;
+  AND NOT EXISTS (
+    SELECT 1 FROM <denied set> AS fset
+    WHERE fset.entity_id COLLATE "default" = final_entities.entity_id
+  );
 ```
 
 **Healthy plan**: The list walks `metadata.name` in order and stops after 21
@@ -827,8 +888,23 @@ catalog.queryEntities({
 });
 ```
 
-**Reference SQL**: Scenarios 5, 1 and 2 with `AND <permission>` added next to
-the `kind = 'component'` condition.
+**Reference SQL**: The page is scenario 1 with `AND <permission>` added next
+to the `kind = 'component'` condition. The facets and count queries are
+scenario 15's, with the `kind = 'component'` condition in the set. In place of
+the `NOT EXISTS` against `<denied set>`, they use:
+
+```sql
+EXISTS (
+  SELECT 1 FROM (
+    (
+      SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+      WHERE s.key = 'kind' AND s.value = 'component'
+    )
+    EXCEPT <denied set>
+  ) AS fset
+  WHERE fset.entity_id COLLATE "default" = search.entity_id
+)
+```
 
 **Healthy plan**: Each permission condition is evaluated once for the whole
 query, or once per entity of the requested kind with a cost that does not
@@ -908,7 +984,9 @@ catalog.queryEntities({
 });
 ```
 
-**Reference SQL** (the count portion):
+**Reference SQL** (the count portion; the page query keeps the correlated
+`NOT (EXISTS ... OR EXISTS ...)` form in place of scenario 1's kind
+condition):
 
 ```sql
 SELECT count(*) AS count
@@ -919,22 +997,23 @@ WHERE final_entities.final_entity IS NOT NULL
     WHERE search.entity_id = final_entities.entity_id
       AND search.key = 'metadata.name' AND search.value IS NOT NULL
   )
-  AND NOT (
-    EXISTS (
-      SELECT 1 FROM search AS s
-      WHERE s.entity_id = final_entities.entity_id
-        AND s.key = 'relations.ownedby' AND s.value = ANY(:claims)
-    )
-    OR EXISTS (
-      SELECT 1 FROM search AS s
-      WHERE s.entity_id = final_entities.entity_id
-        AND s.key = 'metadata.annotations.example.com/readers'
-    )
+  AND NOT EXISTS (
+    SELECT 1 FROM (
+      (
+        SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+        WHERE s.key = 'relations.ownedby' AND s.value = ANY(:claims)
+      )
+      UNION (
+        SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+        WHERE s.key = 'metadata.annotations.example.com/readers'
+      )
+    ) AS fset
+    WHERE fset.entity_id COLLATE "default" = final_entities.entity_id
   );
 ```
 
-**Healthy plan**: Evaluated like `NOT EXISTS a AND NOT EXISTS b`, with each
-condition as an anti-join or a hashed SubPlan that runs once.
+**Healthy plan**: The union of the two sets is built once and anti-joined, or
+each condition is an anti-join or a hashed SubPlan that runs once.
 
 **Anti-patterns**:
 
