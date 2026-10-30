@@ -216,6 +216,25 @@ describe.each(databases.eachSupportedId())(
         rows2.find(r => r.entity_ref === 'component:default/d')
           ?.ingestion_mark_id,
       ).toBe(markId2);
+
+      // A batch that repeats a ref, both new and existing, must not fail the
+      // upsert.
+      await manager.createMarkEntities(
+        'testProvider',
+        [makeEntity('a'), makeEntity('e'), makeEntity('A'), makeEntity('e')],
+        markId2,
+      );
+
+      const rows3 = await knex('ingestion_mark_entities')
+        .select('entity_ref', 'ingestion_mark_id')
+        .orderBy('entity_ref');
+      expect(rows3).toEqual([
+        { entity_ref: 'component:default/a', ingestion_mark_id: markId2 },
+        { entity_ref: 'component:default/b', ingestion_mark_id: markId2 },
+        { entity_ref: 'component:default/c', ingestion_mark_id: markId2 },
+        { entity_ref: 'component:default/d', ingestion_mark_id: markId2 },
+        { entity_ref: 'component:default/e', ingestion_mark_id: markId2 },
+      ]);
     });
 
     it('deleteEntityRecordsByRef removes matching refs scoped to the given provider', async () => {
