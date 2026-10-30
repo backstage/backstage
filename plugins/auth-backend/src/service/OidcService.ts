@@ -131,16 +131,6 @@ function matchesRedirectUri(
   });
 }
 
-/**
- * Credentials presented by an OAuth client. Confidential clients authenticate
- * with both a client ID and a client secret, while public clients identify
- * themselves with a client ID alone.
- */
-export type OidcClientCredentials = {
-  clientId: string;
-  clientSecret?: string;
-};
-
 export class OidcService {
   private readonly auth: AuthService;
   private readonly tokenIssuer: TokenIssuer;
@@ -194,9 +184,6 @@ export class OidcService {
   }
 
   public getConfiguration() {
-    const dcrEnabled = this.config.getOptionalBoolean(
-      'auth.experimentalDynamicClientRegistration.enabled',
-    );
     const cimdEnabled = this.isCimdEnabled();
 
     return {
@@ -222,11 +209,7 @@ export class OidcService {
         'openid',
         ...(this.offlineAccess ? ['offline_access'] : []),
       ],
-      token_endpoint_auth_methods_supported: [
-        'client_secret_basic',
-        'client_secret_post',
-        ...(cimdEnabled ? ['none'] : []),
-      ],
+      token_endpoint_auth_methods_supported: ['none'],
       claims_supported: ['sub', 'ent'],
       grant_types_supported: [
         'authorization_code',
@@ -234,10 +217,7 @@ export class OidcService {
       ],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
       code_challenge_methods_supported: ['S256', 'plain'],
-      ...(dcrEnabled && {
-        registration_endpoint: `${this.baseUrl}/v1/register`,
-      }),
-      ...((dcrEnabled || cimdEnabled) && {
+      ...(cimdEnabled && {
         revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
       ...(cimdEnabled && { client_id_metadata_document_supported: true }),
@@ -270,39 +250,6 @@ export class OidcService {
     return await this.userInfo.getUserInfo(userEntityRef);
   }
 
-  public async registerClient(opts: {
-    responseTypes?: string[];
-    grantTypes?: string[];
-    clientName: string;
-    redirectUris?: string[];
-    scope?: string;
-  }) {
-    const generatedClientId = crypto.randomUUID();
-    const generatedClientSecret = crypto.randomUUID();
-
-    const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
-      'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-    ) ?? [
-      'cursor://*',
-      'https://www.cursor.com/*',
-      ...LOOPBACK_REDIRECT_PATTERNS,
-    ];
-
-    for (const redirectUri of opts.redirectUris ?? []) {
-      validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
-    }
-
-    return await this.oidc.createClient({
-      clientId: generatedClientId,
-      clientName: opts.clientName,
-      clientSecret: generatedClientSecret,
-      redirectUris: opts.redirectUris ?? [],
-      responseTypes: opts.responseTypes ?? ['code'],
-      grantTypes: opts.grantTypes ?? ['authorization_code'],
-      scope: opts.scope,
-    });
-  }
-
   public async createAuthorizationSession(opts: {
     clientId: string;
     redirectUri: string;
@@ -330,19 +277,17 @@ export class OidcService {
 
     const client = await this.resolveClient({ clientId, redirectUri });
 
-    if (client.requiresPkce && !codeChallenge) {
+    if (!codeChallenge) {
       throw new InputError(
         'PKCE is required for public clients. Provide a code_challenge parameter.',
       );
     }
 
-    if (codeChallenge) {
-      if (
-        !codeChallengeMethod ||
-        !['S256', 'plain'].includes(codeChallengeMethod)
-      ) {
-        throw new InputError('Invalid code_challenge_method');
-      }
+    if (
+      !codeChallengeMethod ||
+      !['S256', 'plain'].includes(codeChallengeMethod)
+    ) {
+      throw new InputError('Invalid code_challenge_method');
     }
 
     const sessionId = crypto.randomUUID();
@@ -408,24 +353,7 @@ export class OidcService {
     clientId: string;
     redirectUri?: string;
   }) {
-    let cimdUrl: URL | undefined;
-    try {
-      cimdUrl = validateCimdUrl(opts.clientId);
-    } catch {
-      // Not a valid CIMD URL, fall through to DCR
-    }
-
-    if (cimdUrl) {
-      return this.resolveCimdClient({ ...opts, cimdUrl });
-    }
-    return this.resolveDcrClient(opts);
-  }
-
-  private async resolveCimdClient(opts: {
-    clientId: string;
-    cimdUrl: URL;
-    redirectUri?: string;
-  }) {
+    const cimdUrl = validateCimdUrl(opts.clientId);
     const cimd = this.getCimdConfig();
 
     if (!cimd.enabled) {
@@ -434,7 +362,7 @@ export class OidcService {
 
     const matchingPattern = cimd.allowedClientIdPatterns.find(pattern => {
       const matches = createUrlPatternMatcher(pattern);
-      return matches(opts.cimdUrl);
+      return matches(cimdUrl);
     });
     if (!matchingPattern) {
       throw new InputError(`Invalid client_id '${opts.clientId}'`);
@@ -448,7 +376,7 @@ export class OidcService {
 
     const cimdClient = await fetchCimdMetadata({
       clientId: opts.clientId,
-      validatedUrl: opts.cimdUrl,
+      validatedUrl: cimdUrl,
       skipSsrfCheck: isExactPattern,
     });
 
@@ -462,31 +390,7 @@ export class OidcService {
       }
     }
 
-    return {
-      clientName: cimdClient.clientName,
-      redirectUris: cimdClient.redirectUris,
-      requiresPkce: true,
-    };
-  }
-
-  private async resolveDcrClient(opts: {
-    clientId: string;
-    redirectUri?: string;
-  }) {
-    const client = await this.oidc.getClient({ clientId: opts.clientId });
-    if (!client) {
-      throw new InputError('Invalid client_id');
-    }
-
-    if (opts.redirectUri && !client.redirectUris.includes(opts.redirectUri)) {
-      throw new InputError(`Invalid redirect_uri '${opts.redirectUri}'`);
-    }
-
-    return {
-      clientName: client.clientName,
-      redirectUris: client.redirectUris,
-      requiresPkce: false,
-    };
+    return cimdClient;
   }
 
   private async getValidPendingSession(sessionId: string) {
@@ -706,58 +610,24 @@ export class OidcService {
   }
 
   /**
-   * Verifies client credentials against the registered OIDC clients
+   * Verifies a public client's ID without fetching its metadata, so tokens can
+   * still be revoked when the metadata document is unavailable.
    */
-  public async verifyClientCredentials(
-    options: Required<OidcClientCredentials>,
-  ): Promise<boolean> {
-    const { clientId, clientSecret } = options;
-    const client = await this.oidc.getClient({ clientId });
-    if (!client?.clientSecret) {
-      return false;
-    }
-    const expected = Buffer.from(client.clientSecret, 'utf8');
-    const provided = Buffer.from(clientSecret, 'utf8');
-    if (expected.length !== provided.length) {
-      return false;
-    }
-    return crypto.timingSafeEqual(expected, provided);
-  }
-
-  /**
-   * Verifies a client for token revocation. DCR clients are confidential
-   * clients and must present a valid client secret, while CIMD clients are
-   * public clients that are identified by their client ID alone. The CIMD
-   * metadata document is deliberately not fetched here, so that tokens can
-   * still be revoked when the document is unreachable or has been removed.
-   */
-  public async verifyRevocationClient(
-    options: OidcClientCredentials,
-  ): Promise<boolean> {
-    const { clientId, clientSecret } = options;
-
-    let cimdUrl: URL | undefined;
+  public async verifyRevocationClient(clientId: string): Promise<boolean> {
+    let cimdUrl: URL;
     try {
       cimdUrl = validateCimdUrl(clientId);
     } catch {
-      // Not a valid CIMD URL, fall through to DCR
-    }
-
-    if (cimdUrl) {
-      const cimd = this.getCimdConfig();
-      return (
-        cimd.enabled &&
-        cimd.allowedClientIdPatterns.some(pattern =>
-          createUrlPatternMatcher(pattern)(cimdUrl),
-        )
-      );
-    }
-
-    if (!clientSecret) {
       return false;
     }
 
-    return this.verifyClientCredentials({ clientId, clientSecret });
+    const cimd = this.getCimdConfig();
+    return (
+      cimd.enabled &&
+      cimd.allowedClientIdPatterns.some(pattern =>
+        createUrlPatternMatcher(pattern)(cimdUrl),
+      )
+    );
   }
 
   /**

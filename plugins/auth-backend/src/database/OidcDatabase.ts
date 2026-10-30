@@ -25,17 +25,6 @@ function toDate(value?: Date | string | number): Date | undefined {
     ? new Date(value)
     : value;
 }
-type OidcClientRow = {
-  client_id: string;
-  client_secret: string;
-  client_name: string;
-  response_types: string;
-  grant_types: string;
-  redirect_uris: string;
-  scope: string | null;
-  metadata: string | null;
-};
-
 type OAuthAuthorizationSessionRow = {
   id: string;
   client_id: string;
@@ -56,17 +45,6 @@ type OidcAuthorizationCodeRow = {
   session_id: string;
   expires_at: Date | string;
   used: boolean;
-};
-
-export type Client = {
-  clientId: string;
-  clientName: string;
-  clientSecret: string;
-  redirectUris: string[];
-  responseTypes: string[];
-  grantTypes: string[];
-  scope?: string;
-  metadata?: Record<string, unknown>;
 };
 
 export type AuthorizationSession = {
@@ -105,7 +83,7 @@ export type AccessToken = {
 
 /**
  * This class provides database operations for OpenID Connect (OIDC) authentication flows.
- * It manages OIDC clients, authorization codes, and access tokens in the database.
+ * It manages authorization sessions and codes in the database.
  */
 export class OidcDatabase {
   private constructor(private readonly db: Knex) {}
@@ -113,33 +91,6 @@ export class OidcDatabase {
   static async create(options: { database: AuthDatabase }) {
     const client = await options.database.get();
     return new OidcDatabase(client);
-  }
-
-  async createClient(client: Client) {
-    await this.db<OidcClientRow>('oidc_clients').insert({
-      client_id: client.clientId,
-      client_secret: client.clientSecret,
-      client_name: client.clientName,
-      response_types: JSON.stringify(client.responseTypes),
-      grant_types: JSON.stringify(client.grantTypes),
-      redirect_uris: JSON.stringify(client.redirectUris),
-      scope: client.scope,
-      metadata: JSON.stringify(client.metadata),
-    });
-
-    return client;
-  }
-
-  async getClient({ clientId }: { clientId: string }) {
-    const client = await this.db<OidcClientRow>('oidc_clients')
-      .where('client_id', clientId)
-      .first();
-
-    if (!client) {
-      return null;
-    }
-
-    return this.rowToClient(client) as Client;
   }
 
   async createAuthorizationSession(
@@ -316,23 +267,6 @@ export class OidcDatabase {
     const [returnedCode] = returnedRows;
 
     return this.rowToAuthorizationCode(returnedCode) as AuthorizationCode;
-  }
-
-  private rowToClient(row: OidcClientRow): Client {
-    return {
-      clientId: row.client_id,
-      clientName: row.client_name,
-      clientSecret: row.client_secret,
-      redirectUris: row.redirect_uris
-        ? JSON.parse(row.redirect_uris)
-        : undefined,
-      responseTypes: row.response_types
-        ? JSON.parse(row.response_types)
-        : undefined,
-      grantTypes: row.grant_types ? JSON.parse(row.grant_types) : undefined,
-      scope: row.scope ?? undefined,
-      metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
-    };
   }
 
   private authorizationSessionToRow(
