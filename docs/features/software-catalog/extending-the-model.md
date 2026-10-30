@@ -587,7 +587,7 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 }
 ```
 
-The validators from `@backstage/catalog-model` work in both frontend and backend code. By default, they interpret the JSON Schema without generating code at runtime, so they work under a strict Content Security Policy without `'unsafe-eval'`. The catalog backend switches the whole backend process to the faster [ajv](https://ajv.js.org) engine, which compiles schemas into code, so your processor gets that engine automatically when it runs in the catalog. To use ajv in other backend code, call `installAjvSchemaEngine` from `@backstage/catalog-model/ajv` once at startup. Don't use it in frontend code. Validation error messages are worded differently by the two engines, so don't rely on their exact text.
+The validators from `@backstage/catalog-model` work in both frontend and backend code. They interpret the JSON Schema without generating code at runtime, so they work under a strict Content Security Policy without `'unsafe-eval'`. Processors validate every entity they handle, so for them it's worth using the faster [ajv](https://ajv.js.org) versions instead, which compile schemas into code. `createAjvEntityValidators` from `@backstage/catalog-model/ajv` returns the same validators backed by ajv, for example `createAjvEntityValidators().entityKindSchemaValidator(foobarEntityV1alpha1Schema)`. Only use them in backend code. The two kinds of validators word their error messages differently, so don't rely on the exact text.
 
 #### New Backend
 

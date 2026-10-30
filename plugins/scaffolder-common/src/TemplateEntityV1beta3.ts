@@ -196,6 +196,13 @@ export interface TemplatePermissionsV1beta3 extends JsonObject {
   tags?: string[];
 }
 
+/**
+ * The JSON Schema for `TemplateEntityV1beta3` entities.
+ *
+ * @alpha
+ */
+export const templateEntityV1beta3Schema: JsonObject = schema as JsonObject;
+
 let validator: ((data: unknown) => Entity | false) | undefined;
 
 /**

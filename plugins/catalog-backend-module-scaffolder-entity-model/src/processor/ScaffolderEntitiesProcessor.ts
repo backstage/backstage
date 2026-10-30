@@ -27,10 +27,9 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import {
-  TemplateEntityV1beta3,
-  templateEntityV1beta3Validator,
-} from '@backstage/plugin-scaffolder-common';
+import { createAjvEntityValidators } from '@backstage/catalog-model/ajv';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { templateEntityV1beta3Schema } from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * Adds support for scaffolder specific entity kinds to the catalog.
@@ -42,11 +41,17 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
     return 'ScaffolderEntitiesProcessor';
   }
 
-  private readonly validators = [templateEntityV1beta3Validator];
+  // Validation is performance sensitive in the catalog, so use a validator
+  // that compiles the schema into code
+  private readonly validators = [
+    createAjvEntityValidators().entityKindSchemaValidator(
+      templateEntityV1beta3Schema,
+    ),
+  ];
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
-      if (await validator.check(entity)) {
+      if (validator(entity) === entity) {
         return true;
       }
     }

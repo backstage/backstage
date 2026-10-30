@@ -18,7 +18,12 @@ import entitySchema from '../../schema/Entity.schema.json';
 import { Entity } from '../Entity';
 import { EntityPolicy } from './types';
 import { compileSchema } from '../../validation/compileSchema';
-import { CompiledSchema } from '../../validation/engine/types';
+import { cfworkerSchemaEngine } from '../../validation/engine/cfworkerSchemaEngine';
+import { CompiledSchema, SchemaEngine } from '../../validation/engine/types';
+
+// Lets internal code pick the engine for a policy, without exposing engines
+// in the public constructor
+const policyEngines = new WeakMap<SchemaValidEntityPolicy, SchemaEngine>();
 
 /**
  * Ensures that the entity spec is valid according to a schema.
@@ -36,7 +41,11 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
 
   async enforce(entity: Entity): Promise<Entity> {
     if (!this.validate) {
-      this.validate = compileSchema(entitySchema, { allErrors: false });
+      this.validate = compileSchema(
+        policyEngines.get(this) ?? cfworkerSchemaEngine,
+        entitySchema,
+        { allErrors: false },
+      );
     }
 
     const errors = this.validate(entity);
@@ -53,4 +62,12 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
       `Malformed envelope, ${error.instancePath || '<root>'} ${error.message}`,
     );
   }
+}
+
+export function createSchemaValidEntityPolicy(
+  engine: SchemaEngine,
+): SchemaValidEntityPolicy {
+  const policy = new SchemaValidEntityPolicy();
+  policyEngines.set(policy, engine);
+  return policy;
 }

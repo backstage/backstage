@@ -28,7 +28,7 @@ describe('catalogModuleScaffolderEntityModel', () => {
     });
 
     expect(extensionPoint.addProcessor).toHaveBeenCalledWith(
-      new ScaffolderEntitiesProcessor(),
+      expect.any(ScaffolderEntitiesProcessor),
     );
   });
 });

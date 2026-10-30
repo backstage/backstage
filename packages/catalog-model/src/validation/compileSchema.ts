@@ -18,7 +18,6 @@ import entitySchema from '../schema/Entity.schema.json';
 import entityEnvelopeSchema from '../schema/EntityEnvelope.schema.json';
 import entityMetaSchema from '../schema/EntityMeta.schema.json';
 import commonSchema from '../schema/shared/common.schema.json';
-import { getSchemaEngine } from './engine/registry';
 import {
   CompiledSchema,
   SchemaEngine,
@@ -61,12 +60,15 @@ export function throwSchemaError(
   );
 }
 
-function compileWithEngine(
+// Compiles the given schema with the given engine, and makes sure to also
+// grab any core dependencies that it depends on
+export function compileSchema(
   engine: SchemaEngine,
   schema: Schema,
-  options: { disableCache: boolean; allErrors: boolean },
+  options: { disableCache?: boolean; allErrors?: boolean } = {},
 ): CompiledSchema {
-  const { disableCache, allErrors } = options;
+  const disableCache = options.disableCache ?? false;
+  const allErrors = options.allErrors ?? true;
   const cacheKey = disableCache ? '' : `${allErrors}:${JSON.stringify(schema)}`;
 
   let cache = compiledSchemaCache.get(engine);
@@ -93,36 +95,6 @@ function compileWithEngine(
   }
 
   return compiled;
-}
-
-// Compiles the given schema, and makes sure to also grab any core dependencies
-// that it depends on.
-//
-// The schema is compiled right away using the current schema engine, so that
-// errors in the schema itself are reported early. If the engine is replaced
-// later on, for example because the validator was created at module load time
-// before the engine was installed, the schema is compiled again with the new
-// engine on next use.
-export function compileSchema(
-  schema: Schema,
-  options: { disableCache?: boolean; allErrors?: boolean } = {},
-): CompiledSchema {
-  const resolvedOptions = {
-    disableCache: options.disableCache ?? false,
-    allErrors: options.allErrors ?? true,
-  };
-
-  let engine = getSchemaEngine();
-  let compiled = compileWithEngine(engine, schema, resolvedOptions);
-
-  return data => {
-    const currentEngine = getSchemaEngine();
-    if (currentEngine !== engine) {
-      engine = currentEngine;
-      compiled = compileWithEngine(engine, schema, resolvedOptions);
-    }
-    return compiled(data);
-  };
 }
 
 // Find refs in the given schema and recursively in all known schemas it

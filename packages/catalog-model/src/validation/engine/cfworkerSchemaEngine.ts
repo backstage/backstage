@@ -102,8 +102,6 @@ function normalizeUndefined(value: unknown): unknown {
   return value;
 }
 
-let metaSchemaValidator: Validator | undefined;
-
 /**
  * A schema engine based on `@cfworker/json-schema`, which interprets schemas
  * instead of generating code.
@@ -123,22 +121,43 @@ export const cfworkerSchemaEngine: SchemaEngine = {
     }
 
     return data => {
-      const result = validator.validate(
-        containsUndefined(data) ? normalizeUndefined(data) : data,
-      );
+      let result;
+      try {
+        result = validator.validate(
+          containsUndefined(data) ? normalizeUndefined(data) : data,
+        );
+      } catch (error) {
+        // The engine throws for values that can not be represented in JSON,
+        // such as functions; report those as a regular validation error
+        return [
+          {
+            instancePath: '',
+            keyword: 'type',
+            message: error instanceof Error ? error.message : String(error),
+          },
+        ];
+      }
       return result.valid ? undefined : convertErrors(result.errors);
     };
   },
-
-  validateSchema(schema) {
-    if (!metaSchemaValidator) {
-      metaSchemaValidator = new Validator(
-        structuredClone(draft07MetaSchema) as Schema,
-        '7',
-        false,
-      );
-    }
-    const result = metaSchemaValidator.validate(schema);
-    return result.valid ? undefined : convertErrors(result.errors)[0];
-  },
 };
+
+let metaSchemaValidator: Validator | undefined;
+
+/**
+ * Validates a schema against the JSON Schema draft-07 meta schema, returning
+ * the first error if any.
+ */
+export function validateAgainstMetaSchema(
+  schema: object,
+): SchemaValidationError | undefined {
+  if (!metaSchemaValidator) {
+    metaSchemaValidator = new Validator(
+      structuredClone(draft07MetaSchema) as Schema,
+      '7',
+      false,
+    );
+  }
+  const result = metaSchemaValidator.validate(schema);
+  return result.valid ? undefined : convertErrors(result.errors)[0];
+}
