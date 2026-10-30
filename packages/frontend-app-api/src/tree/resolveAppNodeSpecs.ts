@@ -242,6 +242,9 @@ export function resolveAppNodeSpecs(options: {
     },
   );
 
+  const extensionsById = new Map(
+    deduplicatedExtensions.map(e => [e.extension.id, e]),
+  );
   const order = new Map<string, (typeof deduplicatedExtensions)[number]>();
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
@@ -257,9 +260,7 @@ export function resolveAppNodeSpecs(options: {
       continue;
     }
 
-    const existing = deduplicatedExtensions.find(
-      e => e.extension.id === extensionId,
-    );
+    const existing = extensionsById.get(extensionId);
     if (existing) {
       if (overrideParam.attachTo) {
         existing.params.attachTo = overrideParam.attachTo;
@@ -293,7 +294,7 @@ export function resolveAppNodeSpecs(options: {
   // Apply map entries after ordering so their property order has no effect on
   // extension ordering.
   for (const [id, value] of Object.entries(overrides)) {
-    const existing = orderedExtensions.find(e => e.extension.id === id);
+    const existing = extensionsById.get(id);
     const params = expandShorthandExtensionParameters(
       { [id]: value },
       'app.extension',
