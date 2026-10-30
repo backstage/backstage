@@ -45,6 +45,16 @@ import {
   coreServices,
   createServiceFactory,
   RootLoggerService,
+  AuditorService,
+  CacheService,
+  HttpRouterService,
+  LifecycleService,
+  LoggerService,
+  PermissionsRegistryService,
+  RootHealthService,
+  RootHttpRouterService,
+  RootLifecycleService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -58,7 +68,7 @@ import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
 import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
-import { createServiceMock } from './createServiceMock';
+import { createServiceMock, ServiceMock } from './createServiceMock';
 import { MockSchedulerService } from './MockSchedulerService';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
@@ -181,6 +191,364 @@ const mockRootSystemMetadata = (): RootSystemMetadataService => ({
 });
 
 /**
+ * The type of {@link (mockServices:variable)}, with mock implementations of the core
+ * services.
+ *
+ * @public
+ */
+export interface MockServices {
+  /**
+   * Mocks for the root config service. Calling it creates a functional config
+   * service with the given data, which can be updated later.
+   */
+  readonly rootConfig: {
+    (options?: mockServices.rootConfig.Options): RootConfigService & {
+      update(options: { data: JsonObject }): void;
+    };
+    readonly factory: (
+      options?: mockServices.rootConfig.Options,
+    ) => ServiceFactory<RootConfigService, 'root', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<RootConfigService>,
+    ) => ServiceMock<RootConfigService>;
+  };
+
+  /**
+   * Mocks for the root logger service. Calling it creates a functional logger
+   * that is silent by default.
+   */
+  readonly rootLogger: {
+    (options?: mockServices.rootLogger.Options): RootLoggerService;
+    readonly factory: (
+      options?: mockServices.rootLogger.Options,
+    ) => ServiceFactory<RootLoggerService, 'root', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<RootLoggerService>,
+    ) => ServiceMock<RootLoggerService>;
+  };
+
+  /**
+   * Mocks for the auditor service.
+   */
+  readonly auditor: {
+    readonly factory: () => ServiceFactory<
+      AuditorService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<AuditorService>,
+    ) => ServiceMock<AuditorService>;
+  };
+
+  /**
+   * Mocks for the auth service. Calling it creates a functional mock auth
+   * service.
+   */
+  readonly auth: {
+    (options?: {
+      pluginId?: string;
+      disableDefaultAuthPolicy?: boolean;
+    }): AuthService;
+    readonly factory: () => ServiceFactory<AuthService, 'plugin', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<AuthService>,
+    ) => ServiceMock<AuthService>;
+  };
+
+  /**
+   * Mocks for the discovery service. Calling it creates a discovery service
+   * that points to an unreachable local address.
+   */
+  readonly discovery: {
+    (): DiscoveryService;
+    readonly factory: () => ServiceFactory<
+      DiscoveryService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<DiscoveryService>,
+    ) => ServiceMock<DiscoveryService>;
+  };
+
+  /**
+   * Mocks for the `HttpAuthService`.
+   *
+   * By default all requests without credentials are treated as requests from
+   * the default mock user principal. This behavior can be configured with the
+   * `defaultCredentials` option.
+   */
+  readonly httpAuth: {
+    (options?: {
+      pluginId?: string;
+      /**
+       * The default credentials to use if there are no credentials present in
+       * the incoming request.
+       *
+       * By default all requests without credentials are treated as
+       * authenticated as the default mock user as returned from
+       * `mockCredentials.user()`.
+       */
+      defaultCredentials?: BackstageCredentials;
+    }): HttpAuthService;
+    readonly factory: (options?: {
+      defaultCredentials?: BackstageCredentials;
+    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<HttpAuthService>,
+    ) => ServiceMock<HttpAuthService>;
+  };
+
+  /**
+   * Mocks for the `UserInfoService`.
+   *
+   * By default it extracts the user's entity ref from a user principal and
+   * returns that as the only ownership entity ref, but calling it lets you
+   * pass in a custom set of user info.
+   */
+  readonly userInfo: {
+    (customInfo?: Partial<BackstageUserInfo>): UserInfoService;
+    readonly factory: () => ServiceFactory<
+      UserInfoService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<UserInfoService>,
+    ) => ServiceMock<UserInfoService>;
+  };
+
+  /**
+   * Mocks for the cache service.
+   */
+  readonly cache: {
+    readonly factory: () => ServiceFactory<CacheService, 'plugin', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<CacheService>,
+    ) => ServiceMock<CacheService>;
+  };
+
+  /**
+   * Mocks for the
+   * {@link @backstage/backend-plugin-api#CoreServices.database | database}
+   * service.
+   *
+   * Calling it, or its `factory` with a `knex` instance, uses that instance,
+   * which is useful in combination with the {@link TestDatabases} facility.
+   * Calling `factory` without options returns the regular default database
+   * factory, which reads config settings.
+   */
+  readonly database: {
+    (options: { knex: Knex; migrations?: { skip?: boolean } }): DatabaseService;
+    readonly factory: (options?: {
+      knex: Knex;
+      migrations?: { skip?: boolean };
+    }) => ServiceFactory<DatabaseService, 'plugin', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<DatabaseService>,
+    ) => ServiceMock<DatabaseService>;
+  };
+
+  /**
+   * Mocks for the root health service.
+   */
+  readonly rootHealth: {
+    readonly factory: () => ServiceFactory<
+      RootHealthService,
+      'root',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<RootHealthService>,
+    ) => ServiceMock<RootHealthService>;
+  };
+
+  /**
+   * Mocks for the HTTP router service.
+   */
+  readonly httpRouter: {
+    readonly factory: () => ServiceFactory<
+      HttpRouterService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<HttpRouterService>,
+    ) => ServiceMock<HttpRouterService>;
+  };
+
+  /**
+   * Mocks for the root HTTP router service.
+   */
+  readonly rootHttpRouter: {
+    readonly factory: () => ServiceFactory<
+      RootHttpRouterService,
+      'root',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<RootHttpRouterService>,
+    ) => ServiceMock<RootHttpRouterService>;
+  };
+
+  /**
+   * Mocks for the lifecycle service.
+   */
+  readonly lifecycle: {
+    readonly factory: () => ServiceFactory<
+      LifecycleService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<LifecycleService>,
+    ) => ServiceMock<LifecycleService>;
+  };
+
+  /**
+   * Mocks for the logger service.
+   */
+  readonly logger: {
+    readonly factory: () => ServiceFactory<
+      LoggerService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<LoggerService>,
+    ) => ServiceMock<LoggerService>;
+  };
+
+  /**
+   * Mocks for the
+   * {@link @backstage/backend-plugin-api#CoreServices.permissions | permissions}
+   * service.
+   *
+   * Calling it creates a functional mock implementation. Its `factory` returns
+   * the given `result` for all requests if you supply one, and otherwise the
+   * regular default permissions factory.
+   */
+  readonly permissions: {
+    (options?: {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }): PermissionsService;
+    readonly factory: (options?: {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }) => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<PermissionsService>,
+    ) => ServiceMock<PermissionsService>;
+  };
+
+  /**
+   * Mocks for the permissions registry service.
+   */
+  readonly permissionsRegistry: {
+    readonly factory: () => ServiceFactory<
+      PermissionsRegistryService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<PermissionsRegistryService>,
+    ) => ServiceMock<PermissionsRegistryService>;
+  };
+
+  /**
+   * Mocks for the root lifecycle service.
+   */
+  readonly rootLifecycle: {
+    readonly factory: () => ServiceFactory<
+      RootLifecycleService,
+      'root',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<RootLifecycleService>,
+    ) => ServiceMock<RootLifecycleService>;
+  };
+
+  /**
+   * Mocks for the scheduler service. Calling it creates a functional mock
+   * scheduler.
+   */
+  readonly scheduler: {
+    (): SchedulerService;
+    readonly factory: (options?: {
+      skipTaskRunOnStartup?: boolean;
+      includeManualTasksOnStartup?: boolean;
+      includeInitialDelayedTasksOnStartup?: boolean;
+    }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
+    readonly mock: (
+      partialImpl?: Partial<SchedulerService>,
+    ) => ServiceMock<SchedulerService>;
+  };
+
+  /**
+   * Mocks for the URL reader service.
+   */
+  readonly urlReader: {
+    readonly factory: () => ServiceFactory<
+      UrlReaderService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<UrlReaderService>,
+    ) => ServiceMock<UrlReaderService>;
+  };
+
+  /**
+   * Mocks for the
+   * {@link @backstage/plugin-events-node#eventsServiceRef | events service}.
+   * Calling it, or using its `factory`, creates a functional mock
+   * implementation.
+   */
+  readonly events: {
+    (): EventsService;
+    readonly factory: () => ServiceFactory<
+      EventsService,
+      'plugin',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<EventsService>,
+    ) => ServiceMock<EventsService>;
+  };
+
+  /**
+   * Mocks for the root instance metadata service.
+   */
+  readonly rootInstanceMetadata: {
+    (): RootInstanceMetadataService;
+    readonly factory: () => ServiceFactory<
+      RootInstanceMetadataService,
+      'root',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<RootInstanceMetadataService>,
+    ) => ServiceMock<RootInstanceMetadataService>;
+  };
+
+  /**
+   * Mocks for the root system metadata service.
+   */
+  readonly rootSystemMetadata: {
+    (): RootSystemMetadataService;
+    readonly factory: () => ServiceFactory<
+      RootSystemMetadataService,
+      'root',
+      'singleton'
+    >;
+    readonly mock: (
+      partialImpl?: Partial<RootSystemMetadataService>,
+    ) => ServiceMock<RootSystemMetadataService>;
+  };
+}
+
+/**
  * Mock implementations of the core services, to be used in tests.
  *
  * @public
@@ -222,7 +590,7 @@ const mockRootSystemMetadata = (): RootSystemMetadataService => ({
  * });
  * ```
  */
-export const mockServices = Object.freeze({
+export const mockServices: MockServices = Object.freeze({
   rootConfig: Object.freeze(
     Object.assign(mockRootConfig, {
       factory: simpleFactoryWithOptions(
@@ -326,22 +694,8 @@ export const mockServices = Object.freeze({
     }),
   ),
 
-  /**
-   * Creates a mock implementation of the `HttpAuthService`.
-   *
-   * By default all requests without credentials are treated as requests from
-   * the default mock user principal. This behavior can be configured with the
-   * `defaultCredentials` option.
-   */
   httpAuth: Object.freeze(
     Object.assign(mockHttpAuth, {
-      /**
-       * Creates a mock service factory for the `HttpAuthService`.
-       *
-       * By default all requests without credentials are treated as requests from
-       * the default mock user principal. This behavior can be configured with the
-       * `defaultCredentials` option.
-       */
       factory: (options?: { defaultCredentials?: BackstageCredentials }) =>
         createServiceFactory({
           service: coreServices.httpAuth,
@@ -359,21 +713,8 @@ export const mockServices = Object.freeze({
     }),
   ),
 
-  /**
-   * Creates a mock implementation of the `UserInfoService`.
-   *
-   * By default it extracts the user's entity ref from a user principal and
-   * returns that as the only ownership entity ref, but this can be overridden
-   * by passing in a custom set of user info.
-   */
   userInfo: Object.freeze(
     Object.assign(mockUserInfo, {
-      /**
-       * Creates a mock service factory for the `UserInfoService`.
-       *
-       * By default it extracts the user's entity ref from a user principal and
-       * returns that as the only ownership entity ref.
-       */
       factory: () =>
         createServiceFactory({
           service: coreServices.userInfo,
@@ -401,21 +742,8 @@ export const mockServices = Object.freeze({
     })),
   }),
 
-  /**
-   * Creates a mock implementation of the
-   * {@link @backstage/backend-plugin-api#coreServices | coreServices.database}. Just returns
-   * the given `knex` instance, which is useful in combination with the
-   * {@link TestDatabases} facility.
-   */
   database: Object.freeze(
     Object.assign(mockDatabase, {
-      /**
-       * Creates a mock factory for the
-       * {@link @backstage/backend-plugin-api#coreServices | coreServices.database}. Just returns
-       * the given `knex` instance if you supply one, which is useful in
-       * combination with the {@link TestDatabases} facility. Otherwise, it
-       * returns the regular default database factory which reads config settings.
-       */
       factory: (options?: { knex: Knex; migrations?: { skip?: boolean } }) =>
         options
           ? createServiceFactory({
@@ -424,11 +752,6 @@ export const mockServices = Object.freeze({
               factory: () => mockDatabase(options),
             })
           : databaseServiceFactory,
-      /**
-       * Creates a mock of the
-       * {@link @backstage/backend-plugin-api#coreServices | coreServices.database}, optionally
-       * with some given method implementations.
-       */
       mock: createServiceMock(coreServices.database, () => ({
         getClient: jest.fn(),
       })),
@@ -471,18 +794,8 @@ export const mockServices = Object.freeze({
     mock: createServiceMock(coreServices.logger, () => createLoggerMock()),
   }),
 
-  /**
-   * Creates a functional mock implementation of the
-   * {@link @backstage/backend-plugin-api#PermissionsService}.
-   */
   permissions: Object.freeze(
     Object.assign(mockPermissions, {
-      /**
-       * Creates a mock factory for the
-       * {@link @backstage/backend-plugin-api#coreServices | coreServices.permissions}. Just
-       * returns the given `result` if you supply one. Otherwise, it returns the
-       * regular default permissions factory.
-       */
       factory: (options?: {
         result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
       }) =>
@@ -493,11 +806,6 @@ export const mockServices = Object.freeze({
               factory: () => new MockPermissionsService(options),
             })
           : permissionsServiceFactory,
-      /**
-       * Creates a mock of the
-       * {@link @backstage/backend-plugin-api#coreServices | coreServices.permissions},
-       * optionally with some given method implementations.
-       */
       mock: createServiceMock(coreServices.permissions, () => ({
         authorize: jest.fn(),
         authorizeConditional: jest.fn(),
@@ -550,22 +858,9 @@ export const mockServices = Object.freeze({
     })),
   }),
 
-  /**
-   * Creates a functional mock implementation of the
-   * {@link @backstage/backend-events-node#eventsServiceRef}.
-   */
   events: Object.freeze(
     Object.assign(mockEvents, {
-      /**
-       * Creates a functional mock factory for the
-       * {@link @backstage/backend-events-node#eventsServiceRef}.
-       */
       factory: simpleFactoryWithOptions(eventsServiceRef, mockEvents),
-      /**
-       * Creates a mock of the
-       * {@link @backstage/backend-events-node#eventsServiceRef}, optionally
-       * with some given method implementations.
-       */
       mock: createServiceMock(eventsServiceRef, () => ({
         publish: jest.fn(),
         subscribe: jest.fn(),

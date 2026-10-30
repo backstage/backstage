@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-plugin-api': patch
+'@backstage/backend-plugin-api': minor
 ---
 
-The `coreServices` export is now declared as a frozen plain object instead of a TypeScript namespace. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
+The `coreServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `CoreServices` interface. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
