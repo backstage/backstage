@@ -84,4 +84,12 @@ addHook(
 // Register module hooks, used by "type": "module" in package.json, .mjs and
 // .mts files, as well as dynamic import(...)s, although dynamic imports will be
 // handled be the CommonJS hooks in this file if what it points to is CommonJS.
-Module.register('./nodeTransformHooks.mjs', pathToFileURL(__filename));
+//
+// The synchronous hooks API runs in the same thread and is used when available,
+// since Node.js 26 deprecates Module.register(). It requires loading the hooks
+// module with require(), which can be disabled with --no-experimental-require-module.
+if (Module.registerHooks && process.features.require_module) {
+  Module.registerHooks(require('./nodeTransformHooks.mjs').syncHooks);
+} else {
+  Module.register('./nodeTransformHooks.mjs', pathToFileURL(__filename));
+}
