@@ -2053,6 +2053,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@cfworker/json-schema": "npm:^4.1.1"
     "@types/json-schema": "npm:^7.0.5"
     "@types/lodash": "npm:^4.14.151"
     ajv: "npm:^8.10.0"
