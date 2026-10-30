@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,77 +14,47 @@
  * limitations under the License.
  */
 
-import { Widget } from './types';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import AddIcon from '@material-ui/icons/Add';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { homeTranslationRef } from '../../translation';
+import { createSwappableComponent } from '@backstage/frontend-plugin-api';
 
-interface AddWidgetDialogProps {
-  widgets: Widget[];
-  handleAdd: (widget: Widget) => void;
+/**
+ * A widget that can be chosen in the {@link AddWidgetDialog}.
+ *
+ * @alpha
+ */
+export interface AddWidgetDialogWidget {
+  /** The unique name of the widget. */
+  name: string;
+  /** The title to show for the widget, the name is used if it is missing. */
+  title?: string;
+  /** A short description of the widget. */
+  description?: string;
 }
 
-const getTitle = (widget: Widget) => {
-  return widget.title || widget.name;
-};
+/**
+ * Props for the {@link AddWidgetDialog} swappable component.
+ *
+ * @alpha
+ */
+export interface AddWidgetDialogProps {
+  /** Whether the dialog is open. */
+  open: boolean;
+  /** Closes the dialog without adding a widget. */
+  onClose: () => void;
+  /** The widgets that can be added to the grid. */
+  widgets: AddWidgetDialogWidget[];
+  /** Adds one of the provided widgets to the grid and closes the dialog. */
+  handleAdd: (widget: AddWidgetDialogWidget) => void;
+}
 
-export const AddWidgetDialog = (props: AddWidgetDialogProps) => {
-  const { widgets, handleAdd } = props;
-  const { t } = useTranslationRef(homeTranslationRef);
-  return (
-    <>
-      <DialogTitle>{t('addWidgetDialog.title')}</DialogTitle>
-      <DialogContent>
-        {widgets.length === 0 ? (
-          <Box pb={3} textAlign="center">
-            <Typography variant="body1" color="textSecondary">
-              {t('addWidgetDialog.noAvailableWidgets')}
-            </Typography>
-          </Box>
-        ) : (
-          <List dense>
-            {widgets.map(widget => {
-              return (
-                <ListItem
-                  key={widget.name}
-                  button
-                  onClick={() => handleAdd(widget)}
-                >
-                  <ListItemAvatar>
-                    <AddIcon />
-                  </ListItemAvatar>
-                  <ListItemText
-                    secondary={
-                      widget.description && (
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          color="textPrimary"
-                        >
-                          {widget.description}
-                        </Typography>
-                      )
-                    }
-                    primary={
-                      <Typography variant="body1" color="textPrimary">
-                        {getTitle(widget)}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        )}
-      </DialogContent>
-    </>
-  );
-};
+/**
+ * The dialog that the home page grid opens to add widgets. Apps using the new
+ * frontend system can replace it by registering a `SwappableComponentBlueprint`
+ * that targets `AddWidgetDialog`.
+ *
+ * @alpha
+ */
+export const AddWidgetDialog = createSwappableComponent<AddWidgetDialogProps>({
+  id: 'home.add-widget-dialog',
+  loader: () =>
+    import('./DefaultAddWidgetDialog').then(m => m.DefaultAddWidgetDialog),
+});

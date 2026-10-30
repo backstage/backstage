@@ -25,8 +25,13 @@ import {
   createComponentExtension,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  swappableComponentsApiRef,
+  SwappableComponentsApi,
+} from '@backstage/frontend-plugin-api';
 import userEvent from '@testing-library/user-event';
 import { ComponentProps } from 'react';
+import { AddWidgetDialogProps } from './AddWidgetDialog';
 
 const ComponentA = homePlugin.provide(
   createComponentExtension({
@@ -191,7 +196,7 @@ describe('CustomHomepageGrid', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
     await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
 
-    const dialog = screen.getByRole('dialog');
+    const dialog = await screen.findByRole('dialog');
     expect(
       within(dialog).getByRole('heading', {
         name: 'Add new widget to dashboard',
@@ -221,7 +226,7 @@ describe('CustomHomepageGrid', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
     await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
 
-    const dialog = screen.getByRole('dialog');
+    const dialog = await screen.findByRole('dialog');
     expect(
       within(dialog).getByRole('heading', {
         name: 'Add new widget to dashboard',
@@ -265,5 +270,57 @@ describe('CustomHomepageGrid', () => {
         'All available widgets have been added to the dashboard.',
       ),
     ).toBeInTheDocument();
+  });
+  it('should render a replacement add widget dialog when the app provides one', async () => {
+    const mockStorage = mockApis.storage();
+    const ReplacementDialog = ({
+      open,
+      widgets,
+      handleAdd,
+    }: AddWidgetDialogProps) =>
+      open ? (
+        <div role="dialog">
+          <h2>Custom add widget dialog</h2>
+          {widgets.map(widget => (
+            <button key={widget.name} onClick={() => handleAdd(widget)}>
+              {`Pick ${widget.name}`}
+            </button>
+          ))}
+        </div>
+      ) : null;
+    const swappableComponentsApi = {
+      getComponent: () => ReplacementDialog,
+    } as unknown as SwappableComponentsApi;
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [storageApiRef, mockStorage],
+          [swappableComponentsApiRef, swappableComponentsApi],
+        ]}
+      >
+        <CustomHomepageGrid config={twoWidgetConfig}>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
+
+    expect(
+      await screen.findByText('Custom add widget dialog'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Add new widget to dashboard'),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Pick C' }));
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Custom add widget dialog'),
+    ).not.toBeInTheDocument();
   });
 });
