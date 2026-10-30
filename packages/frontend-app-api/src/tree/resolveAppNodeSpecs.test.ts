@@ -22,7 +22,10 @@ import {
   Extension,
   ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
+import { ConfigReader } from '@backstage/config';
+import { readAppExtensionsConfig } from './readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
+import { resolveAppTree } from './resolveAppTree';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 
 const collector = createErrorCollector();
@@ -70,6 +73,146 @@ function makeExtDef(
 }
 
 describe('resolveAppNodeSpecs', () => {
+  it('layers map settings over the ordered list without changing registration order', () => {
+    const shared = {
+      app: {
+        extensions: [
+          {
+            c: {
+              disabled: true,
+              config: {
+                nested: { keep: 1, replace: [1, 2] },
+                typed: 'old',
+                fallback: 'from-list',
+              },
+            },
+          },
+          'a',
+        ],
+        extension: {
+          c: {
+            config: {
+              nested: { shared: true, remove: true },
+              fallback: 'from-map',
+            },
+          },
+          b: { config: { keepDisabled: true } },
+        },
+      },
+    };
+    const local = {
+      app: {
+        extension: {
+          d: false,
+          c: {
+            disabled: false,
+            attachTo: { input: 'other' },
+            config: {
+              nested: { replace: [3], remove: null, shared: false },
+              typed: { value: 1 },
+              fallback: null,
+            },
+          },
+        },
+      },
+    };
+    const config = ConfigReader.fromConfigs([
+      { context: 'shared', data: shared },
+      { context: 'local', data: local },
+    ]);
+    const resolve = (
+      overrides: NonNullable<
+        ReturnType<typeof readAppExtensionsConfig>['overrides']
+      >,
+    ) =>
+      resolveAppNodeSpecs({
+        builtinExtensions: [
+          makeExt('a'),
+          makeExt('b', 'disabled'),
+          makeExt('c'),
+          makeExt('d'),
+        ],
+        ...readAppExtensionsConfig(config),
+        overrides,
+        collector,
+      });
+    const overrides = readAppExtensionsConfig(config).overrides!;
+    const result = resolve(overrides);
+    expect(result.map(e => e.id)).toEqual(['c', 'a', 'b', 'd']);
+    expect(result[0]).toMatchObject({
+      attachTo: { id: 'root', input: 'other' },
+      disabled: false,
+      config: {
+        nested: { keep: 1, replace: [3], shared: false },
+        typed: { value: 1 },
+        fallback: 'from-list',
+      },
+    });
+    expect(result[0].config).not.toHaveProperty('nested.remove');
+    expect(result[2]).toMatchObject({
+      disabled: true,
+      config: { keepDisabled: true },
+    });
+    expect(result[3].disabled).toBe(true);
+    const reversed = resolve(
+      Object.fromEntries(Object.entries(overrides).reverse()),
+    );
+    const settings = (specs: typeof result) =>
+      specs.map(spec => ({
+        id: spec.id,
+        disabled: spec.disabled,
+        config: spec.config,
+        attachTo: spec.attachTo,
+      }));
+    expect(settings(reversed)).toEqual(settings(result));
+    for (const specs of [result, reversed]) {
+      const tree = resolveAppTree(
+        'root',
+        [{ ...specs[1], id: 'root' }, ...specs],
+        collector,
+      );
+      expect(
+        tree.root.edges.attachments.get('default')?.map(node => node.spec.id),
+      ).toEqual(['a', 'b', 'd']);
+      expect(
+        tree.root.edges.attachments.get('other')?.map(node => node.spec.id),
+      ).toEqual(['c']);
+    }
+  });
+
+  it('validates map settings and reports unavailable or forbidden extensions', () => {
+    expect(() =>
+      resolveAppNodeSpecs({
+        overrides: { a: { unknown: true } },
+        collector,
+      }),
+    ).toThrow('app.extension[a].unknown, unknown parameter');
+    expect(() =>
+      resolveAppNodeSpecs({
+        overrides: { a: { disabled: 1 } },
+        collector,
+      }),
+    ).toThrow('app.extension[a].disabled, must be a boolean');
+    expect(() =>
+      resolveAppNodeSpecs({
+        overrides: { a: { config: [] } },
+        collector,
+      }),
+    ).toThrow('app.extension[a].config, must be an object');
+    const result = resolveAppNodeSpecs({
+      builtinExtensions: [makeExt('a')],
+      overrides: { missing: true, a: false },
+      forbidden: new Set(['a']),
+      collector,
+    });
+    expect(result.map(e => e.id)).toEqual(['a']);
+    expect(result[0].disabled).toBe(false);
+    expect(collector.collectErrors()?.map(e => e.message)).toEqual([
+      'Extension missing does not exist',
+      "Configuration of the 'a' extension is forbidden",
+    ]);
+  });
+
   it('should not filter out disabled extension instances', () => {
     const a = makeExt('a', 'disabled');
     expect(

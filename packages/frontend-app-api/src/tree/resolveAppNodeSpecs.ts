@@ -21,7 +21,12 @@ import {
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { ExtensionParameters } from './readAppExtensionsConfig';
+import {
+  ExtensionParameters,
+  expandShorthandExtensionParameters,
+} from './readAppExtensionsConfig';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -69,12 +74,14 @@ export function resolveAppNodeSpecs(options: {
   features?: FrontendFeature[];
   builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
+  overrides?: JsonObject;
   forbidden?: Set<string>;
   collector: ErrorCollector;
 }): AppNodeSpec[] {
   const {
     builtinExtensions = [],
     parameters = [],
+    overrides = {},
     forbidden = new Set(),
     features = [],
     collector,
@@ -283,6 +290,60 @@ export function resolveAppNodeSpecs(options: {
     ...order.values(),
     ...deduplicatedExtensions.filter(e => !order.has(e.extension.id)),
   ];
+
+  // Apply map entries after ordering so their property order has no effect on
+  // extension ordering. Merge through the config reader to retain normal config
+  // semantics for nested objects, arrays, and explicit false values.
+  for (const [id, value] of Object.entries(overrides)) {
+    const existing = orderedExtensions.find(e => e.extension.id === id);
+    let settings: JsonObject;
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      settings = value;
+    } else {
+      const { id: _id, ...expanded } = expandShorthandExtensionParameters(
+        { [id]: value },
+        'app.extension',
+      );
+      settings = expanded as JsonObject;
+    }
+    const merged = ConfigReader.fromConfigs([
+      {
+        context: 'extension defaults and app.extensions',
+        data: {
+          settings: {
+            attachTo: existing?.params.attachTo,
+            disabled: existing?.params.disabled,
+            config: existing?.params.config,
+          } as JsonObject,
+        },
+      },
+      {
+        context: 'app.extension',
+        data: { settings },
+      },
+    ]).get<JsonObject>('settings');
+    const params = expandShorthandExtensionParameters(
+      { [id]: merged },
+      'app.extension',
+    );
+    if (forbidden.has(id)) {
+      collector.report({
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: `Configuration of the '${id}' extension is forbidden`,
+        context: { extensionId: id },
+      });
+    } else if (!existing) {
+      collector.report({
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: `Extension ${id} does not exist`,
+        context: { extensionId: id },
+      });
+    } else {
+      existing.params.attachTo = params.attachTo ?? existing.extension.attachTo;
+      existing.params.disabled = params.disabled ?? existing.extension.disabled;
+      existing.params.config = params.config;
+    }
+  }
 
   return orderedExtensions.map(param => ({
     id: param.extension.id,

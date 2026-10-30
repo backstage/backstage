@@ -61,6 +61,22 @@ export interface Config {
     >;
 
     /**
+     * Overrides extension settings without changing extension order.
+     * Settings take precedence over `app.extensions` and merge across config files.
+     *
+     * @deepVisibility frontend
+     */
+    extension?: {
+      [extensionId: string]:
+        | boolean
+        | {
+            attachTo?: { id?: string; input?: string };
+            disabled?: boolean;
+            config?: unknown;
+          };
+    };
+
+    /**
      * This section enables you to override certain properties of specific or
      * groups of plugins.
      *
