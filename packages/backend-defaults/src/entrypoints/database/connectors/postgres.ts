@@ -250,7 +250,11 @@ export async function createPgDatabaseClient(
   const knexConfig = await buildPgDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
 
-  const role = dbConfig.getOptionalString('role');
+  // A plugin-level role, when present, is passed in via the overrides and
+  // takes precedence over the base config role.
+  const role =
+    (overrides as { role?: string } | undefined)?.role ??
+    dbConfig.getOptionalString('role');
 
   if (role) {
     database.client.pool.on(
@@ -789,6 +793,13 @@ export interface PgPluginDatabaseConfig {
   pluginDivisionMode: string;
   /** The connection configuration */
   connection: Knex.PgConnectionConfig;
+  /**
+   * The connection configuration to use for administrative operations such
+   * as creating the database or schema. Same credentials as `connection`,
+   * but without `database` and the per-plugin `application_name`, so that
+   * plugins with identical credentials can share administrative connections.
+   */
+  adminConnection: Knex.PgConnectionConfig;
   /** The database name, if any */
   databaseName: string | undefined;
   /** The schema name, if using schema division mode */
@@ -867,6 +878,12 @@ export function computePgPluginConfig(
     config.getOptional(`${pluginPath(pluginId)}.connection`),
   );
 
+  const configuredApplicationName =
+    (pluginConnection as Knex.PgConnectionConfig).application_name ??
+    (clientOverridden
+      ? undefined
+      : (baseConnection as Knex.PgConnectionConfig).application_name);
+
   (
     baseConnection as Knex.PgConnectionConfig
   ).application_name ||= `backstage_plugin_${pluginId}`;
@@ -875,6 +892,13 @@ export function computePgPluginConfig(
     // Include base connection if client type has not been overridden
     ...(clientOverridden ? {} : baseConnection),
     ...pluginConnection,
+  } as Knex.PgConnectionConfig;
+
+  const adminConnection = {
+    ...omit(connection, ['application_name', 'database']),
+    ...(configuredApplicationName && {
+      application_name: configuredApplicationName,
+    }),
   } as Knex.PgConnectionConfig;
 
   // Database name
@@ -931,11 +955,31 @@ export function computePgPluginConfig(
     ensureSchemaExists,
     pluginDivisionMode,
     connection,
+    adminConnection,
     databaseName,
     schemaName,
     databaseClientOverrides,
     knexConfig,
   };
+}
+
+type PgAdminConfig = Knex.Config & { role?: string };
+
+/**
+ * Serializes a value with object keys in sorted order, so that equivalent
+ * configurations produce the same string regardless of property order.
+ */
+function stableStringify(value: unknown): string {
+  return JSON.stringify(value, (_key, item) => {
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      return Object.fromEntries(
+        Object.keys(item)
+          .sort()
+          .map(key => [key, item[key]]),
+      );
+    }
+    return item;
+  });
 }
 
 export class PgConnector implements Connector {
@@ -944,8 +988,11 @@ export class PgConnector implements Connector {
   private readonly schemaPrefix: string;
   private readonly databaseEnsureCache = new Map<string, Promise<void>>();
   private readonly customEnsureDatabaseExists?: typeof ensurePgDatabaseExists;
-  private readonly databaseAdminPool: PgAdminPool;
-  private readonly schemaAdminPool: PgAdminPool;
+  private readonly createAdminClient: (overrides: Knex.Config) => Promise<Knex>;
+  private readonly adminPoolIdleTimeoutMillis: number;
+  private readonly databaseAdminPools = new Map<string, PgAdminPool>();
+  private readonly schemaAdminPools = new Map<string, PgAdminPool>();
+  private shuttingDown = false;
 
   constructor(
     config: Config,
@@ -961,42 +1008,106 @@ export class PgConnector implements Connector {
     this.prefix = prefix;
     this.schemaPrefix = schemaPrefix;
     this.customEnsureDatabaseExists = options.ensureDatabaseExists;
-
-    const createAdminClient =
+    this.createAdminClient =
       options.createAdminClient ??
       ((overrides: Knex.Config) =>
         createPgDatabaseClient(this.config, overrides));
-    const idleTimeoutMillis = options.adminPoolIdleTimeoutMillis ?? 10_000;
-    this.databaseAdminPool = new PgAdminPool(
-      () => createAdminClient(PG_DATABASE_ADMIN_OVERRIDES),
-      idleTimeoutMillis,
-    );
-    this.schemaAdminPool = new PgAdminPool(
-      () => createAdminClient(PG_SCHEMA_ADMIN_OVERRIDES),
-      idleTimeoutMillis,
-    );
+    this.adminPoolIdleTimeoutMillis =
+      options.adminPoolIdleTimeoutMillis ?? 10_000;
   }
 
-  private async ensureDatabase(databaseName: string): Promise<void> {
-    let promise = this.databaseEnsureCache.get(databaseName);
+  /**
+   * Administrative operations (database and schema creation) run with the
+   * same credentials and role as the plugin's own connection, so that the
+   * created objects are owned by the plugin user and plugin-level credentials
+   * are honored. Plugins that resolve to identical credentials share admin
+   * connections.
+   */
+  private getAdminConfig(pluginDbConfig: PgPluginDatabaseConfig): {
+    key: string;
+    adminConfig: PgAdminConfig;
+  } {
+    const adminConfig: PgAdminConfig = {
+      client: pluginDbConfig.client,
+      connection: pluginDbConfig.adminConnection,
+      ...(pluginDbConfig.role && { role: pluginDbConfig.role }),
+    };
+    return { key: stableStringify(adminConfig), adminConfig };
+  }
+
+  private assertNotShuttingDown(): void {
+    if (this.shuttingDown) {
+      throw new Error('PostgreSQL connector is shutting down');
+    }
+  }
+
+  private getDatabaseAdminPool(key: string, adminConfig: PgAdminConfig) {
+    this.assertNotShuttingDown();
+    let pool = this.databaseAdminPools.get(key);
+    if (!pool) {
+      pool = new PgAdminPool(
+        () =>
+          this.createAdminClient(
+            mergeDatabaseConfig(adminConfig, PG_DATABASE_ADMIN_OVERRIDES),
+          ),
+        this.adminPoolIdleTimeoutMillis,
+      );
+      this.databaseAdminPools.set(key, pool);
+    }
+    return pool;
+  }
+
+  private getSchemaAdminPool(
+    key: string,
+    adminConfig: PgAdminConfig,
+    databaseName: string | undefined,
+  ) {
+    this.assertNotShuttingDown();
+    const poolKey = `${key}\n${databaseName ?? ''}`;
+    let pool = this.schemaAdminPools.get(poolKey);
+    if (!pool) {
+      pool = new PgAdminPool(
+        () =>
+          this.createAdminClient(
+            mergeDatabaseConfig(
+              adminConfig,
+              databaseName ? { connection: { database: databaseName } } : {},
+              PG_SCHEMA_ADMIN_OVERRIDES,
+            ),
+          ),
+        this.adminPoolIdleTimeoutMillis,
+      );
+      this.schemaAdminPools.set(poolKey, pool);
+    }
+    return pool;
+  }
+
+  private async ensureDatabase(
+    key: string,
+    adminConfig: PgAdminConfig,
+    databaseName: string,
+  ): Promise<void> {
+    const cacheKey = `${key}\n${databaseName}`;
+    let promise = this.databaseEnsureCache.get(cacheKey);
     if (!promise) {
       promise = this.customEnsureDatabaseExists
         ? this.customEnsureDatabaseExists(this.config, databaseName)
         : retryPgAdminOperation(() =>
             ddlLimiter(() =>
-              this.runAdminOperation(this.databaseAdminPool, admin =>
-                ensurePgDatabase(admin, databaseName),
+              this.runAdminOperation(
+                this.getDatabaseAdminPool(key, adminConfig),
+                admin => ensurePgDatabase(admin, databaseName),
               ),
             ),
           );
-      this.databaseEnsureCache.set(databaseName, promise);
+      this.databaseEnsureCache.set(cacheKey, promise);
     }
 
     try {
       await promise;
     } catch (error) {
-      if (this.databaseEnsureCache.get(databaseName) === promise) {
-        this.databaseEnsureCache.delete(databaseName);
+      if (this.databaseEnsureCache.get(cacheKey) === promise) {
+        this.databaseEnsureCache.delete(cacheKey);
       }
       throw error;
     }
@@ -1015,10 +1126,15 @@ export class PgConnector implements Connector {
   }
 
   async shutdown(): Promise<void> {
-    const results = await Promise.allSettled([
-      this.databaseAdminPool.shutdown(),
-      this.schemaAdminPool.shutdown(),
-    ]);
+    // Refuse to create admin pools from here on, so that work still in flight
+    // cannot create a pool that this shutdown never sees.
+    this.shuttingDown = true;
+    const results = await Promise.allSettled(
+      [
+        ...this.databaseAdminPools.values(),
+        ...this.schemaAdminPools.values(),
+      ].map(pool => pool.shutdown()),
+    );
     const errors = results
       .filter(
         (result): result is PromiseRejectedResult =>
@@ -1050,9 +1166,15 @@ export class PgConnector implements Connector {
       this.schemaPrefix,
     );
 
+    const { key, adminConfig } = this.getAdminConfig(pluginDbConfig);
+
     if (pluginDbConfig.databaseName && pluginDbConfig.ensureExists) {
       try {
-        await this.ensureDatabase(pluginDbConfig.databaseName);
+        await this.ensureDatabase(
+          key,
+          adminConfig,
+          pluginDbConfig.databaseName,
+        );
       } catch (error) {
         throw new Error(
           `Failed to connect to the database to make sure that '${pluginDbConfig.databaseName}' exists, ${error}`,
@@ -1064,12 +1186,18 @@ export class PgConnector implements Connector {
       if (pluginDbConfig.ensureSchemaExists || pluginDbConfig.ensureExists) {
         try {
           await ddlLimiter(() =>
-            this.runAdminOperation(this.schemaAdminPool, admin =>
-              ensurePgSchema(
-                admin,
-                this.config.getOptionalString('role'),
-                pluginDbConfig.schemaName!,
+            this.runAdminOperation(
+              this.getSchemaAdminPool(
+                key,
+                adminConfig,
+                pluginDbConfig.databaseName,
               ),
+              admin =>
+                ensurePgSchema(
+                  admin,
+                  pluginDbConfig.role,
+                  pluginDbConfig.schemaName!,
+                ),
             ),
           );
         } catch (error) {
