@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import type { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import { filterReviewState, hasErrors } from './utils';
 
@@ -99,6 +99,40 @@ describe('filterReviewState', () => {
     schema,
     mergedSchema: schema,
     uiSchema: {},
+  });
+
+  it('omits unrestricted hidden properties of a shared object while preserving visible fields', () => {
+    const visible = step({
+      properties: {
+        connection: {
+          type: 'object',
+          properties: { username: { type: 'string' } },
+        },
+      },
+    });
+    const hidden = step({
+      properties: {
+        connection: {
+          type: 'object',
+          additionalProperties: true,
+          'ui:backstage': { review: { show: false } },
+        },
+      },
+    });
+    const formState = {
+      connection: {
+        username: 'user',
+        password: 'SECRET',
+        nested: { token: 'SECRET-token' },
+        tokens: ['SECRET-array'],
+      },
+    };
+    expect(filterReviewState(formState, [visible], [hidden])).toEqual({
+      connection: { username: 'user' },
+    });
+    expect(formState.connection.password).toBe('SECRET');
+    expect(formState.connection.nested.token).toBe('SECRET-token');
+    expect(formState.connection.tokens).toEqual(['SECRET-array']);
   });
 
   it('excludes retained fields from inactive hidden dependency branches while preserving shared fields', () => {
@@ -219,9 +253,14 @@ describe('filterReviewState', () => {
       extra: 'extra-value',
     });
   });
-  it.each(['properties', 'patternProperties'])(
-    'does not apply additionalProperties to a key matched by %s',
-    keyword => {
+  it.each([
+    ['properties', true],
+    ['patternProperties', true],
+    ['properties', { properties: { password: { type: 'string' } } }],
+    ['patternProperties', { properties: { password: { type: 'string' } } }],
+  ] as [string, JsonValue][])(
+    'does not apply additionalProperties to a key matched by %s (%j)',
+    (keyword, additionalProperties) => {
       const formState = {
         connection: { username: 'visible-user', password: 'hidden-password' },
         other: { password: 'visible-additional-value' },
@@ -232,7 +271,7 @@ describe('filterReviewState', () => {
             properties: { username: { type: 'string' } },
           },
         },
-        additionalProperties: { properties: { password: { type: 'string' } } },
+        additionalProperties,
       });
       const hidden = step({
         properties: {

@@ -25,6 +25,7 @@ import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper, type StepperProps } from './Stepper';
 import * as stepperUtils from './utils';
+import { ReviewState } from '../ReviewState';
 
 jest.mock('./utils', () => ({
   ...jest.requireActual('./utils'),
@@ -32,6 +33,97 @@ jest.mock('./utils', () => ({
 }));
 
 describe('Stepper', () => {
+  it.each(['default', 'custom state', 'custom step'])(
+    'preserves dependency-based masks in %s review when their trigger is hidden',
+    async review => {
+      const onCreate = jest.fn();
+      const components: Record<string, StepperProps['components']> = {
+        default: {},
+        'custom state': {
+          ReviewStateComponent: props => <ReviewState {...props} />,
+        },
+        'custom step': {
+          ReviewStepComponent: ({
+            formData,
+            schemaFormState,
+            steps,
+            handleCreate,
+          }) => (
+            <>
+              <ReviewState
+                formState={formData}
+                schemaFormState={schemaFormState}
+                schemas={steps.map(step => ({ ...step, title: 'Credentials' }))}
+              />
+              <button onClick={handleCreate}>Create</button>
+            </>
+          ),
+        },
+      };
+      const initialState = {
+        mode: 'create',
+        password: 'SECRET-password',
+        masked: 'SECRET-masked',
+        omitted: 'SECRET-omitted',
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Dependency masks',
+              steps: [
+                {
+                  title: 'Hidden trigger',
+                  schema: {
+                    'ui:backstage': { visibleWhen: { not: {} } },
+                    properties: { mode: { type: 'string' } },
+                  },
+                },
+                {
+                  title: 'Credentials',
+                  schema: {
+                    type: 'object',
+                    dependencies: {
+                      mode: {
+                        properties: {
+                          password: { type: 'string', 'ui:widget': 'password' },
+                          masked: {
+                            type: 'string',
+                            'ui:backstage': { review: { mask: 'Custom mask' } },
+                          },
+                          omitted: {
+                            type: 'string',
+                            'ui:backstage': { review: { show: false } },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            }}
+            initialState={initialState}
+            components={components[review]}
+            extensions={[]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      expect(
+        screen.queryByText('create', { exact: true }),
+      ).not.toBeInTheDocument();
+      for (const value of Object.values(initialState).slice(1)) {
+        expect(screen.queryByText(value)).not.toBeInTheDocument();
+      }
+      expect(screen.getByText('******')).toBeInTheDocument();
+      expect(screen.getByText('Custom mask')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      await waitFor(() => expect(onCreate).toHaveBeenCalledWith(initialState));
+    },
+  );
+
   it('defers hidden field filtering until review is displayed', async () => {
     const filter = jest.mocked(stepperUtils.filterReviewState);
     filter.mockClear();
@@ -109,6 +201,10 @@ describe('Stepper', () => {
               properties: {
                 enabled: { type: 'boolean', title: 'Show credentials' },
                 shared: { type: 'string' },
+                unrestrictedConnection: {
+                  type: 'object',
+                  properties: { username: { type: 'string' } },
+                },
                 connection: {
                   type: 'object',
                   properties: {
@@ -144,6 +240,11 @@ describe('Stepper', () => {
                 visibleWhen: { properties: { enabled: { const: true } } },
               },
               properties: {
+                unrestrictedConnection: {
+                  type: 'object',
+                  additionalProperties: true,
+                  'ui:backstage': { review: { show: false } },
+                },
                 password: {
                   type: 'string',
                   title: 'Password',
@@ -187,6 +288,10 @@ describe('Stepper', () => {
       const initialState = {
         enabled: true,
         shared: 'shared-value',
+        unrestrictedConnection: {
+          username: 'unrestricted-user',
+          password: 'unrestricted-password',
+        },
         connection: {
           credentials: {
             username: 'retained-user',
@@ -240,6 +345,7 @@ describe('Stepper', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
       await screen.findByRole('button', { name: 'Create' });
       for (const value of [
+        'unrestricted-password',
         'nested-password',
         'nested-private-key',
         'array-password',
@@ -258,7 +364,11 @@ describe('Stepper', () => {
       expect(
         screen.getByText('extra-value', { exact: false }),
       ).toBeInTheDocument();
-      for (const value of ['retained-user', 'retained-host']) {
+      for (const value of [
+        'retained-user',
+        'retained-host',
+        'unrestricted-user',
+      ]) {
         expect(screen.getByText(value, { exact: false })).toBeInTheDocument();
       }
       const displayedValues =

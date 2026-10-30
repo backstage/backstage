@@ -112,8 +112,9 @@ function declaresPath(
   if (
     !explicitProperty &&
     patterns.length === 0 &&
-    isObject(schema.additionalProperties) &&
-    ownsChild(schema.additionalProperties)
+    (schema.additionalProperties === true ||
+      (isObject(schema.additionalProperties) &&
+        ownsChild(schema.additionalProperties)))
   ) {
     return true;
   }

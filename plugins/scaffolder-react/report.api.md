@@ -197,6 +197,7 @@ export function makeFieldSchema<
 export type ReviewStepProps = {
   disableButtons: boolean;
   formData: JsonObject;
+  schemaFormState?: JsonObject;
   handleBack: () => void;
   handleReset: () => void;
   handleCreate: () => void;

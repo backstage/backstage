@@ -1056,6 +1056,11 @@ objects and arrays, are omitted from review, including custom review components.
 This also applies to retained fields declared in conditional branches that are
 no longer active. A shared field appears in review only when a visible step
 actively declares it. Visible fields retain their configured review masks.
+Custom review components receive the filtered values in `formState` or
+`formData`, and the complete values in `schemaFormState`. Use `schemaFormState`
+only to resolve conditional schemas and masks; display values from `formState`
+or `formData`. When wrapping the default `ReviewState`, pass through
+`schemaFormState` so that hidden dependency triggers do not disable masks.
 The backend continues to validate the original parameter schemas. Use
 conditional JSON Schema requirements, as shown above, for fields that are only
 required in a particular workflow.
