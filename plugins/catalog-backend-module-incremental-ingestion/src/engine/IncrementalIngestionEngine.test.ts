@@ -223,3 +223,110 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     expect(callCount).toBe(3);
   });
 });
+
+describe('IncrementalIngestionEngine - repeated entity refs', () => {
+  const component = (name: string, version: number) => ({
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name, annotations: { version: String(version) } },
+    },
+  });
+
+  const setup = () => {
+    const provider = {
+      getProviderName: jest.fn().mockReturnValue('test-provider'),
+      next: jest.fn(),
+      around: jest.fn(async fn => fn({})),
+      eventHandler: {
+        onEvent: jest.fn(),
+        supportsEventTopics: jest.fn().mockReturnValue(['test-topic']),
+      },
+    };
+    const manager = {
+      getLastMark: jest.fn().mockResolvedValue(null),
+      createMark: jest.fn().mockResolvedValue(undefined),
+      createMarkEntities: jest.fn().mockResolvedValue(undefined),
+      computeRemoved: jest.fn().mockResolvedValue({ total: 0, removed: [] }),
+      getCurrentIngestionRecord: jest
+        .fn()
+        .mockResolvedValue({ id: 'ingestion', status: 'bursting' }),
+      getFirstMark: jest.fn().mockResolvedValue({ id: 'mark' }),
+      deleteEntityRecordsByRef: jest.fn().mockResolvedValue(undefined),
+    };
+    const connection = {
+      applyMutation: jest.fn().mockResolvedValue(undefined),
+      refresh: jest.fn().mockResolvedValue(undefined),
+    };
+    const logger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnThis(),
+    };
+    const engine = new IncrementalIngestionEngine({
+      provider,
+      manager: manager as any,
+      connection: connection as any,
+      burstLength: { seconds: 10 },
+      restLength: { minutes: 1 },
+      logger: logger as any,
+      ready: Promise.resolve(),
+      metrics: metricsServiceMock.mock(),
+    });
+    return { engine, provider, manager, connection, logger };
+  };
+
+  const names = (entities: { entity: any }[]) =>
+    entities.map(e => [e.entity.metadata.name, e.entity.metadata.annotations]);
+
+  it('keeps the last candidate for each ref and warns, in bursts and events', async () => {
+    mockPerformanceNow.mockReturnValue(1000);
+    const { engine, provider, manager, connection, logger } = setup();
+
+    provider.next.mockResolvedValueOnce({
+      done: true,
+      entities: [
+        component('a', 1),
+        component('b', 1),
+        component('A', 2),
+        component('c', 1),
+        component('b', 2),
+      ],
+    });
+    await engine.ingestOneBurst('ingestion', new AbortController().signal);
+
+    // Each ref keeps its last candidate, at the position of its last occurrence
+    const expected = [
+      ['A', { version: '2' }],
+      ['c', { version: '1' }],
+      ['b', { version: '2' }],
+    ];
+    expect(names(manager.createMarkEntities.mock.calls[0][1])).toEqual(
+      expected,
+    );
+    expect(names(connection.applyMutation.mock.calls[0][0].added)).toEqual(
+      expected,
+    );
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn.mock.calls[0][0]).toContain(
+      "Ingestion 'ingestion': 2 entity refs were emitted more than once",
+    );
+
+    provider.eventHandler.onEvent.mockResolvedValueOnce({
+      type: 'delta',
+      added: [component('d', 1), component('d', 2)],
+      removed: [],
+    });
+    await engine.onEvent({ topic: 'test-topic', eventPayload: {} });
+
+    expect(names(manager.createMarkEntities.mock.calls[1][1])).toEqual([
+      ['d', { version: '2' }],
+    ]);
+    expect(names(connection.applyMutation.mock.calls[1][0].added)).toEqual([
+      ['d', { version: '2' }],
+    ]);
+    expect(logger.warn).toHaveBeenCalledTimes(2);
+  });
+});

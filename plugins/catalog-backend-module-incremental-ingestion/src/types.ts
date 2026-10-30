@@ -55,7 +55,8 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
    * @param context - anything needed in order to fetch a single page.
    * @param cursor - a unique value identifying the page to ingest.
    * @returns The entities to be ingested, as well as the cursor of
-   * the next page after this one.
+   * the next page after this one. Each entity should appear at most once
+   * per page. If an entity ref repeats, only the last one is kept.
    */
   next(
     context: TContext,
