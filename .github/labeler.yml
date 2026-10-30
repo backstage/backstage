@@ -11,6 +11,11 @@ area:catalog:
           - plugins/catalog/**/*
           - plugins/catalog-*/**/*
           - packages/catalog-*/**/*
+area:design-system:
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs-ui/**/*
+          - packages/ui/**/*
 area:documentation:
   - changed-files:
       - any-glob-to-any-file:
