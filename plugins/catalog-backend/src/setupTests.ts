@@ -15,9 +15,13 @@
  */
 
 import { TestDatabases } from '@backstage/backend-test-utils';
+import { installAjvSchemaEngine } from '@backstage/catalog-model/ajv';
 
 export {};
 
 TestDatabases.setDefaults({
   ids: ['MYSQL_8', 'POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
 });
+
+// Validate entities the same way as the catalog backend does in production
+installAjvSchemaEngine();

@@ -14,39 +14,33 @@
  * limitations under the License.
  */
 
-import { type SchemaObject } from 'ajv';
+import { JsonObject } from '@backstage/types';
 import { isJsonObject } from './util';
 import { InputError } from '@backstage/errors';
-import { getAjv } from './getAjv';
+import { getSchemaEngine } from '../../validation/engine/registry';
+import { SchemaValidationError } from '../../validation/engine/types';
 
 /**
  * Validates that the schema is valid according to known JSON Schema meta
  * schemas - does not perform any semantic validation beyond that.
  */
-export function validateMetaSchema(schema: unknown): schema is SchemaObject {
+export function validateMetaSchema(schema: unknown): schema is JsonObject {
   if (!isJsonObject(schema) || typeof schema.then === 'function') {
     throw new InputError('Invalid JSON schema: must be an object');
   }
 
-  const ajv = getAjv();
+  // The full set of errors is typically too complex to report; the engine
+  // just picks the first one.
+  let error: SchemaValidationError | undefined;
   try {
-    const result = ajv.validateSchema(schema);
-    if (typeof result !== 'boolean') {
-      // Should not happen; the function is expected to return a promise only
-      // for async schemas, but since that's not enforced at the typescript
-      // level we add the extra check just to be sure
-      throw new InputError('Expected synchronous validation result');
-    }
-  } catch (error) {
-    throw new InputError(`Invalid JSON schema: ${error}`);
+    error = getSchemaEngine().validateSchema(schema);
+  } catch (e) {
+    throw new InputError(`Invalid JSON schema: ${e}`);
   }
 
-  // The full set of errors is typically too complex to report; just pick the
-  // first one.
-  const error = ajv.errors?.[0];
   if (error) {
     let message = error.message;
-    if (Array.isArray(error?.params?.allowedValues)) {
+    if (Array.isArray(error.params?.allowedValues)) {
       message += `, expected one of: ${error.params.allowedValues.join(', ')}`;
     }
     throw new InputError(

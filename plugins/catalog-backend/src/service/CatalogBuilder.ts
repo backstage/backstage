@@ -25,6 +25,7 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
+import { installAjvSchemaEngine } from '@backstage/catalog-model/ajv';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'node:crypto';
 import { Router } from 'express';
@@ -379,6 +380,10 @@ export class CatalogBuilder {
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
+    // Entity validation is performance sensitive here, so use the faster
+    // code generating engine rather than the default interpreting one
+    installAjvSchemaEngine();
+
     const {
       config,
       database,
