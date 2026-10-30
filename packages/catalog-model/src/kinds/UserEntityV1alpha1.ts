@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/User.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage catalog User kind Entity.
@@ -42,8 +42,7 @@ export interface UserEntityV1alpha1 extends Entity {
  *
  * @public
  */
-export const userEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+export const userEntityV1alpha1Validator = lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the User kind.

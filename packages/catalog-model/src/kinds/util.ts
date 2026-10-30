@@ -19,13 +19,10 @@ import { cfworkerSchemaEngine } from '../validation/engine/cfworkerSchemaEngine'
 import { SchemaEngine } from '../validation/engine/types';
 import { KindValidator } from './types';
 
-// TODO(freben): Left here as a compatibility helper. It would be nicer to
-// just export the inner validator directly. However, all of the already
-// exported kind validators have the `KindValidator` signature which is
-// different. So let's postpone that change until a later time.
-// The schema is compiled on first use, so that importing a kind module does
-// not cause any upfront work.
-export function ajvCompiledJsonSchemaValidator(
+// Creates a validator with the `KindValidator` signature for the given kind
+// schema. The schema is compiled on first use, so that importing a kind module
+// does not cause any upfront work.
+export function lazyKindSchemaValidator(
   schema: unknown,
   engine: SchemaEngine = cfworkerSchemaEngine,
 ): KindValidator {

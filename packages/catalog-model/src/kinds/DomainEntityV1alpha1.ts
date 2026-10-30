@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/Domain.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage Domain kind Entity. Domains group Systems together.
@@ -44,7 +44,7 @@ export interface DomainEntityV1alpha1 extends Entity {
  * @public
  */
 export const domainEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+  lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the Domain kind.

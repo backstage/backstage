@@ -28,7 +28,7 @@ import type {
   KindValidator,
 } from '@backstage/catalog-model';
 import { createSchemaValidEntityPolicy } from './entity/policies/SchemaValidEntityPolicy';
-import { ajvCompiledJsonSchemaValidator } from './kinds/util';
+import { lazyKindSchemaValidator } from './kinds/util';
 import apiSchema from './schema/kinds/API.v1alpha1.schema.json';
 import componentSchema from './schema/kinds/Component.v1alpha1.schema.json';
 import domainSchema from './schema/kinds/Domain.v1alpha1.schema.json';
@@ -116,7 +116,7 @@ export function createAjvEntityValidators(): AjvEntityValidators {
       resourceSchema,
       systemSchema,
       userSchema,
-    ].map(schema => ajvCompiledJsonSchemaValidator(schema, ajvSchemaEngine)),
+    ].map(schema => lazyKindSchemaValidator(schema, ajvSchemaEngine)),
     schemaValidEntityPolicy: createSchemaValidEntityPolicy(ajvSchemaEngine),
   };
 }
