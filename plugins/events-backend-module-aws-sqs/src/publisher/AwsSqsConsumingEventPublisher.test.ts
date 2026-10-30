@@ -263,4 +263,92 @@ describe('AwsSqsConsumingEventPublisher', () => {
     });
     expect(events.published[1].metadata).toEqual({});
   });
+
+  it('does not delete messages whose events failed to publish', async () => {
+    const config = new ConfigReader({
+      events: {
+        modules: {
+          awsSqs: {
+            awsSqsConsumingEventPublisher: {
+              topics: {
+                fake1: {
+                  queue: {
+                    region: 'eu-west-1',
+                    url: 'https://fake1.queue.url',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    const logger = mockServices.logger.mock();
+    const events = new TestEventsService();
+    const publish = events.publish.bind(events);
+    jest.spyOn(events, 'publish').mockImplementation(async params => {
+      if ((params.eventPayload as { event: string }).event === 'payload2') {
+        throw new Error('Service is shutting down');
+      }
+      await publish(params);
+    });
+    let taskFn: (() => Promise<void>) | undefined = undefined;
+    const scheduler = {
+      scheduleTask: (spec: { fn: () => Promise<void> }) => {
+        taskFn = spec.fn;
+      },
+    } as unknown as SchedulerService;
+
+    jest.spyOn(SQSClient.prototype, 'send').mockImplementation(sqsSendMock);
+    sqsSendMock.mockImplementation(async command => {
+      if (command instanceof ReceiveMessageCommand) {
+        return {
+          Messages: [
+            {
+              MessageId: 'id1',
+              Body: '{"event":"payload1"}',
+              ReceiptHandle: 'fake-handle1',
+            },
+            {
+              MessageId: 'id2',
+              Body: '{"event":"payload2"}',
+              ReceiptHandle: 'fake-handle2',
+            },
+          ],
+        };
+      }
+      if (command instanceof DeleteMessageBatchCommand) {
+        return { Successful: [{ Id: 'id1' }] };
+      }
+      throw new Error(`No mock for ${command.constructor.name}`);
+    });
+
+    const [publisher] = AwsSqsConsumingEventPublisher.fromConfig({
+      config,
+      events,
+      logger,
+      scheduler,
+    });
+    await publisher.start();
+    await taskFn!();
+
+    const deleteMessageCommands = sqsSendMock.mock.calls
+      .map(call => call[0])
+      .filter(
+        (command): command is DeleteMessageBatchCommand =>
+          command instanceof DeleteMessageBatchCommand,
+      );
+    expect(deleteMessageCommands).toHaveLength(1);
+    expect(deleteMessageCommands[0].input).toEqual({
+      QueueUrl: 'https://fake1.queue.url',
+      Entries: [{ Id: 'id1', ReceiptHandle: 'fake-handle1' }],
+    });
+
+    expect(events.published).toHaveLength(1);
+    expect(events.published[0].eventPayload).toEqual({ event: 'payload1' });
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to publish event for message id2'),
+      expect.objectContaining({ message: 'Service is shutting down' }),
+    );
+  });
 });

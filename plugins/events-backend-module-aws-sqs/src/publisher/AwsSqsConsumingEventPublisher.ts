@@ -161,34 +161,31 @@ export class AwsSqsConsumingEventPublisher {
         new ReceiveMessageCommand(this.receiveParams),
       );
 
-      data.Messages?.forEach(message => {
-        const eventPayload = JSON.parse(message.Body!);
+      const messages = data.Messages ?? [];
+      const results = await Promise.allSettled(
+        messages.map(message => this.publishMessage(message)),
+      );
 
-        const metadata: Record<string, string | string[]> = {};
-        Object.keys(message.MessageAttributes ?? {}).forEach(key => {
-          const attrValue = message.MessageAttributes![key];
-          if (
-            !attrValue ||
-            !attrValue.DataType ||
-            !['String', 'Number'].includes(attrValue.DataType)
-          ) {
-            return;
-          }
-
-          const value = attrValue.StringListValues ?? attrValue.StringValue;
-          if (value !== undefined) {
-            metadata[key] = value;
-          }
-        });
-
-        this.events.publish({
-          topic: this.topic,
-          eventPayload,
-          metadata,
-        });
+      const published: Message[] = [];
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          published.push(messages[index]);
+        } else {
+          this.logger.warn(
+            `Failed to publish event for message ${
+              messages[index].MessageId ?? `at index ${index}`
+            } from AWS SQS ${
+              this.queueUrl
+            }; it will be redelivered after the visibility timeout`,
+            result.reason,
+          );
+        }
       });
-      await this.deleteMessages(data.Messages);
-      return data.Messages?.length ?? 0;
+
+      // Failed messages are left on the queue so SQS redelivers them, e.g. to
+      // another instance when this one is shutting down.
+      await this.deleteMessages(published);
+      return messages.length;
     } catch (error) {
       this.logger.error(
         `Failed to receive events from AWS SQS ${this.queueUrl}`,
@@ -196,6 +193,33 @@ export class AwsSqsConsumingEventPublisher {
       );
       return 0;
     }
+  }
+
+  private async publishMessage(message: Message): Promise<void> {
+    const eventPayload = JSON.parse(message.Body!);
+
+    const metadata: Record<string, string | string[]> = {};
+    Object.keys(message.MessageAttributes ?? {}).forEach(key => {
+      const attrValue = message.MessageAttributes![key];
+      if (
+        !attrValue ||
+        !attrValue.DataType ||
+        !['String', 'Number'].includes(attrValue.DataType)
+      ) {
+        return;
+      }
+
+      const value = attrValue.StringListValues ?? attrValue.StringValue;
+      if (value !== undefined) {
+        metadata[key] = value;
+      }
+    });
+
+    await this.events.publish({
+      topic: this.topic,
+      eventPayload,
+      metadata,
+    });
   }
 
   private sleep(ms: number): Promise<void> {
