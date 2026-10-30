@@ -394,19 +394,33 @@ const technologyRelations = createCatalogModelLayer({
       reverse: { type: 'dependencyOf', title: 'dependency of' },
     });
     model.addRelationPair({
-      fromKind: ['Component', 'Resource'],
-      toKind: 'Technology',
-      description: 'A technology is depended on by a component or resource.',
-      forward: { type: 'dependencyOf', title: 'dependency of' },
-      reverse: { type: 'dependsOn', title: 'depends on' },
+      fromKind: 'Technology',
+      toKind: ['Component', 'Resource'],
+      description: 'A technology depends on a component or resource.',
+      forward: { type: 'dependsOn', title: 'depends on' },
+      reverse: { type: 'dependencyOf', title: 'dependency of' },
     });
   },
 });
 ```
 
-The second pair in this example is needed when a Component or Resource also
-uses `spec.dependencyOf` to reference a Technology; each pair describes the
-relation type emitted by the entity's field.
+Each relation pair describes the direction in which one kind depends on another,
+along with its inverse:
+
+- The first pair declares that a Component or Resource can depend on a
+  Technology (`dependsOn`), which automatically establishes that the Technology
+  is a dependency of the Component or Resource (`dependencyOf`).
+- The second pair declares the reverse dependency direction: a Technology can
+  depend on a Component or Resource (`dependsOn`), establishing that the
+  Component or Resource is a dependency of the Technology (`dependencyOf`).
+
+Declare each direction in which kinds can depend on each other so the catalog
+knows how to emit inverse relations when processing either side. If
+dependencies can exist in both directions between these kinds, you can
+alternatively cover them with a single relation pair that lists all applicable
+kinds on both `fromKind` and `toKind` (for example,
+`['Component', 'Resource', 'Technology']`), similar to how the built-in
+`dependsOn` relation pair is declared.
 
 Register the layer with `provideStaticCatalogModel({ layers: [...] })` or
 through the catalog model extension point. The custom kind can continue to be
