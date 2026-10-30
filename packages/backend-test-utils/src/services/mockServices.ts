@@ -115,7 +115,7 @@ const mockRootLogger = (
   options?: mockServices.rootLogger.Options,
 ): RootLoggerService => MockRootLoggerService.create(options);
 
-const auth = (options?: {
+const mockAuth = (options?: {
   pluginId?: string;
   disableDefaultAuthPolicy?: boolean;
 }): AuthService =>
@@ -124,7 +124,7 @@ const auth = (options?: {
     disableDefaultAuthPolicy: Boolean(options?.disableDefaultAuthPolicy),
   });
 
-const discovery = (): DiscoveryService =>
+const mockDiscovery = (): DiscoveryService =>
   HostDiscovery.fromConfig(
     new ConfigReader({
       backend: {
@@ -135,7 +135,7 @@ const discovery = (): DiscoveryService =>
     }),
   );
 
-const httpAuth = (options?: {
+const mockHttpAuth = (options?: {
   pluginId?: string;
   /**
    * The default credentials to use if there are no credentials present in the
@@ -151,10 +151,11 @@ const httpAuth = (options?: {
     options?.defaultCredentials ?? mockCredentials.user(),
   );
 
-const userInfo = (customInfo?: Partial<BackstageUserInfo>): UserInfoService =>
-  new MockUserInfoService(customInfo);
+const mockUserInfo = (
+  customInfo?: Partial<BackstageUserInfo>,
+): UserInfoService => new MockUserInfoService(customInfo);
 
-const database = (options: {
+const mockDatabase = (options: {
   knex: Knex;
   migrations?: { skip?: boolean };
 }): DatabaseService => ({
@@ -162,20 +163,20 @@ const database = (options: {
   migrations: options.migrations,
 });
 
-const permissions = (options?: {
+const mockPermissions = (options?: {
   result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
 }): PermissionsService => new MockPermissionsService(options);
 
-const scheduler = (): SchedulerService => new MockSchedulerService();
+const mockScheduler = (): SchedulerService => new MockSchedulerService();
 
-const events = (): EventsService => new MockEventsService();
+const mockEvents = (): EventsService => new MockEventsService();
 
-const rootInstanceMetadata = (): RootInstanceMetadataService => ({
+const mockRootInstanceMetadata = (): RootInstanceMetadataService => ({
   getId: () => 'mock',
   getInstalledPlugins: () => Promise.resolve([]),
 });
 
-const rootSystemMetadata = (): RootSystemMetadataService => ({
+const mockRootSystemMetadata = (): RootSystemMetadataService => ({
   getInstalledPlugins: () => Promise.resolve([]),
 });
 
@@ -267,7 +268,7 @@ export const mockServices = Object.freeze({
     })),
   },
 
-  auth: Object.assign(auth, {
+  auth: Object.assign(mockAuth, {
     factory: () =>
       createServiceFactory({
         service: coreServices.auth,
@@ -298,12 +299,12 @@ export const mockServices = Object.freeze({
     })),
   }),
 
-  discovery: Object.assign(discovery, {
+  discovery: Object.assign(mockDiscovery, {
     factory: () =>
       createServiceFactory({
         service: coreServices.discovery,
         deps: {},
-        factory: () => discovery(),
+        factory: () => mockDiscovery(),
       }),
     mock: createServiceMock(coreServices.discovery, () => ({
       getBaseUrl: jest.fn(),
@@ -318,7 +319,7 @@ export const mockServices = Object.freeze({
    * the default mock user principal. This behavior can be configured with the
    * `defaultCredentials` option.
    */
-  httpAuth: Object.assign(httpAuth, {
+  httpAuth: Object.assign(mockHttpAuth, {
     /**
      * Creates a mock service factory for the `HttpAuthService`.
      *
@@ -349,7 +350,7 @@ export const mockServices = Object.freeze({
    * returns that as the only ownership entity ref, but this can be overridden
    * by passing in a custom set of user info.
    */
-  userInfo: Object.assign(userInfo, {
+  userInfo: Object.assign(mockUserInfo, {
     /**
      * Creates a mock service factory for the `UserInfoService`.
      *
@@ -384,14 +385,14 @@ export const mockServices = Object.freeze({
 
   /**
    * Creates a mock implementation of the
-   * {@link @backstage/backend-plugin-api#coreServices.database}. Just returns
+   * {@link @backstage/backend-plugin-api#coreServices}.database. Just returns
    * the given `knex` instance, which is useful in combination with the
    * {@link TestDatabases} facility.
    */
-  database: Object.assign(database, {
+  database: Object.assign(mockDatabase, {
     /**
      * Creates a mock factory for the
-     * {@link @backstage/backend-plugin-api#coreServices.database}. Just returns
+     * {@link @backstage/backend-plugin-api#coreServices}.database. Just returns
      * the given `knex` instance if you supply one, which is useful in
      * combination with the {@link TestDatabases} facility. Otherwise, it
      * returns the regular default database factory which reads config settings.
@@ -401,12 +402,12 @@ export const mockServices = Object.freeze({
         ? createServiceFactory({
             service: coreServices.database,
             deps: {},
-            factory: () => database(options),
+            factory: () => mockDatabase(options),
           })
         : databaseServiceFactory,
     /**
      * Creates a mock of the
-     * {@link @backstage/backend-plugin-api#coreServices.database}, optionally
+     * {@link @backstage/backend-plugin-api#coreServices}.database, optionally
      * with some given method implementations.
      */
     mock: createServiceMock(coreServices.database, () => ({
@@ -454,10 +455,10 @@ export const mockServices = Object.freeze({
    * Creates a functional mock implementation of the
    * {@link @backstage/backend-plugin-api#PermissionsService}.
    */
-  permissions: Object.assign(permissions, {
+  permissions: Object.assign(mockPermissions, {
     /**
      * Creates a mock factory for the
-     * {@link @backstage/backend-plugin-api#coreServices.permissions}. Just
+     * {@link @backstage/backend-plugin-api#coreServices}.permissions. Just
      * returns the given `result` if you supply one. Otherwise, it returns the
      * regular default permissions factory.
      */
@@ -473,7 +474,7 @@ export const mockServices = Object.freeze({
         : permissionsServiceFactory,
     /**
      * Creates a mock of the
-     * {@link @backstage/backend-plugin-api#coreServices.permissions},
+     * {@link @backstage/backend-plugin-api#coreServices}.permissions,
      * optionally with some given method implementations.
      */
     mock: createServiceMock(coreServices.permissions, () => ({
@@ -501,7 +502,7 @@ export const mockServices = Object.freeze({
     })),
   },
 
-  scheduler: Object.assign(scheduler, {
+  scheduler: Object.assign(mockScheduler, {
     factory: (options?: {
       skipTaskRunOnStartup?: boolean;
       includeManualTasksOnStartup?: boolean;
@@ -529,12 +530,12 @@ export const mockServices = Object.freeze({
    * Creates a functional mock implementation of the
    * {@link @backstage/backend-events-node#eventsServiceRef}.
    */
-  events: Object.assign(events, {
+  events: Object.assign(mockEvents, {
     /**
      * Creates a functional mock factory for the
      * {@link @backstage/backend-events-node#eventsServiceRef}.
      */
-    factory: simpleFactoryWithOptions(eventsServiceRef, events),
+    factory: simpleFactoryWithOptions(eventsServiceRef, mockEvents),
     /**
      * Creates a mock of the
      * {@link @backstage/backend-events-node#eventsServiceRef}, optionally
@@ -546,24 +547,24 @@ export const mockServices = Object.freeze({
     })),
   }),
 
-  rootInstanceMetadata: Object.assign(rootInstanceMetadata, {
+  rootInstanceMetadata: Object.assign(mockRootInstanceMetadata, {
     mock: createServiceMock(coreServices.rootInstanceMetadata, () => ({
       getId: jest.fn().mockReturnValue('mock'),
       getInstalledPlugins: jest.fn(),
     })),
     factory: simpleFactoryWithOptions(
       coreServices.rootInstanceMetadata,
-      rootInstanceMetadata,
+      mockRootInstanceMetadata,
     ),
   }),
 
-  rootSystemMetadata: Object.assign(rootSystemMetadata, {
+  rootSystemMetadata: Object.assign(mockRootSystemMetadata, {
     mock: createServiceMock(coreServices.rootSystemMetadata, () => ({
       getInstalledPlugins: jest.fn(),
     })),
     factory: simpleFactoryWithOptions(
       coreServices.rootSystemMetadata,
-      rootSystemMetadata,
+      mockRootSystemMetadata,
     ),
   }),
 });

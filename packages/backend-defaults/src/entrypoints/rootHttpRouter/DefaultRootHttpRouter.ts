@@ -37,7 +37,7 @@ export interface DefaultRootHttpRouterOptions {
 
 /**
  * The default implementation of the {@link @backstage/backend-plugin-api#RootHttpRouterService} interface for
- * {@link @backstage/backend-plugin-api#coreServices.rootHttpRouter}.
+ * {@link @backstage/backend-plugin-api#coreServices}.rootHttpRouter.
  *
  * @public
  */
