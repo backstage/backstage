@@ -352,10 +352,10 @@ export class OidcRouter {
         try {
           // Handle authorization_code grant type
           if (grantType === 'authorization_code') {
-            if (!code || !redirectUri || !bodyClientId) {
+            if (!code || !redirectUri) {
               throw new OidcError(
                 'invalid_request',
-                'Missing code, redirect_uri or client_id parameters for authorization_code grant',
+                'Missing code or redirect_uri parameters for authorization_code grant',
                 400,
               );
             }

@@ -617,7 +617,7 @@ describe('OidcRouter', () => {
     describe('token exchange', () => {
       it('should exchange authorization code for tokens', async () => {
         const {
-          mocks: { auth, service, tokenIssuer, httpAuth },
+          mocks: { auth, service, tokenIssuer, httpAuth, logger },
           router,
         } = await createRouter(databaseId);
 
@@ -686,13 +686,6 @@ describe('OidcRouter', () => {
           code_verifier: 'test-code-verifier',
           client_id: client.clientId,
         };
-        for (const clientId of [undefined, '']) {
-          const response = await request(server)
-            .post('/api/auth/v1/token')
-            .send({ ...tokenRequest, client_id: clientId })
-            .expect(400);
-          expect(response.body.error).toBe('invalid_request');
-        }
         for (const clientId of [
           'https://example.com/other-client.json',
           'legacy-client-id',
@@ -743,6 +736,37 @@ describe('OidcRouter', () => {
           .expect(400);
         expect(replayResponse.body.error).toBe('invalid_grant');
         expect(tokenIssuer.issueToken).toHaveBeenCalledTimes(1);
+        expect(logger.warn).not.toHaveBeenCalled();
+
+        for (const clientId of [undefined, '']) {
+          const legacySession = await service.createAuthorizationSession({
+            clientId: client.clientId,
+            redirectUri: tokenRequest.redirect_uri,
+            responseType: 'code',
+            codeChallenge: tokenRequest.code_verifier,
+            codeChallengeMethod: 'plain',
+          });
+          const { redirectUrl: legacyRedirectUrl } =
+            await service.approveAuthorizationSession({
+              sessionId: legacySession.id,
+              userEntityRef: MOCK_USER_ENTITY_REF,
+            });
+          const legacyTokenResponse = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              ...tokenRequest,
+              client_id: clientId,
+              code: new URL(legacyRedirectUrl).searchParams.get('code'),
+            })
+            .expect(200);
+          expect(legacyTokenResponse.body.access_token).toBe(
+            'mock-access-token',
+          );
+        }
+        expect(logger.warn).toHaveBeenCalledTimes(2);
+        expect(logger.warn).toHaveBeenCalledWith(
+          'Authorization-code exchange without client_id is deprecated and will be rejected in a future release. Update the client to include client_id.',
+        );
       });
 
       it('should exchange authorization code for tokens with PKCE', async () => {

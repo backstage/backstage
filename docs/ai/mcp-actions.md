@@ -231,13 +231,6 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
-When exchanging an authorization code at `/api/auth/v1/token`, clients must send
-`client_id` with the same metadata document URL used in the authorization request,
-along with the code, redirect URI, and PKCE verifier. A missing client ID returns
-`invalid_request`; a client ID that does not match the authorization returns
-`invalid_grant`. Requests rejected for a missing or mismatched client ID do not
-consume the code.
-
 #### Migrating from Dynamic Client Registration
 
 Backstage previously supported experimental Dynamic Client Registration (DCR).
