@@ -134,7 +134,22 @@ describe.each(supportedDatabases.eachSupportedId())(
       await store.transaction(async tx => {
         await store.prepareInsert(tx);
         await store.insertDocuments(tx, 'my-type', documents);
+        await tx.raw(`
+          CREATE FUNCTION pg_temp.reject_document_insert() RETURNS trigger
+          LANGUAGE plpgsql AS $$
+          BEGIN
+            RAISE EXCEPTION 'Unchanged documents must be filtered before insertion';
+          END;
+          $$;
+          CREATE TRIGGER reject_document_insert
+          BEFORE INSERT ON documents
+          FOR EACH ROW EXECUTE FUNCTION pg_temp.reject_document_insert();
+        `);
         await store.completeInsert(tx, 'my-type');
+        await tx.raw(`
+          DROP TRIGGER reject_document_insert ON documents;
+          DROP FUNCTION pg_temp.reject_document_insert();
+        `);
       });
 
       expect(
