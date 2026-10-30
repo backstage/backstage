@@ -82,8 +82,7 @@ ordering.
 
 Each field supplied in `app.extension` takes precedence over the corresponding
 field in `app.extensions`. Unspecified fields retain their values from the
-array, or the extension defaults if no array setting exists. In particular,
-`disabled: false` overrides `disabled: true`.
+array, or the extension defaults if no array setting exists.
 
 The `config` objects in the two sections are **not merged**. Providing `config`
 in the map replaces the entire `config` from the array, even if the map's
