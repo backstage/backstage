@@ -46,6 +46,24 @@ interface CodeSearchRequest {
   };
 }
 
+export interface GitRepositoryListResponse {
+  count: number;
+  value: GitRepository[];
+}
+
+export interface GitRepository {
+  id: string;
+  name: string;
+  // Missing when the repository is empty
+  defaultBranch?: string;
+  isDisabled?: boolean;
+  // Only present on forks
+  isFork?: boolean;
+  project: {
+    name: string;
+  };
+}
+
 const isCloud = (host: string) => {
   if (host === 'dev.azure.com') {
     return true;
@@ -58,7 +76,13 @@ const isCloud = (host: string) => {
   return false;
 };
 
+const getOrganizationUrl = (azureConfig: AzureIntegrationConfig, org: string) =>
+  azureConfig.host.endsWith('.visualstudio.com')
+    ? `https://${azureConfig.host}`
+    : `https://${azureConfig.host}/${org}`;
+
 const PAGE_SIZE = 1000;
+const GIT_API_VERSION = '6.0';
 
 // codeSearch returns all files that matches the given search path.
 export async function codeSearch(
@@ -75,9 +99,7 @@ export async function codeSearch(
     : `https://${azureConfig.host}`;
   const searchUrl = `${searchBaseUrl}/${org}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
 
-  const url = azureConfig.host.endsWith('.visualstudio.com')
-    ? `https://${azureConfig.host}`
-    : `https://${azureConfig.host}/${org}`;
+  const url = getOrganizationUrl(azureConfig, org);
 
   let items: CodeSearchResultItem[] = [];
   let hasMorePages = true;
@@ -124,4 +146,83 @@ export async function codeSearch(
   } while (hasMorePages);
 
   return items;
+}
+
+// listRepositories returns the Git repositories of a project, or of the whole
+// organization when no project is given.
+export async function listRepositories(
+  credentialsProvider: AzureDevOpsCredentialsProvider,
+  azureConfig: AzureIntegrationConfig,
+  org: string,
+  project?: string,
+): Promise<GitRepository[]> {
+  const url = getOrganizationUrl(azureConfig, org);
+  const scopeUrl = project ? `${url}/${encodeURIComponent(project)}` : url;
+
+  const credentials = await credentialsProvider.getCredentials({
+    url,
+  });
+
+  const response = await fetch(
+    `${scopeUrl}/_apis/git/repositories?api-version=${GIT_API_VERSION}`,
+    {
+      headers: credentials?.headers,
+    },
+  );
+
+  if (response.status !== 200) {
+    throw new Error(
+      `Azure DevOps repository listing failed with response status ${response.status}`,
+    );
+  }
+
+  const body: GitRepositoryListResponse = await response.json();
+  return body.value;
+}
+
+// fileExists checks whether a file exists in a repository, on the given branch
+// or on the default branch of the repository.
+export async function fileExists(
+  credentialsProvider: AzureDevOpsCredentialsProvider,
+  azureConfig: AzureIntegrationConfig,
+  org: string,
+  project: string,
+  repositoryId: string,
+  path: string,
+  branch?: string,
+): Promise<boolean> {
+  const url = getOrganizationUrl(azureConfig, org);
+  const itemUrl = new URL(
+    `${url}/${encodeURIComponent(
+      project,
+    )}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/items`,
+  );
+  itemUrl.searchParams.set('path', path);
+  itemUrl.searchParams.set('$format', 'json');
+  itemUrl.searchParams.set('api-version', GIT_API_VERSION);
+  if (branch) {
+    itemUrl.searchParams.set('versionDescriptor.version', branch);
+    itemUrl.searchParams.set('versionDescriptor.versionType', 'branch');
+  }
+
+  const credentials = await credentialsProvider.getCredentials({
+    url,
+  });
+
+  const response = await fetch(itemUrl, {
+    headers: credentials?.headers,
+  });
+
+  // Also returned when the branch does not exist in the repository
+  if (response.status === 404) {
+    return false;
+  }
+
+  if (response.status !== 200) {
+    throw new Error(
+      `Azure DevOps file lookup failed with response status ${response.status}`,
+    );
+  }
+
+  return true;
 }
