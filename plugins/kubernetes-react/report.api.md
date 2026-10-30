@@ -574,6 +574,7 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'cluster.noPodsWithErrors': 'No pods with errors';
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
+    readonly 'podsTable.unknown': 'unknown';
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
@@ -582,7 +583,6 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
     readonly 'podsTable.columns.cpuUsage': 'CPU usage %';
     readonly 'podsTable.columns.memoryUsage': 'Memory usage %';
-    readonly 'podsTable.unknown': 'unknown';
     readonly 'podsTable.status.running': 'Running';
     readonly 'podsTable.status.ok': 'OK';
     readonly 'errorPanel.message': 'There was a problem retrieving some Kubernetes resources for the entity: {{entityName}}. This could mean that the Error Reporting card is not completely accurate.';

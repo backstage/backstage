@@ -466,6 +466,13 @@ and hoisting of Jest mocks. The Backstage CLI also only targets up to date and
 modern browsers, so we actually want to keep the transpilation process as
 lightweight as possible, and leave most syntax intact.
 
+Package builds, app bundles, and the backend development server compile code
+for ES2024, which Node.js 22 and later support. The `lib` setting in
+`@backstage/cli/config/tsconfig.json` also allows code to use ES2024 built-in
+APIs like `Object.groupBy` and `Promise.withResolvers`. Since Backstage doesn't
+include polyfills, frontend code that uses these APIs needs at least Chrome or
+Edge 119, Firefox 121, or Safari 17.4.
+
 Apart from these requirements, the deciding factor for which transpiler to use
 is their speed. The build process keeps the integration with the transpilers
 lightweight, without additional plugins or such. This enables us to switch out
