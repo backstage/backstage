@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/API.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage API kind Entity. APIs describe the interfaces for Components to communicate.
@@ -45,8 +45,7 @@ export interface ApiEntityV1alpha1 extends Entity {
  *
  * @public
  */
-export const apiEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+export const apiEntityV1alpha1Validator = lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the API kind.
