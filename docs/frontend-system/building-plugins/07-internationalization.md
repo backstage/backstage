@@ -230,6 +230,8 @@ const app = createApp({
 });
 ```
 
+The examples in this guide define modules inline for simplicity. You can also place a frontend module in a separate package in your workspace.
+
 You only need to include the keys you want to override — any missing keys fall back to the plugin's defaults.
 
 ### Adding language translations
@@ -401,7 +403,7 @@ export default [
 ];
 ```
 
-The generated resources are translation data, not frontend features. Create a `TranslationBlueprint` extension for each resource and register the extensions in a module for the `app` plugin. Use each resource's `id` as its extension name so the names are unique within the module:
+Create a `TranslationBlueprint` extension for each resource and register the extensions in a module for the `app` plugin. Use each resource's `id` as its extension name so the names are unique within the module:
 
 ```ts
 import { createApp } from '@backstage/frontend-defaults';
@@ -429,7 +431,7 @@ const app = createApp({
 });
 ```
 
-Add `appModuleTranslations` alongside your existing features. Neither `translationResources` nor `...translationResources` can be added directly to `features`. Keep this registration outside the generated file so it is preserved when you rerun `translations import`.
+Keep this registration outside the generated file so it is preserved when you rerun `translations import`.
 
 To make the imported languages selectable, also [declare the available languages](#declaring-available-languages).
 
