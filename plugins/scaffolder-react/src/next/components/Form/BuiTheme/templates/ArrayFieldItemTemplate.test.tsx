@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { render, screen, fireEvent, within } from '@testing-library/react';
-import validator from '@rjsf/validator-ajv8';
+import { validator } from '@internal/rjsf-validator';
 import { Form } from '../../Form';
 
 const schema = {
