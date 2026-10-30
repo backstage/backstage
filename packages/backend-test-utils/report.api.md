@@ -195,12 +195,12 @@ export const mockServices: Readonly<{
       partialImpl?: Partial<RootLoggerService> | undefined,
     ) => ServiceMock<RootLoggerService>;
   };
-  auditor: {
+  auditor: Readonly<{
     factory: () => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
     mock: (
       partialImpl?: Partial<AuditorService> | undefined,
     ) => ServiceMock<AuditorService>;
-  };
+  }>;
   auth: ((options?: {
     pluginId?: string;
     disableDefaultAuthPolicy?: boolean;
@@ -233,12 +233,12 @@ export const mockServices: Readonly<{
       partialImpl?: Partial<UserInfoService> | undefined,
     ) => ServiceMock<UserInfoService>;
   };
-  cache: {
+  cache: Readonly<{
     factory: () => ServiceFactory<CacheService, 'plugin', 'singleton'>;
     mock: (
       partialImpl?: Partial<CacheService> | undefined,
     ) => ServiceMock<CacheService>;
-  };
+  }>;
   database: ((options: {
     knex: Knex;
     migrations?: {
@@ -255,36 +255,36 @@ export const mockServices: Readonly<{
       partialImpl?: Partial<DatabaseService> | undefined,
     ) => ServiceMock<DatabaseService>;
   };
-  rootHealth: {
+  rootHealth: Readonly<{
     factory: () => ServiceFactory<RootHealthService, 'root', 'singleton'>;
     mock: (
       partialImpl?: Partial<RootHealthService> | undefined,
     ) => ServiceMock<RootHealthService>;
-  };
-  httpRouter: {
+  }>;
+  httpRouter: Readonly<{
     factory: () => ServiceFactory<HttpRouterService, 'plugin', 'singleton'>;
     mock: (
       partialImpl?: Partial<HttpRouterService> | undefined,
     ) => ServiceMock<HttpRouterService>;
-  };
-  rootHttpRouter: {
+  }>;
+  rootHttpRouter: Readonly<{
     factory: () => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
     mock: (
       partialImpl?: Partial<RootHttpRouterService> | undefined,
     ) => ServiceMock<RootHttpRouterService>;
-  };
-  lifecycle: {
+  }>;
+  lifecycle: Readonly<{
     factory: () => ServiceFactory<LifecycleService, 'plugin', 'singleton'>;
     mock: (
       partialImpl?: Partial<LifecycleService> | undefined,
     ) => ServiceMock<LifecycleService>;
-  };
-  logger: {
+  }>;
+  logger: Readonly<{
     factory: () => ServiceFactory<LoggerService, 'plugin', 'singleton'>;
     mock: (
       partialImpl?: Partial<LoggerService> | undefined,
     ) => ServiceMock<LoggerService>;
-  };
+  }>;
   permissions: ((options?: {
     result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
   }) => PermissionsService) & {
@@ -295,7 +295,7 @@ export const mockServices: Readonly<{
       partialImpl?: Partial<PermissionsService> | undefined,
     ) => ServiceMock<PermissionsService>;
   };
-  permissionsRegistry: {
+  permissionsRegistry: Readonly<{
     factory: () => ServiceFactory<
       PermissionsRegistryService,
       'plugin',
@@ -304,13 +304,13 @@ export const mockServices: Readonly<{
     mock: (
       partialImpl?: Partial<PermissionsRegistryService> | undefined,
     ) => ServiceMock<PermissionsRegistryService>;
-  };
-  rootLifecycle: {
+  }>;
+  rootLifecycle: Readonly<{
     factory: () => ServiceFactory<RootLifecycleService, 'root', 'singleton'>;
     mock: (
       partialImpl?: Partial<RootLifecycleService> | undefined,
     ) => ServiceMock<RootLifecycleService>;
-  };
+  }>;
   scheduler: (() => SchedulerService) & {
     factory: (options?: {
       skipTaskRunOnStartup?: boolean;
@@ -321,12 +321,12 @@ export const mockServices: Readonly<{
       partialImpl?: Partial<SchedulerService> | undefined,
     ) => ServiceMock<SchedulerService>;
   };
-  urlReader: {
+  urlReader: Readonly<{
     factory: () => ServiceFactory<UrlReaderService, 'plugin', 'singleton'>;
     mock: (
       partialImpl?: Partial<UrlReaderService> | undefined,
     ) => ServiceMock<UrlReaderService>;
-  };
+  }>;
   events: (() => EventsService) & {
     factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
     mock: (

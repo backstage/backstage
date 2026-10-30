@@ -223,40 +223,50 @@ const mockRootSystemMetadata = (): RootSystemMetadataService => ({
  * ```
  */
 export const mockServices = Object.freeze({
-  rootConfig: Object.assign(mockRootConfig, {
-    factory: simpleFactoryWithOptions(coreServices.rootConfig, mockRootConfig),
-    mock: createServiceMock(coreServices.rootConfig, () => ({
-      get: jest.fn(),
-      getBoolean: jest.fn(),
-      getConfig: jest.fn(),
-      getConfigArray: jest.fn(),
-      getNumber: jest.fn(),
-      getOptional: jest.fn(),
-      getOptionalBoolean: jest.fn(),
-      getOptionalConfig: jest.fn(),
-      getOptionalConfigArray: jest.fn(),
-      getOptionalNumber: jest.fn(),
-      getOptionalString: jest.fn(),
-      getOptionalStringArray: jest.fn(),
-      getString: jest.fn(),
-      getStringArray: jest.fn(),
-      has: jest.fn(),
-      keys: jest.fn(),
-    })),
-  }),
+  rootConfig: Object.freeze(
+    Object.assign(mockRootConfig, {
+      factory: simpleFactoryWithOptions(
+        coreServices.rootConfig,
+        mockRootConfig,
+      ),
+      mock: createServiceMock(coreServices.rootConfig, () => ({
+        get: jest.fn(),
+        getBoolean: jest.fn(),
+        getConfig: jest.fn(),
+        getConfigArray: jest.fn(),
+        getNumber: jest.fn(),
+        getOptional: jest.fn(),
+        getOptionalBoolean: jest.fn(),
+        getOptionalConfig: jest.fn(),
+        getOptionalConfigArray: jest.fn(),
+        getOptionalNumber: jest.fn(),
+        getOptionalString: jest.fn(),
+        getOptionalStringArray: jest.fn(),
+        getString: jest.fn(),
+        getStringArray: jest.fn(),
+        has: jest.fn(),
+        keys: jest.fn(),
+      })),
+    }),
+  ),
 
-  rootLogger: Object.assign(mockRootLogger, {
-    factory: simpleFactoryWithOptions(coreServices.rootLogger, mockRootLogger),
-    mock: createServiceMock(coreServices.rootLogger, () => ({
-      child: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-    })),
-  }),
+  rootLogger: Object.freeze(
+    Object.assign(mockRootLogger, {
+      factory: simpleFactoryWithOptions(
+        coreServices.rootLogger,
+        mockRootLogger,
+      ),
+      mock: createServiceMock(coreServices.rootLogger, () => ({
+        child: jest.fn(),
+        debug: jest.fn(),
+        error: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+      })),
+    }),
+  ),
 
-  auditor: {
+  auditor: Object.freeze({
     factory: () => auditorServiceFactory,
     mock: createServiceMock(coreServices.auditor, () => ({
       createEvent: jest.fn(async _ => {
@@ -266,51 +276,55 @@ export const mockServices = Object.freeze({
         };
       }),
     })),
-  },
-
-  auth: Object.assign(mockAuth, {
-    factory: () =>
-      createServiceFactory({
-        service: coreServices.auth,
-        deps: {
-          plugin: coreServices.pluginMetadata,
-          config: coreServices.rootConfig,
-        },
-        factory({ plugin, config }) {
-          const disableDefaultAuthPolicy = Boolean(
-            config.getOptionalBoolean(
-              'backend.auth.dangerouslyDisableDefaultAuthPolicy',
-            ),
-          );
-          return new MockAuthService({
-            pluginId: plugin.getId(),
-            disableDefaultAuthPolicy,
-          });
-        },
-      }),
-    mock: createServiceMock(coreServices.auth, () => ({
-      authenticate: jest.fn(),
-      getNoneCredentials: jest.fn(),
-      getOwnServiceCredentials: jest.fn(),
-      isPrincipal: jest.fn() as any,
-      getPluginRequestToken: jest.fn(),
-      getLimitedUserToken: jest.fn(),
-      listPublicServiceKeys: jest.fn(),
-    })),
   }),
 
-  discovery: Object.assign(mockDiscovery, {
-    factory: () =>
-      createServiceFactory({
-        service: coreServices.discovery,
-        deps: {},
-        factory: () => mockDiscovery(),
-      }),
-    mock: createServiceMock(coreServices.discovery, () => ({
-      getBaseUrl: jest.fn(),
-      getExternalBaseUrl: jest.fn(),
-    })),
-  }),
+  auth: Object.freeze(
+    Object.assign(mockAuth, {
+      factory: () =>
+        createServiceFactory({
+          service: coreServices.auth,
+          deps: {
+            plugin: coreServices.pluginMetadata,
+            config: coreServices.rootConfig,
+          },
+          factory({ plugin, config }) {
+            const disableDefaultAuthPolicy = Boolean(
+              config.getOptionalBoolean(
+                'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+              ),
+            );
+            return new MockAuthService({
+              pluginId: plugin.getId(),
+              disableDefaultAuthPolicy,
+            });
+          },
+        }),
+      mock: createServiceMock(coreServices.auth, () => ({
+        authenticate: jest.fn(),
+        getNoneCredentials: jest.fn(),
+        getOwnServiceCredentials: jest.fn(),
+        isPrincipal: jest.fn() as any,
+        getPluginRequestToken: jest.fn(),
+        getLimitedUserToken: jest.fn(),
+        listPublicServiceKeys: jest.fn(),
+      })),
+    }),
+  ),
+
+  discovery: Object.freeze(
+    Object.assign(mockDiscovery, {
+      factory: () =>
+        createServiceFactory({
+          service: coreServices.discovery,
+          deps: {},
+          factory: () => mockDiscovery(),
+        }),
+      mock: createServiceMock(coreServices.discovery, () => ({
+        getBaseUrl: jest.fn(),
+        getExternalBaseUrl: jest.fn(),
+      })),
+    }),
+  ),
 
   /**
    * Creates a mock implementation of the `HttpAuthService`.
@@ -319,29 +333,31 @@ export const mockServices = Object.freeze({
    * the default mock user principal. This behavior can be configured with the
    * `defaultCredentials` option.
    */
-  httpAuth: Object.assign(mockHttpAuth, {
-    /**
-     * Creates a mock service factory for the `HttpAuthService`.
-     *
-     * By default all requests without credentials are treated as requests from
-     * the default mock user principal. This behavior can be configured with the
-     * `defaultCredentials` option.
-     */
-    factory: (options?: { defaultCredentials?: BackstageCredentials }) =>
-      createServiceFactory({
-        service: coreServices.httpAuth,
-        deps: { plugin: coreServices.pluginMetadata },
-        factory: ({ plugin }) =>
-          new MockHttpAuthService(
-            plugin.getId(),
-            options?.defaultCredentials ?? mockCredentials.user(),
-          ),
-      }),
-    mock: createServiceMock(coreServices.httpAuth, () => ({
-      credentials: jest.fn(),
-      issueUserCookie: jest.fn(),
-    })),
-  }),
+  httpAuth: Object.freeze(
+    Object.assign(mockHttpAuth, {
+      /**
+       * Creates a mock service factory for the `HttpAuthService`.
+       *
+       * By default all requests without credentials are treated as requests from
+       * the default mock user principal. This behavior can be configured with the
+       * `defaultCredentials` option.
+       */
+      factory: (options?: { defaultCredentials?: BackstageCredentials }) =>
+        createServiceFactory({
+          service: coreServices.httpAuth,
+          deps: { plugin: coreServices.pluginMetadata },
+          factory: ({ plugin }) =>
+            new MockHttpAuthService(
+              plugin.getId(),
+              options?.defaultCredentials ?? mockCredentials.user(),
+            ),
+        }),
+      mock: createServiceMock(coreServices.httpAuth, () => ({
+        credentials: jest.fn(),
+        issueUserCookie: jest.fn(),
+      })),
+    }),
+  ),
 
   /**
    * Creates a mock implementation of the `UserInfoService`.
@@ -350,30 +366,32 @@ export const mockServices = Object.freeze({
    * returns that as the only ownership entity ref, but this can be overridden
    * by passing in a custom set of user info.
    */
-  userInfo: Object.assign(mockUserInfo, {
-    /**
-     * Creates a mock service factory for the `UserInfoService`.
-     *
-     * By default it extracts the user's entity ref from a user principal and
-     * returns that as the only ownership entity ref.
-     */
-    factory: () =>
-      createServiceFactory({
-        service: coreServices.userInfo,
-        deps: {},
-        factory() {
-          return new MockUserInfoService();
-        },
-      }),
-    mock: createServiceMock(coreServices.userInfo, () => ({
-      getUserInfo: jest.fn(),
-    })),
-  }),
+  userInfo: Object.freeze(
+    Object.assign(mockUserInfo, {
+      /**
+       * Creates a mock service factory for the `UserInfoService`.
+       *
+       * By default it extracts the user's entity ref from a user principal and
+       * returns that as the only ownership entity ref.
+       */
+      factory: () =>
+        createServiceFactory({
+          service: coreServices.userInfo,
+          deps: {},
+          factory() {
+            return new MockUserInfoService();
+          },
+        }),
+      mock: createServiceMock(coreServices.userInfo, () => ({
+        getUserInfo: jest.fn(),
+      })),
+    }),
+  ),
 
   // TODO(Rugvip): Not all core services have implementations available here yet.
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
-  cache: {
+  cache: Object.freeze({
     factory: () => cacheServiceFactory,
     mock: createServiceMock(coreServices.cache, () => ({
       delete: jest.fn(),
@@ -381,7 +399,7 @@ export const mockServices = Object.freeze({
       set: jest.fn(),
       withOptions: jest.fn(),
     })),
-  },
+  }),
 
   /**
    * Creates a mock implementation of the
@@ -389,101 +407,105 @@ export const mockServices = Object.freeze({
    * the given `knex` instance, which is useful in combination with the
    * {@link TestDatabases} facility.
    */
-  database: Object.assign(mockDatabase, {
-    /**
-     * Creates a mock factory for the
-     * {@link @backstage/backend-plugin-api#coreServices}.database. Just returns
-     * the given `knex` instance if you supply one, which is useful in
-     * combination with the {@link TestDatabases} facility. Otherwise, it
-     * returns the regular default database factory which reads config settings.
-     */
-    factory: (options?: { knex: Knex; migrations?: { skip?: boolean } }) =>
-      options
-        ? createServiceFactory({
-            service: coreServices.database,
-            deps: {},
-            factory: () => mockDatabase(options),
-          })
-        : databaseServiceFactory,
-    /**
-     * Creates a mock of the
-     * {@link @backstage/backend-plugin-api#coreServices}.database, optionally
-     * with some given method implementations.
-     */
-    mock: createServiceMock(coreServices.database, () => ({
-      getClient: jest.fn(),
-    })),
-  }),
+  database: Object.freeze(
+    Object.assign(mockDatabase, {
+      /**
+       * Creates a mock factory for the
+       * {@link @backstage/backend-plugin-api#coreServices}.database. Just returns
+       * the given `knex` instance if you supply one, which is useful in
+       * combination with the {@link TestDatabases} facility. Otherwise, it
+       * returns the regular default database factory which reads config settings.
+       */
+      factory: (options?: { knex: Knex; migrations?: { skip?: boolean } }) =>
+        options
+          ? createServiceFactory({
+              service: coreServices.database,
+              deps: {},
+              factory: () => mockDatabase(options),
+            })
+          : databaseServiceFactory,
+      /**
+       * Creates a mock of the
+       * {@link @backstage/backend-plugin-api#coreServices}.database, optionally
+       * with some given method implementations.
+       */
+      mock: createServiceMock(coreServices.database, () => ({
+        getClient: jest.fn(),
+      })),
+    }),
+  ),
 
-  rootHealth: {
+  rootHealth: Object.freeze({
     factory: () => rootHealthServiceFactory,
     mock: createServiceMock(coreServices.rootHealth, () => ({
       getLiveness: jest.fn(),
       getReadiness: jest.fn(),
     })),
-  },
+  }),
 
-  httpRouter: {
+  httpRouter: Object.freeze({
     factory: () => httpRouterServiceFactory,
     mock: createServiceMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
       addAuthPolicy: jest.fn(),
     })),
-  },
+  }),
 
-  rootHttpRouter: {
+  rootHttpRouter: Object.freeze({
     factory: () => rootHttpRouterServiceFactory(),
     mock: createServiceMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
     })),
-  },
+  }),
 
-  lifecycle: {
+  lifecycle: Object.freeze({
     factory: () => lifecycleServiceFactory,
     mock: createServiceMock(coreServices.lifecycle, () => ({
       addShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
     })),
-  },
+  }),
 
-  logger: {
+  logger: Object.freeze({
     factory: () => loggerServiceFactory,
     mock: createServiceMock(coreServices.logger, () => createLoggerMock()),
-  },
+  }),
 
   /**
    * Creates a functional mock implementation of the
    * {@link @backstage/backend-plugin-api#PermissionsService}.
    */
-  permissions: Object.assign(mockPermissions, {
-    /**
-     * Creates a mock factory for the
-     * {@link @backstage/backend-plugin-api#coreServices}.permissions. Just
-     * returns the given `result` if you supply one. Otherwise, it returns the
-     * regular default permissions factory.
-     */
-    factory: (options?: {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-    }) =>
-      options?.result
-        ? createServiceFactory({
-            service: coreServices.permissions,
-            deps: {},
-            factory: () => new MockPermissionsService(options),
-          })
-        : permissionsServiceFactory,
-    /**
-     * Creates a mock of the
-     * {@link @backstage/backend-plugin-api#coreServices}.permissions,
-     * optionally with some given method implementations.
-     */
-    mock: createServiceMock(coreServices.permissions, () => ({
-      authorize: jest.fn(),
-      authorizeConditional: jest.fn(),
-    })),
-  }),
+  permissions: Object.freeze(
+    Object.assign(mockPermissions, {
+      /**
+       * Creates a mock factory for the
+       * {@link @backstage/backend-plugin-api#coreServices}.permissions. Just
+       * returns the given `result` if you supply one. Otherwise, it returns the
+       * regular default permissions factory.
+       */
+      factory: (options?: {
+        result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+      }) =>
+        options?.result
+          ? createServiceFactory({
+              service: coreServices.permissions,
+              deps: {},
+              factory: () => new MockPermissionsService(options),
+            })
+          : permissionsServiceFactory,
+      /**
+       * Creates a mock of the
+       * {@link @backstage/backend-plugin-api#coreServices}.permissions,
+       * optionally with some given method implementations.
+       */
+      mock: createServiceMock(coreServices.permissions, () => ({
+        authorize: jest.fn(),
+        authorizeConditional: jest.fn(),
+      })),
+    }),
+  ),
 
-  permissionsRegistry: {
+  permissionsRegistry: Object.freeze({
     factory: () => permissionsRegistryServiceFactory,
     mock: createServiceMock(coreServices.permissionsRegistry, () => ({
       addPermissionRules: jest.fn(),
@@ -491,82 +513,90 @@ export const mockServices = Object.freeze({
       addResourceType: jest.fn(),
       getPermissionRuleset: jest.fn(),
     })),
-  },
+  }),
 
-  rootLifecycle: {
+  rootLifecycle: Object.freeze({
     factory: () => rootLifecycleServiceFactory,
     mock: createServiceMock(coreServices.rootLifecycle, () => ({
       addShutdownHook: jest.fn(),
       addBeforeShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
     })),
-  },
-
-  scheduler: Object.assign(mockScheduler, {
-    factory: (options?: {
-      skipTaskRunOnStartup?: boolean;
-      includeManualTasksOnStartup?: boolean;
-      includeInitialDelayedTasksOnStartup?: boolean;
-    }) => new MockSchedulerService().factory(options),
-    mock: createServiceMock(coreServices.scheduler, () => ({
-      createScheduledTaskRunner: jest.fn(),
-      getScheduledTasks: jest.fn(),
-      scheduleTask: jest.fn(),
-      triggerTask: jest.fn(),
-      cancelTask: jest.fn(),
-    })),
   }),
 
-  urlReader: {
+  scheduler: Object.freeze(
+    Object.assign(mockScheduler, {
+      factory: (options?: {
+        skipTaskRunOnStartup?: boolean;
+        includeManualTasksOnStartup?: boolean;
+        includeInitialDelayedTasksOnStartup?: boolean;
+      }) => new MockSchedulerService().factory(options),
+      mock: createServiceMock(coreServices.scheduler, () => ({
+        createScheduledTaskRunner: jest.fn(),
+        getScheduledTasks: jest.fn(),
+        scheduleTask: jest.fn(),
+        triggerTask: jest.fn(),
+        cancelTask: jest.fn(),
+      })),
+    }),
+  ),
+
+  urlReader: Object.freeze({
     factory: () => urlReaderServiceFactory,
     mock: createServiceMock(coreServices.urlReader, () => ({
       readTree: jest.fn(),
       readUrl: jest.fn(),
       search: jest.fn(),
     })),
-  },
+  }),
 
   /**
    * Creates a functional mock implementation of the
    * {@link @backstage/backend-events-node#eventsServiceRef}.
    */
-  events: Object.assign(mockEvents, {
-    /**
-     * Creates a functional mock factory for the
-     * {@link @backstage/backend-events-node#eventsServiceRef}.
-     */
-    factory: simpleFactoryWithOptions(eventsServiceRef, mockEvents),
-    /**
-     * Creates a mock of the
-     * {@link @backstage/backend-events-node#eventsServiceRef}, optionally
-     * with some given method implementations.
-     */
-    mock: createServiceMock(eventsServiceRef, () => ({
-      publish: jest.fn(),
-      subscribe: jest.fn(),
-    })),
-  }),
+  events: Object.freeze(
+    Object.assign(mockEvents, {
+      /**
+       * Creates a functional mock factory for the
+       * {@link @backstage/backend-events-node#eventsServiceRef}.
+       */
+      factory: simpleFactoryWithOptions(eventsServiceRef, mockEvents),
+      /**
+       * Creates a mock of the
+       * {@link @backstage/backend-events-node#eventsServiceRef}, optionally
+       * with some given method implementations.
+       */
+      mock: createServiceMock(eventsServiceRef, () => ({
+        publish: jest.fn(),
+        subscribe: jest.fn(),
+      })),
+    }),
+  ),
 
-  rootInstanceMetadata: Object.assign(mockRootInstanceMetadata, {
-    mock: createServiceMock(coreServices.rootInstanceMetadata, () => ({
-      getId: jest.fn().mockReturnValue('mock'),
-      getInstalledPlugins: jest.fn(),
-    })),
-    factory: simpleFactoryWithOptions(
-      coreServices.rootInstanceMetadata,
-      mockRootInstanceMetadata,
-    ),
-  }),
+  rootInstanceMetadata: Object.freeze(
+    Object.assign(mockRootInstanceMetadata, {
+      mock: createServiceMock(coreServices.rootInstanceMetadata, () => ({
+        getId: jest.fn().mockReturnValue('mock'),
+        getInstalledPlugins: jest.fn(),
+      })),
+      factory: simpleFactoryWithOptions(
+        coreServices.rootInstanceMetadata,
+        mockRootInstanceMetadata,
+      ),
+    }),
+  ),
 
-  rootSystemMetadata: Object.assign(mockRootSystemMetadata, {
-    mock: createServiceMock(coreServices.rootSystemMetadata, () => ({
-      getInstalledPlugins: jest.fn(),
-    })),
-    factory: simpleFactoryWithOptions(
-      coreServices.rootSystemMetadata,
-      mockRootSystemMetadata,
-    ),
-  }),
+  rootSystemMetadata: Object.freeze(
+    Object.assign(mockRootSystemMetadata, {
+      mock: createServiceMock(coreServices.rootSystemMetadata, () => ({
+        getInstalledPlugins: jest.fn(),
+      })),
+      factory: simpleFactoryWithOptions(
+        coreServices.rootSystemMetadata,
+        mockRootSystemMetadata,
+      ),
+    }),
+  ),
 });
 
 /**
