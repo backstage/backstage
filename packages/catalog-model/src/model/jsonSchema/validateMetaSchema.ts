@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import { isJsonObject } from './util';
 import { InputError } from '@backstage/errors';
-import { getSchemaEngine } from '../../validation/engine/registry';
+import { validateAgainstMetaSchema } from '../../validation/engine/cfworkerSchemaEngine';
 import { SchemaValidationError } from '../../validation/engine/types';
 
 /**
@@ -29,22 +29,18 @@ export function validateMetaSchema(schema: unknown): schema is JsonObject {
     throw new InputError('Invalid JSON schema: must be an object');
   }
 
-  // The full set of errors is typically too complex to report; the engine
-  // just picks the first one.
+  // The full set of errors is typically too complex to report; just pick the
+  // first one.
   let error: SchemaValidationError | undefined;
   try {
-    error = getSchemaEngine().validateSchema(schema);
+    error = validateAgainstMetaSchema(schema);
   } catch (e) {
     throw new InputError(`Invalid JSON schema: ${e}`);
   }
 
   if (error) {
-    let message = error.message;
-    if (Array.isArray(error.params?.allowedValues)) {
-      message += `, expected one of: ${error.params.allowedValues.join(', ')}`;
-    }
     throw new InputError(
-      `Invalid JSON schema, error at path ${error.instancePath}: ${message}`,
+      `Invalid JSON schema, error at path ${error.instancePath}: ${error.message}`,
     );
   }
 

@@ -17,6 +17,8 @@
 import { EntityEnvelope } from '../entity/EntityEnvelope';
 import entityEnvelopeSchema from '../schema/EntityEnvelope.schema.json';
 import { compileSchema, throwSchemaError } from './compileSchema';
+import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
+import { SchemaEngine } from './engine/types';
 
 /**
  * Creates a validation function that takes some arbitrary data, and either
@@ -47,7 +49,14 @@ import { compileSchema, throwSchemaError } from './compileSchema';
 export function entityEnvelopeSchemaValidator<
   T extends EntityEnvelope = EntityEnvelope,
 >(schema?: unknown): (data: unknown) => T {
+  return createEntityEnvelopeSchemaValidator<T>(cfworkerSchemaEngine, schema);
+}
+
+export function createEntityEnvelopeSchemaValidator<
+  T extends EntityEnvelope = EntityEnvelope,
+>(engine: SchemaEngine, schema?: unknown): (data: unknown) => T {
   const validate = compileSchema(
+    engine,
     schema ? (schema as object) : entityEnvelopeSchema,
   );
 

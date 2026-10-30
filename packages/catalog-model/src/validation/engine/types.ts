@@ -39,27 +39,15 @@ export type CompiledSchema = (
 
 /**
  * An implementation of JSON Schema validation.
- *
- * @remarks
- *
- * Engines are registered process wide on `globalThis`, so that multiple copies
- * of this package agree on which one to use. Changes to this interface must
- * therefore stay compatible with older versions of the package.
  */
 export interface SchemaEngine {
   /**
    * Compiles a schema. The extra schemas are made available for `$ref`
-   * resolution by their `$id`.
+   * resolution by their `$id`. Throws if the schema is invalid.
    */
   compile(options: {
     schema: object;
     extraSchemas: object[];
     allErrors: boolean;
   }): CompiledSchema;
-
-  /**
-   * Validates a schema against the JSON Schema draft-07 meta schema, returning
-   * the first error if any. May throw if the schema can not be processed at all.
-   */
-  validateSchema(schema: object): SchemaValidationError | undefined;
 }

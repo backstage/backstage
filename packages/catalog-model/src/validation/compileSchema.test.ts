@@ -16,8 +16,10 @@
 
 import { compileSchema } from './compileSchema';
 import { ajvSchemaEngine } from './engine/ajvSchemaEngine';
-import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
-import { getSchemaEngine, setSchemaEngine } from './engine/registry';
+import {
+  cfworkerSchemaEngine,
+  validateAgainstMetaSchema,
+} from './engine/cfworkerSchemaEngine';
 
 describe('compileSchema', () => {
   const schema = {
@@ -30,55 +32,44 @@ describe('compileSchema', () => {
     },
   };
 
-  afterEach(() => {
-    setSchemaEngine(cfworkerSchemaEngine);
-  });
+  it.each([
+    ['cfworker', cfworkerSchemaEngine],
+    ['ajv', ajvSchemaEngine],
+  ])('validates with the %s engine', (_name, engine) => {
+    const validate = compileSchema(engine, schema, { disableCache: true });
 
-  it('validates with either engine', () => {
-    for (const engine of [cfworkerSchemaEngine, ajvSchemaEngine]) {
-      setSchemaEngine(engine);
-      const validate = compileSchema(schema, { disableCache: true });
-
-      expect(validate({ kind: 'Component', metadata: { name: 'a' } })).toBe(
-        undefined,
-      );
-      expect(validate({ kind: 'Api' })).toEqual([
-        expect.objectContaining({ instancePath: '/kind', keyword: 'enum' }),
-      ]);
-      expect(validate({ kind: 'Component', metadata: { name: 7 } })).toEqual([
-        expect.objectContaining({
-          instancePath: '/metadata/name',
-          keyword: 'type',
-        }),
-      ]);
-      // undefined properties are absent, undefined array items are invalid
-      expect(validate({ kind: 'Component', tags: undefined })).toBe(undefined);
-      expect(validate({ kind: 'Component', tags: ['a', undefined] })).toEqual([
-        expect.objectContaining({ instancePath: '/tags/1', keyword: 'type' }),
-      ]);
-    }
-  });
-
-  it('defaults to the interpreting engine and switches on next use', () => {
-    expect(getSchemaEngine()).toBe(cfworkerSchemaEngine);
-
-    const validate = compileSchema(schema);
-    expect(validate({ kind: 'Api' })?.[0].message).toBe(
-      'Instance does not match any of ["Component"].',
+    expect(validate({ kind: 'Component', metadata: { name: 'a' } })).toBe(
+      undefined,
     );
-
-    setSchemaEngine(ajvSchemaEngine);
-    expect(validate({ kind: 'Api' })?.[0].message).toBe(
-      'must be equal to one of the allowed values',
-    );
+    expect(validate({ kind: 'Api' })).toEqual([
+      expect.objectContaining({ instancePath: '/kind', keyword: 'enum' }),
+    ]);
+    expect(validate({ kind: 'Component', metadata: { name: 7 } })).toEqual([
+      expect.objectContaining({
+        instancePath: '/metadata/name',
+        keyword: 'type',
+      }),
+    ]);
+    // undefined properties are absent, undefined array items are invalid
+    expect(validate({ kind: 'Component', tags: undefined })).toBe(undefined);
+    expect(validate({ kind: 'Component', tags: ['a', undefined] })).toEqual([
+      expect.objectContaining({ instancePath: '/tags/1', keyword: 'type' }),
+    ]);
+    expect(validate(undefined)).toEqual([
+      expect.objectContaining({ instancePath: '', keyword: 'type' }),
+    ]);
   });
 
-  it('validates schemas against the meta schema with either engine', () => {
-    for (const engine of [cfworkerSchemaEngine, ajvSchemaEngine]) {
-      expect(engine.validateSchema(schema)).toBe(undefined);
-      expect(engine.validateSchema({ type: 'what-is-this' })).toEqual(
-        expect.objectContaining({ instancePath: '/type' }),
-      );
-    }
+  it('rejects invalid schemas with ajv at compile time', () => {
+    expect(() =>
+      compileSchema(ajvSchemaEngine, { type: 'object', unknownKeyword: 1 }),
+    ).toThrow(/unknown keyword/);
+  });
+
+  it('validates schemas against the meta schema', () => {
+    expect(validateAgainstMetaSchema(schema)).toBe(undefined);
+    expect(validateAgainstMetaSchema({ type: 'what-is-this' })).toEqual(
+      expect.objectContaining({ instancePath: '/type' }),
+    );
   });
 });

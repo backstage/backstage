@@ -21,3 +21,4 @@ export {
   filterHiddenStepValues,
   resolveParameterSteps,
 } from './filterHiddenStepValues';
+export { templateEntityV1beta3Schema } from './TemplateEntityV1beta3';

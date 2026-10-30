@@ -16,6 +16,8 @@
 
 import { Entity } from '../entity/Entity';
 import { compileSchema, throwSchemaError } from './compileSchema';
+import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
+import { SchemaEngine } from './engine/types';
 
 /**
  * Creates a validation function that takes some arbitrary data, and either
@@ -62,7 +64,14 @@ import { compileSchema, throwSchemaError } from './compileSchema';
 export function entityKindSchemaValidator<T extends Entity>(
   schema: unknown,
 ): (data: unknown) => T | false {
-  const validate = compileSchema(schema as object);
+  return createEntityKindSchemaValidator<T>(cfworkerSchemaEngine, schema);
+}
+
+export function createEntityKindSchemaValidator<T extends Entity>(
+  engine: SchemaEngine,
+  schema: unknown,
+): (data: unknown) => T | false {
+  const validate = compileSchema(engine, schema as object);
 
   return data => {
     const errors = validate(data);
