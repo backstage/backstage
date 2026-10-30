@@ -33,7 +33,7 @@ You can customize the sidebar item using its [properties](https://backstage.io/a
 
 Read and saved statuses are independent for each user, including for broadcast
 notifications. Marking a notification as read or unread preserves its saved
-status. Saving or unsaving a notification preserves its read status.
+status. Changing a notification's saved status preserves its read status.
 
 ## Usage
 
