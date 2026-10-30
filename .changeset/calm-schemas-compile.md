@@ -1,6 +1,6 @@
 ---
 '@backstage/plugin-catalog-backend': patch
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-catalog-backend-module-scaffolder-entity-model': patch
 ---
 
-Entity validation keeps using the faster ajv engine, now that `@backstage/catalog-model` interprets schemas by default.
+Entity validation keeps using the faster ajv engine, now that `@backstage/catalog-model` validates without generating code by default.

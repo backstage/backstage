@@ -66,7 +66,6 @@ import {
   metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { createScaffolderActions } from './actions';
-import { installAjvSchemaEngine } from '@backstage/catalog-model/ajv';
 
 /**
  * Scaffolder plugin
@@ -76,9 +75,6 @@ import { installAjvSchemaEngine } from '@backstage/catalog-model/ajv';
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',
   register(env) {
-    // Use the faster code generating engine for template validation
-    installAjvSchemaEngine();
-
     const addedActions = new Array<TemplateAction<any, any>>();
     env.registerExtensionPoint(scaffolderActionsExtensionPoint, {
       addActions(...newActions: TemplateAction<any>[]) {

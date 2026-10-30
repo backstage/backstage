@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import { entityKindSchemaValidator } from '../validation';
+import { createEntityKindSchemaValidator } from '../validation/entityKindSchemaValidator';
+import { cfworkerSchemaEngine } from '../validation/engine/cfworkerSchemaEngine';
+import { SchemaEngine } from '../validation/engine/types';
 import { KindValidator } from './types';
 
 // TODO(freben): Left here as a compatibility helper. It would be nicer to
 // just export the inner validator directly. However, all of the already
 // exported kind validators have the `KindValidator` signature which is
 // different. So let's postpone that change until a later time.
-export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
+// The schema is compiled on first use, so that importing a kind module does
+// not cause any upfront work.
+export function ajvCompiledJsonSchemaValidator(
+  schema: unknown,
+  engine: SchemaEngine = cfworkerSchemaEngine,
+): KindValidator {
   let validator: undefined | ((data: unknown) => any);
   return {
     async check(data) {
       if (!validator) {
-        validator = entityKindSchemaValidator(schema);
+        validator = createEntityKindSchemaValidator(engine, schema);
       }
       return validator(data) === data;
     },

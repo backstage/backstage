@@ -15,7 +15,6 @@
  */
 
 import Ajv, { ErrorObject } from 'ajv';
-import ajvErrors from 'ajv-errors';
 import { SchemaEngine, SchemaValidationError } from './types';
 
 function convertErrors(
@@ -28,8 +27,6 @@ function convertErrors(
     params: error.params,
   }));
 }
-
-let metaSchemaAjv: Ajv | undefined;
 
 /**
  * A schema engine based on `ajv`, which compiles schemas to code. This is
@@ -53,24 +50,5 @@ export const ajvSchemaEngine: SchemaEngine = {
       }
       return convertErrors(validate.errors);
     };
-  },
-
-  validateSchema(schema) {
-    if (!metaSchemaAjv) {
-      metaSchemaAjv = new Ajv({
-        allowUnionTypes: true,
-        allErrors: true,
-        validateSchema: true,
-      });
-      ajvErrors(metaSchemaAjv);
-    }
-    const result = metaSchemaAjv.validateSchema(schema);
-    if (typeof result !== 'boolean') {
-      // Should not happen; the function is expected to return a promise only
-      // for async schemas, but since that's not enforced at the typescript
-      // level we add the extra check just to be sure
-      throw new Error('Expected synchronous validation result');
-    }
-    return convertErrors(metaSchemaAjv.errors)[0];
   },
 };

@@ -17,6 +17,8 @@
 import { Entity } from '../entity/Entity';
 import entitySchema from '../schema/Entity.schema.json';
 import { compileSchema, throwSchemaError } from './compileSchema';
+import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
+import { SchemaEngine } from './engine/types';
 
 /**
  * Creates a validation function that takes some arbitrary data, and either
@@ -44,7 +46,17 @@ import { compileSchema, throwSchemaError } from './compileSchema';
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T {
-  const validate = compileSchema(schema ? (schema as object) : entitySchema);
+  return createEntitySchemaValidator<T>(cfworkerSchemaEngine, schema);
+}
+
+export function createEntitySchemaValidator<T extends Entity = Entity>(
+  engine: SchemaEngine,
+  schema?: unknown,
+): (data: unknown) => T {
+  const validate = compileSchema(
+    engine,
+    schema ? (schema as object) : entitySchema,
+  );
 
   return data => {
     const errors = validate(data);
