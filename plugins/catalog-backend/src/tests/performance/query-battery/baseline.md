@@ -456,6 +456,13 @@ because of a different join order. Scenario 19's count for that user took
 6.8 s in one run at 32MB, from the existing sort-key `EXISTS` in the count
 query rather than from the set.
 
+Readable plans for the facets and count queries of scenarios 15-19 with this
+change, using the 40-claim sign-in at 32MB and 4MB, are retained in
+[`plans.md`](./plans.md), and the exact JSON output in
+[`plans.json`](./plans.json). At 32MB only scenario 19's count writes
+temporary files (about 79MB). At 4MB every set-based query except the rare
+facet spills, by 67-181MB, with execution times within about 25% of 32MB.
+
 ### Local synthetic catalog
 
 These measurements come from a synthetic catalog in a local PostgreSQL 17.11
