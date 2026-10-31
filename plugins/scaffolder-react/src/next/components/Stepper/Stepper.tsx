@@ -380,6 +380,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           <>
             <ReviewStateComponent
               formState={filteredFormState}
+              schemaFormState={stepsState}
               schemas={visibleSteps}
             />
             <div className={styles.footer}>

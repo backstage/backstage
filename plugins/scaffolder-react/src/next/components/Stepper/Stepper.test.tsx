@@ -1359,6 +1359,74 @@ describe('Stepper', () => {
       ).toBeInTheDocument();
     });
 
+    it('masks secrets on review when hidden steps own related fields', async () => {
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Review masking',
+              steps: [
+                {
+                  title: 'Hidden mode',
+                  when: false,
+                  schema: { properties: { mode: { type: 'string' } } },
+                },
+                {
+                  title: 'Hidden connection',
+                  when: false,
+                  schema: {
+                    properties: {
+                      connection: {
+                        type: 'object',
+                        additionalProperties: true,
+                        'ui:backstage': { review: { show: false } },
+                      },
+                    },
+                  },
+                },
+                {
+                  title: 'Visible',
+                  schema: {
+                    properties: {
+                      connection: {
+                        type: 'object',
+                        properties: { username: { type: 'string' } },
+                      },
+                    },
+                    dependencies: {
+                      mode: {
+                        properties: {
+                          password: {
+                            type: 'string',
+                            'ui:widget': 'password',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            }}
+            extensions={[]}
+            onCreate={jest.fn()}
+            initialState={{
+              mode: 'create',
+              password: 'DEPENDENCY_SECRET',
+              connection: { username: 'user', password: 'NESTED_SECRET' },
+            }}
+          />
+        </SecretsContextProvider>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      });
+
+      expect(screen.queryByText('DEPENDENCY_SECRET')).not.toBeInTheDocument();
+      expect(screen.queryByText('NESTED_SECRET')).not.toBeInTheDocument();
+      expect(screen.getByText('user')).toBeInTheDocument();
+    });
+
     it('should show steps with boolean when: true', async () => {
       const manifest: TemplateParameterSchema = {
         title: 'Boolean Condition',
