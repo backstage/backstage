@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
-import { filterHiddenStepValues } from './filterHiddenStepValues';
+import {
+  filterHiddenStepValues,
+  resolveParameterSteps,
+} from './filterHiddenStepValues';
 
 describe('filterHiddenStepValues', () => {
   it('removes hidden nested fields but preserves visible fields, unrelated data, and the original input', () => {
@@ -153,7 +156,31 @@ describe('filterHiddenStepValues', () => {
     expect(values.items[1]).toEqual({ hidden: 'remove' });
   });
 
-  it('includes fields from schema branches and dependencies and rejects invalid reference chains', () => {
+  it('does not let root-level additionalProperties in a hidden step claim undeclared values', () => {
+    expect(
+      filterHiddenStepValues(
+        { hidden: 'remove', prefilled: 'keep', shared: 'keep' },
+        [
+          {
+            visible: false,
+            schema: {
+              additionalProperties: true,
+              properties: { hidden: {}, shared: {} },
+            },
+          },
+          { visible: true, schema: { properties: { shared: {} } } },
+        ],
+      ),
+    ).toEqual({ prefilled: 'keep', shared: 'keep' });
+    expect(
+      filterHiddenStepValues({ hidden: 'keep' }, [
+        { visible: false, schema: { properties: { hidden: {} } } },
+        { visible: true, schema: { additionalProperties: true } },
+      ]),
+    ).toEqual({ hidden: 'keep' });
+  });
+
+  it('includes fields from schema branches and dependencies and keeps values when references cannot be resolved', () => {
     expect(
       filterHiddenStepValues(
         {
@@ -180,19 +207,63 @@ describe('filterHiddenStepValues', () => {
       '#/definitions/Missing',
       '#/constructor',
       '#/definitions/Loop',
+      '#/%',
       'https://example.com/schema',
     ]) {
-      expect(() =>
+      const schema = {
+        definitions: { Loop: { $ref: '#/definitions/Loop' } },
+        properties: { field: { type: 'string' } },
+        allOf: [{ $ref: ref }],
+      };
+      expect(
         filterHiddenStepValues({ field: 'value' }, [
-          {
-            visible: false,
-            schema: {
-              definitions: { Loop: { $ref: '#/definitions/Loop' } },
-              allOf: [{ $ref: ref }],
-            },
-          },
+          { visible: false, schema },
         ]),
-      ).toThrow(/parameter schema/);
+      ).toEqual({ field: 'value' });
+      expect(
+        filterHiddenStepValues({ field: 'value', other: 'remove' }, [
+          { visible: true, schema },
+          { visible: false, schema: { properties: { field: {}, other: {} } } },
+        ]),
+      ).toEqual({ field: 'value', other: 'remove' });
     }
+  });
+});
+
+describe('resolveParameterSteps', () => {
+  it('evaluates conditions in order against values from visible steps', () => {
+    const steps = [
+      { schema: { properties: { provider: { type: 'string' } } } },
+      {
+        when: "${{ parameters.provider === 'AWS' }}",
+        schema: { properties: { advanced: { type: 'boolean' } } },
+      },
+      {
+        when: '${{ parameters.advanced }}',
+        schema: { properties: { tuning: { type: 'string' } } },
+      },
+    ];
+
+    expect(
+      resolveParameterSteps(
+        { provider: 'GCP', advanced: true, tuning: 'fast' },
+        steps,
+      ),
+    ).toEqual({ visible: [true, false, false], values: { provider: 'GCP' } });
+    expect(
+      resolveParameterSteps(
+        { provider: 'AWS', advanced: true, tuning: 'fast' },
+        steps,
+      ),
+    ).toEqual({
+      visible: [true, true, true],
+      values: { provider: 'AWS', advanced: true, tuning: 'fast' },
+    });
+    expect(
+      resolveParameterSteps({ provider: 'AWS' }, [
+        ...steps,
+        { when: { not: 'a step condition' }, schema: {} },
+      ]).visible,
+    ).toEqual([true, true, false, true]);
   });
 });

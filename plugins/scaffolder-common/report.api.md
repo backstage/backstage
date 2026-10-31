@@ -26,12 +26,6 @@ export type Action = {
 };
 
 // @public
-export function evaluateCondition(
-  condition: string | boolean | undefined,
-  formState: Record<string, JsonValue>,
-): boolean;
-
-// @public
 export const isTemplateEntityV1beta3: (
   entity: Entity,
 ) => entity is TemplateEntityV1beta3;

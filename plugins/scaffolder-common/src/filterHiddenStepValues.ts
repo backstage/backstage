@@ -15,6 +15,7 @@
  */
 import { InputError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
+import { evaluateCondition } from './evaluateCondition';
 
 type FieldPaths = { all?: boolean; children: Map<string, FieldPaths> };
 
@@ -50,8 +51,16 @@ function expandSchemas(
   if (typeof schema.$ref === 'string') {
     const ref = schema.$ref;
     let target: unknown = root;
-    const pointer = decodeURIComponent(ref.slice(1));
-    if (!ref.startsWith('#') || (pointer && !pointer.startsWith('/'))) {
+    if (!ref.startsWith('#')) {
+      throw new InputError(`Unsupported parameter schema reference '${ref}'`);
+    }
+    let pointer: string;
+    try {
+      pointer = decodeURIComponent(ref.slice(1));
+    } catch {
+      throw new InputError(`Malformed parameter schema reference '${ref}'`);
+    }
+    if (pointer && !pointer.startsWith('/')) {
       throw new InputError(`Unsupported parameter schema reference '${ref}'`);
     }
     for (const segment of pointer ? pointer.slice(1).split('/') : []) {
@@ -89,13 +98,17 @@ function collectPaths(
   value: JsonValue | undefined,
   root: JsonObject,
   isRoot = false,
+  hidden = false,
 ): FieldPaths {
   if (!isObject(schema) || value === undefined) return allFields;
   const paths: FieldPaths = { children: new Map() };
   for (const part of expandSchemas(schema, root)) {
+    // A hidden step only owns the fields it declares, so root-level
+    // `additionalProperties` must not claim values from other sources.
     if (
-      part.additionalProperties === true ||
-      isObject(part.additionalProperties)
+      !(isRoot && hidden) &&
+      (part.additionalProperties === true ||
+        isObject(part.additionalProperties))
     ) {
       paths.all = true;
     }
@@ -177,10 +190,10 @@ function filterValue(
  * with visible steps and values not described by any step are preserved.
  * References are resolved within each step's schema. Schema branches are
  * combined to include fields from previously selected options. Explicit
- * `additionalProperties` in a visible field preserves its entire value.
- *
- * @throws An {@link @backstage/errors#InputError} if a reference cannot be resolved
- * or a reference chain contains a cycle.
+ * `additionalProperties` in a visible field preserves its entire value, while
+ * root-level `additionalProperties` in a hidden step does not claim any values.
+ * If a step's schema contains a reference that cannot be resolved, values are
+ * kept rather than filtered.
  *
  * @alpha
  */
@@ -192,10 +205,50 @@ export function filterHiddenStepValues(
   const hidden: FieldPaths = { children: new Map() };
   const visible: FieldPaths = { children: new Map() };
   for (const step of steps) {
-    mergePaths(
-      step.visible ? visible : hidden,
-      collectPaths(step.schema, values, step.schema, true),
-    );
+    let paths: FieldPaths;
+    try {
+      paths = collectPaths(
+        step.schema,
+        values,
+        step.schema,
+        true,
+        !step.visible,
+      );
+    } catch {
+      // Keep values when a schema can't be resolved, a hidden step then owns
+      // nothing, and a visible step keeps everything.
+      if (!step.visible) continue;
+      paths = allFields;
+    }
+    mergePaths(step.visible ? visible : hidden, paths);
   }
   return filterValue(values, hidden, visible) as Record<string, JsonValue>;
+}
+
+/**
+ * Resolves which parameter steps are visible, and the values to submit.
+ *
+ * Steps are evaluated in order, and each `when` condition only sees values
+ * that remain after hiding the earlier steps. This keeps chained conditions
+ * consistent, so a step that depends on a value from a hidden step is hidden
+ * as well.
+ *
+ * @alpha
+ */
+export function resolveParameterSteps(
+  values: Record<string, JsonValue>,
+  steps: ReadonlyArray<{ schema: JsonObject; when?: unknown }>,
+): { visible: boolean[]; values: Record<string, JsonValue> } {
+  const resolved: Array<{ schema: JsonObject; visible: boolean }> = [];
+  for (const step of steps) {
+    const condition = step.when;
+    const visible =
+      (typeof condition !== 'string' && typeof condition !== 'boolean') ||
+      evaluateCondition(condition, filterHiddenStepValues(values, resolved));
+    resolved.push({ schema: step.schema, visible });
+  }
+  return {
+    visible: resolved.map(step => step.visible),
+    values: filterHiddenStepValues(values, resolved),
+  };
 }

@@ -48,13 +48,12 @@ import {
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
 import {
-  evaluateCondition,
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
-  filterHiddenStepValues,
+  resolveParameterSteps,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
@@ -236,6 +235,29 @@ async function validateSecrets(options: {
     errors: formatSecretsValidationErrors(result),
   });
   return false;
+}
+
+/**
+ * Validates the values against the parameter steps that are visible, and
+ * returns the values with those owned only by hidden steps removed.
+ */
+function validateParameterSteps(
+  template: TemplateEntityV1beta3,
+  values: Record<string, JsonValue>,
+): { result?: ValidatorResult; values: Record<string, JsonValue> } {
+  const parameters = [template.spec.parameters ?? []].flat();
+  const resolved = resolveParameterSteps(
+    values,
+    parameters.map(schema => ({ schema, when: schema.when })),
+  );
+  for (const [index, schema] of parameters.entries()) {
+    if (!resolved.visible[index]) continue;
+    const result = validate(values, schema);
+    if (!result.valid) {
+      return { result, values: resolved.values };
+    }
+  }
+  return { values: resolved.values };
 }
 
 function serializeTask(task: SerializedTask): SerializedTaskResponse {
@@ -498,20 +520,16 @@ export async function createRouter(
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(param => {
-              const condition = (param as Record<string, unknown>).when;
-              const isStepCondition =
-                typeof condition === 'string' || typeof condition === 'boolean';
-              const { when: _, ...schema } = param as Record<string, unknown>;
-              return {
-                title:
-                  (param.title as string) ??
-                  'Please enter the following information',
-                description: param.description as string,
-                ...(isStepCondition ? { when: condition } : {}),
-                schema: isStepCondition ? schema : param,
-              };
-            }),
+            steps: parameters.map(({ when, ...schema }) => ({
+              title:
+                (schema.title as string) ??
+                'Please enter the following information',
+              description: schema.description as string,
+              ...(typeof when === 'string' || typeof when === 'boolean'
+                ? { when }
+                : {}),
+              schema,
+            })),
             formDecorators:
               template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
@@ -595,51 +613,21 @@ export async function createRouter(
           credentials,
         );
 
-        const parameterSteps = [template.spec.parameters ?? []]
-          .flat()
-          .map(schema => {
-            const condition = schema.when;
-            const isStepCondition =
-              typeof condition === 'string' || typeof condition === 'boolean';
-            return {
-              schema,
-              visible:
-                !isStepCondition ||
-                evaluateCondition(
-                  condition,
-                  values as Record<string, JsonValue>,
-                ),
-            };
+        const { result: validationResult, values: filteredValues } =
+          validateParameterSteps(template, values as Record<string, JsonValue>);
+
+        if (validationResult) {
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(
+              validationResult.errors,
+              'Could not create entity',
+            ),
           });
 
-        for (const { schema: parameters, visible } of parameterSteps) {
-          if (!visible) continue;
-          const param = parameters as Record<string, unknown>;
-          const condition = param.when;
-          const isStepCondition =
-            typeof condition === 'string' || typeof condition === 'boolean';
-          const { when: _, ...rest } = param;
-          const schema = isStepCondition ? rest : param;
-          const result = validate(values, schema);
-
-          if (!result.valid) {
-            await auditorEvent?.fail({
-              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-              error: (AggregateError as any)(
-                result.errors,
-                'Could not create entity',
-              ),
-            });
-
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
+          res.status(400).json({ errors: validationResult.errors });
+          return;
         }
-
-        const filteredValues = filterHiddenStepValues(
-          values as Record<string, JsonValue>,
-          parameterSteps,
-        );
 
         const secretsValid = await validateSecrets({
           template,
@@ -1107,54 +1095,28 @@ export async function createRouter(
           template.metadata.namespace || 'default'
         }/${template.metadata.name}`;
 
-        const dryRunParameterSteps = [template.spec.parameters ?? []]
-          .flat()
-          .map(schema => {
-            const condition = schema.when;
-            const isStepCondition =
-              typeof condition === 'string' || typeof condition === 'boolean';
-            return {
-              schema,
-              visible:
-                !isStepCondition ||
-                evaluateCondition(
-                  condition,
-                  body.values as Record<string, JsonValue>,
-                ),
-            };
+        const { result: validationResult, values: dryRunFilteredValues } =
+          validateParameterSteps(
+            template,
+            body.values as Record<string, JsonValue>,
+          );
+
+        if (validationResult) {
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(
+              validationResult.errors,
+              'Could not execute dry run',
+            ),
+            meta: {
+              templateRef: templateRef,
+              parameters: template.spec.parameters,
+            },
           });
 
-        for (const { schema: parameters, visible } of dryRunParameterSteps) {
-          if (!visible) continue;
-          const param = parameters as Record<string, unknown>;
-          const condition = param.when;
-          const isStepCondition =
-            typeof condition === 'string' || typeof condition === 'boolean';
-          const { when: _, ...rest } = param;
-          const schema = isStepCondition ? rest : param;
-          const result = validate(body.values, schema);
-          if (!result.valid) {
-            await auditorEvent?.fail({
-              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-              error: (AggregateError as any)(
-                result.errors,
-                'Could not execute dry run',
-              ),
-              meta: {
-                templateRef: templateRef,
-                parameters: template.spec.parameters,
-              },
-            });
-
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
+          res.status(400).json({ errors: validationResult.errors });
+          return;
         }
-
-        const dryRunFilteredValues = filterHiddenStepValues(
-          body.values as Record<string, JsonValue>,
-          dryRunParameterSteps,
-        );
 
         const secretsValid = await validateSecrets({
           template,
