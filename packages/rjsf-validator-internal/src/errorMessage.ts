@@ -21,8 +21,9 @@
 //   errorMessage: 'message'                  - replaces every error in the schema
 //   errorMessage: { pattern: 'message' }     - replaces errors for one keyword
 //   errorMessage: { properties: { a: 'm' } } - replaces errors for one property
-//   errorMessage: { items: ['m'] }           - replaces errors for one tuple item
+//   errorMessage: { items: ['m'] }           - replaces errors for one item
 //   errorMessage: { required: { a: 'm' } }   - replaces one required error
+//   errorMessage: { dependencies: { a: 'm' } } - replaces one dependency error
 //   errorMessage: { _: 'message' }           - replaces all other errors
 // Message templates such as `${/path}` are not supported.
 
@@ -142,10 +143,18 @@ function missingPropertyOf(error: CFWorkerValidationError) {
   return error.error.match(/required property ["']([^"']+)["']/)?.[1];
 }
 
+function dependencyOf(error: CFWorkerValidationError) {
+  if (error.keyword !== 'dependencies') {
+    return undefined;
+  }
+  return error.error.match(/^Instance has "(.*)" but does not have /)?.[1];
+}
+
+// Encodes a child the same way that the engine encodes instance locations
 function childLocation(instanceLocation: string, child: string) {
-  return `${instanceLocation}/${child
-    .replace(/~/g, '~0')
-    .replace(/\//g, '~1')}`;
+  return `${instanceLocation}/${encodeURI(
+    child.replace(/~/g, '~0').replace(/\//g, '~1'),
+  )}`;
 }
 
 /** Finds the custom message that replaces an error, from the innermost schema that has one. */
@@ -172,11 +181,15 @@ function findReplacement(
       .slice(0, locationLength)
       .map(s => `/${s}`)
       .join('')}/errorMessage`;
-    const [keyword, child] = keywordLocation.slice(locationLength);
+    const [keyword] = keywordLocation.slice(locationLength);
     const missingProperty =
       locationLength === keywordLocation.length - 1
         ? missingPropertyOf(error)
         : undefined;
+    // The child of the instance at this schema that the error is for, if any
+    const childSegment = instanceSegments[instanceDepth + 1];
+    const child =
+      childSegment === undefined ? undefined : decodeSegment(childSegment);
     const target = missingProperty
       ? childLocation(instanceLocation, missingProperty)
       : instanceLocation;
@@ -194,13 +207,28 @@ function findReplacement(
 
     let message: unknown;
     let messageLocation = target;
-    if (keyword === 'properties' || keyword === 'items') {
-      message = errorMessage[keyword]?.[child];
+    const dependency =
+      locationLength === keywordLocation.length - 1
+        ? dependencyOf(error)
+        : undefined;
+    if (child !== undefined) {
+      // Errors for a child match by its name or index, whichever keyword of
+      // this schema led to it, such as `allOf` or `items`
+      const childMessages = /^\d+$/.test(child)
+        ? errorMessage.items
+        : errorMessage.properties;
+      message = childMessages?.[child];
       messageLocation = childLocation(instanceLocation, child);
     } else if (keyword === 'required' && missingProperty) {
       const required = errorMessage.required;
       message =
         typeof required === 'object' ? required?.[missingProperty] : required;
+    } else if (keyword === 'dependencies' && dependency !== undefined) {
+      const dependencies = errorMessage.dependencies;
+      message =
+        typeof dependencies === 'object'
+          ? dependencies?.[dependency]
+          : dependencies;
     } else {
       message = errorMessage[keyword];
     }
