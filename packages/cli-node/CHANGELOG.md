@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.3.6-next.1
+
+### Patch Changes
+
+- a96b99c: The Node.js module transform now uses the synchronous `module.registerHooks()` API when it is available, which avoids the `module.register()` deprecation warning printed by Node.js 26. On older Node.js versions it continues to use `module.register()`.
+
 ## 0.3.6-next.0
 
 ### Patch Changes
