@@ -20,7 +20,7 @@ import {
   RequestValidationContext,
   RequestValidator,
 } from '@backstage/plugin-events-node';
-import { timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual } from 'crypto';
 
 /**
  * Validates incoming Azure DevOps webhook requests
