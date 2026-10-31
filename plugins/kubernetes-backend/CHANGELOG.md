@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
 ## 0.21.13-next.0
 
 ### Patch Changes

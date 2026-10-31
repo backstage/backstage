@@ -1,5 +1,14 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.11-next.1
+
+### Patch Changes
+
+- c0ea056: Fixed broadcast notifications losing their saved status when marked as read or unread, and losing their read status when saved or unsaved.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+  - @backstage/plugin-signals-node@0.2.7-next.1
+
 ## 0.6.11-next.0
 
 ### Patch Changes
