@@ -309,7 +309,15 @@ export default {
             'features/software-catalog/well-known-annotations',
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
-            'features/software-catalog/extending-the-model',
+            {
+              type: 'category',
+              label: 'Extending the model',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/extending-the-model',
+              },
+              items: ['features/software-catalog/catalog-model-layers'],
+            },
             {
               type: 'category',
               label: 'External integrations',
