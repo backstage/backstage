@@ -326,11 +326,11 @@ To now change the text of the title from "Sidebar Title" to "Backstage" we can l
 ```yaml
 app:
   # ...
-  extensions:
+  extension:
     # ...
-    - app/nav:
-        config:
-          title: 'Backstage'
+    app/nav:
+      config:
+        title: 'Backstage'
 ```
 
 ## Extension factory as a generator function

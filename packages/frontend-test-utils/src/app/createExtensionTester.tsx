@@ -283,7 +283,7 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
       resolveAppNodeSpecs({
         features: [],
         builtinExtensions: this.#extensions.map(_ => _.extension),
-        parameters: readAppExtensionsConfig(this.#getConfig()),
+        ...readAppExtensionsConfig(this.#getConfig()),
         collector,
       }),
       collector,
