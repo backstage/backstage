@@ -143,3 +143,31 @@ const app = createApp({
 
 export default app.createRoot();
 ```
+
+### Extension factory middleware
+
+The `advanced.extensionFactoryMiddleware` option lets you inspect or modify
+extension data as extensions are instantiated. It accepts a middleware function
+or an array of middleware functions.
+
+For example, you can log each extension's output while troubleshooting app startup:
+
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+
+const app = createApp({
+  advanced: {
+    extensionFactoryMiddleware(originalFactory, { node }) {
+      const output = originalFactory();
+      console.debug(`Extension '${node.spec.id}' output:`, [...output]);
+      return output;
+    },
+  },
+});
+
+export default app.createRoot();
+```
+
+The middleware calls `originalFactory()` to instantiate the extension and returns
+its output. The example logs the data without changing what the extension provides
+to the app.

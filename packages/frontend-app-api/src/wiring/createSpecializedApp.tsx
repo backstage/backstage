@@ -17,11 +17,11 @@
 import {
   ApiHolder,
   ConfigApi,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '../routing';
 import { FrontendPluginInfoResolver } from './createPluginInfoAttacher';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   createSessionStateFromApis,
   CreateSpecializedAppInternalOptions,
