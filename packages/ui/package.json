@@ -69,7 +69,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/use-sync-external-store": "^1.0.0",
     "eslint-plugin-storybook": "^10.4.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "globals": "^17.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
