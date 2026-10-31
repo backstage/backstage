@@ -51,6 +51,11 @@ export type FormProps = Pick<
 export type ReviewStepProps = {
   disableButtons: boolean;
   formData: JsonObject;
+  /**
+   * Complete form values for resolving conditional schemas and review masks.
+   * Display only values from `formData`, which excludes hidden step fields.
+   */
+  schemaFormState?: JsonObject;
   handleBack: () => void;
   handleReset: () => void;
   handleCreate: () => void;

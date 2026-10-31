@@ -234,6 +234,7 @@ export const ReviewState: (props: ReviewStateProps) => JSX_2.Element;
 export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
+  schemaFormState?: JsonObject;
 };
 
 // @alpha
