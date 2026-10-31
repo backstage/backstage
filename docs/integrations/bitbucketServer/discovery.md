@@ -98,3 +98,10 @@ catalog:
     The amount of time that should pass before the first invocation happens.
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
+
+If the same Bitbucket repository is returned more than once while projects are
+being scanned, the provider generates one catalog location for it. If custom
+parsing produces the same entity reference more than once, the provider keeps
+one copy when the entities are identical. Conflicting entities with the same
+reference are rejected with their source repositories instead of being selected
+arbitrarily.
