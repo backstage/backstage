@@ -112,7 +112,7 @@ function withDetectedModuleType(resolved) {
   if (resolved.format) {
     return resolved;
   }
-  // Happens in Node.js v22 when there's a package.json without an explicit "type" field. Use the default.
+  // Happens when there's a package.json without an explicit "type" field. Use the default.
   if (resolved.format === null) {
     return { ...resolved, format: DEFAULT_MODULE_FORMAT };
   }

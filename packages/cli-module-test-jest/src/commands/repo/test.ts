@@ -37,7 +37,7 @@ type JestProject = {
   rootDir: string;
 };
 
-interface TestGlobal extends Global {
+interface TestGlobal {
   __backstageCli_jestSuccessCache?: {
     filterConfigs(
       projectConfigs: JestProject[],
