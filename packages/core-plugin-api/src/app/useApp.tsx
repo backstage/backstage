@@ -15,6 +15,7 @@
  */
 
 import { useMemo } from 'react';
+import { createIconComponentLookup } from '../icons/createIconComponentLookup';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
@@ -108,6 +109,8 @@ export const useApp = (): AppContextV1 => {
 
     const { tree } = appTreeApi.getTree();
 
+    const getSystemIcon = createIconComponentLookup(key => iconsApi.icon(key));
+
     let gatheredPlugins: BackstagePlugin[] | undefined = undefined;
 
     const ErrorBoundaryFallbackWrapper: AppComponents['ErrorBoundaryFallback'] =
@@ -133,13 +136,11 @@ export const useApp = (): AppContextV1 => {
         return gatheredPlugins;
       },
 
-      getSystemIcon(key: string): IconComponent | undefined {
-        return iconsApi.getIcon(key);
-      },
+      getSystemIcon,
 
       getSystemIcons(): Record<string, IconComponent> {
         return Object.fromEntries(
-          iconsApi.listIconKeys().map(key => [key, iconsApi.getIcon(key)!]),
+          iconsApi.listIconKeys().map(key => [key, getSystemIcon(key)!]),
         );
       },
 

@@ -982,20 +982,6 @@ export interface DialogApi {
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
   ): DialogApiDialog<TResult>;
-  // @deprecated
-  show<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: {
-          dialog: DialogApiDialog<TResult | undefined>;
-        }) => JSX.Element),
-  ): DialogApiDialog<TResult | undefined>;
-  // @deprecated
-  showModal<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
-  ): DialogApiDialog<TResult>;
 }
 
 // @public
@@ -1012,7 +998,7 @@ export interface DialogApiDialog<TResult = void> {
 }
 
 // @public @deprecated
-export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog'> & {
+export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1580,15 +1566,13 @@ export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
-  // @deprecated (undocumented)
-  getIcon(key: string): IconComponent | undefined;
   icon(key: string): IconElement | undefined;
   // (undocumented)
   listIconKeys(): string[];
 }
 
 // @public @deprecated
-export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons'> & {
+export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
