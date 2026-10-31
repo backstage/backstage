@@ -123,3 +123,11 @@ This will create schemas named `backstage_catalog`, `backstage_auth`, and so on.
 Enabling `schemaPrefix` on an existing deployment creates new prefixed schemas and does not migrate data from existing non-prefixed schemas. This configuration is intended for new deployments or to avoid conflicts with existing schemas in your database. If you enable this on an existing Backstage instance, your data will remain in the original non-prefixed schemas while Backstage uses the new prefixed schemas.
 
 :::
+
+## Further reading
+
+If you want to read more about the database configuration, here are some helpful links:
+
+- [Database](../database/index.md) for how Backstage uses a database and which database systems you can choose from.
+- [Database maintenance](../database/maintenance.md) for backups, restores, upgrades, and connection tuning.
+- [Configuring Plugin Databases](./configuring-plugin-databases.md) for per-plugin clients, connections, and database names.
