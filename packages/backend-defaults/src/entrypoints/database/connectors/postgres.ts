@@ -844,13 +844,17 @@ export function computePgPluginConfig(
   const baseEnsureSchemaExists =
     config.getOptionalBoolean('ensureSchemaExists') ?? false;
   const ensureSchemaExists =
-    config.getOptionalBoolean(
-      `${pluginPath(pluginId)}.getEnsureSchemaExistsConfig`,
-    ) ?? baseEnsureSchemaExists;
+    config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureSchemaExists`) ??
+    baseEnsureSchemaExists;
 
   // Plugin division mode
+  const pluginDivisionModeOverride = config.getOptionalString(
+    `${pluginPath(pluginId)}.pluginDivisionMode`,
+  );
   const pluginDivisionMode =
-    config.getOptionalString('pluginDivisionMode') ?? 'database';
+    pluginDivisionModeOverride ??
+    config.getOptionalString('pluginDivisionMode') ??
+    'database';
 
   // Connection config
   let baseConnection = normalizeConnection(config.get('connection'));
@@ -889,6 +893,12 @@ export function computePgPluginConfig(
   } else {
     // All other supported databases should fallback to an auto-prefixed name
     databaseName = connectionDatabaseName ?? `${prefix}${pluginId}`;
+  }
+
+  if (pluginDivisionModeOverride === 'schema' && !databaseName) {
+    throw new Error(
+      `PostgreSQL plugin '${pluginId}' uses schema division mode but has no database configured`,
+    );
   }
 
   // Database client overrides
@@ -944,6 +954,7 @@ export class PgConnector implements Connector {
   private readonly schemaPrefix: string;
   private readonly databaseEnsureCache = new Map<string, Promise<void>>();
   private readonly customEnsureDatabaseExists?: typeof ensurePgDatabaseExists;
+  private readonly createAdminClient: (overrides: Knex.Config) => Promise<Knex>;
   private readonly databaseAdminPool: PgAdminPool;
   private readonly schemaAdminPool: PgAdminPool;
 
@@ -962,17 +973,17 @@ export class PgConnector implements Connector {
     this.schemaPrefix = schemaPrefix;
     this.customEnsureDatabaseExists = options.ensureDatabaseExists;
 
-    const createAdminClient =
+    this.createAdminClient =
       options.createAdminClient ??
       ((overrides: Knex.Config) =>
         createPgDatabaseClient(this.config, overrides));
     const idleTimeoutMillis = options.adminPoolIdleTimeoutMillis ?? 10_000;
     this.databaseAdminPool = new PgAdminPool(
-      () => createAdminClient(PG_DATABASE_ADMIN_OVERRIDES),
+      () => this.createAdminClient(PG_DATABASE_ADMIN_OVERRIDES),
       idleTimeoutMillis,
     );
     this.schemaAdminPool = new PgAdminPool(
-      () => createAdminClient(PG_SCHEMA_ADMIN_OVERRIDES),
+      () => this.createAdminClient(PG_SCHEMA_ADMIN_OVERRIDES),
       idleTimeoutMillis,
     );
   }
@@ -1011,6 +1022,42 @@ export class PgConnector implements Connector {
     } catch (error) {
       await pool.invalidate().catch(() => {});
       throw error;
+    }
+  }
+
+  private async ensureSchema(
+    pluginId: string,
+    pluginDbConfig: PgPluginDatabaseConfig,
+  ): Promise<void> {
+    const hasPluginConnection =
+      this.config.getOptional(`${pluginPath(pluginId)}.connection`) !==
+      undefined;
+    const hasPluginRole =
+      this.config.getOptionalString(`${pluginPath(pluginId)}.role`) !==
+      undefined;
+
+    if (!hasPluginConnection && !hasPluginRole) {
+      await this.runAdminOperation(this.schemaAdminPool, admin =>
+        ensurePgSchema(admin, pluginDbConfig.role, pluginDbConfig.schemaName!),
+      );
+      return;
+    }
+
+    const admin = await this.createAdminClient(
+      mergeDatabaseConfig(
+        pluginDbConfig.knexConfig,
+        pluginDbConfig.databaseClientOverrides,
+        PG_SCHEMA_ADMIN_OVERRIDES,
+      ),
+    );
+    try {
+      await ensurePgSchema(
+        admin,
+        pluginDbConfig.role,
+        pluginDbConfig.schemaName!,
+      );
+    } finally {
+      await admin.destroy();
     }
   }
 
@@ -1063,15 +1110,7 @@ export class PgConnector implements Connector {
     if (pluginDbConfig.pluginDivisionMode === 'schema') {
       if (pluginDbConfig.ensureSchemaExists || pluginDbConfig.ensureExists) {
         try {
-          await ddlLimiter(() =>
-            this.runAdminOperation(this.schemaAdminPool, admin =>
-              ensurePgSchema(
-                admin,
-                this.config.getOptionalString('role'),
-                pluginDbConfig.schemaName!,
-              ),
-            ),
-          );
+          await ddlLimiter(() => this.ensureSchema(pluginId, pluginDbConfig));
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
