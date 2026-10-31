@@ -34,7 +34,7 @@ afterEach(() => {
 });
 
 describe('collectRouteIds', () => {
-  it('should assign IDs to routes', () => {
+  it.each(['id', 'pluginId'])('should assign IDs to routes without %s', key => {
     const ref = createRouteRef();
     const extRef = createExternalRouteRef();
 
@@ -47,11 +47,14 @@ describe('collectRouteIds', () => {
 
     const collected = collectRouteIds(
       [
-        createFrontendPlugin({
-          pluginId: 'test',
-          routes: { ref },
-          externalRoutes: { extRef },
-        }),
+        Object.assign(
+          createFrontendPlugin({
+            pluginId: 'test',
+            routes: { ref },
+            externalRoutes: { extRef },
+          }),
+          { [key]: undefined },
+        ),
       ],
       collector,
     );

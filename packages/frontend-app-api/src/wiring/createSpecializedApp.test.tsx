@@ -106,15 +106,21 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
 
-  it('should deduplicate features keeping the last received one', () => {
-    const app = createSpecializedApp({
-      features: [makeAppPlugin('Test 1'), makeAppPlugin('Test 2')],
-    });
+  it.each(['id', 'pluginId'])(
+    'should deduplicate features keeping the last received one without %s',
+    key => {
+      const app = createSpecializedApp({
+        features: [
+          makeAppPlugin('Test 1'),
+          Object.assign(makeAppPlugin('Test 2'), { [key]: undefined }),
+        ],
+      });
 
-    render(app.element);
+      render(app.element);
 
-    expect(screen.getByText('Test 2')).toBeInTheDocument();
-  });
+      expect(screen.getByText('Test 2')).toBeInTheDocument();
+    },
+  );
 
   it('should forward config', () => {
     const app = createSpecializedApp({

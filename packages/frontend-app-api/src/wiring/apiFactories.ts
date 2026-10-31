@@ -188,8 +188,9 @@ function registerFeatureFlagDeclarations(
     let source: string | undefined;
 
     if (OpaqueFrontendPlugin.isType(feature)) {
-      pluginId = feature.id;
-      flags = OpaqueFrontendPlugin.toInternal(feature).featureFlags;
+      const plugin = OpaqueFrontendPlugin.toInternal(feature);
+      pluginId = plugin.pluginId ?? plugin.id;
+      flags = plugin.featureFlags;
       source = 'Plugin';
     } else if (isInternalFrontendModule(feature)) {
       pluginId = feature.pluginId;
