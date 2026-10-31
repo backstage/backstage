@@ -55,12 +55,19 @@ function asFormatChecker(
   return (value: string) => regex.test(value);
 }
 
-/** Installs the built-in RJSF formats and any user-provided formats into the engine registry.
+/** Makes a validator use the built-in RJSF formats and any user-provided
+ * formats, without leaking them to other validators.
  *
+ * The engine only reads formats from its module-wide registry, so the formats
+ * are installed for the duration of each validation and then restored. This
+ * is safe because validation is synchronous.
+ *
+ * @param validator - The validator to scope the formats to
  * @param customFormats - The custom formats to add after the built-in `color` and `data-url` formats
  * @param [targetRegistry] - The format registry to update; defaults to the `@cfworker/json-schema` module registry
  */
-export function installFormats(
+export function scopeFormats(
+  validator: Validator,
   customFormats: CustomValidatorOptionsType['customFormats'],
   targetRegistry = (CFWorkerJsonSchema as unknown as FormatRegistryModule)
     .format,
@@ -73,11 +80,35 @@ export function installFormats(
   }
 
   const registry = targetRegistry;
-  registry.color = asFormatChecker(COLOR_FORMAT_REGEX);
-  registry['data-url'] = asFormatChecker(DATA_URL_FORMAT_REGEX);
+  const formats: Record<string, CFWorkerFormatChecker> = {
+    color: asFormatChecker(COLOR_FORMAT_REGEX),
+    'data-url': asFormatChecker(DATA_URL_FORMAT_REGEX),
+  };
   for (const [name, spec] of Object.entries(customFormats ?? {})) {
-    registry[name] = asFormatChecker(spec);
+    formats[name] = asFormatChecker(spec);
   }
+  const names = Object.keys(formats);
+
+  const validate = validator.validate.bind(validator);
+  validator.validate = instance => {
+    const previous = names.map(name => ({
+      name,
+      present: Object.prototype.hasOwnProperty.call(registry, name),
+      checker: registry[name],
+    }));
+    Object.assign(registry, formats);
+    try {
+      return validate(instance);
+    } finally {
+      for (const { name, present, checker } of previous) {
+        if (present) {
+          registry[name] = checker;
+        } else {
+          delete registry[name];
+        }
+      }
+    }
+  };
 }
 
 /** Builds a schema-bound `@cfworker/json-schema` validator.
@@ -100,7 +131,6 @@ export default function createCfworkerInstance(
     shortCircuit = false,
   } = options;
 
-  installFormats(customFormats);
   // The engine annotates schemas during dereferencing. Clone every user-owned
   // schema so frozen RJSF fixtures and application schemas remain untouched.
   let validator = new Validator(structuredClone(schema), draft, shortCircuit);
@@ -117,5 +147,6 @@ export default function createCfworkerInstance(
   if (typeof extenderFn === 'function') {
     validator = extenderFn(validator);
   }
+  scopeFormats(validator, customFormats);
   return validator;
 }
