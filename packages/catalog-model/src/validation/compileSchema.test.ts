@@ -89,12 +89,40 @@ describe('compileSchema', () => {
     expect(
       validate({ ...JSON.parse('{"__proto__":{"x":1}}'), b: undefined }),
     ).toEqual([expect.objectContaining({ keyword: 'additionalProperties' })]);
+
+    // other schema errors are kept next to undefined array items
+    expect(validate({ a: [undefined], b: 1 })).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ instancePath: '/a/0', keyword: 'type' }),
+        expect.objectContaining({ instancePath: '/b', keyword: 'type' }),
+      ]),
+    );
+
+    // circular references are reported rather than overflowing the stack
+    const circular: Record<string, unknown> = { b: 'x' };
+    circular.self = circular;
+    expect(validate(circular)).toEqual([expect.anything()]);
+    expect(validate({ a: [null], b: 'x', c: undefined, d: circular })).toEqual(
+      expect.arrayContaining([expect.anything()]),
+    );
   });
 
   it('rejects invalid schemas with ajv at compile time', () => {
     expect(() =>
       compileSchema(ajvSchemaEngine, { type: 'object', unknownKeyword: 1 }),
     ).toThrow(/unknown keyword/);
+  });
+
+  it('rejects malformed schemas with cfworker at compile time', () => {
+    expect(() =>
+      compileSchema(
+        cfworkerSchemaEngine,
+        { type: 'strng' },
+        {
+          disableCache: true,
+        },
+      ),
+    ).toThrow(/Invalid JSON schema/);
   });
 
   it('validates schemas against the meta schema', () => {
