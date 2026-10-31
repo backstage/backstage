@@ -57,23 +57,25 @@ export function useBreadcrumbEntries(): { items: BreadcrumbEntryData[] } {
 /**
  * Registers a breadcrumb entry for the current page. The entry is added on
  * mount and removed on unmount. Wraps its children and increments the depth
- * counter so nested registrations are ordered correctly.
+ * counter so nested registrations are ordered correctly. Omit the entry to skip
+ * registration while keeping children mounted.
  *
  * @public
  */
 export function BreadcrumbEntry(props: {
-  entry: Omit<BreadcrumbEntryData, 'depth'>;
+  entry?: Omit<BreadcrumbEntryData, 'depth'>;
   children: ReactNode;
 }) {
   const ctx = useVersionedContext<ContextMap>(CONTEXT_KEY);
   const register = ctx?.atVersion(1)?.register;
   const depthCtx = useVersionedContext<DepthMap>(DEPTH_KEY);
   const depth = depthCtx?.atVersion(1) ?? 0;
-  const { label, href } = props.entry;
+  const { label = '', href = '' } = props.entry ?? {};
+  const enabled = Boolean(props.entry);
   const registrationRef = useRef<Registration | null>(null);
 
   useEffect(() => {
-    if (!register) return undefined;
+    if (!register || !enabled) return undefined;
     const reg = register({ label, href, depth });
     registrationRef.current = reg;
     return () => {
@@ -81,7 +83,7 @@ export function BreadcrumbEntry(props: {
       registrationRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [register, depth]);
+  }, [register, depth, enabled]);
 
   useEffect(() => {
     registrationRef.current?.update(label, href);

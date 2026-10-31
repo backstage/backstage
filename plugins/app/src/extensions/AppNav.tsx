@@ -36,6 +36,8 @@ import {
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { createSnapshotSourceCollection } from '@internal/frontend';
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -153,6 +155,31 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
+  const titleSource = useMemo(() => {
+    const pages =
+      appTreeApi
+        .getTree()
+        .tree.nodes.get('app/routes')
+        ?.edges.attachments.get('routes') ?? [];
+    return createSnapshotSourceCollection(
+      pages.map(page => {
+        const source = page.spec.disabled
+          ? undefined
+          : page.instance?.getData(coreExtensionData.titleSource);
+        return (
+          source ?? {
+            getSnapshot: () => undefined,
+            subscribe: () => () => {},
+          }
+        );
+      }),
+    );
+  }, [appTreeApi]);
+  const translatedTitles = useSyncExternalStore(
+    titleSource.subscribe,
+    titleSource.getSnapshot,
+  );
+
   // Deprecated items: just resolve nav item routeRefs to paths, no page discovery.
   const legacyItems = useMemo(() => {
     return props.legacyNavItems.flatMap(item => {
@@ -183,7 +210,7 @@ function NavContentRenderer(props: {
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
-    const items = pageNodes.flatMap((node): NavContentNavItem[] => {
+    const items = pageNodes.flatMap((node, index): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
         return [];
       }
@@ -205,9 +232,11 @@ function NavContentRenderer(props: {
         resolvedTitle !== undefined &&
         resolvedTitle !== pluginTitle &&
         resolvedTitle !== pluginId;
-      const title = hasExplicitPageTitle
+      const staticTitle = hasExplicitPageTitle
         ? resolvedTitle
         : matchingNavItem?.title ?? pluginTitle ?? pluginId;
+
+      const title = translatedTitles[index] ?? staticTitle;
 
       // PageBlueprint resolves icon as: params.icon ?? plugin.icon
       // We want the priority: page (params) -> nav item -> plugin -> (excluded)
@@ -239,7 +268,7 @@ function NavContentRenderer(props: {
     });
 
     return new NavItemBag(items);
-  }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+  }, [appTreeApi, routeResolutionApi, props.legacyNavItems, translatedTitles]);
 
   return <props.Content navItems={navItems} items={legacyItems} />;
 }

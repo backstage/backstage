@@ -24,11 +24,31 @@ export interface TranslationRef<
   TId extends string = string,
   TMessages extends { [key in string]: string } = { [key in string]: string },
 > {
+  /** Selects a message key, checked against this ref's declared messages. */
+  (key: keyof TMessages & string): TranslationRefTuple<TId, TMessages>;
+
   $$type: '@backstage/TranslationRef';
 
   id: TId;
 
   T: TMessages;
+}
+
+/**
+ * A message selected from a translation ref.
+ *
+ * Created by calling a translation ref with one of its declared message keys.
+ * @public
+ */
+export interface TranslationRefTuple<
+  TId extends string = string,
+  TMessages extends { [key in string]: string } = { [key in string]: string },
+> {
+  /** The ref that owns the selected message. */
+  readonly ref: TranslationRef<TId, TMessages>;
+  /** The selected message key. */
+  // Defer key extraction so typed refs remain assignable to refs with unknown messages.
+  readonly key: keyof TMessages extends infer TKey ? TKey & string : never;
 }
 
 /** @internal */
@@ -118,52 +138,6 @@ function flattenMessages(nested: AnyNestedMessages): AnyMessages {
   return Object.fromEntries(entries);
 }
 
-/** @internal */
-class TranslationRefImpl<
-  TId extends string,
-  TNestedMessages extends AnyNestedMessages,
-> implements InternalTranslationRef<TId, FlattenedMessages<TNestedMessages>>
-{
-  #id: TId;
-  #messages: FlattenedMessages<TNestedMessages>;
-  #resources: TranslationResource | undefined;
-
-  constructor(options: TranslationRefOptions<TId, TNestedMessages, any>) {
-    this.#id = options.id;
-    this.#messages = flattenMessages(
-      options.messages,
-    ) as FlattenedMessages<TNestedMessages>;
-  }
-
-  $$type = '@backstage/TranslationRef' as const;
-
-  version = 'v1' as const;
-
-  get id(): TId {
-    return this.#id;
-  }
-
-  get T(): never {
-    throw new Error('Not implemented');
-  }
-
-  getDefaultMessages(): AnyMessages {
-    return this.#messages;
-  }
-
-  setDefaultResource(resources: TranslationResource): void {
-    this.#resources = resources;
-  }
-
-  getDefaultResource(): TranslationResource | undefined {
-    return this.#resources;
-  }
-
-  toString() {
-    return `TranslationRef{id=${this.id}}`;
-  }
-}
-
 /** @public */
 export function createTranslationRef<
   TId extends string,
@@ -178,14 +152,45 @@ export function createTranslationRef<
 >(
   config: TranslationRefOptions<TId, TNestedMessages, TTranslations>,
 ): TranslationRef<TId, FlattenedMessages<TNestedMessages>> {
-  const ref = new TranslationRefImpl(config);
+  const messages = flattenMessages(config.messages);
+  let resource: TranslationResource | undefined;
+  const ref: InternalTranslationRef<
+    TId,
+    FlattenedMessages<TNestedMessages>
+  > = Object.assign(
+    (
+      key: keyof FlattenedMessages<TNestedMessages> & string,
+    ): TranslationRefTuple<TId, FlattenedMessages<TNestedMessages>> => ({
+      ref,
+      key: key as unknown as TranslationRefTuple<
+        TId,
+        FlattenedMessages<TNestedMessages>
+      >['key'],
+    }),
+    {
+      $$type: '@backstage/TranslationRef' as const,
+      version: 'v1' as const,
+      id: config.id,
+      T: undefined as unknown as FlattenedMessages<TNestedMessages>,
+      getDefaultMessages: () => messages,
+      getDefaultResource: () => resource,
+      toString: () => `TranslationRef{id=${ref.id}}`,
+    },
+  );
+  Object.defineProperties(ref, {
+    id: { writable: false },
+    T: {
+      get() {
+        throw new Error('Not implemented');
+      },
+      enumerable: false,
+    },
+  });
   if (config.translations) {
-    ref.setDefaultResource(
-      createTranslationResource({
-        ref,
-        translations: config.translations as any,
-      }),
-    );
+    resource = createTranslationResource({
+      ref,
+      translations: config.translations as any,
+    });
   }
   return ref;
 }

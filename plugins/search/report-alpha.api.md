@@ -21,7 +21,9 @@ import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -83,6 +85,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            SnapshotSource<string>,
+            'core.titleSource',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -103,6 +112,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               string,
               'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              SnapshotSource<string>,
+              'core.titleSource',
               {
                 optional: true;
               }
@@ -171,7 +187,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationRefTuple;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
@@ -229,6 +245,13 @@ export const searchPage: OverridableExtensionDefinition<{
         }
       >
     | ExtensionDataRef<
+        SnapshotSource<string>,
+        'core.titleSource',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
         IconElement,
         'core.icon',
         {
@@ -249,6 +272,13 @@ export const searchPage: OverridableExtensionDefinition<{
       | ConfigurableExtensionDataRef<
           string,
           'core.title',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          SnapshotSource<string>,
+          'core.titleSource',
           {
             optional: true;
           }
@@ -317,7 +347,7 @@ export const searchPage: OverridableExtensionDefinition<{
   name: undefined;
   params: {
     path: string;
-    title?: string;
+    title?: string | TranslationRefTuple;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
