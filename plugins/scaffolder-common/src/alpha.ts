@@ -16,3 +16,5 @@
 
 export * from './permissions';
 export { scaffolderCatalogModelLayer } from './catalogModel';
+
+export { filterHiddenStepValues } from './filterHiddenStepValues';

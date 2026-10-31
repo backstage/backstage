@@ -5,10 +5,21 @@
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { CatalogModelLayer } from '@backstage/catalog-model/alpha';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
 // @alpha
 export const actionExecutePermission: ResourcePermission<'scaffolder-action'>;
+
+// @alpha
+export function filterHiddenStepValues(
+  values: Record<string, JsonValue>,
+  steps: ReadonlyArray<{
+    schema: JsonObject;
+    visible: boolean;
+  }>,
+): Record<string, JsonValue>;
 
 // @alpha
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';

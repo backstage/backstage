@@ -48,11 +48,13 @@ import {
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
 import {
+  evaluateCondition,
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
+  filterHiddenStepValues,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
@@ -82,7 +84,7 @@ import {
   scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
@@ -496,13 +498,20 @@ export async function createRouter(
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
-              title:
-                (schema.title as string) ??
-                'Please enter the following information',
-              description: schema.description as string,
-              schema,
-            })),
+            steps: parameters.map(param => {
+              const condition = (param as Record<string, unknown>).when;
+              const isStepCondition =
+                typeof condition === 'string' || typeof condition === 'boolean';
+              const { when: _, ...schema } = param as Record<string, unknown>;
+              return {
+                title:
+                  (param.title as string) ??
+                  'Please enter the following information',
+                description: param.description as string,
+                ...(isStepCondition ? { when: condition } : {}),
+                schema: isStepCondition ? schema : param,
+              };
+            }),
             formDecorators:
               template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
@@ -586,8 +595,32 @@ export async function createRouter(
           credentials,
         );
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
+        const parameterSteps = [template.spec.parameters ?? []]
+          .flat()
+          .map(schema => {
+            const condition = schema.when;
+            const isStepCondition =
+              typeof condition === 'string' || typeof condition === 'boolean';
+            return {
+              schema,
+              visible:
+                !isStepCondition ||
+                evaluateCondition(
+                  condition,
+                  values as Record<string, JsonValue>,
+                ),
+            };
+          });
+
+        for (const { schema: parameters, visible } of parameterSteps) {
+          if (!visible) continue;
+          const param = parameters as Record<string, unknown>;
+          const condition = param.when;
+          const isStepCondition =
+            typeof condition === 'string' || typeof condition === 'boolean';
+          const { when: _, ...rest } = param;
+          const schema = isStepCondition ? rest : param;
+          const result = validate(values, schema);
 
           if (!result.valid) {
             await auditorEvent?.fail({
@@ -602,6 +635,11 @@ export async function createRouter(
             return;
           }
         }
+
+        const filteredValues = filterHiddenStepValues(
+          values as Record<string, JsonValue>,
+          parameterSteps,
+        );
 
         const secretsValid = await validateSecrets({
           template,
@@ -624,7 +662,7 @@ export async function createRouter(
           })),
           EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
           output: template.spec.output ?? {},
-          parameters: values,
+          parameters: filteredValues,
           user: {
             entity: userEntity as UserEntity,
             ref: userEntityRef,
@@ -1069,8 +1107,32 @@ export async function createRouter(
           template.metadata.namespace || 'default'
         }/${template.metadata.name}`;
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(body.values, parameters);
+        const dryRunParameterSteps = [template.spec.parameters ?? []]
+          .flat()
+          .map(schema => {
+            const condition = schema.when;
+            const isStepCondition =
+              typeof condition === 'string' || typeof condition === 'boolean';
+            return {
+              schema,
+              visible:
+                !isStepCondition ||
+                evaluateCondition(
+                  condition,
+                  body.values as Record<string, JsonValue>,
+                ),
+            };
+          });
+
+        for (const { schema: parameters, visible } of dryRunParameterSteps) {
+          if (!visible) continue;
+          const param = parameters as Record<string, unknown>;
+          const condition = param.when;
+          const isStepCondition =
+            typeof condition === 'string' || typeof condition === 'boolean';
+          const { when: _, ...rest } = param;
+          const schema = isStepCondition ? rest : param;
+          const result = validate(body.values, schema);
           if (!result.valid) {
             await auditorEvent?.fail({
               // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
@@ -1088,6 +1150,11 @@ export async function createRouter(
             return;
           }
         }
+
+        const dryRunFilteredValues = filterHiddenStepValues(
+          body.values as Record<string, JsonValue>,
+          dryRunParameterSteps,
+        );
 
         const secretsValid = await validateSecrets({
           template,
@@ -1125,7 +1192,7 @@ export async function createRouter(
             apiVersion: template.apiVersion,
             steps,
             output: template.spec.output ?? {},
-            parameters: body.values as JsonObject,
+            parameters: dryRunFilteredValues as JsonObject,
             user: {
               entity: userEntity as UserEntity,
               ref: userEntityRef,

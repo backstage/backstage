@@ -225,6 +225,8 @@ export interface ParsedTemplateSchema {
   title: string;
   // (undocumented)
   uiSchema: UiSchema;
+  // (undocumented)
+  when?: string | boolean;
 }
 
 // @alpha
