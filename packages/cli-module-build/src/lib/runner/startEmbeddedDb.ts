@@ -14,49 +14,18 @@
  * limitations under the License.
  */
 
-import os from 'node:os';
-import fs from 'fs-extra';
+import { spawn } from 'node:child_process';
 import {
   isAbsolute as isAbsolutePath,
   resolve as resolvePath,
 } from 'node:path';
 import { z } from 'zod';
 import { getPortPromise } from 'portfinder';
-import { ForwardedError } from '@backstage/errors';
 import { ConfigSources } from '@backstage/config-loader';
 import { targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
-
-const TEMP_DIR_PREFIX = 'backstage-dev-db-';
-const PID_FILE = 'backstage.pid';
-
-function isProcessAlive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function cleanStaleDatabases() {
-  const tmpBase = os.tmpdir();
-  const entries = (await fs.readdir(tmpBase)).filter(d =>
-    d.startsWith(TEMP_DIR_PREFIX),
-  );
-  await Promise.all(
-    entries.map(async d => {
-      const dir = resolvePath(tmpBase, d);
-      const raw = await fs
-        .readFile(resolvePath(dir, PID_FILE), 'utf8')
-        .catch(() => undefined);
-      const pid = raw ? Number(raw.trim()) : NaN;
-      if (!pid || !isProcessAlive(pid)) {
-        await fs.remove(dir);
-      }
-    }),
-  );
-}
+import { ForwardedError } from '@backstage/errors';
+import { embeddedPostgresProcess } from './embeddedPostgresProcess';
 
 export interface EmbeddedDbConnectionConfig {
   host?: string;
@@ -85,6 +54,7 @@ const connectionSchema: z.ZodType<EmbeddedDbConnectionConfig> = z.object({
 export interface StartEmbeddedDbOptions {
   configPaths?: string[];
   targetDir?: string;
+  signal?: AbortSignal;
 }
 
 /**
@@ -100,19 +70,22 @@ export async function startEmbeddedDb(options: StartEmbeddedDbOptions): Promise<
     }
   | undefined
 > {
+  options.signal?.throwIfAborted();
   const dbConfig = await readDatabaseConfig(
     options.configPaths,
     options.targetDir,
   );
+  options.signal?.throwIfAborted();
   if (dbConfig?.client !== 'embedded-postgres') {
     return undefined;
   }
 
-  return startEmbeddedDbInternal(dbConfig.connection);
+  return startEmbeddedDbInternal(dbConfig.connection, options.signal);
 }
 
 async function startEmbeddedDbInternal(
   userConfig?: EmbeddedDbConnectionConfig,
+  signal?: AbortSignal,
 ) {
   console.warn(
     chalk.yellow(
@@ -120,52 +93,108 @@ async function startEmbeddedDbInternal(
     ),
   );
 
-  const { default: EmbeddedPostgres } = await import('embedded-postgres').catch(
-    error => {
-      throw new ForwardedError(
-        `Failed to load 'embedded-postgres' which is required when using ` +
-          `'embedded-postgres' as the database client. It must be installed ` +
-          `as an explicit dependency in your project`,
-        error,
-      );
-    },
-  );
-
-  await cleanStaleDatabases();
-
   const host = userConfig?.host ?? 'localhost';
   const user = userConfig?.user ?? 'postgres';
   const password = userConfig?.password ?? 'postgres';
   const port = userConfig?.port ?? (await getPortPromise());
-  const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), TEMP_DIR_PREFIX));
-
-  const pg = new EmbeddedPostgres({
-    databaseDir: tmpDir,
-    user,
-    password,
-    port,
-    persistent: false,
-    ...(userConfig?.flags?.postgres
-      ? { postgresFlags: userConfig.flags.postgres }
-      : {}),
-    ...(userConfig?.flags?.initdb
-      ? { initdbFlags: userConfig.flags.initdb }
-      : {}),
-    onError(messageOrError) {
-      console.error(`[embedded-postgres]`, messageOrError);
-    },
-    onLog() {},
-  });
-
+  let embeddedPostgresPath: string;
   try {
-    await pg.initialise();
-    await fs.writeFile(resolvePath(tmpDir, PID_FILE), String(process.pid));
-    await pg.start();
+    embeddedPostgresPath = require.resolve('embedded-postgres');
   } catch (error) {
-    await pg.stop().catch(() => {});
-    await fs.remove(tmpDir).catch(() => {});
-    throw error;
+    throw new ForwardedError(
+      `Failed to resolve 'embedded-postgres'. It must be installed as an explicit dependency in your project`,
+      error,
+    );
   }
+
+  // Isolate both Postgres and the library's exit hooks from terminal signals.
+  const child = spawn(
+    process.execPath,
+    [
+      '--eval',
+      `(${embeddedPostgresProcess.toString()})(${JSON.stringify(
+        embeddedPostgresPath,
+      )}, ${JSON.stringify(
+        require.resolve('async-exit-hook', { paths: [embeddedPostgresPath] }),
+      )})`,
+    ],
+    {
+      detached: true,
+      windowsHide: true,
+      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+    },
+  );
+  child.on('message', (message: { log?: string }) => {
+    if (message.log) {
+      console.error('[embedded-postgres]', message.log);
+    }
+  });
+  const disconnect = () => {
+    child.unref();
+    if (child.connected) {
+      child.disconnect();
+    }
+  };
+  signal?.addEventListener('abort', disconnect, { once: true });
+  if (signal?.aborted) {
+    disconnect();
+  }
+  const exitPromise = new Promise<void>((resolve, reject) => {
+    child.once('error', reject);
+    child.once('exit', code => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Embedded Postgres helper exited with code ${code}`));
+      }
+    });
+  });
+  exitPromise.then(
+    () => signal?.removeEventListener('abort', disconnect),
+    () => signal?.removeEventListener('abort', disconnect),
+  );
+  // Observe failures even while the backend is running.
+  exitPromise.catch(error => console.error(error));
+
+  let aborted: () => void;
+  let ready: (message: { ready?: boolean; error?: string }) => void;
+  await new Promise<void>((resolve, reject) => {
+    aborted = () => reject(signal?.reason);
+    ready = message => {
+      if (message.error) {
+        reject(new Error(message.error));
+      } else if (message.ready) {
+        resolve();
+      }
+    };
+    child.on('message', ready);
+    signal?.addEventListener('abort', aborted, { once: true });
+    if (signal?.aborted) {
+      aborted();
+      return;
+    }
+    exitPromise.then(
+      () =>
+        reject(new Error('Embedded Postgres helper exited before starting')),
+      reject,
+    );
+    child.send({ user, password, port, flags: userConfig?.flags });
+  })
+    .catch(async error => {
+      if (child.connected) {
+        child.disconnect();
+      }
+      if (!signal?.aborted) {
+        await exitPromise.catch(() => {});
+      }
+      throw error;
+    })
+    .finally(() => {
+      signal?.removeEventListener('abort', aborted);
+      child.removeListener('message', ready);
+    });
+
+  child.unref();
 
   const configOverride: Record<string, unknown> = {
     client: 'pg',
@@ -190,8 +219,11 @@ async function startEmbeddedDbInternal(
   return {
     configOverride,
     async close() {
-      await pg.stop();
-      await fs.remove(tmpDir);
+      child.ref();
+      if (child.connected) {
+        child.disconnect();
+      }
+      await exitPromise;
     },
   };
 }
