@@ -1,5 +1,15 @@
 # @backstage/backend-defaults
 
+## 0.18.2-next.1
+
+### Patch Changes
+
+- f81ca4e: The AWS S3 URL reader no longer assumes the configured `roleArn` a second time when the matching account under `aws.accounts` already provides credentials for that exact role, for example through a web identity token file. Previously the role had to trust itself for this setup to work. The role is still assumed explicitly when the integration sets an `externalId`.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.1
+
 ## 0.18.2-next.0
 
 ### Patch Changes
