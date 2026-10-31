@@ -26,6 +26,130 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/amazon-bedrock@npm:^4.0.199":
+  version: 4.0.199
+  resolution: "@ai-sdk/amazon-bedrock@npm:4.0.199"
+  dependencies:
+    "@ai-sdk/anthropic": "npm:3.0.133"
+    "@ai-sdk/openai": "npm:3.0.130"
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
+    "@smithy/eventstream-codec": "npm:^4.0.1"
+    "@smithy/util-utf8": "npm:^4.0.0"
+    aws4fetch: "npm:^1.0.20"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/216eeaa15acf54cd2ea542661d3a6a1038c39a8e9a0ff7ea43945d2641eab125856e3ef62cb64022b50e5396273cd0960aa42913caf61e8b5ff773872ddddb32
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/anthropic@npm:3.0.133, @ai-sdk/anthropic@npm:^3.0.133":
+  version: 3.0.133
+  resolution: "@ai-sdk/anthropic@npm:3.0.133"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/51237c1af7fa2e41818f636b9908cd084325cb4aaf892138676cfbf7cb946cb798216d3fa509c51c28349d3b43c0c956059ae066e620cac4825363a05c5a8b41
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/gateway@npm:3.0.217":
+  version: 3.0.217
+  resolution: "@ai-sdk/gateway@npm:3.0.217"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
+    "@vercel/oidc": "npm:3.2.0"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/cab253d157ce83456e459bb73d639154ed0ea3f18b69ce3927ba32f0bbf14f446ad900035000d0ab1bdabd2336a12652b11656667e5a530ecd5660d418210cf0
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/google@npm:^3.0.118":
+  version: 3.0.118
+  resolution: "@ai-sdk/google@npm:3.0.118"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.15"
+    "@ai-sdk/provider-utils": "npm:4.0.49"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/fef94158e66ba9cdccce95f6d52b3ee8619be28f56303e902a7b8a26b6ece7355e248c7c6a2f7962851a0816873bb1967e9bd79348d69e43f84a8e2dda4da27f
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/openai-compatible@npm:^2.0.85":
+  version: 2.0.85
+  resolution: "@ai-sdk/openai-compatible@npm:2.0.85"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/a72677168f12c3274d771aade53bb12145fa326672d8152629f494c7a6c2ad7acd326204147d9489b01d38c481563b95275ba825372a33c84111f3d4cf108f0c
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/openai@npm:3.0.130, @ai-sdk/openai@npm:^3.0.130":
+  version: 3.0.130
+  resolution: "@ai-sdk/openai@npm:3.0.130"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/eecb8072733bdf4e3c6c154779a1d8e793ba35a4a0978f85b223ac9baaceedccbc5c361a42eac2437bf5587cbc04601eec7970212c295d34e8a2a00449aced66
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/provider-utils@npm:4.0.49":
+  version: 4.0.49
+  resolution: "@ai-sdk/provider-utils@npm:4.0.49"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.15"
+    "@standard-schema/spec": "npm:^1.1.0"
+    eventsource-parser: "npm:^3.0.8"
+    undici: "npm:^6.28.0"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/910fe82cd02eb9fb894d2b6c54cca8d415d7db35e7c55d083be9809b300b4d4429abef52521642c20f9f646b83f144ea49188df7c78acfb545b4b77c604104aa
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/provider-utils@npm:4.0.61":
+  version: 4.0.61
+  resolution: "@ai-sdk/provider-utils@npm:4.0.61"
+  dependencies:
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@standard-schema/spec": "npm:^1.1.0"
+    eventsource-parser: "npm:^3.0.8"
+    undici: "npm:^6.28.0"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/3041b516d9d2b0754c995be87c301cb5583f53d006cec44c9d75ac374dec1ee1b8bb04897619a4f65764286a41a418a126fe2ab8688724ad7bddbb160420185e
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/provider@npm:3.0.15":
+  version: 3.0.15
+  resolution: "@ai-sdk/provider@npm:3.0.15"
+  dependencies:
+    json-schema: "npm:^0.4.0"
+  checksum: 10/3efa96a4e59edef46a871d4c392c1c8351bd134e401c9e80bb72c128f92730402ca54512ab8b7aa336a6c9c8c2bfbb35c30f0ee06253a1c8f0b3b2754a466969
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/provider@npm:3.0.19, @ai-sdk/provider@npm:^3.0.19":
+  version: 3.0.19
+  resolution: "@ai-sdk/provider@npm:3.0.19"
+  dependencies:
+    json-schema: "npm:^0.4.0"
+  checksum: 10/36f51157936eb6c6ef329d8d217a16476421c34b717f5fb29f2b864f3ffbba1a92b5fe31994b3e390f354c407030ae72aa25ded330d1ba9b2474e3b7d3cd609c
+  languageName: node
+  linkType: hard
+
 "@algolia/cache-browser-local-storage@npm:4.23.2":
   version: 4.23.2
   resolution: "@algolia/cache-browser-local-storage@npm:4.23.2"
@@ -1773,6 +1897,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/backend-defaults@workspace:packages/backend-defaults"
   dependencies:
+    "@ai-sdk/amazon-bedrock": "npm:^4.0.199"
+    "@ai-sdk/anthropic": "npm:^3.0.133"
+    "@ai-sdk/google": "npm:^3.0.118"
+    "@ai-sdk/openai": "npm:^3.0.130"
+    "@ai-sdk/openai-compatible": "npm:^2.0.85"
+    "@ai-sdk/provider": "npm:^3.0.19"
     "@aws-sdk/abort-controller": "npm:^3.347.0"
     "@aws-sdk/client-codecommit": "npm:^3.350.0"
     "@aws-sdk/client-s3": "npm:^3.350.0"
@@ -1819,6 +1949,7 @@ __metadata:
     "@types/node-forge": "npm:^1.3.0"
     "@types/pg-format": "npm:^1.0.5"
     "@types/yauzl": "npm:^2.10.0"
+    ai: "npm:^6.0.309"
     archiver: "npm:^7.0.0"
     base64-stream: "npm:^1.0.0"
     better-sqlite3: "npm:^12.0.0"
@@ -1961,6 +2092,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/backend-plugin-api@workspace:packages/backend-plugin-api"
   dependencies:
+    "@ai-sdk/provider": "npm:^3.0.19"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
@@ -3319,6 +3451,41 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-ai-gateway-backend@workspace:^, @backstage/plugin-ai-gateway-backend@workspace:plugins/ai-gateway-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-ai-gateway-backend@workspace:plugins/ai-gateway-backend"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": "npm:^4.17.6"
+    "@types/supertest": "npm:^2.0.8"
+    express: "npm:^4.22.0"
+    supertest: "npm:^7.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-ai-gateway-react@workspace:^, @backstage/plugin-ai-gateway-react@workspace:plugins/ai-gateway-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-ai-gateway-react@workspace:plugins/ai-gateway-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/types": "workspace:^"
+    cross-fetch: "npm:^4.0.0"
+    msw: "npm:^2.0.0"
+    uri-template: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -9846,6 +10013,40 @@ __metadata:
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@internal/plugin-example-ai-code-review@workspace:^, @internal/plugin-example-ai-code-review@workspace:plugins/example-ai-code-review":
+  version: 0.0.0-use.local
+  resolution: "@internal/plugin-example-ai-code-review@workspace:plugins/example-ai-code-review"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-ai-gateway-react": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@material-ui/core": "npm:^4.12.2"
+    "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@testing-library/dom": "npm:^10.0.0"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@testing-library/user-event": "npm:^14.0.0"
+    "@types/react": "npm:^18.0.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.30.2"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.30.2
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -16435,6 +16636,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/eventstream-codec@npm:^4.0.1":
+  version: 4.5.2
+  resolution: "@smithy/eventstream-codec@npm:4.5.2"
+  dependencies:
+    "@smithy/core": "npm:^3.33.2"
+    tslib: "npm:^2.6.2"
+  checksum: 10/cc0863d303c3fb630bc0b2dd9a4031a294d0da0fb9b152e26009048bdc5043b9bfbec34179ff2bc210e2a47bd00d49aa77a23c2e624da9642440f6c1a8fed7fd
+  languageName: node
+  linkType: hard
+
 "@smithy/fetch-http-handler@npm:^5.8.0":
   version: 5.8.0
   resolution: "@smithy/fetch-http-handler@npm:5.8.0"
@@ -16628,6 +16839,16 @@ __metadata:
     "@smithy/util-buffer-from": "npm:^3.0.0"
     tslib: "npm:^2.6.2"
   checksum: 10/1aead297d835af419f75e0c3113c021aa0da671110d1b498035530d5f35d8030092cad5147edaa7ca458aafe27c9383399ccd8176d342942465a2d8357e5cbf4
+  languageName: node
+  linkType: hard
+
+"@smithy/util-utf8@npm:^4.0.0":
+  version: 4.5.2
+  resolution: "@smithy/util-utf8@npm:4.5.2"
+  dependencies:
+    "@smithy/core": "npm:^3.33.2"
+    tslib: "npm:^2.6.2"
+  checksum: 10/25c7bb62e1ba300a6df8bbbc878920241c89353dfc6cb74dc10110b43e95e80446ea44ffb8cf7f4f1482a5ca85a666f8902d40f07a596f3909a8bfefc897b79f
   languageName: node
   linkType: hard
 
@@ -20505,6 +20726,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vercel/oidc@npm:3.2.0":
+  version: 3.2.0
+  resolution: "@vercel/oidc@npm:3.2.0"
+  checksum: 10/2a64ee806217d8e1cff79cc9d2925d6381883d24fa7b76ef07c9c1178534b624dc8da4d00d39f42e2a3be8c0ef35ab12bec2164dd978913db639c442fb93ccae
+  languageName: node
+  linkType: hard
+
 "@vitest/expect@npm:3.2.4":
   version: 3.2.4
   resolution: "@vitest/expect@npm:3.2.4"
@@ -21713,6 +21941,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ai@npm:^6.0.309":
+  version: 6.0.309
+  resolution: "ai@npm:6.0.309"
+  dependencies:
+    "@ai-sdk/gateway": "npm:3.0.217"
+    "@ai-sdk/provider": "npm:3.0.19"
+    "@ai-sdk/provider-utils": "npm:4.0.61"
+    "@opentelemetry/api": "npm:^1.9.0"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10/46079f646e0d18fdaf87d5617a6cf488f967691aee0fb560262d7c74ea24f8839e5d072ed673a99c896584cca887a29409c60b69768ffb4ca85c205db8f9eab0
+  languageName: node
+  linkType: hard
+
 "ajv-draft-04@npm:^1.0.0, ajv-draft-04@npm:~1.0.0":
   version: 1.0.0
   resolution: "ajv-draft-04@npm:1.0.0"
@@ -22545,6 +22787,13 @@ __metadata:
   version: 1.13.2
   resolution: "aws4@npm:1.13.2"
   checksum: 10/290b9f84facbad013747725bfd8b4c42d0b3b04b5620d8418f0219832ef95a7dc597a4af7b1589ae7fce18bacde96f40911c3cda36199dd04d9f8e01f72fa50a
+  languageName: node
+  linkType: hard
+
+"aws4fetch@npm:^1.0.20":
+  version: 1.0.20
+  resolution: "aws4fetch@npm:1.0.20"
+  checksum: 10/1329dd5913224c9a4fcb276633a2677baafe8224c3e4b99083309b30af4b114b33a73b6674369419f1978b83e905c4fff61d4af175c24450707c3cf027bb86da
   languageName: node
   linkType: hard
 
@@ -27438,10 +27687,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventsource-parser@npm:^3.0.0, eventsource-parser@npm:^3.0.1":
-  version: 3.0.6
-  resolution: "eventsource-parser@npm:3.0.6"
-  checksum: 10/febf7058b9c2168ecbb33e92711a1646e06bd1568f60b6eb6a01a8bf9f8fcd29cc8320d57247059cacf657a296280159f21306d2e3ff33309a9552b2ef889387
+"eventsource-parser@npm:^3.0.0, eventsource-parser@npm:^3.0.1, eventsource-parser@npm:^3.0.8":
+  version: 3.1.1
+  resolution: "eventsource-parser@npm:3.1.1"
+  checksum: 10/4ed3fbd0ea5b7041c3d14e6ab686077bc1b93ce230839d50ca735a39754ee17be2402c02be9e6608b325aa7a1e151bfd341ce4c985cb0d0ac2898a0712ab4826
   languageName: node
   linkType: hard
 
@@ -27566,6 +27815,7 @@ __metadata:
     "@backstage/frontend-defaults": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-ai-gateway-react": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
     "@backstage/plugin-app": "workspace:^"
     "@backstage/plugin-app-module-user-settings": "workspace:^"
@@ -27600,6 +27850,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
+    "@internal/plugin-example-ai-code-review": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
@@ -27632,6 +27883,7 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-ai-gateway-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
@@ -32825,6 +33077,13 @@ __metadata:
   version: 8.0.2
   resolution: "json-schema-typed@npm:8.0.2"
   checksum: 10/fa866d1fe91e3a94aa4fe007861475cd03dcaf47b719861cab171ef2f8598478007c634d29ae45de94ee34ddff4e13414c63ea5ff06c5b868b613142c699d511
+  languageName: node
+  linkType: hard
+
+"json-schema@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "json-schema@npm:0.4.0"
+  checksum: 10/8b3b64eff4a807dc2a3045b104ed1b9335cd8d57aa74c58718f07f0f48b8baa3293b00af4dcfbdc9144c3aafea1e97982cc27cc8e150fc5d93c540649507a458
   languageName: node
   linkType: hard
 

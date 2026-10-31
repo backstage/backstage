@@ -571,6 +571,7 @@ export default {
                 'backend-system/core-services/user-info',
                 'backend-system/core-services/actions-registry',
                 'backend-system/core-services/actions',
+                'backend-system/core-services/ai-models',
               ],
             ),
           ],

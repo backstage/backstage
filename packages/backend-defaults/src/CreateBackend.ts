@@ -38,6 +38,7 @@ import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
 import {
+  aiModelsServiceFactory,
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   metricsServiceFactory,
@@ -71,6 +72,7 @@ export const defaultServiceFactories: ServiceFactory[] = [
   eventsServiceFactory,
 
   // alpha services
+  aiModelsServiceFactory,
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   metricsServiceFactory,

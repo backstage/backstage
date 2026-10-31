@@ -5,9 +5,16 @@
 ```ts
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import type { AIModelCapability } from '@backstage/backend-plugin-api/alpha';
+import { AIModelsService } from '@backstage/backend-plugin-api/alpha';
+import type { Config } from '@backstage/config';
 import { ConnectionsService } from '@backstage/connections';
+import type { EmbeddingModelV3 } from '@ai-sdk/provider';
+import type { LanguageModelV3 } from '@ai-sdk/provider';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 
 // @public (undocumented)
@@ -23,6 +30,70 @@ export const actionsServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
+
+// @alpha
+export type AIEmbeddingModelFactory = (modelId: string) => EmbeddingModelV3;
+
+// @alpha
+export type AILanguageModelFactory = (modelId: string) => LanguageModelV3;
+
+// @alpha
+export const aiModelsServiceFactory: ServiceFactory<
+  AIModelsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export interface AIProvider {
+  dispose?(): Promise<void>;
+  getEmbeddingModelFactory?(): AIEmbeddingModelFactory;
+  // (undocumented)
+  getLanguageModelFactory(): AILanguageModelFactory;
+  // (undocumented)
+  healthCheck(): Promise<AIProviderHealthCheckResult>;
+  // (undocumented)
+  readonly metadata: AIProviderMetadata;
+  supports(capability: AIModelCapability): boolean;
+}
+
+// @alpha
+export const aiProviderFactoriesServiceRef: ServiceRef<
+  AIProviderFactory,
+  'plugin',
+  'multiton'
+>;
+
+// @alpha
+export interface AIProviderFactory {
+  // (undocumented)
+  create(options: AIProviderFactoryOptions): Promise<AIProvider>;
+  readonly type: string;
+}
+
+// @alpha
+export interface AIProviderFactoryOptions {
+  config: Config;
+  id: string;
+  // (undocumented)
+  logger: LoggerService;
+}
+
+// @alpha
+export interface AIProviderHealthCheckResult {
+  // (undocumented)
+  healthy: boolean;
+  // (undocumented)
+  latency?: number;
+  // (undocumented)
+  message?: string;
+}
+
+// @alpha
+export interface AIProviderMetadata {
+  id: string;
+  type: string;
+}
 
 // @alpha
 export const connectionsServiceFactory: ServiceFactory<
