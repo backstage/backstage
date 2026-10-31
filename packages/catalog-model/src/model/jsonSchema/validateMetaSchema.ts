@@ -29,6 +29,20 @@ export function validateMetaSchema(schema: unknown): schema is JsonObject {
     throw new InputError('Invalid JSON schema: must be an object');
   }
 
+  // Only draft-07 is supported by the schema engines
+  if (
+    schema.$schema !== undefined &&
+    !/^https?:\/\/json-schema\.org\/draft-07\/schema#?$/.test(
+      String(schema.$schema),
+    )
+  ) {
+    throw new InputError(
+      `Invalid JSON schema: unsupported $schema ${JSON.stringify(
+        schema.$schema,
+      )}, only draft-07 is supported`,
+    );
+  }
+
   // The full set of errors is typically too complex to report; just pick the
   // first one.
   let error: SchemaValidationError | undefined;
