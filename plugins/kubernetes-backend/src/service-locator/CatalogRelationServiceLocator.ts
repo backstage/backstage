@@ -58,11 +58,21 @@ export class CatalogRelationServiceLocator implements KubernetesServiceLocator {
     entity: Entity,
     cluster: ClusterDetails,
   ): boolean {
-    return entity.relations!.some(
-      rel =>
-        rel.type === 'dependsOn' &&
-        rel.targetRef ===
-          `resource:${entity.metadata.namespace ?? 'default'}/${cluster.name}`,
-    );
+    // Prefer matching on the cluster's source entity ref, which is
+    // namespace-correct and unique. For clusters that are not sourced from the
+    // catalog (e.g. config or gke) there is no entityRef, so match by name
+    // against a cluster resource assumed to live in the consumer's namespace.
+    const sameNamespaceRef = `resource:${
+      entity.metadata.namespace ?? 'default'
+    }/${cluster.name}`;
+    return entity.relations!.some(rel => {
+      if (rel.type !== 'dependsOn') {
+        return false;
+      }
+      if (cluster.entityRef) {
+        return rel.targetRef === cluster.entityRef;
+      }
+      return rel.targetRef === sameNamespaceRef;
+    });
   }
 }
