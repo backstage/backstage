@@ -44,12 +44,12 @@ export const listTemplatingExtensions = (
 export const renderFragment = (e: Extension) => `${e.kind}_${e.name}`;
 
 export const parseFragment = (fragment: string): Extension => {
-  const [k, name] = fragment.split('_', 2);
+  const [k, ...rest] = fragment.split('_');
   const kind = k as ExtensionKind;
   if (kinds.includes(kind)) {
     return {
       kind,
-      name,
+      name: rest.join('_'),
     };
   }
   throw Error(fragment);
