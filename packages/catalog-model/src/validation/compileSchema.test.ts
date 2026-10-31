@@ -117,7 +117,7 @@ describe('compileSchema', () => {
     expect(() =>
       compileSchema(
         cfworkerSchemaEngine,
-        { type: 'strng' },
+        { type: 'not-a-type' },
         {
           disableCache: true,
         },
