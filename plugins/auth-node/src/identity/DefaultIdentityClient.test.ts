@@ -37,9 +37,6 @@ interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-const nodeMajor = Number(process.versions.node.split('.')[0]);
-const itIfNode24 = nodeMajor >= 24 ? it : it.skip;
-
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
 class FakeTokenFactory {
   private readonly keys = new Array<AnyJWK>();
@@ -178,7 +175,7 @@ describe('DefaultIdentityClient', () => {
       ).rejects.toThrow();
     });
 
-    itIfNode24('should authenticate tokens signed with ML-DSA-65', async () => {
+    it('should authenticate tokens signed with ML-DSA-65', async () => {
       const algorithm = 'ML-DSA-65';
       const mlDsaFactory = new FakeTokenFactory({
         issuer: mockBaseUrl,
@@ -199,9 +196,7 @@ describe('DefaultIdentityClient', () => {
       });
 
       const token = await mlDsaFactory.issueToken({ claims: { sub: 'foo' } });
-      // eslint-disable-next-line jest/no-standalone-expect
       expect(decodeProtectedHeader(token).alg).toBe(algorithm);
-      // eslint-disable-next-line jest/no-standalone-expect
       await expect(identityClient.authenticate(token)).resolves.toEqual({
         token,
         identity: {

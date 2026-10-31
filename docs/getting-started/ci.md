@@ -154,7 +154,7 @@ expects pre-built backend bundles.
 Common modifications:
 
 - **Add a matrix strategy** to test on multiple Node.js versions (the
-  template supports Node.js 22 and 24).
+  template supports Node.js 24 and 26).
 - **Add a deploy step** that pushes the Docker image to a registry when
   merging to your default branch.
 - **Add end-to-end tests** using the included Playwright configuration
