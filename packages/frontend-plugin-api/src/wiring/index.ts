@@ -38,7 +38,6 @@ export {
   type CreateFrontendPluginOptions,
   type FrontendPlugin,
   type OverridableFrontendPlugin,
-  type PluginOptions,
   type FrontendPluginInfo,
   type FrontendPluginInfoOptions,
 } from './createFrontendPlugin';

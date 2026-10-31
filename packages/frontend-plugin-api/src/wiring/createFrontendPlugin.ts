@@ -209,17 +209,6 @@ export interface CreateFrontendPluginOptions<
 }
 
 /**
- * @deprecated Use {@link CreateFrontendPluginOptions} instead.
- * @public
- */
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends { [name in string]: RouteRef | SubRouteRef },
-  TExternalRoutes extends { [name in string]: ExternalRouteRef },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
-
-/**
  * Creates a new plugin that can be installed in a Backstage app.
  *
  * @remarks
