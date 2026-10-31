@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-
 import {
   ApiBlueprint,
   PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { Flex } from '@backstage/ui';
 import { z } from 'zod/v4';
 
 import {
@@ -171,11 +170,9 @@ const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
     filter: { kind: 'api' },
     loader: async () =>
       import('./components/ApiDefinitionCard').then(m => (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <m.ApiDefinitionCard />
-          </Grid>
-        </Grid>
+        <Flex direction="column" gap="6">
+          <m.ApiDefinitionCard />
+        </Flex>
       )),
   },
 });
@@ -189,14 +186,10 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('./components/ApisCards').then(m => (
-        <Grid container spacing={3} alignItems="stretch">
-          <Grid item xs={12}>
-            <m.ProvidedApisCard />
-          </Grid>
-          <Grid item xs={12}>
-            <m.ConsumedApisCard />
-          </Grid>
-        </Grid>
+        <Flex direction="column" gap="6">
+          <m.ProvidedApisCard />
+          <m.ConsumedApisCard />
+        </Flex>
       )),
   },
 });
