@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import SearchIcon from '@material-ui/icons/Search';
+import { RiSearch2Line } from '@remixicon/react';
 import { z } from 'zod/v4';
 
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
@@ -67,7 +67,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
       path: '/search',
       routeRef: rootRouteRef,
       title: 'Search',
-      icon: <SearchIcon fontSize="inherit" />,
+      icon: <RiSearch2Line size="1em" />,
       loader: async () => {
         const { SearchPage } = await import('./alpha/SearchPage');
         const items = inputs.items.map(item =>
@@ -117,7 +117,7 @@ const homePageSearchBarWidget = HomePageWidgetBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'search',
   title: 'Search',
-  icon: <SearchIcon fontSize="inherit" />,
+  icon: <RiSearch2Line size="1em" />,
   info: { packageJson: () => import('../package.json') },
   extensions: [searchApi, searchPage, homePageSearchBarWidget],
   routes: {

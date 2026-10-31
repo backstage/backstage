@@ -20,7 +20,7 @@ import {
   PageBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import SettingsIcon from '@material-ui/icons/Settings';
+import { RiSettings2Line } from '@remixicon/react';
 import { settingsRouteRef } from './plugin';
 
 import { userSettingsTranslationRef as _userSettingsTranslationRef } from './translation';
@@ -36,7 +36,7 @@ const userSettingsPage = PageBlueprint.make({
     path: '/settings',
     routeRef: settingsRouteRef,
     title: 'Settings',
-    icon: <SettingsIcon fontSize="inherit" />,
+    icon: <RiSettings2Line size="1em" />,
   },
 });
 
@@ -115,7 +115,7 @@ const featureFlagsSettingsPage = SubPageBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'user-settings',
   title: 'Settings',
-  icon: <SettingsIcon fontSize="inherit" />,
+  icon: <RiSettings2Line size="1em" />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     userSettingsPage,
