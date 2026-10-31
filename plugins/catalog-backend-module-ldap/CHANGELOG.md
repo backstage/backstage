@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.12.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.12.10
+
+### Patch Changes
+
+- 916e5b2: Improved the performance of LDAP organization ingestion, especially for large directories, without changing the resulting catalog entities.
+- 1a20364: Improved large LDAP organization refreshes by yielding to the event loop while resolving relations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+
 ## 0.12.10-next.1
 
 ### Patch Changes

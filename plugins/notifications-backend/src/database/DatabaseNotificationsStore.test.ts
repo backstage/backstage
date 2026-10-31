@@ -726,6 +726,89 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    it.each([
+      ['saved', 'read', 'markSaved', 'markRead', 'markUnread'],
+      ['read', 'saved', 'markRead', 'markSaved', 'markUnsaved'],
+    ] as const)(
+      'should preserve broadcast %s status when updating the other status',
+      async (status, otherStatus, firstUpdate, secondUpdate, clearUpdate) => {
+        await storage.saveBroadcast(testNotification1);
+        await storage[firstUpdate]({ ids: [id1], user });
+        const before = await storage.getNotification({ id: id1, user });
+        expect(before?.[status]).toBeTruthy();
+        expect(before?.[otherStatus]).toBeNull();
+
+        await storage[secondUpdate]({ ids: [id1], user });
+        const after = await storage.getNotification({ id: id1, user });
+        expect(after?.[status]).toEqual(before?.[status]);
+        expect(after?.[otherStatus]).toBeTruthy();
+
+        await storage[firstUpdate]({ ids: [id1], user });
+        const repeated = await storage.getNotification({ id: id1, user });
+        expect(repeated?.[status]).toBeTruthy();
+        expect(repeated?.[otherStatus]).toEqual(after?.[otherStatus]);
+
+        await storage[clearUpdate]({ ids: [id1], user });
+        const cleared = await storage.getNotification({ id: id1, user });
+        expect(cleared?.[status]).toEqual(repeated?.[status]);
+        expect(cleared?.[otherStatus]).toBeNull();
+      },
+    );
+
+    it('should preserve independent statuses for bulk updates and different users', async () => {
+      await storage.saveBroadcast(testNotification1);
+      await storage.saveBroadcast(testNotification2);
+      await storage.saveNotification(testNotification3);
+      const options = { ids: [id1, id2, id3], user };
+
+      await storage.markSaved(options);
+      await storage.markRead(options);
+      await storage.markRead({ ids: [id1], user: otherUser });
+      await storage.markSaved({ ids: [id2], user: otherUser });
+
+      const notifications = await storage.getNotifications(options);
+      expect(notifications).toHaveLength(3);
+      for (const notification of notifications) {
+        expect(notification.read).toBeTruthy();
+        expect(notification.saved).toBeTruthy();
+      }
+      expect(await storage.getNotifications({ user: otherUser })).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: id1,
+            read: expect.anything(),
+            saved: null,
+          }),
+          expect.objectContaining({
+            id: id2,
+            read: null,
+            saved: expect.anything(),
+          }),
+        ]),
+      );
+
+      await storage.markUnread(options);
+      await storage.markRead(options);
+      await storage.markUnsaved(options);
+      const unsaved = await storage.getNotifications(options);
+      for (const notification of unsaved) {
+        expect(notification.read).toBeTruthy();
+        expect(notification.saved).toBeNull();
+      }
+      expect(
+        await storage.getNotification({ id: id1, user: otherUser }),
+      ).toMatchObject({
+        read: expect.anything(),
+        saved: null,
+      });
+      expect(
+        await storage.getNotification({ id: id2, user: otherUser }),
+      ).toMatchObject({
+        read: null,
+        saved: expect.anything(),
+      });
+    });
+
     describe('markRead', () => {
       it('should mark notification read', async () => {
         await storage.saveNotification(testNotification1);

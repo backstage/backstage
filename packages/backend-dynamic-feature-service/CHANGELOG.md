@@ -1,5 +1,50 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.9-next.0
+
+### Patch Changes
+
+- c999b77: Dynamic backend plugins can now require the packages they share with the backend when those packages are not in the root `node_modules`, as with the pnpm `isolated` node linker. They are found through the backend package and through this package. With the default pnpm hoisting, this includes the packages that pnpm hoists into `node_modules/.pnpm/node_modules`. With `hoist: false`, only the direct dependencies of the backend package and of this package are found. Everything that was searched before is still searched first, so a module that was found before is found in the same place. The exception is plugins inside the Backstage root on Windows, which did not search the root `node_modules` before, other than through `NODE_PATH`. It is now searched in the same order as on other platforms.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/plugin-catalog-backend@4.0.3-next.0
+  - @backstage/cli-node@0.3.6-next.0
+  - @backstage/plugin-events-backend@0.6.8-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/plugin-search-backend-node@1.4.10-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+  - @backstage/plugin-app-node@0.1.51-next.0
+
+## 0.8.8
+
+### Patch Changes
+
+- 786a8ea: Corrected the `schemaLocator` documentation to identify `dist/.config-schema.json` as the default dynamic-plugin config-schema path.
+- b9c9dd2: Internal refactor of dynamic backend plugin alpha-to-main entrypoint loading. No intended behavior change.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/plugin-catalog-backend@4.0.1
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/plugin-events-backend@0.6.7
+  - @backstage/cli-common@0.3.2
+  - @backstage/plugin-app-node@0.1.50
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+  - @backstage/plugin-scaffolder-node@0.13.8
+  - @backstage/plugin-search-backend-node@1.4.9
+  - @backstage/plugin-search-common@1.2.26
+
 ## 0.8.8-next.1
 
 ### Patch Changes

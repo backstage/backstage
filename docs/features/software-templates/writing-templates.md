@@ -230,6 +230,27 @@ spec:
             inputType: tel
 ```
 
+### Array item headings in the BUI theme
+
+When using the experimental BUI form theme, array cards use the `title` from the item
+schema followed by its position, such as **Service 1**. Without a title, the
+heading is **Item 1**. Set `ui:title` within `items` to supply an exact
+heading without a position suffix:
+
+```yaml
+services:
+  type: array
+  items:
+    type: object
+    title: Service
+    ui:title: New service
+    properties:
+      name:
+        type: string
+```
+
+This heading changes presentation only; it does not change submitted values.
+
 ### Using Secrets
 
 You may want to mark things as secret and make sure that these values are protected and not available through REST endpoints. You can do this by using the built in `ui:field: Secret`.

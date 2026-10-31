@@ -32,8 +32,37 @@ function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   );
 }
 
-function isObject(value: unknown): value is Record<string, unknown> {
+export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Rejects primitives, and operator objects that are not exactly one of
+ * `{ $all: [...] }`, `{ $any: [...] }` or `{ $not: ... }`.
+ */
+export function assertObjectPredicate(filter: FilterPredicate): void {
+  if (!isObject(filter)) {
+    const actual = JSON.stringify(filter);
+    throw new InputError(
+      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
+    );
+  }
+
+  const entries = Object.entries(filter);
+  if (entries.some(([key]) => key.startsWith('$'))) {
+    const [[key, value]] = entries;
+    const valid =
+      entries.length === 1 &&
+      (key === '$not' ||
+        ((key === '$all' || key === '$any') && Array.isArray(value)));
+    if (!valid) {
+      throw new InputError(
+        `Invalid filter predicate: operators must be a single $all or $any with an array, or $not, but got ${JSON.stringify(
+          filter,
+        )}`,
+      );
+    }
+  }
 }
 
 export function applyPredicateEntityFilterToQuery(options: {
@@ -44,13 +73,7 @@ export function applyPredicateEntityFilterToQuery(options: {
 }): Knex.QueryBuilder {
   const { filter, targetQuery, onEntityIdField, knex } = options;
 
-  // We do not support top-level primitives; all matching happens through objects
-  if (!isObject(filter)) {
-    const actual = JSON.stringify(filter);
-    throw new InputError(
-      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
-    );
-  }
+  assertObjectPredicate(filter);
 
   if ('$not' in filter) {
     return targetQuery.andWhereNot(inner =>
@@ -105,69 +128,54 @@ export function applyPredicateEntityFilterToQuery(options: {
   }
   return targetQuery.andWhere(inner => {
     for (const [keyAnyCase, value] of Object.entries(filter)) {
-      applyFieldCondition({
-        key: keyAnyCase.toLowerCase(),
-        value,
-        targetQuery: inner,
-        onEntityIdField,
-        knex,
-      });
+      const subquery = searchExists(knex, onEntityIdField);
+      if (applyFieldCondition(subquery, keyAnyCase.toLowerCase(), value)) {
+        inner.whereExists(subquery);
+      } else {
+        inner.whereNotExists(subquery);
+      }
     }
   });
 }
 
 /**
- * Applies a single { key: value } filter to the target query.
+ * Applies a single { key: value } filter to a query on the search table,
+ * aliased as `SEARCH_FLT_ALIAS`. Returns false if the matching entities are
+ * those without such rows.
  */
-function applyFieldCondition(options: {
-  key: string;
-  value: FilterPredicateValue;
-  targetQuery: Knex.QueryBuilder;
-  onEntityIdField: string;
-  knex: Knex;
-}): Knex.QueryBuilder {
-  const { key, value, targetQuery, onEntityIdField, knex } = options;
-
+export function applyFieldCondition(
+  searchQuery: Knex.QueryBuilder,
+  key: string,
+  value: FilterPredicateValue,
+): boolean {
   if (isPrimitive(value)) {
-    return targetQuery.whereExists(
-      searchExists(knex, onEntityIdField)
-        .where(`${S}.key`, key)
-        .where(`${S}.value`, String(value).toLowerCase()),
-    );
+    searchQuery
+      .where(`${S}.key`, key)
+      .where(`${S}.value`, String(value).toLowerCase());
+    return true;
   }
 
   if (isObject(value)) {
     if ('$exists' in value) {
-      const subquery = searchExists(knex, onEntityIdField).where(
-        `${S}.key`,
-        key,
-      );
-      return value.$exists
-        ? targetQuery.whereExists(subquery)
-        : targetQuery.whereNotExists(subquery);
+      searchQuery.where(`${S}.key`, key);
+      return Boolean(value.$exists);
     }
 
     if ('$in' in value) {
       const values = value.$in.map(v => String(v).toLowerCase());
-      return targetQuery.whereExists(
-        searchExists(knex, onEntityIdField)
-          .where(`${S}.key`, key)
-          .where(whereInArray(`${S}.value`, values)),
-      );
+      searchQuery
+        .where(`${S}.key`, key)
+        .where(whereInArray(`${S}.value`, values));
+      return true;
     }
 
     if ('$hasPrefix' in value) {
       const prefix = value.$hasPrefix.toLowerCase();
       const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
-      return targetQuery.whereExists(
-        searchExists(knex, onEntityIdField)
-          .where(`${S}.key`, key)
-          .andWhereRaw('?? like ? escape ?', [
-            `${S}.value`,
-            `${escaped}%`,
-            '\\',
-          ]),
-      );
+      searchQuery
+        .where(`${S}.key`, key)
+        .andWhereRaw('?? like ? escape ?', [`${S}.value`, `${escaped}%`, '\\']);
+      return true;
     }
 
     if ('$contains' in value) {
@@ -184,11 +192,10 @@ function applyFieldCondition(options: {
       // "b" key with a primitive value. We'll consider that an acceptable
       // tradeoff though.
       if (isPrimitive(target)) {
-        return targetQuery.whereExists(
-          searchExists(knex, onEntityIdField)
-            .where(`${S}.key`, key)
-            .where(`${S}.value`, String(target).toLowerCase()),
-        );
+        searchQuery
+          .where(`${S}.key`, key)
+          .where(`${S}.value`, String(target).toLowerCase());
+        return true;
       }
 
       // Object form of $contains - currently only supports relation-style
@@ -199,12 +206,8 @@ function applyFieldCondition(options: {
       // TO:   search for key = "relations.ownedby" AND value = "group:default/team-a"
       if (isObject(target)) {
         if (key === 'relations') {
-          return applyContainsRelation({
-            target,
-            targetQuery,
-            onEntityIdField,
-            knex,
-          });
+          applyContainsRelation(searchQuery, target);
+          return true;
         }
 
         throw new InputError(
@@ -247,14 +250,10 @@ function applyFieldCondition(options: {
  * relation of that type. The "targetRef" value can be a string or an `$in`
  * array.
  */
-function applyContainsRelation(options: {
-  target: Record<string, unknown>;
-  targetQuery: Knex.QueryBuilder;
-  onEntityIdField: string;
-  knex: Knex;
-}): Knex.QueryBuilder {
-  const { target: rawTarget, targetQuery, onEntityIdField, knex } = options;
-
+function applyContainsRelation(
+  searchQuery: Knex.QueryBuilder,
+  rawTarget: Record<string, unknown>,
+): void {
   function parseStringOrIn(value: unknown): string[] {
     if (typeof value === 'string') {
       return [value.toLowerCase()];
@@ -317,14 +316,9 @@ function applyContainsRelation(options: {
     );
   }
 
-  const subquery = searchExists(knex, onEntityIdField).where(
-    `${S}.key`,
-    `relations.${type.toLowerCase()}`,
-  );
+  searchQuery.where(`${S}.key`, `relations.${type.toLowerCase()}`);
 
   if (targetRef) {
-    subquery.where(whereInArray(`${S}.value`, targetRef));
+    searchQuery.where(whereInArray(`${S}.value`, targetRef));
   }
-
-  return targetQuery.whereExists(subquery);
 }

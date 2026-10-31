@@ -1,5 +1,29 @@
 # @backstage/plugin-auth-backend
 
+## 0.30.3-next.0
+
+### Patch Changes
+
+- 8965c27: User tokens issued by sign-in resolvers now always have the entity refs in their `sub` and `ent` claims in canonical form, for example `user:default/jane.doe` rather than `User:default/Jane.Doe`, and duplicate `ent` refs are removed. Previously, a custom sign-in resolver could issue valid but non-canonical refs, which then failed to match stored user info and offline sessions on case-sensitive databases.
+- fa0eb7a: Added a `POST /v1/offline-sessions/revoke` endpoint that lets other backend services revoke all offline sessions (refresh tokens) of a user. The endpoint only accepts service credentials, records an audit event, and is only available when `auth.experimentalRefreshToken.enabled` is set.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.30.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+
 ## 0.30.2-next.1
 
 ### Patch Changes

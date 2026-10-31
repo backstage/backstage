@@ -1,5 +1,55 @@
 # @backstage/plugin-techdocs
 
+## 1.19.1-next.0
+
+### Patch Changes
+
+- 9a1d5cf: Fixed the TechDocs table of contents drifting to the right on wide screens. It now stays aligned with the right edge of the documentation content.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-search-react@1.11.10-next.0
+  - @backstage/plugin-techdocs-react@1.4.1-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/integration-react@1.2.24-next.0
+  - @backstage/plugin-auth-react@0.1.33-next.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 4a5b52d: TechDocs now uses the default `NotFoundErrorPage` when documentation is missing, instead of its own TechDocs-specific page.
+
+  This means if you have provided an override to the `NotFoundErrorPage` component it will now be used within TechDocs when documentation is missing as well.
+
+  One thing to note is that the default not found page shows "PAGE NOT FOUND" rather than "Documentation not found".
+
+- 80a0da9: Added `withoutFeedbackLink` prop to `page:techdocs/reader` and `entity-content:techdocs` extensions, which can be set to `true` to disable the feedback button in the rendered documentation.
+
+### Patch Changes
+
+- 24fd0e8: Fixed TechDocs addons silently not rendering in apps using the new frontend system, on both the standalone documentation reader page and the entity documentation tab.
+- 6c74f3f: Migrated the `TechDocsPicker` filter from the deprecated `getCatalogFilters` to `getCatalogQuery`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/integration@2.1.3
+  - @backstage/ui@0.19.0
+  - @backstage/plugin-techdocs-react@1.4.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-components@0.18.15
+  - @backstage/plugin-techdocs-common@0.1.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+  - @backstage/plugin-auth-react@0.1.32
+  - @backstage/plugin-search-common@1.2.26
+  - @backstage/plugin-search-react@1.11.9
+
 ## 1.19.0-next.2
 
 ### Patch Changes

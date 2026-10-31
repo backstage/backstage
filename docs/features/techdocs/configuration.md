@@ -8,7 +8,21 @@ Using the `app-config.yaml` in the Backstage app, you can configure TechDocs usi
 
 ## Generator Configuration
 
-`techdocs.generator` is used to configure how documentation sites are generated using MkDocs.
+`techdocs.generator` is used to configure how documentation sites are generated. Unless noted otherwise, these settings apply to every [documentation engine](./engines.md).
+
+### Default Engine
+
+`techdocs.generator.defaultEngine`
+
+(Optional) The [documentation engine](./engines.md) used for entities without a `backstage.io/techdocs-engine` annotation. Must be an engine with a registered generator, such as `mkdocs` (built in) or `zensical` (from the [Zensical module](./engines-zensical.md)). Defaults to `mkdocs`.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    defaultEngine: 'zensical'
+```
 
 ### Run In
 
@@ -34,7 +48,7 @@ techdocs:
 
 (Optional) This can be used to control the docker image used during documentation generation. This can be useful if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
 
-**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'`.
+**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'`, and only for the MkDocs engine. Zensical builds use `techdocs.generator.zensical.dockerImage`, see [Zensical Engine](./engines-zensical.md#docker-image).
 
 **Example:**
 
@@ -87,6 +101,8 @@ techdocs:
 ```
 
 ### MkDocs Configuration
+
+Settings under `techdocs.generator.mkdocs` configure the MkDocs engine. The `legacyCopyReadmeMdToIndexMd` and `dangerouslyAllow*` settings also apply to Zensical builds, see [Zensical Engine](./engines-zensical.md#other-settings).
 
 #### Omit TechDocs Core Plugin
 

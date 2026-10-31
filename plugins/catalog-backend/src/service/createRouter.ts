@@ -936,7 +936,7 @@ export async function createRouter(
           error: (AggregateError as any)(errors, 'Could not validate entity'),
         });
 
-        res.status(400).json({
+        return res.status(400).json({
           errors,
         });
       }

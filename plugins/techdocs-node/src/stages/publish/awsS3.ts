@@ -745,7 +745,17 @@ export class AwsS3Publish implements PublisherBase {
           res.setHeader(headerKey, headerValue);
         }
 
-        (resp.Body as Readable)
+        const body = resp.Body as Readable;
+
+        // If the client disconnects before the file is fully sent, the piped
+        // body is left paused and keeps its pooled S3 connection forever.
+        res.on('close', () => {
+          if (!body.readableEnded) {
+            body.destroy();
+          }
+        });
+
+        body
           .on('error', err => {
             this.logger.warn(
               `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,

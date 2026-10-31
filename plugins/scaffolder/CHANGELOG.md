@@ -1,5 +1,54 @@
 # @backstage/plugin-scaffolder
 
+## 1.41.0-next.0
+
+### Minor Changes
+
+- 3fe82f6: Added a `ScaffolderTemplateFilterBlueprint` that lets apps filter the new frontend system's template list using identity, catalog, or other viewer-specific state.
+- ae86338: Added GitLab branch autocompletion to RepoBranchPicker using user SCM credentials.
+
+### Patch Changes
+
+- 111c6ce: Keep the task button bar at the user's chosen visibility when a task completes, so log visibility and start-over controls remain accessible. Action availability continues to depend on task state and permissions.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/plugin-scaffolder-react@3.0.0-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-home-react@0.1.44-next.0
+  - @backstage/plugin-techdocs-react@1.4.1-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/integration-react@1.2.24-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 1.40.0
+
+### Minor Changes
+
+- d0cc453: Added a `Featured Templates` homepage widget that displays templates tagged with a configurable catalog tag, defaulting to `featured`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/integration@2.1.3
+  - @backstage/ui@0.19.0
+  - @backstage/plugin-techdocs-react@1.4.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-components@0.18.15
+  - @backstage/plugin-techdocs-common@0.1.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-home-react@0.1.43
+  - @backstage/plugin-permission-react@0.5.6
+  - @backstage/plugin-scaffolder-common@2.3.1
+  - @backstage/plugin-scaffolder-react@2.1.1
+
 ## 1.40.0-next.2
 
 ### Minor Changes

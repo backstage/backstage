@@ -1,5 +1,21 @@
 # @backstage/core-app-api
 
+## 1.20.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.0
+
+## 1.20.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.19.0
+  - @backstage/config@1.3.10
+  - @backstage/core-plugin-api@1.12.11
+
 ## 1.20.6-next.1
 
 ### Patch Changes

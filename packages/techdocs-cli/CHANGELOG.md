@@ -1,5 +1,37 @@
 # @techdocs/cli
 
+## 1.14.0-next.0
+
+### Minor Changes
+
+- a4604d2: Add Zensical support to `serve`, `serve:raw` and `generate` via `--engine zensical` (or the `backstage.io/techdocs-engine` annotation in `catalog-info.yaml`), including live reload in the preview app. The default `--docker-image` is now chosen per engine instead of always being `spotify/techdocs`, and matches the image the TechDocs backend uses for that engine, so MkDocs previews now use `spotify/techdocs:v1.2.8` instead of `latest`. Passing `--docker-image` explicitly behaves as before.
+
+  The `serve` flags `--mkdocs-port`, `--mkdocs-config-file-name` and `--mkdocs-parameter-*` are deprecated in favor of `--engine-port`, `--config-file-name` and `--parameter-*`. If both the old and new flag are given, the new one wins and the warning says the old one is ignored.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/plugin-techdocs-node@2.2.0-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 4d4f987: Add engine abstraction layer for multi-engine TechDocs support. Introduces `--engine` flag, engine config map, generator registry with `backstage.io/techdocs-engine` annotation support, `engine` field in `techdocs_metadata.json`, `serve:raw` command, and live-reload adapter interface. MkDocs remains the default with no behavior change.
+
+  The built-in generator is now registered under `mkdocs`; the previous `techdocs` key is kept as an alias, so existing `generators.register('techdocs', ...)` calls continue to work. The CLI's `--engine` flag takes precedence over the `backstage.io/techdocs-engine` annotation for all commands, and `serve:mkdocs` and the `--mkdocs-parameter-*` flags now print deprecation warnings.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@2.1.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config@1.3.10
+  - @backstage/catalog-model@1.10.2
+  - @backstage/cli-common@0.3.2
+
 ## 1.12.1-next.0
 
 ### Patch Changes

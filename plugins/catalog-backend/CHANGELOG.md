@@ -1,5 +1,62 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3-next.0
+
+### Patch Changes
+
+- 7d765b6: Improved repository validation for catalog entity placeholders. Placeholder-driven reads, including `$openapi` and `$asyncapi` document references, are now restricted to the entity's own repository on SCM hosts; cross-repository references are rejected.
+- 2a9f08b: Match URL locations in catalog rules in canonical form.
+
+  URL locations are now matched against catalog rules in a canonical form of the URL, so that rule decisions agree with how the location target is resolved when its content is fetched. URL patterns that relied on percent-encoded characters being matched as written, or on default ports being kept, no longer match and should be updated.
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+
+## 4.0.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 4.0.1
+
+### Patch Changes
+
+- 589dcef: Fixed an issue where successfully processed entities could remain unavailable if stitch scheduling was interrupted.
+- a08e746: Improved large entity provider mutations by yielding to the event loop while preparing database changes.
+- aa6e7c6: Reduce repeated work for entities that fail stitching by gradually increasing retry delays with jitter. Failed entities remain eligible for recovery, and new stitching requests reset their failure count.
+- d7cc6e5: Reject non-positive stitching polling intervals and lease durations at startup to prevent continuous polling and immediate lease expiry. Configuration errors identify the setting that needs correction.
+- 727d53f: Improve responsiveness to other requests while reading large sets of entities with field selection, without reducing page sizes.
+
+  Like full-entity responses, projected list responses may now be streamed without a `Content-Length` or automatically generated `ETag` header.
+
+- 11f608b: Entity and location queries with a primitive value at the root of the filter predicate are now rejected with an "Invalid query" error, rather than "Query must be an object".
+- e783f4b: Fixed catalog processing error messages to report stable processor names in minified builds.
+- 7c376ff: Improved the performance and planner stability of orphan entity cleanup on large PostgreSQL catalogs. Orphan deletion and updates to related entities are now atomic, so a failed cleanup does not leave related entities waiting indefinitely for updated relations. Cleanup also preserves entities when a new reference is committed while it waits to delete them.
+- a69d971: Improved the reliability of deferred stitching. Pending stitching work is no longer lost when entities are deleted and re-added, and updated instances prevent timed-out stitching attempts from overwriting or removing work taken over by another updated instance. During rolling upgrades from older versions, instances may still perform redundant stitching. On MySQL, protection against overlapping writes remains best-effort.
+- 476f042: Fixed entities disappearing from filtered and sorted catalog queries after a database error during stitching. The final entity and its search index rows are now written together, so a failure part way through is rolled back and retried in full. Previously the entity could be left with a search index that no longer matched it, and because the entity itself looked up to date, every later stitch attempt skipped it. Such an entity stayed readable by direct lookup while missing from list queries that filter or sort, until it was next edited.
+
+  PostgreSQL and MySQL deadlocks trigger prompt, bounded retries of the entire write transaction, skipping the write if newer stitching work has superseded it. If retries are exhausted, queued work remains available for recovery after the stitching timeout.
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+
 ## 4.0.1-next.3
 
 ### Patch Changes

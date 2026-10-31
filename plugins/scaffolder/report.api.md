@@ -822,7 +822,7 @@ export const scaffolderTranslationRef: TranslationRef<
 // @public @deprecated (undocumented)
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
-// @public (undocumented)
+// @public
 export const TaskPage: (props: {
   TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput_2;

@@ -61,4 +61,54 @@ describe('CatalogAuthResolverContext', () => {
       { credentials: await auth.getOwnServiceCredentials() },
     );
   });
+
+  it('issues tokens and stores user info with a canonical subject', async () => {
+    const tokenIssuer = {
+      issueToken: jest.fn().mockResolvedValue({ token: 'token' }),
+      listPublicKeys: jest.fn(),
+    } as unknown as jest.Mocked<TokenIssuer>;
+    const context = CatalogAuthResolverContext.create({
+      logger: mockServices.logger.mock(),
+      catalog,
+      tokenIssuer,
+      auth: mockServices.auth(),
+      userInfo: mockUserInfo,
+    });
+
+    await expect(
+      context.issueToken({
+        claims: { sub: 'User:Default/Jane.Doe', custom: 'Value' },
+      }),
+    ).resolves.toEqual({ token: 'token' });
+
+    const expectedClaims = {
+      sub: 'user:default/jane.doe',
+      ent: ['user:default/jane.doe'],
+      custom: 'Value',
+    };
+    expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
+      claims: expectedClaims,
+    });
+    expect(mockUserInfo.addUserInfo).toHaveBeenCalledWith({
+      claims: expectedClaims,
+    });
+
+    // Explicit ownership claims are canonicalized and deduplicated
+    await context.issueToken({
+      claims: {
+        sub: 'user:default/Jane.Doe',
+        ent: [
+          'User:default/Jane.Doe',
+          'group:default/Team',
+          'Group:Default/team',
+        ],
+      },
+    });
+    expect(tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+      claims: {
+        sub: 'user:default/jane.doe',
+        ent: ['user:default/jane.doe', 'group:default/team'],
+      },
+    });
+  });
 });

@@ -1,0 +1,59 @@
+{
+  "name": "@backstage/plugin-techdocs-backend-module-zensical",
+  "version": "0.1.0-next.0",
+  "description": "A module for the TechDocs backend that adds Zensical as a documentation engine",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "techdocs",
+    "pluginPackage": "@backstage/plugin-techdocs-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/techdocs-backend-module-zensical"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-techdocs-node": "workspace:^",
+    "entities": "^4.5.0",
+    "fs-extra": "^11.0.0",
+    "js-yaml": "^5.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  },
+  "configSchema": "config.d.ts"
+}

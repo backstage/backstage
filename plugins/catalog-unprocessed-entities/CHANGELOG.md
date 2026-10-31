@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-compat-api@0.5.17-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.2.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/core-compat-api@0.5.16
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.18
+
 ## 0.2.36-next.1
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-notifications-node@0.2.32-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+  - @backstage/plugin-signals-node@0.2.7-next.0
+
+## 0.6.10
+
+### Patch Changes
+
+- 8ba34e8: Persist notification payload metadata for user notifications and broadcasts, and return it when reading notifications. Re-sending a scoped notification replaces its metadata, or clears it when the new payload omits metadata.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-notifications-common@0.2.5
+  - @backstage/plugin-notifications-node@0.2.31
+  - @backstage/plugin-signals-node@0.2.6
+
 ## 0.6.10-next.2
 
 ### Patch Changes

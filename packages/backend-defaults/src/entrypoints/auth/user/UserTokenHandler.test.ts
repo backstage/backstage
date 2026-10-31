@@ -23,7 +23,18 @@ import {
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthenticationError } from '@backstage/errors';
-import { SignJWT, GeneralSign, importJWK, base64url } from 'jose';
+import {
+  SignJWT,
+  GeneralSign,
+  importJWK,
+  base64url,
+  exportJWK,
+  generateKeyPair,
+} from 'jose';
+import { randomUUID as uuid } from 'node:crypto';
+
+const nodeMajor = Number(process.versions.node.split('.')[0]);
+const itIfNode24 = nodeMajor >= 24 ? it : it.skip;
 
 const mockPublicKey = {
   kty: 'EC',
@@ -194,6 +205,44 @@ describe('UserTokenHandler', () => {
         userEntityRef: parts.payload.sub,
       });
     });
+
+    itIfNode24(
+      'should verify a valid user token signed with ML-DSA-65',
+      async () => {
+        const algorithm = 'ML-DSA-65';
+        const pair = await generateKeyPair(algorithm);
+        const publicKey = await exportJWK(pair.publicKey);
+        const kid = uuid();
+        publicKey.kid = kid;
+        publicKey.alg = algorithm;
+
+        server.use(
+          http.get('http://localhost:0/api/auth/.well-known/jwks.json', () =>
+            HttpResponse.json({ keys: [publicKey] }),
+          ),
+        );
+
+        const sub = 'user:development/guest';
+        const iat = Math.floor(Date.now() / 1000);
+        const token = await new SignJWT({
+          sub,
+          aud: 'backstage',
+          iat,
+          exp: iat + 3600,
+        })
+          .setProtectedHeader({
+            typ: 'vnd.backstage.user',
+            alg: algorithm,
+            kid,
+          })
+          .sign(pair.privateKey);
+
+        // eslint-disable-next-line jest/no-standalone-expect
+        await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
+          userEntityRef: sub,
+        });
+      },
+    );
 
     it('should fail to verify when the sub claim is missing', async () => {
       const expectedIssuedAt = 1712071714;

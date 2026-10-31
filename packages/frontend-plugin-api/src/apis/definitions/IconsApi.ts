@@ -40,6 +40,7 @@ export interface IconsApi {
  * The `ApiRef` of {@link IconsApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.icons} instead.
  */
 export const iconsApiRef = createApiRef<IconsApi>().with({
   id: 'core.icons',

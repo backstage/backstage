@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.2-next.0
+
+### Patch Changes
+
+- ae86338: Added GitLab branch autocompletion to RepoBranchPicker using user SCM credentials.
+- ed8e58f: Fixed `publish:gitlab:merge-request` and `gitlab:repo:push` failing with "A file with this name already exists" when `commitAction` is `auto` and the repository file list cannot be fetched, for example when the request times out on a large repository. The actions now check each file individually in that case, instead of treating every file as new.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+
+## 0.12.1
+
+### Patch Changes
+
+- 06128be: Throw a `ConflictError` with a clear message when `publish:gitlab` is called and the target repository already exists, instead of letting the GitLab API return a `GitbeakerRequestError` with a raw JSON body such as `{"name":["has already been taken"]}`.
+- fe51d40: Added a secure `variableKey` input to `gitlab:projectAccessToken:create` and `gitlab:projectDeployToken:create` actions. When provided, the generated token is stored directly as a masked GitLab CI/CD variable instead of being exposed in task outputs and checkpoint state. The raw token outputs are now deprecated when `variableKey` is not used.
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-scaffolder-node@0.13.8
+
 ## 0.12.1-next.2
 
 ### Patch Changes

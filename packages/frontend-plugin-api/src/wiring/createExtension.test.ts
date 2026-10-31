@@ -1258,9 +1258,10 @@ describe('createExtension', () => {
           .add(multi1Ext)
           .add(multi2Ext)
           .get(outputRef),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
-      );
+      ).toThrowErrorMatchingInlineSnapshot(`
+        "Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs
+        If an error is expected, allow it with the isExpectedError option, for example: error => error.code === 'EXTENSION_FACTORY_ERROR'"
+      `);
 
       // Mix forward and data override
       expect(() =>
@@ -1281,9 +1282,10 @@ describe('createExtension', () => {
           .add(multi1Ext)
           .add(multi2Ext)
           .get(outputRef),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
-      );
+      ).toThrowErrorMatchingInlineSnapshot(`
+        "Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides
+        If an error is expected, allow it with the isExpectedError option, for example: error => error.code === 'EXTENSION_FACTORY_ERROR'"
+      `);
 
       // Required input not provided
       expect(() =>
@@ -1304,9 +1306,10 @@ describe('createExtension', () => {
           .add(multi1Ext)
           .add(multi2Ext)
           .get(outputRef),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
-      );
+      ).toThrowErrorMatchingInlineSnapshot(`
+        "Failed to resolve the extension tree: Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'
+        If an error is expected, allow it with the isExpectedError option, for example: error => error.code === 'EXTENSION_FACTORY_ERROR'"
+      `);
 
       // Wrong value provided
       expect(() =>
@@ -1333,9 +1336,10 @@ describe('createExtension', () => {
           .add(multi1Ext)
           .add(multi2Ext)
           .get(outputRef),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
-      );
+      ).toThrowErrorMatchingInlineSnapshot(`
+        "Failed to resolve the extension tree: Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared
+        If an error is expected, allow it with the isExpectedError option, for example: error => error.code === 'EXTENSION_FACTORY_ERROR'"
+      `);
     });
   });
 

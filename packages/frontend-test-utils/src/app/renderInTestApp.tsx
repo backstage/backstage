@@ -16,7 +16,10 @@
 
 import { Fragment } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { prepareSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  type AppError,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -35,13 +38,14 @@ import {
   type ApiRef,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
-import appPlugin from '@backstage/plugin-app';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
+import { createTestAppPlugin } from './testAppPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
+import { throwOnAppErrors } from './throwOnAppErrors';
 import { OpaqueExternalRouteRef } from '@internal/frontend';
 
 const DEFAULT_MOCK_CONFIG = {
@@ -106,7 +110,9 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   initialRouteEntries?: string[];
 
   /**
-   * API overrides to provide to the test app. Use `mockApis` helpers
+   * API overrides to provide to the test app. In-memory fakes are provided by
+   * default for alerts, errors, OAuth requests, storage, and toasts.
+   * Explicit overrides take precedence. Use `mockApis` helpers
    * from `@backstage/frontend-test-utils` to create mock implementations.
    *
    * @example
@@ -119,24 +125,26 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * ```
    */
   apis?: readonly [...TestApiPairs<TApiPairs>];
+
+  /**
+   * Decides whether an error reported while creating the test app is
+   * expected. By default every app error fails the test.
+   *
+   * @example
+   * ```ts
+   * isExpectedError: error =>
+   *   error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
+   *   error.context.node.spec.id === 'page:my-plugin'
+   * ```
+   */
+  isExpectedError?: (error: AppError) => boolean;
 };
 
-const appPluginOverride = appPlugin.withOverrides({
-  extensions: [
-    appPlugin.getExtension('sign-in-page:app').override({
-      disabled: true,
-    }),
-    appPlugin.getExtension('app/layout').override({
-      disabled: true,
-    }),
-    appPlugin.getExtension('app/routes').override({
-      disabled: true,
-    }),
-    appPlugin.getExtension('app/nav').override({
-      disabled: true,
-    }),
-  ],
-});
+const testAppPlugin = createTestAppPlugin([
+  'app/layout',
+  'app/routes',
+  'app/nav',
+]);
 
 /**
  * @public
@@ -240,7 +248,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
       pluginId: 'test',
       extensions,
     }),
-    appPluginOverride,
+    testAppPlugin,
   ];
 
   if (options?.features) {
@@ -271,6 +279,11 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
           }
         : undefined,
   } as CreateSpecializedAppInternalOptions).finalize();
+
+  throwOnAppErrors(app.errors, {
+    description: 'Failed to create the test app',
+    isExpectedError: options?.isExpectedError,
+  });
 
   if (identityOverrideFactory) {
     // identityApiRef always resolves to the app's internal AppIdentityProxy

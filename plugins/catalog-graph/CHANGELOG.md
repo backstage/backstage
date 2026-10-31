@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-graph
 
+## 0.6.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.6.9
+
+### Patch Changes
+
+- cc7eccf: The catalog graph page in the new frontend system no longer renders its own legacy header, and instead uses the page header provided by the app. Apps that use the old frontend system are not affected.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+
 ## 0.6.9-next.1
 
 ### Patch Changes

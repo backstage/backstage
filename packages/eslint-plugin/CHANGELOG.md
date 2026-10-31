@@ -1,5 +1,17 @@
 # @backstage/eslint-plugin
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 245d9e3: Internal changes for TypeScript 7 compatibility. The rules work the same as before.
+
+## 0.3.3
+
+### Patch Changes
+
+- 914101d: The `no-mixed-plugin-imports` rule now also applies when the repository is checked out below a directory whose name starts with a dot, such as `~/.worktrees/my-repo`. Before, it silently reported nothing in such locations, because `includedFiles` was matched only against the absolute file path. Patterns are now matched against the path relative to the package directory as well.
+
 ## 0.3.2
 
 ### Patch Changes

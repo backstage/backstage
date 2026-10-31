@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.3.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.10-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.3.19
+
+### Patch Changes
+
+- 33ff9ed: Updated dependency `@backstage-community/plugin-explore-common` to `^0.14.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/plugin-search-backend-node@1.4.9
+  - @backstage/plugin-search-common@1.2.26
+
 ## 0.3.19-next.1
 
 ### Patch Changes

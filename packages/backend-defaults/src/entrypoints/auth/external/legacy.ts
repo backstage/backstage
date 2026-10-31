@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
+import { decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
 
 import { ExternalTokenHandler } from './types';
 
@@ -55,14 +55,10 @@ export const legacyTokenHandler: LegacyTokenHandlerOverloaded = {
       throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
-    try {
-      return {
-        key: base64url.decode(secret),
-        subject,
-      };
-    } catch {
-      throw new Error('Illegal secret, must be a valid base64 string');
-    }
+    return {
+      key: Buffer.from(secret, 'base64'),
+      subject,
+    };
   },
 
   async verifyToken(token: string, context: LegacyTokenHandlerContext) {

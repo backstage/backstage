@@ -1,5 +1,42 @@
 # @backstage/plugin-techdocs-node
 
+## 2.2.0-next.0
+
+### Minor Changes
+
+- a4604d2: Added a new `@backstage/plugin-techdocs-node/alpha` entry point with building blocks for implementing additional documentation engines in separate modules: `createDockerContainerRunner`, `createOrUpdateMetadata`, `storeEtagMetadata`, `runCommand`, `validateInputDirectory`, `patchIndexPreBuild`, and the `mkdocs.yml` helpers `MKDOCS_SCHEMA`, `validateMkdocsYaml` and `sanitizeMkdocsYml`. These are alpha and may change in minor releases.
+
+### Patch Changes
+
+- 686d3cb: Fixed TechDocs served from Azure Blob Storage or Google Cloud Storage keeping storage connections open when a browser navigates away before a file is fully loaded. Errors that occur while streaming a file from Azure Blob Storage are now also logged and handled, instead of being left unhandled.
+- 2e98895: Fixed TechDocs served from AWS S3 leaking S3 connections when a browser navigates away before a file is fully loaded. Over time the connection pool was exhausted and all TechDocs pages failed to load with `Socket timed out without establishing a connection` errors until the backend was restarted.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 2.1.0
+
+### Minor Changes
+
+- 4d4f987: Add engine abstraction layer for multi-engine TechDocs support. Introduces `--engine` flag, engine config map, generator registry with `backstage.io/techdocs-engine` annotation support, `engine` field in `techdocs_metadata.json`, `serve:raw` command, and live-reload adapter interface. MkDocs remains the default with no behavior change.
+
+  The built-in generator is now registered under `mkdocs`; the previous `techdocs` key is kept as an alias, so existing `generators.register('techdocs', ...)` calls continue to work. The CLI's `--engine` flag takes precedence over the `backstage.io/techdocs-engine` annotation for all commands, and `serve:mkdocs` and the `--mkdocs-parameter-*` flags now print deprecation warnings.
+
+### Patch Changes
+
+- 9fc5387: Improved handling of mapping-style Markdown extension configuration.
+- 0fd5fe5: Fixed TechDocs allowing `custom_icons` paths in `mkdocs.yml` that resolve outside the documentation input directory. A `custom_icons` option with such a path is now removed from the configuration with a warning.
+- 8a37336: Fixed TechDocs generation rejecting `mkdocs.yml` files that use the emoji indexes and generators or the `pymdownx.superfences` custom fence formats documented by mkdocs-material, pymdown-extensions and mkdocs-mermaid2.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-techdocs-common@0.1.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-search-common@1.2.26
+
 ## 2.0.3-next.2
 
 ### Patch Changes

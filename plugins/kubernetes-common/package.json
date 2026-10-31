@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-common",
-  "version": "0.9.14-next.0",
+  "version": "0.9.15-next.0",
   "description": "Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin",
   "backstage": {
     "role": "common-library",
@@ -56,11 +56,11 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@kubernetes/client-node": "1.4.0",
-    "kubernetes-models": "^4.3.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "kubernetes-models": "^4.3.1"
   }
 }

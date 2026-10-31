@@ -58,17 +58,14 @@ export class MockStorageApi implements StorageApi {
   }
 
   forBucket(name: string): StorageApi {
-    if (!this.bucketStorageApis.has(name)) {
+    const namespace = `${this.namespace}/${name}`;
+    if (!this.bucketStorageApis.has(namespace)) {
       this.bucketStorageApis.set(
-        name,
-        new MockStorageApi(
-          `${this.namespace}/${name}`,
-          this.bucketStorageApis,
-          this.data,
-        ),
+        namespace,
+        new MockStorageApi(namespace, this.bucketStorageApis, this.data),
       );
     }
-    return this.bucketStorageApis.get(name)!;
+    return this.bucketStorageApis.get(namespace)!;
   }
 
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T> {

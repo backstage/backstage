@@ -156,6 +156,7 @@ export interface DialogApi {
  * The `ApiRef` of {@link DialogApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.dialog} instead.
  */
 export const dialogApiRef = createApiRef<DialogApi>().with({
   id: 'core.dialog',

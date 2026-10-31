@@ -1,5 +1,33 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.15-next.0
+  - @backstage/plugin-kubernetes-node@0.4.10-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.21.12
+
+### Patch Changes
+
+- 66f8cf8: Replace deprecated `createPermissionIntegrationRouter` API call with `permissionsRegistry`
+- b3292fc: Declare the existing per-cluster `assumeRole` and `externalId` options in the configuration schema so schema-generated configuration forms can expose AWS IAM role authentication settings. External IDs are marked as secrets.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-kubernetes-common@0.9.14
+  - @backstage/plugin-kubernetes-node@0.4.9
+  - @backstage/plugin-permission-common@0.9.12
+
 ## 0.21.12-next.2
 
 ### Patch Changes

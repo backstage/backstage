@@ -1,5 +1,21 @@
 # @backstage/plugin-events-backend-module-bitbucket-server
 
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/plugin-events-node@0.4.27
+
 ## 0.1.17-next.1
 
 ### Patch Changes

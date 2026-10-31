@@ -60,6 +60,8 @@ Each changeset message should be relevant to every package it names and written 
 
 Changes that introduce new features or modify existing behavior must include documentation updates. Documentation should be placed in [TSDoc](https://tsdoc.org) comments, the package README, or within the `/docs` folder, whichever is most appropriate. Documentation should follow the style guide at `/docs/contribute/doc-style-guide.md`.
 
+Core feature concepts, usage and configuration guides, and behavior spanning multiple packages should generally live in the appropriate `/docs` section, such as `/docs/features`, `/docs/frontend-system`, `/docs/backend-system`, or `/docs/conf`. Keep package READMEs focused on package-specific overviews and setup information, linking to canonical documentation rather than duplicating these guides.
+
 Before creating a pull request, check whether there is already an open PR for the same change to avoid duplicating effort.
 
 When creating pull requests, use the template at `/.github/PULL_REQUEST_TEMPLATE.md`. Do NOT erase or replace the template — fill it in and only check items on the checklist that have actually been completed. PR descriptions should be short and concise. If there are extensive details to share (design rationale, migration context, investigation notes), suggest opening a GitHub issue and linking to it from the PR instead. If the PR is related to an existing issue, link to it in the PR description.
@@ -71,3 +73,7 @@ Never make changes to the release notes in `/docs/releases` unless explicitly as
 ## Repository Structure
 
 See `/docs/contribute/project-structure.md` for a detailed description of the repository structure.
+
+## Skills
+
+Agent skills live in `/.agents/skills` (also linked as `/.claude/skills`), each in a `<name>/SKILL.md` file. Only the skills listed in `/.agents/skills/index.json` are published to adopters. See `/docs/ai/skills.md` before adding or changing a skill.

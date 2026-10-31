@@ -60,6 +60,7 @@ export default async ({ args, info }: CliCommandContext) => {
           body: {
             token: refreshToken,
             token_type_hint: 'refresh_token',
+            client_id: instance.clientId,
           },
           signal: AbortSignal.timeout(30_000),
         });
