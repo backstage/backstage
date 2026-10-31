@@ -25,7 +25,6 @@ describe('DefaultIconsApi', () => {
   it('should return undefined for unknown keys', () => {
     const api = new DefaultIconsApi({});
     expect(api.icon('missing')).toBeUndefined();
-    expect(api.getIcon('missing')).toBeUndefined();
   });
 
   it('should list all registered icon keys', () => {
@@ -61,6 +60,74 @@ describe('DefaultIconsApi', () => {
     expect(result.type).toBe(MyIcon);
     // @ts-expect-error accessing internal React element structure
     expect(result.props.fontSize).toBe('inherit');
+  });
+
+  it('should log a single warning listing all IconComponent keys', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    void new DefaultIconsApi({
+      a: () => createElement('span'),
+      elem: createElement('span'),
+      b: () => createElement('span'),
+      empty: null,
+    });
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/a, b$/));
+  });
+
+  it('should not warn when only IconElement values are provided', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    void new DefaultIconsApi({
+      element: createElement('span'),
+      empty: null,
+    });
+
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('should treat React.memo components as IconComponent', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const MemoIcon = memo(() => createElement('svg'));
+    const api = new DefaultIconsApi({ myIcon: MemoIcon });
+
+    const el = api.icon('myIcon');
+    expect(el).toBeTruthy();
+    // @ts-expect-error accessing internal React element structure
+    expect(el.type).toBe(MemoIcon);
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
+  });
+
+  it('should treat React.forwardRef components as IconComponent', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const RefIcon = forwardRef(() => createElement('svg'));
+    // @ts-expect-error forwardRef is not strictly IconComponent but should be handled
+    const api = new DefaultIconsApi({ myIcon: RefIcon });
+
+    const el = api.icon('myIcon');
+    expect(el).toBeTruthy();
+    // @ts-expect-error accessing internal React element structure
+    expect(el.type).toBe(RefIcon);
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
+  });
+  it('delegates to a custom v2 API and preserves missing and empty icons', () => {
+    const element = createElement('svg');
+    const iconsApi = {
+      icon: jest.fn((key: string) => (key === 'custom' ? element : undefined)),
+      listIconKeys: jest.fn(() => ['custom']),
+    };
+    const api = DefaultIconsApi.withLegacySupport(iconsApi);
+    expect(api.icon('custom')).toBe(element);
+    expect(api.listIconKeys()).toEqual(['custom']);
+    expect(api.getIcon('missing')).toBeUndefined();
+    const component = api.getIcon('custom');
+    expect(component).toEqual(expect.any(Function));
+    expect(api.getIcon('custom')).toBe(component);
+    expect(iconsApi.icon).toHaveBeenCalledWith('custom');
+    expect(iconsApi.listIconKeys).toHaveBeenCalledTimes(1);
   });
 
   it('should wrap IconElement values in a component for getIcon()', () => {
@@ -118,55 +185,8 @@ describe('DefaultIconsApi', () => {
     expect(icon({})).toBeNull();
   });
 
-  it('should log a single warning listing all IconComponent keys', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    void new DefaultIconsApi({
-      a: () => createElement('span'),
-      elem: createElement('span'),
-      b: () => createElement('span'),
-      empty: null,
-    });
-
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/a, b$/));
-  });
-
-  it('should not warn when only IconElement values are provided', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    void new DefaultIconsApi({
-      element: createElement('span'),
-      empty: null,
-    });
-
-    expect(warnSpy).not.toHaveBeenCalled();
-  });
-
-  it('should treat React.memo components as IconComponent', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const MemoIcon = memo(() => createElement('svg'));
-    const api = new DefaultIconsApi({ myIcon: MemoIcon });
-
-    const el = api.icon('myIcon');
-    expect(el).toBeTruthy();
-    // @ts-expect-error accessing internal React element structure
-    expect(el.type).toBe(MemoIcon);
-
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
-  });
-
-  it('should treat React.forwardRef components as IconComponent', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const RefIcon = forwardRef(() => createElement('svg'));
-    // @ts-expect-error forwardRef is not strictly IconComponent but should be handled
-    const api = new DefaultIconsApi({ myIcon: RefIcon });
-
-    const el = api.icon('myIcon');
-    expect(el).toBeTruthy();
-    // @ts-expect-error accessing internal React element structure
-    expect(el.type).toBe(RefIcon);
-
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
+  it('reuses the default implementation for both API versions', () => {
+    const api = new DefaultIconsApi({});
+    expect(DefaultIconsApi.withLegacySupport(api)).toBe(api);
   });
 });

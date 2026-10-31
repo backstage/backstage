@@ -147,7 +147,8 @@ class ForwardsCompatApis implements ApiHolder {
   get<T>(ref: ApiRef<any>): T | undefined {
     if (ref.id === swappableComponentsApiRef.id) {
       return this.#componentsApi as T;
-    } else if (ref.id === iconsApiRef.id) {
+    } else if (ref.id === iconsApiRef.id || ref.id === 'core.icons') {
+      // Older plugins still request the original icons API ID.
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;
