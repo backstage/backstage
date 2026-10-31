@@ -101,7 +101,7 @@ function extractMissingProperty(
   if (error.keyword !== 'required') {
     return undefined;
   }
-  return error.error.match(/required property ["']([^"']+)["']/)?.[1];
+  return error.error.match(/required property "(.*)"\.$/)?.[1];
 }
 
 /** Keywords that `@cfworker/json-schema` reports a summary error for whenever
@@ -133,7 +133,13 @@ const SUMMARY_KEYWORDS = new Set([
 export function removeSummaryErrors(
   errors: CFWorkerValidationError[],
 ): CFWorkerValidationError[] {
-  return errors.filter(error => {
+  // A `false` schema (such as `additionalProperties: false`) produces an
+  // error for the subschema itself, beneath the error for the keyword that
+  // holds it. The keyword error is the more descriptive one, so keep that.
+  const relevant = errors.some(error => error.keyword !== 'false')
+    ? errors.filter(error => error.keyword !== 'false')
+    : errors;
+  return relevant.filter(error => {
     if (!SUMMARY_KEYWORDS.has(error.keyword)) {
       return true;
     }
@@ -155,7 +161,7 @@ export function removeSummaryErrors(
         key.replace(/~/g, '~0').replace(/\//g, '~1'),
       )}`;
     }
-    return !errors.some(other =>
+    return !relevant.some(other =>
       other.keywordLocation.startsWith(`${location}/`),
     );
   });
