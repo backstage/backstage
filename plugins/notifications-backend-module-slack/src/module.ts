@@ -28,10 +28,7 @@ import {
   SlackBlockKitRenderer,
 } from './extensions';
 
-const MIGRATIONS_DIR = resolvePackagePath(
-  '@backstage/plugin-notifications-backend-module-slack',
-  'migrations',
-);
+const MIGRATIONS_DIR = resolvePackagePath(import.meta.url, 'migrations');
 
 const DB_MIGRATIONS_TABLE = 'notifications_module_slack__knex_migrations';
 const CLEANUP_RETENTION_SECONDS = 24 * 60 * 60; // 24 hours

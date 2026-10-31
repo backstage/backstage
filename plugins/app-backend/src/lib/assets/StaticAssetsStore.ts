@@ -24,10 +24,7 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-app-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 interface StaticAssetRow {
   path: string;
