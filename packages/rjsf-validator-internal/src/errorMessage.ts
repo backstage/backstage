@@ -37,6 +37,8 @@ interface Frame {
   locationLength: number;
   /** The number of instance location segments that lead to this schema. */
   instanceDepth: number;
+  /** The keyword that led to this schema from its parent. */
+  keyword?: string;
 }
 
 // Keywords that hold a single subschema
@@ -66,6 +68,9 @@ const SCHEMA_MAP_KEYWORDS = new Set([
   'prefixItems',
   'properties',
 ]);
+
+// Keywords whose subschemas apply to an item of an array instance
+const ITEM_KEYWORDS = new Set(['additionalItems', 'items', 'prefixItems']);
 
 // Keywords whose subschemas apply to a child of the instance
 const CHILD_INSTANCE_KEYWORDS = new Set([
@@ -131,7 +136,7 @@ function collectFrames(root: SchemaNode, keywordLocation: string[]): Frame[] {
       instanceDepth += 1;
     }
     node = next;
-    frames.push({ node, locationLength: i, instanceDepth });
+    frames.push({ node, locationLength: i, instanceDepth, keyword });
   }
   return frames;
 }
@@ -140,7 +145,7 @@ function missingPropertyOf(error: CFWorkerValidationError) {
   if (error.keyword !== 'required') {
     return undefined;
   }
-  return error.error.match(/required property ["']([^"']+)["']/)?.[1];
+  return error.error.match(/required property "(.*)"\.$/)?.[1];
 }
 
 function dependencyOf(error: CFWorkerValidationError) {
@@ -190,14 +195,12 @@ function findReplacement(
     const childSegment = instanceSegments[instanceDepth + 1];
     const child =
       childSegment === undefined ? undefined : decodeSegment(childSegment);
-    const target = missingProperty
-      ? childLocation(instanceLocation, missingProperty)
-      : instanceLocation;
-
+    // Messages that replace all errors of a kind are reported once, for the
+    // instance that the schema applies to, like ajv-errors does
     if (typeof errorMessage === 'string') {
       return {
         message: errorMessage,
-        instanceLocation: target,
+        instanceLocation,
         keywordLocation: location,
       };
     }
@@ -206,23 +209,33 @@ function findReplacement(
     }
 
     let message: unknown;
-    let messageLocation = target;
+    let messageLocation = instanceLocation;
     const dependency =
       locationLength === keywordLocation.length - 1
         ? dependencyOf(error)
         : undefined;
     if (child !== undefined) {
-      // Errors for a child match by its name or index, whichever keyword of
-      // this schema led to it, such as `allOf` or `items`
-      const childMessages = /^\d+$/.test(child)
+      // Errors for a child match by its property name or item index, no
+      // matter which keywords of this schema led to it, such as `allOf`
+      const childFrame = frames
+        .slice(f + 1)
+        .find(frame => frame.instanceDepth === instanceDepth + 1);
+      const isItem = childFrame
+        ? ITEM_KEYWORDS.has(childFrame.keyword!)
+        : /^\d+$/.test(child);
+      const childMessages = isItem
         ? errorMessage.items
         : errorMessage.properties;
       message = childMessages?.[child];
       messageLocation = childLocation(instanceLocation, child);
     } else if (keyword === 'required' && missingProperty) {
       const required = errorMessage.required;
-      message =
-        typeof required === 'object' ? required?.[missingProperty] : required;
+      if (typeof required === 'object') {
+        message = required?.[missingProperty];
+        messageLocation = childLocation(instanceLocation, missingProperty);
+      } else {
+        message = required;
+      }
     } else if (keyword === 'dependencies' && dependency !== undefined) {
       const dependencies = errorMessage.dependencies;
       message =
@@ -234,7 +247,7 @@ function findReplacement(
     }
     if (typeof message !== 'string') {
       message = errorMessage._;
-      messageLocation = target;
+      messageLocation = instanceLocation;
     }
     if (typeof message === 'string') {
       return {

@@ -111,6 +111,43 @@ export function scopeFormats(
   };
 }
 
+/** Calls a function for every object within a schema, including itself. */
+function forEachObject(
+  node: unknown,
+  fn: (value: Record<string, unknown>) => void,
+) {
+  if (Array.isArray(node)) {
+    node.forEach(item => forEachObject(item, fn));
+  } else if (node && typeof node === 'object') {
+    fn(node as Record<string, unknown>);
+    Object.values(node).forEach(item => forEachObject(item, fn));
+  }
+}
+
+/** Removes the IDs that are declared within one schema from another.
+ *
+ * @param target - The schema to update in place
+ * @param source - The schema whose IDs to remove
+ * @returns - False when the target schema itself declares one of the IDs, so it can not be registered
+ */
+function removeSchemaIds(target: Schema, source: Schema | boolean): boolean {
+  const ids = new Set<unknown>();
+  forEachObject(source, node => {
+    if (typeof node.$id === 'string') {
+      ids.add(node.$id);
+    }
+  });
+  if (ids.has(target.$id)) {
+    return false;
+  }
+  forEachObject(target, node => {
+    if (ids.has(node.$id)) {
+      delete node.$id;
+    }
+  });
+  return true;
+}
+
 /** Builds a schema-bound `@cfworker/json-schema` validator.
  *
  * @param schema - The schema the validator will use
@@ -142,7 +179,12 @@ export default function createCfworkerInstance(
     );
   }
   if (rootSchema && rootSchema !== schema) {
-    validator.addSchema(structuredClone(rootSchema), rootSchema.$id);
+    const root = structuredClone(rootSchema);
+    // The schema is often a part of the root schema. Any IDs declared within
+    // it are already registered, and registering them again would fail.
+    if (removeSchemaIds(root, schema)) {
+      validator.addSchema(root, root.$id);
+    }
   }
   if (typeof extenderFn === 'function') {
     validator = extenderFn(validator);
