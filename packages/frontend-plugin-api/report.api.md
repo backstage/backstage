@@ -86,39 +86,6 @@ export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public @deprecated
-export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
-  kind: 'analytics';
-  params: <TDeps extends { [name in string]: unknown }>(
-    params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams_2<AnalyticsImplementationFactory<{}>>;
-  output: ExtensionDataRef_2<
-    AnalyticsImplementationFactory<{}>,
-    'core.analytics.factory',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnalyticsImplementationFactory<{}>,
-      'core.analytics.factory',
-      {}
-    >;
-  };
-}>;
-
-// @public @deprecated (undocumented)
-export type AnalyticsImplementationFactory<
-  Deps extends {
-    [name in string]: unknown;
-  } = {},
-> = {
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): AnalyticsImplementation;
-};
-
 // @public
 export type AnalyticsTracker = {
   captureEvent: (
