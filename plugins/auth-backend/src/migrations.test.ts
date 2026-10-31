@@ -416,4 +416,67 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       knex('oauth_authorization_sessions').select('id'),
     ).resolves.toEqual([{ id: 'dcr-session' }]);
   });
+  it('20261030120000_remove_dcr.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20261030120000_remove_dcr.js');
+
+    await knex('oidc_clients').insert({
+      client_id: 'registered-client',
+      client_secret: 'secret',
+      client_name: 'Registered Client',
+      response_types: '["code"]',
+      grant_types: '["authorization_code"]',
+      redirect_uris: '["https://example.com/callback"]',
+    });
+    const cimdClientId = 'https://example.com/client.json';
+    for (const [id, clientId] of [
+      ['dcr', 'registered-client'],
+      ['cimd', cimdClientId],
+    ]) {
+      await knex('oauth_authorization_sessions').insert({
+        id,
+        client_id: clientId,
+        redirect_uri: 'https://example.com/callback',
+        response_type: 'code',
+        expires_at: new Date(Date.now() + 60_000),
+      });
+      await knex('oidc_authorization_codes').insert({
+        code: id,
+        session_id: id,
+        expires_at: new Date(Date.now() + 60_000),
+      });
+      await knex('offline_sessions').insert({
+        id,
+        oidc_client_id: clientId,
+        user_entity_ref: 'user:default/test',
+        token_hash: 'hash',
+      });
+    }
+    await knex('offline_sessions').insert({
+      id: 'device',
+      user_entity_ref: 'user:default/test',
+      token_hash: 'hash',
+    });
+
+    await migrateUpOnce(knex);
+
+    await expect(knex.schema.hasTable('oidc_clients')).resolves.toBe(false);
+    await expect(
+      knex('oauth_authorization_sessions').select('id'),
+    ).resolves.toEqual([{ id: 'cimd' }]);
+    await expect(
+      knex('oidc_authorization_codes').select('code'),
+    ).resolves.toEqual([{ code: 'cimd' }]);
+    await expect(
+      knex('offline_sessions').select('id').orderBy('id'),
+    ).resolves.toEqual([{ id: 'cimd' }, { id: 'device' }]);
+
+    await migrateDownOnce(knex);
+    await expect(knex('oidc_clients')).resolves.toEqual([]);
+    await expect(
+      knex('oauth_authorization_sessions').select('id'),
+    ).resolves.toEqual([{ id: 'cimd' }]);
+    await migrateUpOnce(knex);
+    await expect(knex.schema.hasTable('oidc_clients')).resolves.toBe(false);
+  });
 });

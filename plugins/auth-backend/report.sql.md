@@ -57,23 +57,6 @@
 
 - `oidc_authorization_codes_pkey` (`code`) unique primary
 
-## Table `oidc_clients`
-
-| Column           | Type                | Nullable | Max Length | Default |
-| ---------------- | ------------------- | -------- | ---------- | ------- |
-| `client_id`      | `character varying` | false    | 255        | -       |
-| `client_name`    | `character varying` | false    | 255        | -       |
-| `client_secret`  | `character varying` | false    | 255        | -       |
-| `grant_types`    | `text`              | false    | -          | -       |
-| `metadata`       | `text`              | true     | -          | -       |
-| `redirect_uris`  | `text`              | false    | -          | -       |
-| `response_types` | `text`              | false    | -          | -       |
-| `scope`          | `text`              | true     | -          | -       |
-
-### Indices
-
-- `oidc_clients_pkey` (`client_id`) unique primary
-
 ## Table `sessions`
 
 | Column    | Type                       | Nullable | Max Length | Default |
