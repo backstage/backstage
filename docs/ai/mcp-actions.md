@@ -231,26 +231,18 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
-#### Dynamic Client Registration (deprecated)
+#### Migrating from Dynamic Client Registration
 
-:::caution
-Dynamic Client Registration (DCR) is deprecated in Backstage and should not be used for new deployments. The MCP specification demoted DCR from a SHOULD to a MAY requirement in the [November 2025 revision](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization), characterizing it as a backwards-compatibility option. DCR will eventually be removed from both the MCP specification and Backstage. Migrate to [Client ID Metadata Documents](#client-id-metadata-documents).
-:::
+Backstage previously supported experimental Dynamic Client Registration (DCR).
+This support has been removed in favor of [Client ID Metadata Documents](#client-id-metadata-documents).
+Remove `auth.experimentalDynamicClientRegistration` from your configuration and
+enable CIMD instead. Clients must support CIMD and use a metadata document URL as
+their client ID; previously registered client IDs and secrets no longer work.
 
-Existing DCR configurations continue to work but log a deprecation warning at startup. If you are using DCR, plan to migrate to CIMD.
-
-```yaml title="app-config.yaml"
-auth:
-  experimentalDynamicClientRegistration:
-    enabled: true
-    # Optional: restrict which redirect URIs are allowed.
-    # Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
-    # allowedRedirectUriPatterns:
-    #   - 'cursor://*'
-    #   - 'http://localhost:*/*'
-    #   - 'http://127.0.0.1:*/*'
-    #   - 'http://[::1]:*/*'
-```
+The database migration deletes registered clients and their authorization and
+offline sessions. Existing DCR authorization codes and refresh tokens stop working;
+users must sign in again through a CIMD client. User tokens that have already been
+issued remain valid until they expire.
 
 ## Configuring MCP Clients
 
@@ -395,4 +387,4 @@ If your MCP client shows an `invalid_client` error when authenticating, check th
          - 'http://[::1]:*/*'
    ```
 
-4. **New Frontend System requirement**: OAuth authentication (both CIMD and DCR) requires the [new frontend system](../frontend-system/architecture/00-index.md). If you are using the old frontend system, [migrate to the new frontend system](../frontend-system/architecture/00-index.md) to use OAuth authentication. If migration is not possible, use [static tokens](#external-access-with-static-tokens) as a fallback.
+4. **New Frontend System requirement**: OAuth authentication requires the [new frontend system](../frontend-system/architecture/00-index.md). If you are using the old frontend system, [migrate to the new frontend system](../frontend-system/architecture/00-index.md) to use OAuth authentication. If migration is not possible, use [static tokens](#external-access-with-static-tokens) as a fallback.

@@ -89,6 +89,7 @@ jest.mock('yaml', () => ({ parse: jest.fn() }));
 jest.mock('inquirer', () => ({ prompt: jest.fn() }));
 
 import loginCommand from './login';
+import { httpJson } from '../lib/http';
 
 // Mock global fetch for the metadata endpoint check
 const originalFetch = global.fetch;
@@ -148,6 +149,20 @@ describe('login command - metadata preservation', () => {
         '--noBrowser',
       ],
     });
+
+    expect(httpJson).toHaveBeenCalledWith(
+      'https://backstage.example.com/api/auth/v1/token',
+      expect.objectContaining({
+        body: {
+          grant_type: 'authorization_code',
+          client_id:
+            'https://backstage.example.com/api/auth/.well-known/oauth-client/cli.json',
+          code: 'test-code',
+          redirect_uri: 'http://localhost:9999/callback',
+          code_verifier: 'test-verifier',
+        },
+      }),
+    );
 
     expect(mockUpsertInstance).toHaveBeenCalledWith(
       expect.objectContaining({
