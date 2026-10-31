@@ -153,7 +153,28 @@ export type DbFinalEntitiesRow = {
   last_updated_at?: string | Date;
   /** When the row was last tombstoned; informational only. */
   deleted_at?: string | Date | null;
+  /**
+   * The body that a tombstone replaced, used to evaluate permission conditions
+   * for its deletion. Null for live rows and for older tombstones.
+   */
+  last_final_entity?: string | null;
   entity_ref: string;
+};
+
+/**
+ * Represents the entity_change_subscriptions table.
+ */
+export type DbEntityChangeSubscriptionsRow = {
+  subscription_id: string;
+  created_at: string | number | Date;
+  active_at: string | number | Date;
+  state: 'idle' | 'waiting';
+  ack_id: string | null;
+  ack_timeout_at: string | number | Date | null;
+  last_sent_generation: string | number;
+  last_acknowledged_generation: string | number;
+  /** JSON array of scope entries, or null for everything. */
+  scope: string | null;
 };
 
 /**

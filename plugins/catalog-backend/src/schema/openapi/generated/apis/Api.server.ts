@@ -23,14 +23,29 @@ import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
+import { EntityChangesResponse } from '../models/EntityChangesResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
+import { GetEntityChanges202Response } from '../models/GetEntityChanges202Response.model';
 import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
 import { QueryEntityFacetsByPredicateRequest } from '../models/QueryEntityFacetsByPredicateRequest.model';
+import { ReadEntityChangeSubscription200Response } from '../models/ReadEntityChangeSubscription200Response.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
+import { UpsertEntityChangeSubscription200Response } from '../models/UpsertEntityChangeSubscription200Response.model';
+import { UpsertEntityChangeSubscriptionRequest } from '../models/UpsertEntityChangeSubscriptionRequest.model';
 import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
+/**
+ * @public
+ */
+export type AckEntityChangeSubscription = {
+  path: {
+    subscriptionId: string;
+    ackId: string;
+  };
+  response: void | Error | Error;
+};
 /**
  * @public
  */
@@ -115,12 +130,35 @@ export type GetEntityByUid = {
 /**
  * @public
  */
+export type GetEntityChanges = {
+  query: {
+    cursor?: string;
+    afterGeneration?: string;
+    scope?: Array<string>;
+    limit?: number;
+    block?: boolean;
+  };
+  response: EntityChangesResponse | GetEntityChanges202Response | Error | Error;
+};
+/**
+ * @public
+ */
 export type GetEntityFacets = {
   query: {
     facet: Array<string>;
     filter?: Array<string>;
   };
   response: EntityFacetsResponse | Error | Error;
+};
+/**
+ * @public
+ */
+export type NackEntityChangeSubscription = {
+  path: {
+    subscriptionId: string;
+    ackId: string;
+  };
+  response: void | Error | Error;
 };
 /**
  * @public
@@ -139,9 +177,29 @@ export type QueryEntityFacetsByPredicate = {
 /**
  * @public
  */
+export type ReadEntityChangeSubscription = {
+  path: {
+    subscriptionId: string;
+  };
+  query: {
+    limit?: number;
+    block?: boolean;
+  };
+  response: ReadEntityChangeSubscription200Response | void | Error | Error;
+};
+/**
+ * @public
+ */
 export type RefreshEntity = {
   body: RefreshEntityRequest;
   response: void | Error | Error;
+};
+/**
+ * @public
+ */
+export type UpsertEntityChangeSubscription = {
+  body: UpsertEntityChangeSubscriptionRequest;
+  response: UpsertEntityChangeSubscription200Response | Error | Error | Error;
 };
 /**
  * @public
@@ -232,6 +290,8 @@ export type UpdateLocation = {
 };
 
 export type EndpointMap = {
+  '#post|/entities/changes/subscriptions/{subscriptionId}/ack/{ackId}': AckEntityChangeSubscription;
+
   '#_delete|/entities/by-uid/{uid}': DeleteEntityByUid;
 
   '#get|/entities': GetEntities;
@@ -246,13 +306,21 @@ export type EndpointMap = {
 
   '#get|/entities/by-uid/{uid}': GetEntityByUid;
 
+  '#get|/entities/changes': GetEntityChanges;
+
   '#get|/entity-facets': GetEntityFacets;
+
+  '#post|/entities/changes/subscriptions/{subscriptionId}/nack/{ackId}': NackEntityChangeSubscription;
 
   '#post|/entities/by-query': QueryEntitiesByPredicate;
 
   '#post|/entity-facets': QueryEntityFacetsByPredicate;
 
+  '#get|/entities/changes/subscriptions/{subscriptionId}/read': ReadEntityChangeSubscription;
+
   '#post|/refresh': RefreshEntity;
+
+  '#post|/entities/changes/subscriptions': UpsertEntityChangeSubscription;
 
   '#post|/validate-entity': ValidateEntity;
 
