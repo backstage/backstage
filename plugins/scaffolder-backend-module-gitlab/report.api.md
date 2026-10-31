@@ -295,6 +295,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     commitAction?: 'auto' | 'update' | 'create' | 'delete' | 'skip' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
+    squash?: boolean | undefined;
     assignee?: string | undefined;
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;
