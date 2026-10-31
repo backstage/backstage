@@ -263,4 +263,67 @@ describe('validator', () => {
     customizeValidator({ customFormats: { 'entity-ref': /^x$/ } });
     expect(validator.validateFormData('y', entityRef).errors).toEqual([]);
   });
+
+  it('handles schema IDs, quoted names, aggregate messages and false schemas', () => {
+    const root = {
+      definitions: {
+        id: { $id: 'urn:example:id', type: 'string' },
+      },
+    } as RJSFSchema;
+    expect(
+      validator.isValid(root.definitions!.id as RJSFSchema, 'a', root),
+    ).toBe(true);
+    expect(validator.isValid(root.definitions!.id as RJSFSchema, 1, root)).toBe(
+      false,
+    );
+
+    const messageSchema = {
+      type: 'object',
+      required: ["owner's name", 'b'],
+      properties: {
+        0: { type: 'string' },
+        strict: {
+          type: 'object',
+          additionalProperties: false,
+          errorMessage: { additionalProperties: 'no extras' },
+        },
+        list: { type: 'array', items: { type: 'string' } },
+      },
+      errorMessage: {
+        required: { "owner's name": 'owner is needed' },
+        properties: { 0: 'zero must be a string' },
+        _: 'something is wrong',
+      },
+    } as RJSFSchema;
+    const custom = customizeValidator({ errorMessage: true });
+    const errors = custom
+      .validateFormData({ 0: 1, strict: { x: 1 } }, messageSchema)
+      .errors.map(e => [e.property, e.message]);
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        [`["owner's name"]`, 'owner is needed'],
+        ['.0', 'zero must be a string'],
+        ['.strict', 'no extras'],
+        ['', 'something is wrong'],
+      ]),
+    );
+    expect(errors).toHaveLength(4);
+
+    // a string message for all required errors is reported once, for the object
+    const aggregate = custom.validateFormData({}, {
+      type: 'object',
+      required: ['a', 'b'],
+      errorMessage: 'Fill in all fields',
+    } as RJSFSchema).errors;
+    expect(aggregate.map(e => [e.property, e.message])).toEqual([
+      ['', 'Fill in all fields'],
+    ]);
+
+    // without custom messages, false schemas report the keyword error only
+    const plain = validator.validateFormData(
+      { strict: { x: 1 } },
+      messageSchema,
+    ).errors;
+    expect(plain.map(e => e.message)).not.toContain('False boolean schema.');
+  });
 });
