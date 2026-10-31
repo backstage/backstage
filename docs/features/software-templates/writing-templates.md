@@ -1037,3 +1037,60 @@ spec:
       createButtonText: 'Update'
       reviewButtonText: 'Verify'
 ```
+
+## Conditionally displaying parameter steps
+
+Set `ui:backstage.visibleWhen` on a parameter step to a JSON Schema that matches
+against the complete current form data. The step appears only when that schema
+matches. Include `required` when a condition depends on a value being present.
+
+```yaml
+parameters:
+  - title: Project
+    properties:
+      action:
+        type: string
+        enum: [create, manage]
+  - title: Initial configuration
+    ui:backstage:
+      visibleWhen:
+        required: [action]
+        properties:
+          action:
+            const: create
+    properties:
+      name:
+        type: string
+    if:
+      required: [action]
+      properties:
+        action:
+          const: create
+    then:
+      required: [name]
+```
+
+Navigation, frontend validation, and review use the visible steps. Values entered
+before a step becomes hidden are retained and remain part of the submitted task
+values. Fields belonging only to hidden steps, including nested fields in shared
+objects and arrays, are omitted from review, including custom review components.
+This also applies to retained fields declared in conditional branches that are
+no longer active. A shared field appears in review only when a visible step
+actively declares it. Visible fields retain their configured review masks.
+Custom review components receive the filtered values in `formState` or
+`formData`, and the complete values in `schemaFormState`. Use `schemaFormState`
+only to resolve conditional schemas and masks; display values from `formState`
+or `formData`. When wrapping the default `ReviewState`, pass through
+`schemaFormState` so that hidden dependency triggers do not disable masks.
+The backend continues to validate the original parameter schemas. Use
+conditional JSON Schema requirements, as shown above, for fields that are only
+required in a particular workflow.
+
+Revealing an earlier step keeps the user on the current step while it remains
+visible. Before review, the workflow returns to visible steps that still need
+validation.
+A step that is hidden and later shown again must be validated again.
+
+Step visibility is a presentation feature, not an authorization boundary. Use
+backend permissions and conditional task actions to enforce access and execution
+requirements.

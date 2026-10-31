@@ -31,8 +31,6 @@ import MuiStepper from '@material-ui/core/Stepper';
 import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
-import { customizeValidator } from '@rjsf/validator-ajv8';
-import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
 import {
   ComponentType,
@@ -56,10 +54,7 @@ import {
 } from './createAsyncValidators';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
-import { hasErrors } from './utils';
-
-const validator = customizeValidator();
-ajvErrors(validator.ajv);
+import { filterReviewState, hasErrors, validator } from './utils';
 
 /** @alpha */
 export type BackstageTemplateStepperClassKey =
@@ -126,13 +121,64 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = t('stepper.reviewButtonText'),
   } = components;
   const analytics = useAnalytics();
-  const { presentation, steps } = useTemplateSchema(props.manifest);
+  const { presentation, steps: allSteps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
+  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(
+    () => new Set(),
+  );
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
+
+  // Keep the cursor in the original manifest so hiding an earlier step does
+  // not move the user to a different visible step.
+  const visibleSteps = allSteps
+    .map((step, index) => ({ step, index }))
+    .filter(({ step }) => {
+      const condition = step.uiSchema['ui:backstage']?.visibleWhen;
+      return (
+        condition === undefined ||
+        validator.isValid(condition, stepsState, condition)
+      );
+    });
+  const steps = visibleSteps.map(({ step }) => step);
+  const visibleIndices = new Set(visibleSteps.map(({ index }) => index));
+  if ([...validatedSteps].some(index => !visibleIndices.has(index))) {
+    setValidatedSteps(
+      new Set([...validatedSteps].filter(index => visibleIndices.has(index))),
+    );
+  }
+  const pendingStep = visibleSteps.find(
+    ({ index }) => !validatedSteps.has(index),
+  );
+  const nextVisibleIndex = visibleSteps.findIndex(
+    ({ index }) => index >= activeStep,
+  );
+  let visibleStep =
+    activeStep >= allSteps.length || nextVisibleIndex === -1
+      ? steps.length
+      : nextVisibleIndex;
+  // If the current step hides itself, visit pending steps before falling through to review.
+  if (
+    activeStep < allSteps.length &&
+    visibleStep === steps.length &&
+    pendingStep
+  ) {
+    visibleStep = visibleSteps.indexOf(pendingStep);
+  }
+
+  const displayedStep = visibleSteps[visibleStep]?.index ?? allSteps.length;
+  if (activeStep !== displayedStep) {
+    setActiveStep(displayedStep);
+  }
+
+  const hiddenSteps = allSteps.filter(step => !steps.includes(step));
+  const reviewState =
+    visibleStep === steps.length
+      ? filterReviewState(stepsState, steps, hiddenSteps)
+      : stepsState;
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
@@ -163,16 +209,18 @@ export const Stepper = (stepperProps: StepperProps) => {
   }, [props.extensions]);
 
   const validation = useMemo(() => {
-    return createAsyncValidators(steps[activeStep]?.mergedSchema, validators, {
+    return createAsyncValidators(steps[visibleStep]?.mergedSchema, validators, {
       apiHolder,
     });
-  }, [steps, activeStep, validators, apiHolder]);
+  }, [steps, visibleStep, validators, apiHolder]);
 
   const handleBack = useCallback(() => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  }, [setActiveStep]);
+    setActiveStep(visibleSteps[Math.max(0, visibleStep - 1)]?.index ?? 0);
+  }, [visibleSteps, visibleStep]);
 
-  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+  const currentStep = useTransformSchemaToProps(steps[visibleStep], {
+    layouts,
+  });
 
   const {
     formContext: propFormContext,
@@ -187,8 +235,14 @@ export const Stepper = (stepperProps: StepperProps) => {
       setStepsState(current => {
         return { ...current, ...e.formData };
       });
+      setValidatedSteps(current => {
+        if (!current.has(displayedStep)) return current;
+        const updated = new Set(current);
+        updated.delete(displayedStep);
+        return updated;
+      });
     },
-    [setStepsState],
+    [displayedStep],
   );
 
   const handleNext = useCallback(
@@ -211,14 +265,26 @@ export const Stepper = (stepperProps: StepperProps) => {
         setErrors(returnedValidation);
       } else {
         setErrors(undefined);
-        setActiveStep(prevActiveStep => {
-          const stepNum = prevActiveStep + 1;
-          analytics.captureEvent('click', `Next Step (${stepNum})`);
-          return stepNum;
-        });
+        const validated = new Set(validatedSteps);
+        validated.add(displayedStep);
+        setValidatedSteps(validated);
+        const nextStep =
+          visibleSteps[visibleStep + 1]?.index ??
+          visibleSteps.find(({ index }) => !validated.has(index))?.index ??
+          allSteps.length;
+        analytics.captureEvent('click', `Next Step (${visibleStep + 1})`);
+        setActiveStep(nextStep);
       }
     },
-    [validation, analytics],
+    [
+      validation,
+      analytics,
+      visibleSteps,
+      visibleStep,
+      allSteps.length,
+      validatedSteps,
+      displayedStep,
+    ],
   );
 
   useEffect(() => {
@@ -248,6 +314,11 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = useCallback(async () => {
+    // A manifest update can reveal a step while review is already displayed.
+    if (pendingStep) {
+      setActiveStep(pendingStep.index);
+      return;
+    }
     setIsCreating(true);
     analytics.captureEvent('click', `${createLabel}`);
     try {
@@ -255,26 +326,27 @@ export const Stepper = (stepperProps: StepperProps) => {
     } finally {
       setIsCreating(false);
     }
-  }, [analytics, createLabel, onCreate, stepsState]);
+  }, [analytics, createLabel, onCreate, stepsState, pendingStep]);
 
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
       <MuiStepper
-        activeStep={activeStep}
+        activeStep={visibleStep}
         alternativeLabel
         variant="elevation"
         style={{ overflowX: 'auto' }}
       >
         {steps.map((step, index) => {
-          const isAllowedLabelClick = activeStep > index;
+          const isAllowedLabelClick = visibleStep > index;
           return (
             <MuiStep key={index}>
               <MuiStepLabel
                 aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
                 style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
                 onClick={() => {
-                  if (isAllowedLabelClick) setActiveStep(index);
+                  if (isAllowedLabelClick)
+                    setActiveStep(visibleSteps[index].index);
                 }}
               >
                 {step.title}
@@ -288,9 +360,9 @@ export const Stepper = (stepperProps: StepperProps) => {
       </MuiStepper>
       <div className={styles.formWrapper} ref={formWrapperRef}>
         {/* eslint-disable-next-line no-nested-ternary */}
-        {activeStep < steps.length ? (
+        {visibleStep < steps.length ? (
           <Form
-            key={activeStep}
+            key={visibleSteps[visibleStep]?.index}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={stepsState}
@@ -313,12 +385,12 @@ export const Stepper = (stepperProps: StepperProps) => {
                 variant="tertiary"
                 onPress={handleBack}
                 className={styles.backButton}
-                isDisabled={activeStep < 1 || isValidating}
+                isDisabled={visibleStep < 1 || isValidating}
               >
                 {backLabel}
               </Button>
               <Button variant="primary" type="submit" isDisabled={isValidating}>
-                {activeStep === steps.length - 1
+                {visibleStep === steps.length - 1
                   ? reviewLabel
                   : t('stepper.nextButtonText')}
               </Button>
@@ -328,7 +400,8 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={stepsState}
+            formData={reviewState}
+            schemaFormState={stepsState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -336,13 +409,17 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={stepsState} schemas={steps} />
+            <ReviewStateComponent
+              formState={reviewState}
+              schemaFormState={stepsState}
+              schemas={steps}
+            />
             <div className={styles.footer}>
               <Button
                 variant="tertiary"
                 onPress={handleBack}
                 className={styles.backButton}
-                isDisabled={activeStep < 1}
+                isDisabled={visibleStep < 1}
               >
                 {backLabel}
               </Button>

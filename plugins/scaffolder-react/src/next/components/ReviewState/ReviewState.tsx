@@ -26,6 +26,11 @@ import { isJsonObject, formatKey, findSchemaForKey } from './util';
 export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
+  /**
+   * Complete form values for resolving conditional schemas and review masks.
+   * Only values from `formState` are displayed.
+   */
+  schemaFormState?: JsonObject;
 };
 
 function processSchema(
@@ -90,12 +95,13 @@ function processSchema(
  * @alpha
  */
 export const ReviewState = (props: ReviewStateProps) => {
+  const schemaFormState = props.schemaFormState ?? props.formState;
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
-        const schema = findSchemaForKey(key, props.schemas, props.formState);
+        const schema = findSchemaForKey(key, props.schemas, schemaFormState);
         return schema
-          ? processSchema(key, value, schema, props.formState)
+          ? processSchema(key, value, schema, schemaFormState)
           : [[formatKey(key), value]];
       })
       .filter(prop => prop.length > 0),
