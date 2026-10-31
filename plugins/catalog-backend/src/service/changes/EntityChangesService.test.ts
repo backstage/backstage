@@ -260,6 +260,51 @@ describe.each(databases.eachSupportedId())('EntityChangesService, %p', id => {
     await expect(abortedWait).resolves.toBe('aborted');
   });
 
+  it('wakes a blocked subscription reader when another reader releases a batch', async () => {
+    const setupResult = setup(knex, { seconds: 3 });
+    listener = setupResult.listener;
+    const { service } = setupResult;
+    await publish(knex, 'component:default/a', 1);
+    await service.upsertSubscription({
+      subscriptionId: 'shared',
+      afterGeneration: '0',
+      credentials,
+    });
+    const read = (block: boolean) =>
+      service.readSubscription({
+        subscriptionId: 'shared',
+        limit: 100,
+        block,
+        credentials,
+        signal: new AbortController().signal,
+      });
+
+    // One replica holds the batch, so another has to wait
+    const held = await read(false);
+    if (held.type !== 'data' || !held.ackId) {
+      throw new Error('expected a batch');
+    }
+    const blocked = await read(true);
+    if (blocked.type !== 'block') {
+      throw new Error('expected a wait');
+    }
+    const wait = blocked.wait();
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Nothing new is published; releasing the batch is enough to wake it
+    const started = Date.now();
+    await service.nackSubscription({
+      subscriptionId: 'shared',
+      ackId: held.ackId,
+      credentials,
+    });
+    await expect(wait).resolves.toBe('ready');
+    expect(Date.now() - started).toBeLessThan(2000);
+    await expect(read(false)).resolves.toEqual(
+      expect.objectContaining({ entityRefs: ['component:default/a'] }),
+    );
+  });
+
   it('delivers subscription batches, and skips windows the reader cannot see', async () => {
     const setupResult = setup(knex);
     listener = setupResult.listener;

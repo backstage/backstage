@@ -17,6 +17,7 @@
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
+import lodashChunk from 'lodash/chunk';
 import { randomUUID } from 'node:crypto';
 import { DbEntityChangeSubscriptionsRow } from '../../tables';
 import { generationAsText, getMaxGeneration } from './readEntityChanges';
@@ -104,6 +105,40 @@ export async function getEntityChangeSubscription(
 ): Promise<EntityChangeSubscription | undefined> {
   const row = await get(knex, subscriptionId);
   return row ? toSubscription(row) : undefined;
+}
+
+/**
+ * Reads a token for the state of each given subscription, in one batch. The
+ * token changes whenever a batch is sent, acknowledged or released, so a
+ * waiter can tell that it may be able to read again. Missing subscriptions
+ * are left out.
+ */
+export async function getEntityChangeSubscriptionStates(
+  knex: Knex,
+  subscriptionIds: string[],
+): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  for (const chunk of lodashChunk(subscriptionIds, 500)) {
+    const rows = await knex<DbEntityChangeSubscriptionsRow>(TABLE)
+      .whereIn('subscription_id', chunk)
+      .select(
+        'subscription_id',
+        'state',
+        'ack_id',
+        generationAsText(
+          knex,
+          'last_acknowledged_generation',
+          'last_acknowledged_generation',
+        ),
+      );
+    for (const row of rows) {
+      result.set(
+        row.subscription_id,
+        `${row.state}:${row.ack_id ?? ''}:${row.last_acknowledged_generation}`,
+      );
+    }
+  }
+  return result;
 }
 
 /**

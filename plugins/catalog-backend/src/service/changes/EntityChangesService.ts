@@ -281,6 +281,7 @@ export class EntityChangesService {
 
     const listener = this.#listener.setupListener({
       signal,
+      subscriptionId,
       checker: async () => {
         const current = await getEntityChangeSubscription(
           this.#knex,
