@@ -83,18 +83,37 @@ function containsUndefined(value: unknown): boolean {
 // The engine refuses to process `undefined` values, which can not be
 // represented in JSON. Treat them the way ajv does: object properties that
 // are `undefined` are considered absent, while `undefined` array items are
-// replaced by `null` so that they fail validation at the correct path.
-function normalizeUndefined(value: unknown): unknown {
+// invalid regardless of the schema. The paths of the latter are collected in
+// `invalidPaths`.
+function normalizeUndefined(
+  value: unknown,
+  path: string,
+  invalidPaths: string[],
+): unknown {
   if (Array.isArray(value)) {
-    return value.map(item =>
-      item === undefined ? null : normalizeUndefined(item),
-    );
+    return value.map((item, index) => {
+      if (item === undefined) {
+        invalidPaths.push(`${path}/${index}`);
+        return null;
+      }
+      return normalizeUndefined(item, `${path}/${index}`, invalidPaths);
+    });
   }
   if (typeof value === 'object' && value !== null) {
     const result: Record<string, unknown> = {};
     for (const [key, item] of Object.entries(value)) {
       if (item !== undefined) {
-        result[key] = normalizeUndefined(item);
+        // Plain assignment would treat a `__proto__` key as a prototype change
+        Object.defineProperty(result, key, {
+          value: normalizeUndefined(
+            item,
+            `${path}/${key.replace(/~/g, '~0').replace(/\//g, '~1')}`,
+            invalidPaths,
+          ),
+          enumerable: true,
+          writable: true,
+          configurable: true,
+        });
       }
     }
     return result;
@@ -121,11 +140,22 @@ export const cfworkerSchemaEngine: SchemaEngine = {
     }
 
     return data => {
+      let input = data;
+      if (containsUndefined(data)) {
+        const invalidPaths = new Array<string>();
+        input = normalizeUndefined(data, '', invalidPaths);
+        if (invalidPaths.length) {
+          return invalidPaths.map(instancePath => ({
+            instancePath,
+            keyword: 'type',
+            message: 'Array items must not be undefined',
+          }));
+        }
+      }
+
       let result;
       try {
-        result = validator.validate(
-          containsUndefined(data) ? normalizeUndefined(data) : data,
-        );
+        result = validator.validate(input);
       } catch (error) {
         // The engine throws for values that can not be represented in JSON,
         // such as functions; report those as a regular validation error

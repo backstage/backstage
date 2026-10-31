@@ -39,6 +39,19 @@ describe('validateMetaSchema', () => {
     expect(() => validateMetaSchema(schema)).toThrow('Invalid JSON schema');
   });
 
+  it('should only accept draft-07 schemas', () => {
+    expect(
+      validateMetaSchema({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+      }),
+    ).toEqual(true);
+    expect(() =>
+      validateMetaSchema({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+      }),
+    ).toThrow('unsupported $schema');
+  });
+
   it('should gracefully handle completely wrong input', () => {
     expect(() => validateMetaSchema(undefined)).toThrow('Invalid JSON schema');
     expect(() => validateMetaSchema(null)).toThrow('Invalid JSON schema');
