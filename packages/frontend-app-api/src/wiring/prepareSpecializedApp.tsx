@@ -26,7 +26,6 @@ import {
   ExtensionFactoryMiddleware,
   FrontendFeature,
   IdentityApi,
-  identityApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -257,16 +256,6 @@ export interface CreateSpecializedAppInternalOptions
   __internal?: {
     apiFactoryOverrides?: AnyApiFactory[];
   };
-}
-
-export function createSessionStateFromApis(
-  apis: ApiHolder,
-): SpecializedAppSessionState {
-  return OpaqueSpecializedAppSessionState.createInstance('v1', {
-    apis,
-    identityApi: apis.get(identityApiRef),
-    predicateContext: EMPTY_PREDICATE_CONTEXT,
-  });
 }
 
 /**
