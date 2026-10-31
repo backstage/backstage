@@ -22,11 +22,25 @@ import {
 } from './readAppExtensionsConfig';
 
 describe('readAppExtensionsConfig', () => {
+  it('reads map-only configuration and rejects invalid section types', () => {
+    expect(
+      readAppExtensionsConfig(
+        new ConfigReader({ app: { extension: { 'page:catalog': false } } }),
+      ),
+    ).toEqual({ parameters: [], overrides: { 'page:catalog': false } });
+    expect(() =>
+      readAppExtensionsConfig(new ConfigReader({ app: { extension: [] } })),
+    ).toThrow('app.extension');
+    expect(() =>
+      readAppExtensionsConfig(new ConfigReader({ app: { extensions: {} } })),
+    ).toThrow('app.extensions');
+  });
+
   it('should disable extension with shorthand notation', () => {
     expect(
       readAppExtensionsConfig(
         new ConfigReader({ app: { extensions: [{ 'app/root': false }] } }),
-      ),
+      ).parameters,
     ).toEqual([
       {
         id: 'app/root',
@@ -38,7 +52,7 @@ describe('readAppExtensionsConfig', () => {
         new ConfigReader({
           app: { extensions: [{ 'app/root': { disabled: true } }] },
         }),
-      ),
+      ).parameters,
     ).toEqual([
       {
         at: undefined,
@@ -53,7 +67,7 @@ describe('readAppExtensionsConfig', () => {
     expect(
       readAppExtensionsConfig(
         new ConfigReader({ app: { extensions: ['app/root'] } }),
-      ),
+      ).parameters,
     ).toEqual([
       {
         id: 'app/root',
@@ -63,7 +77,7 @@ describe('readAppExtensionsConfig', () => {
     expect(
       readAppExtensionsConfig(
         new ConfigReader({ app: { extensions: [{ 'app/root': true }] } }),
-      ),
+      ).parameters,
     ).toEqual([
       {
         id: 'app/root',
@@ -75,7 +89,7 @@ describe('readAppExtensionsConfig', () => {
         new ConfigReader({
           app: { extensions: [{ 'app/root': { disabled: false } }] },
         }),
-      ),
+      ).parameters,
     ).toEqual([
       {
         id: 'app/root',

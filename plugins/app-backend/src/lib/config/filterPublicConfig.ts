@@ -33,14 +33,18 @@ export function filterPublicConfig(
 
   const allowedConfig =
     publicConfig.getOptionalStringArray('allowedConfig') ?? [];
-  const allowedExtensions =
-    publicConfig.getOptionalStringArray('allowedExtensions') ?? [];
+  const allowedExtensions = new Set(
+    publicConfig.getOptionalStringArray('allowedExtensions') ?? [],
+  );
 
   return appConfigs.map(appConfig => {
     const source = cloneDeep(appConfig.data);
     const extensions = source.app && (source.app as JsonObject).extensions;
+    const extensionOverrides =
+      source.app && (source.app as JsonObject).extension;
     // Remove extensions before picking so parent and descendant paths cannot bypass the allowlist.
     unset(source, 'app.extensions');
+    unset(source, 'app.extension');
     const data = pick(source, allowedConfig);
 
     if (Array.isArray(extensions)) {
@@ -49,7 +53,7 @@ export function filterPublicConfig(
         'app.extensions',
         extensions.filter(extension => {
           if (typeof extension === 'string') {
-            return allowedExtensions.includes(extension);
+            return allowedExtensions.has(extension);
           }
           if (
             extension &&
@@ -57,10 +61,26 @@ export function filterPublicConfig(
             !Array.isArray(extension)
           ) {
             const ids = Object.keys(extension);
-            return ids.length === 1 && allowedExtensions.includes(ids[0]);
+            return ids.length === 1 && allowedExtensions.has(ids[0]);
           }
           return false;
         }),
+      );
+    }
+
+    if (
+      extensionOverrides &&
+      typeof extensionOverrides === 'object' &&
+      !Array.isArray(extensionOverrides)
+    ) {
+      set(
+        data,
+        'app.extension',
+        Object.fromEntries(
+          Object.entries(extensionOverrides).filter(([id]) =>
+            allowedExtensions.has(id),
+          ),
+        ),
       );
     }
 

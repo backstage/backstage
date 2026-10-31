@@ -298,7 +298,7 @@ export function prepareSpecializedApp(
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      parameters: readAppExtensionsConfig(config),
+      ...readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
       collector,
     }),

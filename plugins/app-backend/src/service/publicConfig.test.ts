@@ -18,6 +18,7 @@ import express from 'express';
 import fs from 'fs-extra';
 import request from 'supertest';
 import { AppConfig, ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import {
   createMockDirectory,
   mockCredentials,
@@ -91,6 +92,10 @@ describe('public entry point config', () => {
                         anyOf: [{ type: 'string' }, { type: 'object' }],
                       },
                     },
+                    extension: {
+                      type: 'object',
+                      deepVisibility: 'frontend',
+                    },
                     privateValue: { type: 'string', visibility: 'backend' },
                     secret: { type: 'string', visibility: 'secret' },
                   },
@@ -123,6 +128,7 @@ describe('public entry point config', () => {
     options?: {
       disablePublicEntryPoint?: boolean;
       disableConfigInjection?: boolean;
+      extension?: JsonObject;
     },
   ) {
     const data = {
@@ -329,7 +335,16 @@ describe('public entry point config', () => {
     {},
     { allowedConfig: [], allowedExtensions: [] },
     { allowedExtensions: ['api:auth'] },
+    { allowedExtensions: ['api:auth.config'] },
     { allowedConfig: ['app.extensions'] },
+    { allowedConfig: ['app.extension'] },
+    {
+      allowedConfig: [
+        'app.extension.api:auth',
+        'app.extension.api:auth.config',
+      ],
+    },
+    { allowedConfig: ['app["extension"]["api:auth"]'] },
     { allowedConfig: ['app.extensions.0', 'app.extensions.1.api:auth'] },
     { allowedConfig: ['app.extensions[0]', 'app["extensions"]'] },
     { allowedConfig: ['app'], allowedExtensions: [] },
@@ -340,7 +355,15 @@ describe('public entry point config', () => {
   ])(
     'restricts extensions independently of key paths: %j',
     async publicConfig => {
-      const app = await createApp(publicConfig);
+      const extension = {
+        'api:auth': { config: { provider: 'github' } },
+        'api:auth.extra': { config: { title: 'Not an exact match' } },
+        'page:catalog': {
+          disabled: false,
+          config: { title: 'Internal catalog' },
+        },
+      };
+      const app = await createApp(publicConfig, { extension });
       const response = await request(app).get('/backstage/');
       expect(response.status).toBe(200);
       const includesApp = publicConfig.allowedConfig?.includes('app');
@@ -349,6 +372,9 @@ describe('public entry point config', () => {
           ...(includesApp
             ? { title: 'Backstage', baseUrl: frontendData.app.baseUrl }
             : {}),
+          extension: publicConfig.allowedExtensions?.includes('api:auth')
+            ? { 'api:auth': extension['api:auth'] }
+            : {},
           extensions: publicConfig.allowedExtensions?.includes('api:auth')
             ? [extensions[1]]
             : [],
@@ -359,7 +385,10 @@ describe('public entry point config', () => {
       const mainResponse = await request(app)
         .get('/backstage/')
         .set('Cookie', mockCredentials.limitedUser.cookie());
-      expect(readInjectedConfig(mainResponse.text)).toEqual(frontendData);
+      expect(readInjectedConfig(mainResponse.text)).toEqual({
+        ...frontendData,
+        app: { ...frontendData.app, extension },
+      });
     },
   );
 });

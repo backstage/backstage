@@ -21,7 +21,11 @@ import {
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { ExtensionParameters } from './readAppExtensionsConfig';
+import {
+  ExtensionParameters,
+  expandShorthandExtensionParameters,
+} from './readAppExtensionsConfig';
+import { JsonObject } from '@backstage/types';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -69,12 +73,14 @@ export function resolveAppNodeSpecs(options: {
   features?: FrontendFeature[];
   builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
+  overrides?: JsonObject;
   forbidden?: Set<string>;
   collector: ErrorCollector;
 }): AppNodeSpec[] {
   const {
     builtinExtensions = [],
     parameters = [],
+    overrides = {},
     forbidden = new Set(),
     features = [],
     collector,
@@ -236,6 +242,9 @@ export function resolveAppNodeSpecs(options: {
     },
   );
 
+  const extensionsById = new Map(
+    deduplicatedExtensions.map(e => [e.extension.id, e]),
+  );
   const order = new Map<string, (typeof deduplicatedExtensions)[number]>();
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
@@ -251,9 +260,7 @@ export function resolveAppNodeSpecs(options: {
       continue;
     }
 
-    const existing = deduplicatedExtensions.find(
-      e => e.extension.id === extensionId,
-    );
+    const existing = extensionsById.get(extensionId);
     if (existing) {
       if (overrideParam.attachTo) {
         existing.params.attachTo = overrideParam.attachTo;
@@ -283,6 +290,33 @@ export function resolveAppNodeSpecs(options: {
     ...order.values(),
     ...deduplicatedExtensions.filter(e => !order.has(e.extension.id)),
   ];
+
+  // Apply map entries after ordering so their property order has no effect on
+  // extension ordering.
+  for (const [id, value] of Object.entries(overrides)) {
+    const existing = extensionsById.get(id);
+    const params = expandShorthandExtensionParameters(
+      { [id]: value },
+      'app.extension',
+    );
+    if (forbidden.has(id)) {
+      collector.report({
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: `Configuration of the '${id}' extension is forbidden`,
+        context: { extensionId: id },
+      });
+    } else if (!existing) {
+      collector.report({
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: `Extension ${id} does not exist`,
+        context: { extensionId: id },
+      });
+    } else {
+      existing.params.attachTo = params.attachTo ?? existing.params.attachTo;
+      existing.params.disabled = params.disabled ?? existing.params.disabled;
+      existing.params.config = params.config ?? existing.params.config;
+    }
+  }
 
   return orderedExtensions.map(param => ({
     id: param.extension.id,
