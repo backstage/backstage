@@ -17,6 +17,7 @@ import { RequestListener } from 'node:http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootHttpRouterServiceWebSocketHandler } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -39,6 +40,9 @@ export function createHttpServer(
 // @public
 export class DefaultRootHttpRouter implements RootHttpRouterService {
   // (undocumented)
+  addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void;
+  closeWebSockets(): void;
+  // (undocumented)
   static create(options?: DefaultRootHttpRouterOptions): DefaultRootHttpRouter;
   // (undocumented)
   handler(): Handler;
@@ -49,6 +53,8 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
 // @public
 export interface DefaultRootHttpRouterOptions {
   indexPath?: string | false;
+  logger?: LoggerService;
+  server?: Server;
 }
 
 // @public

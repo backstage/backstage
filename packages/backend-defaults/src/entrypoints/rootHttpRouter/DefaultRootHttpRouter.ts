@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import {
+  RootHttpRouterServiceWebSocketHandler,
+  LoggerService,
+  RootHttpRouterService,
+} from '@backstage/backend-plugin-api';
+import type { Server } from 'node:http';
+import type { Duplex } from 'node:stream';
 import { Handler, Router } from 'express';
 import trimEnd from 'lodash/trimEnd';
 
@@ -33,6 +39,10 @@ export interface DefaultRootHttpRouterOptions {
    * not given. Disables index path behavior if false is given.
    */
   indexPath?: string | false;
+  /** The HTTP server whose upgrades this router handles. Required for WebSocket registrations. */
+  server?: Server;
+  /** Logger for failed WebSocket upgrades. */
+  logger?: LoggerService;
 }
 
 /**
@@ -43,6 +53,14 @@ export interface DefaultRootHttpRouterOptions {
  */
 export class DefaultRootHttpRouter implements RootHttpRouterService {
   #indexPath?: string;
+  #webSocketHandlers = new Map<
+    string,
+    RootHttpRouterServiceWebSocketHandler['handler']
+  >();
+  #webSockets = new Set<Duplex>();
+  #webSocketServer?: Server;
+  #webSocketLogger?: LoggerService;
+  #webSocketsStopped = false;
 
   #router = Router();
   #namedRoutes = Router();
@@ -60,11 +78,17 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
     } else {
       indexPath = options.indexPath;
     }
-    return new DefaultRootHttpRouter(indexPath);
+    return new DefaultRootHttpRouter({ ...options, indexPath });
   }
 
-  private constructor(indexPath?: string) {
-    this.#indexPath = indexPath;
+  private constructor({
+    indexPath,
+    server,
+    logger,
+  }: DefaultRootHttpRouterOptions) {
+    this.#indexPath = indexPath || undefined;
+    this.#webSocketServer = server;
+    this.#webSocketLogger = logger;
     this.#router.use(this.#namedRoutes);
 
     // Any request with a /api/ prefix will skip the index router, even if no named router matches
@@ -93,6 +117,83 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
     if (this.#indexPath === path) {
       this.#indexRouter.use(handler);
     }
+  }
+
+  addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void {
+    const { path, handler } = input;
+    if (
+      !path.startsWith('/') ||
+      /[?#\\]/.test(path) ||
+      new URL(path, 'http://localhost').pathname !== path
+    ) {
+      throw new Error(
+        'WebSocket path must be an absolute pathname without a query or fragment',
+      );
+    }
+    if (this.#webSocketsStopped) {
+      throw new Error('Cannot register WebSocket handlers after shutdown');
+    }
+    if (this.#webSocketHandlers.has(path)) {
+      throw new Error(`WebSocket handler already registered for ${path}`);
+    }
+    if (!this.#webSocketServer) {
+      throw new Error(
+        'WebSocket routing requires an HTTP server in the router options',
+      );
+    }
+    if (this.#webSocketHandlers.size === 0) {
+      if (this.#webSocketServer.listenerCount('upgrade') > 0) {
+        throw new Error(
+          'WebSocket routes cannot be combined with server-level upgrade listeners',
+        );
+      }
+      this.#webSocketServer.on('upgrade', (request, socket, head) => {
+        // Node does not handle rejected promises from event listeners.
+        const onError = (error: Error) => {
+          this.#webSocketLogger?.warn('WebSocket upgrade failed', error);
+          socket.destroy();
+        };
+        socket.on('error', onError);
+        socket.once('close', () => {
+          this.#webSockets.delete(socket);
+          socket.off('error', onError);
+        });
+        this.#webSockets.add(socket);
+        if (this.#webSocketsStopped) {
+          socket.destroy();
+          return;
+        }
+        const pathName = request.url?.split('?')[0];
+        const matchedHandler =
+          pathName && this.#webSocketHandlers.get(pathName);
+        if (
+          request.headers.upgrade?.toLowerCase() !== 'websocket' ||
+          !matchedHandler
+        ) {
+          socket.end(
+            'HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 0\r\n\r\n',
+            () => socket.destroy(),
+          );
+          return;
+        }
+        Promise.resolve()
+          .then(() => matchedHandler({ request, socket, head }))
+          .catch(onError);
+      });
+    }
+    this.#webSocketHandlers.set(path, handler);
+  }
+
+  /**
+   * Stops accepting upgrades and destroys tracked sockets before the HTTP
+   * server is closed.
+   */
+  closeWebSockets(): void {
+    this.#webSocketsStopped = true;
+    for (const socket of this.#webSockets) {
+      socket.destroy();
+    }
+    this.#webSockets.clear();
   }
 
   handler(): Handler {

@@ -26,6 +26,7 @@ import {
   createCookieAuthRefreshMiddleware,
   createCredentialsBarrier,
   createLifecycleMiddleware,
+  createWebSocketRouter,
 } from './http';
 import { MiddlewareFactory } from '../rootHttpRouter';
 import { createRateLimitMiddleware } from './http/createRateLimitMiddleware.ts';
@@ -86,6 +87,13 @@ export const httpRouterServiceFactory = createServiceFactory({
       use(handler: Handler): void {
         pluginRoutes.use(handler);
       },
+      addWebSocketHandler: createWebSocketRouter({
+        auth,
+        config,
+        lifecycle,
+        pluginId: plugin.getId(),
+        rootHttpRouter,
+      }),
       addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
         credentialsBarrier.addAuthPolicy(policy);
       },
