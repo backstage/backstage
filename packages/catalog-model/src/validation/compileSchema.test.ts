@@ -60,6 +60,37 @@ describe('compileSchema', () => {
     ]);
   });
 
+  it.each([
+    ['cfworker', cfworkerSchemaEngine],
+    ['ajv', ajvSchemaEngine],
+  ])('handles edge case values with the %s engine', (_name, engine) => {
+    const validate = compileSchema(
+      engine,
+      {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          a: { type: 'array', items: { type: 'null' } },
+          b: { type: 'string' },
+        },
+      },
+      { disableCache: true },
+    );
+
+    // undefined array items fail even where null would pass
+    expect(validate({ a: [undefined] })).toEqual([
+      expect.objectContaining({ instancePath: '/a/0', keyword: 'type' }),
+    ]);
+    // an own __proto__ key is still seen as an additional property, also when
+    // the undefined values are normalized away
+    expect(validate(JSON.parse('{"__proto__":{"x":1}}'))).toEqual([
+      expect.objectContaining({ keyword: 'additionalProperties' }),
+    ]);
+    expect(
+      validate({ ...JSON.parse('{"__proto__":{"x":1}}'), b: undefined }),
+    ).toEqual([expect.objectContaining({ keyword: 'additionalProperties' })]);
+  });
+
   it('rejects invalid schemas with ajv at compile time', () => {
     expect(() =>
       compileSchema(ajvSchemaEngine, { type: 'object', unknownKeyword: 1 }),
