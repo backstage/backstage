@@ -247,6 +247,8 @@ app:
       scaffolder.registerComponent: false
 ```
 
+Setting a binding to `false` disables the external route, including its default target. Links using that route will be unavailable.
+
 We also have the ability to express this in code as an option to `createApp`, but you of course only need to use one of these two methods:
 
 ```tsx title="packages/app/src/App.tsx"
