@@ -19,12 +19,17 @@ import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import pLimit from 'p-limit';
 import { getMaxGeneration } from '../../database/operations/changes/readEntityChanges';
+import { getEntityChangeSubscriptionStates } from '../../database/operations/changes/subscriptions';
 
 export type EntityChangeWaitResult = 'ready' | 'timeout' | 'aborted';
 
 type Waiter = {
   /** Whether the waiter has not yet been checked since it registered. */
   fresh: boolean;
+  /** The subscription that the waiter reads from, if any. */
+  subscriptionId?: string;
+  /** The subscription state seen at the previous poll. */
+  subscriptionState?: string;
   wake(): void;
 };
 
@@ -35,10 +40,12 @@ type Waiter = {
  *
  * Polling is the only mechanism, since `LISTEN` doesn't survive transaction
  * pooling. While anyone is waiting, one loop per instance reads the highest
- * generation, so the database work doesn't grow with the number of waiters.
- * The stitcher on this instance also signals publications, which triggers an
- * early poll. On a change, each waiter runs its own check to see whether
- * there is something that it can actually read.
+ * generation, and in the same poll the state of every subscription that has
+ * a waiter, in one batch. That way an ack, nack or timeout on any instance is
+ * noticed within a poll interval. The stitcher on this instance also signals
+ * publications, which triggers an early poll. When something relevant has
+ * changed, each affected waiter runs its own check to see whether there is
+ * something that it can actually read.
  */
 export class EntityChangeListener {
   readonly #knex: Knex;
@@ -85,10 +92,13 @@ export class EntityChangeListener {
    *
    * @param checker - Returns true when there is data for the caller.
    * @param signal - Aborts the wait, for example when the client disconnects.
+   * @param subscriptionId - The subscription being read, so that changes to
+   *   its state also wake the waiter.
    */
   setupListener(options: {
     checker: () => Promise<boolean>;
     signal: AbortSignal;
+    subscriptionId?: string;
   }): {
     waitForUpdate(): Promise<EntityChangeWaitResult>;
   } {
@@ -101,6 +111,7 @@ export class EntityChangeListener {
 
     const waiter: Waiter = {
       fresh: true,
+      subscriptionId: options.subscriptionId,
       wake: () => {
         if (checking) {
           checkAgain = true;
@@ -185,13 +196,26 @@ export class EntityChangeListener {
     this.#polling = true;
     this.#pollAgain = false;
     try {
-      const generation = await getMaxGeneration(this.#knex);
+      const waiters = [...this.#waiters];
+      const subscriptionIds = new Set(
+        waiters.flatMap(w => (w.subscriptionId ? [w.subscriptionId] : [])),
+      );
+      const [generation, subscriptionStates] = await Promise.all([
+        getMaxGeneration(this.#knex),
+        getEntityChangeSubscriptionStates(this.#knex, [...subscriptionIds]),
+      ]);
       const changed = generation !== this.#highestGeneration;
       this.#highestGeneration = generation;
-      for (const waiter of this.#waiters) {
-        // A new waiter is always checked once, since something may have been
-        // published between its registration and the previous poll
-        if (changed || waiter.fresh) {
+      for (const waiter of waiters) {
+        let subscriptionChanged = false;
+        if (waiter.subscriptionId) {
+          const state = subscriptionStates.get(waiter.subscriptionId) ?? '';
+          subscriptionChanged = state !== waiter.subscriptionState;
+          waiter.subscriptionState = state;
+        }
+        // A new waiter is always checked once, since something may have
+        // changed between its registration and the previous poll
+        if (changed || subscriptionChanged || waiter.fresh) {
           waiter.fresh = false;
           waiter.wake();
         }
