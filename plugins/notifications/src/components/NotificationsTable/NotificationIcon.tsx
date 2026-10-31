@@ -23,9 +23,9 @@ function NotificationIconWithCustomIcon({
   notification: Notification;
 }) {
   const iconsApi = useApi(iconsApiRef);
-  const Icon = iconsApi.getIcon(notification.payload.icon!);
-  if (Icon) {
-    return <Icon />;
+  const icon = iconsApi.icon(notification.payload.icon!);
+  if (icon !== undefined) {
+    return icon;
   }
   return <SeverityIcon severity={notification.payload.severity} />;
 }
