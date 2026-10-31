@@ -55,16 +55,39 @@ export interface RawValidationErrorsType<Result = any> {
   validationError?: Error;
 }
 
+/** Decodes one URI-encoded JSON pointer segment, as emitted by cfworker. */
+function decodeSegment(segment: string): string {
+  return decodeURIComponent(segment).replace(/~1/g, '/').replace(/~0/g, '~');
+}
+
+/** Appends a property name to an RJSF property path, using bracket notation
+ * for names that dot notation can not represent.
+ *
+ * @param property - The RJSF property path to append to
+ * @param name - The literal property name
+ * @returns - The extended RJSF property path
+ */
+function appendProperty(property: string, name: string): string {
+  if (/^[^.[\]'"\\]+$/.test(name)) {
+    return `${property}.${name}`;
+  }
+  return `${property}[${JSON.stringify(name)}]`;
+}
+
 /** Converts a cfworker instance location into RJSF's dot-separated property path.
  *
  * @param instanceLocation - The instance location emitted by `@cfworker/json-schema`
  * @returns - The corresponding RJSF property path
  */
 function instanceLocationToProperty(instanceLocation: string): string {
-  if (!instanceLocation || instanceLocation === '#') {
+  const trimmed = instanceLocation.replace(/^#?\/?/, '');
+  if (!trimmed) {
     return '';
   }
-  return instanceLocation.replace(/^#?/, '').replace(/\//g, '.');
+  return trimmed
+    .split('/')
+    .map(decodeSegment)
+    .reduce((property, name) => appendProperty(property, name), '');
 }
 
 /** Extracts the missing property name from a cfworker `required` error.
@@ -110,13 +133,32 @@ const SUMMARY_KEYWORDS = new Set([
 export function removeSummaryErrors(
   errors: CFWorkerValidationError[],
 ): CFWorkerValidationError[] {
-  return errors.filter(
-    error =>
-      !SUMMARY_KEYWORDS.has(error.keyword) ||
-      !errors.some(other =>
-        other.keywordLocation.startsWith(`${error.keywordLocation}/`),
-      ),
-  );
+  return errors.filter(error => {
+    if (!SUMMARY_KEYWORDS.has(error.keyword)) {
+      return true;
+    }
+    let location = error.keywordLocation;
+    if (
+      error.keyword === 'dependencies' ||
+      error.keyword === 'dependentSchemas'
+    ) {
+      // These keywords also report direct failures, such as a missing
+      // dependent property. Only the errors for a dependent schema are
+      // summaries, and only of the errors beneath that same schema.
+      const key = error.error.match(
+        /^Instance has "(.*)" but does not match dependant schema\.$/,
+      )?.[1];
+      if (key === undefined) {
+        return true;
+      }
+      location = `${location}/${encodeURI(
+        key.replace(/~/g, '~0').replace(/\//g, '~1'),
+      )}`;
+    }
+    return !errors.some(other =>
+      other.keywordLocation.startsWith(`${location}/`),
+    );
+  });
 }
 
 /** Filters duplicate errors from `anyOf`/`oneOf` schema paths according to the `suppressDuplicateFiltering` flag.
@@ -133,7 +175,7 @@ export function filterDuplicateErrors(
     return errorList;
   }
   return errorList.reduce<RJSFValidationError[]>((acc, error) => {
-    const { message, schemaPath } = error;
+    const { message, property, schemaPath } = error;
     const anyOfIndex =
       suppressDuplicateFiltering !== 'anyOf'
         ? schemaPath?.indexOf(`/${ANY_OF_KEY}/`)
@@ -152,6 +194,7 @@ export function filterDuplicateErrors(
       ? acc.find(
           candidate =>
             candidate.message === message &&
+            candidate.property === property &&
             candidate.schemaPath?.startsWith(schemaPrefix),
         )
       : undefined;
@@ -190,9 +233,11 @@ export function transformRJSFValidationErrors<
     const missingProperty = extractMissingProperty(error);
 
     if (missingProperty) {
-      const path = property
-        ? `${property}.${missingProperty}`
-        : missingProperty;
+      // Like the ajv validator, missing root properties have no leading dot
+      const path =
+        property || !/^[^.[\]'"\\]+$/.test(missingProperty)
+          ? appendProperty(property, missingProperty)
+          : missingProperty;
       const { title: directTitle } = getUiOptions(get(uiSchema, toPath(path)));
       let title = directTitle;
       if (title === undefined) {
@@ -204,10 +249,7 @@ export function transformRJSFValidationErrors<
         title = getUiOptions(get(uiSchema, uiSchemaPath)).title;
       }
       if (title === undefined && schema) {
-        const propertyParts = property
-          .replace(/^\./, '')
-          .split('.')
-          .filter(Boolean);
+        const propertyParts = toPath(property).filter(Boolean);
         const schemaPath: (string | number)[] = [];
         for (const part of propertyParts) {
           schemaPath.push(PROPERTIES_KEY, part);
@@ -219,19 +261,17 @@ export function transformRJSFValidationErrors<
         message = message.replace(`"${missingProperty}"`, `'${title}'`);
         uiTitle = title;
       }
-      property = property ? `${property}.${missingProperty}` : missingProperty;
+      property = path;
       stack = message;
     } else {
-      const propertyPath = property.replace(/^\./, '');
+      const propertyParts = toPath(property).filter(Boolean);
       const uiSchemaTitle = getUiOptions<T, S, F>(
-        get(uiSchema, toPath(propertyPath)),
+        get(uiSchema, propertyParts),
       ).title;
       const schemaTitle = schema
         ? get(
             schema,
-            propertyPath
-              .split('.')
-              .filter(Boolean)
+            propertyParts
               .flatMap(part => [PROPERTIES_KEY, part])
               .concat(['title']),
           )
