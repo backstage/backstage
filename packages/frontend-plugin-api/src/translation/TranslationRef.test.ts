@@ -19,11 +19,11 @@ import {
 } from './TranslationRef';
 import { toInternalTranslationResource } from './TranslationResource';
 
-describe('TranslationRefImpl', () => {
+describe('createTranslationRef', () => {
   it('should create a TranslationRef instance using the factory function', () => {
     const ref = createTranslationRef({
       id: 'test',
-      messages: { key: 'value' },
+      messages: { key: 'value', nested: { title: 'Nested' } },
     });
 
     const internalRef = toInternalTranslationRef(ref);
@@ -31,7 +31,21 @@ describe('TranslationRefImpl', () => {
     expect(internalRef.$$type).toBe('@backstage/TranslationRef');
     expect(internalRef.version).toBe('v1');
     expect(internalRef.id).toBe('test');
-    expect(internalRef.getDefaultMessages()).toEqual({ key: 'value' });
+    expect(internalRef.getDefaultMessages()).toEqual({
+      key: 'value',
+      'nested.title': 'Nested',
+    });
+    expect(ref('key')).toEqual({ ref, key: 'key' });
+    expect(ref('key').ref).toBe(ref);
+    const selectedKey: keyof typeof ref.T = ref('key').key;
+    expect(selectedKey).toBe('key');
+    expect(String(ref)).toBe('TranslationRef{id=test}');
+    expect(() => ref.T).toThrow('Not implemented');
+    // @ts-expect-error Unknown keys cannot be selected from this ref.
+    ref('missing');
+    expect(ref('nested.title')).toEqual({ ref, key: 'nested.title' });
+    // @ts-expect-error Only flattened message keys can be selected.
+    ref('nested');
   });
 
   it('should create a TranslationRef instance with nested messages', () => {
@@ -52,6 +66,8 @@ describe('TranslationRefImpl', () => {
         'nested.conflict2': 'outer conflict2',
       },
     });
+
+    expect(ref('nested.inner.key')).toEqual({ ref, key: 'nested.inner.key' });
 
     const internalRef = toInternalTranslationRef(ref);
 

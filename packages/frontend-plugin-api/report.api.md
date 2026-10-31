@@ -22,6 +22,7 @@ import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
+import { SnapshotSource } from '@backstage/types/alpha';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 
@@ -396,7 +397,7 @@ export const bitbucketServerAuthApiRef: ApiRef_2<
 
 // @public
 export function BreadcrumbEntry(props: {
-  entry: Omit<BreadcrumbEntryData, 'depth'>;
+  entry?: Omit<BreadcrumbEntryData, 'depth'>;
   children: ReactNode;
 }): JSX_3.Element;
 
@@ -466,6 +467,11 @@ export namespace coreApis {
 // @public (undocumented)
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
+  titleSource: ConfigurableExtensionDataRef_2<
+    SnapshotSource<string>,
+    'core.titleSource',
+    {}
+  >;
   icon: ConfigurableExtensionDataRef_2<IconElement, 'core.icon', {}>;
   reactElement: ConfigurableExtensionDataRef_2<
     JSX_2.Element,
@@ -1851,7 +1857,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
     path: string;
-    title?: string;
+    title?: string | TranslationRefTuple;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
@@ -1870,6 +1876,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     | ExtensionDataRef_2<
         string,
         'core.title',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef_2<
+        SnapshotSource<string>,
+        'core.titleSource',
         {
           optional: true;
         }
@@ -1895,6 +1908,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
       | ConfigurableExtensionDataRef_2<
           string,
           'core.title',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef_2<
+          SnapshotSource<string>,
+          'core.titleSource',
           {
             optional: true;
           }
@@ -2188,7 +2208,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sub-page';
   params: {
     path: string;
-    title: string;
+    title: string | TranslationRefTuple;
     icon?: IconElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
@@ -2204,6 +2224,13 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
       >
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<string, 'core.title', {}>
+    | ExtensionDataRef_2<
+        SnapshotSource<string>,
+        'core.titleSource',
+        {
+          optional: true;
+        }
+      >
     | ExtensionDataRef_2<
         IconElement,
         'core.icon',
@@ -2396,6 +2423,7 @@ export interface TranslationRef<
 > {
   // (undocumented)
   $$type: '@backstage/TranslationRef';
+  (key: keyof TMessages & string): TranslationRefTuple<TId, TMessages>;
   // (undocumented)
   id: TId;
   // (undocumented)
@@ -2420,6 +2448,19 @@ export interface TranslationRefOptions<
   messages: TNestedMessages;
   // (undocumented)
   translations?: TTranslations;
+}
+
+// @public
+export interface TranslationRefTuple<
+  TId extends string = string,
+  TMessages extends {
+    [key in string]: string;
+  } = {
+    [key in string]: string;
+  },
+> {
+  readonly key: keyof TMessages extends infer TKey ? TKey & string : never;
+  readonly ref: TranslationRef<TId, TMessages>;
 }
 
 // @public (undocumented)

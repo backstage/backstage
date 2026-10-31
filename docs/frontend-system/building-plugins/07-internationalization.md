@@ -312,6 +312,41 @@ The `availableLanguages` array controls which languages appear as options in the
 
 Go to the Settings page — you should see a language select dropdown. Switch languages to verify your translations are loaded correctly.
 
+### Translating page titles
+
+Page and sub-page blueprints accept either a plain title string or a message
+reference. To enable a translated title, select a message from your plugin's
+existing translation ref. Calling the ref checks the key against its declared
+messages and returns a `TranslationRefTuple` object with `ref` and `key` properties:
+
+```tsx
+PageBlueprint.make({
+  params: {
+    path: '/my-plugin',
+    title: myPluginTranslationRef('indexPage.title'),
+    loader: () => import('./MyPage').then(m => <m.MyPage />),
+  },
+});
+```
+
+`SubPageBlueprint` accepts the same title form for its tab and breadcrumb label.
+Install translations using the existing `TranslationBlueprint` and translation
+resources described above. No additional title bundles or APIs are required.
+Existing string title parameters keep their behavior.
+
+The blueprint reads the ref's declared default message synchronously to provide a
+plain title during initial loading. A configured `title` supplies that plain
+fallback instead. Every resolved API value takes precedence over configured and
+plain titles, including when the API resolves to the ref's declared default.
+Missing locale messages use the translation API's existing fallback.
+Later language changes retain the previously resolved title while loading, without
+remounting page content. Failed loads use the translation API's fallback when available.
+
+Message keys are checked by TypeScript when calling the ref and validated again
+when the extension is instantiated. Titles must not
+require interpolation or pluralization arguments, or contain nested `$t(...)`
+references, so the declared default is directly usable as a string.
+
 ### Using the CLI for full translation workflows
 
 When translating your app to other languages at scale — especially when working with external translation systems — the Backstage CLI provides `translations export` and `translations import` commands that automate the extraction and wiring of translation messages across all your plugin dependencies.
