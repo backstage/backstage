@@ -66,6 +66,14 @@ describe('evaluateCondition', () => {
         true,
       );
     }
+    expect(
+      evaluateCondition('${{ parameters.value | length }}', { value: {} }),
+    ).toBe(false);
+    expect(
+      evaluateCondition('${{ parameters.value | length }}', {
+        value: { a: 1 },
+      }),
+    ).toBe(true);
     expect(evaluateCondition('${{ parameters.missing.nested }}', {})).toBe(
       false,
     );

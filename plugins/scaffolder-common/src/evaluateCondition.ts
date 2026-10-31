@@ -26,7 +26,7 @@ const conditionRenderer = createTemplateRenderer();
  * parameters are still validated. Empty arrays are treated as false, matching
  * action step conditions.
  *
- * @public
+ * @internal
  */
 export function evaluateCondition(
   condition: string | boolean | undefined,

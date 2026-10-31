@@ -22,8 +22,7 @@ import {
   ReviewStepProps,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import { evaluateCondition } from '@backstage/plugin-scaffolder-common';
-import { filterHiddenStepValues } from '@backstage/plugin-scaffolder-common/alpha';
+import { resolveParameterSteps } from '@backstage/plugin-scaffolder-common/alpha';
 import { JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -130,33 +129,40 @@ export const Stepper = (stepperProps: StepperProps) => {
   const analytics = useAnalytics();
   const { presentation, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
-  const [activeStep, setActiveStep] = useState(0);
+  // Index into `steps` rather than `visibleSteps`, so that the active step
+  // stays the same when other steps are shown or hidden.
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
 
-  const visibleSteps = useMemo(
-    () => steps.filter(step => evaluateCondition(step.when, stepsState)),
-    [steps, stepsState],
-  );
-
-  useEffect(() => {
-    setActiveStep(prev =>
-      prev >= visibleSteps.length ? Math.max(visibleSteps.length - 1, 0) : prev,
+  const { visibleSteps, filteredFormState } = useMemo(() => {
+    const resolved = resolveParameterSteps(
+      stepsState,
+      steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
     );
-  }, [visibleSteps.length]);
+    return {
+      visibleSteps: steps.filter((_, index) => resolved.visible[index]),
+      filteredFormState: resolved.values,
+    };
+  }, [steps, stepsState]);
 
-  const filteredFormState = useMemo(
-    () =>
-      filterHiddenStepValues(
-        stepsState,
-        steps.map(step => ({
-          schema: step.mergedSchema,
-          visible: visibleSteps.includes(step),
-        })),
+  // If the active step is hidden, move on to the next visible step.
+  const nextVisibleStep = visibleSteps.findIndex(
+    step => steps.indexOf(step) >= activeStepIndex,
+  );
+  const activeStep =
+    nextVisibleStep === -1 ? visibleSteps.length : nextVisibleStep;
+
+  const setActiveStep = useCallback(
+    (step: number) =>
+      setActiveStepIndex(
+        step < visibleSteps.length
+          ? steps.indexOf(visibleSteps[step])
+          : steps.length,
       ),
-    [steps, visibleSteps, stepsState],
+    [steps, visibleSteps],
   );
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
@@ -196,8 +202,8 @@ export const Stepper = (stepperProps: StepperProps) => {
   }, [visibleSteps, activeStep, validators, apiHolder]);
 
   const handleBack = useCallback(() => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  }, [setActiveStep]);
+    setActiveStep(activeStep - 1);
+  }, [activeStep, setActiveStep]);
 
   const currentStep = useTransformSchemaToProps(visibleSteps[activeStep], {
     layouts,
@@ -240,14 +246,21 @@ export const Stepper = (stepperProps: StepperProps) => {
         setErrors(returnedValidation);
       } else {
         setErrors(undefined);
-        setActiveStep(prevActiveStep => {
-          const stepNum = prevActiveStep + 1;
-          analytics.captureEvent('click', `Next Step (${stepNum})`);
-          return stepNum;
-        });
+        const stepNum = activeStep + 1;
+        analytics.captureEvent('click', `Next Step (${stepNum})`);
+        // Move to the next step that is visible with the submitted values.
+        const current = steps.indexOf(visibleSteps[activeStep]);
+        const { visible } = resolveParameterSteps(
+          { ...stepsState, ...formData },
+          steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
+        );
+        const next = visible.findIndex(
+          (isVisible, index) => isVisible && index > current,
+        );
+        setActiveStepIndex(next === -1 ? steps.length : next);
       }
     },
-    [validation, analytics],
+    [validation, analytics, activeStep, steps, visibleSteps, stepsState],
   );
 
   useEffect(() => {

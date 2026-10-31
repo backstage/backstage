@@ -22,6 +22,18 @@ export function filterHiddenStepValues(
 ): Record<string, JsonValue>;
 
 // @alpha
+export function resolveParameterSteps(
+  values: Record<string, JsonValue>,
+  steps: ReadonlyArray<{
+    schema: JsonObject;
+    when?: unknown;
+  }>,
+): {
+  visible: boolean[];
+  values: Record<string, JsonValue>;
+};
+
+// @alpha
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 // @alpha

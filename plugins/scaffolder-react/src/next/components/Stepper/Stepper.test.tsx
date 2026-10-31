@@ -1248,6 +1248,117 @@ describe('Stepper', () => {
       );
     });
 
+    it('hides chained steps whose condition depends on a hidden step', async () => {
+      const onCreate = jest.fn();
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Chained Steps',
+              steps: [
+                {
+                  title: 'Provider',
+                  schema: { properties: { cloudProvider: { type: 'string' } } },
+                },
+                {
+                  title: 'AWS Config',
+                  when: "${{ parameters.cloudProvider === 'AWS' }}",
+                  schema: { properties: { awsAdvanced: { type: 'boolean' } } },
+                },
+                {
+                  title: 'AWS Advanced',
+                  when: '${{ parameters.awsAdvanced }}',
+                  schema: { properties: { awsTuning: { type: 'string' } } },
+                },
+              ],
+            }}
+            extensions={[]}
+            onCreate={onCreate}
+            initialState={{
+              cloudProvider: 'GCP',
+              awsAdvanced: true,
+              awsTuning: 'fast',
+            }}
+          />
+        </SecretsContextProvider>,
+      );
+
+      expect(screen.queryByText('AWS Config')).not.toBeInTheDocument();
+      expect(screen.queryByText('AWS Advanced')).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      });
+      expect(onCreate).toHaveBeenCalledWith({ cloudProvider: 'GCP' });
+    });
+
+    it('stays on the active step when an earlier step is shown', async () => {
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Active Step',
+              steps: [
+                {
+                  title: 'Start',
+                  schema: {
+                    properties: { name: { type: 'string', title: 'Name' } },
+                  },
+                },
+                {
+                  title: 'Early',
+                  when: '${{ parameters.toggle }}',
+                  schema: {
+                    properties: { early: { type: 'string', title: 'Early' } },
+                  },
+                },
+                {
+                  title: 'Details',
+                  schema: {
+                    properties: { toggle: { type: 'string', title: 'Toggle' } },
+                  },
+                },
+              ],
+            }}
+            extensions={[]}
+            onCreate={jest.fn()}
+          />
+        </SecretsContextProvider>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      });
+      expect(
+        screen.getByRole('textbox', { name: 'Toggle' }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Early')).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Toggle' }), {
+          target: { value: 'yes' },
+        });
+      });
+
+      expect(screen.getByText('Early')).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'Toggle' })).toHaveValue(
+        'yes',
+      );
+      expect(
+        screen.queryByRole('textbox', { name: 'Early' }),
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+      });
+      expect(
+        screen.getByRole('textbox', { name: 'Early' }),
+      ).toBeInTheDocument();
+    });
+
     it('should show steps with boolean when: true', async () => {
       const manifest: TemplateParameterSchema = {
         title: 'Boolean Condition',

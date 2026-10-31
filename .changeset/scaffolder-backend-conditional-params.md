@@ -1,9 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
-The parameter schema endpoint now passes through the `when` field from parameter step entries, enabling conditional step visibility in the scaffolder wizard frontend. Backend validation for task creation and dry-run endpoints now skips parameter schema validation for steps whose `when` condition evaluates to false, and strips their values from the submitted parameters.
-
-Updated Nunjitsu to 0.7.0. Parameter step conditions now use the same expression rules as the frontend wizard.
-
-Hidden values are removed at their field paths, including nested fields, array items, and local schema references. Fields shared with visible steps remain included.
+Added support for `when` conditions on parameter steps. Steps whose condition evaluates to false are skipped during validation, and their values are removed before the task runs. Also updated Nunjitsu to 0.7.0, with no change to existing templating behavior.

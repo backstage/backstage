@@ -39,5 +39,3 @@ export type {
 export * from './ScaffolderClient';
 
 export * from './api';
-
-export { evaluateCondition } from './evaluateCondition';
