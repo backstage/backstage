@@ -729,6 +729,119 @@ Request body is JSON, on the form
 }
 ```
 
+## Entity changes
+
+:::caution Experimental
+These endpoints are experimental and may change. Until deletion tracking is
+enabled in every deployment, the feed may not include every deletion.
+:::
+
+These endpoints let a consumer follow changes to the catalog instead of
+reading the whole catalog over and over. They return the refs of entities that
+may have changed, in the order the changes were committed. Deletions are
+included.
+
+A change is a hint, not a diff. Read the current state of each returned ref
+through [`POST /entities/by-refs`](#post-entitiesby-refs). A ref of an entity
+that has been deleted, or that you aren't allowed to see, comes back as
+`null`. The same ref can be returned again without any visible change, so
+consumers must be idempotent.
+
+A typical consumer starts like this:
+
+1. Get a starting position: a cursor from `GET /entities/changes?afterGeneration=last`,
+   or a subscription created with `afterGeneration` set to `last`.
+2. Read the entities it needs through the ordinary entity endpoints.
+3. Read changes from the starting position, and apply them.
+
+Anything that changes during step 2 is delivered again in step 3, so nothing
+is missed.
+
+You can limit the changes to a scope: a list of entries on the form `kind`,
+`kind:namespace` or `kind:namespace/name`, for example `user` and `group`.
+Only parts of the entity ref can be scoped on. Filter on other fields yourself,
+after reading the entities back.
+
+If your access to the catalog depends on permission conditions, the results
+are filtered for you and marked with `filtered: true`. You won't be told when
+you lose access to an entity, so a consumer that keeps a copy of the catalog
+should read it in full again now and then.
+
+### `GET /entities/changes`
+
+Reads changed refs after a position. Pass either `afterGeneration` (a position,
+or `last` to start at the end), or a `cursor` from an earlier response. Other
+parameters:
+
+- `scope`: scope entries, repeated for several, for example
+  `scope=user&scope=group`.
+- `limit`: the maximum number of rows to read. A response can hold more refs
+  than this, since changes committed together are never split.
+- `block`: if `true` and nothing new is available, the response has status
+  `202` and is held open until there may be new changes, or for about ten
+  seconds. Read again with the cursor from its body when it ends.
+
+The response is JSON, on the form
+
+```json
+{
+  "items": [{ "entityRef": "component:default/foo" }],
+  "pageInfo": { "cursor": "eyJ2IjoxLCJh..." }
+}
+```
+
+The list of items can be empty while there are more changes to read. Always
+continue with the returned cursor.
+
+### `POST /entities/changes/subscriptions`
+
+Creates a subscription, or marks an existing one as active. A subscription
+keeps track of a consumer's position on the server, and several replicas of
+the same consumer can share it. Call this every time a consumer starts.
+
+The request body is JSON, on the form
+
+```json
+{
+  "subscriptionId": "my-service",
+  "afterGeneration": "last",
+  "scope": ["user", "group"]
+}
+```
+
+All fields are optional. Without a `subscriptionId`, a random one is created.
+The position and scope are set when the subscription is created and can't
+change later. Asking for a different scope responds with `409`. Use one
+subscription for each service, or for each set of callers with the same
+permissions. Subscriptions are deleted after about 30 days without use.
+
+### `GET /entities/changes/subscriptions/<subscriptionId>/read`
+
+Reads a batch of changed refs from a subscription. It takes the same `limit`
+and `block` parameters as `GET /entities/changes`. The response is JSON, on
+the form
+
+```json
+{
+  "items": [{ "entityRef": "component:default/foo" }],
+  "ackId": "2a9d7e4c-..."
+}
+```
+
+When the response has an `ackId`, handle the batch and then acknowledge it.
+Until then, reads of the same subscription return nothing. A batch that isn't
+acknowledged within about 30 seconds is sent again.
+
+### `POST /entities/changes/subscriptions/<subscriptionId>/ack/<ackId>`
+
+Acknowledges a batch, so that the subscription moves past it.
+
+### `POST /entities/changes/subscriptions/<subscriptionId>/nack/<ackId>`
+
+Releases a batch without acknowledging it, so that it can be read again right
+away, for example when a consumer is shutting down. Don't use it for errors
+that will happen again, since the subscription then can't move on.
+
 ## Locations
 
 ### `GET /locations`

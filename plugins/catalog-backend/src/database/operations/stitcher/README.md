@@ -23,9 +23,11 @@ null. `deleted_at` is informational.
 A trigger on `refresh_state` deletions requests a stitch for every deleted ref,
 using the same ticket contract as application code. PostgreSQL uses one
 statement-level trigger per deletion; MySQL and SQLite only have row-level
-triggers, which cost more for wide deletions but behave the same. When the stitcher then finds no candidate for a live slot, it clears the
-body, deletes the search rows and assigns a generation in one publication.
-Re-creation revives the same slot. The hash is the plain content hash while the
+triggers, which cost more for wide deletions but behave the same. When the stitcher then finds no candidate for a live slot, it moves the
+body to `last_final_entity`, deletes the search rows and assigns a generation in
+one publication. The kept body lets the change feed evaluate permission
+conditions for the deletion, since the tombstone has no search rows. Re-creation
+revives the same slot and clears `last_final_entity`. The hash is the plain content hash while the
 slot and candidate IDs match; otherwise the candidate ID is folded in, so that
 identical content from a new candidate still publishes its new UID.
 

@@ -27,11 +27,16 @@ import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
+import { EntityChangesResponse } from '../models/EntityChangesResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
+import { GetEntityChanges202Response } from '../models/GetEntityChanges202Response.model';
 import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
 import { QueryEntityFacetsByPredicateRequest } from '../models/QueryEntityFacetsByPredicateRequest.model';
+import { ReadEntityChangeSubscription200Response } from '../models/ReadEntityChangeSubscription200Response.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
+import { UpsertEntityChangeSubscription200Response } from '../models/UpsertEntityChangeSubscription200Response.model';
+import { UpsertEntityChangeSubscriptionRequest } from '../models/UpsertEntityChangeSubscriptionRequest.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
 import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
@@ -60,6 +65,15 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 export interface RequestOptions {
   token?: string;
 }
+/**
+ * @public
+ */
+export type AckEntityChangeSubscription = {
+  path: {
+    subscriptionId: string;
+    ackId: string;
+  };
+};
 /**
  * @public
  */
@@ -137,10 +151,31 @@ export type GetEntityByUid = {
 /**
  * @public
  */
+export type GetEntityChanges = {
+  query: {
+    cursor?: string;
+    afterGeneration?: string;
+    scope?: Array<string>;
+    limit?: number;
+    block?: boolean;
+  };
+};
+/**
+ * @public
+ */
 export type GetEntityFacets = {
   query: {
     facet: Array<string>;
     filter?: Array<string>;
+  };
+};
+/**
+ * @public
+ */
+export type NackEntityChangeSubscription = {
+  path: {
+    subscriptionId: string;
+    ackId: string;
   };
 };
 /**
@@ -158,8 +193,26 @@ export type QueryEntityFacetsByPredicate = {
 /**
  * @public
  */
+export type ReadEntityChangeSubscription = {
+  path: {
+    subscriptionId: string;
+  };
+  query: {
+    limit?: number;
+    block?: boolean;
+  };
+};
+/**
+ * @public
+ */
 export type RefreshEntity = {
   body: RefreshEntityRequest;
+};
+/**
+ * @public
+ */
+export type UpsertEntityChangeSubscription = {
+  body: UpsertEntityChangeSubscriptionRequest;
 };
 /**
  * @public
@@ -242,6 +295,34 @@ export class DefaultApiClient {
   }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi || { fetch: crossFetch };
+  }
+
+  /**
+   * **Experimental.** Acknowledges a batch, so that the subscription moves past it.
+   * @param subscriptionId -
+   * @param ackId -
+   */
+  public async ackEntityChangeSubscription(
+    // @ts-ignore
+    request: AckEntityChangeSubscription,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/changes/subscriptions/{subscriptionId}/ack/{ackId}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      subscriptionId: request.path.subscriptionId,
+      ackId: request.path.ackId,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+    });
   }
 
   /**
@@ -450,6 +531,38 @@ export class DefaultApiClient {
   }
 
   /**
+   * **Experimental.** Reads refs of entities that may have changed after a position, in commit order. Deletions are included. This is a hint, not a diff: read the current state of each ref through `/entities/by-refs`.  To bootstrap, first take a cursor with `afterGeneration=last`, then do a full read through the ordinary entity endpoints, and then continue from the cursor. Changes made during the full read are delivered again, so consumers must be idempotent.  These endpoints are experimental until deletion tracking is enabled in all deployments, and may change.
+   * @param cursor - A cursor from a previous response. Replaces all other parameters.
+   * @param afterGeneration - Read changes after this position, or &#x60;last&#x60; to start at the end.
+   * @param scope - Only read refs within these entries, each on the form &#x60;kind&#x60;, &#x60;kind:namespace&#x60; or &#x60;kind:namespace/name&#x60;. Only parts of the ref can be scoped on.
+   * @param limit - The maximum number of rows to scan. A page is never split within a generation, so it can hold more refs than this.
+   * @param block - If nothing new is available, respond with 202 and hold the request open until there may be new changes, or until a timeout. Then read again.
+   */
+  public async getEntityChanges(
+    // @ts-ignore
+    request: GetEntityChanges,
+    options?: RequestOptions,
+  ): Promise<
+    TypedResponse<EntityChangesResponse | GetEntityChanges202Response>
+  > {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/changes{?cursor,afterGeneration,scope*,limit,block}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
    * Get all entity facets that match the given filters.
    * @param facet -
    * @param filter - You can pass in one or more filter sets that get matched against each entity. Each filter set is a number of conditions that all have to match for the condition to be true (conditions effectively have an AND between them). At least one filter set has to be true for the entity to be part of the result set (filter sets effectively have an OR between them).  Example:  &#x60;&#x60;&#x60;text /entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type    Return entities that match      Filter set 1:       Condition 1: kind &#x3D; user                   AND       Condition 2: metadata.namespace &#x3D; default      OR      Filter set 2:       Condition 1: kind &#x3D; group                   AND       Condition 2: spec.type exists &#x60;&#x60;&#x60;  Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;. The first form asserts on the existence of a certain key (with any value), and the second asserts that the key exists and has a certain value. All checks are always case _insensitive_.  In all cases, the key is a simplified JSON path in a given piece of entity data. Each part of the path is a key of an object, and the traversal also descends through arrays. There are two special forms:  - Array items that are simple value types (such as strings) match on a key-value   pair where the key is the item as a string, and the value is the string &#x60;true&#x60; - Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form  Let\&#39;s look at a simplified example to illustrate the concept:  &#x60;&#x60;&#x60;json {   \&quot;a\&quot;: {     \&quot;b\&quot;: [\&quot;c\&quot;, { \&quot;d\&quot;: 1 }],     \&quot;e\&quot;: 7   } } &#x60;&#x60;&#x60;  This would match any one of the following conditions:  - &#x60;a&#x60; - &#x60;a.b&#x60; - &#x60;a.b.c&#x60; - &#x60;a.b.c&#x3D;true&#x60; - &#x60;a.b.d&#x60; - &#x60;a.b.d&#x3D;1&#x60; - &#x60;a.e&#x60; - &#x60;a.e&#x3D;7&#x60;  Some more real world usable examples:  - Return all orphaned entities:    &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;  - Return all users and groups:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;  - Return all service components:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;  - Return all entities with the &#x60;java&#x60; tag:    &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;  - Return all users who are members of the &#x60;ops&#x60; group (note that the full   [reference](references.md) of the group is used):    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
@@ -473,6 +586,34 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
+    });
+  }
+
+  /**
+   * **Experimental.** Releases a batch without acknowledging it, so that it can be read again right away. Use this when a consumer can\'t finish a batch, for example while shutting down. Don\'t use it for errors that will happen again, since the subscription then can\'t move on.
+   * @param subscriptionId -
+   * @param ackId -
+   */
+  public async nackEntityChangeSubscription(
+    // @ts-ignore
+    request: NackEntityChangeSubscription,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/changes/subscriptions/{subscriptionId}/nack/{ackId}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      subscriptionId: request.path.subscriptionId,
+      ackId: request.path.ackId,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
     });
   }
 
@@ -527,6 +668,35 @@ export class DefaultApiClient {
   }
 
   /**
+   * **Experimental.** Reads a batch of changed refs from a subscription. When the response has an `ackId`, acknowledge it once the batch is handled; otherwise it is sent again after a timeout.
+   * @param subscriptionId -
+   * @param limit - The maximum number of rows to scan. A page is never split within a generation, so it can hold more refs than this.
+   * @param block - If nothing new is available, respond with 202 and hold the request open until there may be new changes, or until a timeout. Then read again.
+   */
+  public async readEntityChangeSubscription(
+    // @ts-ignore
+    request: ReadEntityChangeSubscription,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void | ReadEntityChangeSubscription200Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/changes/subscriptions/{subscriptionId}/read{?limit,block}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      subscriptionId: request.path.subscriptionId,
+      ...request.query,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
    * Refresh the entity related to entityRef.
    * @param refreshEntityRequest -
    */
@@ -538,6 +708,31 @@ export class DefaultApiClient {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
     const uriTemplate = `/refresh`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * **Experimental.** Creates a subscription, or marks an existing one as active. Call this before reading, whether or not the subscription exists. The position and scope are set at creation and can\'t change later; asking for a different scope responds with 409. Subscriptions are deleted after a long period without use.  A subscription tracks a position on behalf of a consumer, and several replicas of that consumer can share it. Each read hands one replica a batch that it must acknowledge. Use one subscription per principal, or per set of principals with the same permissions.
+   * @param upsertEntityChangeSubscriptionRequest -
+   */
+  public async upsertEntityChangeSubscription(
+    // @ts-ignore
+    request: UpsertEntityChangeSubscription,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<UpsertEntityChangeSubscription200Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/changes/subscriptions`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
