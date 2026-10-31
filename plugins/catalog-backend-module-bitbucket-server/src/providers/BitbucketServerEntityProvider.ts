@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, LocationEntity } from '@backstage/catalog-model';
+import {
+  Entity,
+  LocationEntity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -28,7 +32,9 @@ import {
   CatalogService,
 } from '@backstage/plugin-catalog-node';
 import { randomUUID } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { BitbucketServerClient, paginated } from '../lib';
+import type { BitbucketServerRepository } from '../lib';
 import {
   BitbucketServerEntityProviderConfig,
   readProviderConfigs,
@@ -48,6 +54,10 @@ import { BitbucketServerEvents } from '../lib';
 import { EventsService } from '@backstage/plugin-events-node';
 
 const TOPIC_REPO_REFS_CHANGED = 'bitbucketServer.repo:refs_changed';
+
+type BitbucketServerRepositoryWithId = BitbucketServerRepository & {
+  id?: unknown;
+};
 
 /**
  * Discovers catalog files located in Bitbucket Server.
@@ -229,18 +239,25 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     const projects = paginated(options =>
       client.listProjects({ listOptions: options }),
     );
-    const result: Entity[] = [];
+    const repositoryCandidates = new Map<
+      string,
+      {
+        projectKey: string;
+        repository: BitbucketServerRepository;
+      }
+    >();
+
     for await (const project of projects) {
       if (!this.matchesRepositoryFilters({ projectKey: project.key })) {
         continue;
       }
-      const repositories = paginated(options =>
+      const projectRepositories = paginated(options =>
         client.listRepositories({
           projectKey: project.key,
           listOptions: options,
         }),
       );
-      for await (const repository of repositories) {
+      for await (const repository of projectRepositories) {
         if (
           !this.matchesRepositoryFilters({
             projectKey: project.key,
@@ -250,65 +267,157 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         ) {
           continue;
         }
-        if (this.config.validateLocationsExist) {
-          try {
-            const response = await client.getFile({
-              projectKey: project.key,
-              repo: repository.slug,
-              path: this.config.catalogPath,
-            });
-            if (!response.ok) {
-              if (response.status === 404) {
-                this.logger.debug(
-                  `Skipping repository ${repository.slug} in project ${project.key} because the catalog file does not exist.`,
-                );
-              } else {
-                this.logger.warn(
-                  `Unexpected response code ${
-                    response.status
-                  } while fetching the catalog file from repository ${
-                    repository.slug
-                  } in project ${
-                    project.key
-                  }. Response details: ${JSON.stringify(response)}`,
-                );
-              }
-              continue;
-            }
-          } catch (error) {
-            this.logger.error(
-              `An error occurred while fetching the catalog file from repository ${repository.slug} in project ${project.key}: ${error}`,
+
+        const repositoryKey = this.getRepositoryKey(repository);
+        const existing = repositoryCandidates.get(repositoryKey);
+        if (existing) {
+          if (
+            !this.hasMatchingRepositoryData(existing.repository, repository)
+          ) {
+            throw new Error(
+              `Found conflicting Bitbucket Server repository data for '${repositoryKey}' in projects '${existing.projectKey}' and '${project.key}' (repositories '${existing.repository.slug}' and '${repository.slug}')`,
             );
           }
-        }
-        for await (const entity of this.parser({
-          client,
-          logger: this.logger,
-          location: {
-            type: 'url',
-            target: `${repository.links.self[0].href}${this.config.catalogPath}`,
-            presence: 'optional',
-          },
-        })) {
-          if (entity.metadata.annotations === undefined) {
-            entity.metadata.annotations = {};
-          }
-          if (repository.defaultBranch === undefined) {
-            const defaultBranchResponse = await client.getDefaultBranch({
-              repo: repository.slug,
+
+          if (
+            this.isRepositoryPreferred(
+              { projectKey: project.key, repository },
+              existing,
+            )
+          ) {
+            repositoryCandidates.set(repositoryKey, {
               projectKey: project.key,
+              repository,
             });
-            entity.metadata.annotations[this.defaultBranchAnnotation] =
-              defaultBranchResponse.displayId;
-          } else {
-            entity.metadata.annotations[this.defaultBranchAnnotation] =
-              repository.defaultBranch;
           }
-          result.push(entity);
+          continue;
         }
+
+        repositoryCandidates.set(repositoryKey, {
+          projectKey: project.key,
+          repository,
+        });
       }
     }
-    return result;
+
+    const result = new Map<
+      string,
+      {
+        entity: Entity;
+        source: string;
+      }
+    >();
+
+    for (const { projectKey, repository } of repositoryCandidates.values()) {
+      if (this.config.validateLocationsExist) {
+        try {
+          const response = await client.getFile({
+            projectKey,
+            repo: repository.slug,
+            path: this.config.catalogPath,
+          });
+          if (!response.ok) {
+            if (response.status === 404) {
+              this.logger.debug(
+                `Skipping repository ${repository.slug} in project ${projectKey} because the catalog file does not exist.`,
+              );
+            } else {
+              this.logger.warn(
+                `Unexpected response code ${
+                  response.status
+                } while fetching the catalog file from repository ${
+                  repository.slug
+                } in project ${projectKey}. Response details: ${JSON.stringify(
+                  response,
+                )}`,
+              );
+            }
+            continue;
+          }
+        } catch (error) {
+          this.logger.error(
+            `An error occurred while fetching the catalog file from repository ${repository.slug} in project ${projectKey}: ${error}`,
+          );
+        }
+      }
+
+      const source = `${projectKey}/${repository.slug}`;
+      for await (const entity of this.parser({
+        client,
+        logger: this.logger,
+        location: {
+          type: 'url',
+          target: `${repository.links.self[0].href}${this.config.catalogPath}`,
+          presence: 'optional',
+        },
+      })) {
+        if (entity.metadata.annotations === undefined) {
+          entity.metadata.annotations = {};
+        }
+        if (repository.defaultBranch === undefined) {
+          const defaultBranchResponse = await client.getDefaultBranch({
+            repo: repository.slug,
+            projectKey,
+          });
+          entity.metadata.annotations[this.defaultBranchAnnotation] =
+            defaultBranchResponse.displayId;
+        } else {
+          entity.metadata.annotations[this.defaultBranchAnnotation] =
+            repository.defaultBranch;
+        }
+
+        const entityRef = stringifyEntityRef(entity);
+        const existing = result.get(entityRef);
+        if (existing) {
+          if (!isDeepStrictEqual(existing.entity, entity)) {
+            throw new Error(
+              `Found conflicting entities with the same entity ref '${entityRef}' from Bitbucket Server sources '${existing.source}' and '${source}'`,
+            );
+          }
+          continue;
+        }
+
+        result.set(entityRef, { entity, source });
+      }
+    }
+
+    return Array.from(result.values(), value => value.entity);
+  }
+
+  private getRepositoryKey(repository: BitbucketServerRepository): string {
+    const repositoryId = (repository as BitbucketServerRepositoryWithId).id;
+    return typeof repositoryId === 'number' &&
+      Number.isSafeInteger(repositoryId)
+      ? `id:${repositoryId}`
+      : `url:${this.getRepositoryTarget(repository)}`;
+  }
+
+  private getRepositoryTarget(repository: BitbucketServerRepository): string {
+    return repository.links.self[0].href;
+  }
+
+  private isRepositoryPreferred(
+    candidate: { projectKey: string; repository: BitbucketServerRepository },
+    existing: { projectKey: string; repository: BitbucketServerRepository },
+  ): boolean {
+    const candidateTarget = this.getRepositoryTarget(candidate.repository);
+    const existingTarget = this.getRepositoryTarget(existing.repository);
+    return (
+      candidateTarget < existingTarget ||
+      (candidateTarget === existingTarget &&
+        candidate.projectKey < existing.projectKey)
+    );
+  }
+
+  private hasMatchingRepositoryData(
+    first: BitbucketServerRepository,
+    second: BitbucketServerRepository,
+  ): boolean {
+    return (
+      first.slug === second.slug &&
+      first.archived === second.archived &&
+      first.defaultBranch === second.defaultBranch
+    );
   }
 
   private matchesRepositoryFilters(options: {

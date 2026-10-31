@@ -58,7 +58,7 @@ class PersistingTaskRunner implements SchedulerServiceTaskRunner {
 
 type Project = {
   key: string;
-  repos: { name: string; archived?: true }[];
+  repos: { name: string; id?: number | null | string; archived?: true }[];
 };
 
 function pagedResponse(values: any): BitbucketServerPagedResponse<any> {
@@ -102,6 +102,7 @@ function setupStubs(
         for (const repo of project.repos) {
           response.push({
             slug: repo.name,
+            ...(repo.id === undefined ? {} : { id: repo.id }),
             links: {
               self: [
                 {
@@ -224,6 +225,22 @@ const createLocationEntity = (
     ['bitbucket.org/default-branch']: defaultBranch,
   };
 
+  return entity;
+};
+
+const createDiscoveredLocationEntity = (
+  repoUrl: string,
+  path: string,
+  defaultBranch: string,
+): LocationEntity => {
+  const entity = locationSpecToLocationEntity({
+    location: {
+      type: 'url',
+      target: `${repoUrl}${path}`,
+      presence: 'optional',
+    },
+  });
+  entity.metadata.annotations!['bitbucket.org/default-branch'] = defaultBranch;
   return entity;
 };
 
@@ -512,6 +529,238 @@ describe('BitbucketServerEntityProvider', () => {
       type: 'full',
       entities: expectedEntities,
     });
+  });
+
+  it('deduplicates the same repository discovered from overlapping projects', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        bitbucketServer: [{ host }],
+      },
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            mainProvider: {
+              host,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    setupStubs(
+      [
+        {
+          key: 'project-b',
+          repos: [
+            { name: 'shared-repo', id: 42 },
+            { name: 'unique-repo', id: 43 },
+          ],
+        },
+        { key: 'project-a', repos: [{ name: 'shared-repo', id: 42 }] },
+      ],
+      `https://${host}`,
+      'master',
+    );
+    await provider.connect(entityProviderConnection);
+
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: createDiscoveredLocationEntity(
+            `https://${host}/projects/project-a/repos/shared-repo/browse`,
+            targetPath,
+            'master',
+          ),
+          locationKey: 'bitbucketServer-provider:mainProvider',
+        },
+        {
+          entity: createDiscoveredLocationEntity(
+            `https://${host}/projects/project-b/repos/unique-repo/browse`,
+            targetPath,
+            'master',
+          ),
+          locationKey: 'bitbucketServer-provider:mainProvider',
+        },
+      ],
+    });
+  });
+
+  it('rejects conflicting repository metadata for a repeated repository id', async () => {
+    const conflictLogger = mockServices.logger.mock();
+    conflictLogger.child.mockReturnValue(conflictLogger);
+    const config = new ConfigReader({
+      integrations: {
+        bitbucketServer: [{ host }],
+      },
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            mainProvider: {
+              host,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger: conflictLogger,
+      schedule,
+    })[0];
+
+    setupStubs(
+      [
+        { key: 'project-a', repos: [{ name: 'shared-repo', id: 42 }] },
+        { key: 'project-b', repos: [{ name: 'different-repo', id: 42 }] },
+      ],
+      `https://${host}`,
+      'master',
+    );
+    await provider.connect(entityProviderConnection);
+
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    expect(conflictLogger.error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Found conflicting Bitbucket Server repository data for 'id:42' in projects 'project-a' and 'project-b' (repositories 'shared-repo' and 'different-repo')",
+      ),
+      expect.anything(),
+    );
+  });
+
+  it('does not merge repositories with invalid repository ids', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        bitbucketServer: [{ host }],
+      },
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            mainProvider: {
+              host,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    setupStubs(
+      [
+        { key: 'project-a', repos: [{ name: 'repo-a', id: null }] },
+        { key: 'project-b', repos: [{ name: 'repo-b', id: '42' }] },
+      ],
+      `https://${host}`,
+      'master',
+    );
+    await provider.connect(entityProviderConnection);
+
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: createDiscoveredLocationEntity(
+            `https://${host}/projects/project-a/repos/repo-a/browse`,
+            targetPath,
+            'master',
+          ),
+          locationKey: 'bitbucketServer-provider:mainProvider',
+        },
+        {
+          entity: createDiscoveredLocationEntity(
+            `https://${host}/projects/project-b/repos/repo-b/browse`,
+            targetPath,
+            'master',
+          ),
+          locationKey: 'bitbucketServer-provider:mainProvider',
+        },
+      ],
+    });
+  });
+
+  it('rejects conflicting entities with the same entity ref', async () => {
+    const conflictLogger = mockServices.logger.mock();
+    conflictLogger.child.mockReturnValue(conflictLogger);
+    const config = new ConfigReader({
+      integrations: {
+        bitbucketServer: [{ host }],
+      },
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            mainProvider: {
+              host,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger: conflictLogger,
+      schedule,
+      parser: async function* conflictingEntityParser({ location }) {
+        yield {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'shared-component',
+            annotations: { 'example.com/source': location.target },
+          },
+        };
+      },
+    })[0];
+
+    setupStubs(
+      [
+        { key: 'project-a', repos: [{ name: 'shared-repo' }] },
+        { key: 'project-b', repos: [{ name: 'shared-repo' }] },
+      ],
+      `https://${host}`,
+      'master',
+    );
+    await provider.connect(entityProviderConnection);
+
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    expect(conflictLogger.error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Found conflicting entities with the same entity ref 'component:default/shared-component' from Bitbucket Server sources 'project-a/shared-repo' and 'project-b/shared-repo'",
+      ),
+      expect.anything(),
+    );
   });
 
   it('fail without schedule and scheduler', () => {
