@@ -66,15 +66,31 @@ function convertErrors(errors: OutputUnit[]): SchemaValidationError[] {
     }));
 }
 
-function containsUndefined(value: unknown): boolean {
+// Throws for circular references, which can not be represented in JSON
+function checkCycle(value: object, ancestors: Set<object>) {
+  if (ancestors.has(value)) {
+    throw new TypeError('Instance contains a circular reference');
+  }
+}
+
+function containsUndefined(
+  value: unknown,
+  ancestors: Set<object> = new Set(),
+): boolean {
   if (value === undefined) {
     return true;
   }
   if (typeof value === 'object' && value !== null) {
-    for (const item of Object.values(value)) {
-      if (containsUndefined(item)) {
-        return true;
+    checkCycle(value, ancestors);
+    ancestors.add(value);
+    try {
+      for (const item of Object.values(value)) {
+        if (containsUndefined(item, ancestors)) {
+          return true;
+        }
       }
+    } finally {
+      ancestors.delete(value);
     }
   }
   return false;
@@ -89,6 +105,25 @@ function normalizeUndefined(
   value: unknown,
   path: string,
   invalidPaths: string[],
+  ancestors: Set<object> = new Set(),
+): unknown {
+  if (typeof value !== 'object' || value === null) {
+    return value;
+  }
+  checkCycle(value, ancestors);
+  ancestors.add(value);
+  try {
+    return normalizeObject(value, path, invalidPaths, ancestors);
+  } finally {
+    ancestors.delete(value);
+  }
+}
+
+function normalizeObject(
+  value: object,
+  path: string,
+  invalidPaths: string[],
+  ancestors: Set<object>,
 ): unknown {
   if (Array.isArray(value)) {
     return value.map((item, index) => {
@@ -96,29 +131,32 @@ function normalizeUndefined(
         invalidPaths.push(`${path}/${index}`);
         return null;
       }
-      return normalizeUndefined(item, `${path}/${index}`, invalidPaths);
+      return normalizeUndefined(
+        item,
+        `${path}/${index}`,
+        invalidPaths,
+        ancestors,
+      );
     });
   }
-  if (typeof value === 'object' && value !== null) {
-    const result: Record<string, unknown> = {};
-    for (const [key, item] of Object.entries(value)) {
-      if (item !== undefined) {
-        // Plain assignment would treat a `__proto__` key as a prototype change
-        Object.defineProperty(result, key, {
-          value: normalizeUndefined(
-            item,
-            `${path}/${key.replace(/~/g, '~0').replace(/\//g, '~1')}`,
-            invalidPaths,
-          ),
-          enumerable: true,
-          writable: true,
-          configurable: true,
-        });
-      }
+  const result: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (item !== undefined) {
+      // Plain assignment would treat a `__proto__` key as a prototype change
+      Object.defineProperty(result, key, {
+        value: normalizeUndefined(
+          item,
+          `${path}/${key.replace(/~/g, '~0').replace(/\//g, '~1')}`,
+          invalidPaths,
+          ancestors,
+        ),
+        enumerable: true,
+        writable: true,
+        configurable: true,
+      });
     }
-    return result;
   }
-  return value;
+  return result;
 }
 
 /**
@@ -127,6 +165,17 @@ function normalizeUndefined(
  */
 export const cfworkerSchemaEngine: SchemaEngine = {
   compile({ schema, extraSchemas, allErrors }) {
+    // The engine does not check schemas by itself, so reject malformed ones
+    // up front, like ajv does
+    const schemaError = validateAgainstMetaSchema(schema);
+    if (schemaError) {
+      throw new TypeError(
+        `Invalid JSON schema, error at path ${
+          schemaError.instancePath || '<root>'
+        }: ${schemaError.message}`,
+      );
+    }
+
     // The engine annotates schemas while resolving references, so we make
     // sure to not touch the originals
     const validator = new Validator(
@@ -140,21 +189,12 @@ export const cfworkerSchemaEngine: SchemaEngine = {
     }
 
     return data => {
-      let input = data;
-      if (containsUndefined(data)) {
-        const invalidPaths = new Array<string>();
-        input = normalizeUndefined(data, '', invalidPaths);
-        if (invalidPaths.length) {
-          return invalidPaths.map(instancePath => ({
-            instancePath,
-            keyword: 'type',
-            message: 'Array items must not be undefined',
-          }));
-        }
-      }
-
+      const invalidPaths = new Array<string>();
       let result;
       try {
+        const input = containsUndefined(data)
+          ? normalizeUndefined(data, '', invalidPaths)
+          : data;
         result = validator.validate(input);
       } catch (error) {
         // The engine throws for values that can not be represented in JSON,
@@ -167,7 +207,20 @@ export const cfworkerSchemaEngine: SchemaEngine = {
           },
         ];
       }
-      return result.valid ? undefined : convertErrors(result.errors);
+
+      // Undefined array items are validated as null, which the schema may
+      // allow, so they are always reported on top of any schema errors
+      const errors = result.valid ? [] : convertErrors(result.errors);
+      for (const instancePath of invalidPaths) {
+        if (!errors.some(e => e.instancePath === instancePath)) {
+          errors.push({
+            instancePath,
+            keyword: 'type',
+            message: 'Array items must not be undefined',
+          });
+        }
+      }
+      return errors.length ? errors : undefined;
     };
   },
 };
