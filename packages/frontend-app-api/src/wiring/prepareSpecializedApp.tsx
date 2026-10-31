@@ -101,10 +101,12 @@ function deduplicateFeatures(
       if (!OpaqueFrontendPlugin.isType(feature)) {
         return true;
       }
-      if (seenIds.has(feature.id)) {
+      const pluginId =
+        feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id;
+      if (seenIds.has(pluginId)) {
         return false;
       }
-      seenIds.add(feature.id);
+      seenIds.add(pluginId);
       return true;
     })
     .reverse();

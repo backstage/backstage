@@ -66,7 +66,8 @@ export function toLegacyPlugin(
 
   legacy = {
     getId(): string {
-      return plugin.pluginId ?? plugin.id;
+      // Older plugin instances may only expose the original id property.
+      return plugin.pluginId ?? (plugin as unknown as { id: string }).id;
     },
     get routes() {
       return {};
