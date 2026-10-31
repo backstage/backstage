@@ -119,7 +119,12 @@ export async function getEntityChangeSubscriptionStates(
 ): Promise<Map<string, string>> {
   const result = new Map<string, string>();
   for (const chunk of lodashChunk(subscriptionIds, 500)) {
-    const rows = await knex<DbEntityChangeSubscriptionsRow>(TABLE)
+    const rows: Array<
+      Pick<
+        DbEntityChangeSubscriptionsRow,
+        'subscription_id' | 'state' | 'ack_id' | 'last_acknowledged_generation'
+      >
+    > = await knex<DbEntityChangeSubscriptionsRow>(TABLE)
       .whereIn('subscription_id', chunk)
       .select(
         'subscription_id',
