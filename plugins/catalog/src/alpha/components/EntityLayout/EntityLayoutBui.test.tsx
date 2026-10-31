@@ -130,7 +130,7 @@ describe('EntityLayoutBui', () => {
 
   it('renders the default and custom missing-entity states', async () => {
     const first = await renderLayout({});
-    expect(screen.getByText('Entity not found')).toBeInTheDocument();
+    expect(await screen.findByTestId('error')).toBeInTheDocument();
     first.unmount();
 
     await renderLayout({ NotFoundComponent: <div>Custom missing</div> });
