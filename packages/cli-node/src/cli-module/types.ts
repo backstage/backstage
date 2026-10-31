@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
+import type { BackstagePackageJson } from '../monorepo';
+
+/**
+ * Information about the package that a package command is being run in,
+ * used to decide whether a toggleable command is enabled.
+ *
+ * @public
+ */
+export interface CliPackageContext {
+  /**
+   * The absolute path to the package directory, which is the directory of
+   * the nearest `package.json` at or above the current working directory.
+   */
+  dir: string;
+  /**
+   * The contents of the package's `package.json`.
+   */
+  packageJson: BackstagePackageJson;
+}
+
 /**
  * The context provided to a CLI command at the time of execution.
  *
@@ -82,6 +102,24 @@ export interface CliCommand {
    */
   experimental?: boolean;
   /**
+   * An optional predicate that makes the command toggleable per package.
+   * Only allowed for commands whose path starts with `package`.
+   *
+   * Several modules may register the same `package` command path as long as
+   * at most one of them omits `isEnabled`. When the command is invoked, the
+   * predicate of each variant is evaluated against the package at the
+   * current working directory. If exactly one variant is enabled it is run;
+   * if several are enabled an error is thrown. If none are enabled, the
+   * variant without `isEnabled` is run as a fallback, and if there is no
+   * fallback an error is thrown.
+   *
+   * @example
+   * ```
+   * isEnabled: ({ packageJson }) => Boolean(packageJson.devDependencies?.vitest)
+   * ```
+   */
+  isEnabled?: (context: CliPackageContext) => boolean | Promise<boolean>;
+  /**
    * The command implementation, either as a direct function or as a loader
    * that returns the implementation as a default export. The loader form
    * is useful for deferring heavy imports until the command is invoked.
@@ -105,6 +143,53 @@ export interface CliCommand {
           default: (context: CliCommandContext) => Promise<void>;
         }>;
       };
+}
+
+/**
+ * Options for registering a run target with `addRunTarget`.
+ *
+ * A run target is invoked as `backstage-cli repo run <name>`. It runs the
+ * given `package` command once per package in the workspace, in a separate
+ * process, and supports the `--since`, `--include-dependents` and `--watch`
+ * flags.
+ *
+ * @public
+ */
+export interface CliRunTargetOptions {
+  /**
+   * A short description of the target, displayed in the `repo run` help
+   * output.
+   */
+  description: string;
+  /**
+   * The package command to run for each package, for example
+   * `['package', 'test']`. Must start with `package`.
+   */
+  packageCommand: string[];
+  /**
+   * The `package.json` script that opts a package in to the run target. A
+   * package is included if this script starts with
+   * `backstage-cli <packageCommand>`, and any further arguments in the script
+   * are passed on to the package command.
+   *
+   * Defaults to the last segment of `packageCommand`.
+   */
+  scriptName?: string;
+  /**
+   * Arguments that are always passed to the package command, for example
+   * `['--no-watch']`.
+   */
+  packageArgs?: string[];
+  /**
+   * Whether `--since` also includes the local dependents of changed packages.
+   * Users can override this with `--include-dependents` or
+   * `--no-include-dependents`, and it also applies to `--watch` re-runs.
+   *
+   * Defaults to `true`, because a change in a package can break the packages
+   * that depend on it, so selecting only the changed packages would silently
+   * miss regressions. Set to `false` for commands where that is not the case.
+   */
+  includeDependents?: boolean;
 }
 
 /**

@@ -751,6 +751,7 @@ Commands:
   help
   lint
   list-deprecations
+  run
   start
   test
 ```
@@ -811,6 +812,32 @@ Usage: backstage-cli repo list-deprecations [flags...]
 Options:
   --json
   -h, --help
+```
+
+### `backstage-cli repo run`
+
+```
+Usage: <none>
+
+Commands:
+  test
+```
+
+### `backstage-cli repo run test`
+
+```
+Usage: backstage-cli repo run test [flags...]
+
+Options:
+  --concurrency <number>
+  --include-dependents
+  --since <string>
+  --success-cache
+  --success-cache-dir <string>
+  --verbose
+  --watch
+  -h, --help
+  -p, --package <string>
 ```
 
 ### `backstage-cli repo start`

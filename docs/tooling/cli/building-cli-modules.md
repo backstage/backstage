@@ -96,7 +96,8 @@ The `createCliModule` function accepts an options object with two fields:
   imported `package.json`. The name is used in error messages when command
   conflicts occur.
 - **`init`** — An async callback that receives a registry object. Use the
-  registry's `addCommand` method to register commands.
+  registry's `addCommand` method to register commands, and `addRunTarget` to
+  register a target for `repo run`.
 
 The `init` callback runs when the module is loaded, not when a command is
 executed. Keep it lightweight and use the deferred loader pattern for commands
@@ -175,6 +176,85 @@ export default async ({ args, info }: CliCommandContext) => {
   console.log('Hello!');
 };
 ```
+
+### Toggling package commands
+
+Commands under `package` can set `isEnabled`, a predicate that receives the
+package directory and its `package.json`. This lets several modules provide the
+same command path, such as `package lint`, with the right one running for each
+package:
+
+```ts
+reg.addCommand({
+  path: ['package', 'lint'],
+  description: 'Lint the package with oxlint',
+  isEnabled: ({ packageJson }) =>
+    'oxlint' in (packageJson.devDependencies ?? {}),
+  execute: { loader: () => import('./commands/lint') },
+});
+```
+
+The predicate is evaluated for the package in the current working directory.
+The following rules apply when several modules register the same path:
+
+- At most one of them may omit `isEnabled`. That command is the fallback, and
+  a second command without `isEnabled` is reported as a conflict.
+- If exactly one command is enabled, it runs.
+- If more than one command is enabled, the CLI fails and lists the modules.
+- If none is enabled, the fallback runs. Without a fallback, the CLI fails
+  with an error that names the package and the candidate modules.
+
+A module that is installed on its own and has `isEnabled` set does not replace
+the matching command in a default module set. The default command stays
+available as the fallback. Setting `isEnabled` on a command outside `package`
+is an error.
+
+### Run targets
+
+Use `reg.addRunTarget` to register a target for `backstage-cli repo run`. A
+target runs a `package` command for each package in the workspace, in a
+separate process per package:
+
+```ts
+reg.addRunTarget('test', {
+  description: 'Run the tests of each package',
+  packageCommand: ['package', 'test'],
+  packageArgs: ['--no-watch'],
+  includeDependents: true,
+});
+```
+
+The CLI registers `repo run` itself when at least one module provides a target.
+`backstage-cli repo run test` then runs the `test` target, and
+`backstage-cli repo run --help` lists all targets.
+
+The `packageCommand` must start with `package`. A package is included if the
+script named by `scriptName` in its `package.json` starts with
+`backstage-cli <packageCommand>`. The script name defaults to the last segment
+of `packageCommand`, and any further arguments in the script are passed on.
+Arguments in `packageArgs` are always appended.
+
+The `includeDependents` option sets whether `--since` and `--watch` also run the
+local dependents of changed packages. It defaults to `true`, and the
+`--include-dependents` and `--no-include-dependents` flags override it. The
+command also supports `--since <ref>`, `--watch`, `--concurrency <n>`
+(default 8), `--verbose`, `-p, --package <selector>`, and `--success-cache`
+with `--success-cache-dir`, which skips packages that passed before and have
+not changed since. By default it shows a
+progress view, or one line for each finished package when not in a terminal,
+and only shows package output with `--verbose`.
+
+Positional arguments and `--package` values select packages. A selector is a
+package name, a glob on the name with or without its scope, or a package
+directory relative to the current directory. Selected packages do not include
+their dependents unless `--include-dependents` is passed, and with `--since` the
+result is the intersection. A selector that matches no package for the target is
+an error. Arguments can't be passed to the package command, which runs with the
+`packageArgs` of the target and the extra arguments from the package script
+only. Unknown options and `--` are errors.
+
+Several modules can register the same target name only if their options are
+identical. Otherwise the CLI fails with an error that names both modules.
 
 ## Command context
 

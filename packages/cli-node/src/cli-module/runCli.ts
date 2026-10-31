@@ -26,7 +26,13 @@ import chalk from 'chalk';
 import { cli, command } from 'cleye';
 import type { Renderers } from 'cleye';
 import { CommandGraph } from './CommandGraph';
+import {
+  findCliPackageContext,
+  resolveCommandVariant,
+} from './resolveCommandVariant';
 import type { CliCommand, CliModule } from './types';
+import { createRunCommand, mergeRunTargets } from './repoCommand/runTargets';
+import type { RegisteredRunTarget } from './repoCommand/runTargets';
 
 interface HelpNode {
   id?: string;
@@ -159,8 +165,10 @@ function createHelpOptions(options: {
       const { name, children } = OpaqueCommandTreeNode.toInternal(node);
       groupRows.push([name, createGroupPreview(children, previewWidth)]);
     } else {
-      const { name, command: cmd } = OpaqueCommandLeafNode.toInternal(node);
-      commandRows.push([name, cmd.description]);
+      const { name, variants } = OpaqueCommandLeafNode.toInternal(node);
+      // The fallback is the default implementation, so it describes the command
+      const described = variants.find(v => !v.command.isEnabled) ?? variants[0];
+      commandRows.push([name, described.command.description]);
     }
   }
   if (includeHelpCommand) {
@@ -263,11 +271,11 @@ async function runCommandLevel(options: {
               version,
             });
           } else {
-            await executeCommand(
-              OpaqueCommandLeafNode.toInternal(node).command,
-              commandArgs,
-              programName,
+            const selected = await resolveCommandVariant(
+              OpaqueCommandLeafNode.toInternal(node).variants,
+              () => findCliPackageContext(process.cwd()),
             );
+            await executeCommand(selected, commandArgs, programName);
             await flushStdio();
             process.exit(process.exitCode ?? 0);
           }
@@ -359,6 +367,11 @@ function hasVersionFlag(args: string[]): boolean {
  * directly imported modules. Module discovery and override behavior are left
  * to the caller.
  *
+ * Multiple modules may provide the same `package` command if all but at most
+ * one of them declare `isEnabled`. The variant to run is selected at invocation
+ * time based on the package at the current working directory, see
+ * {@link CliCommand.isEnabled}.
+ *
  * Invoking the program or a command group without a subcommand displays
  * help for that level and completes successfully. Command groups and commands
  * are listed separately in alphabetical order. Group previews fit the terminal width
@@ -396,6 +409,8 @@ export async function runCli(options: {
 }): Promise<void> {
   const { modules, name, version } = options;
   const graph = new CommandGraph();
+  const runTargets = new Array<RegisteredRunTarget>();
+  let runTargetModule: CliModule | undefined;
 
   for (const module of modules) {
     if (!OpaqueCliModule.isType(module)) {
@@ -408,6 +423,24 @@ export async function runCli(options: {
       .commands) {
       graph.add(commandToAdd, module);
     }
+    const internal = OpaqueCliModule.toInternal(module);
+    for (const {
+      name: targetName,
+      options: targetOptions,
+    } of await internal.runTargets) {
+      runTargetModule ??= module;
+      runTargets.push({
+        name: targetName,
+        options: targetOptions,
+        moduleName: internal.packageName,
+      });
+    }
+  }
+
+  if (runTargetModule) {
+    // Only added when some module provides a target, so that `repo run` does
+    // not show up in CLIs that have nothing to run.
+    graph.add(createRunCommand(mergeRunTargets(runTargets)), runTargetModule);
   }
 
   if (
