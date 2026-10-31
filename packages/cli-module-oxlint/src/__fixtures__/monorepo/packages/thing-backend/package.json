@@ -1,0 +1,7 @@
+{
+  "name": "@internal/thing-backend",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "thing"
+  }
+}
