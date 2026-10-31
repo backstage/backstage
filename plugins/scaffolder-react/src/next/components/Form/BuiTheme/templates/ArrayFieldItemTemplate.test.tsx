@@ -38,7 +38,7 @@ describe('BUI array item titles', () => {
     );
     expect(
       within(
-        screen.getByRole('button', { name: /^Collapse/ }).parentElement!,
+        screen.getByRole('button', { name: 'Service 1' }).parentElement!,
       ).getByText('Service 1'),
     ).toBeInTheDocument();
     rerender(
@@ -51,7 +51,7 @@ describe('BUI array item titles', () => {
     );
     expect(
       within(
-        screen.getByRole('button', { name: /^Collapse/ }).parentElement!,
+        screen.getByRole('button', { name: 'Item 1' }).parentElement!,
       ).getByText('Item 1'),
     ).toBeInTheDocument();
   });
@@ -70,7 +70,7 @@ describe('BUI array item titles', () => {
     );
     expect(
       within(
-        screen.getByRole('button', { name: /^Collapse/ }).parentElement!,
+        screen.getByRole('button', { name: 'New service' }).parentElement!,
       ).getByText('New service'),
     ).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'web' } });
@@ -88,10 +88,44 @@ describe('BUI array item titles', () => {
     );
     expect(
       within(
-        screen.getByRole('button', { name: /^Collapse/ }).parentElement!,
+        screen.getByRole('button', { name: 'web' }).parentElement!,
       ).getByText('web'),
     ).toBeInTheDocument();
     expect(screen.queryByText('New service')).not.toBeInTheDocument();
     expect(screen.getByRole('textbox')).toHaveValue('web');
+  });
+
+  it('includes item titles in toolbar action button aria-labels', async () => {
+    const { rerender } = render(
+      <Form
+        validator={validator}
+        schema={schema}
+        formData={[{ name: 'web' }, { name: 'api' }]}
+        EXPERIMENTAL_theme="bui"
+      />,
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'Remove Service 2' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Move up Service 2' }),
+    ).toBeInTheDocument();
+
+    rerender(
+      <Form
+        validator={validator}
+        schema={{ ...schema, items: { ...schema.items, title: undefined } }}
+        formData={[{ name: 'web' }, { name: 'api' }]}
+        EXPERIMENTAL_theme="bui"
+      />,
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'Remove Item 2' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Move up Item 2' }),
+    ).toBeInTheDocument();
   });
 });
