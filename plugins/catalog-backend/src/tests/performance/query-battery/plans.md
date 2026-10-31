@@ -2519,3 +2519,152 @@ Planning:
 Planning Time: 1.228 ms
 Execution Time: 2756.619 ms
 ```
+
+## 20 permission component list (set operations, 32MB)
+
+```text
+Sort  (cost=178075.27..178192.51 rows=46893 width=1209) (actual time=563.502..579.940 rows=60599 loops=1)
+  Sort Key: final_entities.entity_ref COLLATE "C"
+  Sort Method: external merge  Disk: 36224kB
+  Buffers: shared hit=177478, temp read=4528 written=4529
+  I/O Timings: temp read=7.268 write=15.907
+  ->  Hash Join  (cost=25674.68..149590.56 rows=46893 width=1209) (actual time=78.940..475.337 rows=60599 loops=1)
+        Hash Cond: (final_entities.entity_id = (fset.entity_id)::text)
+        Buffers: shared hit=177475
+        ->  Seq Scan on final_entities  (cost=0.00..122210.74 rows=649572 width=1177) (actual time=0.021..237.664 rows=649632 loops=1)
+              Filter: (final_entity IS NOT NULL)
+              Rows Removed by Filter: 605
+              Buffers: shared hit=115707
+        ->  Hash  (cost=25087.80..25087.80 rows=46951 width=32) (actual time=78.495..78.514 rows=60599 loops=1)
+              Buckets: 65536  Batches: 1  Memory Usage: 4596kB
+              Buffers: shared hit=61768
+              ->  Subquery Scan on fset  (cost=0.69..25087.80 rows=46951 width=32) (actual time=53.579..67.483 rows=60599 loops=1)
+                    Buffers: shared hit=61768
+                    ->  HashSetOp Except  (cost=0.69..25087.80 rows=46951 width=36) (actual time=53.577..62.800 rows=60599 loops=1)
+                          Buffers: shared hit=61768
+                          ->  Append  (cost=0.69..24962.56 rows=50096 width=36) (actual time=0.072..32.533 rows=61697 loops=1)
+                                Buffers: shared hit=61768
+                                ->  Subquery Scan on "*SELECT* 1"  (cost=0.69..14107.14 rows=48591 width=36) (actual time=0.071..23.432 rows=60599 loops=1)
+                                      Buffers: shared hit=59680
+                                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..13621.23 rows=48591 width=32) (actual time=0.071..18.822 rows=60599 loops=1)
+                                            Index Cond: ((key = 'kind'::text) AND (value = 'component'::text))
+                                            Heap Fetches: 4366
+                                            Buffers: shared hit=59680
+                                ->  Result  (cost=10582.36..10604.93 rows=1505 width=36) (actual time=5.365..5.633 rows=1098 loops=1)
+                                      Buffers: shared hit=2088
+                                      ->  Unique  (cost=10582.36..10589.88 rows=1505 width=32) (actual time=5.363..5.544 rows=1098 loops=1)
+                                            Buffers: shared hit=2088
+                                            ->  Sort  (cost=10582.36..10586.12 rows=1505 width=32) (actual time=5.362..5.412 rows=1098 loops=1)
+                                                  Sort Key: "*SELECT* 2".entity_id COLLATE "C"
+                                                  Sort Method: quicksort  Memory: 49kB
+                                                  Buffers: shared hit=2088
+                                                  ->  Append  (cost=0.69..10502.93 rows=1505 width=32) (actual time=4.375..5.028 rows=1098 loops=1)
+                                                        Buffers: shared hit=2088
+                                                        ->  Result  (cost=0.69..9531.32 rows=1475 width=32) (actual time=4.374..4.520 rows=893 loops=1)
+                                                              Buffers: shared hit=1711
+                                                              ->  HashSetOp Except  (cost=0.69..9516.57 rows=1475 width=36) (actual time=4.372..4.450 rows=893 loops=1)
+                                                                    Buffers: shared hit=1711
+                                                                    ->  Append  (cost=0.69..9450.17 rows=26562 width=36) (actual time=0.047..4.079 rows=1157 loops=1)
+                                                                          Buffers: shared hit=1711
+                                                                          ->  Subquery Scan on "*SELECT* 2"  (cost=0.69..444.30 rows=1477 width=36) (actual time=0.047..0.398 rows=893 loops=1)
+                                                                                Buffers: shared hit=876
+                                                                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..429.53 rows=1477 width=32) (actual time=0.046..0.332 rows=893 loops=1)
+                                                                                      Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                                                                                      Heap Fetches: 78
+                                                                                      Buffers: shared hit=876
+                                                                          ->  HashAggregate  (cost=8622.21..8873.06 rows=25085 width=36) (actual time=3.496..3.619 rows=264 loops=1)
+                                                                                Group Key: ((search_flt_2.entity_id)::text)
+                                                                                Batches: 1  Memory Usage: 817kB
+                                                                                Buffers: shared hit=835
+                                                                                ->  Append  (cost=0.69..8559.50 rows=25085 width=32) (actual time=1.144..3.393 rows=265 loops=1)
+                                                                                      Buffers: shared hit=835
+                                                                                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..7600.87 rows=24982 width=32) (actual time=1.144..2.603 rows=265 loops=1)
+                                                                                            Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims)))
+                                                                                            Heap Fetches: 10
+                                                                                            Buffers: shared hit=825
+                                                                                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..833.20 rows=103 width=32) (actual time=0.773..0.774 rows=0 loops=1)
+                                                                                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (:claims)))
+                                                                                            Heap Fetches: 0
+                                                                                            Buffers: shared hit=10
+                                                        ->  Result  (cost=0.69..18.12 rows=15 width=32) (actual time=0.202..0.227 rows=205 loops=1)
+                                                              Buffers: shared hit=186
+                                                              ->  HashSetOp Except  (cost=0.69..17.97 rows=15 width=36) (actual time=0.201..0.211 rows=205 loops=1)
+                                                                    Buffers: shared hit=186
+                                                                    ->  Append  (cost=0.69..17.93 rows=16 width=36) (actual time=0.027..0.145 rows=205 loops=1)
+                                                                          Buffers: shared hit=186
+                                                                          ->  Subquery Scan on "*SELECT* 5"  (cost=0.69..9.14 rows=15 width=36) (actual time=0.026..0.104 rows=205 loops=1)
+                                                                                Buffers: shared hit=181
+                                                                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.99 rows=15 width=32) (actual time=0.026..0.087 rows=205 loops=1)
+                                                                                      Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                                                                      Heap Fetches: 16
+                                                                                      Buffers: shared hit=181
+                                                                          ->  Subquery Scan on "*SELECT* 6"  (cost=0.69..8.71 rows=1 width=36) (actual time=0.028..0.029 rows=0 loops=1)
+                                                                                Buffers: shared hit=5
+                                                                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.028..0.028 rows=0 loops=1)
+                                                                                      Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                                                                      Heap Fetches: 0
+                                                                                      Buffers: shared hit=5
+                                                        ->  Result  (cost=0.69..945.96 rows=15 width=32) (actual time=0.213..0.218 rows=0 loops=1)
+                                                              Buffers: shared hit=191
+                                                              ->  HashSetOp Intersect  (cost=0.69..945.81 rows=15 width=36) (actual time=0.213..0.218 rows=0 loops=1)
+                                                                    Buffers: shared hit=191
+                                                                    ->  Append  (cost=0.69..942.08 rows=1490 width=36) (actual time=0.018..0.162 rows=205 loops=1)
+                                                                          Buffers: shared hit=191
+                                                                          ->  Subquery Scan on "*SELECT* 9"  (cost=0.69..9.14 rows=15 width=36) (actual time=0.017..0.078 rows=205 loops=1)
+                                                                                Buffers: shared hit=181
+                                                                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..8.99 rows=15 width=32) (actual time=0.017..0.062 rows=205 loops=1)
+                                                                                      Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                                                                      Heap Fetches: 16
+                                                                                      Buffers: shared hit=181
+                                                                          ->  Result  (cost=0.69..925.50 rows=1475 width=36) (actual time=0.067..0.071 rows=0 loops=1)
+                                                                                Buffers: shared hit=10
+                                                                                ->  HashSetOp Intersect  (cost=0.69..910.75 rows=1475 width=36) (actual time=0.067..0.070 rows=0 loops=1)
+                                                                                      Buffers: shared hit=10
+                                                                                      ->  Append  (cost=0.69..903.36 rows=2954 width=36) (actual time=0.060..0.062 rows=0 loops=1)
+                                                                                            Buffers: shared hit=10
+                                                                                            ->  Subquery Scan on "*SELECT* 7"  (cost=0.69..444.30 rows=1477 width=36) (actual time=0.029..0.030 rows=0 loops=1)
+                                                                                                  Buffers: shared hit=5
+                                                                                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..429.53 rows=1477 width=32) (actual time=0.029..0.029 rows=0 loops=1)
+                                                                                                        Index Cond: (key = 'spec.a'::text)
+                                                                                                        Heap Fetches: 0
+                                                                                                        Buffers: shared hit=5
+                                                                                            ->  Subquery Scan on "*SELECT* 8"  (cost=0.69..444.30 rows=1477 width=36) (actual time=0.030..0.030 rows=0 loops=1)
+                                                                                                  Buffers: shared hit=5
+                                                                                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..429.53 rows=1477 width=32) (actual time=0.029..0.029 rows=0 loops=1)
+                                                                                                        Index Cond: (key = 'spec.b'::text)
+                                                                                                        Heap Fetches: 0
+                                                                                                        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=288
+Planning Time: 3.582 ms
+Serialization: time=454.502 ms  output=271059kB  format=binary
+  Buffers: shared hit=190124
+Execution Time: 1051.972 ms
+```
+
+## 20 unfiltered list (32MB)
+
+```text
+Gather Merge  (cost=287229.75..350386.99 rows=541310 width=1209) (actual time=477.463..1056.934 rows=649632 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=115821, temp read=100827 written=100852
+  I/O Timings: temp read=165.899 write=366.598
+  ->  Sort  (cost=286229.72..286906.36 rows=270655 width=1209) (actual time=471.731..609.983 rows=216544 loops=3)
+        Sort Key: entity_ref COLLATE "C"
+        Sort Method: external merge  Disk: 287960kB
+        Buffers: shared hit=115821, temp read=100827 written=100852
+        I/O Timings: temp read=165.899 write=366.598
+        Worker 0:  Sort Method: external merge  Disk: 256624kB
+        Worker 1:  Sort Method: external merge  Disk: 262032kB
+        ->  Parallel Seq Scan on final_entities  (cost=0.00..118416.89 rows=270655 width=1209) (actual time=0.007..88.666 rows=216544 loops=3)
+              Filter: (final_entity IS NOT NULL)
+              Rows Removed by Filter: 202
+              Buffers: shared hit=115707
+Planning:
+  Buffers: shared hit=132
+Planning Time: 0.476 ms
+Serialization: time=1030.917 ms  output=1375653kB  format=binary
+  Buffers: shared hit=263635
+Execution Time: 2181.320 ms
+```

@@ -489,3 +489,45 @@ the median of three warm runs after one warm-up, shown as master / this change.
 
 The page queries run the same SQL before and after, so their timing
 differences are run-to-run variation.
+
+## Unpaginated entity lists (2026-10-31)
+
+On PostgreSQL, `entities()` without a limit now also compiles filters that
+contain a disjunction or a negation into set operations, and sorts its
+fallback order by `entity_ref` under `COLLATE "C"`. That order is documented
+as stable but unspecified. Requests with a limit are unchanged.
+
+Measured on a production read replica (PostgreSQL 17.10, about 650k entities,
+`en_US.UTF-8`) with SQL captured from `DefaultEntitiesCatalog` on master and
+with this change. The permission filter is the one from scenarios 15-20 with a
+173-claim sign-in. An annotation on 893 entities stands in for the readers
+annotation. Times include sending the result (`EXPLAIN (ANALYZE, SERIALIZE)`),
+since the entity bodies are a large part of the cost. Master was run once,
+this change twice; the two runs were within 10% of each other, and the table
+shows the first.
+
+| Query (scenario 20)                            | master 32MB / 4MB | this change 32MB / 4MB |
+| ---------------------------------------------- | ----------------- | ---------------------- |
+| unfiltered list                                | 5.43 / 5.48 s     | 2.15 / 2.26 s          |
+| permission + `kind=group`                      | 43.7 / 43.8 s     | 0.31 / 0.32 s          |
+| permission + `kind=component`                  | 139.9 / 140.6 s   | 1.07 / 1.21 s          |
+| permission + `kind=component`, ordered by name | 279.4 / 281.0 s   | 2.16 / 2.39 s          |
+| permission only, ordered by name               | >180 s / 18.8 s   | 8.64 / 9.25 s          |
+| permission only                                | 2.32 / 1.95 s     | 3.02 / 3.31 s          |
+
+The remaining regression is the permission filter on its own, without a
+request filter or an order. Master walks the `entity_ref` index there and
+evaluates the per-row conditions as hashed subplans. With the set the planner
+uses a hash join, whose output is unordered, so the whole result is sorted.
+The ordered variant on master switched plans between runs, which explains the
+timeout at 32MB.
+
+On a staging replica (PostgreSQL 18.6, about 705k entities) the same pattern
+held with hand-written SQL: the unfiltered list took 9.2 s before and 4.4 s
+after, and permission + `kind=component` took 50 s before and 1.4 s after.
+Sorting all `entity_ref` values took 7-15 s under `en_US.UTF-8` and 0.5 s
+under `"C"`, which is most of the unfiltered list's gain.
+
+Readable plans for the permission + `kind=component` list and the unfiltered
+list with this change are in [`plans.md`](./plans.md), and the exact JSON in
+[`plans.json`](./plans.json).

@@ -157,12 +157,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
 
       if (request?.filter) {
-        entitiesQuery = applyEntityFilterToQuery({
-          filter: request.filter,
-          targetQuery: entitiesQuery,
-          onEntityIdField: 'final_entities.entity_id',
-          knex: db,
-        });
+        this.applyEntitiesFilter(request.filter, entitiesQuery, limit);
       }
 
       if (request?.order) {
@@ -183,6 +178,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           }
         });
         entitiesQuery.orderBy('final_entities.entity_id', 'asc');
+      } else if (limit === undefined && db.client.config.client === 'pg') {
+        // The fallback order is only guaranteed to be stable. Without a limit
+        // the whole result is sorted, and byte-wise comparisons are much
+        // cheaper than the default collation for large catalogs.
+        entitiesQuery = entitiesQuery.orderByRaw(
+          '?? collate "C" asc',
+          'final_entities.entity_ref',
+        );
       } else {
         entitiesQuery = entitiesQuery.orderBy(
           'final_entities.entity_ref',
@@ -244,12 +247,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       if (!request.filter) {
         return query;
       }
-      return applyEntityFilterToQuery({
-        filter: request.filter,
-        targetQuery: query,
-        onEntityIdField: 'final_entities.entity_id',
-        knex: db,
-      });
+      return this.applyEntitiesFilter(request.filter, query, limit);
     };
 
     // Phase 1 -- entities that have a non-NULL value for the order field.
@@ -870,7 +868,28 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     return { facets };
   }
 
-  // For queries over the whole filtered set; see query battery scenarios 15-19
+  // Without a limit, entities() reads the whole filtered set, so it benefits
+  // from set operations the same way as counts and facets do
+  private applyEntitiesFilter<T extends Knex.QueryBuilder>(
+    filter: FilterPredicate,
+    targetQuery: T,
+    limit: number | undefined,
+  ): T {
+    const options = {
+      filter,
+      targetQuery,
+      onEntityIdField: 'final_entities.entity_id',
+      knex: this.database,
+    };
+    if (limit === undefined && this.useSetFilter(filter)) {
+      applySetEntityFilterToQuery(options);
+    } else {
+      applyEntityFilterToQuery(options);
+    }
+    return targetQuery;
+  }
+
+  // For queries over the whole filtered set; see query battery scenarios 15-20
   private useSetFilter(filter: FilterPredicate): boolean {
     return (
       this.database.client.config.client === 'pg' && needsSetFilter(filter)

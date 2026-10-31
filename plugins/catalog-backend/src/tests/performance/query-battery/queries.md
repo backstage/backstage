@@ -628,9 +628,9 @@ wasted scanning entries before a deep cursor.
 
 ---
 
-## Scenarios 15-19: Conditional permission filters
+## Scenarios 15-20: Conditional permission filters
 
-Scenarios 15-19 cover the filters produced by conditional permission policies
+Scenarios 15-20 cover the filters produced by conditional permission policies
 for catalog reads. `AuthorizedEntitiesCatalog` converts the conditional
 decision into a predicate and combines it with any request filter as
 `{ $all: [permission, requestFilter] }`. The scenarios call
@@ -1080,6 +1080,68 @@ needed. Execution time is in the low tens of milliseconds.
   so LIMIT cannot stop early. With a small `work_mem` the set no longer fits in
   `hash_mem`, and PostgreSQL falls back to scanning it once per row.
 - The same applies to a negated large `$in` compiled to `NOT IN (SELECT ...)`.
+
+---
+
+## 20. Unpaginated entity list as a permission-filtered user
+
+**User action**: A plugin or script reads every entity of a kind through the
+legacy `GET /entities` endpoint, without a limit, on behalf of a user whose
+read access comes from the conditional permission policy above. Also covers
+the same request without any filter or permission, as made by batch readers
+with service credentials.
+
+**Method call**:
+
+```ts
+catalog.entities({
+  filter: { $all: [permission, { kind: 'component' }] },
+  credentials,
+});
+
+// Without a filter
+catalog.entities({ credentials });
+```
+
+**Reference SQL**: On PostgreSQL, a filter that contains a disjunction or a
+negation is compiled into set operations, as for facets and counts, because
+the whole filtered set is read anyway. The fallback order uses `COLLATE "C"`,
+since it only has to be stable.
+
+```sql
+SELECT final_entities.* FROM final_entities
+WHERE final_entities.final_entity IS NOT NULL
+  AND EXISTS (
+    SELECT 1 FROM (
+      (
+        SELECT s.entity_id COLLATE "C" AS entity_id FROM search AS s
+        WHERE s.key = 'kind' AND s.value = 'component'
+      )
+      EXCEPT <denied set>
+    ) AS fset
+    WHERE fset.entity_id COLLATE "default" = final_entities.entity_id
+  )
+ORDER BY final_entities.entity_ref COLLATE "C" ASC
+```
+
+Without a filter, only the `final_entity IS NOT NULL` condition remains. With
+an explicit `order`, the set is applied the same way to both phases of the
+ordered query. Requests with a limit keep the correlated `EXISTS` form and the
+default collation, so that LIMIT can stop early.
+
+**Healthy plan**: The set is built from a few index-only scans of
+`search_key_value_entity_idx` and joined back to `final_entities` by
+`entity_id`. Most of the time goes to fetching and sending the entity bodies,
+which grows with the size of the result.
+
+**Anti-patterns**:
+
+- A per-row `SubPlan` probing `search` with `value = ANY(:claims)` for every
+  candidate entity. With 173 claims, each probe costs about 1 ms, so tens of
+  thousands of candidates take minutes.
+- Sorting the whole result by `entity_ref` under a linguistic collation such as
+  `en_US.UTF-8`. Sorting 700k references this way takes 7-15 s, compared to
+  about 0.5 s under `"C"`.
 
 ---
 

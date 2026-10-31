@@ -35,7 +35,7 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
-import { EntitiesRequest } from '../catalog/types';
+import { EntitiesRequest, EntitiesResponse } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
 
@@ -778,6 +778,118 @@ describe.each(databases.eachSupportedId())(
         // ordered by entity_id ASC, regardless of primary direction
         await expect(page('asc')).resolves.toEqual(['n1', 'n2', 'n3']);
         await expect(page('desc')).resolves.toEqual(['n1', 'n2', 'n3']);
+      });
+
+      it('applies a permission style filter with and without a limit', async () => {
+        await createDatabase();
+        const entities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'owned-b' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/a' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'ownedb' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/b' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: {
+              name: 'readable',
+              annotations: { 'example.com/readers': 'group:default/a' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: {
+              name: 'restricted',
+              annotations: { 'example.com/readers': 'group:default/b' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Template',
+            metadata: { name: 'template' },
+            spec: {},
+          },
+        ];
+        for (const entity of entities) {
+          await addEntityToSearch(entity);
+        }
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+
+        const claims = ['user:default/me', 'group:default/a'];
+        const filter: FilterPredicate = {
+          $all: [
+            {
+              $any: [
+                { 'relations.ownedBy': { $in: claims } },
+                { 'metadata.annotations.example.com/readers': { $in: claims } },
+                {
+                  $not: {
+                    'metadata.annotations.example.com/readers': {
+                      $exists: true,
+                    },
+                  },
+                },
+              ],
+            },
+            { $not: { kind: 'template' } },
+          ],
+        };
+        const names = (response: EntitiesResponse) =>
+          entitiesResponseToObjects(response.entities)
+            .map(e => e!.metadata.name)
+            .sort();
+
+        const expected = ['owned-b', 'ownedb', 'readable'];
+        await expect(
+          catalog
+            .entities({ filter, credentials: mockCredentials.none() })
+            .then(names),
+        ).resolves.toEqual(expected);
+        await expect(
+          catalog
+            .entities({
+              filter,
+              pagination: { limit: 10 },
+              credentials: mockCredentials.none(),
+            })
+            .then(names),
+        ).resolves.toEqual(expected);
+        await expect(
+          catalog
+            .entities({
+              filter,
+              order: [{ field: 'metadata.name', order: 'desc' }],
+              credentials: mockCredentials.none(),
+            })
+            .then(names),
+        ).resolves.toEqual(expected);
+
+        // Without a limit, the fallback order is the same on every call
+        const unordered = await catalog.entities({
+          credentials: mockCredentials.none(),
+        });
+        const again = await catalog.entities({
+          credentials: mockCredentials.none(),
+        });
+        expect(entitiesResponseToObjects(unordered.entities)).toHaveLength(5);
+        expect(entitiesResponseToObjects(again.entities)).toEqual(
+          entitiesResponseToObjects(unordered.entities),
+        );
       });
     });
 
