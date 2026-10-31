@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export type { IconComponent } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
+
+/**
+ * Icon component type used throughout the legacy frontend system.
+ *
+ * @public
+ */
+export type IconComponent = ComponentType<{
+  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+}>;
