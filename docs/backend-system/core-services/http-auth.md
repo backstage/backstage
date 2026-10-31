@@ -91,6 +91,12 @@ to `true` when extracting credentials.
 
 Due to the above, we do not document the `httpAuth.issueUserCookie` method here.
 
+The cookie is host-only, which means that browsers only send it to the host of
+the backend's external base URL, and not to any of its subdomains. This lets you
+run separate Backstage instances on a domain and its subdomains, for example
+`example.com` and `uat.example.com`, without one instance receiving the cookie
+of the other.
+
 ## Configuring the service
 
 :::note
