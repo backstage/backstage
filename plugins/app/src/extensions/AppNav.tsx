@@ -153,23 +153,6 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
-  // Deprecated items: just resolve nav item routeRefs to paths, no page discovery.
-  const legacyItems = useMemo(() => {
-    return props.legacyNavItems.flatMap(item => {
-      const link = routeResolutionApi.resolve(item.routeRef);
-      if (!link) return [];
-      return [
-        {
-          to: link(),
-          text: item.title,
-          icon: item.icon,
-          title: item.title,
-          routeRef: item.routeRef,
-        },
-      ];
-    });
-  }, [props.legacyNavItems, routeResolutionApi]);
-
   // New navItems: discover pages from the extension tree, merged with nav items.
   const navItems = useMemo(() => {
     const { tree } = appTreeApi.getTree();
@@ -241,7 +224,7 @@ function NavContentRenderer(props: {
     return new NavItemBag(items);
   }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
 
-  return <props.Content navItems={navItems} items={legacyItems} />;
+  return <props.Content navItems={navItems} />;
 }
 
 export const AppNav = createExtension({

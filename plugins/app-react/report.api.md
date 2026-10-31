@@ -135,14 +135,6 @@ export type NavContentComponent = (
 
 // @public
 export interface NavContentComponentProps {
-  // @deprecated
-  items: Array<{
-    icon: IconComponent;
-    title: string;
-    routeRef: RouteRef<undefined>;
-    to: string;
-    text: string;
-  }>;
   navItems: NavContentNavItems;
 }
 
