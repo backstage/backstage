@@ -88,7 +88,7 @@ export default function ArrayFieldItemTemplate<
                           alignItems: 'center',
                           color: 'var(--bui-fg-secondary)',
                         }}
-                        aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                        aria-label={itemTitle}
                       >
                         {isExpanded ? (
                           <RiArrowDownSLine size={18} />
@@ -109,7 +109,7 @@ export default function ArrayFieldItemTemplate<
                               size="small"
                               isDisabled={disabled || readonly || !hasMoveUp}
                               onClick={onReorderClick(index, index - 1)}
-                              aria-label="Move up"
+                              aria-label={`Move up ${itemTitle}`}
                               icon={<RiArrowUpSLine size={18} />}
                             />
                             <ButtonIcon
@@ -117,7 +117,7 @@ export default function ArrayFieldItemTemplate<
                               size="small"
                               isDisabled={disabled || readonly || !hasMoveDown}
                               onClick={onReorderClick(index, index + 1)}
-                              aria-label="Move down"
+                              aria-label={`Move down ${itemTitle}`}
                               icon={<RiArrowDownSLine size={18} />}
                             />
                           </>
@@ -128,7 +128,7 @@ export default function ArrayFieldItemTemplate<
                             size="small"
                             isDisabled={disabled || readonly}
                             onClick={onCopyIndexClick(index)}
-                            aria-label="Duplicate"
+                            aria-label={`Duplicate ${itemTitle}`}
                             icon={<RiAddLine size={18} />}
                           />
                         )}
@@ -138,7 +138,7 @@ export default function ArrayFieldItemTemplate<
                             size="small"
                             isDisabled={disabled || readonly}
                             onClick={onDropIndexClick(index)}
-                            aria-label="Remove"
+                            aria-label={`Remove ${itemTitle}`}
                             icon={<RiDeleteBinLine size={18} />}
                           />
                         )}
