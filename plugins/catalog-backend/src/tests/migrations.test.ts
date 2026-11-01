@@ -1992,6 +1992,19 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
       true,
     );
+
+    // A retry after a partial run, with the foreign key already gone, keeps
+    // tracking deletions.
+    await jest
+      .requireActual<{ up(knex: Knex): Promise<void> }>(
+        '../../migrations/20261020000000_final_entity_tombstones',
+      )
+      .up(knex);
+    await insertCandidate('retried', 'k:ns/retried');
+    await knex('refresh_state').where('entity_id', 'retried').delete();
+    expect(await knex('stitch_queue').pluck('entity_ref')).toContain(
+      'k:ns/retried',
+    );
   });
 
   it('20261007000000_stitch_failure_count.js', async () => {
