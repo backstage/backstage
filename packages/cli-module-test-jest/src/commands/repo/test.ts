@@ -356,6 +356,7 @@ export default async ({ args, info }: CliCommandContext) => {
     // Shared state for the bridge
     const projectHashes = new Map<string, string>();
     const outputSuccessCache = new Array<string>();
+    let cacheUnavailable = false;
 
     // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
     // are picked up by the config script itself, as well as the custom result processor.
@@ -371,6 +372,7 @@ export default async ({ args, info }: CliCommandContext) => {
           console.warn(
             `Failed to read ${packageManager.lockfileName()}, running all tests without the success cache, ${error}`,
           );
+          cacheUnavailable = true;
           return projectConfigs;
         }
         const cacheEntries = await cache.read();
@@ -430,6 +432,11 @@ export default async ({ args, info }: CliCommandContext) => {
       },
       // This is called by `config/jestCacheResultProcess.cjs` after all tests have run
       async reportResults(results) {
+        // The cache is neither read nor written when it is unavailable
+        if (cacheUnavailable) {
+          return;
+        }
+
         const successful = new Set<string>();
         const failed = new Set<string>();
 
