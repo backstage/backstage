@@ -19,7 +19,7 @@ import draft07MetaSchema from '../../schema/meta/json-schema-draft-07.json';
 import { SchemaEngine, SchemaValidationError } from './types';
 
 // Keywords that cfworker reports a summary error for whenever one of their
-// subschemas fails. These only repeat the more specific errors beneath them.
+// subschemas fails
 const SUMMARY_KEYWORDS = new Set([
   '$ref',
   'additionalItems',
@@ -40,20 +40,101 @@ const SUMMARY_KEYWORDS = new Set([
 // placed last, which also matches the order that ajv reports errors in.
 const ALTERNATIVE_KEYWORDS = new Set(['anyOf', 'oneOf']);
 
-function convertErrors(errors: OutputUnit[]): SchemaValidationError[] {
-  // A `false` schema (such as `additionalProperties: false`) produces an error
-  // for the subschema itself, beneath the error for the keyword that holds it.
-  // The keyword error is the more descriptive one, so keep only that.
-  const relevant = errors.filter(e => e.keyword !== 'false');
+// Keywords whose failures ajv reports for the parent instance, rather than
+// for the subschema that failed
+const PARENT_REPORTED_KEYWORDS = new Set([
+  'additionalItems',
+  'additionalProperties',
+  'unevaluatedItems',
+  'unevaluatedProperties',
+]);
 
-  return relevant
-    .filter(
-      error =>
-        !SUMMARY_KEYWORDS.has(error.keyword) ||
-        !relevant.some(other =>
-          other.keywordLocation.startsWith(`${error.keywordLocation}/`),
-        ),
-    )
+function encodePointerSegment(segment: string) {
+  return encodeURI(segment.replace(/~/g, '~0').replace(/\//g, '~1'));
+}
+
+// The instance location that a summary error is about, ending with a slash
+// when it covers several children
+function summaryChildLocation(error: OutputUnit) {
+  const property = error.error.match(
+    /^Property "(.*)" (does not|matches)/,
+  )?.[1];
+  if (property !== undefined) {
+    return `${error.instanceLocation}/${encodePointerSegment(property)}`;
+  }
+  if (error.error.startsWith('Items did not match')) {
+    return `${error.instanceLocation}/`;
+  }
+  return error.instanceLocation;
+}
+
+function isWithin(instanceLocation: string, location: string) {
+  return location.endsWith('/')
+    ? instanceLocation.startsWith(location)
+    : instanceLocation === location ||
+        instanceLocation.startsWith(`${location}/`);
+}
+
+// The engine reports a summary error for keywords such as `properties`
+// whenever one of their subschemas fails, which only repeat the errors
+// beneath them. A `false` subschema also reports an error of its own. This
+// removes the redundant ones, keeping the same errors that ajv would report.
+function removeRedundantErrors(errors: OutputUnit[]): OutputUnit[] {
+  const summaryLocation = (error: OutputUnit) => {
+    if (
+      error.keyword !== 'dependencies' &&
+      error.keyword !== 'dependentSchemas'
+    ) {
+      return error.keywordLocation;
+    }
+    // These keywords also report direct failures, such as a missing
+    // dependent property, and only summarize the errors of a dependent schema
+    const key = error.error.match(
+      /^Instance has "(.*)" but does not match dependant schema\.$/,
+    )?.[1];
+    return key === undefined
+      ? undefined
+      : `${error.keywordLocation}/${encodePointerSegment(key)}`;
+  };
+
+  const summaries = errors.filter(error => {
+    if (!SUMMARY_KEYWORDS.has(error.keyword)) {
+      return false;
+    }
+    const location = summaryLocation(error);
+    if (location === undefined) {
+      return false;
+    }
+    const child = summaryChildLocation(error);
+    return errors.some(
+      other =>
+        other !== error &&
+        isWithin(other.instanceLocation, child) &&
+        // The location of `false` errors is an instance location
+        (other.keyword === 'false'
+          ? !PARENT_REPORTED_KEYWORDS.has(error.keyword)
+          : other.keywordLocation.startsWith(`${location}/`)),
+    );
+  });
+
+  const parentReported = errors.filter(
+    error =>
+      PARENT_REPORTED_KEYWORDS.has(error.keyword) && !summaries.includes(error),
+  );
+  return errors.filter(
+    error =>
+      !summaries.includes(error) &&
+      !(
+        error.keyword === 'false' &&
+        parentReported.some(parent =>
+          isWithin(error.instanceLocation, summaryChildLocation(parent)),
+        )
+      ),
+  );
+}
+
+function convertErrors(errors: OutputUnit[]): SchemaValidationError[] {
+  return removeRedundantErrors(errors)
     .sort(
       (a, b) =>
         Number(ALTERNATIVE_KEYWORDS.has(a.keyword)) -
@@ -159,6 +240,144 @@ function normalizeObject(
   return result;
 }
 
+// Schemas are plain JSON, so this works without relying on `structuredClone`
+function cloneJson<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+/**
+ * Throws if the schema declares a `$schema` other than draft-07, which is the
+ * only dialect supported by the schema engines.
+ */
+export function checkSchemaDialect(schema: object) {
+  const declared = (schema as { $schema?: unknown }).$schema;
+  if (
+    declared !== undefined &&
+    !/^http:\/\/json-schema\.org\/draft-07\/schema#?$/.test(String(declared))
+  ) {
+    throw new TypeError(
+      `Invalid JSON schema: unsupported $schema ${JSON.stringify(
+        declared,
+      )}, only http://json-schema.org/draft-07/schema# is supported`,
+    );
+  }
+}
+
+// The keywords that ajv knows about for draft-07, plus annotations
+const KNOWN_KEYWORDS = new Set([
+  '$comment',
+  '$defs',
+  '$id',
+  '$ref',
+  '$schema',
+  'additionalItems',
+  'additionalProperties',
+  'allOf',
+  'anyOf',
+  'const',
+  'contains',
+  'contentEncoding',
+  'contentMediaType',
+  'default',
+  'definitions',
+  'dependencies',
+  'deprecated',
+  'description',
+  'else',
+  'enum',
+  'examples',
+  'exclusiveMaximum',
+  'exclusiveMinimum',
+  'format',
+  'if',
+  'items',
+  'maxItems',
+  'maxLength',
+  'maxProperties',
+  'maximum',
+  'minItems',
+  'minLength',
+  'minProperties',
+  'minimum',
+  'multipleOf',
+  'not',
+  'oneOf',
+  'pattern',
+  'patternProperties',
+  'properties',
+  'propertyNames',
+  'readOnly',
+  'required',
+  'then',
+  'title',
+  'type',
+  'uniqueItems',
+  'writeOnly',
+]);
+
+// Keywords whose values are subschemas, or maps or arrays of subschemas
+const SUBSCHEMA_KEYWORDS = new Set([
+  'additionalItems',
+  'additionalProperties',
+  'contains',
+  'else',
+  'if',
+  'items',
+  'not',
+  'propertyNames',
+  'then',
+]);
+const SUBSCHEMA_LIST_KEYWORDS = new Set(['allOf', 'anyOf', 'oneOf']);
+const SUBSCHEMA_MAP_KEYWORDS = new Set([
+  '$defs',
+  'definitions',
+  'dependencies',
+  'patternProperties',
+  'properties',
+]);
+
+/**
+ * Throws for unknown keywords, which the engine would silently ignore. This
+ * matches the strict mode of ajv, which catches typos such as `minLenght`.
+ */
+function checkKnownKeywords(schema: unknown, path: string = '') {
+  if (Array.isArray(schema)) {
+    schema.forEach((item, index) =>
+      checkKnownKeywords(item, `${path}/${index}`),
+    );
+    return;
+  }
+  if (!schema || typeof schema !== 'object') {
+    return;
+  }
+  for (const [keyword, value] of Object.entries(schema)) {
+    if (!KNOWN_KEYWORDS.has(keyword)) {
+      throw new TypeError(
+        `Invalid JSON schema: unknown keyword "${keyword}" at path ${
+          path || '<root>'
+        }`,
+      );
+    }
+    if (
+      SUBSCHEMA_KEYWORDS.has(keyword) ||
+      SUBSCHEMA_LIST_KEYWORDS.has(keyword)
+    ) {
+      checkKnownKeywords(value, `${path}/${keyword}`);
+    } else if (
+      SUBSCHEMA_MAP_KEYWORDS.has(keyword) &&
+      value &&
+      typeof value === 'object'
+    ) {
+      for (const [name, subschema] of Object.entries(value)) {
+        // Property dependencies are lists of names rather than schemas
+        if (!Array.isArray(subschema)) {
+          checkKnownKeywords(subschema, `${path}/${keyword}/${name}`);
+        }
+      }
+    }
+  }
+}
+
 /**
  * A schema engine based on `@cfworker/json-schema`, which interprets schemas
  * instead of generating code.
@@ -167,6 +386,8 @@ export const cfworkerSchemaEngine: SchemaEngine = {
   compile({ schema, extraSchemas, allErrors }) {
     // The engine does not check schemas by itself, so reject malformed ones
     // up front, like ajv does
+    checkSchemaDialect(schema);
+    checkKnownKeywords(schema);
     const schemaError = validateAgainstMetaSchema(schema);
     if (schemaError) {
       throw new TypeError(
@@ -179,12 +400,12 @@ export const cfworkerSchemaEngine: SchemaEngine = {
     // The engine annotates schemas while resolving references, so we make
     // sure to not touch the originals
     const validator = new Validator(
-      structuredClone(schema) as Schema,
+      cloneJson(schema) as Schema,
       '7',
       !allErrors,
     );
     for (const extraSchema of extraSchemas) {
-      const clone = structuredClone(extraSchema) as Schema;
+      const clone = cloneJson(extraSchema) as Schema;
       validator.addSchema(clone, clone.$id);
     }
 
@@ -220,6 +441,14 @@ export const cfworkerSchemaEngine: SchemaEngine = {
           });
         }
       }
+      if (!result.valid && !errors.length) {
+        // Such as for a `false` root schema
+        errors.push({
+          instancePath: '',
+          keyword: 'false',
+          message: 'Instance does not match the schema',
+        });
+      }
       return errors.length ? errors : undefined;
     };
   },
@@ -236,7 +465,7 @@ export function validateAgainstMetaSchema(
 ): SchemaValidationError | undefined {
   if (!metaSchemaValidator) {
     metaSchemaValidator = new Validator(
-      structuredClone(draft07MetaSchema) as Schema,
+      cloneJson(draft07MetaSchema) as Schema,
       '7',
       false,
     );
