@@ -22,6 +22,7 @@ import {
 } from './PackageManager';
 import { Yarn } from './yarn';
 import { withLogCollector } from '@backstage/test-utils';
+import { resolve as resolvePath } from 'node:path';
 
 const mockDir = createMockDirectory();
 overrideTargetPaths(mockDir.path);
@@ -154,6 +155,27 @@ describe('PackageManager', () => {
       });
       expect(mockYarnCreate).toHaveBeenNthCalledWith(2, {
         workspaceRootDir: mockDir.resolve('nested'),
+      });
+
+      // A relative root is cached by the directory it points to at the time
+      const originalCwd = process.cwd();
+      let rootDir = '';
+      try {
+        process.chdir(mockDir.path);
+        rootDir = process.cwd();
+        await detectPackageManager({ workspaceRootDir: '.' });
+        process.chdir(mockDir.resolve('nested'));
+        await detectPackageManager({ workspaceRootDir: '.' });
+        await detectPackageManager({ workspaceRootDir: '..' });
+      } finally {
+        process.chdir(originalCwd);
+      }
+      expect(mockYarnCreate).toHaveBeenCalledTimes(4);
+      expect(mockYarnCreate).toHaveBeenNthCalledWith(3, {
+        workspaceRootDir: rootDir,
+      });
+      expect(mockYarnCreate).toHaveBeenNthCalledWith(4, {
+        workspaceRootDir: resolvePath(rootDir, 'nested'),
       });
     });
 
