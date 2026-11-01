@@ -174,6 +174,55 @@ describe('GenericScmEventRefreshProvider', () => {
       ]);
     });
 
+    it.each([
+      {
+        type: 'location.updated',
+        url: 'https://github.com/backstage/demo/blob/master/catalog-info.yaml',
+      },
+      { type: 'repository.updated', url: 'https://github.com/backstage/demo' },
+    ] as const)(
+      'refreshes a re-created entity found through search, for $type',
+      async event => {
+        const { knex, subscriber } = await initialize(databaseId);
+
+        // Re-created after a deletion: the final row and its search rows
+        // keep the original ID, while the candidate has a new one.
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: 'new-candidate',
+          entity_ref: 'k:ns/recreated',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: new Date('1980-01-01T00:00:00Z'),
+          last_discovery_at: new Date('1980-01-01T00:00:00Z'),
+          result_hash: 'h',
+        });
+        await knex<DbFinalEntitiesRow>('final_entities').insert({
+          entity_id: 'original-slot',
+          entity_ref: 'k:ns/recreated',
+          hash: 'h',
+          final_entity: '{}',
+        });
+        await knex<DbSearchRow>('search').insert({
+          entity_id: 'original-slot',
+          key: `metadata.annotations.${ANNOTATION_LOCATION}`,
+          original_value: 'ignored',
+          value:
+            'url:https://github.com/backstage/demo/blob/master/catalog-info.yaml',
+        });
+        // An unrelated candidate stays untouched.
+        await insertRefreshState(knex, 'other');
+
+        await subscriber!.onEvents([event]);
+
+        await expect(
+          knex<DbRefreshStateRow>('refresh_state')
+            .select('entity_id')
+            .where('next_update_at', '>', new Date('1981-01-01T00:00:00Z')),
+        ).resolves.toEqual([{ entity_id: 'new-candidate' }]);
+      },
+    );
+
     it('handles repository.updated', async () => {
       const { knex, subscriber } = await initialize(databaseId);
 
