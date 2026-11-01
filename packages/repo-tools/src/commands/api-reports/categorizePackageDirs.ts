@@ -34,7 +34,7 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           }
 
           const pkgJson = await fs
-            .readJson(targetPaths.resolveWorkspaceRoot(dir, 'package.json'))
+            .readJson(targetPaths.resolveInstallationRoot(dir, 'package.json'))
             .catch(error => {
               if (error.code === 'ENOENT') {
                 return undefined;
@@ -47,7 +47,7 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           }
           if (
             await fs.pathExists(
-              targetPaths.resolveWorkspaceRoot(dir, 'migrations'),
+              targetPaths.resolveInstallationRoot(dir, 'migrations'),
             )
           ) {
             sqlPackageDirs.push(dir);

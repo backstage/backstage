@@ -66,9 +66,10 @@ export type TargetPaths = {
    * `workspaces` field. pnpm ignores the `workspaces` field, so a directory
    * with one is part of a pnpm workspace above it when the `packages`
    * patterns of that workspace include the directory or a directory inside
-   * it, and a workspace of its own otherwise. The lockfile and the package
-   * manager configuration live here, and installs act on everything inside
-   * it.
+   * it, and a workspace of its own otherwise. For example, `apps/*` and
+   * `apps/backstage/packages/*` both include `apps/backstage`. The lockfile
+   * and the package manager configuration live here, and installs act on
+   * everything inside it.
    *
    * Falls back to the target directory when it is not inside a workspace.
    */
@@ -328,7 +329,10 @@ function readPnpmWorkspacePatterns(dir: string): string[] {
  * Returns true if the nearest `pnpm-workspace.yaml` above `dir` includes
  * `dir` or a directory inside it in its `packages` field. Without a
  * `packages` field, a pnpm workspace only includes its root. A negated
- * pattern that matches `dir` leaves out all of it.
+ * pattern leaves out `dir` when it matches `dir` and everything inside it.
+ * Negated patterns that only match the directories inside `dir` are not
+ * checked against the positive ones, since that would need the file system,
+ * so `dir` then still counts as included.
  */
 function isInPnpmWorkspace(dir: string): boolean {
   const parentDir = dirname(dir);
@@ -345,8 +349,12 @@ function isInPnpmWorkspace(dir: string): boolean {
   );
   return (
     matchers.some(m => !m.negate && m.match(relDir, true)) &&
-    // The trailing slash also matches patterns that end with /**
-    !matchers.some(m => m.negate && !m.match(`${relDir}/`))
+    // pnpm applies a negated pattern to each package directory on its own, so
+    // it only leaves out everything when it matches the directory and a path
+    // deep inside it, such as `!apps/backstage/**`
+    !matchers.some(
+      m => m.negate && !m.match(`${relDir}/`) && !m.match(`${relDir}/x/x`),
+    )
   );
 }
 
