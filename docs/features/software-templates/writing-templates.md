@@ -1004,6 +1004,8 @@ The template editor has 3 main sections:
 
 Allow to load a directory on your local file system that contains a template and editing the files in it while previewing the form and executing the template.
 
+While a directory loads or reloads, the file tree shows a progress indicator with the number of files loaded so far. Until loading finishes, the editor is read-only, and you can't save or reload files, or open, create, or close a directory from the **File** menu or the file tree toolbar.
+
 ![template editor load dir](../../assets/software-templates/template-editor-load-dir.png)
 
 If you complete the form in the right side and click on `Create` button, the template will be executed in dry-run mode and the result will be shown in the `Dry-run result` drawer that will pop-up at the bottom of the screen.
