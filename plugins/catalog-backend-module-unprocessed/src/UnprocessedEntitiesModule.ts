@@ -120,14 +120,24 @@ export class UnprocessedEntitiesModule {
           'refresh_state.entity_ref',
         )
         // A tombstone left by an earlier deletion of the same ref does not
-        // make a re-created candidate any less pending.
+        // make a re-created candidate any less pending. Neither does an empty
+        // row from before tombstones, which has no deletion time, if it
+        // belonged to a predecessor.
         .where(q =>
           q
             .whereNull('final_entities.entity_id')
             .orWhere(t =>
               t
                 .whereNull('final_entities.final_entity')
-                .whereNotNull('final_entities.deleted_at'),
+                .where(u =>
+                  u
+                    .whereNotNull('final_entities.deleted_at')
+                    .orWhere(
+                      'final_entities.entity_id',
+                      '<>',
+                      this.database.ref('refresh_state.entity_id'),
+                    ),
+                ),
             ),
         )
     ).map(this.hydrateRefreshState);
@@ -150,6 +160,10 @@ export class UnprocessedEntitiesModule {
         )
         .whereNull('final_entities.final_entity')
         .whereNull('final_entities.deleted_at')
+        .where(
+          'final_entities.entity_id',
+          this.database.ref('refresh_state.entity_id'),
+        )
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);

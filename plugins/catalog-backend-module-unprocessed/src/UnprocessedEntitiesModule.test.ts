@@ -101,7 +101,27 @@ describe('UnprocessedEntitiesModule', () => {
       last_discovery_at: now,
     });
 
+    // Re-created over an empty row from before tombstones, which has no
+    // deletion time. It is pending too.
+    await db('refresh_state').insert({
+      entity_id: 'recreated-legacy-entity',
+      entity_ref: 'component:default/recreated-legacy',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'recreated-legacy' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
+    });
+
     await db('final_entities').insert([
+      {
+        entity_id: 'legacy-slot',
+        entity_ref: 'component:default/recreated-legacy',
+        final_entity: null,
+      },
       {
         entity_id: 'failed-entity',
         entity_ref: 'component:default/failed',
@@ -173,12 +193,20 @@ describe('UnprocessedEntitiesModule', () => {
         response.body.entities
           .map((e: { entity_ref: string }) => e.entity_ref)
           .sort(),
-      ).toEqual(['component:default/pending', 'component:default/recreated']);
+      ).toEqual([
+        'component:default/pending',
+        'component:default/recreated',
+        'component:default/recreated-legacy',
+      ]);
       expect(
         response.body.entities
           .map((e: { entity_id: string }) => e.entity_id)
           .sort(),
-      ).toEqual(['pending-entity', 'recreated-entity']);
+      ).toEqual([
+        'pending-entity',
+        'recreated-entity',
+        'recreated-legacy-entity',
+      ]);
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
 

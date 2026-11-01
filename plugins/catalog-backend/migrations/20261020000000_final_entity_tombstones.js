@@ -70,9 +70,15 @@ exports.up = async function up(knex) {
   if (isMysql(knex)) {
     // Matches the application's enqueue contract, as on PostgreSQL. Triggers
     // are not fired by foreign key actions in MySQL, but nothing cascades into
-    // refresh_state.
-    await knex.raw(`DROP TRIGGER IF EXISTS ${triggerName}`);
-    await knex.raw(`
+    // refresh_state. An existing trigger is kept: on a retry after the
+    // foreign key is gone it is all that tracks deletions, and these
+    // statements don't run in a transaction.
+    const [existing] = await knex.raw(
+      'SELECT 1 FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA = DATABASE() AND TRIGGER_NAME = ?',
+      [triggerName],
+    );
+    if (!existing.length) {
+      await knex.raw(`
       CREATE TRIGGER ${triggerName}
       AFTER DELETE ON refresh_state
       FOR EACH ROW
@@ -82,15 +88,16 @@ exports.up = async function up(knex) {
         stitch_ticket = VALUES(stitch_ticket),
         failure_count = 0
     `);
+    }
     for (const name of await findMysqlForeignKeys(knex)) {
       await knex.raw('ALTER TABLE final_entities DROP FOREIGN KEY ??', [name]);
     }
     return;
   }
 
-  await knex.raw(`DROP TRIGGER IF EXISTS ${triggerName}`);
+  // As on MySQL, an existing trigger is kept
   await knex.raw(`
-    CREATE TRIGGER ${triggerName}
+    CREATE TRIGGER IF NOT EXISTS ${triggerName}
     AFTER DELETE ON refresh_state
     FOR EACH ROW
     BEGIN
