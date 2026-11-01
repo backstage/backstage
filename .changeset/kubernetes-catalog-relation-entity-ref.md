@@ -1,6 +1,10 @@
 ---
-'@backstage/plugin-kubernetes-backend': patch
+'@backstage/plugin-kubernetes-backend': minor
 '@backstage/plugin-kubernetes-node': patch
 ---
 
-Fixed the `catalogRelation` service locator to match clusters whose `kubernetes-cluster` resource lives in a different namespace than the component, and to disambiguate clusters that share the same name. Clusters not sourced from the catalog keep the previous name-based matching. `ClusterDetails` gains an optional `entityRef` field carrying the source cluster resource's entity ref when sourced from the catalog.
+**BREAKING**: The `catalogRelation` service locator now matches catalog-sourced clusters by the full entity ref of their `kubernetes-cluster` resource, instead of assuming the resource lives in the component's namespace. This fixes clusters in other namespaces not being found and same-named clusters being mixed up.
+
+This only affects components whose `dependsOn` relation points to a cluster in a different namespace using a short ref, for example `resource:prod` from a component in `team-a` for a cluster in `default`. Update these to the full ref, such as `resource:default/prod`. Setups where components and clusters share a namespace, including everything in `default`, and clusters not sourced from the catalog are unaffected.
+
+`ClusterDetails` gains an optional `entityRef` field.
