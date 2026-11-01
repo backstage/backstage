@@ -131,6 +131,26 @@ describe('AppIdentityProxy', () => {
     }
   });
 
+  it('should not preserve location when pathname starts with double slash', async () => {
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/root' });
+    window.history.pushState(
+      {},
+      '',
+      `${window.location.origin}//external.example/catalog`,
+    );
+
+    try {
+      const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+      await (proxy as any).signOut({ preserveLocation: true });
+
+      expect(mockIdentityApi.signOut).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith('/root');
+    } finally {
+      window.history.pushState({}, '', '/');
+    }
+  });
+
   it('should report whether a target has been set', () => {
     const proxy = new AppIdentityProxy();
     expect(proxy.isTargetSet()).toBe(false);
