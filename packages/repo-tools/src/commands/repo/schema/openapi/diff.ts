@@ -24,13 +24,27 @@ import {
 } from '../../../../lib/openapi/constants';
 import { ensureOasdiffInstalled } from '../../../util';
 import chalk from 'chalk';
-import { relative as relativePath, join, sep, posix } from 'node:path';
+import {
+  relative as relativePath,
+  resolve as resolvePath,
+  join,
+  sep,
+  posix,
+} from 'node:path';
 import { pathExists } from 'fs-extra';
 
 export async function command(opts: OptionValues) {
   await ensureOasdiffInstalled();
 
   let packages = await PackageGraph.listTargetPackages();
+
+  // Paths in git diffs and at git refs are relative to the root of the
+  // repository
+  const { stdout: gitRootRaw } = await exec('git', [
+    'rev-parse',
+    '--show-toplevel',
+  ]);
+  const gitRoot = gitRootRaw.toString().trim();
 
   let since = '';
   if (opts.since) {
@@ -46,7 +60,7 @@ export async function command(opts: OptionValues) {
     const changedOpenApiSpecs = changedFiles
       .split('\n')
       .filter(e => e.endsWith(YAML_SCHEMA_PATH))
-      .map(e => targetPaths.resolve(e));
+      .map(e => resolvePath(gitRoot, e));
 
     packages = packages.filter(pkg =>
       changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}/`)),
@@ -81,16 +95,18 @@ export async function command(opts: OptionValues) {
   for (const pkg of packagesWithSpecs) {
     const specPath = join(pkg.dir, YAML_SCHEMA_PATH);
     const relativeSpecPath = relativePath(
-      targetPaths.workspaceRootDir,
+      targetPaths.installationRootDir,
       specPath,
     )
       .split(sep)
       .join(posix.sep);
-    const pkgName = relativePath(targetPaths.workspaceRootDir, pkg.dir)
+    const pkgName = relativePath(targetPaths.installationRootDir, pkg.dir)
       .split(sep)
       .join(posix.sep);
     const baseRef = since || DEFAULT_BASE_REF;
-    const baseSpec = `${baseRef}:${relativeSpecPath}`;
+    const baseSpec = `${baseRef}:${relativePath(gitRoot, specPath)
+      .split(sep)
+      .join(posix.sep)}`;
 
     try {
       const { stdout } = await exec(
@@ -104,7 +120,7 @@ export async function command(opts: OptionValues) {
           '--template',
           templatePath,
         ],
-        { cwd: targetPaths.workspaceRootDir },
+        { cwd: targetPaths.installationRootDir },
       );
       const output = stdout.toString().trim();
       if (output) {

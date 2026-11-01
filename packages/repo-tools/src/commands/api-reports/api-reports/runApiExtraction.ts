@@ -96,7 +96,7 @@ async function findPackageEntryPoints(packageDirs: string[]): Promise<
   return Promise.all(
     packageDirs.map(async packageDir => {
       const pkg = await fs.readJson(
-        targetPaths.resolveWorkspaceRoot(packageDir, 'package.json'),
+        targetPaths.resolveInstallationRoot(packageDir, 'package.json'),
       );
 
       return getPackageExportDetails(pkg).map(details => {
@@ -139,7 +139,7 @@ export async function runApiExtraction({
   // inspected.
   const allDistTypesEntryPointPaths = allEntryPoints.map(
     ({ packageDir, distTypesPath }) => {
-      return targetPaths.resolveWorkspaceRoot(
+      return targetPaths.resolveInstallationRoot(
         './dist-types',
         packageDir,
         distTypesPath,
@@ -168,8 +168,8 @@ export async function runApiExtraction({
       ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
       : allowWarnings;
 
-    const projectFolder = targetPaths.resolveWorkspaceRoot(packageDir);
-    const packageFolder = targetPaths.resolveWorkspaceRoot(
+    const projectFolder = targetPaths.resolveInstallationRoot(packageDir);
+    const packageFolder = targetPaths.resolveInstallationRoot(
       './dist-types',
       packageDir,
     );
@@ -372,7 +372,7 @@ export async function runApiExtraction({
             const expected = await fs.readFile(conflictingFile, 'utf8');
             logReportDiff(
               relativePath(
-                targetPaths.workspaceRootDir,
+                targetPaths.installationRootDir,
                 extractorConfig.reportFilePath,
               ),
               existing,
