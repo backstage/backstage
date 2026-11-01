@@ -114,15 +114,46 @@ describe('compileSchema', () => {
   });
 
   it('rejects malformed schemas with cfworker at compile time', () => {
+    const compile = (s: object) =>
+      compileSchema(cfworkerSchemaEngine, s, { disableCache: true });
+    expect(() => compile({ type: 'not-a-type' })).toThrow(
+      /Invalid JSON schema/,
+    );
     expect(() =>
-      compileSchema(
-        cfworkerSchemaEngine,
-        { type: 'not-a-type' },
-        {
-          disableCache: true,
-        },
-      ),
-    ).toThrow(/Invalid JSON schema/);
+      compile({ properties: { a: { type: 'string', minLenght: 3 } } }),
+    ).toThrow(/unknown keyword "minLenght" at path \/properties\/a/);
+    expect(() =>
+      compile({ $schema: 'https://json-schema.org/draft/2020-12/schema' }),
+    ).toThrow(/unsupported \$schema/);
+    expect(() =>
+      compile({ $schema: 'https://json-schema.org/draft-07/schema#' }),
+    ).toThrow(/unsupported \$schema/);
+    expect(() =>
+      compile({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        dependencies: { a: ['b'] },
+      }),
+    ).not.toThrow();
+  });
+
+  it.each([
+    ['cfworker', cfworkerSchemaEngine],
+    ['ajv', ajvSchemaEngine],
+  ])('handles false schemas with the %s engine', (_name, engine) => {
+    const reject = compileSchema(engine, false as any, { disableCache: true });
+    expect(reject({})).toEqual([expect.anything()]);
+
+    const validate = compileSchema(
+      engine,
+      { properties: { forbidden: false, name: { type: 'string' } } },
+      { disableCache: true },
+    );
+    expect(validate({ forbidden: 1, name: 2 })).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ instancePath: '/forbidden' }),
+        expect.objectContaining({ instancePath: '/name', keyword: 'type' }),
+      ]),
+    );
   });
 
   it('validates schemas against the meta schema', () => {
