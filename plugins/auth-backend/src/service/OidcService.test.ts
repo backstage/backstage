@@ -994,6 +994,52 @@ describe('OidcService', () => {
         });
       });
 
+      it('should use non-default backstageTokenExpiration when exchanging code for tokens', async () => {
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              backstageTokenExpiration: '2 hours',
+            },
+          },
+        });
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:8080/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'http://localhost:8080/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'http://localhost:8080/callback',
+          grantType: 'authorization_code',
+        });
+
+        expect(tokenResult).toEqual({
+          accessToken: mockToken,
+          tokenType: 'Bearer',
+          expiresIn: 7200,
+          idToken: mockToken,
+          scope: 'openid',
+        });
+      });
+
       it('should throw error for invalid grant type', async () => {
         const { service } = await createOidcService({ databaseId });
 
@@ -1123,6 +1169,38 @@ describe('OidcService', () => {
         expect(tokenResult.accessToken).toBe(mockToken);
         expect(tokenResult.refreshToken).toBeUndefined();
         expect(mockOfflineAccess.issueRefreshToken).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('refreshAccessToken', () => {
+      it('should use non-default backstageTokenExpiration when refreshing an access token', async () => {
+        const mockOfflineAccess = {
+          refreshAccessToken: jest.fn().mockResolvedValue({
+            accessToken: 'new-mock-token',
+            refreshToken: 'new-mock-refresh-token',
+          }),
+        } as unknown as OfflineAccessService;
+
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              backstageTokenExpiration: '2 hours',
+            },
+          },
+          offlineAccess: mockOfflineAccess,
+        });
+
+        const tokenResult = await service.refreshAccessToken({
+          refreshToken: 'mock-refresh-token',
+        });
+
+        expect(tokenResult).toEqual({
+          accessToken: 'new-mock-token',
+          tokenType: 'Bearer',
+          expiresIn: 7200,
+          refreshToken: 'new-mock-refresh-token',
+        });
       });
     });
 
