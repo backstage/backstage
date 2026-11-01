@@ -172,8 +172,11 @@ const detectedPackageManagers = new Map<string, Promise<PackageManager>>();
 export async function detectPackageManager(
   options?: DetectPackageManagerOptions,
 ): Promise<PackageManager> {
-  const workspaceRootDir =
-    options?.workspaceRootDir ?? targetPaths.workspaceRootDir;
+  // Relative paths are resolved so that they are cached by the directory
+  // that they point to when the call is made
+  const workspaceRootDir = resolvePath(
+    options?.workspaceRootDir ?? targetPaths.workspaceRootDir,
+  );
 
   let detected = detectedPackageManagers.get(workspaceRootDir);
   if (!detected) {
