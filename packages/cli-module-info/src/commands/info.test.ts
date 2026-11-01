@@ -161,6 +161,9 @@ describe('info', () => {
 
     const output = await runForJsonOutput(['--format', 'json']);
     expect(output.dependencies).toEqual({});
+    expect(output.local).toEqual({
+      '@backstage/local': [{ version: '0.3.0' }],
+    });
     expect(output.system.packageManager).toEqual({
       name: 'yarn',
       version: '4.1.0',
