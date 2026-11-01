@@ -400,18 +400,23 @@ function translateNullable(schema: unknown) {
   }
   const node = schema as Record<string, unknown>;
   if ('nullable' in node) {
-    if (node.nullable === true) {
-      if (typeof node.type === 'string') {
-        node.type = [node.type, 'null'];
-      } else if (Array.isArray(node.type) && !node.type.includes('null')) {
-        node.type = [...node.type, 'null'];
-      }
-      if ('const' in node) {
-        node.enum = [node.const, null];
-        delete node.const;
-      } else if (Array.isArray(node.enum) && !node.enum.includes(null)) {
-        node.enum = [...node.enum, null];
-      }
+    // Matches ajv, where `nullable` only extends the type, while any `enum`
+    // or `const` still applies as written
+    const types = typeof node.type === 'string' ? [node.type] : node.type;
+    if (typeof node.nullable !== 'boolean') {
+      throw new TypeError('Invalid JSON schema: nullable must be a boolean');
+    }
+    if (!Array.isArray(types)) {
+      throw new TypeError(
+        'Invalid JSON schema: nullable can not be used without type',
+      );
+    }
+    if (node.nullable && !types.includes('null')) {
+      node.type = [...types, 'null'];
+    } else if (!node.nullable && types.includes('null')) {
+      throw new TypeError(
+        'Invalid JSON schema: type null contradicts nullable false',
+      );
     }
     delete node.nullable;
   }

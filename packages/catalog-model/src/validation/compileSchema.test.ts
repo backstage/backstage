@@ -148,6 +148,7 @@ describe('compileSchema', () => {
           a: { type: 'string', nullable: true },
           b: { type: 'string', enum: ['x', null], nullable: true },
           c: { type: 'string', nullable: false },
+          d: { type: 'string', enum: ['x'], nullable: true },
         },
       },
       { disableCache: true },
@@ -163,6 +164,20 @@ describe('compileSchema', () => {
     expect(validate({ c: null })).toEqual([
       expect.objectContaining({ instancePath: '/c' }),
     ]);
+    // enum still applies as written
+    expect(validate({ d: null })).toEqual([
+      expect.objectContaining({ instancePath: '/d' }),
+    ]);
+
+    for (const invalid of [
+      { type: 'string', nullable: 'true' },
+      { nullable: true },
+      { type: ['string', 'null'], nullable: false },
+    ]) {
+      expect(() =>
+        compileSchema(engine, invalid, { disableCache: true }),
+      ).toThrow();
+    }
   });
 
   it.each([
