@@ -145,7 +145,7 @@ describe('targetPaths', () => {
       // which a workspaces field marks, and one backstage.json at the top
       'pnpm/package.json': '{}',
       'pnpm/pnpm-workspace.yaml':
-        "packages:\n  - apps/**\n  - '!apps/excluded'\n  - ./libs/*\n  - other/{lib-?,svc}\n",
+        "packages:\n  - apps/**\n  - '!apps/excluded/**'\n  - '!apps/kept'\n  - ./libs/*\n  - other/{lib-?,svc}\n  - nested/*/packages/*\n",
       'pnpm/backstage.json': '{}',
       'pnpm/apps/backstage/package.json': JSON.stringify({
         workspaces: ['packages/*'],
@@ -160,6 +160,11 @@ describe('targetPaths', () => {
       'pnpm/apps/second/backstage.json': '{}',
       'pnpm/apps/second/packages/app/package.json': '{}',
       'pnpm/libs/other/package.json': '{}',
+      // An installation that only a pattern for its packages includes
+      'pnpm/nested/backstage/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/nested/backstage/packages/app/package.json': '{}',
       'pnpm/other/lib-a/package.json': JSON.stringify({
         workspaces: ['packages/*'],
       }),
@@ -178,6 +183,11 @@ describe('targetPaths', () => {
         workspaces: ['packages/*'],
       }),
       'pnpm/apps/excluded/packages/a/package.json': '{}',
+      // A negation of the directory alone keeps the packages inside it
+      'pnpm/apps/kept/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/kept/packages/a/package.json': '{}',
       // A pnpm-workspace.yaml with settings only, which includes no packages
       'settings-only/pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
       'settings-only/yarn/package.json': JSON.stringify({
@@ -281,10 +291,22 @@ describe('targetPaths', () => {
       'pnpm/backstage.json',
     );
     expectRoots(
+      'pnpm/nested/backstage/packages/app',
+      'pnpm',
+      'pnpm/nested/backstage',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
       'pnpm/apps/excluded/packages/a',
       'pnpm/apps/excluded',
       'pnpm/apps/excluded',
       'pnpm/apps/excluded/backstage.json',
+    );
+    expectRoots(
+      'pnpm/apps/kept/packages/a',
+      'pnpm',
+      'pnpm/apps/kept',
+      'pnpm/backstage.json',
     );
     expectRoots(
       'pnpm/tools/yarn-project/packages/a',
