@@ -2131,6 +2131,7 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
     await knex('entity_change_subscriptions').insert({
       subscription_id: 's',
+      owner: 'user:default/me',
       state: 'idle',
       last_sent_generation: '9007199254740993',
       last_acknowledged_generation: '9007199254740993',

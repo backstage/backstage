@@ -166,6 +166,8 @@ export type DbFinalEntitiesRow = {
  */
 export type DbEntityChangeSubscriptionsRow = {
   subscription_id: string;
+  /** The principal that created the subscription, and may use it. */
+  owner: string;
   created_at: string | number | Date;
   active_at: string | number | Date;
   state: 'idle' | 'waiting';

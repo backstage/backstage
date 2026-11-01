@@ -751,11 +751,15 @@ A typical consumer starts like this:
 
 1. Get a starting position: a cursor from `GET /entities/changes?afterGeneration=last`,
    or a subscription created with `afterGeneration` set to `last`.
-2. Read the entities it needs through the ordinary entity endpoints.
+2. Read the entities it needs through
+   [`GET /entities/by-query`](#get-entitiesby-query), following the returned
+   cursors.
 3. Read changes from the starting position, and apply them.
 
 Anything that changes during step 2 is delivered again in step 3, so nothing
-is missed.
+is missed. Don't use offsets or custom sort fields in step 2: when an entity
+is deleted between pages, an offset can skip a different entity that never
+changes, and so never shows up in the feed either.
 
 You can limit the changes to a scope: a list of entries on the form `kind`,
 `kind:namespace` or `kind:namespace/name`, for example `user` and `group`.
@@ -798,6 +802,10 @@ continue with the returned cursor.
 Creates a subscription, or marks an existing one as active. A subscription
 keeps track of a consumer's position on the server, and several replicas of
 the same consumer can share it. Call this every time a consumer starts.
+
+A subscription belongs to the user or service that created it, and only that
+caller can read from it or acknowledge its batches. For others, it doesn't
+exist, and creating one with the same ID responds with 409.
 
 The request body is JSON, on the form
 

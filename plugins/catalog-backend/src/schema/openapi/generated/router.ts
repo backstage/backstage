@@ -1276,7 +1276,7 @@ export const spec = {
         operationId: 'GetEntityChanges',
         tags: ['Entity'],
         description:
-          '**Experimental.** Reads refs of entities that may have changed after a\nposition, in commit order. Deletions are included. This is a hint, not\na diff: read the current state of each ref through\n`/entities/by-refs`.\n\nTo bootstrap, first take a cursor with `afterGeneration=last`, then do\na full read through the ordinary entity endpoints, and then continue\nfrom the cursor. Changes made during the full read are delivered\nagain, so consumers must be idempotent.\n\nThese endpoints are experimental until deletion tracking is enabled\nin all deployments, and may change.\n',
+          '**Experimental.** Reads refs of entities that may have changed after a\nposition, in commit order. Deletions are included. This is a hint, not\na diff: read the current state of each ref through\n`/entities/by-refs`.\n\nTo bootstrap, first take a cursor with `afterGeneration=last`, then do\na full read through `/entities/by-query`, following its cursors\nwithout offsets or custom sort fields, and then continue from the\ncursor. Changes made during the full read are delivered again, so\nconsumers must be idempotent.\n\nThese endpoints are experimental until deletion tracking is enabled\nin all deployments, and may change.\n',
         responses: {
           '200': {
             description: 'Ok',
@@ -1383,7 +1383,7 @@ export const spec = {
         operationId: 'UpsertEntityChangeSubscription',
         tags: ['Entity'],
         description:
-          "**Experimental.** Creates a subscription, or marks an existing one as\nactive. Call this before reading, whether or not the subscription\nexists. The position and scope are set at creation and can't change\nlater; asking for a different scope responds with 409. Subscriptions\nare deleted after a long period without use.\n\nA subscription tracks a position on behalf of a consumer, and several\nreplicas of that consumer can share it. Each read hands one replica a\nbatch that it must acknowledge. Use one subscription per principal, or\nper set of principals with the same permissions.\n",
+          "**Experimental.** Creates a subscription, or marks an existing one as\nactive. Call this before reading, whether or not the subscription\nexists. The position and scope are set at creation and can't change\nlater; asking for a different scope responds with 409. Subscriptions\nare deleted after a long period without use.\n\nA subscription tracks a position on behalf of a consumer, and several\nreplicas of that consumer can share it. Each read hands one replica a\nbatch that it must acknowledge. A subscription belongs to the\nprincipal that created it, and doesn't exist for anyone else; using\nan ID that another principal already has responds with 409.\n",
         responses: {
           '200': {
             description: 'Ok',

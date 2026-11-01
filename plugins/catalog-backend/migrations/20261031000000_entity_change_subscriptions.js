@@ -47,6 +47,10 @@ exports.up = async function up(knex) {
           .primary()
           .comment('Unique ID of the subscription');
         table
+          .text('owner')
+          .notNullable()
+          .comment('The principal that created the subscription');
+        table
           .dateTime('created_at')
           .notNullable()
           .defaultTo(tx.fn.now())

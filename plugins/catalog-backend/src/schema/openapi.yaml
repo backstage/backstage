@@ -1147,9 +1147,10 @@ paths:
         `/entities/by-refs`.
 
         To bootstrap, first take a cursor with `afterGeneration=last`, then do
-        a full read through the ordinary entity endpoints, and then continue
-        from the cursor. Changes made during the full read are delivered
-        again, so consumers must be idempotent.
+        a full read through `/entities/by-query`, following its cursors
+        without offsets or custom sort fields, and then continue from the
+        cursor. Changes made during the full read are delivered again, so
+        consumers must be idempotent.
 
         These endpoints are experimental until deletion tracking is enabled
         in all deployments, and may change.
@@ -1234,8 +1235,9 @@ paths:
 
         A subscription tracks a position on behalf of a consumer, and several
         replicas of that consumer can share it. Each read hands one replica a
-        batch that it must acknowledge. Use one subscription per principal, or
-        per set of principals with the same permissions.
+        batch that it must acknowledge. A subscription belongs to the
+        principal that created it, and doesn't exist for anyone else; using
+        an ID that another principal already has responds with 409.
       responses:
         '200':
           description: Ok

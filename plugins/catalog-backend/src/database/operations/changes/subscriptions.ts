@@ -30,6 +30,14 @@ type SubscriptionRow = Omit<
   'last_sent_generation'
 >;
 
+/**
+ * Identifies the principal that created a subscription. Only the same
+ * principal can use it, so that, for example, replicas of one service share a
+ * subscription, while other callers can neither claim its batches nor skip
+ * past changes on its behalf.
+ */
+export type EntityChangeSubscriptionOwner = string;
+
 export type EntityChangeSubscription = {
   subscriptionId: string;
   createdAt: Date;
@@ -46,13 +54,15 @@ export type EntityChangeSubscription = {
  *
  * @remarks
  *
- * The position and scope are set when the subscription is created and can't
- * be changed later. Asking for a different scope is a conflict, so that a
- * consumer whose configuration changed doesn't silently follow the old scope.
+ * The owner, position and scope are set when the subscription is created and
+ * can't be changed later. Asking for a different scope is a conflict, so that
+ * a consumer whose configuration changed doesn't silently follow the old
+ * scope. So is using an ID that another owner already has.
  */
 export async function upsertEntityChangeSubscription(
   knex: Knex,
   options: {
+    owner: EntityChangeSubscriptionOwner;
     subscriptionId?: string;
     afterGeneration?: string;
     scope?: EntityChangeScopeEntry[];
@@ -63,7 +73,7 @@ export async function upsertEntityChangeSubscription(
 
   // Touching an existing row first avoids reading the maximum generation,
   // which only matters on creation
-  let existing = await touch(knex, subscriptionId);
+  let existing = await touch(knex, subscriptionId, options.owner);
   if (!existing) {
     const position =
       !options.afterGeneration || options.afterGeneration === 'last'
@@ -72,6 +82,7 @@ export async function upsertEntityChangeSubscription(
     await knex<DbEntityChangeSubscriptionsRow>(TABLE)
       .insert({
         subscription_id: subscriptionId,
+        owner: options.owner,
         created_at: new Date(),
         active_at: new Date(),
         state: 'idle',
@@ -84,6 +95,11 @@ export async function upsertEntityChangeSubscription(
     existing = await get(knex, subscriptionId);
     if (!existing) {
       throw new NotFoundError(`Subscription ${subscriptionId} not found`);
+    }
+    if (existing.owner !== options.owner) {
+      throw new ConflictError(
+        `Subscription ${subscriptionId} already exists with a different owner`,
+      );
     }
   }
 
@@ -147,7 +163,8 @@ export async function getEntityChangeSubscriptionStates(
 }
 
 /**
- * Reads a subscription and marks it as active. Throws if it doesn't exist.
+ * Reads a subscription and marks it as active. Throws if it doesn't exist, or
+ * belongs to another owner.
  *
  * @remarks
  *
@@ -157,14 +174,16 @@ export async function getEntityChangeSubscriptionStates(
 export async function touchEntityChangeSubscription(
   knex: Knex,
   subscriptionId: string,
+  owner: EntityChangeSubscriptionOwner,
 ): Promise<EntityChangeSubscription> {
   await knex<DbEntityChangeSubscriptionsRow>(TABLE)
     .where('subscription_id', subscriptionId)
+    .where('owner', owner)
     .where('state', 'waiting')
     .where('ack_timeout_at', '<', new Date())
     .update({ state: 'idle', ack_id: null, ack_timeout_at: null });
 
-  const row = await touch(knex, subscriptionId);
+  const row = await touch(knex, subscriptionId, owner);
   if (!row) {
     throw new NotFoundError(`Subscription ${subscriptionId} not found`);
   }
@@ -233,10 +252,15 @@ export async function sendEntityChangeSubscription(
  */
 export async function ackEntityChangeSubscription(
   knex: Knex,
-  options: { subscriptionId: string; ackId: string },
+  options: {
+    subscriptionId: string;
+    owner: EntityChangeSubscriptionOwner;
+    ackId: string;
+  },
 ): Promise<boolean> {
   const count = await knex<DbEntityChangeSubscriptionsRow>(TABLE)
     .where('subscription_id', options.subscriptionId)
+    .where('owner', options.owner)
     .where('state', 'waiting')
     .where('ack_id', options.ackId)
     .update({
@@ -254,10 +278,15 @@ export async function ackEntityChangeSubscription(
  */
 export async function nackEntityChangeSubscription(
   knex: Knex,
-  options: { subscriptionId: string; ackId: string },
+  options: {
+    subscriptionId: string;
+    owner: EntityChangeSubscriptionOwner;
+    ackId: string;
+  },
 ): Promise<boolean> {
   const count = await knex<DbEntityChangeSubscriptionsRow>(TABLE)
     .where('subscription_id', options.subscriptionId)
+    .where('owner', options.owner)
     .where('state', 'waiting')
     .where('ack_id', options.ackId)
     .update({ state: 'idle', ack_id: null, ack_timeout_at: null });
@@ -294,23 +323,32 @@ export async function cleanUpEntityChangeSubscriptions(
 async function touch(
   knex: Knex,
   subscriptionId: string,
+  owner: EntityChangeSubscriptionOwner,
 ): Promise<SubscriptionRow | undefined> {
   // MySQL reports unchanged rows as unaffected, so the count can't be used
   // to tell whether the subscription exists.
   await knex<DbEntityChangeSubscriptionsRow>(TABLE)
     .where('subscription_id', subscriptionId)
+    .where('owner', owner)
     .update({ active_at: new Date() });
-  return get(knex, subscriptionId);
+  return get(knex, subscriptionId, owner);
 }
 
 async function get(
   knex: Knex,
   subscriptionId: string,
+  owner?: EntityChangeSubscriptionOwner,
 ): Promise<SubscriptionRow | undefined> {
   return knex<DbEntityChangeSubscriptionsRow>(TABLE)
     .where('subscription_id', subscriptionId)
+    .modify(qb => {
+      if (owner !== undefined) {
+        qb.where('owner', owner);
+      }
+    })
     .select(
       'subscription_id',
+      'owner',
       'created_at',
       'active_at',
       'state',
