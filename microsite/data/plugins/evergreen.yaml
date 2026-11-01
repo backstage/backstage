@@ -1,0 +1,10 @@
+---
+title: Evergreen Lifecycle Risk
+author: Evergreen
+authorUrl: https://github.com/arminazimi/evergreen
+category: Discovery
+description: Shows end-of-life and deprecation risk per Component from the Evergreen portal export. Requires the backend plugin.
+documentation: https://github.com/arminazimi/evergreen/tree/main/integrations/backstage#readme
+npmPackageName: '@evergreen-dev/backstage-plugin'
+addedDate: '2026-11-01'
+status: active
