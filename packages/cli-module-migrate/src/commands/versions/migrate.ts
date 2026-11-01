@@ -20,6 +20,7 @@ import { cli } from 'cleye';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
 import { runInstall } from '../../lib/utils';
+import { getCatalogName } from '../../lib/catalogs';
 import replace from 'replace-in-file';
 import { detectPackageManager } from '@backstage/cli-node/alpha';
 import type { CliCommandContext } from '@backstage/cli-node';
@@ -80,7 +81,14 @@ export async function migrateMovedPackages(options?: {
     'Checking for moved packages to the @backstage-community namespace...',
   );
   const packages = await PackageGraph.listTargetPackages();
-  let didAnythingChange = false;
+  const packageManager = await detectPackageManager();
+  const catalogs = await packageManager.readCatalogs?.();
+  // A moved package that refers to a catalog gets an entry in that catalog
+  const catalogUpdates = new Map<string, Map<string, string>>();
+  const changedPackages = new Array<{
+    pkg: (typeof packages)[number];
+    movedPackages: Map<string, string>;
+  }>();
 
   for (const pkg of packages) {
     const pkgName = pkg.packageJson.name;
@@ -119,6 +127,23 @@ export async function migrateMovedPackages(options?: {
         const movedPackageName = packageInfo.backstage?.moved;
 
         if (movedPackageName) {
+          const catalogName = catalogs ? getCatalogName(depVersion) : undefined;
+          const catalog = catalogName ? catalogs?.[catalogName] : undefined;
+          if (catalogName && catalog?.[movedPackageName] === undefined) {
+            // Without a version to copy, the new name would refer to nothing
+            if (catalog?.[depName] === undefined) {
+              console.warn(
+                chalk.yellow(
+                  `Skipping the moved package ${depName} in ${pkgName} (${depType}), since the ${catalogName} catalog has no entry for it`,
+                ),
+              );
+              continue;
+            }
+            const entries = catalogUpdates.get(catalogName) ?? new Map();
+            entries.set(movedPackageName, catalog[depName]);
+            catalogUpdates.set(catalogName, entries);
+          }
+
           movedPackages.set(depName, movedPackageName);
           console.log(
             chalk.yellow(
@@ -127,7 +152,6 @@ export async function migrateMovedPackages(options?: {
           );
 
           didPackageChange = true;
-          didAnythingChange = true;
 
           depsObj[movedPackageName] = depsObj[depName];
           delete depsObj[depName];
@@ -136,38 +160,55 @@ export async function migrateMovedPackages(options?: {
     }
 
     if (didPackageChange) {
-      await writeJson(resolvePath(pkg.dir, 'package.json'), pkg.packageJson, {
-        spaces: 2,
+      changedPackages.push({ pkg, movedPackages });
+    }
+  }
+
+  // The catalogs are written first, so that a failure there leaves the
+  // package.json files as they were
+  if (catalogUpdates.size > 0) {
+    await packageManager.updateCatalogs!(
+      Object.fromEntries(
+        Array.from(catalogUpdates, ([catalogName, entries]) => [
+          catalogName,
+          Object.fromEntries(entries),
+        ]),
+      ),
+    );
+  }
+
+  for (const { pkg, movedPackages } of changedPackages) {
+    await writeJson(resolvePath(pkg.dir, 'package.json'), pkg.packageJson, {
+      spaces: 2,
+    });
+
+    if (!options?.skipCodeChanges) {
+      // Replace all occurrences of the old package names in the code.
+      const files = await replace({
+        files: joinPath(pkg.dir, 'src', '**'),
+        allowEmptyPaths: true,
+        processor: content => {
+          return Array.from(movedPackages.entries()).reduce(
+            (newContent, [oldName, newName]) => {
+              return newContent
+                .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`)
+                .replace(new RegExp(`'${oldName}'`, 'g'), `'${newName}'`)
+                .replace(new RegExp(`${oldName}/`, 'g'), `${newName}/`);
+            },
+            content,
+          );
+        },
       });
 
-      if (!options?.skipCodeChanges) {
-        // Replace all occurrences of the old package names in the code.
-        const files = await replace({
-          files: joinPath(pkg.dir, 'src', '**'),
-          allowEmptyPaths: true,
-          processor: content => {
-            return Array.from(movedPackages.entries()).reduce(
-              (newContent, [oldName, newName]) => {
-                return newContent
-                  .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`)
-                  .replace(new RegExp(`'${oldName}'`, 'g'), `'${newName}'`)
-                  .replace(new RegExp(`${oldName}/`, 'g'), `${newName}/`);
-              },
-              content,
-            );
-          },
-        });
-
-        if (files.length > 0) {
-          console.log(
-            chalk.green(
-              `Updated ${files.length} files in ${pkgName} to use the new package names`,
-            ),
-          );
-        }
+      if (files.length > 0) {
+        console.log(
+          chalk.green(
+            `Updated ${files.length} files in ${pkg.packageJson.name} to use the new package names`,
+          ),
+        );
       }
     }
   }
 
-  return didAnythingChange;
+  return changedPackages.length > 0;
 }
