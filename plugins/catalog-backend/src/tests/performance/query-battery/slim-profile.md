@@ -26,12 +26,13 @@ requested anyway. Never fall back to a smaller matrix silently.
   a case, run it once to compare results, and reuse the baseline's timing.
 - **Assumption:** on PostgreSQL, only `$in` lists with at least
   `IN_SUBQUERY_MIN_VALUES` values (10 at the time of writing, see
-  `src/service/request/longInLists.ts`) are compiled differently. Scenarios
+  `src/service/request/longInLists.ts`), on fields other than the broad ones
+  (`kind`, `spec.type` and `spec.lifecycle`), are compiled differently. Scenarios
   without permissions, short claim lists and filters with short lists produce
   the same SQL.
 - **Check:** compare the generated SQL strings, not the claim count. Read the
   threshold from the code under test and print it in the report.
-- **Invalidated by:** any change to the threshold, to which operators are
+- **Invalidated by:** any change to the threshold, to the broad fields, to which operators are
   compiled as sets, or to the rule that decides when a long list is joined as a
   set rather than matched with `IN`. If the threshold changes, also revisit the
   claim lists in C4.

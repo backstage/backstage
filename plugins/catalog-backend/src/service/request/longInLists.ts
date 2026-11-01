@@ -110,10 +110,24 @@ export function countInValues(value: FilterPredicateValue): number {
 }
 
 /**
- * Whether a field value is an `$in` list long enough to be matched as a set.
+ * Whether a field value is an `$in` list that is to be matched as a set.
+ *
+ * Lists on the broad fields are always matched per row. Each of their values
+ * matches a large share of the catalog, so a set of them is close to the
+ * whole catalog and expensive to build, while the per-row probe stays cheap
+ * since such lists are short in practice. Battery scenario 21 excluding 32
+ * types on a production-sized catalog took 0.74 s probed per row, 1.1 s as
+ * IN and 3.2 s as JOIN for a stream page; the same list on a UI page took
+ * 45-87 ms per row and 0.6-1 s in either set form.
  */
-export function isLongInList(value: FilterPredicateValue): boolean {
-  return countInValues(value) >= IN_SUBQUERY_MIN_VALUES;
+export function isLongInList(
+  keyAnyCase: string,
+  value: FilterPredicateValue,
+): boolean {
+  return (
+    !BROAD_FIELDS.has(keyAnyCase.toLowerCase()) &&
+    countInValues(value) >= IN_SUBQUERY_MIN_VALUES
+  );
 }
 
 /**
@@ -181,9 +195,9 @@ function isBroadFilter(filter: unknown): boolean {
     const list = '$all' in filter ? filter.$all : filter.$any;
     return Array.isArray(list) && list.some(isBroadFilter);
   }
-  return Object.values(filter).some(
-    value =>
-      !isLongInList(value as FilterPredicateValue) &&
+  return Object.entries(filter).some(
+    ([keyAnyCase, value]) =>
+      !isLongInList(keyAnyCase, value as FilterPredicateValue) &&
       !(isObject(value) && '$exists' in value && !value.$exists),
   );
 }
@@ -281,7 +295,7 @@ export function findJoinedLongInLists(
     // A field expression; its other keys act as `$all` siblings of the list
     const entries = Object.entries(node);
     for (const [keyAnyCase, value] of entries) {
-      if (!isLongInList(value as FilterPredicateValue)) {
+      if (!isLongInList(keyAnyCase, value as FilterPredicateValue)) {
         continue;
       }
       const narrowed =

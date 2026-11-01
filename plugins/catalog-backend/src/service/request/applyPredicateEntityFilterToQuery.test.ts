@@ -142,6 +142,25 @@ describe('PostgreSQL query generation', () => {
       expect(query.sql).toContain(inSet);
       expect(query.sql).not.toContain('in_set_');
     }
+
+    // Probed per row when the list is on a broad field, even if long
+    const types = {
+      'spec.type': {
+        $in: Array.from({ length: IN_SUBQUERY_MIN_VALUES }, (_, i) => `t${i}`),
+      },
+    };
+    for (const filter of [
+      types,
+      { $all: [{ kind: 'component' }, { $not: types }] },
+      { $any: [types, owned] },
+    ] as FilterPredicate[]) {
+      const query = compile(filter);
+      expect(query.sql).toContain(
+        '"search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))',
+      );
+      expect(query.sql).toContain('exists');
+    }
+    expect(compile({ $any: [types, owned] }).sql).toContain(inSet);
   });
 });
 
