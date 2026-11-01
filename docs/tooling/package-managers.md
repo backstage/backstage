@@ -13,13 +13,13 @@ pnpm support is experimental. The CLI, the app template, and this page may chang
 ## Supported package managers
 
 - **Yarn** is the default. The app template ships Yarn 4. Every part of the CLI and the app template supports it.
-- **pnpm 11.28 or a later 11.x release, and pnpm 12.7 or later** are supported on Linux and macOS. Older releases do not link workspace packages into the root `node_modules` under the `hoisted` node linker, which backend plugins in the workspace rely on to find their own files. Commands that run pnpm fail with an error that names the supported versions when they find another pnpm version. The end-to-end tests run on Linux with pnpm 11.28 and 12.7, each with both the `hoisted` and the `isolated` node linker. See [Node linkers](#node-linkers) and [Known gaps](#known-gaps).
+- **pnpm 11.28 or a later 11.x release, and pnpm 12.7 or later** are supported on Linux and macOS. Older releases do not link workspace packages into the root `node_modules` under the `hoisted` node linker, which backend plugins in the workspace rely on to find their own files. Commands that run pnpm fail with an error that names the supported versions when they find another pnpm version. pnpm projects need Node.js 24, since the libraries that read `pnpm-lock.yaml` need Node.js 22.13 or later, while Backstage supports every Node.js 22 release. The end-to-end tests run on Linux with pnpm 11.28 and 12.7, each with both the `hoisted` and the `isolated` node linker, and with the pnpm version that the app template pins. See [Node linkers](#node-linkers) and [Known gaps](#known-gaps).
 
 ## Workspace root and installation root
 
 The CLI tells two directories apart:
 
-- The **workspace root** is the closest parent directory that holds a `pnpm-workspace.yaml` file, or whose `package.json` has a `workspaces` field. The lockfile, the package manager settings, and pnpm catalogs live here. pnpm ignores the `workspaces` field, so a directory with that field belongs to a pnpm workspace above it when the `packages` patterns of its `pnpm-workspace.yaml` match the directory or a directory inside it, and no negated pattern leaves it out. Otherwise it is a workspace of its own, for example a Yarn project below a `pnpm-workspace.yaml` that only holds settings.
+- The **workspace root** is the closest parent directory that holds a `pnpm-workspace.yaml` file, or whose `package.json` has a `workspaces` field. The lockfile, the package manager settings, and pnpm catalogs live here. pnpm ignores the `workspaces` field, so a directory with that field belongs to a pnpm workspace above it when the `packages` patterns of its `pnpm-workspace.yaml` match the directory or a directory inside it, and no negated pattern leaves it out. For example, both `apps/*` and `apps/backstage/packages/*` include `apps/backstage`. A negated pattern leaves the directory out when it matches all of it, such as `!apps/backstage/**`. Otherwise it is a workspace of its own, for example a Yarn project below a `pnpm-workspace.yaml` that only holds settings.
 - The **installation root** is the closest parent directory, up to the workspace root, whose `package.json` has a `workspaces` field, and otherwise the workspace root. This is the Backstage installation that commands such as `repo start`, `versions:bump`, `info`, and `new` work on. The `repo` commands, such as `repo test`, `repo lint`, and `repo build`, work on the packages that its `workspaces` field lists, and the default configuration files, such as `app-config.yaml`, are loaded from it. In a Yarn workspace it is always the workspace root.
 
 When neither root is found, both are the working directory, so the configuration files are loaded from there, as before.
@@ -86,7 +86,7 @@ When the command runs through pnpm, pnpm is selected without the option:
 pnpm create @backstage/app
 ```
 
-The prerequisite check verifies that pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later, is installed. After the files are written, `create-app` runs `pnpm install` and `pnpm tsc`. Yarn apps get a seed `yarn.lock` with a few known-good dependency pins. pnpm apps do not, and any such pin goes into `overrides` in the template instead.
+The prerequisite check verifies that pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later, is installed, and that Node.js is version 24. pnpm apps need Node.js 24, since the libraries that read `pnpm-lock.yaml` need Node.js 22.13 or later, while Backstage supports every Node.js 22 release, and their `engines` field says so. After the files are written, `create-app` runs `pnpm install` and `pnpm tsc`. Yarn apps get a seed `yarn.lock` with a few known-good dependency pins. pnpm apps do not, and any such pin goes into `overrides` in the template instead.
 
 ## What the pnpm template contains
 
@@ -116,7 +116,6 @@ minimumReleaseAgeExclude:
   - '@backstage/*'
 
 overrides:
-  '@yarnpkg/core': 4.9.1
   '@types/react': ^18
   '@types/react-dom': ^18
 
@@ -131,7 +130,7 @@ What each setting does:
 
 - `nodeLinker: hoisted` gives a flat `node_modules` layout, like the one Yarn produces with `nodeLinker: node-modules`. This is the layout that the plugin ecosystem is tested against. See [Node linkers](#node-linkers).
 - `minimumReleaseAge: 4320` tells pnpm to only resolve dependency versions that have been published for at least three days, which limits exposure to compromised releases. `minimumReleaseAgeExclude` lifts the limit for `@backstage/*`, so `versions:bump` can move to a Backstage release on the day it is published. The Yarn template does the same with `npmMinimalAgeGate` and `npmPreapprovedPackages`. This turns the protection off for the packages that a Backstage app depends on most. If you would rather wait for those too, remove the exclusion, and `versions:bump` fails until a release is three days old.
-- `overrides` holds the same pins as the `resolutions` field of the Yarn template. pnpm ignores `resolutions`, so the pins live here.
+- `overrides` holds the React type pins of the `resolutions` field of the Yarn template. pnpm ignores `resolutions`, so the pins live here. The Yarn template also pins `@yarnpkg/core`, which pnpm apps don't install.
 - `allowBuilds` controls which dependencies may run their install scripts. pnpm blocks all of them by default. The template allows the dependencies with native code that a default app needs, and turns off scripts that only print messages or collect telemetry.
 
 The template keeps the pnpm default `autoInstallPeers: true`. When a package has a peer dependency that the version installed in the project does not satisfy, pnpm installs a second copy that does, next to that package. Yarn only warns about the unmet peer dependency and uses the installed version. A second copy of a package such as `@mui/material` can break styling or React context. To get the Yarn behavior under the `hoisted` node linker, set `autoInstallPeers: false` in `pnpm-workspace.yaml` and check the warnings that `pnpm install` prints. Under the `isolated` linker, an unmet peer dependency is then not available to the package at all.
@@ -159,7 +158,9 @@ With `--catalog <name>`, the command updates the entries of that catalog and not
 pnpm backstage-cli versions:bump --catalog backstage-next --release next
 ```
 
-A catalog that does not exist is an error, so that a typo does not create a catalog that nothing refers to. The command checks this before it changes any files. A catalog belongs to the whole workspace, so bumping it also moves the packages outside of the Backstage installation that refer to it. `versions:bump` never moves a dependency between a range and a catalog, which keeps it compatible with lint rules that enforce catalog usage. It also leaves `backstage.json` alone when it bumps a named catalog. Only the versions in `pnpm-workspace.yaml` change, so its comments and formatting are kept.
+A catalog that does not exist is an error, so that a typo does not create a catalog that nothing refers to. The command checks this before it changes any files. A catalog belongs to the whole workspace, so bumping it also moves the packages outside of the Backstage installation that refer to it. `versions:bump` never moves a dependency between a range and a catalog, which keeps it compatible with lint rules that enforce catalog usage. It also leaves `backstage.json` alone when it bumps a named catalog. Only the versions in `pnpm-workspace.yaml` change, so its comments and formatting are kept. The catalogs are written before any `package.json` file.
+
+When `versions:bump` or `versions:migrate` replaces a moved package, a dependency that refers to a catalog keeps the reference, and the new package name gets an entry with the same version in that catalog, unless the catalog already has one. When the catalog has no entry for either name, the dependency is left as it is, with a warning.
 
 `overrides` in `pnpm-workspace.yaml` take precedence over both version ranges and catalogs. When overrides pin packages that `versions:bump` bumps, the command warns, since those packages keep the versions that the overrides set until you update or remove them.
 
@@ -177,10 +178,10 @@ The CLI commands work the same in Yarn and pnpm projects. These are the differen
 
 - `versions:migrate` and `new` run `pnpm install` after they change `package.json` files. `new` runs the `lint --fix` script of the created package with pnpm.
 - `new` writes `catalog:` for the dependencies of the created package that have an entry in the default catalog, so that it works in repositories that require catalogs, for example through the `pnpm/json-enforce-catalog` lint rule. Other dependencies get version ranges.
-- `repo build`, `repo lint`, and `repo test` with `--since` diff `pnpm-lock.yaml` at the given git ref to find changed packages. The names of the workspace packages are read from the same ref. When the changed lockfile belongs to another package manager, or cannot be compared, all packages count as changed.
+- `repo build`, `repo lint`, and `repo test` with `--since` diff `pnpm-lock.yaml` at the given git ref to find changed packages. The names of the workspace packages are read from the same ref. A package also counts as changed when one of its dependencies resolves to another version or patch, even if another package still uses the old one. When the changed lockfile belongs to another package manager, or cannot be compared, all packages count as changed.
 - `repo test` finds the packages that `pnpm-workspace.yaml` declares, or the packages that the `workspaces` field lists for an installation in a subdirectory.
-- `package build` for backend packages and `build-workspace` copy `pnpm-lock.yaml`, `pnpm-workspace.yaml`, the patch files that its `patchedDependencies` setting names, and the pnpmfile into the dist workspace, so that `pnpm install --frozen-lockfile` works there. The lockfile entries of bundled packages, such as the app, are emptied, since their dependencies are left out of the dist workspace. Packages that need a pack step, for example with `--alwaysPack`, are packed with `pnpm pack` and keep their `workspace:` and `catalog:` dependency ranges. The backend `skeleton.tar.gz` contains these files too. Only the pnpmfile itself is copied, so a pnpmfile that loads other local files fails the build. Move that code into the pnpmfile.
-- `package bundle` makes the bundle a pnpm project of its own, and prunes and installs its lockfile offline. It copies the patch files, the pnpmfile, and the registry settings of the root `.npmrc` file into the bundle, but not auth settings or credentials in registry URLs. When the pnpm cache lacks a package, the command fails and names the package and the settings that decide where pnpm looks for it. See [package bundle](./cli/module-build.md#lockfile-and-installation).
+- `package build` for backend packages and `build-workspace` copy `pnpm-lock.yaml`, `pnpm-workspace.yaml`, the patch files that its `patchedDependencies` setting names, and the pnpmfile into the dist workspace, so that `pnpm install --frozen-lockfile` works there. The lockfile entries of bundled packages, such as the app, are emptied, since their dependencies are left out of the dist workspace, and the entries of workspace packages that the dist workspace doesn't contain are removed. Packages that need a pack step, for example with `--alwaysPack`, are packed with `pnpm pack` and keep their `workspace:` and `catalog:` dependency ranges. The backend `skeleton.tar.gz` contains these files too. Only the pnpmfile itself is copied, so a pnpmfile that loads other local files fails the build. Move that code into the pnpmfile.
+- `package bundle` makes the bundle a pnpm project of its own, and prunes and installs its lockfile offline. It copies the patch files, the pnpmfile, and the registry settings of the root `.npmrc` file into the bundle, but not auth settings or credentials in registry URLs, which are also left out of the registry settings in `pnpm-workspace.yaml`. A missing patch file fails the command, and so does a pnpmfile that loads a package that is not installed where the bundle is written. When the pnpm cache lacks a package, the command fails and names the package and the settings that decide where pnpm looks for it. See [package bundle](./cli/module-build.md#lockfile-and-installation).
 - `info` prints a `pnpm:` line with the pnpm version. The JSON output has a `packageManager` object with `name` and `version`. The `yarn` field is only present in Yarn projects.
 - `package start --link <path>` accepts a pnpm workspace as the linked workspace. See [Linking in Local Packages](./local-dev/linking-local-packages.md).
 - Messages that tell you to run a command, such as `repo fix`, print the pnpm form of the command.
@@ -194,10 +195,10 @@ Two tools outside the CLI also follow the package manager:
 
 pnpm workspaces are often driven by a build system that owns installs and caching. The CLI commands are safe to run in that setting:
 
-- No command installs dependencies implicitly. `versions:bump` and `new` run an install only without `--skip-install`, and `package bundle` installs into its own output directory.
+- Most commands don't install dependencies. `versions:bump` and `new` run an install unless you pass `--skip-install`. `versions:migrate` always runs one after it changes `package.json` files, and has no option to skip it. `package bundle` installs into its own output directory.
 - The success caches of `repo test` and `repo lint` are opt-in.
-- A readable lockfile is not required. Without one, `--since` counts every package as changed, `versions:bump` skips its report of possibly breaking updates, `info` leaves out installed packages, `repo test` and `repo lint` run without their success cache, and `package build` and `build-workspace` create the dist workspace without a lockfile.
-- pnpm does not have to be on the `PATH` for commands that do not run it. The CLI checks the pnpm version the first time it runs pnpm, not when it detects the package manager, so commands that only read the project files, such as `repo test` and `repo lint`, work where pnpm is not available.
+- A readable lockfile is not required. Without one, `--since` still finds changed packages from the changed files, and counts every package as changed only when git also reports a change to the lockfile. `versions:bump` skips its report of possibly breaking updates, `info` leaves out installed packages, `repo test` and `repo lint` run without their success cache, and `package build` and `build-workspace` create the dist workspace without a lockfile.
+- The package manager does not have to be on the `PATH` for commands that do not run it. The CLI checks the pnpm or Yarn version the first time it needs it, not when it detects the package manager, so commands that only read the project files, such as `repo test` and `repo lint`, work where the package manager is not available.
 - Checking the pnpm version does not write files. pnpm records a pinned pnpm version in `pnpm-lock.yaml` on every command, so the CLI runs `pnpm --version` with the `lockfile` setting turned off.
 
 ## Node linkers
