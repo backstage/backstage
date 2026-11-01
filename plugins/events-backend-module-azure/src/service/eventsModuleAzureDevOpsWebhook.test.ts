@@ -39,7 +39,7 @@ describe('eventsModuleAzureDevOpsWebhook', () => {
     } as RequestDetails;
   };
 
-  it('should not register ingress when no secret configured', async () => {
+  it('should add ingress and reject with 403 when no secret is configured', async () => {
     let addedIngress: HttpPostIngressOptions | undefined;
     const extensionPoint = {
       addHttpPostIngress: (ingress: HttpPostIngressOptions) => {
@@ -57,7 +57,24 @@ describe('eventsModuleAzureDevOpsWebhook', () => {
       ],
     });
 
-    expect(addedIngress).toBeUndefined();
+    expect(addedIngress).not.toBeUndefined();
+    expect(addedIngress?.topic).toEqual('azureDevOps');
+    expect(addedIngress?.validator).not.toBeUndefined();
+    const rejections: any[] = [];
+    const context = {
+      reject: (details: { status?: any; payload?: any }) => {
+        rejections.push(details);
+      },
+    };
+    await addedIngress!.validator!(requestWithHeader(), context);
+    expect(rejections).toEqual([
+      {
+        status: 403,
+        payload: {
+          message: 'invalid webhook secret',
+        },
+      },
+    ]);
   });
 
   it('should be correctly wired and set up with secret', async () => {
