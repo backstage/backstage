@@ -39,6 +39,10 @@ const DEFAULT_BRANCH = 'master';
 // Uses the same 'N.x' format as GitHub Actions node-version matrices for easy find-and-replace.
 // Keep in sync with the engines.node field in the root package.json.
 const SUPPORTED_NODE_VERSIONS = ['22.x', '24.x'];
+// The libraries that read pnpm-lock.yaml need Node.js 22.13 or later, while
+// Backstage supports every Node.js 22 release, so pnpm apps start at Node.js
+// 24. Keep in sync with the engines.node field of pnpm apps in the templates.
+const PNPM_MIN_NODE_MAJOR = 24;
 // The pnpm versions that the created app and the Backstage CLI support
 const SUPPORTED_PNPM_VERSIONS =
   'pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later';
@@ -163,6 +167,11 @@ export default async (opts: OptionValues): Promise<void> => {
       `Node version ${major} is not a supported LTS version. Please use a supported version (${SUPPORTED_NODE_VERSIONS.join(
         ' or ',
       )}).`,
+    );
+    hasPrerequisiteError = true;
+  } else if (packageManager === 'pnpm' && major < PNPM_MIN_NODE_MAJOR) {
+    Task.error(
+      `Node version ${major} is not supported for pnpm apps. Please use Node version ${PNPM_MIN_NODE_MAJOR}.`,
     );
     hasPrerequisiteError = true;
   }

@@ -50,9 +50,16 @@ describe('command entrypoint', () => {
   const mockDir = createMockDirectory({ mockOsTmpDir: true });
   const originalUserAgent = process.env.npm_config_user_agent;
 
+  const originalNodeVersion = process.versions.node;
+
   beforeEach(() => {
     // Make the default package manager independent of how the tests are run
     delete process.env.npm_config_user_agent;
+    // pnpm apps need Node.js 24, and the tests also run on Node.js 22
+    Object.defineProperty(process.versions, 'node', {
+      value: '24.15.0',
+      configurable: true,
+    });
     promptMock.mockResolvedValueOnce({
       name: 'MyApp',
       dbType: 'PostgreSQL',
@@ -67,6 +74,10 @@ describe('command entrypoint', () => {
   });
 
   afterEach(() => {
+    Object.defineProperty(process.versions, 'node', {
+      value: originalNodeVersion,
+      configurable: true,
+    });
     if (originalUserAgent === undefined) {
       delete process.env.npm_config_user_agent;
     } else {
@@ -382,6 +393,35 @@ describe('command entrypoint', () => {
         configurable: true,
       });
     }
+  });
+
+  it('should exit when a pnpm app is created with Node.js 22', async () => {
+    Object.defineProperty(process.versions, 'node', {
+      value: '22.22.0',
+      configurable: true,
+    });
+    const errorMock = jest.spyOn(tasks.Task, 'error');
+    jest.spyOn(tasks.Task, 'exit').mockImplementation(() => {
+      throw new Error('exit');
+    });
+    tryCommandForVersionMock.mockResolvedValue({
+      version: '12.7.0',
+      error: undefined,
+    });
+
+    await expect(
+      createApp({ packageManager: 'pnpm' } as unknown as Command),
+    ).rejects.toThrow('exit');
+    expect(errorMock).toHaveBeenCalledWith(
+      'Node version 22 is not supported for pnpm apps. Please use Node version 24.',
+    );
+    expect(templatingMock).not.toHaveBeenCalled();
+
+    // Yarn apps still support Node.js 22
+    jest.spyOn(tasks.Task, 'exit').mockImplementation(() => undefined);
+    promptMock.mockResolvedValue({ name: 'MyApp' });
+    await createApp({ packageManager: 'yarn' } as unknown as Command);
+    expect(templatingMock).toHaveBeenCalled();
   });
 
   it('should exit when Node version is too new', async () => {

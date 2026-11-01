@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
+{{#if pnpm}}
+    "node": "24"
+{{else}}
     "node": "22 || 24"
+{{/if}}
   },
   "scripts": {
     "start": "backstage-cli repo start",

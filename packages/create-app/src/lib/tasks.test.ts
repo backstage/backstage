@@ -389,6 +389,7 @@ describe('tasks', () => {
       expect(fs.existsSync('yarnApp/yarn.lock')).toBe(true);
       await expect(fs.readJson('yarnApp/package.json')).resolves.toEqual(
         expect.objectContaining({
+          engines: { node: '22 || 24' },
           workspaces: ['packages/*', 'plugins/*'],
           resolutions: {
             '@yarnpkg/core': '4.9.1',
@@ -452,6 +453,7 @@ describe('tasks', () => {
       expect(pnpmPkg).not.toHaveProperty('resolutions');
       expect(pnpmPkg).toEqual(
         expect.objectContaining({
+          engines: { node: '24' },
           packageManager: 'pnpm@12.14.0',
           // TypeScript only finds the types of the root tsconfig.json from the
           // root, which the isolated linker does not hoist them into
@@ -468,12 +470,9 @@ describe('tasks', () => {
       );
       const pnpmFiles = await readTextFiles('pnpmApp', []);
       expect(Object.keys(pnpmFiles).filter(f => /yarn/i.test(f))).toEqual([]);
-      // Only the names of Yarn packages that are pinned for both may remain
       expect(
         Object.entries(pnpmFiles)
-          .filter(([, content]) =>
-            /yarn/i.test(content.replace(/@yarnpkg\//g, '')),
-          )
+          .filter(([, content]) => /yarn/i.test(content))
           .map(([file]) => file),
       ).toEqual([]);
       const workspace = pnpmFiles['pnpm-workspace.yaml'];
@@ -484,7 +483,7 @@ describe('tasks', () => {
         "minimumReleaseAgeExclude:\n  - '@backstage/*'",
       );
       expect(workspace).toContain(
-        "  '@yarnpkg/core': 4.9.1\n  '@types/react': ^18\n  '@types/react-dom': ^18",
+        "overrides:\n  '@types/react': ^18\n  '@types/react-dom': ^18\n",
       );
       expect(workspace).toMatch(
         /allowBuilds:\n( {2}.*\n)* {2}better-sqlite3: true/,
