@@ -48,6 +48,8 @@ have a `backstage.moved` field in their `package.json`, updates the dependency
 names in `package.json` files, and optionally rewrites import paths in source
 files.
 
+In pnpm workspaces, a dependency that refers to a catalog keeps its `catalog:` reference, and the new package name gets an entry with the same version in that catalog, unless the catalog already has one. When the catalog has no entry for either name, the dependency is left as it is, with a warning.
+
 After making changes the command installs dependencies with the package manager of the project, such as `yarn install`, to update the lockfile.
 
 ```text

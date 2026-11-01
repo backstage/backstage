@@ -71,7 +71,9 @@ export interface PackageManager {
   ): Promise<void>;
   supportsBackstageVersionProtocol(): Promise<boolean>;
   toString(): string;
-  updateCatalog?(name: string, versions: Record<string, string>): Promise<void>;
+  updateCatalogs?(
+    updates: Record<string, Record<string, string>>,
+  ): Promise<void>;
   version(): Promise<string>;
 }
 
@@ -127,7 +129,9 @@ export class Pnpm implements PackageManager {
   ): Promise<void>;
   supportsBackstageVersionProtocol(): Promise<boolean>;
   toString(): string;
-  updateCatalog(name: string, versions: Record<string, string>): Promise<void>;
+  updateCatalogs(
+    updates: Record<string, Record<string, string>>,
+  ): Promise<void>;
   version(): Promise<string>;
 }
 

@@ -38,6 +38,7 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runInstall } from '../../lib/utils';
+import { getCatalogName } from '../../lib/catalogs';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const DEP_TYPES = [
@@ -55,14 +56,6 @@ type PkgVersionInfo = {
   name: string;
   location: string;
 };
-
-// The catalog that a `catalog:` or `catalog:<name>` range refers to
-function getCatalogName(range: string): string | undefined {
-  if (!range.startsWith('catalog:')) {
-    return undefined;
-  }
-  return range.slice('catalog:'.length) || 'default';
-}
 
 function extendsDefaultPattern(pattern: string): boolean {
   if (!pattern.endsWith('/*')) {
@@ -297,6 +290,8 @@ export default async ({ args, info }: CliCommandContext) => {
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
     const catalogUpdates = new Map<string, Map<string, string>>();
+    // Every catalog that is referenced, whether it is bumped or not
+    const referencedCatalogs = new Set<string>();
     // Nothing is written until all updates are known to apply
     const packageUpdates = new Map<string, object>();
     await runConcurrentTasks({
@@ -319,6 +314,9 @@ export default async ({ args, info }: CliCommandContext) => {
               const catalogName = catalogs
                 ? getCatalogName(oldRange)
                 : undefined;
+              if (catalogName) {
+                referencedCatalogs.add(catalogName);
+              }
               const selected = catalogFlag
                 ? catalogName === catalogFlag
                 : catalogName === undefined || catalogName === 'default';
@@ -386,7 +384,7 @@ export default async ({ args, info }: CliCommandContext) => {
       },
     });
 
-    const missingCatalogs = Array.from(catalogUpdates.keys()).filter(
+    const missingCatalogs = Array.from(referencedCatalogs).filter(
       catalogName => !catalogs?.[catalogName],
     );
     if (missingCatalogs.length > 0) {
@@ -399,12 +397,6 @@ export default async ({ args, info }: CliCommandContext) => {
       );
     }
 
-    if (!dryRun) {
-      for (const [pkgPath, pkgJson] of packageUpdates) {
-        await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
-      }
-    }
-
     for (const [catalogName, entries] of catalogUpdates) {
       for (const [dependency, range] of entries) {
         console.log(
@@ -413,11 +405,23 @@ export default async ({ args, info }: CliCommandContext) => {
           )} to ${chalk.yellow(range)}`,
         );
       }
-      if (!dryRun) {
-        await packageManager.updateCatalog!(
-          catalogName,
-          Object.fromEntries(entries),
+    }
+
+    // The catalogs are written at once and first, since that is the step
+    // that can fail on the contents of a file
+    if (!dryRun) {
+      if (catalogUpdates.size > 0) {
+        await packageManager.updateCatalogs!(
+          Object.fromEntries(
+            Array.from(catalogUpdates, ([catalogName, entries]) => [
+              catalogName,
+              Object.fromEntries(entries),
+            ]),
+          ),
         );
+      }
+      for (const [pkgPath, pkgJson] of packageUpdates) {
+        await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
       }
     }
 

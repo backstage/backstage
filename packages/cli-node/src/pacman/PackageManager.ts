@@ -175,12 +175,14 @@ export interface PackageManager {
   readOverrides?(): Promise<Record<string, string>>;
 
   /**
-   * Sets the given dependency versions in an existing catalog of the
-   * workspace, using the names from {@link PackageManager.readCatalogs}. Fails
-   * when the catalog does not exist. Only implemented by package managers that
-   * support catalogs.
+   * Sets dependency versions in existing catalogs of the workspace, keyed by
+   * the catalog names from {@link PackageManager.readCatalogs}. All catalogs
+   * are written at once, and nothing is written when one of them does not
+   * exist. Only implemented by package managers that support catalogs.
    */
-  updateCatalog?(name: string, versions: Record<string, string>): Promise<void>;
+  updateCatalogs?(
+    updates: Record<string, Record<string, string>>,
+  ): Promise<void>;
 
   /**
    * Returns the command that a user would type to run the given arguments
