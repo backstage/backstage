@@ -16,7 +16,7 @@
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { targetPaths } from '@backstage/cli-common';
-import { resolvePackagePaths } from '../../lib/paths';
+import { resolveNodeModulesPath, resolvePackagePaths } from '../../lib/paths';
 import { createTemporaryTsConfig } from './utils';
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import pLimit from 'p-limit';
@@ -76,7 +76,7 @@ async function generateDocJson(pkg: string) {
 
   const packageJson = JSON.parse(
     await readFile(
-      targetPaths.resolveWorkspaceRoot(pkg, 'package.json'),
+      targetPaths.resolveInstallationRoot(pkg, 'package.json'),
       'utf-8',
     ),
   );
@@ -89,17 +89,17 @@ async function generateDocJson(pkg: string) {
     return false;
   }
 
-  await mkdirp(targetPaths.resolveWorkspaceRoot(`dist-types`, pkg));
+  await mkdirp(targetPaths.resolveInstallationRoot(`dist-types`, pkg));
 
   const { stdout, stderr } = await execAsync(
     [
-      targetPaths.resolveWorkspaceRoot('node_modules/.bin/typedoc'),
+      resolveNodeModulesPath('.bin/typedoc'),
       '--json',
-      targetPaths.resolveWorkspaceRoot(`dist-types`, pkg, 'docs.json'),
+      targetPaths.resolveInstallationRoot(`dist-types`, pkg, 'docs.json'),
       '--tsconfig',
       temporaryTsConfigPath,
       '--basePath',
-      targetPaths.workspaceRootDir,
+      targetPaths.installationRootDir,
       '--skipErrorChecking',
       ...(getExports(packageJson).flatMap(e => [
         '--entryPoints',
@@ -107,7 +107,7 @@ async function generateDocJson(pkg: string) {
       ]) as string[]),
     ].join(' '),
     {
-      cwd: pkg,
+      cwd: targetPaths.resolveInstallationRoot(pkg),
       env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=12288' },
     },
   );
@@ -121,7 +121,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
   console.warn('!!! This is an experimental command !!!');
 
   const existingDocsJsonPaths = glob.sync(
-    targetPaths.resolveWorkspaceRoot('dist-types/**/docs.json'),
+    targetPaths.resolveInstallationRoot('dist-types/**/docs.json'),
     { windowsPathsNoEscape: true },
   );
   if (existingDocsJsonPaths.length > 0) {
@@ -134,7 +134,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
     }
   }
   console.warn('!!! Deleting existing docs output !!!');
-  await rm(targetPaths.resolveWorkspaceRoot('type-docs'), {
+  await rm(targetPaths.resolveInstallationRoot('type-docs'), {
     recursive: true,
     force: true,
   });
@@ -145,7 +145,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
   });
 
   const cache = await PackageDocsCache.loadAsync(
-    targetPaths.workspaceRootDir,
+    targetPaths.installationRootDir,
     await Lockfile.load(targetPaths.resolveWorkspaceRoot('yarn.lock')),
   );
 
@@ -155,7 +155,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
       limit(async () => {
         const pkgJson = JSON.parse(
           await readFile(
-            targetPaths.resolveWorkspaceRoot(pkg, 'package.json'),
+            targetPaths.resolveInstallationRoot(pkg, 'package.json'),
             'utf-8',
           ),
         );
@@ -178,7 +178,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
           if (success) {
             await cache.write(
               pkg,
-              targetPaths.resolveWorkspaceRoot(`dist-types`, pkg),
+              targetPaths.resolveInstallationRoot(`dist-types`, pkg),
             );
           }
         } catch (e) {
@@ -192,7 +192,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
   const generatedPackageDirs = [];
   for (const pkg of selectedPackageDirs) {
     try {
-      const docsJsonPath = targetPaths.resolveWorkspaceRoot(
+      const docsJsonPath = targetPaths.resolveInstallationRoot(
         `dist-types/${pkg}/docs.json`,
       );
       const docsJson = JSON.parse(await readFile(docsJsonPath, 'utf-8'));
@@ -216,7 +216,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
 
   const { stdout, stderr } = await execAsync(
     [
-      targetPaths.resolveWorkspaceRoot('node_modules/.bin/typedoc'),
+      resolveNodeModulesPath('.bin/typedoc'),
       '--entryPointStrategy',
       'merge',
       ...generatedPackageDirs.flatMap(pkg => [
@@ -225,13 +225,13 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
       ]),
       ...HIGHLIGHT_LANGUAGES.flatMap(e => ['--highlightLanguages', e]),
       '--out',
-      targetPaths.resolveWorkspaceRoot('type-docs'),
-      ...(existsSync(targetPaths.resolveWorkspaceRoot('typedoc.json'))
-        ? ['--options', targetPaths.resolveWorkspaceRoot('typedoc.json')]
+      targetPaths.resolveInstallationRoot('type-docs'),
+      ...(existsSync(targetPaths.resolveInstallationRoot('typedoc.json'))
+        ? ['--options', targetPaths.resolveInstallationRoot('typedoc.json')]
         : []),
     ].join(' '),
     {
-      cwd: targetPaths.workspaceRootDir,
+      cwd: targetPaths.installationRootDir,
     },
   );
 

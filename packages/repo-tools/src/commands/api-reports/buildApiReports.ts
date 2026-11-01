@@ -38,7 +38,7 @@ type Options = {
 } & OptionValues;
 
 export async function buildApiReports(paths: string[] = [], opts: Options) {
-  const tmpDir = targetPaths.resolveWorkspaceRoot(
+  const tmpDir = targetPaths.resolveInstallationRoot(
     './node_modules/.cache/api-extractor',
   );
 
@@ -74,7 +74,8 @@ export async function buildApiReports(paths: string[] = [], opts: Options) {
     temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
   }
   const tsconfigFilePath =
-    temporaryTsConfigPath ?? targetPaths.resolveWorkspaceRoot('tsconfig.json');
+    temporaryTsConfigPath ??
+    targetPaths.resolveInstallationRoot('tsconfig.json');
 
   if (runTsc) {
     console.log('# Compiling TypeScript');
@@ -117,7 +118,7 @@ export async function buildApiReports(paths: string[] = [], opts: Options) {
     console.log('# Generating package documentation');
     await buildDocs({
       inputDir: tmpDir,
-      outputDir: targetPaths.resolveWorkspaceRoot('docs/reference'),
+      outputDir: targetPaths.resolveInstallationRoot('docs/reference'),
     });
   }
 }

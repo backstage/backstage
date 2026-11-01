@@ -19,6 +19,7 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
+import { resolveNodeModulesPath } from '../../../../../lib/paths';
 import {
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
@@ -37,7 +38,7 @@ async function generate(
   abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = targetPaths.resolveWorkspaceRoot(
+  const resolvedOutputDirectory = targetPaths.resolveInstallationRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
@@ -97,9 +98,7 @@ async function generate(
     signal: abortSignal?.signal,
   });
 
-  const prettier = targetPaths.resolveWorkspaceRoot(
-    'node_modules/.bin/prettier',
-  );
+  const prettier = resolveNodeModulesPath('.bin/prettier');
   if (await fs.pathExists(prettier)) {
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
