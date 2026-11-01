@@ -218,7 +218,10 @@ export function applyPredicateEntityFilterToQuery(options: {
         inner.whereNotNull(`${alias}.entity_id`);
         continue;
       }
-      if (knex.client.config.client === 'pg' && isLongInList(value)) {
+      if (
+        knex.client.config.client === 'pg' &&
+        isLongInList(keyAnyCase, value)
+      ) {
         // A long list in the IN form: an uncorrelated set that is computed
         // once per query and hashed, instead of probing the list once per
         // candidate row. See `longInLists.ts` for when each form is used.

@@ -1170,9 +1170,12 @@ const types = [
 }
 ```
 
-**Healthy plan**: Each list is matched once as a set of entity IDs, either
-joined or hashed. The total cost of a full stream grows with the number of
-matching entities, not with entities times list length.
+**Healthy plan**: Lists on `kind`, `spec.type` and `spec.lifecycle` are
+probed per row, as with short lists: each of their values matches a large
+share of the catalog, so a set of them is close to the whole catalog. Lists on
+other fields are matched once as a set of entity IDs, either joined or hashed.
+The total cost of a full stream grows with the number of matching entities,
+not with entities times list length.
 
 **Anti-patterns**:
 
