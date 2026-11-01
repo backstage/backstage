@@ -42,10 +42,13 @@ describe('Yarn', () => {
   let berry: Yarn;
 
   beforeAll(async () => {
-    mockRunOutput.mockResolvedValueOnce('1.22.22\n');
     classic = await Yarn.create({ workspaceRootDir: '/classic' });
-    mockRunOutput.mockResolvedValueOnce('4.5.0\n');
     berry = await Yarn.create({ workspaceRootDir: '/berry' });
+
+    mockRunOutput.mockResolvedValueOnce('1.22.22\n');
+    await classic.version();
+    mockRunOutput.mockResolvedValueOnce('4.5.0\n');
+    await berry.version();
   });
 
   beforeEach(() => {
@@ -69,24 +72,43 @@ describe('Yarn', () => {
     expect(classic.name()).toBe('yarn');
     await expect(classic.version()).resolves.toBe('1.22.22');
     expect(classic.lockfileName()).toBe('yarn.lock');
-    expect(classic.toString()).toBe('yarn@1.22.22');
+    expect(classic.toString()).toBe('yarn');
 
     expect(berry.name()).toBe('yarn');
     await expect(berry.version()).resolves.toBe('4.5.0');
     expect(berry.lockfileName()).toBe('yarn.lock');
-    expect(berry.toString()).toBe('yarn@4.5.0');
+    expect(berry.toString()).toBe('yarn');
   });
 
-  it('should retry the version detection after a failure', async () => {
+  it('should only detect the version when it is needed, and retry after a failure', async () => {
+    const yarn = await Yarn.create({ workspaceRootDir: '/flaky' });
+    await yarn.loadLockfile().catch(() => {});
+    await yarn.supportsBackstageVersionProtocol();
+    expect(yarn.getCommandHint(['install'])).toBe('yarn install');
+    // A plain install has the same flags in every version
+    await yarn.install();
+    expect(mockRunOutput).not.toHaveBeenCalled();
+    mockRun.mockClear();
+
     mockRunOutput.mockRejectedValueOnce(new Error('command not found'));
-    await expect(Yarn.create({ workspaceRootDir: '/flaky' })).rejects.toThrow(
+    await expect(yarn.install({ immutable: true })).rejects.toThrow(
       'Failed to determine yarn version',
     );
+    expect(mockRun).not.toHaveBeenCalled();
 
     mockRunOutput.mockResolvedValueOnce('4.5.0\n');
-    const yarn = await Yarn.create({ workspaceRootDir: '/flaky' });
     await expect(yarn.version()).resolves.toBe('4.5.0');
     expect(mockRunOutput).toHaveBeenCalledTimes(2);
+  });
+
+  it('should fail a command that a signal ended', async () => {
+    mockRun.mockReturnValueOnce({
+      waitForExit: async () => {},
+      signalCode: 'SIGTERM',
+    } as unknown as ReturnType<typeof run>);
+    await expect(berry.install()).rejects.toThrow(
+      "Command 'yarn install' was ended by SIGTERM",
+    );
   });
 
   it('should run commands and scripts in the workspace root by default', async () => {
@@ -100,9 +122,9 @@ describe('Yarn', () => {
       cwd: '/berry/packages/a',
     });
 
-    await berry.runWorkspaceScript('backend', 'start', ['--inspect']);
+    await berry.runWorkspaceScript('backend', 'pack', ['--inspect']);
     expect(mockRun).toHaveBeenLastCalledWith(
-      ['yarn', 'workspace', 'backend', 'start', '--inspect'],
+      ['yarn', 'workspace', 'backend', 'run', 'pack', '--inspect'],
       { cwd: '/berry' },
     );
 
