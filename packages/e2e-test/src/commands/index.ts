@@ -35,6 +35,10 @@ export function registerCommands(program: Command) {
         'Node linker to switch a pnpm app to, instead of the hoisted linker that the template uses',
       ).choices(['hoisted', 'isolated']),
     )
+    .option(
+      '--keep-pnpm-version',
+      'Keep the pnpm version that the template pins, instead of pinning a pnpm app to the pnpm version that runs the test',
+    )
     .description('Run e2e tests')
     .action(runCommand);
 }

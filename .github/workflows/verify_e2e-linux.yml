@@ -110,7 +110,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14@sha256:ceef4a62198b562d6fe3e51be67362f72a0abf0aaa255f54f0c0e55be9768ed2
+        image: postgres:14@sha256:14bfab572eec6abf65892e1db7c3ba8d41b2a2855c1b143664907d6e146eb6e1
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -127,6 +127,10 @@ jobs:
         pnpm-version: [11.28.0, 12.7.0]
         # The template uses hoisted, isolated is what many pnpm monorepos use
         node-linker: [hoisted, isolated]
+        include:
+          # The pnpm version that the template pins, as new apps use it
+          - pnpm-version: template
+            node-linker: hoisted
 
     env:
       CI: true
@@ -135,7 +139,7 @@ jobs:
     name: E2E Linux pnpm ${{ matrix.pnpm-version }} ${{ matrix.node-linker }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
 
@@ -149,17 +153,18 @@ jobs:
           git config --global user.name 'GitHub e2e user'
 
       - name: use node.js 24.x
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24.19.0
+          node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       # The pnpm version is set explicitly since the root package.json of this
-      # repository pins Yarn.
+      # repository pins Yarn. For the template run, pnpm switches to the version
+      # that the app pins by itself.
       - name: install pnpm
         uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
-          version: ${{ matrix.pnpm-version }}
+          version: ${{ matrix.pnpm-version == 'template' && '12.7.0' || matrix.pnpm-version }}
 
       - name: yarn install
         uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
@@ -173,9 +178,13 @@ jobs:
       - name: run E2E test
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
-          yarn e2e-test run --package-manager pnpm --node-linker "$NODE_LINKER"
+          if [ "$KEEP_PNPM_VERSION" = true ]; then
+            set -- --keep-pnpm-version
+          fi
+          yarn e2e-test run --package-manager pnpm --node-linker "$NODE_LINKER" "$@"
         env:
           NODE_LINKER: ${{ matrix.node-linker }}
+          KEEP_PNPM_VERSION: ${{ matrix.pnpm-version == 'template' }}
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
