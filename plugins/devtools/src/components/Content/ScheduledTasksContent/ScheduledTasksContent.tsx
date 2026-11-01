@@ -108,7 +108,7 @@ export const ScheduledTasksContent = () => {
   const plugins =
     configApi.getOptionalStringArray('devTools.scheduledTasks.plugins') || [];
   const [selectedPlugin, setSelectedPlugin] = useState(plugins[0] || '');
-  const { scheduledTasks, loading, error, refresh } =
+  const { scheduledTasks, loading, error, refresh, loadedPlugin } =
     useScheduledTasks(selectedPlugin);
   const { triggerTask, cancelTask, isLoading } = useScheduledTasksOperations();
 
@@ -272,6 +272,15 @@ export const ScheduledTasksContent = () => {
     },
   ];
 
+  const isLoadingDifferentPlugin = loading && selectedPlugin !== loadedPlugin;
+  const isNotFoundError =
+    Boolean(error) &&
+    ((error as any).statusCode === 404 ||
+      (error as any).response?.status === 404 ||
+      (error as any).status === 404 ||
+      error!.name === 'NotFoundError' ||
+      (error as any).cause?.name === 'NotFoundError');
+
   return (
     <Box>
       <Autocomplete
@@ -296,36 +305,44 @@ export const ScheduledTasksContent = () => {
         )}
       />
 
-      {loading && !scheduledTasks && <Progress />}
+      {isLoadingDifferentPlugin && <Progress />}
 
-      {error && (
+      {!isLoadingDifferentPlugin && error && (
         <ErrorPanel
-          error={new Error(`No scheduled tasks found for "${selectedPlugin}"`)}
-          title="No Scheduled Tasks Found"
+          error={error}
+          title={
+            isNotFoundError
+              ? 'No Scheduled Tasks Found'
+              : 'Error Loading Scheduled Tasks'
+          }
         >
-          <Typography variant="body2">
-            The plugin ID "{selectedPlugin}" doesn't have any scheduled tasks or
-            may contain a typo.
-          </Typography>
-          <Typography variant="body2" style={{ marginTop: 8 }}>
-            Please verify:
-          </Typography>
-          <ul>
-            <li>
+          {isNotFoundError && (
+            <>
               <Typography variant="body2">
-                The plugin ID is spelled correctly
+                The plugin ID "{selectedPlugin}" doesn't have any scheduled
+                tasks or may contain a typo.
               </Typography>
-            </li>
-            <li>
-              <Typography variant="body2">
-                The plugin has registered scheduled tasks
+              <Typography variant="body2" style={{ marginTop: 8 }}>
+                Please verify:
               </Typography>
-            </li>
-          </ul>
+              <ul>
+                <li>
+                  <Typography variant="body2">
+                    The plugin ID is spelled correctly
+                  </Typography>
+                </li>
+                <li>
+                  <Typography variant="body2">
+                    The plugin has registered scheduled tasks
+                  </Typography>
+                </li>
+              </ul>
+            </>
+          )}
         </ErrorPanel>
       )}
 
-      {scheduledTasks && (
+      {!isLoadingDifferentPlugin && !error && scheduledTasks && (
         <Table
           title={`Scheduled Tasks (${selectedPlugin})`}
           options={{
