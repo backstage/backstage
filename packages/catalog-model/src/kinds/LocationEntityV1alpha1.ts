@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/Location.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage catalog Location kind Entity.
@@ -41,7 +41,7 @@ export interface LocationEntityV1alpha1 extends Entity {
  * @public
  */
 export const locationEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+  lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the Location kind.

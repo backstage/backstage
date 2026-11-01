@@ -5,6 +5,7 @@
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { CatalogModelLayer } from '@backstage/catalog-model/alpha';
+import { JsonObject } from '@backstage/types';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
 // @alpha
@@ -53,6 +54,9 @@ export const taskReadPermission: ResourcePermission<'scaffolder-task'>;
 
 // @alpha
 export const templateDryRunPermission: BasicPermission;
+
+// @alpha
+export const templateEntityV1beta3Schema: JsonObject;
 
 // @alpha
 export const templateManagementPermission: BasicPermission;

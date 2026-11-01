@@ -196,7 +196,14 @@ export interface TemplatePermissionsV1beta3 extends JsonObject {
   tags?: string[];
 }
 
-const validator = entityKindSchemaValidator(schema);
+/**
+ * The JSON Schema for `TemplateEntityV1beta3` entities.
+ *
+ * @alpha
+ */
+export const templateEntityV1beta3Schema: JsonObject = schema as JsonObject;
+
+let validator: ((data: unknown) => Entity | false) | undefined;
 
 /**
  * Entity data validator for {@link TemplateEntityV1beta3}.
@@ -206,6 +213,11 @@ const validator = entityKindSchemaValidator(schema);
 export const templateEntityV1beta3Validator: KindValidator = {
   // TODO(freben): Emulate the old KindValidator until we fix that type
   async check(data: Entity) {
+    // Created on first use, to avoid the cost for anyone who only imports this
+    // module for its types and type guards
+    if (!validator) {
+      validator = entityKindSchemaValidator(schema);
+    }
     return validator(data) === data;
   },
 };
