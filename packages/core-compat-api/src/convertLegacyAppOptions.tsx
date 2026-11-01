@@ -159,6 +159,7 @@ export function convertLegacyAppOptions(
     if (Progress) {
       extensions.push(
         SwappableComponentBlueprint.make({
+          name: 'core-progress',
           params: define =>
             define({
               component: SwappableProgress,
@@ -171,6 +172,7 @@ export function convertLegacyAppOptions(
     if (NotFoundErrorPage) {
       extensions.push(
         SwappableComponentBlueprint.make({
+          name: 'core-not-found-error-page',
           params: define =>
             define({
               component: SwappableNotFoundErrorPage,
@@ -191,6 +193,7 @@ export function convertLegacyAppOptions(
 
       extensions.push(
         SwappableComponentBlueprint.make({
+          name: 'core-error-display',
           params: define =>
             define({
               component: SwappableErrorDisplay,
