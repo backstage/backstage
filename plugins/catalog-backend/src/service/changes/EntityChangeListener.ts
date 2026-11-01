@@ -118,11 +118,13 @@ export class EntityChangeListener {
           return;
         }
         checking = true;
+        // A wait that ended while queued has no use for the check
+        const checkIfWaiting = () => (resolve ? checker() : false);
         (async () => {
           do {
             checkAgain = false;
             try {
-              if (await this.#checkLimiter(checker)) {
+              if (await this.#checkLimiter(checkIfWaiting)) {
                 resolve?.('ready');
                 return;
               }

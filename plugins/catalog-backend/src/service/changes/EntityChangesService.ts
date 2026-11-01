@@ -16,6 +16,9 @@
 
 import {
   BackstageCredentials,
+  BackstageNonePrincipal,
+  BackstageServicePrincipal,
+  BackstageUserPrincipal,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -39,6 +42,7 @@ import { EntityChangeScopeEntry } from '../../database/operations/changes/scope'
 import {
   ackEntityChangeSubscription,
   EntityChangeSubscription,
+  EntityChangeSubscriptionOwner,
   getEntityChangeSubscription,
   nackEntityChangeSubscription,
   sendEntityChangeSubscription,
@@ -194,6 +198,7 @@ export class EntityChangesService {
   }): Promise<EntityChangeSubscription> {
     await this.#visibility(options.credentials);
     return upsertEntityChangeSubscription(this.#knex, {
+      owner: subscriptionOwner(options.credentials),
       subscriptionId: options.subscriptionId,
       afterGeneration:
         options.afterGeneration === undefined ||
@@ -220,6 +225,7 @@ export class EntityChangesService {
     const subscription = await touchEntityChangeSubscription(
       this.#knex,
       subscriptionId,
+      subscriptionOwner(credentials),
     );
 
     const read = (from: string) =>
@@ -304,7 +310,13 @@ export class EntityChangesService {
     credentials: BackstageCredentials;
   }): Promise<void> {
     await this.#visibility(options.credentials);
-    if (!(await ackEntityChangeSubscription(this.#knex, options))) {
+    if (
+      !(await ackEntityChangeSubscription(this.#knex, {
+        subscriptionId: options.subscriptionId,
+        owner: subscriptionOwner(options.credentials),
+        ackId: options.ackId,
+      }))
+    ) {
       throw new NotFoundError(
         `Subscription ${options.subscriptionId} has no batch with that ack ID`,
       );
@@ -317,7 +329,13 @@ export class EntityChangesService {
     credentials: BackstageCredentials;
   }): Promise<void> {
     await this.#visibility(options.credentials);
-    if (!(await nackEntityChangeSubscription(this.#knex, options))) {
+    if (
+      !(await nackEntityChangeSubscription(this.#knex, {
+        subscriptionId: options.subscriptionId,
+        owner: subscriptionOwner(options.credentials),
+        ackId: options.ackId,
+      }))
+    ) {
       throw new NotFoundError(
         `Subscription ${options.subscriptionId} has no batch with that ack ID`,
       );
@@ -363,6 +381,27 @@ function visibleRefs(rows: EntityChangeRow[], visibility: Visibility) {
           visibility.isTombstoneVisible(JSON.parse(row.lastEntity))),
     )
     .map(row => row.entityRef);
+}
+
+/**
+ * Subscriptions belong to the principal that created them. All replicas of a
+ * service share its principal, so they can share a subscription.
+ */
+function subscriptionOwner(
+  credentials: BackstageCredentials,
+): EntityChangeSubscriptionOwner {
+  const principal = credentials.principal as
+    | BackstageUserPrincipal
+    | BackstageServicePrincipal
+    | BackstageNonePrincipal;
+  switch (principal.type) {
+    case 'user':
+      return `user:${principal.userEntityRef}`;
+    case 'service':
+      return `service:${principal.subject}`;
+    default:
+      return 'none';
+  }
 }
 
 function parseGeneration(value: string): string {

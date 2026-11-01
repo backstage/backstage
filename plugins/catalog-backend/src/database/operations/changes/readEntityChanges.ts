@@ -171,10 +171,15 @@ export async function readEntityChanges(
     if (full) {
       const last = String(rows[limit - 1].generation);
       if (String(rows[limit].generation) === last) {
-        rows = [
-          ...rows.filter(row => String(row.generation) !== last),
-          ...(await select(last)),
-        ];
+        // Keep the rows already read, even if some were republished since,
+        // and add the rest of the generation
+        rows = rows.slice(0, limit);
+        const seen = new Set(rows.map(row => row.entityRef));
+        for (const row of await select(last)) {
+          if (!seen.has(row.entityRef)) {
+            rows.push(row);
+          }
+        }
       } else {
         rows = rows.slice(0, limit);
       }

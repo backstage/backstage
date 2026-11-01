@@ -105,6 +105,10 @@ describe('entity change routes', () => {
       .get('/entities/changes?afterGeneration=0&scope=a:b:c')
       .expect(400);
     await request(app).get('/entities/changes?cursor=garbage').expect(400);
+    const oversized = Buffer.from(
+      JSON.stringify({ v: 1, afterGeneration: '0', limit: 1001, block: false }),
+    ).toString('base64url');
+    await request(app).get(`/entities/changes?cursor=${oversized}`).expect(400);
 
     const first = await request(app)
       .get(
@@ -119,6 +123,17 @@ describe('entity change routes', () => {
       .get(`/entities/changes?cursor=${first.body.pageInfo.cursor}`)
       .expect(200);
     expect(second.body.items).toEqual([{ entityRef: 'user:default/u' }]);
+
+    // An unscoped cursor stays unscoped, even if a scope is passed along
+    const unscoped = await request(app)
+      .get('/entities/changes?afterGeneration=0&limit=1')
+      .expect(200);
+    const unscopedNext = await request(app)
+      .get(
+        `/entities/changes?cursor=${unscoped.body.pageInfo.cursor}&scope=component`,
+      )
+      .expect(200);
+    expect(unscopedNext.body.items).toEqual([{ entityRef: 'user:default/u' }]);
 
     // Starting at the end returns no items, just a cursor
     const last = await request(app)

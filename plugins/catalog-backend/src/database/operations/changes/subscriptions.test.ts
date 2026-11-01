@@ -30,6 +30,7 @@ import {
 
 jest.setTimeout(60_000);
 const databases = TestDatabases.create();
+const owner = 'service:plugin:test';
 
 describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
   it('creates subscriptions once, with a fixed position and scope', async () => {
@@ -43,13 +44,14 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
       generation: 7,
     });
 
-    const random = await upsertEntityChangeSubscription(knex, {});
+    const random = await upsertEntityChangeSubscription(knex, { owner });
     expect(random.subscriptionId).toMatch(/^[0-9a-f-]{36}$/);
     expect(random.lastAcknowledgedGeneration).toBe('7');
     expect(random.scope).toBeUndefined();
 
     const scope = parseEntityChangeScope(['group', 'user']);
     const created = await upsertEntityChangeSubscription(knex, {
+      owner,
       subscriptionId: 'mirror',
       afterGeneration: '3',
       scope,
@@ -66,6 +68,7 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
     // The position is only used on creation, and the scope can't change
     await expect(
       upsertEntityChangeSubscription(knex, {
+        owner,
         subscriptionId: 'mirror',
         afterGeneration: 'last',
         scope: parseEntityChangeScope(['user', 'group', 'user']),
@@ -75,16 +78,29 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
     );
     await expect(
       upsertEntityChangeSubscription(knex, {
+        owner,
         subscriptionId: 'mirror',
         scope: parseEntityChangeScope(['user']),
       }),
     ).rejects.toThrow(ConflictError);
     await expect(
-      upsertEntityChangeSubscription(knex, { subscriptionId: 'mirror' }),
+      upsertEntityChangeSubscription(knex, { owner, subscriptionId: 'mirror' }),
     ).rejects.toThrow(ConflictError);
 
     await expect(
-      touchEntityChangeSubscription(knex, 'missing'),
+      touchEntityChangeSubscription(knex, 'missing', owner),
+    ).rejects.toThrow(NotFoundError);
+
+    // Only the owner can use a subscription
+    await expect(
+      upsertEntityChangeSubscription(knex, {
+        owner: 'user:default/other',
+        subscriptionId: 'mirror',
+        scope,
+      }),
+    ).rejects.toThrow(ConflictError);
+    await expect(
+      touchEntityChangeSubscription(knex, 'mirror', 'user:default/other'),
     ).rejects.toThrow(NotFoundError);
   });
 
@@ -92,6 +108,7 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
     const knex = await databases.init(id);
     await applyDatabaseMigrations(knex);
     await upsertEntityChangeSubscription(knex, {
+      owner,
       subscriptionId: 's',
       afterGeneration: '0',
     });
@@ -110,7 +127,7 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
     expect(ackId).toBeDefined();
     expect([first, second].filter(Boolean)).toHaveLength(1);
 
-    let subscription = await touchEntityChangeSubscription(knex, 's');
+    let subscription = await touchEntityChangeSubscription(knex, 's', owner);
     expect(subscription).toEqual(
       expect.objectContaining({
         state: 'waiting',
@@ -119,21 +136,30 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
       }),
     );
     expect(await send('0', '5')).toBeUndefined();
+    expect(
+      await ackEntityChangeSubscription(knex, {
+        subscriptionId: 's',
+        owner: 'user:default/other',
+        ackId: ackId!,
+      }),
+    ).toBe(false);
 
     // A nack releases the batch without moving the position
     expect(
       await nackEntityChangeSubscription(knex, {
         subscriptionId: 's',
+        owner,
         ackId: ackId!,
       }),
     ).toBe(true);
     expect(
       await ackEntityChangeSubscription(knex, {
         subscriptionId: 's',
+        owner,
         ackId: ackId!,
       }),
     ).toBe(false);
-    subscription = await touchEntityChangeSubscription(knex, 's');
+    subscription = await touchEntityChangeSubscription(knex, 's', owner);
     expect(subscription.state).toBe('idle');
     expect(subscription.lastAcknowledgedGeneration).toBe('0');
 
@@ -141,10 +167,11 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
     expect(
       await ackEntityChangeSubscription(knex, {
         subscriptionId: 's',
+        owner,
         ackId: again!,
       }),
     ).toBe(true);
-    subscription = await touchEntityChangeSubscription(knex, 's');
+    subscription = await touchEntityChangeSubscription(knex, 's', owner);
     expect(subscription.state).toBe('idle');
     expect(subscription.lastAcknowledgedGeneration).toBe('5');
 
@@ -164,7 +191,7 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
       }),
     ).toBe(true);
     expect(
-      (await touchEntityChangeSubscription(knex, 's'))
+      (await touchEntityChangeSubscription(knex, 's', owner))
         .lastAcknowledgedGeneration,
     ).toBe('9');
   });
@@ -174,6 +201,7 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
     await applyDatabaseMigrations(knex);
     for (const subscriptionId of ['timed-out', 'unused', 'kept']) {
       await upsertEntityChangeSubscription(knex, {
+        owner,
         subscriptionId,
         afterGeneration: '0',
       });
@@ -197,12 +225,13 @@ describe.each(databases.eachSupportedId())('subscriptions, %p', id => {
 
     // Reading a subscription releases its own timed out batch right away
     await expire();
-    expect((await touchEntityChangeSubscription(knex, 'timed-out')).state).toBe(
-      'idle',
-    );
+    expect(
+      (await touchEntityChangeSubscription(knex, 'timed-out', owner)).state,
+    ).toBe('idle');
     expect(
       await ackEntityChangeSubscription(knex, {
         subscriptionId: 'timed-out',
+        owner,
         ackId: timedOut!,
       }),
     ).toBe(false);

@@ -21,7 +21,8 @@ const cursorSchema = z.object({
   v: z.literal(1),
   afterGeneration: z.string().regex(/^\d+$/),
   scope: z.array(z.string()).optional(),
-  limit: z.number().int().positive(),
+  // The same bound as the limit query parameter
+  limit: z.number().int().positive().max(1000),
   block: z.boolean(),
 });
 

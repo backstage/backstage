@@ -49,7 +49,10 @@ export function bindEntityChangesRoutes(
         throw new InputError('Either cursor or afterGeneration is required');
       }
 
-      const scope = parseEntityChangeScope(cursor?.scope ?? req.query.scope);
+      // A cursor replaces all other parameters, including an absent scope
+      const scope = parseEntityChangeScope(
+        cursor ? cursor.scope : req.query.scope,
+      );
       const limit = cursor?.limit ?? req.query.limit ?? DEFAULT_LIMIT;
       const block = cursor?.block ?? req.query.block ?? false;
 

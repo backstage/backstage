@@ -531,7 +531,7 @@ export class DefaultApiClient {
   }
 
   /**
-   * **Experimental.** Reads refs of entities that may have changed after a position, in commit order. Deletions are included. This is a hint, not a diff: read the current state of each ref through `/entities/by-refs`.  To bootstrap, first take a cursor with `afterGeneration=last`, then do a full read through the ordinary entity endpoints, and then continue from the cursor. Changes made during the full read are delivered again, so consumers must be idempotent.  These endpoints are experimental until deletion tracking is enabled in all deployments, and may change.
+   * **Experimental.** Reads refs of entities that may have changed after a position, in commit order. Deletions are included. This is a hint, not a diff: read the current state of each ref through `/entities/by-refs`.  To bootstrap, first take a cursor with `afterGeneration=last`, then do a full read through `/entities/by-query`, following its cursors without offsets or custom sort fields, and then continue from the cursor. Changes made during the full read are delivered again, so consumers must be idempotent.  These endpoints are experimental until deletion tracking is enabled in all deployments, and may change.
    * @param cursor - A cursor from a previous response. Replaces all other parameters.
    * @param afterGeneration - Read changes after this position, or &#x60;last&#x60; to start at the end.
    * @param scope - Only read refs within these entries, each on the form &#x60;kind&#x60;, &#x60;kind:namespace&#x60; or &#x60;kind:namespace/name&#x60;. Only parts of the ref can be scoped on.
@@ -722,7 +722,7 @@ export class DefaultApiClient {
   }
 
   /**
-   * **Experimental.** Creates a subscription, or marks an existing one as active. Call this before reading, whether or not the subscription exists. The position and scope are set at creation and can\'t change later; asking for a different scope responds with 409. Subscriptions are deleted after a long period without use.  A subscription tracks a position on behalf of a consumer, and several replicas of that consumer can share it. Each read hands one replica a batch that it must acknowledge. Use one subscription per principal, or per set of principals with the same permissions.
+   * **Experimental.** Creates a subscription, or marks an existing one as active. Call this before reading, whether or not the subscription exists. The position and scope are set at creation and can\'t change later; asking for a different scope responds with 409. Subscriptions are deleted after a long period without use.  A subscription tracks a position on behalf of a consumer, and several replicas of that consumer can share it. Each read hands one replica a batch that it must acknowledge. A subscription belongs to the principal that created it, and doesn\'t exist for anyone else; using an ID that another principal already has responds with 409.
    * @param upsertEntityChangeSubscriptionRequest -
    */
   public async upsertEntityChangeSubscription(
