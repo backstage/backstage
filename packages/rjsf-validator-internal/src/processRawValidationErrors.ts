@@ -189,6 +189,49 @@ function summaryKeywordLocation(
     : `${error.keywordLocation}/${encodePointerSegment(key)}`;
 }
 
+/** Gives an error for a `false` subschema the keyword location of that
+ * subschema. cfworker reports its instance location instead, which loses the
+ * schema ancestry needed to find custom messages.
+ *
+ * @param error - The error for the `false` subschema
+ * @param errors - All errors, including the summary error of the keyword that holds the subschema
+ * @returns - The error with its keyword location, when it could be found
+ */
+function withFalseSchemaLocation(
+  error: CFWorkerValidationError,
+  errors: CFWorkerValidationError[],
+): CFWorkerValidationError {
+  for (const summary of errors) {
+    if (summaryChildLocation(summary) !== error.instanceLocation) {
+      continue;
+    }
+    if (summary.keyword === 'properties') {
+      const key = summary.error.match(/^Property "(.*)" does not/)?.[1];
+      return {
+        ...error,
+        keywordLocation: `${summary.keywordLocation}/${encodePointerSegment(
+          key!,
+        )}`,
+      };
+    }
+    if (summary.keyword === 'patternProperties') {
+      const pattern = summary.error.match(/matches pattern "(.*)" but/)?.[1];
+      if (pattern !== undefined) {
+        return {
+          ...error,
+          keywordLocation: `${summary.keywordLocation}/${encodePointerSegment(
+            pattern,
+          )}`,
+        };
+      }
+    }
+    if (summary.keyword === 'additionalProperties') {
+      return { ...error, keywordLocation: summary.keywordLocation };
+    }
+  }
+  return error;
+}
+
 /** Removes summary errors that only repeat more specific errors beneath them,
  * and errors for `false` subschemas that AJV reports for the parent keyword.
  * This is a Backstage addition that is not part of `@rjsf/validator-cfworker`.
@@ -197,8 +240,13 @@ function summaryKeywordLocation(
  * @returns - The errors without redundant ones
  */
 export function removeSummaryErrors(
-  errors: CFWorkerValidationError[],
+  rawErrors: CFWorkerValidationError[],
 ): CFWorkerValidationError[] {
+  const errors = rawErrors.map(error =>
+    error.keyword === 'false'
+      ? withFalseSchemaLocation(error, rawErrors)
+      : error,
+  );
   const summaries = errors.filter(error => {
     const location = SUMMARY_KEYWORDS.has(error.keyword)
       ? summaryKeywordLocation(error)
