@@ -240,6 +240,13 @@ function normalizeObject(
   return result;
 }
 
+// Copies a schema, translating any `nullable` keywords
+function withoutNullable(schema: object): Schema {
+  const clone = cloneJson(schema);
+  translateNullable(clone);
+  return clone as Schema;
+}
+
 // Schemas are plain JSON, so this works without relying on `structuredClone`
 function cloneJson<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
@@ -301,6 +308,7 @@ const KNOWN_KEYWORDS = new Set([
   'minimum',
   'multipleOf',
   'not',
+  'nullable',
   'oneOf',
   'pattern',
   'patternProperties',
@@ -338,7 +346,7 @@ const SUBSCHEMA_MAP_KEYWORDS = new Set([
 
 /**
  * Throws for unknown keywords, which the engine would silently ignore. This
- * matches the strict mode of ajv, which catches typos such as `minLenght`.
+ * matches the strict mode of ajv, which catches misspelled keywords.
  */
 function checkKnownKeywords(schema: unknown, path: string = '') {
   if (Array.isArray(schema)) {
@@ -379,6 +387,55 @@ function checkKnownKeywords(schema: unknown, path: string = '') {
 }
 
 /**
+ * Replaces the `nullable` keyword, which ajv supports as an OpenAPI extension,
+ * with the equivalent standard keywords. Modifies the schema in place.
+ */
+function translateNullable(schema: unknown) {
+  if (Array.isArray(schema)) {
+    schema.forEach(translateNullable);
+    return;
+  }
+  if (!schema || typeof schema !== 'object') {
+    return;
+  }
+  const node = schema as Record<string, unknown>;
+  if ('nullable' in node) {
+    if (node.nullable === true) {
+      if (typeof node.type === 'string') {
+        node.type = [node.type, 'null'];
+      } else if (Array.isArray(node.type) && !node.type.includes('null')) {
+        node.type = [...node.type, 'null'];
+      }
+      if ('const' in node) {
+        node.enum = [node.const, null];
+        delete node.const;
+      } else if (Array.isArray(node.enum) && !node.enum.includes(null)) {
+        node.enum = [...node.enum, null];
+      }
+    }
+    delete node.nullable;
+  }
+  for (const [keyword, value] of Object.entries(node)) {
+    if (
+      SUBSCHEMA_KEYWORDS.has(keyword) ||
+      SUBSCHEMA_LIST_KEYWORDS.has(keyword)
+    ) {
+      translateNullable(value);
+    } else if (
+      SUBSCHEMA_MAP_KEYWORDS.has(keyword) &&
+      value &&
+      typeof value === 'object'
+    ) {
+      for (const subschema of Object.values(value)) {
+        if (!Array.isArray(subschema)) {
+          translateNullable(subschema);
+        }
+      }
+    }
+  }
+}
+
+/**
  * A schema engine based on `@cfworker/json-schema`, which interprets schemas
  * instead of generating code.
  */
@@ -399,13 +456,9 @@ export const cfworkerSchemaEngine: SchemaEngine = {
 
     // The engine annotates schemas while resolving references, so we make
     // sure to not touch the originals
-    const validator = new Validator(
-      cloneJson(schema) as Schema,
-      '7',
-      !allErrors,
-    );
+    const validator = new Validator(withoutNullable(schema), '7', !allErrors);
     for (const extraSchema of extraSchemas) {
-      const clone = cloneJson(extraSchema) as Schema;
+      const clone = withoutNullable(extraSchema);
       validator.addSchema(clone, clone.$id);
     }
 
