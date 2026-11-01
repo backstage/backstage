@@ -2858,6 +2858,143 @@ describe.each(databases.eachSupportedId())(
         ).toEqual(['owned', 'readable']);
       });
 
+      it('gives the same results for long $in lists as for short ones', async () => {
+        const catalog = await setupFacetsCatalog([
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'owned' },
+            spec: {},
+            relations: [
+              { type: 'ownedBy', targetRef: 'group:default/a' },
+              { type: 'ownedBy', targetRef: 'user:default/me' },
+            ],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'unrestricted' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/b' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'readable',
+              annotations: { 'example.com/readers': 'group:default/a' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'restricted',
+              annotations: { 'example.com/readers': 'group:default/b' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Template',
+            metadata: { name: 'template' },
+            spec: {},
+          },
+        ]);
+
+        const permissionFilter = (claims: string[]): FilterPredicate => ({
+          $all: [
+            {
+              $any: [
+                { 'relations.ownedBy': { $in: claims } },
+                { 'metadata.annotations.example.com/readers': { $in: claims } },
+                {
+                  $not: {
+                    'metadata.annotations.example.com/readers': {
+                      $exists: true,
+                    },
+                  },
+                },
+              ],
+            },
+            { $not: { 'relations.ownedBy': { $in: claims } } },
+          ],
+        });
+        const shortClaims = ['user:default/me', 'group:default/a'];
+        const longClaims = [
+          ...shortClaims,
+          ...Array.from({ length: 20 }, (_, i) => `group:default/other-${i}`),
+        ];
+
+        const collect = async (filter: FilterPredicate) => {
+          const names = (
+            items: Parameters<typeof entitiesResponseToObjects>[0],
+          ) => entitiesResponseToObjects(items).map(e => e!.metadata.name);
+          const pages: string[][] = [];
+          let response = await catalog.queryEntities({
+            filter,
+            orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            limit: 1,
+            credentials: mockCredentials.none(),
+          });
+          const totalItems = response.totalItems;
+          pages.push(names(response.items));
+          while (response.pageInfo.nextCursor) {
+            response = await catalog.queryEntities({
+              cursor: response.pageInfo.nextCursor,
+              limit: 1,
+              credentials: mockCredentials.none(),
+            });
+            pages.push(names(response.items));
+          }
+          const unordered = await catalog.queryEntities({
+            filter,
+            limit: 10,
+            credentials: mockCredentials.none(),
+          });
+          const { entities } = await catalog.entities({
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          const batch = await catalog.entitiesBatch({
+            entityRefs: [
+              'component:default/owned',
+              'component:default/unrestricted',
+              'api:default/readable',
+              'api:default/restricted',
+            ],
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          const facets = await catalog.facets({
+            facets: ['kind'],
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          return {
+            pages,
+            totalItems,
+            unordered: names(unordered.items).toSorted(),
+            entities: names(entities).toSorted(),
+            batch: entitiesResponseToObjects(batch.items).map(
+              e => e?.metadata.name ?? null,
+            ),
+            facets,
+          };
+        };
+
+        const expected = await collect(permissionFilter(shortClaims));
+        expect(expected.pages).toEqual([
+          ['readable'],
+          ['template'],
+          ['unrestricted'],
+        ]);
+        await expect(collect(permissionFilter(longClaims))).resolves.toEqual(
+          expected,
+        );
+      });
+
       it('filters with both filter and query combined', async () => {
         const catalog = await setupFacetsCatalog([
           {

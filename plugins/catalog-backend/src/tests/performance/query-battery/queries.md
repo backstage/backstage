@@ -22,6 +22,22 @@ Record execution time, plan shape, and buffer usage in `baseline.md`. Keep one
 readable representative full plan per scenario in `plans.md` and the exact
 machine-diffable final-run output in `plans.json`.
 
+**Run every scenario with and without permissions.** The plans of a request
+with and without a conditional permission filter are very different, so each
+scenario 1-14 and 20 has two variants: `_nop` (as written) and `_perm` (the
+same request with the `<permission>` predicate from scenarios 15-19 combined
+with its filter using `$all`). Scenarios 8, 9 and 11 do not go through the
+permission layer and only have a `_nop` variant.
+
+**Use several claim lists.** Long `$in` lists of 10 or more values are matched
+differently from short ones, so measure the `_perm` variants with at least 3,
+10 and 40 claims, and a list where a single claim owns a large share of the
+catalog.
+
+For a faster run that relies on documented assumptions, see the
+[slim profile](./slim-profile.md). It must not be used without checking those
+assumptions first.
+
 ---
 
 ## 1. Paginated entity list (kind=component, ordered by name)
@@ -1080,6 +1096,92 @@ needed. Execution time is in the low tens of milliseconds.
   so LIMIT cannot stop early. With a small `work_mem` the set no longer fits in
   `hash_mem`, and PostgreSQL falls back to scanning it once per row.
 - The same applies to a negated large `$in` compiled to `NOT IN (SELECT ...)`.
+
+---
+
+## 20. Late page of a selective list ordered by name
+
+**User action**: Paging forward in the catalog table to names starting late in
+the alphabet, for a kind with few entities (`group`) and one with many
+(`component`).
+
+**Method call**:
+
+```ts
+catalog.queryEntities({
+  filter: { kind: 'group' }, // and { kind: 'component' }
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  cursor, // positioned after names starting with 't'
+  limit: 20,
+  credentials,
+});
+```
+
+**Reference SQL**: Scenario 1 with the cursor condition added:
+
+```sql
+AND (search.value > 't' OR (search.value = 't' AND final_entities.entity_id > ''))
+```
+
+**Healthy plan**: Without permissions, walks `metadata.name` from the cursor
+and stops after 21 rows. With permissions, a small kind such as `group` is
+driven from the kind or the permission set, not from the name order.
+
+**Anti-patterns**:
+
+- Walking the name index from the cursor while checking every entity of
+  another kind against the permission filter per row. For `group` this reads
+  the rest of the catalog to find 21 rows, with a per-row `= ANY(:claims)`
+  probe for each.
+
+---
+
+## 21. Request filters with a long `$in` list
+
+**User action**: A client filtering on many values of one field, for example a
+script or plugin streaming entities of 30 different `spec.type` values. These
+cases have no permission filter, and the list length does not depend on the
+user.
+
+**Method calls**: `catalog.queryEntitiesStream` or paged `queryEntities`
+ordered by entity ID, with each of these filters:
+
+```ts
+const types = [
+  /* 30 spec.type values */
+];
+
+// adv_types_or_api
+{
+  $any: [{ 'spec.type': { $in: types } }, { kind: 'api' }];
+}
+
+// adv_types_or_broad
+{
+  $any: [
+    { 'spec.type': { $in: [...types, 'workflow', 'dataset'] } },
+    { 'spec.lifecycle': 'production' },
+  ];
+}
+
+// adv_comp_not_types
+{
+  $all: [{ kind: 'component' }, { $not: { 'spec.type': { $in: types } } }];
+}
+```
+
+**Healthy plan**: Lists on `kind`, `spec.type` and `spec.lifecycle` are
+probed per row, as with short lists: each of their values matches a large
+share of the catalog, so a set of them is close to the whole catalog. Lists on
+other fields are matched once as a set of entity IDs, either joined or hashed.
+The total cost of a full stream grows with the number of matching entities,
+not with entities times list length.
+
+**Anti-patterns**:
+
+- Per-row `= ANY(array)` SubPlans (global anti-pattern 6).
+- A negated list planned as a filter that scans a materialized set again for every
+  row.
 
 ---
 
