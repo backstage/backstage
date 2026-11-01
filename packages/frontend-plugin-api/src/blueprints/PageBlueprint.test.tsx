@@ -25,6 +25,8 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { waitFor } from '@testing-library/react';
+import { Route, Routes } from 'react-router-dom';
+import { SubPageBlueprint } from './SubPageBlueprint';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -162,6 +164,44 @@ describe('PageBlueprint', () => {
     const { getByTestId } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('test')).toBeInTheDocument());
+  });
+
+  it('should set the title template for a sub-page on initial load', async () => {
+    const parentPage = PageBlueprint.make({
+      name: 'parent-page',
+      params: {
+        path: '/parent',
+        title: 'Parent',
+      },
+    });
+    const subPage = SubPageBlueprint.make({
+      name: 'sub-page',
+      attachTo: { id: 'page:parent-page', input: 'pages' },
+      params: {
+        loader: () =>
+          Promise.resolve(
+            <div data-testid="sub-page-content">Sub-page content</div>,
+          ),
+        path: 'sub-page',
+        title: 'Sub-page',
+      },
+    });
+    const tester = createExtensionTester(parentPage).add(subPage);
+
+    const { findByTestId } = renderInTestApp(
+      <Routes>
+        <Route path="/parent/*" element={tester.reactElement()} />
+      </Routes>,
+      {
+        initialRouteEntries: ['/parent/sub-page'],
+      },
+    );
+
+    await findByTestId('sub-page-content');
+
+    await waitFor(() =>
+      expect(document.title).toBe('Parent | Sub-page | Backstage'),
+    );
   });
 
   it('should allow defining additional inputs to the extension', async () => {

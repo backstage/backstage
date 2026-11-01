@@ -31,15 +31,28 @@ export function useTitleCounter() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (count === 0) {
+      throttledSetTitle.cancel();
+      const baseTitle = cleanTitle(document.title);
+      if (document.title !== baseTitle) {
+        document.title = baseTitle;
+      }
+      return;
+    }
     const baseTitle = cleanTitle(title);
     const shownTitle = `${getPrefix(count)}${baseTitle}`;
     if (document.title !== shownTitle) {
       throttledSetTitle(shownTitle);
     }
-    return () => {
-      document.title = cleanTitle(title);
-    };
   }, [count, title]);
+
+  useEffect(
+    () => () => {
+      throttledSetTitle.cancel();
+      document.title = cleanTitle(document.title);
+    },
+    [],
+  );
 
   useEffect(() => {
     const titleElement = document.querySelector('title');
@@ -54,6 +67,7 @@ export function useTitleCounter() {
         characterData: true,
         childList: true,
       });
+      setTitle(cleanTitle(document.title));
     }
     return () => {
       if (observer) {
