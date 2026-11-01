@@ -124,47 +124,114 @@ const SUMMARY_KEYWORDS = new Set([
   'unevaluatedProperties',
 ]);
 
-/** Removes summary errors that only repeat more specific errors beneath them.
+/** Keywords whose failures AJV reports for the parent instance, rather than
+ * for the subschema that failed.
+ */
+const PARENT_REPORTED_KEYWORDS = new Set([
+  'additionalItems',
+  'additionalProperties',
+  'unevaluatedItems',
+  'unevaluatedProperties',
+]);
+
+/** Encodes a JSON pointer segment the same way that cfworker does. */
+function encodePointerSegment(segment: string): string {
+  return encodeURI(segment.replace(/~/g, '~0').replace(/\//g, '~1'));
+}
+
+/** Finds the instance location that a summary error is about.
+ *
+ * @param error - The summary error
+ * @returns - The instance location, ending with a slash when it covers several children
+ */
+function summaryChildLocation(error: CFWorkerValidationError): string {
+  const property = error.error.match(
+    /^Property "(.*)" (does not|matches)/,
+  )?.[1];
+  if (property !== undefined) {
+    return `${error.instanceLocation}/${encodePointerSegment(property)}`;
+  }
+  if (error.error.startsWith('Items did not match')) {
+    return `${error.instanceLocation}/`;
+  }
+  return error.instanceLocation;
+}
+
+/** Checks whether an instance location is at or beneath another. */
+function isWithin(instanceLocation: string, location: string): boolean {
+  return location.endsWith('/')
+    ? instanceLocation.startsWith(location)
+    : instanceLocation === location ||
+        instanceLocation.startsWith(`${location}/`);
+}
+
+/** Finds the keyword location beneath which a summary error's subschema errors are reported.
+ *
+ * @param error - The summary error
+ * @returns - The keyword location, or undefined when the error is a direct failure
+ */
+function summaryKeywordLocation(
+  error: CFWorkerValidationError,
+): string | undefined {
+  if (
+    error.keyword !== 'dependencies' &&
+    error.keyword !== 'dependentSchemas'
+  ) {
+    return error.keywordLocation;
+  }
+  // These keywords also report direct failures, such as a missing dependent
+  // property, and only summarize the errors of a dependent schema
+  const key = error.error.match(
+    /^Instance has "(.*)" but does not match dependant schema\.$/,
+  )?.[1];
+  return key === undefined
+    ? undefined
+    : `${error.keywordLocation}/${encodePointerSegment(key)}`;
+}
+
+/** Removes summary errors that only repeat more specific errors beneath them,
+ * and errors for `false` subschemas that AJV reports for the parent keyword.
  * This is a Backstage addition that is not part of `@rjsf/validator-cfworker`.
  *
  * @param errors - The cfworker errors to filter
- * @returns - The errors without redundant summary errors
+ * @returns - The errors without redundant ones
  */
 export function removeSummaryErrors(
   errors: CFWorkerValidationError[],
 ): CFWorkerValidationError[] {
-  // A `false` schema (such as `additionalProperties: false`) produces an
-  // error for the subschema itself, beneath the error for the keyword that
-  // holds it. The keyword error is the more descriptive one, so keep that.
-  const relevant = errors.some(error => error.keyword !== 'false')
-    ? errors.filter(error => error.keyword !== 'false')
-    : errors;
-  return relevant.filter(error => {
-    if (!SUMMARY_KEYWORDS.has(error.keyword)) {
-      return true;
+  const summaries = errors.filter(error => {
+    const location = SUMMARY_KEYWORDS.has(error.keyword)
+      ? summaryKeywordLocation(error)
+      : undefined;
+    if (location === undefined) {
+      return false;
     }
-    let location = error.keywordLocation;
-    if (
-      error.keyword === 'dependencies' ||
-      error.keyword === 'dependentSchemas'
-    ) {
-      // These keywords also report direct failures, such as a missing
-      // dependent property. Only the errors for a dependent schema are
-      // summaries, and only of the errors beneath that same schema.
-      const key = error.error.match(
-        /^Instance has "(.*)" but does not match dependant schema\.$/,
-      )?.[1];
-      if (key === undefined) {
-        return true;
-      }
-      location = `${location}/${encodeURI(
-        key.replace(/~/g, '~0').replace(/\//g, '~1'),
-      )}`;
-    }
-    return !relevant.some(other =>
-      other.keywordLocation.startsWith(`${location}/`),
+    const child = summaryChildLocation(error);
+    return errors.some(
+      other =>
+        other !== error &&
+        isWithin(other.instanceLocation, child) &&
+        // The keyword location of a `false` error is its instance location
+        (other.keyword === 'false'
+          ? !PARENT_REPORTED_KEYWORDS.has(error.keyword)
+          : other.keywordLocation.startsWith(`${location}/`)),
     );
   });
+
+  const parentReported = errors.filter(
+    error =>
+      PARENT_REPORTED_KEYWORDS.has(error.keyword) && !summaries.includes(error),
+  );
+  return errors.filter(
+    error =>
+      !summaries.includes(error) &&
+      !(
+        error.keyword === 'false' &&
+        parentReported.some(parent =>
+          isWithin(error.instanceLocation, summaryChildLocation(parent)),
+        )
+      ),
+  );
 }
 
 /** Filters duplicate errors from `anyOf`/`oneOf` schema paths according to the `suppressDuplicateFiltering` flag.
@@ -244,7 +311,9 @@ export function transformRJSFValidationErrors<
         property || !/^[^.[\]'"\\]+$/.test(missingProperty)
           ? appendProperty(property, missingProperty)
           : missingProperty;
-      const { title: directTitle } = getUiOptions(get(uiSchema, toPath(path)));
+      const { title: directTitle } = getUiOptions(
+        get(uiSchema, toPath(path).filter(Boolean)),
+      );
       let title = directTitle;
       if (title === undefined) {
         const uiSchemaPath = keywordLocation
