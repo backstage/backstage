@@ -29,14 +29,27 @@ const DEPENDENCY_FIELDS = [
 ] as const;
 
 /**
+ * A dependency of a resolved package or workspace package. The name is the one
+ * that entries list the dependency under, and the node is what it resolves to.
+ */
+type PnpmDependency = {
+  name: string;
+  /** The specifier in the package.json, only for workspace packages */
+  specifier?: string;
+  node?: string;
+  version: string;
+};
+
+/**
  * A resolved package or workspace package that entries point to. Packages are
- * keyed by their package ID, `name@version`, and workspace packages by
- * `importer:<dir>`.
+ * keyed by their package ID, `name@version`, followed by the patch hash for a
+ * patched package, and workspace packages by `importer:<dir>`.
  */
 type PnpmNode = {
   version: string;
   integrity?: string;
-  dependencies: Set<string>;
+  patchHash?: string;
+  dependencies: PnpmDependency[];
 };
 
 type PnpmEntry = LockfileEntry & {
@@ -57,6 +70,11 @@ type PnpmEntry = LockfileEntry & {
  * workspace packages have a `link:` version with the directory of the linked
  * package relative to the workspace root. Workspace packages themselves are
  * listed under their name with a `workspace:<dir>` range.
+ *
+ * Diffs and dependency tree hashes follow each package to the versions that
+ * it resolves to, including the patch of a patched package, since pnpm can
+ * resolve the same range to different versions for different workspace
+ * packages.
  *
  * pnpm lists workspace packages by directory, so their names come from the
  * `readWorkspacePackageJsons` option, which must read from the same source as
@@ -85,7 +103,7 @@ export class PnpmLockfile implements Lockfile {
     const {
       parse: parseDepPath,
       refToRelative,
-      removeSuffix,
+      getPkgIdWithPatchHash,
     } = await import('@pnpm/deps.path');
 
     let lockfileFile;
@@ -117,7 +135,10 @@ export class PnpmLockfile implements Lockfile {
         entries.set(name, nameEntries);
       }
       const exists = nameEntries.some(
-        e => e.range === entry.range && e.version === entry.version,
+        e =>
+          e.range === entry.range &&
+          e.version === entry.version &&
+          e.node === entry.node,
       );
       if (!exists) {
         nameEntries.push(entry);
@@ -151,18 +172,38 @@ export class PnpmLockfile implements Lockfile {
       if (!depPath) {
         return { version: reference };
       }
-      const packageId = removeSuffix(depPath);
+      // A patched package is a separate node, so that its patch is part of
+      // the comparisons and hashes
+      const packageId = getPkgIdWithPatchHash(depPath);
       return {
         version: nodes.get(packageId)?.version ?? reference,
         node: packageId,
       };
     };
 
-    // Packages and their dependencies. Variants of a package with different
-    // peer dependencies are merged into a single node.
+    const addDependency = (node: PnpmNode, dependency: PnpmDependency) => {
+      const exists = node.dependencies.some(
+        d =>
+          d.name === dependency.name &&
+          d.specifier === dependency.specifier &&
+          d.node === dependency.node &&
+          d.version === dependency.version,
+      );
+      if (!exists) {
+        node.dependencies.push(dependency);
+      }
+    };
+
+    // Packages, where variants of a package with different peer dependencies
+    // are merged into a single node
     const packageNames = new Map<string, string>();
+    const packageDependencies = new Array<
+      [node: PnpmNode, dependencies: Record<string, string>]
+    >();
     for (const [depPath, pkg] of Object.entries(lockfile.packages ?? {})) {
-      const packageId = removeSuffix(depPath);
+      const packageId = getPkgIdWithPatchHash(
+        depPath as Parameters<typeof getPkgIdWithPatchHash>[0],
+      );
       const parsed = parseDepPath(packageId);
       if (!parsed.name) {
         throw new Error(`Failed to parse pnpm-lock.yaml package '${depPath}'`);
@@ -175,15 +216,33 @@ export class PnpmLockfile implements Lockfile {
         node = {
           version: parsed.version ?? parsed.nonSemverVersion ?? packageId,
           integrity: resolution?.integrity,
-          dependencies: new Set(Object.keys(pkg.peerDependencies ?? {})),
+          patchHash: parsed.patchHash,
+          dependencies: [],
         };
         nodes.set(packageId, node);
       }
-      for (const depName of Object.keys(pkg.dependencies ?? {})) {
-        node.dependencies.add(depName);
-      }
-      for (const depName of Object.keys(pkg.optionalDependencies ?? {})) {
-        node.dependencies.add(depName);
+      // Resolved peer dependencies are part of these
+      packageDependencies.push(
+        [node, pkg.dependencies ?? {}],
+        [node, pkg.optionalDependencies ?? {}],
+      );
+    }
+
+    // The dependencies of packages, once all packages are known. Aliased
+    // dependencies are listed under the name of the real package, which the
+    // entries of transitive packages use.
+    for (const [node, dependencies] of packageDependencies) {
+      for (const [name, reference] of Object.entries(dependencies)) {
+        const { version, node: depNode } = resolveReference(
+          '.',
+          name,
+          reference,
+        );
+        addDependency(node, {
+          name: (depNode && packageNames.get(depNode)) ?? name,
+          node: depNode,
+          version,
+        });
       }
     }
 
@@ -198,20 +257,19 @@ export class PnpmLockfile implements Lockfile {
       const nodeKey = `importer:${dir}`;
       const node: PnpmNode = {
         version: `link:${dir}`,
-        dependencies: new Set(),
+        dependencies: [],
       };
       nodes.set(nodeKey, node);
 
       for (const field of DEPENDENCY_FIELDS) {
         for (const [name, reference] of Object.entries(importer[field] ?? {})) {
-          node.dependencies.add(name);
-
           const specifier = importer.specifiers[name] ?? reference;
           const { version, node: depNode } = resolveReference(
             dir,
             name,
             reference,
           );
+          addDependency(node, { name, specifier, node: depNode, version });
           addEntry(name, {
             range: specifier.replace(/^npm:/, ''),
             version,
@@ -283,7 +341,9 @@ export class PnpmLockfile implements Lockfile {
 
     for (const [name, entries] of this.entries) {
       const dependencies = new Set(
-        entries.flatMap(e => [...(this.getNode(e)?.dependencies ?? [])]),
+        entries.flatMap(
+          e => this.getNode(e)?.dependencies.map(d => d.name) ?? [],
+        ),
       );
       graph.set(name, dependencies);
     }
@@ -327,35 +387,27 @@ export class PnpmLockfile implements Lockfile {
     for (const [name, otherEntries] of otherLockfile.entries) {
       remainingOldNames.delete(name);
 
-      const thisEntries = this.entries.get(name);
-      // A package that only exists in the other lockfile has had all of its
-      // entries removed
-      if (!thisEntries) {
-        diff.removed.push(...otherEntries.map(e => ({ name, range: e.range })));
-        continue;
-      }
+      // A range can resolve to several versions, one per workspace package
+      const thisRanges = this.groupByRange(this.entries.get(name) ?? []);
+      const otherRanges = otherLockfile.groupByRange(otherEntries);
 
-      const remainingOldRanges = new Set(thisEntries.map(e => e.range));
-
-      for (const otherEntry of otherEntries) {
-        remainingOldRanges.delete(otherEntry.range);
-
-        const thisEntry = thisEntries.find(e => e.range === otherEntry.range);
-        if (!thisEntry) {
-          diff.removed.push({ name, range: otherEntry.range });
-          continue;
-        }
-
-        const thisCheck =
-          this.getNode(thisEntry)?.integrity ?? thisEntry.version;
-        const otherCheck =
-          otherLockfile.getNode(otherEntry)?.integrity ?? otherEntry.version;
-        if (thisCheck !== otherCheck) {
-          diff.changed.push({ name, range: otherEntry.range });
+      for (const [range, otherRangeEntries] of otherRanges) {
+        const thisRangeEntries = thisRanges.get(range);
+        thisRanges.delete(range);
+        if (!thisRangeEntries) {
+          diff.removed.push({ name, range });
+        } else if (
+          !isSameSet(
+            thisRangeEntries.map(e => this.getFingerprint(e)),
+            otherRangeEntries.map(e => otherLockfile.getFingerprint(e)),
+          ) ||
+          this.hasChangedResolutions(thisRangeEntries, otherLockfile)
+        ) {
+          diff.changed.push({ name, range });
         }
       }
 
-      for (const thisRange of remainingOldRanges) {
+      for (const thisRange of thisRanges.keys()) {
         diff.added.push({ name, range: thisRange });
       }
     }
@@ -370,51 +422,52 @@ export class PnpmLockfile implements Lockfile {
 
   /** {@inheritDoc Lockfile.getDependencyTreeHash} */
   getDependencyTreeHash(startName: string): string {
-    if (!this.entries.has(startName)) {
+    const startEntries = this.entries.get(startName);
+    if (!startEntries) {
       throw new Error(`Package '${startName}' not found in lockfile`);
     }
 
-    const hash = crypto.createHash('sha1');
-
-    const queue = [startName];
+    // The dependencies are followed to the exact nodes that they resolve to,
+    // so that the hash only covers the versions that the package uses
     const seen = new Set<string>();
-
+    const queue = startEntries.flatMap(e => (e.node ? [e.node] : []));
     while (queue.length > 0) {
-      const name = queue.pop()!;
-
-      if (seen.has(name)) {
+      const key = queue.pop()!;
+      if (seen.has(key)) {
         continue;
       }
-      seen.add(name);
-
-      const entries = this.entries.get(name);
-      if (!entries) {
-        continue; // In case of missing optional peer dependencies
-      }
-
-      hash.update(`pkg:${name}`);
-      hash.update('\0');
-
-      const deps = new Array<string>();
-      for (const entry of entries) {
-        hash.update(entry.version);
-
-        const node = this.getNode(entry);
-        if (!node) {
-          continue;
+      seen.add(key);
+      for (const dependency of this.nodes.get(key)?.dependencies ?? []) {
+        if (dependency.node) {
+          queue.push(dependency.node);
         }
-
-        if (node.integrity) {
-          hash.update('#');
-          hash.update(node.integrity);
-        }
-
-        hash.update(' ');
-
-        deps.push(...node.dependencies);
       }
+    }
 
-      queue.push(...new Set(deps));
+    // Nodes are hashed in a stable order, independent of the lockfile order
+    const hash = crypto.createHash('sha1');
+    hash.update(`pkg:${startName}`);
+    hash.update('\0');
+    // The nodes cover the other entries, so that a new dependent of a
+    // workspace package with another range doesn't change its hash
+    for (const entry of startEntries) {
+      if (!entry.node) {
+        hash.update(`${entry.version}\0`);
+      }
+    }
+    for (const key of [...seen].sort(compareStrings)) {
+      const node = this.nodes.get(key);
+      hash.update(`node:${key}\0`);
+      if (!node) {
+        // In case of missing optional dependencies
+        continue;
+      }
+      hash.update(`${node.version}#${node.integrity ?? ''}#`);
+      hash.update(`${node.patchHash ?? ''}\0`);
+      const dependencies = node.dependencies
+        .map(d => `${d.name}=${d.node ?? d.version}`)
+        .sort(compareStrings);
+      hash.update(`${dependencies.join(' ')}\0`);
     }
 
     return hash.digest('hex');
@@ -423,6 +476,67 @@ export class PnpmLockfile implements Lockfile {
   private getNode(entry: PnpmEntry): PnpmNode | undefined {
     return entry.node ? this.nodes.get(entry.node) : undefined;
   }
+
+  /**
+   * Returns what an entry resolves to, which is the integrity of the package
+   * if known, and the version otherwise, together with any patch hash.
+   */
+  private getFingerprint(entry: PnpmEntry): string {
+    const node = this.getNode(entry);
+    return `${node?.integrity ?? entry.version}${node?.patchHash ?? ''}`;
+  }
+
+  private groupByRange(entries: PnpmEntry[]): Map<string, PnpmEntry[]> {
+    const ranges = new Map<string, PnpmEntry[]>();
+    for (const entry of entries) {
+      ranges.set(entry.range, [...(ranges.get(entry.range) ?? []), entry]);
+    }
+    return ranges;
+  }
+
+  /**
+   * Returns true if a workspace package resolves an unchanged dependency
+   * specifier differently in the other lockfile. Changed specifiers are not
+   * compared, since they come with a change to the package.json of the
+   * workspace package.
+   */
+  private hasChangedResolutions(
+    entries: PnpmEntry[],
+    otherLockfile: PnpmLockfile,
+  ): boolean {
+    for (const entry of entries) {
+      const node = this.getNode(entry);
+      const otherNode = otherLockfile.getNode(entry);
+      if (!node || !otherNode || !entry.node?.startsWith('importer:')) {
+        continue;
+      }
+      for (const dependency of node.dependencies) {
+        const otherDependency = otherNode.dependencies.find(
+          d =>
+            d.name === dependency.name && d.specifier === dependency.specifier,
+        );
+        if (
+          otherDependency &&
+          this.getDependencyFingerprint(dependency) !==
+            otherLockfile.getDependencyFingerprint(otherDependency)
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private getDependencyFingerprint(dependency: PnpmDependency): string {
+    const node = dependency.node ? this.nodes.get(dependency.node) : undefined;
+    return `${node?.integrity ?? dependency.version}${node?.patchHash ?? ''}`;
+  }
+}
+
+function isSameSet(a: string[], b: string[]): boolean {
+  const setA = new Set(a);
+  const setB = new Set(b);
+  return setA.size === setB.size && [...setA].every(value => setB.has(value));
 }
 
 function compareStrings(a: string, b: string): number {

@@ -187,6 +187,7 @@ describe('info', () => {
     expect(output.dependencies).toEqual({});
     expect(output.local).toEqual({
       '@backstage/local': [{ version: '0.3.0' }],
+      'my-local-plugin': [{ version: '1.2.0' }],
     });
     expect(output.system.packageManager).toEqual({
       name: 'yarn',

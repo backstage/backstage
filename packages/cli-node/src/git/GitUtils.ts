@@ -123,8 +123,9 @@ export async function readFilesAtRef(
  */
 export class GitUtils {
   /**
-   * Returns a sorted list of all files that have changed since the merge base
+   * Returns a list of all files that have changed since the merge base
    * of the provided `ref` and HEAD, as well as all files that are not tracked by git.
+   * Only files inside the workspace root are listed, with paths relative to it.
    */
   static async listChangedFiles(ref: string) {
     if (!ref) {
@@ -133,7 +134,8 @@ export class GitUtils {
 
     const diffRef = await resolveMergeBase(ref);
 
-    const tracked = await runGit('diff', '--name-only', diffRef);
+    // Like ls-files, only list files in the workspace root, relative to it
+    const tracked = await runGit('diff', '--relative', '--name-only', diffRef);
     const untracked = await runGit(
       'ls-files',
       '--others',
@@ -144,12 +146,14 @@ export class GitUtils {
   }
 
   /**
-   * Returns the contents of a file at a specific ref.
+   * Returns the contents of a file at a specific ref, with the path relative to
+   * the workspace root.
    */
   static async readFileAtRef(path: string, ref: string) {
     const showRef = await resolveMergeBase(ref);
 
-    const stdout = await runOutput(['git', 'show', `${showRef}:${path}`], {
+    // The ./ prefix resolves the path from the workspace root
+    const stdout = await runOutput(['git', 'show', `${showRef}:./${path}`], {
       cwd: targetPaths.workspaceRootDir,
     });
     return stdout;
