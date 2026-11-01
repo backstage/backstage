@@ -1,0 +1,194 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Adapted from @rjsf/validator-cfworker 6.11.0 (Apache-2.0) for use with RJSF 5.
+// See the package README for details.
+
+import * as CFWorkerJsonSchema from '@cfworker/json-schema';
+import type { Schema } from '@cfworker/json-schema';
+import { Validator } from '@cfworker/json-schema';
+
+import type {
+  CFWorkerFormatChecker,
+  CustomValidatorOptionsType,
+} from './types';
+
+/** Regular expression used to validate RJSF's `color` format. */
+export const COLOR_FORMAT_REGEX =
+  /^(#?([0-9A-Fa-f]{3}){1,2}\b|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|(rgb\(\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*\))|(rgb\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*\)))$/;
+
+/** Regular expression used to validate RJSF's `data-url` format. */
+export const DATA_URL_FORMAT_REGEX =
+  /^data:([a-z]+\/[a-z0-9-+.]+)?;(?:name=(.*);)?base64,(.*)$/;
+
+/** The shape of the `@cfworker/json-schema` module used to reach its runtime format registry. */
+interface FormatRegistryModule {
+  /** The engine's runtime format registry, when the module exposes it. */
+  format?: Record<string, CFWorkerFormatChecker>;
+}
+
+/** Converts a supported custom-format declaration into a format checker.
+ *
+ * @param spec - The custom-format function, regular expression, or regular-expression source
+ * @returns - A function that checks whether a string satisfies the format
+ */
+function asFormatChecker(
+  spec: string | RegExp | CFWorkerFormatChecker,
+): CFWorkerFormatChecker {
+  if (typeof spec === 'function') {
+    return spec;
+  }
+  const regex = spec instanceof RegExp ? spec : new RegExp(spec);
+  return (value: string) => regex.test(value);
+}
+
+/** Makes a validator use the built-in RJSF formats and any user-provided
+ * formats, without leaking them to other validators.
+ *
+ * The engine only reads formats from its module-wide registry, so the formats
+ * are installed for the duration of each validation and then restored. This
+ * is safe because validation is synchronous.
+ *
+ * @param validator - The validator to scope the formats to
+ * @param customFormats - The custom formats to add after the built-in `color` and `data-url` formats
+ * @param [targetRegistry] - The format registry to update; defaults to the `@cfworker/json-schema` module registry
+ */
+export function scopeFormats(
+  validator: Validator,
+  customFormats: CustomValidatorOptionsType['customFormats'],
+  targetRegistry = (CFWorkerJsonSchema as unknown as FormatRegistryModule)
+    .format,
+): void {
+  // `format` is a runtime export in @cfworker/json-schema 4.1.1, although its
+  // generated declaration file omits it. The engine reads this registry while
+  // validating, so adding entries here is its supported runtime extension seam.
+  if (!targetRegistry) {
+    throw new Error('@cfworker/json-schema did not expose its format registry');
+  }
+
+  const registry = targetRegistry;
+  const formats: Record<string, CFWorkerFormatChecker> = {
+    color: asFormatChecker(COLOR_FORMAT_REGEX),
+    'data-url': asFormatChecker(DATA_URL_FORMAT_REGEX),
+  };
+  for (const [name, spec] of Object.entries(customFormats ?? {})) {
+    formats[name] = asFormatChecker(spec);
+  }
+  const names = Object.keys(formats);
+
+  const validate = validator.validate.bind(validator);
+  validator.validate = instance => {
+    const previous = names.map(name => ({
+      name,
+      present: Object.prototype.hasOwnProperty.call(registry, name),
+      checker: registry[name],
+    }));
+    Object.assign(registry, formats);
+    try {
+      return validate(instance);
+    } finally {
+      for (const { name, present, checker } of previous) {
+        if (present) {
+          registry[name] = checker;
+        } else {
+          delete registry[name];
+        }
+      }
+    }
+  };
+}
+
+/** Calls a function for every object within a schema, including itself. */
+function forEachObject(
+  node: unknown,
+  fn: (value: Record<string, unknown>) => void,
+) {
+  if (Array.isArray(node)) {
+    node.forEach(item => forEachObject(item, fn));
+  } else if (node && typeof node === 'object') {
+    fn(node as Record<string, unknown>);
+    Object.values(node).forEach(item => forEachObject(item, fn));
+  }
+}
+
+/** Removes the IDs that are declared within one schema from another.
+ *
+ * @param target - The schema to update in place
+ * @param source - The schema whose IDs to remove
+ * @returns - False when the target schema itself declares one of the IDs, so it can not be registered
+ */
+function removeSchemaIds(target: Schema, source: Schema | boolean): boolean {
+  const ids = new Set<unknown>();
+  forEachObject(source, node => {
+    if (typeof node.$id === 'string') {
+      ids.add(node.$id);
+    }
+  });
+  if (ids.has(target.$id)) {
+    return false;
+  }
+  forEachObject(target, node => {
+    if (ids.has(node.$id)) {
+      delete node.$id;
+    }
+  });
+  return true;
+}
+
+/** Builds a schema-bound `@cfworker/json-schema` validator.
+ *
+ * @param schema - The schema the validator will use
+ * @param [options={}] - The options used to configure formats, schemas, draft behavior, and engine extension
+ * @param [rootSchema] - The root schema to register for cross-schema `$ref` resolution
+ * @returns - The configured schema-bound validator
+ */
+export default function createCfworkerInstance(
+  schema: Schema | boolean,
+  options: CustomValidatorOptionsType = {},
+  rootSchema?: Schema,
+): Validator {
+  const {
+    additionalMetaSchemas,
+    customFormats,
+    draft = '7',
+    extenderFn,
+    shortCircuit = false,
+  } = options;
+
+  // The engine annotates schemas during dereferencing. Clone every user-owned
+  // schema so frozen RJSF fixtures and application schemas remain untouched.
+  let validator = new Validator(structuredClone(schema), draft, shortCircuit);
+
+  for (const additionalSchema of additionalMetaSchemas ?? []) {
+    validator.addSchema(
+      structuredClone(additionalSchema),
+      additionalSchema.$id,
+    );
+  }
+  if (rootSchema && rootSchema !== schema) {
+    const root = structuredClone(rootSchema);
+    // The schema is often a part of the root schema. Any IDs declared within
+    // it are already registered, and registering them again would fail.
+    if (removeSchemaIds(root, schema)) {
+      validator.addSchema(root, root.$id);
+    }
+  }
+  if (typeof extenderFn === 'function') {
+    validator = extenderFn(validator);
+  }
+  scopeFormats(validator, customFormats);
+  return validator;
+}
