@@ -91,12 +91,42 @@ function splitPointer(pointer: string): string[] {
   return trimmed ? trimmed.split('/').map(decodeSegment) : [];
 }
 
+const schemaIds = new WeakMap<SchemaNode, Map<string, SchemaNode>>();
+
+/** Finds the schemas within the root schema that declare an ID. */
+function getSchemaIds(root: SchemaNode): Map<string, SchemaNode> {
+  let ids = schemaIds.get(root);
+  if (!ids) {
+    const found = new Map<string, SchemaNode>();
+    const visit = (node: unknown) => {
+      if (Array.isArray(node)) {
+        node.forEach(visit);
+      } else if (node && typeof node === 'object') {
+        const record = node as SchemaNode;
+        if (typeof record.$id === 'string') {
+          found.set(record.$id.replace(/#$/, ''), record);
+        }
+        Object.values(record).forEach(visit);
+      }
+    };
+    visit(root);
+    ids = found;
+    schemaIds.set(root, ids);
+  }
+  return ids;
+}
+
 function resolveRef(root: SchemaNode, ref: unknown): SchemaNode | undefined {
-  if (typeof ref !== 'string' || !ref.startsWith('#')) {
+  if (typeof ref !== 'string') {
     return undefined;
   }
-  let node: any = root;
-  for (const segment of splitPointer(ref)) {
+  // Supports references within the root schema, and to schemas by their
+  // absolute ID, optionally followed by a JSON pointer
+  const hashIndex = ref.indexOf('#');
+  const id = hashIndex === -1 ? ref : ref.slice(0, hashIndex);
+  let node: any = id ? getSchemaIds(root).get(id) : root;
+  const fragment = hashIndex === -1 ? '' : ref.slice(hashIndex);
+  for (const segment of splitPointer(fragment)) {
     node = node?.[segment];
   }
   return node && typeof node === 'object' ? node : undefined;

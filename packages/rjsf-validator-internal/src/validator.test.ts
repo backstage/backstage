@@ -326,4 +326,63 @@ describe('validator', () => {
     ).errors;
     expect(plain.map(e => e.message)).not.toContain('False boolean schema.');
   });
+
+  it('keeps false schema failures, resolves IDs and finds nested titles', () => {
+    const custom = customizeValidator({ errorMessage: true });
+
+    const forbiddenSchema = {
+      type: 'object',
+      properties: { forbidden: false, name: { type: 'string' } },
+      errorMessage: { properties: { forbidden: 'not allowed' } },
+    } as RJSFSchema;
+    expect(
+      validator
+        .validateFormData({ forbidden: 1, name: 2 }, forbiddenSchema)
+        .errors.map(e => e.property),
+    ).toEqual(expect.arrayContaining(['.forbidden', '.name']));
+    expect(
+      custom
+        .validateFormData({ forbidden: 1, name: 2 }, forbiddenSchema)
+        .errors.map(e => [e.property, e.message]),
+    ).toEqual(expect.arrayContaining([['.forbidden', 'not allowed']]));
+
+    const idSchema = {
+      type: 'object',
+      properties: { owner: { $ref: 'urn:example:owner' } },
+      definitions: {
+        owner: {
+          $id: 'urn:example:owner',
+          type: 'string',
+          pattern: '^[a-z]+$',
+          errorMessage: 'lowercase owner',
+        },
+      },
+    } as RJSFSchema;
+    expect(
+      custom
+        .validateFormData({ owner: 'ABC' }, idSchema)
+        .errors.map(e => e.message),
+    ).toEqual(['lowercase owner']);
+
+    const nestedSchema: RJSFSchema = {
+      type: 'object',
+      properties: { person: { $ref: '#/definitions/person' } },
+      definitions: {
+        person: {
+          type: 'object',
+          required: ['name'],
+          properties: { name: { type: 'string' } },
+        },
+      },
+    };
+    const [nested] = validator.validateFormData(
+      { person: {} },
+      nestedSchema,
+      undefined,
+      undefined,
+      { person: { name: { 'ui:title': 'Full name' } } },
+    ).errors;
+    expect(nested.property).toBe('.person.name');
+    expect(nested.message).toContain("'Full name'");
+  });
 });
