@@ -23,6 +23,7 @@ Usage: e2e-test run [options]
 
 Options:
   --keep
+  --keep-pnpm-version
   --node-linker <name>
   --package-manager <name>
   -h, --help
