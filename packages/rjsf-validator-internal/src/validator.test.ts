@@ -346,6 +346,30 @@ describe('validator', () => {
         .errors.map(e => [e.property, e.message]),
     ).toEqual(expect.arrayContaining([['.forbidden', 'not allowed']]));
 
+    const nestedForbidden = {
+      type: 'object',
+      properties: {
+        profile: {
+          type: 'object',
+          properties: { secret: false, other: false },
+          errorMessage: {
+            properties: { secret: 'no secrets' },
+            _: 'bad profile',
+          },
+        },
+      },
+    } as RJSFSchema;
+    expect(
+      custom
+        .validateFormData({ profile: { secret: 1, other: 1 } }, nestedForbidden)
+        .errors.map(e => [e.property, e.message]),
+    ).toEqual(
+      expect.arrayContaining([
+        ['.profile.secret', 'no secrets'],
+        ['.profile', 'bad profile'],
+      ]),
+    );
+
     const idSchema = {
       type: 'object',
       properties: { owner: { $ref: 'urn:example:owner' } },
