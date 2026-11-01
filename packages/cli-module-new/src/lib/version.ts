@@ -124,6 +124,13 @@ export function createPackageVersionProvider(
   lockfile?: Lockfile,
   options?: {
     preferBackstageProtocol?: boolean;
+    /**
+     * Widens a lockfile range that is an exact version to a caret range of it.
+     * pnpm lists packages that are only depended on transitively under their
+     * exact version, and a new package should get a range that keeps the
+     * version that is installed rather than pin it.
+     */
+    widenExactRanges?: boolean;
   },
 ) {
   return (name: string, versionHint?: string): string | undefined => {
@@ -155,6 +162,9 @@ export function createPackageVersionProvider(
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
+      if (options?.widenExactRanges && semver.valid(highestRange.range)) {
+        return `^${highestRange.range}`;
+      }
       return highestRange?.range;
     }
     if (packageVersion) {

@@ -58,6 +58,7 @@ export class PortableTemplater {
     const versionProvider = createPackageVersionProvider(lockfile, {
       preferBackstageProtocol:
         await packageManager.supportsBackstageVersionProtocol(),
+      widenExactRanges: packageManager.name() === 'pnpm',
     });
 
     const templater = new PortableTemplater(
