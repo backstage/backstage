@@ -35,7 +35,11 @@ import { PnpmLockfile } from './PnpmLockfile';
 const SUPPORTED_PNPM_VERSIONS = '^11.28.0 || >=12.7.0';
 
 // Keeps the formatting that pnpm writes as far as possible
-const STRINGIFY_OPTIONS = { lineWidth: 0, flowCollectionPadding: false };
+const STRINGIFY_OPTIONS = {
+  lineWidth: 0,
+  flowCollectionPadding: false,
+  singleQuote: true,
+};
 
 /**
  * Options for {@link Pnpm.create}.
@@ -297,26 +301,14 @@ export class Pnpm implements PackageManager {
   }
 
   /**
-   * Sets dependency versions in a catalog in `pnpm-workspace.yaml`. Only the
-   * versions in the file change, so its comments and formatting are kept.
+   * Sets dependency versions in catalogs in `pnpm-workspace.yaml`, which is
+   * written once for all catalogs. Only the versions in the file change, so
+   * its comments and formatting are kept.
    */
-  async updateCatalog(
-    name: string,
-    versions: Record<string, string>,
+  async updateCatalogs(
+    updates: Record<string, Record<string, string>>,
   ): Promise<void> {
     const { content, doc } = (await this.readWorkspaceDocument()) ?? {};
-
-    let path: string[] | undefined;
-    if (name === 'default' && doc?.has('catalog')) {
-      path = ['catalog'];
-    } else if (doc?.hasIn(['catalogs', name])) {
-      path = ['catalogs', name];
-    }
-    if (content === undefined || !doc || !path) {
-      throw new Error(
-        `The catalog '${name}' does not exist in pnpm-workspace.yaml`,
-      );
-    }
 
     // Existing versions are replaced in the text, keeping their quotes, and
     // from the end of the file so that the earlier offsets stay valid
@@ -325,21 +317,39 @@ export class Pnpm implements PackageManager {
       end: number;
       text: string;
     }>();
-    const added = new Map<string, string>();
-    for (const [dependency, version] of Object.entries(versions)) {
-      const node = doc.getIn([...path, dependency], true);
-      if (isScalar(node) && node.range) {
-        const scalar = new Scalar(version);
-        scalar.type = node.type;
-        replacements.push({
-          start: node.range[0],
-          end: node.range[1],
-          text: new Document(scalar).toString(STRINGIFY_OPTIONS).trimEnd(),
-        });
-      } else {
-        added.set(dependency, version);
+    const added = new Array<{ path: string[]; version: string }>();
+    for (const [name, versions] of Object.entries(updates)) {
+      let path: string[] | undefined;
+      if (name === 'default' && doc?.has('catalog')) {
+        path = ['catalog'];
+      } else if (doc?.hasIn(['catalogs', name])) {
+        path = ['catalogs', name];
+      }
+      if (content === undefined || !doc || !path) {
+        throw new Error(
+          `The catalog '${name}' does not exist in pnpm-workspace.yaml`,
+        );
+      }
+
+      for (const [dependency, version] of Object.entries(versions)) {
+        const node = doc.getIn([...path, dependency], true);
+        if (isScalar(node) && node.range) {
+          const scalar = new Scalar(version);
+          scalar.type = node.type;
+          replacements.push({
+            start: node.range[0],
+            end: node.range[1],
+            text: new Document(scalar).toString(STRINGIFY_OPTIONS).trimEnd(),
+          });
+        } else {
+          added.push({ path: [...path, dependency], version });
+        }
       }
     }
+    if (content === undefined || (!replacements.length && !added.length)) {
+      return;
+    }
+
     let updated = content;
     for (const { start, end, text } of replacements.sort(
       (a, b) => b.start - a.start,
@@ -348,10 +358,10 @@ export class Pnpm implements PackageManager {
     }
 
     // New entries can only be added by writing out the whole document
-    if (added.size > 0) {
+    if (added.length > 0) {
       const updatedDoc = parseDocument(updated);
-      for (const [dependency, version] of added) {
-        updatedDoc.setIn([...path, dependency], version);
+      for (const { path, version } of added) {
+        updatedDoc.setIn(path, version);
       }
       updated = updatedDoc.toString(STRINGIFY_OPTIONS);
     }

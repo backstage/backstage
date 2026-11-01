@@ -278,7 +278,7 @@ describe('Pnpm', () => {
     mockDir.setContent({});
     await expect(local.readCatalogs()).resolves.toEqual({});
     await expect(local.readOverrides()).resolves.toEqual({});
-    await expect(local.updateCatalog('default', {})).rejects.toThrow(
+    await expect(local.updateCatalogs({ default: {} })).rejects.toThrow(
       "The catalog 'default' does not exist in pnpm-workspace.yaml",
     );
 
@@ -318,16 +318,26 @@ overrides:
       lodash: '$lodash',
     });
 
-    await local.updateCatalog('default', {
-      '@backstage/core': '^1.2.0',
-      '@backstage/theme': '^1.3.0',
-    });
-    await local.updateCatalog('backstage-next', {
-      '@backstage/core': '^1.3.0-next.1',
-    });
-    await expect(local.updateCatalog('nope', {})).rejects.toThrow(
+    // Nothing is written when one of the catalogs does not exist
+    await expect(
+      local.updateCatalogs({
+        default: { '@backstage/core': '^9.9.9' },
+        nope: {},
+      }),
+    ).rejects.toThrow(
       "The catalog 'nope' does not exist in pnpm-workspace.yaml",
     );
+    expect(mockDir.content()).toEqual({ 'pnpm-workspace.yaml': workspaceYaml });
+
+    await local.updateCatalogs({
+      default: {
+        '@backstage/core': '^1.2.0',
+        '@backstage/theme': '^1.3.0',
+      },
+      'backstage-next': {
+        '@backstage/core': '^1.3.0-next.1',
+      },
+    });
 
     // Only the versions change, with their quotes kept
     const updatedYaml = workspaceYaml
@@ -337,7 +347,7 @@ overrides:
     expect(mockDir.content()).toEqual({ 'pnpm-workspace.yaml': updatedYaml });
 
     // A new entry is added through the document, which keeps the comments
-    await local.updateCatalog('default', { lodash: '^4.17.21' });
+    await local.updateCatalogs({ default: { lodash: '^4.17.21' } });
     const withNewEntry = mockDir.content()?.['pnpm-workspace.yaml'] as string;
     expect(withNewEntry).toContain('# @sort The main line\n');
     expect(withNewEntry).toContain("'@backstage/core': ^1.2.0 # keep this\n");
