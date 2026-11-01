@@ -17,7 +17,13 @@
 import fs from 'fs-extra';
 import { isDeepStrictEqual } from 'node:util';
 import { resolve as resolvePath, sep as pathSep } from 'node:path';
-import { Document, parseAllDocuments, parseDocument } from 'yaml';
+import {
+  Document,
+  isMap,
+  isScalar,
+  parseAllDocuments,
+  parseDocument,
+} from 'yaml';
 import { copyPnpmWorkspaceFiles } from '../pnpmWorkspaceFiles';
 
 const LOCKFILE = 'pnpm-lock.yaml';
@@ -39,6 +45,10 @@ const STRINGIFY_OPTIONS = { lineWidth: 0, flowCollectionPadding: false };
  *
  * - The lockfile entries of bundled packages are emptied, since their
  *   dependencies are removed from their `package.json` in the dist workspace.
+ * - The lockfile entries of the workspace packages that are not copied into
+ *   the dist workspace are removed. A frozen install fails on such an entry
+ *   when its directory exists, as the root of a Backstage installation in a
+ *   subdirectory does when its packages are copied.
  * - The patch files that `patchedDependencies` points at, and the pnpmfiles,
  *   are copied. Patch files outside of the workspace root are copied into
  *   `patches`, and pnpmfiles outside of it into the root of the dist
@@ -57,7 +67,7 @@ export async function preparePnpmDistWorkspace(options: {
 
   const lockfilePath = resolvePath(targetDir, LOCKFILE);
   if (await fs.pathExists(lockfilePath)) {
-    await emptyLockfileImporters(lockfilePath, bundledPackageDirs);
+    await pruneLockfileImporters(lockfilePath, targetDir, bundledPackageDirs);
     files.push(LOCKFILE);
   }
 
@@ -126,13 +136,12 @@ export async function restorePnpmDependencyRanges(
   await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
 }
 
-async function emptyLockfileImporters(
+async function pruneLockfileImporters(
   lockfilePath: string,
-  packageDirs: string[],
+  targetDir: string,
+  bundledPackageDirs: string[],
 ): Promise<void> {
-  if (packageDirs.length === 0) {
-    return;
-  }
+  const bundledDirs = new Set(bundledPackageDirs.map(toPosixPath));
 
   // A lockfile can have a separate document for the package manager itself
   const docs = parseAllDocuments(await fs.readFile(lockfilePath, 'utf8'));
@@ -141,9 +150,20 @@ async function emptyLockfileImporters(
     if (!(doc instanceof Document)) {
       continue;
     }
-    for (const dir of packageDirs.map(toPosixPath)) {
-      if (doc.hasIn(['importers', dir])) {
-        doc.setIn(['importers', dir], doc.createNode({}));
+    const importers = doc.get('importers');
+    if (!isMap(importers)) {
+      continue;
+    }
+    for (const item of [...importers.items]) {
+      const dir = String(isScalar(item.key) ? item.key.value : item.key);
+      if (bundledDirs.has(dir)) {
+        item.value = doc.createNode({});
+        changed = true;
+      } else if (
+        dir !== '.' &&
+        !(await fs.pathExists(resolvePath(targetDir, dir, 'package.json')))
+      ) {
+        importers.delete(item.key);
         changed = true;
       }
     }
