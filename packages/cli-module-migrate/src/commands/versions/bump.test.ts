@@ -18,7 +18,7 @@ import * as runObj from '@backstage/cli-common';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
-import type { PackageInfo } from '@backstage/cli-node/alpha';
+import { Pnpm, type PackageInfo } from '@backstage/cli-node/alpha';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { NotFoundError } from '@backstage/errors';
@@ -1297,6 +1297,36 @@ overrides:
     ).rejects.toThrow(
       'Packages refer to the default catalog, which the workspace does not define. No files were changed.',
     );
+    expect(mockDir.content()).toEqual(before);
+    expect(runObj.run).not.toHaveBeenCalled();
+
+    // A named catalog that is not bumped must exist as well
+    await fs.writeFile(
+      mockDir.resolve('pnpm-workspace.yaml'),
+      workspaceYaml.replace(/catalogs:[\s\S]*/, ''),
+    );
+    const beforeNamed = mockDir.content();
+    await expect(
+      withLogCollector(['log', 'warn'], () =>
+        bump({ args: ['--skip-migrate'], info }),
+      ),
+    ).rejects.toThrow(
+      'Packages refer to the backstage-next catalog, which the workspace does not define. No files were changed.',
+    );
+    expect(mockDir.content()).toEqual(beforeNamed);
+  });
+
+  it('should write the catalogs before any package.json file', async () => {
+    jest
+      .spyOn(Pnpm.prototype, 'updateCatalogs')
+      .mockRejectedValueOnce(new Error('Failed to write the catalogs'));
+    const before = mockDir.content();
+
+    await expect(
+      withLogCollector(['log', 'warn'], () =>
+        bump({ args: ['--skip-migrate'], info }),
+      ),
+    ).rejects.toThrow('Failed to write the catalogs');
     expect(mockDir.content()).toEqual(before);
     expect(runObj.run).not.toHaveBeenCalled();
   });
