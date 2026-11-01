@@ -838,6 +838,89 @@ export const spec = {
         required: ['items', 'totalItems', 'pageInfo'],
         additionalProperties: false,
       },
+      EntityChange: {
+        type: 'object',
+        description:
+          'A ref whose entity may have changed. Read its current state through `/entities/by-refs`, where a deleted or hidden entity comes back as `null`.',
+        required: ['entityRef'],
+        properties: {
+          entityRef: {
+            type: 'string',
+          },
+        },
+        additionalProperties: false,
+      },
+      EntityChangesResponse: {
+        type: 'object',
+        required: ['items', 'pageInfo'],
+        properties: {
+          items: {
+            type: 'array',
+            description:
+              'The changed refs. Can be empty even when there are more changes to read.',
+            items: {
+              $ref: '#/components/schemas/EntityChange',
+            },
+          },
+          pageInfo: {
+            $ref: '#/components/schemas/EntityChangesPageInfo',
+          },
+        },
+        additionalProperties: false,
+      },
+      EntityChangesPageInfo: {
+        type: 'object',
+        required: ['cursor'],
+        properties: {
+          cursor: {
+            type: 'string',
+            description:
+              'Pass this as the `cursor` parameter to continue reading.',
+          },
+          filtered: {
+            type: 'boolean',
+            description:
+              "True if the results were filtered by permission conditions. Such a\nreader isn't told when it loses access to an entity, so it should\nresync now and then.\n",
+          },
+        },
+        additionalProperties: false,
+      },
+      EntityChangeSubscription: {
+        type: 'object',
+        required: [
+          'subscriptionId',
+          'createdAt',
+          'lastActiveAt',
+          'afterGeneration',
+        ],
+        properties: {
+          subscriptionId: {
+            type: 'string',
+          },
+          createdAt: {
+            type: 'string',
+            description:
+              'An ISO timestamp for when the subscription was created.',
+          },
+          lastActiveAt: {
+            type: 'string',
+            description:
+              'An ISO timestamp for when a client last used the subscription.',
+          },
+          afterGeneration: {
+            type: 'string',
+            description:
+              'The acknowledged position, which reads continue from.',
+          },
+          scope: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+        },
+        additionalProperties: false,
+      },
     },
     securitySchemes: {
       JWT: {
@@ -1184,6 +1267,354 @@ export const spec = {
         parameters: [
           {
             $ref: '#/components/parameters/filter',
+          },
+        ],
+      },
+    },
+    '/entities/changes': {
+      get: {
+        operationId: 'GetEntityChanges',
+        tags: ['Entity'],
+        description:
+          '**Experimental.** Reads refs of entities that may have changed after a\nposition, in commit order. Deletions are included. This is a hint, not\na diff: read the current state of each ref through\n`/entities/by-refs`.\n\nTo bootstrap, first take a cursor with `afterGeneration=last`, then do\na full read through `/entities/by-query`, following its cursors\nwithout offsets or custom sort fields, and then continue from the\ncursor. Changes made during the full read are delivered again, so\nconsumers must be idempotent.\n\nThese endpoints are experimental until deletion tracking is enabled\nin all deployments, and may change.\n',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/EntityChangesResponse',
+                },
+              },
+            },
+          },
+          '202': {
+            description:
+              'Nothing new yet. The body has the cursor to read again with once the response ends.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['pageInfo'],
+                  properties: {
+                    pageInfo: {
+                      $ref: '#/components/schemas/EntityChangesPageInfo',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            name: 'cursor',
+            in: 'query',
+            required: false,
+            description:
+              'A cursor from a previous response. Replaces all other parameters.',
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            name: 'afterGeneration',
+            in: 'query',
+            required: false,
+            description:
+              'Read changes after this position, or `last` to start at the end.',
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            name: 'scope',
+            in: 'query',
+            required: false,
+            description:
+              'Only read refs within these entries, each on the form `kind`,\n`kind:namespace` or `kind:namespace/name`. Only parts of the ref\ncan be scoped on.\n',
+            explode: true,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            required: false,
+            description:
+              'The maximum number of rows to scan. A page is never split within a generation, so it can hold more refs than this.',
+            schema: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 1000,
+            },
+          },
+          {
+            name: 'block',
+            in: 'query',
+            required: false,
+            description:
+              'If nothing new is available, respond with 202 and hold the request\nopen until there may be new changes, or until a timeout. Then read\nagain.\n',
+            schema: {
+              type: 'boolean',
+            },
+          },
+        ],
+      },
+    },
+    '/entities/changes/subscriptions': {
+      post: {
+        operationId: 'UpsertEntityChangeSubscription',
+        tags: ['Entity'],
+        description:
+          "**Experimental.** Creates a subscription, or marks an existing one as\nactive. Call this before reading, whether or not the subscription\nexists. The position and scope are set at creation and can't change\nlater; asking for a different scope responds with 409. Subscriptions\nare deleted after a long period without use.\n\nA subscription tracks a position on behalf of a consumer, and several\nreplicas of that consumer can share it. Each read hands one replica a\nbatch that it must acknowledge. A subscription belongs to the\nprincipal that created it, and doesn't exist for anyone else; using\nan ID that another principal already has responds with 409.\n",
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['subscription'],
+                  properties: {
+                    subscription: {
+                      $ref: '#/components/schemas/EntityChangeSubscription',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          '409': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  subscriptionId: {
+                    type: 'string',
+                    maxLength: 250,
+                    description:
+                      'A unique ID. A random one is created if left out.',
+                  },
+                  afterGeneration: {
+                    type: 'string',
+                    description:
+                      'Where a new subscription starts, or `last` (the default) to start at the end.',
+                  },
+                  scope: {
+                    type: 'array',
+                    description:
+                      'Scope entries, each on the form `kind`, `kind:namespace` or `kind:namespace/name`.',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+        },
+      },
+    },
+    '/entities/changes/subscriptions/{subscriptionId}/read': {
+      get: {
+        operationId: 'ReadEntityChangeSubscription',
+        tags: ['Entity'],
+        description:
+          '**Experimental.** Reads a batch of changed refs from a subscription. When\nthe response has an `ackId`, acknowledge it once the batch is handled;\notherwise it is sent again after a timeout.\n',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['items'],
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/EntityChange',
+                      },
+                    },
+                    ackId: {
+                      type: 'string',
+                    },
+                    filtered: {
+                      type: 'boolean',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '202': {
+            description: 'Nothing new yet. Read again once the response ends.',
+          },
+          '404': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            name: 'subscriptionId',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            required: false,
+            description:
+              'The maximum number of rows to scan. A page is never split within a generation, so it can hold more refs than this.',
+            schema: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 1000,
+            },
+          },
+          {
+            name: 'block',
+            in: 'query',
+            required: false,
+            description:
+              'If nothing new is available, respond with 202 and hold the request\nopen until there may be new changes, or until a timeout. Then read\nagain.\n',
+            schema: {
+              type: 'boolean',
+            },
+          },
+        ],
+      },
+    },
+    '/entities/changes/subscriptions/{subscriptionId}/ack/{ackId}': {
+      post: {
+        operationId: 'AckEntityChangeSubscription',
+        tags: ['Entity'],
+        description:
+          '**Experimental.** Acknowledges a batch, so that the subscription moves\npast it.\n',
+        responses: {
+          '200': {
+            description: 'Ok',
+          },
+          '404': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            name: 'subscriptionId',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            name: 'ackId',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+      },
+    },
+    '/entities/changes/subscriptions/{subscriptionId}/nack/{ackId}': {
+      post: {
+        operationId: 'NackEntityChangeSubscription',
+        tags: ['Entity'],
+        description:
+          "**Experimental.** Releases a batch without acknowledging it, so that it\ncan be read again right away. Use this when a consumer can't finish a\nbatch, for example while shutting down. Don't use it for errors that\nwill happen again, since the subscription then can't move on.\n",
+        responses: {
+          '200': {
+            description: 'Ok',
+          },
+          '404': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            name: 'subscriptionId',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            name: 'ackId',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string',
+            },
           },
         ],
       },
