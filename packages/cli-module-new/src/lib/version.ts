@@ -124,8 +124,18 @@ export function createPackageVersionProvider(
   lockfile?: PackageManagerLockfile,
   options?: {
     preferBackstageProtocol?: boolean;
+    /**
+     * Widens a lockfile range that is an exact version to a caret range of it.
+     * pnpm lists packages that are only depended on transitively under their
+     * exact version, and a new package should get a range that keeps the
+     * version that is installed rather than pin it.
+     */
+    widenExactRanges?: boolean;
   },
 ) {
+  const toRange = (range: string) =>
+    options?.widenExactRanges && semver.valid(range) ? `^${range}` : range;
+
   return (name: string, versionHint?: string): string | undefined => {
     const packageVersion = packageVersions[name];
 
@@ -181,8 +191,9 @@ export function createPackageVersionProvider(
         const preferred = highestEntries.filter(entry =>
           semver.satisfies(versionHint, entry.range),
         );
-        return (preferred.length ? preferred : highestEntries).slice(-1)[0]
-          .range;
+        return toRange(
+          (preferred.length ? preferred : highestEntries).slice(-1)[0].range,
+        );
       }
     }
 
@@ -192,7 +203,7 @@ export function createPackageVersionProvider(
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
-      return highestRange?.range;
+      return toRange(highestRange.range);
     }
     if (packageVersion) {
       return `^${packageVersion}`;
