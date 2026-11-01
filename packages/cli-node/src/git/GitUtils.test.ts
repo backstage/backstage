@@ -39,16 +39,25 @@ function commit(message: string) {
 }
 
 beforeAll(async () => {
-  mockDir.setContent({ 'a.txt': 'a', 'b.txt': 'b', 'dir/ö.txt': 'åäö\n' });
+  mockDir.setContent({
+    'a.txt': 'a',
+    'b.txt': 'b',
+    'dir/ö.txt': 'åäö\n',
+    'dir/e.txt': 'e',
+  });
   await runGit('init', '--quiet', '--initial-branch', 'main');
   await runGit('add', '.');
   await commit('initial');
 
   await runGit('checkout', '--quiet', '-b', 'feature');
-  mockDir.addContent({ 'a.txt': 'changed' });
+  mockDir.addContent({ 'a.txt': 'changed', 'dir/e.txt': 'changed' });
   await commit('change a');
 
-  mockDir.addContent({ 'b.txt': 'uncommitted', 'c.txt': 'untracked' });
+  mockDir.addContent({
+    'b.txt': 'uncommitted',
+    'c.txt': 'untracked',
+    'dir/f.txt': 'untracked',
+  });
 });
 
 describe('runGit', () => {
@@ -87,8 +96,24 @@ describe('listChangedFiles', () => {
     await expect(GitUtils.listChangedFiles('main')).resolves.toEqual([
       'a.txt',
       'b.txt',
+      'dir/e.txt',
       'c.txt',
+      'dir/f.txt',
     ]);
+  });
+
+  it('lists and reads files relative to a workspace root in a subdirectory of the repo', async () => {
+    const subdir = overrideTargetPaths(mockDir.resolve('dir'));
+    try {
+      await expect(GitUtils.listChangedFiles('main')).resolves.toEqual([
+        'e.txt',
+        'f.txt',
+      ]);
+      await expect(GitUtils.readFileAtRef('e.txt', 'main')).resolves.toBe('e');
+    } finally {
+      subdir.restore();
+      overrideTargetPaths(mockDir.path);
+    }
   });
 });
 

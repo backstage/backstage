@@ -164,6 +164,16 @@ describe('Pnpm', () => {
     );
   });
 
+  it('should fail a command that a signal ended', async () => {
+    mockRun.mockReturnValueOnce({
+      waitForExit: async () => {},
+      signalCode: 'SIGINT',
+    } as unknown as ReturnType<typeof run>);
+    await expect(pnpm.install()).rejects.toThrow(
+      "Command 'pnpm install' was ended by SIGINT",
+    );
+  });
+
   it('should install dependencies in the workspace root', async () => {
     const npmConfigVar = 'npm_config_backstage_pnpm_test';
     const originalValue = process.env[npmConfigVar];
