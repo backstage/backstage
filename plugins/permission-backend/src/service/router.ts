@@ -49,6 +49,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
+  accessLevel: z.string().optional(),
   action: z
     .union([
       z.literal('create'),
