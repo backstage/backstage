@@ -56,6 +56,12 @@ importers:
         specifier: link:../app
         version: link:../app
 
+  packages/other:
+    dependencies:
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+
 packages:
 
   lodash@4.17.21:
@@ -73,6 +79,8 @@ describe('preparePnpmDistWorkspace', () => {
       'project/.pnpmfile.cjs': 'default hooks',
       dist: {
         'pnpm-lock.yaml': lockfile,
+        'packages/app/package.json': '{}',
+        'packages/backend/package.json': '{}',
         'pnpm-workspace.yaml': `packages:
   - packages/*
 
@@ -97,11 +105,15 @@ patchedDependencies:
       'patches/a-2.patch',
     ]);
     expect(mockDir.content({ path: 'dist', shouldReadAsText: true })).toEqual({
-      // Only the entry of the bundled package changes
-      'pnpm-lock.yaml': lockfile.replace(
-        / {2}packages\/app:\n( {4}.*\n)+/,
-        '  packages/app: {}\n',
-      ),
+      // The entry of the bundled package is emptied, and the entry of a
+      // package that is not in the dist workspace is removed
+      'pnpm-lock.yaml': lockfile
+        .replace(/ {2}packages\/app:\n( {4}.*\n)+/, '  packages/app: {}\n')
+        .replace(/ {2}packages\/other:\n( {4}.*\n)+\n/, ''),
+      packages: {
+        app: { 'package.json': '{}' },
+        backend: { 'package.json': '{}' },
+      },
       'pnpm-workspace.yaml': `packages:
   - packages/*
 

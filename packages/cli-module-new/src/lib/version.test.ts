@@ -16,6 +16,7 @@
 
 import { packageVersions, createPackageVersionProvider } from './version';
 import { YarnLockfile } from '@backstage/cli-node';
+import type { Lockfile } from '@backstage/cli-node/alpha';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'node:fs';
@@ -169,6 +170,33 @@ describe('createPackageVersionProvider', () => {
     // Ranges whose resolved version is outside the range (e.g. forced by
     // Yarn resolutions) are not reused
     expect(provider('f', '17.2.4')).toBe('^17.2.4');
+  });
+
+  it('should widen exact ranges when asked, as pnpm lists transitive packages under their version', async () => {
+    const entries: Record<string, { range: string; version: string }[]> = {
+      '@backstage/errors': [{ range: '1.0.0', version: '1.0.0' }],
+      express: [
+        { range: '4.21.2', version: '4.21.2' },
+        { range: '^4.17.1', version: '4.21.2' },
+      ],
+      zod: [{ range: '3.25.76', version: '3.25.76' }],
+    };
+    const lockfile = {
+      get: (name: string) => entries[name],
+    } as unknown as Lockfile;
+
+    const pinned = createPackageVersionProvider(lockfile);
+    expect(pinned('@backstage/errors', '1.0.0')).toBe('1.0.0');
+    expect(pinned('zod', '3.25.76')).toBe('3.25.76');
+
+    // The range keeps the installed version, rather than the one of the CLI
+    const provider = createPackageVersionProvider(lockfile, {
+      widenExactRanges: true,
+    });
+    expect(provider('@backstage/errors', '1.0.0')).toBe('^1.0.0');
+    expect(provider('express', '4.17.1')).toBe('^4.17.1');
+    expect(provider('zod', '3.25.76')).toBe('^3.25.76');
+    expect(provider('zod', '3.20.0')).toBe('^3.25.76');
   });
 
   describe('with backstage protocol options', () => {
