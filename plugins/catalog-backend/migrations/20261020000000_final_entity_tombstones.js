@@ -273,25 +273,32 @@ async function removeUnmatchedFinalEntities(knex) {
         .whereRaw('refresh_state.entity_id = final_entities.entity_id'),
     )
     .pluck('entity_ref');
-  // Chunked to stay within bound parameter limits.
+  // Chunked to stay within bound parameter limits. Each chunk's deletion and
+  // restitch request commit together: once a row is deleted, a retry can't
+  // find its ref again. PostgreSQL already passes in a transaction.
+  /** @param {(tx: import('knex').Knex) => Promise<void>} fn */
+  const atomically = fn =>
+    knex.isTransaction ? fn(knex) : knex.transaction(fn);
   for (let i = 0; i < refs.length; i += 500) {
     const chunk = refs.slice(i, i + 500);
-    await knex('final_entities').whereIn('entity_ref', chunk).delete();
-    const live = await knex('refresh_state')
-      .whereIn('entity_ref', chunk)
-      .pluck('entity_ref');
-    if (live.length) {
-      await knex('stitch_queue')
-        .insert(
-          live.map(entityRef => ({
-            entity_ref: entityRef,
-            stitch_ticket: randomUUID(),
-            failure_count: 0,
-            next_stitch_at: knex.fn.now(),
-          })),
-        )
-        .onConflict('entity_ref')
-        .merge(['stitch_ticket', 'failure_count']);
-    }
+    await atomically(async tx => {
+      await tx('final_entities').whereIn('entity_ref', chunk).delete();
+      const live = await tx('refresh_state')
+        .whereIn('entity_ref', chunk)
+        .pluck('entity_ref');
+      if (live.length) {
+        await tx('stitch_queue')
+          .insert(
+            live.map(entityRef => ({
+              entity_ref: entityRef,
+              stitch_ticket: randomUUID(),
+              failure_count: 0,
+              next_stitch_at: tx.fn.now(),
+            })),
+          )
+          .onConflict('entity_ref')
+          .merge(['stitch_ticket', 'failure_count']);
+      }
+    });
   }
 }
