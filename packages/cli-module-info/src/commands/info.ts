@@ -152,8 +152,11 @@ export default async ({ args, info }: CliCommandContext) => {
       // If we can't list workspace packages, continue without them
     }
 
-    // Collect all package names from lockfile
-    const allPackages = lockfile ? [...lockfile.keys()] : [];
+    // Collect all package names from lockfile, or only the workspace packages
+    // without one, whose versions are known from their package.json
+    const allPackages = lockfile
+      ? [...lockfile.keys()]
+      : [...workspacePackages.keys()];
     const includePatterns = options.include || [];
 
     // Collect installed (non-local) packages
