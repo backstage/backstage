@@ -66,9 +66,9 @@ export class Pnpm implements PackageManager {
    * pnpm that runs in that directory.
    */
   static async create(options?: PnpmCreateOptions): Promise<Pnpm> {
-    const workspaceRootDir =
-      options?.workspaceRootDir ?? targetPaths.workspaceRootDir;
-    return new Pnpm(workspaceRootDir);
+    return new Pnpm(
+      resolvePath(options?.workspaceRootDir ?? targetPaths.workspaceRootDir),
+    );
   }
 
   private constructor(private readonly workspaceRootDir: string) {}
@@ -129,10 +129,17 @@ export class Pnpm implements PackageManager {
   /** {@inheritDoc PackageManager.run} */
   async run(args: string[], options?: RunOptions) {
     await this.checkVersion();
-    await run(['pnpm', ...args], {
+    const child = run(['pnpm', ...args], {
       ...options,
       cwd: options?.cwd ?? this.workspaceRootDir,
-    }).waitForExit();
+    });
+    await child.waitForExit();
+    // Waiting for the exit also succeeds when a signal ended the process
+    if (child.signalCode) {
+      throw new Error(
+        `Command 'pnpm ${args.join(' ')}' was ended by ${child.signalCode}`,
+      );
+    }
   }
 
   /** Runs `pnpm run <script> [args]`. */
