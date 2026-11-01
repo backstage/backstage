@@ -101,7 +101,9 @@ describe('useLogoutDisconnectedUserEffect', () => {
     renderHook(() => useLogoutDisconnectedUserEffect(props));
 
     expect(staleStore.delete).toHaveBeenCalled();
-    expect(mockIdentityApi.signOut).toHaveBeenCalled();
+    expect(mockIdentityApi.signOut).toHaveBeenCalledWith({
+      preserveLocation: true,
+    });
     expect(staleStore.save).not.toHaveBeenCalled();
   });
 
@@ -126,7 +128,9 @@ describe('useLogoutDisconnectedUserEffect', () => {
       jest.advanceTimersByTime(2000);
     });
 
-    expect(mockIdentityApi.signOut).toHaveBeenCalled();
+    expect(mockIdentityApi.signOut).toHaveBeenCalledWith({
+      preserveLocation: true,
+    });
 
     jest.useRealTimers();
   });

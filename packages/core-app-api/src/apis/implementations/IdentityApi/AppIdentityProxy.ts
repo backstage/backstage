@@ -16,6 +16,7 @@
 
 import {
   IdentityApi,
+  SignOutOptions,
   ProfileInfo,
   BackstageUserIdentity,
   ErrorApi,
@@ -135,12 +136,17 @@ export class AppIdentityProxy implements IdentityApi {
     });
   }
 
-  async signOut(): Promise<void> {
-    await this.waitForTarget.then(target => target.signOut());
+  async signOut(options?: SignOutOptions): Promise<void> {
+    const { pathname, search, hash } = window.location;
+    const preservedUrl =
+      options?.preserveLocation && !pathname.startsWith('//')
+        ? `${pathname}${search}${hash}`
+        : undefined;
 
+    await this.waitForTarget.then(target => target.signOut(options));
     await this.#cookieAuthSignOut?.();
 
-    this.navigateToUrl(this.signOutTargetUrl);
+    this.navigateToUrl(preservedUrl ?? this.signOutTargetUrl);
   }
 
   private navigateToUrl(url: string): void {
