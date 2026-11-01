@@ -28,6 +28,7 @@ import { createHash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import {
   DbFinalEntitiesRow,
+  DbRefreshStateRow,
   DbSearchRow,
   DbStitchQueueRow,
 } from '../../tables';
@@ -279,6 +280,7 @@ export async function performStitching(options: {
         writeEntity({
           tx,
           entityRef,
+          candidateId,
           slotId,
           entity,
           hash,
@@ -370,8 +372,41 @@ async function publish(
 // MySQL does not support ON CONFLICT ... DO UPDATE ... WHERE, so its
 // separate check retains a best-effort TOCTOU window. Do not turn it into a
 // queue lock here: that would introduce a new lock-order dependency during
-// publication. Deleting a candidate replaces its ticket (by trigger), which
-// also fences out a publication racing that deletion.
+// publication.
+//
+// Deletion is fenced by a lock instead: a publication holds a share lock on
+// its candidate until it commits, as the foreign key from final_entities used
+// to. Deleting the candidate therefore waits for the publication, and the
+// deletion's stitch request then sees the committed body and tombstones it.
+
+/**
+ * Locks the candidate against deletion until the transaction ends. Returns
+ * false if it is already gone, or was replaced by a re-created candidate.
+ * This is the first lock that a publication takes, before the final row and
+ * the generation counter.
+ */
+async function lockCandidate(
+  tx: Knex.Transaction,
+  entityRef: string,
+  candidateId: string,
+): Promise<boolean> {
+  const client = String(tx.client.config.client);
+  const row = await tx<DbRefreshStateRow>('refresh_state')
+    .where('entity_id', candidateId)
+    .where('entity_ref', entityRef)
+    .modify(qb => {
+      // Key share is enough to block deletion, without blocking updates of
+      // the candidate's other columns. SQLite has a single writer.
+      if (client === 'pg') {
+        qb.forKeyShare();
+      } else if (client.includes('mysql')) {
+        qb.forShare();
+      }
+    })
+    .select(tx.raw('1'))
+    .first();
+  return Boolean(row);
+}
 
 async function hasValidTicket(
   tx: Knex.Transaction,
@@ -433,6 +468,7 @@ async function ensureStillOwned(options: {
 async function writeEntity(options: {
   tx: Knex.Transaction;
   entityRef: string;
+  candidateId: string;
   slotId: string;
   entity: Entity;
   hash: string;
@@ -440,9 +476,13 @@ async function writeEntity(options: {
   stitchTicket: string;
   stitchLeaseExpiresAt: StitchLeaseExpiresAt;
 }): Promise<'changed' | 'abandoned'> {
-  const { tx, entityRef, entity, hash, stitchTicket } = options;
+  const { tx, entityRef, candidateId, entity, hash, stitchTicket } = options;
   const isMySQL = String(tx.client.config.client).includes('mysql');
   const isPostgres = tx.client.config.client === 'pg';
+
+  if (!(await lockCandidate(tx, entityRef, candidateId))) {
+    return 'abandoned';
+  }
 
   if (!isPostgres && !(await hasValidTicket(tx, entityRef, stitchTicket))) {
     return 'abandoned';

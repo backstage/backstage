@@ -36,13 +36,17 @@ counter uses a transaction, not a sequence: the next allocator waits for commit
 or rollback, and rollback restores both publication and counter. Decimal strings
 preserve bigint precision in JavaScript.
 
-Final rows no longer reference `refresh_state`, so publication
-takes no lock on the candidate and candidate deletion takes no lock on the final
-row. A deletion that races a publication replaces the stitch ticket instead:
-either the publication's ownership check sees it and abandons, or the
-publication commits first and the deletion's request survives its settlement.
+Final rows no longer reference `refresh_state`, so publication takes the lock
+that the foreign key used to take implicitly: its first statement takes a key
+share lock on the candidate (a shared lock on MySQL), held until commit. If
+the candidate is already gone, the publication abandons. Otherwise deleting
+the candidate waits for the publication, and the deletion's stitch request,
+which replaces the ticket but keeps the current lease, then sees the committed
+body and tombstones it. Without that lock, a publication that stalled past its
+lease could commit a live body after the deletion's stitch had already found
+nothing to tombstone and settled.
 
-Write and validate the final entity, then synchronize search. With publication
+Lock the candidate, write and validate the final entity, then synchronize search. With publication
 locks held, PostgreSQL increments the counter in a writable CTE and assigns its
 returned generation to the final entity in the same statement, then commits
 promptly. SQLite and MySQL use separate counter and assignment statements. Never acquire queue or unrelated entity locks after the counter lock.
