@@ -257,6 +257,13 @@ const PNPM_SETTINGS_TO_COPY = [
 
 const PNPM_PATH_SETTINGS = new Set(['storeDir', 'cacheDir']);
 
+// Settings with registry URLs, which may hold credentials
+const PNPM_REGISTRY_SETTINGS = new Set([
+  'registry',
+  'registries',
+  'namedRegistries',
+]);
+
 /** Settings that the bundle sets itself, or handles separately. */
 const PNPM_SETTINGS_SET_BY_BUNDLE = new Set([
   // The bundle is a single package, not the workspace of the source project
@@ -305,6 +312,22 @@ const NPMRC_REGISTRY_PATTERN = /^\s*(@[^\s:=]+:)?registry\s*=/;
 
 // The user and password in a URL
 const URL_CREDENTIALS_PATTERN = /(:\/\/)[^/@\s]*@/;
+
+// Removes the credentials from the URLs in a registry setting
+function stripUrlCredentials(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value.replace(URL_CREDENTIALS_PATTERN, '$1');
+  }
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entry]) => [
+        key,
+        stripUrlCredentials(entry),
+      ]),
+    );
+  }
+  return value;
+}
 
 async function readPnpmWorkspaceConfig(
   rootDir: string,
@@ -399,6 +422,12 @@ const pnpmSteps: BundlePackageManagerSteps = {
     // The bundle pnpm-workspace.yaml is written together with the overrides
     // once those are known, which is before pnpm first runs in the bundle.
 
+    // An earlier bundle in the same directory may have left files that pnpm
+    // reads, while the current project may not have them
+    for (const file of ['.npmrc', '.pnpmfile.mjs', '.pnpmfile.cjs']) {
+      await fs.remove(joinPath(targetDir, file));
+    }
+
     // pnpm keeps its metadata cache per registry, so the offline steps only
     // find the packages of the project when they use the same registries.
     // Auth settings and the credentials in registry URLs are left out, since
@@ -459,6 +488,10 @@ const pnpmSteps: BundlePackageManagerSteps = {
           isAbsolute(value) || value.startsWith('~')
             ? value
             : resolvePath(rootDir, value);
+      } else if (PNPM_REGISTRY_SETTINGS.has(key)) {
+        // Like in the .npmrc, the credentials are left out, and pnpm keeps
+        // its metadata cache of a registry without them
+        config[key] = stripUrlCredentials(value);
       } else {
         config[key] = value;
       }
@@ -472,14 +505,16 @@ const pnpmSteps: BundlePackageManagerSteps = {
       targetDir,
       settings: rootConfig,
       targetName: 'the bundle',
+      // The bundle is pruned before it has a node_modules directory
+      checkPackageImports: true,
     });
-    for (const { name, path } of copied.missingPatches) {
-      console.warn(
-        chalk.yellow(
-          `The patch file for ${chalk.cyan(name)} was not found at ${chalk.cyan(
-            path,
-          )}, the bundle will not be patched`,
-        ),
+    // The bundle is usually what gets deployed, so it must not quietly ship
+    // an unpatched package
+    if (copied.missingPatches.length > 0) {
+      throw new Error(
+        `The patch files of ${copied.missingPatches
+          .map(({ name, path }) => `${name} at ${path}`)
+          .join(', ')} were not found, so the bundle can't be patched`,
       );
     }
     if (Object.keys(copied.patchedDependencies).length > 0) {

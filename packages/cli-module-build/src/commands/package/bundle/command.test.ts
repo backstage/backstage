@@ -778,8 +778,10 @@ overrides:
   some-dep: 1.0.0
 patchedDependencies:
   patched-dep@2.0.0: patches/patched-dep.patch
+registry: https://\${NPM_USER}:\${NPM_PASS}@registry.example.com/
 registries:
-  '@ws': https://ws.example.com/
+  '@ws': https://user:secret@ws.example.com/
+  '@open': https://open.example.com/
 catalog:
   react: ^18.0.0
 customSetting: true
@@ -827,7 +829,12 @@ customSetting: true
           nodeLinker: 'hoisted',
           storeDir: joinPath(mockDir.path, '.pnpm-store'),
           minimumReleaseAge: 4320,
-          registries: { '@ws': 'https://ws.example.com/' },
+          // Credentials are left out like in the .npmrc
+          registry: 'https://registry.example.com/',
+          registries: {
+            '@ws': 'https://ws.example.com/',
+            '@open': 'https://open.example.com/',
+          },
           catalog: { react: '^18.0.0' },
           patchedDependencies: {
             'patched-dep@2.0.0': 'patches/patched-dep.patch',
@@ -873,6 +880,43 @@ customSetting: true
           expect.stringContaining(
             'These pnpm settings of the project are not carried into the bundle: customSetting',
           ),
+        );
+      });
+
+      it('should replace files that an earlier bundle left behind', async () => {
+        await fs.remove(mockDir.resolve('.npmrc'));
+        mockDir.addContent({
+          [joinPath(ctx.relDir, ctx.bundleName, '.npmrc')]:
+            'registry=https://old.example.com/',
+          [joinPath(ctx.relDir, ctx.bundleName, '.pnpmfile.mjs')]:
+            'export const hooks = {};',
+        });
+
+        await bundleCommand(defaultOpts);
+
+        await expectPathExists([ctx.targetDir, '.npmrc'], false);
+        await expectPathExists([ctx.targetDir, '.pnpmfile.mjs'], false);
+        await expectPathExists([ctx.targetDir, '.pnpmfile.cjs'], true);
+      });
+
+      it('should fail rather than leave out a patch or a package of the pnpmfile', async () => {
+        await fs.remove(mockDir.resolve('patches/patched-dep.patch'));
+        await expect(bundleCommand(defaultOpts)).rejects.toThrow(
+          `The patch files of patched-dep@2.0.0 at ${mockDir.resolve(
+            'patches/patched-dep.patch',
+          )} were not found, so the bundle can't be patched`,
+        );
+
+        mockDir.addContent({
+          'patches/patched-dep.patch': '# patch',
+          '.pnpmfile.cjs': "require('pnpmfile-only-dep');",
+        });
+        await expect(bundleCommand(defaultOpts)).rejects.toThrow(
+          'The pnpmfile .pnpmfile.cjs loads pnpmfile-only-dep, which is not installed where the bundle is written.',
+        );
+        expect(mockRun).not.toHaveBeenCalledWith(
+          expect.arrayContaining(['pnpm', 'install']),
+          expect.anything(),
         );
       });
 
