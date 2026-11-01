@@ -50,24 +50,30 @@ export type YarnCreateOptions = {
  * The {@link PackageManager} implementation for Yarn, supporting both Yarn
  * classic and modern Yarn.
  *
+ * @remarks
+ *
+ * The version of Yarn is detected the first time a method needs it. Creating
+ * an instance does not run Yarn, so that the lockfile can be read where Yarn
+ * is not available, such as in the sandbox of a build system.
+ *
  * @alpha
  */
 export class Yarn implements PackageManager {
   /**
-   * Creates an instance bound to a workspace root, using the version of Yarn
-   * that runs in that directory.
+   * Creates an instance bound to a workspace root, which uses the version of
+   * Yarn that runs in that directory.
    */
   static async create(options?: YarnCreateOptions): Promise<Yarn> {
-    const workspaceRootDir =
-      options?.workspaceRootDir ?? targetPaths.workspaceRootDir;
-    const yarnVersion = await detectYarnVersion(workspaceRootDir);
-    return new Yarn(workspaceRootDir, yarnVersion);
+    return new Yarn(
+      resolvePath(options?.workspaceRootDir ?? targetPaths.workspaceRootDir),
+    );
   }
 
-  private constructor(
-    private readonly workspaceRootDir: string,
-    private readonly yarnVersion: YarnVersion,
-  ) {}
+  private constructor(private readonly workspaceRootDir: string) {}
+
+  private async yarnVersion(): Promise<YarnVersion> {
+    return detectYarnVersion(this.workspaceRootDir);
+  }
 
   /** {@inheritDoc PackageManager.name} */
   name() {
@@ -76,7 +82,7 @@ export class Yarn implements PackageManager {
 
   /** {@inheritDoc PackageManager.version} */
   async version() {
-    return this.yarnVersion.version;
+    return (await this.yarnVersion()).version;
   }
 
   /** {@inheritDoc PackageManager.lockfileName} */
@@ -90,7 +96,10 @@ export class Yarn implements PackageManager {
    */
   async install(options?: PackageManagerInstallOptions) {
     const { immutable, offline, env, onStdout, onStderr } = options ?? {};
-    const classic = this.yarnVersion.codename === 'classic';
+    // The flags of immutable and offline installs differ between versions
+    const classic =
+      (immutable || offline) &&
+      (await this.yarnVersion()).codename === 'classic';
 
     const args = ['install'];
     if (immutable) {
@@ -125,10 +134,17 @@ export class Yarn implements PackageManager {
 
   /** {@inheritDoc PackageManager.run} */
   async run(args: string[], options?: RunOptions) {
-    await run(['yarn', ...args], {
+    const child = run(['yarn', ...args], {
       ...options,
       cwd: options?.cwd ?? this.workspaceRootDir,
-    }).waitForExit();
+    });
+    await child.waitForExit();
+    // Waiting for the exit also succeeds when a signal ended the process
+    if (child.signalCode) {
+      throw new Error(
+        `Command 'yarn ${args.join(' ')}' was ended by ${child.signalCode}`,
+      );
+    }
   }
 
   /** Runs `yarn run <script> [args]`. */
@@ -136,14 +152,17 @@ export class Yarn implements PackageManager {
     await this.run(['run', script, ...args], options);
   }
 
-  /** Runs `yarn workspace <workspace> <script> [args]`. */
+  /**
+   * Runs `yarn workspace <workspace> run <script> [args]`, so that a script is
+   * not shadowed by a Yarn command with the same name, such as `pack`.
+   */
   async runWorkspaceScript(
     workspace: string,
     script: string,
     args: string[] = [],
     options?: RunOptions,
   ) {
-    await this.run(['workspace', workspace, script, ...args], options);
+    await this.run(['workspace', workspace, 'run', script, ...args], options);
   }
 
   /**
@@ -152,7 +171,9 @@ export class Yarn implements PackageManager {
    */
   async pack(output: string, packageDir: string) {
     const outArg =
-      this.yarnVersion.codename === 'classic' ? '--filename' : '--out';
+      (await this.yarnVersion()).codename === 'classic'
+        ? '--filename'
+        : '--out';
     await this.run(['pack', outArg, output], {
       cwd: packageDir,
     });
@@ -163,7 +184,7 @@ export class Yarn implements PackageManager {
    * `yarn npm info` with modern Yarn.
    */
   async fetchPackageInfo(name: string): Promise<PackageInfo> {
-    const { codename } = this.yarnVersion;
+    const { codename } = await this.yarnVersion();
 
     const cmd = codename === 'classic' ? ['info'] : ['npm', 'info'];
     try {
@@ -234,7 +255,7 @@ export class Yarn implements PackageManager {
 
   /** {@inheritDoc PackageManager.toString} */
   toString(): string {
-    return `${this.name()}@${this.yarnVersion.version}`;
+    return this.name();
   }
 }
 
