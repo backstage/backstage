@@ -15,8 +15,10 @@
  */
 
 import fs from 'fs-extra';
+import { isBuiltin } from 'node:module';
 import {
   basename,
+  dirname,
   extname,
   isAbsolute,
   join as joinPath,
@@ -33,6 +35,12 @@ const DEFAULT_PNPMFILES = ['.pnpmfile.mjs', '.pnpmfile.cjs'];
 const LOCAL_IMPORT_PATTERN =
   /(?:\brequire(?:\.resolve)?\s*\(|\bimport\s*\(|\bfrom|\bimport)\s*(['"`])(\.\.?\/[^'"`]*)\1/g;
 
+// require() and import() calls, and import and export statements, of
+// packages, which includes the built-in modules of Node.js. Subpath imports
+// that start with # are not packages.
+const PACKAGE_IMPORT_PATTERN =
+  /(?:\brequire(?:\.resolve)?\s*\(\s*|\bimport\s*\(\s*|^\s*import\s*(?:[^'"`;]*?\bfrom\s*)?|^\s*export\s[^'"`;]*?\bfrom\s*)(['"`])([@a-zA-Z0-9][^'"`]*)\1/gm;
+
 /**
  * Copies the files that the settings of a pnpm workspace point at into
  * another directory that is installed with the same lockfile. These are the
@@ -44,6 +52,8 @@ const LOCAL_IMPORT_PATTERN =
  * the target directory, under a name that no other copied file uses, also
  * when names are compared without case. A
  * pnpmfile that loads other local files fails, since those are not copied.
+ * With `checkPackageImports`, a pnpmfile also fails when it loads a package
+ * that is not installed where the target directory is.
  *
  * Returns the copied files, relative to the target directory, and the
  * settings that point at the copies. `pnpmfile` is only returned when the
@@ -55,13 +65,25 @@ export async function copyPnpmWorkspaceFiles(options: {
   settings: { patchedDependencies?: unknown; pnpmfile?: unknown };
   /** Names the target directory in errors, for example "the bundle". */
   targetName: string;
+  /**
+   * Whether to check that the packages that pnpmfiles load are found from the
+   * target directory, for a target that pnpm runs in before it has a
+   * `node_modules` directory of its own.
+   */
+  checkPackageImports?: boolean;
 }): Promise<{
   files: string[];
   patchedDependencies: Record<string, string>;
   missingPatches: Array<{ name: string; path: string }>;
   pnpmfile?: string | string[];
 }> {
-  const { workspaceRootDir, targetDir, settings, targetName } = options;
+  const {
+    workspaceRootDir,
+    targetDir,
+    settings,
+    targetName,
+    checkPackageImports,
+  } = options;
 
   const patches = Object.entries(
     (settings.patchedDependencies ?? {}) as Record<string, unknown>,
@@ -153,6 +175,7 @@ export async function copyPnpmWorkspaceFiles(options: {
         joinPath(targetDir, targetPath),
         path,
         targetName,
+        checkPackageImports,
       );
       copiedPnpmfiles.push(targetPath);
     }
@@ -170,12 +193,14 @@ export async function copyPnpmWorkspaceFiles(options: {
 
 /**
  * Fails when a pnpmfile loads local files, since only the pnpmfile itself is
- * copied and the install would not find them.
+ * copied and the install would not find them. Optionally also fails when it
+ * loads a package that is not installed in a parent directory of the copy.
  */
 async function checkPnpmfileImports(
   pnpmfilePath: string,
   name: string,
   targetName: string,
+  checkPackageImports?: boolean,
 ) {
   const source = (await fs.readFile(pnpmfilePath, 'utf8'))
     // Imports in comments don't count
@@ -191,6 +216,51 @@ async function checkPnpmfileImports(
         ', ',
       )}, but only the pnpmfile itself is copied into ${targetName}. Move that code into the pnpmfile.`,
     );
+  }
+
+  if (!checkPackageImports) {
+    return;
+  }
+  const packageNames = new Set(
+    Array.from(source.matchAll(PACKAGE_IMPORT_PATTERN), match => match[2])
+      // Template literals with placeholders can't be resolved here
+      .filter(specifier => !specifier.includes('${') && !isBuiltin(specifier))
+      .map(specifier =>
+        specifier
+          .split('/')
+          .slice(0, specifier.startsWith('@') ? 2 : 1)
+          .join('/'),
+      ),
+  );
+  const missing = new Array<string>();
+  for (const packageName of packageNames) {
+    if (!(await isInstalledAbove(dirname(pnpmfilePath), packageName))) {
+      missing.push(packageName);
+    }
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `The pnpmfile ${name} loads ${missing.join(
+        ', ',
+      )}, which is not installed where ${targetName} is written. Write ${targetName} inside the project, or remove the import from the pnpmfile.`,
+    );
+  }
+}
+
+// Whether Node.js finds the package from the directory, like it does for a
+// file in it
+async function isInstalledAbove(dir: string, packageName: string) {
+  for (let current = dir; ; current = dirname(current)) {
+    if (
+      await fs.pathExists(
+        joinPath(current, 'node_modules', packageName, 'package.json'),
+      )
+    ) {
+      return true;
+    }
+    if (dirname(current) === current) {
+      return false;
+    }
   }
 }
 
