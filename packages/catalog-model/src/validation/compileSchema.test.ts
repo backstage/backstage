@@ -120,8 +120,8 @@ describe('compileSchema', () => {
       /Invalid JSON schema/,
     );
     expect(() =>
-      compile({ properties: { a: { type: 'string', minLenght: 3 } } }),
-    ).toThrow(/unknown keyword "minLenght" at path \/properties\/a/);
+      compile({ properties: { a: { type: 'string', minimumLength: 3 } } }),
+    ).toThrow(/unknown keyword "minimumLength" at path \/properties\/a/);
     expect(() =>
       compile({ $schema: 'https://json-schema.org/draft/2020-12/schema' }),
     ).toThrow(/unsupported \$schema/);
@@ -134,6 +134,35 @@ describe('compileSchema', () => {
         dependencies: { a: ['b'] },
       }),
     ).not.toThrow();
+  });
+
+  it.each([
+    ['cfworker', cfworkerSchemaEngine],
+    ['ajv', ajvSchemaEngine],
+  ])('supports nullable with the %s engine', (_name, engine) => {
+    const validate = compileSchema(
+      engine,
+      {
+        type: 'object',
+        properties: {
+          a: { type: 'string', nullable: true },
+          b: { type: 'string', enum: ['x', null], nullable: true },
+          c: { type: 'string', nullable: false },
+        },
+      },
+      { disableCache: true },
+    );
+    expect(validate({ a: null, b: null })).toBe(undefined);
+    expect(validate({ a: 'x', b: 'x', c: 'x' })).toBe(undefined);
+    expect(validate({ a: 1 })).toEqual([
+      expect.objectContaining({ instancePath: '/a' }),
+    ]);
+    expect(validate({ b: 'y' })).toEqual([
+      expect.objectContaining({ instancePath: '/b' }),
+    ]);
+    expect(validate({ c: null })).toEqual([
+      expect.objectContaining({ instancePath: '/c' }),
+    ]);
   });
 
   it.each([
