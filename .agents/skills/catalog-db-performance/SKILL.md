@@ -29,7 +29,8 @@ exact machine-diffable output in
 3. **Read the previous baseline** from `baseline.md`, its readable full plans
    from `plans.md`, and its exact plan output from `plans.json`.
 
-4. **Run each scenario** (19 total). For each one, record:
+4. **Run each scenario** (21 total), with and without permissions and with
+   several claim lists as described in `queries.md`. For each one, record:
 
    - Execution time
    - Planning time
@@ -54,6 +55,17 @@ exact machine-diffable output in
 
 7. **Report** a summary to the user: which scenarios improved, which
    regressed, and whether any global anti-patterns were detected.
+
+## Slim profile
+
+`slim-profile.md` in the battery folder describes a faster run that skips work
+based on stated assumptions, for example that short `$in` lists compile to the
+same SQL as before. Use it only after checking each assumption against the
+code under test, and list in the report which cuts were applied and why. If
+the change under test affects anything a cut relies on, such as the `$in` list
+threshold or the rule that decides how long lists are matched, run the full
+battery for the affected cases. Push back if asked to use the slim profile
+anyway.
 
 ## When to run
 
