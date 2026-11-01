@@ -63,6 +63,7 @@ describe('config', () => {
         skipForkedRepos: false,
         includeArchivedRepos: false,
         excludeRepos: [],
+        excludeGroups: [],
         restrictUsersToGroup: false,
         includeUsersWithoutSeat: false,
         membership: undefined,
@@ -110,6 +111,7 @@ describe('config', () => {
         skipForkedRepos: false,
         includeArchivedRepos: false,
         excludeRepos: [],
+        excludeGroups: [],
         restrictUsersToGroup: false,
         includeUsersWithoutSeat: true,
         membership: undefined,
@@ -156,6 +158,7 @@ describe('config', () => {
         schedule: undefined,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         skipForkedRepos: true,
         includeArchivedRepos: false,
         includeUsersWithoutSeat: false,
@@ -203,6 +206,7 @@ describe('config', () => {
         schedule: undefined,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         skipForkedRepos: false,
         includeArchivedRepos: true,
         includeUsersWithoutSeat: false,
@@ -253,6 +257,7 @@ describe('config', () => {
         skipForkedRepos: false,
         includeArchivedRepos: false,
         excludeRepos: ['foo/bar', 'quz/qux'],
+        excludeGroups: [],
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
@@ -301,6 +306,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
@@ -392,6 +398,7 @@ describe('config', () => {
         schedule: undefined,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         skipForkedRepos: false,
         includeUsersWithoutSeat: false,
         includeArchivedRepos: false,
@@ -439,6 +446,7 @@ describe('config', () => {
         schedule: undefined,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         skipForkedRepos: false,
         includeUsersWithoutSeat: false,
         includeArchivedRepos: false,
@@ -486,11 +494,61 @@ describe('config', () => {
         schedule: undefined,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         skipForkedRepos: false,
         includeUsersWithoutSeat: false,
         includeArchivedRepos: false,
         membership: undefined,
         topics: 'topic1',
+        useSearch: false,
+      }),
+    );
+  });
+
+  it('valid config with excludeGroups', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              skipForkedRepos: false,
+              excludeGroups: ['group/personal-dev', 'group/experiments'],
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        skipForkedRepos: false,
+        includeArchivedRepos: false,
+        excludeRepos: [],
+        excludeGroups: ['group/personal-dev', 'group/experiments'],
+        includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
         useSearch: false,
       }),
     );
@@ -533,6 +591,7 @@ describe('config', () => {
         schedule: undefined,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        excludeGroups: [],
         skipForkedRepos: false,
         includeUsersWithoutSeat: false,
         includeArchivedRepos: false,
