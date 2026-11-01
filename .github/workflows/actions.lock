@@ -199,6 +199,7 @@ workflows:
         - 'actions/setup-node@v7'
         - 'actions/upload-artifact@v7'
         - 'backstage/actions@v0.7.13'
+        - 'pnpm/action-setup@v6'
         - 'step-security/harden-runner@v2'
     '.github/workflows/verify_e2e-techdocs.yml':
         - 'actions/checkout@v7'
@@ -399,6 +400,11 @@ dependencies:
         commit: 'sha1-b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad'
         owner_id: 18365890
         repo_id: 256447541
+    'pnpm/action-setup@v6':
+        ref: 'v6'
+        commit: 'sha1-73e46992e05b19abd31f2f3c20e0e7370d762115'
+        owner_id: 21320719
+        repo_id: 262289747
     'redhat-plumbers-in-action/advanced-issue-labeler@v3.0.0':
         ref: 'v3.0.0'
         commit: 'sha1-9e55064634b67244f7deb4211452b4a7217b93de'

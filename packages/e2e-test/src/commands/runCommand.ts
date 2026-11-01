@@ -53,6 +53,11 @@ export async function runCommand(opts: OptionValues) {
   if (opts.nodeLinker && pm.name !== 'pnpm') {
     throw new Error('The --node-linker option is only supported for pnpm');
   }
+  if (opts.keepPnpmVersion && pm.name !== 'pnpm') {
+    throw new Error(
+      'The --keep-pnpm-version option is only supported for pnpm',
+    );
+  }
 
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
@@ -67,6 +72,7 @@ export async function runCommand(opts: OptionValues) {
     rootDir,
     pm,
     opts.nodeLinker,
+    opts.keepPnpmVersion,
   );
 
   print('Creating a Backstage Plugin');
@@ -268,6 +274,7 @@ async function createApp(
   rootDir: string,
   pm: PackageManager,
   nodeLinker?: string,
+  keepPnpmVersion?: boolean,
 ) {
   const child = run(
     [
@@ -323,7 +330,12 @@ async function createApp(
       print(
         'Pinning pnpm version, relaxing install checks and pinning registry in app',
       );
-      await pinPnpmVersion(appDir);
+      // pnpm switches to the version that the template pins by itself
+      if (keepPnpmVersion) {
+        await checkPinnedPnpmVersion(appDir);
+      } else {
+        await pinPnpmVersion(appDir);
+      }
       await relaxPnpmInstallChecks(appDir);
       if (nodeLinker) {
         print(`Switching the app to the ${nodeLinker} node linker`);
@@ -387,6 +399,25 @@ async function pinPnpmVersion(appDir: string) {
   const pkgJson = await fs.readJson(pkgJsonPath);
   pkgJson.packageManager = `pnpm@${version}`;
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
+}
+
+/**
+ * Checks that pnpm runs the version that the app pins, so that a run that
+ * keeps the pin of the template does not quietly test another version.
+ */
+async function checkPinnedPnpmVersion(appDir: string) {
+  const { packageManager } = await fs.readJson(
+    resolvePath(appDir, 'package.json'),
+  );
+  const version = (
+    await runOutput(['pnpm', '--version'], { cwd: appDir })
+  ).trim();
+  if (packageManager !== `pnpm@${version}`) {
+    throw new Error(
+      `Expected pnpm to switch to the pinned ${packageManager}, but it runs ${version}`,
+    );
+  }
+  print(`Running the pinned pnpm ${version}`);
 }
 
 /**
