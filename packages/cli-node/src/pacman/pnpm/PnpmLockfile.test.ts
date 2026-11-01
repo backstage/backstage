@@ -196,17 +196,18 @@ describe('PnpmLockfile', () => {
       removed: [],
     });
 
-    // kind-of is downgraded from 6.0.3 to 6.0.2 with the same range
-    expect(bumped.diff(pinned)).toEqual({
+    // kind-of is downgraded from 6.0.3 to 6.0.2 with the same range, and
+    // @fixture/a, which depends on it, resolves it differently
+    const kindOfChanges = {
       added: [],
-      changed: [{ name: 'kind-of', range: '^6.0.0' }],
+      changed: [
+        { name: 'kind-of', range: '^6.0.0' },
+        { name: '@fixture/a', range: 'workspace:packages/a' },
+      ],
       removed: [],
-    });
-    expect(pinned.diff(bumped)).toEqual({
-      added: [],
-      changed: [{ name: 'kind-of', range: '^6.0.0' }],
-      removed: [],
-    });
+    };
+    expect(bumped.diff(pinned)).toEqual(kindOfChanges);
+    expect(pinned.diff(bumped)).toEqual(kindOfChanges);
 
     const small = await PnpmLockfile.parse(
       `
@@ -327,6 +328,159 @@ snapshots:
     );
   });
 
+  it('should follow the exact versions and patches that packages resolve to', async () => {
+    const createLockfile = (options: {
+      aVersion: string;
+      bVersion: string;
+      patchHash?: string;
+      aliasVersion?: string;
+    }) => {
+      const patched = (version: string) =>
+        options.patchHash && version === '3.0.1'
+          ? `${version}(patch_hash=${options.patchHash})`
+          : version;
+      return PnpmLockfile.parse(
+        `
+lockfileVersion: '9.0'
+
+importers:
+
+  packages/a:
+    dependencies:
+      is-odd:
+        specifier: ^3.0.0
+        version: ${patched(options.aVersion)}
+      wrapper:
+        specifier: ^1.0.0
+        version: 1.0.0
+
+  packages/b:
+    dependencies:
+      is-odd:
+        specifier: ^3.0.0
+        version: ${patched(options.bVersion)}
+
+packages:
+
+  is-number@6.0.0:
+    resolution: {integrity: sha512-number6}
+
+  is-number@7.0.0:
+    resolution: {integrity: sha512-number7}
+
+  is-odd@3.0.0:
+    resolution: {integrity: sha512-odd300}
+
+  is-odd@3.0.1:
+    resolution: {integrity: sha512-odd301}
+
+  wrapper@1.0.0:
+    resolution: {integrity: sha512-wrapper}
+
+snapshots:
+
+  is-number@6.0.0: {}
+
+  is-number@7.0.0: {}
+
+  is-odd@3.0.0:
+    dependencies:
+      is-number: 6.0.0
+
+  is-odd@${patched('3.0.1')}:
+    dependencies:
+      is-number: 6.0.0
+
+  wrapper@1.0.0:
+    dependencies:
+      number-alias: is-number@${options.aliasVersion ?? '7.0.0'}
+`,
+        namedByDir,
+      );
+    };
+
+    const base = await createLockfile({ aVersion: '3.0.1', bVersion: '3.0.0' });
+    expect(base.get('is-odd')).toEqual([
+      { range: '^3.0.0', version: '3.0.0' },
+      { range: '^3.0.0', version: '3.0.1' },
+    ]);
+    // A range with several versions is the same as itself
+    expect(base.diff(base)).toEqual({ added: [], changed: [], removed: [] });
+    // Aliases of transitive dependencies resolve to the real package
+    expect(base.createSimplifiedDependencyGraph().get('wrapper')).toEqual(
+      new Set(['is-number']),
+    );
+
+    // The two workspace packages swap the versions they resolve to, which
+    // leaves the versions of the range as they were
+    const swapped = await createLockfile({
+      aVersion: '3.0.0',
+      bVersion: '3.0.1',
+    });
+    expect(swapped.diff(base)).toEqual({
+      added: [],
+      changed: [
+        { name: '@fixture/a', range: 'workspace:packages/a' },
+        { name: '@fixture/b', range: 'workspace:packages/b' },
+      ],
+      removed: [],
+    });
+    expect(swapped.getDependencyTreeHash('@fixture/a')).not.toBe(
+      base.getDependencyTreeHash('@fixture/a'),
+    );
+    expect(swapped.getDependencyTreeHash('@fixture/b')).not.toBe(
+      base.getDependencyTreeHash('@fixture/b'),
+    );
+
+    // One of the two versions of the range changes
+    const updated = await createLockfile({
+      aVersion: '3.0.1',
+      bVersion: '3.0.1',
+    });
+    expect(updated.diff(base).changed).toEqual(
+      expect.arrayContaining([{ name: 'is-odd', range: '^3.0.0' }]),
+    );
+
+    // A changed patch changes the package without changing its version
+    const patched = await createLockfile({
+      aVersion: '3.0.1',
+      bVersion: '3.0.0',
+      patchHash: 'aaa',
+    });
+    const repatched = await createLockfile({
+      aVersion: '3.0.1',
+      bVersion: '3.0.0',
+      patchHash: 'bbb',
+    });
+    expect(patched.get('is-odd')).toEqual(base.get('is-odd'));
+    expect(repatched.diff(patched).changed).toEqual([
+      { name: 'is-odd', range: '^3.0.0' },
+      { name: '@fixture/a', range: 'workspace:packages/a' },
+    ]);
+    expect(repatched.getDependencyTreeHash('@fixture/a')).not.toBe(
+      patched.getDependencyTreeHash('@fixture/a'),
+    );
+    expect(patched.getDependencyTreeHash('@fixture/a')).not.toBe(
+      base.getDependencyTreeHash('@fixture/a'),
+    );
+    expect(repatched.getDependencyTreeHash('@fixture/b')).toBe(
+      base.getDependencyTreeHash('@fixture/b'),
+    );
+
+    // An update behind a transitive alias reaches the package that uses it
+    const aliasUpdated = await createLockfile({
+      aVersion: '3.0.1',
+      bVersion: '3.0.0',
+      aliasVersion: '6.0.0',
+    });
+    expect(aliasUpdated.getDependencyTreeHash('@fixture/a')).not.toBe(
+      base.getDependencyTreeHash('@fixture/a'),
+    );
+    expect(aliasUpdated.getDependencyTreeHash('@fixture/b')).toBe(
+      base.getDependencyTreeHash('@fixture/b'),
+    );
+  });
+
   it('should collapse links to the same workspace project from different depths', async () => {
     const withDeep = await PnpmLockfile.parse(
       `
@@ -352,7 +506,7 @@ importers:
   packages/nested/deep/c:
     dependencies:
       '@fixture/b':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../../b
 
   packages/b:
@@ -376,6 +530,7 @@ snapshots:
     // The link version is relative to the workspace root, no matter the
     // depth of the project that depends on it
     expect(withDeep.get('@fixture/b')).toEqual([
+      { range: 'workspace:*', version: 'link:packages/b' },
       { range: 'workspace:^', version: 'link:packages/b' },
       { range: 'workspace:packages/b', version: 'link:packages/b' },
     ]);
@@ -414,12 +569,17 @@ snapshots:
 `,
       namedByDir,
     );
-    expect(withoutDeep.get('@fixture/b')).toEqual(withDeep.get('@fixture/b'));
+    expect(withoutDeep.get('@fixture/b')).toEqual([
+      { range: 'workspace:^', version: 'link:packages/b' },
+      { range: 'workspace:packages/b', version: 'link:packages/b' },
+    ]);
+    // A dependent with another range does not change the hash of the package
     expect(withDeep.getDependencyTreeHash('@fixture/b')).toBe(
       withoutDeep.getDependencyTreeHash('@fixture/b'),
     );
     expect(withDeep.diff(withoutDeep)).toEqual({
       added: [
+        { name: '@fixture/b', range: 'workspace:*' },
         { name: 'external', range: 'link:../external' },
         { name: '@fixture/a', range: 'workspace:packages/a' },
         { name: '@fixture/c', range: 'workspace:packages/nested/deep/c' },
