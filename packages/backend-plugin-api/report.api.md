@@ -211,46 +211,53 @@ export type CacheServiceSetOptions = {
 };
 
 // @public
-export namespace coreServices {
-  const auth: ServiceRef<AuthService, 'plugin', 'singleton'>;
-  const userInfo: ServiceRef<UserInfoService, 'plugin', 'singleton'>;
-  const cache: ServiceRef<CacheService, 'plugin', 'singleton'>;
-  const rootConfig: ServiceRef<RootConfigService, 'root', 'singleton'>;
-  const database: ServiceRef<DatabaseService, 'plugin', 'singleton'>;
-  const discovery: ServiceRef<DiscoveryService, 'plugin', 'singleton'>;
-  const rootHealth: ServiceRef<RootHealthService, 'root', 'singleton'>;
-  const httpAuth: ServiceRef<HttpAuthService, 'plugin', 'singleton'>;
-  const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
-  const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
-  const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
-  const auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
-  const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
-  const permissionsRegistry: ServiceRef<
+export interface CoreServices {
+  readonly auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
+  readonly auth: ServiceRef<AuthService, 'plugin', 'singleton'>;
+  readonly cache: ServiceRef<CacheService, 'plugin', 'singleton'>;
+  readonly database: ServiceRef<DatabaseService, 'plugin', 'singleton'>;
+  readonly discovery: ServiceRef<DiscoveryService, 'plugin', 'singleton'>;
+  readonly httpAuth: ServiceRef<HttpAuthService, 'plugin', 'singleton'>;
+  readonly httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
+  readonly lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
+  readonly logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  readonly permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
+  readonly permissionsRegistry: ServiceRef<
     PermissionsRegistryService,
     'plugin',
     'singleton'
   >;
-  const pluginMetadata: ServiceRef<
+  readonly pluginMetadata: ServiceRef<
     PluginMetadataService,
     'plugin',
     'singleton'
   >;
-  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root', 'singleton'>;
-  const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
-  const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
-  const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
-  const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const rootInstanceMetadata: ServiceRef<
+  readonly rootConfig: ServiceRef<RootConfigService, 'root', 'singleton'>;
+  readonly rootHealth: ServiceRef<RootHealthService, 'root', 'singleton'>;
+  readonly rootHttpRouter: ServiceRef<
+    RootHttpRouterService,
+    'root',
+    'singleton'
+  >;
+  readonly rootInstanceMetadata: ServiceRef<
     RootInstanceMetadataService,
     'root',
     'singleton'
   >;
-  const rootSystemMetadata: ServiceRef<
+  readonly rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
+  readonly rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
+  readonly rootSystemMetadata: ServiceRef<
     RootSystemMetadataService,
     'root',
     'singleton'
   >;
+  readonly scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
+  readonly urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
+  readonly userInfo: ServiceRef<UserInfoService, 'plugin', 'singleton'>;
 }
+
+// @public
+export const coreServices: CoreServices;
 
 // @public
 export function createBackendFeatureLoader<
