@@ -17,7 +17,6 @@
 import { targetPaths } from '@backstage/cli-common';
 import { resolvePackagePaths } from './paths';
 import pLimit from 'p-limit';
-import { relative as relativePath } from 'node:path';
 
 export async function runner(
   paths: string[],
@@ -32,13 +31,15 @@ export async function runner(
         let resultText = '';
         try {
           console.log(`## Processing ${pkg}`);
-          await command(pkg);
+          // The package paths are relative to the installation root, which
+          // need not be the working directory
+          await command(targetPaths.resolveInstallationRoot(pkg));
         } catch (err) {
           resultText = err.message;
         }
 
         return {
-          relativeDir: relativePath(targetPaths.rootDir, pkg),
+          relativeDir: pkg,
           resultText,
         };
       }),
