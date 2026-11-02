@@ -1,0 +1,11 @@
+---
+title: TechDocs SVG Viewer
+author: Michael Wizner
+authorUrl: https://github.com/mwz
+category: Documentation
+description: Accessible full-window viewing, pan and zoom for inline SVG diagrams in Backstage TechDocs.
+documentation: https://github.com/mwz/techdocs-mkdocs-svg-viewer#readme
+iconUrl: https://raw.githubusercontent.com/mwz/techdocs-mkdocs-svg-viewer/refs/heads/main/img/project-icon.png
+npmPackageName: '@mwz/techdocs-mkdocs-svg-viewer'
+addedDate: '2026-11-03'
+status: active
