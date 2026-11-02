@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Router from 'express-promise-router';
-import { OidcService } from './OidcService';
+import { OidcService, OidcClientCredentials } from './OidcService';
 import { AuthenticationError, isError } from '@backstage/errors';
 import {
   AuthService,
@@ -57,12 +57,14 @@ const tokenRequestBodySchema = z.object({
   code_verifier: z.string().optional(),
   refresh_token: z.string().optional(),
   client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 });
 
 const revokeRequestBodySchema = z.object({
   token: z.string().min(1),
   token_type_hint: z.string().optional(),
   client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 });
 
 function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
@@ -72,6 +74,69 @@ function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
     throw new OidcError('invalid_request', errorMessage, 400);
   }
   return parseResult.data;
+}
+
+function parseClientCredentials(opts: {
+  req: { headers: { authorization?: string } };
+  bodyClientId?: string;
+  bodyClientSecret?: string;
+}): Partial<OidcClientCredentials> {
+  const { req, bodyClientId, bodyClientSecret } = opts;
+
+  const basicAuth = req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i);
+  if (basicAuth) {
+    try {
+      const decoded = Buffer.from(basicAuth[1], 'base64').toString('utf8');
+      const idx = decoded.indexOf(':');
+      if (idx >= 0) {
+        const clientId = decoded.slice(0, idx);
+        const clientSecret = decoded.slice(idx + 1);
+        if (clientId && clientSecret) {
+          return { clientId, clientSecret };
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return { clientId: bodyClientId, clientSecret: bodyClientSecret };
+}
+
+async function authenticateClient(opts: {
+  req: { headers: { authorization?: string } };
+  oidc: OidcService;
+  bodyClientId?: string;
+  bodyClientSecret?: string;
+}): Promise<Required<OidcClientCredentials>> {
+  const { req, oidc, bodyClientId, bodyClientSecret } = opts;
+  const { clientId, clientSecret } = parseClientCredentials({
+    req,
+    bodyClientId,
+    bodyClientSecret,
+  });
+
+  if (!clientId || !clientSecret) {
+    throw new OidcError(
+      'invalid_client',
+      'Client authentication required',
+      401,
+    );
+  }
+
+  try {
+    const isValidClient = await oidc.verifyClientCredentials({
+      clientId,
+      clientSecret,
+    });
+    if (!isValidClient) {
+      throw new OidcError('invalid_client', 'Invalid client credentials', 401);
+    }
+  } catch (e) {
+    throw OidcError.fromError(e);
+  }
+
+  return { clientId, clientSecret };
 }
 
 export class OidcRouter {
@@ -184,7 +249,7 @@ export class OidcRouter {
       res.json(userInfo);
     });
 
-    if (cimdEnabled) {
+    if (cimdEnabled || this.oidc.hasStaticClients()) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
@@ -347,9 +412,26 @@ export class OidcRouter {
           code_verifier: codeVerifier,
           refresh_token: refreshToken,
           client_id: bodyClientId,
+          client_secret: bodyClientSecret,
         } = validateRequest(tokenRequestBodySchema, req.body);
 
         try {
+          // Authenticate if credentials are provided via Basic auth or body
+          const hasCredentials =
+            req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i) ||
+            (bodyClientId && bodyClientSecret);
+
+          let authenticatedClientId: string | undefined;
+          if (hasCredentials) {
+            const { clientId: authedId } = await authenticateClient({
+              req,
+              oidc: this.oidc,
+              bodyClientId,
+              bodyClientSecret,
+            });
+            authenticatedClientId = authedId;
+          }
+
           // Handle authorization_code grant type
           if (grantType === 'authorization_code') {
             if (!code || !redirectUri) {
@@ -366,6 +448,7 @@ export class OidcRouter {
               redirectUri,
               codeVerifier,
               grantType,
+              authenticatedClientId,
             });
 
             return res.json({
@@ -392,7 +475,7 @@ export class OidcRouter {
 
             const result = await this.oidc.refreshAccessToken({
               refreshToken,
-              clientId: bodyClientId,
+              clientId: authenticatedClientId ?? bodyClientId,
             });
 
             return res.json({
@@ -419,23 +502,41 @@ export class OidcRouter {
       });
 
       // Token Revocation endpoint (RFC 7009-like)
-      // Allows public clients to revoke refresh tokens using their client ID.
+      // Allows clients to revoke refresh tokens. DCR clients are confidential
+      // and must authenticate with their client secret, while CIMD clients
+      // are public clients that only identify themselves with their client ID
       router.post('/v1/revoke', async (req, res) => {
         try {
-          const { token, client_id: clientId } = validateRequest(
-            revokeRequestBodySchema,
-            req.body ?? {},
-          );
+          const {
+            token,
+            client_id: bodyClientId,
+            client_secret: bodyClientSecret,
+          } = validateRequest(revokeRequestBodySchema, req.body ?? {});
+
+          const { clientId, clientSecret } = parseClientCredentials({
+            req,
+            bodyClientId,
+            bodyClientSecret,
+          });
 
           if (!clientId) {
-            throw new OidcError('invalid_client', 'Client ID required', 401);
+            throw new OidcError(
+              'invalid_client',
+              'Client authentication required',
+              401,
+            );
           }
 
-          const isValidClient = await this.oidc.verifyRevocationClient(
+          const isValidClient = await this.oidc.verifyRevocationClient({
             clientId,
-          );
+            clientSecret,
+          });
           if (!isValidClient) {
-            throw new OidcError('invalid_client', 'Invalid client ID', 401);
+            throw new OidcError(
+              'invalid_client',
+              'Invalid client credentials',
+              401,
+            );
           }
 
           try {
@@ -445,6 +546,39 @@ export class OidcRouter {
           }
 
           return res.status(200).send('');
+        } catch (e) {
+          throw OidcError.fromError(e);
+        }
+      });
+    }
+
+    // Dynamic Client Registration endpoint - only available when DCR is enabled
+    if (dcrEnabled) {
+      // https://openid.net/specs/openid-connect-registration-1_0.html#ClientRegistration
+      // Allows clients to register themselves dynamically with the provider
+      router.post('/v1/register', async (req, res) => {
+        const {
+          client_name: clientName,
+          redirect_uris: redirectUris,
+          response_types: responseTypes,
+          grant_types: grantTypes,
+          scope,
+        } = validateRequest(registerRequestBodySchema, req.body);
+
+        try {
+          const client = await this.oidc.registerClient({
+            clientName: clientName ?? 'Backstage CLI',
+            redirectUris,
+            responseTypes,
+            grantTypes,
+            scope,
+          });
+
+          return res.status(201).json({
+            client_id: client.clientId,
+            redirect_uris: client.redirectUris,
+            client_secret: client.clientSecret,
+          });
         } catch (e) {
           throw OidcError.fromError(e);
         }
