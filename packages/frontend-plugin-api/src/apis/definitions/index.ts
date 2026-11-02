@@ -53,3 +53,5 @@ export * from './ToastApi';
 export * from './TranslationApi';
 export * from './PluginHeaderActionsApi';
 export * from './PluginWrapperApi';
+
+export { coreApis } from './coreApis';

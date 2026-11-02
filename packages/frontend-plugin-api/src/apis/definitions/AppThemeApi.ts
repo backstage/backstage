@@ -81,6 +81,7 @@ export type AppThemeApi = {
  * The {@link ApiRef} of {@link AppThemeApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.appTheme} instead.
  */
 export const appThemeApiRef = createApiRef<AppThemeApi>().with({
   id: 'core.apptheme',

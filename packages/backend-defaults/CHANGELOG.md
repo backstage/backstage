@@ -1,5 +1,18 @@
 # @backstage/backend-defaults
 
+## 0.18.2-next.0
+
+### Patch Changes
+
+- 80cc892: Removed the runtime dependency on `@backstage/cli-node`, which was only used for types. Backends no longer install the CLI tooling packages through `@backstage/backend-defaults`.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-app-api@1.9.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
 ## 0.18.1
 
 ### Patch Changes

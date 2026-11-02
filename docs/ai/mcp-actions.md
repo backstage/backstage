@@ -214,14 +214,16 @@ auth:
   clientIdMetadataDocuments:
     enabled: true
     # Optional: override which client_id URLs are allowed.
-    # Defaults to Claude, VS Code, ChatGPT Codex, and the built-in Backstage CLI.
-    # Note: setting this replaces the Claude, VS Code, and ChatGPT Codex
-    # defaults entirely. The built-in CLI client is always allowed, since
-    # this backend serves its metadata document itself.
+    # Defaults to Claude, VS Code, ChatGPT Codex, Cursor, and the built-in
+    # Backstage CLI.
+    # Note: setting this replaces the Claude, VS Code, ChatGPT Codex, and
+    # Cursor defaults entirely. The built-in CLI client is always allowed,
+    # since this backend serves its metadata document itself.
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
     #   - 'https://chatgpt.com/oauth/codex/*/client.json'
+    #   - 'https://cursor.com/oauth/mcp-client.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).

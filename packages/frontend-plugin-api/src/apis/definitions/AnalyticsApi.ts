@@ -150,6 +150,7 @@ export type AnalyticsApi = {
  * {@link AnalyticsImplementationBlueprint} instead.
  *
  * @public
+ * @deprecated Use {@link coreApis.analytics} instead.
  */
 export const analyticsApiRef = createApiRef<AnalyticsApi>().with({
   id: 'core.analytics',

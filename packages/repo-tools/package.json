@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.19.2",
+  "version": "0.19.3-next.0",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -91,7 +91,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
-    "@types/node": "^22.13.14",
+    "@types/node": "^24.0.0",
     "@types/prettier": "^2.0.0",
     "typedoc": "^0.28.0"
   },

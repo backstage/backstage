@@ -9,12 +9,19 @@ import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { AppError } from '@backstage/frontend-app-api';
+import { AppLanguageApi } from '@backstage/frontend-plugin-api';
+import { AppLifecycleApi } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
+import { AppTheme } from '@backstage/frontend-plugin-api';
+import { AppThemeApi } from '@backstage/frontend-plugin-api';
+import { AppTreeApi } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigApi as ConfigApi_2 } from '@backstage/frontend-plugin-api';
+import { DialogApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -34,19 +41,29 @@ import { FeatureFlagState } from '@backstage/frontend-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FetchApi as FetchApi_2 } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
+import { IconsApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react';
+import { OAuthRequestApi } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
+import { PluginHeaderActionsApi } from '@backstage/frontend-plugin-api';
+import { PluginWrapperApi } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { SwappableComponentsApi } from '@backstage/frontend-plugin-api';
+import { ToastApi } from '@backstage/frontend-plugin-api';
+import { ToastApiMessage } from '@backstage/frontend-plugin-api';
 import { TranslationApi } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
@@ -84,6 +101,7 @@ export function createExtensionTester<
   options?: {
     config?: T['configInput'];
     apis?: readonly [...TestApiPairs<TApiPairs>];
+    isExpectedError?: (error: AppError) => boolean;
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
@@ -185,12 +203,50 @@ export namespace mockApis {
         partialImpl?: Partial<AnalyticsApi> | undefined,
       ) => ApiMock<AnalyticsApi>;
   }
+  export function appLanguage(options?: {
+    defaultLanguage?: string;
+    availableLanguages?: string[];
+  }): MockWithApiFactory<AppLanguageApi>;
+  export namespace appLanguage {
+    const mock: (
+      partialImpl?: Partial<AppLanguageApi> | undefined,
+    ) => ApiMock<AppLanguageApi>;
+  }
+  export function appLifecycle(options?: {
+    finalized?: boolean;
+  }): MockWithApiFactory<AppLifecycleApi> & {
+    setFinalized(finalized: boolean): void;
+  };
+  export namespace appLifecycle {
+    const mock: (
+      partialImpl?: Partial<AppLifecycleApi> | undefined,
+    ) => ApiMock<AppLifecycleApi>;
+  }
+  export function appTheme(options?: {
+    themes?: AppTheme[];
+    activeThemeId?: string;
+  }): MockWithApiFactory<AppThemeApi>;
+  export namespace appTheme {
+    const mock: (
+      partialImpl?: Partial<AppThemeApi> | undefined,
+    ) => ApiMock<AppThemeApi>;
+  }
+  export namespace appTree {
+    const mock: (
+      partialImpl?: Partial<AppTreeApi> | undefined,
+    ) => ApiMock<AppTreeApi>;
+  }
   export function config(options?: {
     data?: JsonObject;
   }): MockConfigApi & MockWithApiFactory<ConfigApi_2>;
   export namespace config {
     const // (undocumented)
       mock: (partialImpl?: Partial<Config> | undefined) => ApiMock<Config>;
+  }
+  export namespace dialog {
+    const mock: (
+      partialImpl?: Partial<DialogApi> | undefined,
+    ) => ApiMock<DialogApi>;
   }
   export function discovery(options?: {
     baseUrl?: string;
@@ -227,6 +283,14 @@ export namespace mockApis {
         partialImpl?: Partial<FetchApi_2> | undefined,
       ) => ApiMock<FetchApi_2>;
   }
+  export function icons(options?: {
+    icons?: Record<string, IconElement>;
+  }): MockWithApiFactory<IconsApi>;
+  export namespace icons {
+    const mock: (
+      partialImpl?: Partial<IconsApi> | undefined,
+    ) => ApiMock<IconsApi>;
+  }
   export function identity(options?: {
     userEntityRef?: string;
     ownershipEntityRefs?: string[];
@@ -240,6 +304,12 @@ export namespace mockApis {
       mock: (
         partialImpl?: Partial<IdentityApi> | undefined,
       ) => ApiMock<IdentityApi>;
+  }
+  export function oauthRequest(): MockWithApiFactory<OAuthRequestApi>;
+  export namespace oauthRequest {
+    const mock: (
+      partialImpl?: Partial<OAuthRequestApi> | undefined,
+    ) => ApiMock<OAuthRequestApi>;
   }
   export function permission(options?: {
     authorize?:
@@ -255,6 +325,24 @@ export namespace mockApis {
         partialImpl?: Partial<PermissionApi> | undefined,
       ) => ApiMock<PermissionApi>;
   }
+  export function pluginHeaderActions(options?: {
+    actions?: Record<string, Array<JSX_2.Element | null>>;
+  }): MockWithApiFactory<PluginHeaderActionsApi>;
+  export namespace pluginHeaderActions {
+    const mock: (
+      partialImpl?: Partial<PluginHeaderActionsApi> | undefined,
+    ) => ApiMock<PluginHeaderActionsApi>;
+  }
+  export namespace pluginWrapper {
+    const mock: (
+      partialImpl?: Partial<PluginWrapperApi> | undefined,
+    ) => ApiMock<PluginWrapperApi>;
+  }
+  export namespace routeResolution {
+    const mock: (
+      partialImpl?: Partial<RouteResolutionApi> | undefined,
+    ) => ApiMock<RouteResolutionApi>;
+  }
   export function storage(options?: {
     data?: JsonObject;
   }): MockStorageApi & MockWithApiFactory<StorageApi_2>;
@@ -263,6 +351,19 @@ export namespace mockApis {
       mock: (
         partialImpl?: Partial<StorageApi_2> | undefined,
       ) => ApiMock<StorageApi_2>;
+  }
+  export namespace swappableComponents {
+    const mock: (
+      partialImpl?: Partial<SwappableComponentsApi> | undefined,
+    ) => ApiMock<SwappableComponentsApi>;
+  }
+  export function toast(): MockWithApiFactory<ToastApi> & {
+    getToasts(): ToastApiMessage[];
+  };
+  export namespace toast {
+    const mock: (
+      partialImpl?: Partial<ToastApi> | undefined,
+    ) => ApiMock<ToastApi>;
   }
   export function translation(): MockTranslationApi &
     MockWithApiFactory<TranslationApi>;
@@ -448,6 +549,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
     [path: string]: RouteRef | ExternalRouteRef;
   };
   apis?: readonly [...TestApiPairs<TApiPairs>];
+  isExpectedError?: (error: AppError) => boolean;
 };
 
 // @public
@@ -481,6 +583,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountPath?: string;
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
+  isExpectedError?: (error: AppError) => boolean;
 };
 
 export { withLogCollector };

@@ -85,6 +85,7 @@ export type ErrorApi = {
  * The {@link ApiRef} of {@link ErrorApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.error} instead.
  */
 export const errorApiRef = createApiRef<ErrorApi>().with({
   id: 'core.error',

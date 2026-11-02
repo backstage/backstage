@@ -12,6 +12,11 @@ npx skills add https://backstage.io
 
 ## Skills
 
+### Plugin Development
+
+- `frontend-plugin-development`: Reference for building, wiring, running, and testing frontend plugins on the new frontend system. Covers plugin packaging, app integration, entity page content, dev apps, tests, and troubleshooting plugins that do not show up or fail at startup.
+- `backend-plugin-development`: Reference for developing backend plugins and modules on the new backend system. Currently covers testing with `@backstage/backend-test-utils`, including mocking core services and credentials, and testing against real databases, caches, the filesystem, and remote services.
+
 ### Frontend System Migration
 
 - `app-frontend-system-migration`: Migrate a Backstage app from the old frontend system to the new one. Covers the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.

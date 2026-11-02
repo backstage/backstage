@@ -167,6 +167,30 @@ describe('WebStorage Storage API', () => {
     });
   });
 
+  it('isolates identically named buckets under different parents', async () => {
+    const root = createMockStorage();
+    const left = root.forBucket('left').forBucket('shared');
+    const right = root.forBucket('right').forBucket('shared');
+    const shared = root.forBucket('shared');
+
+    expect(root.forBucket('left').forBucket('shared')).toBe(left);
+    expect(root.forBucket('right').forBucket('shared')).toBe(right);
+    expect(left).not.toBe(right);
+    expect(left).not.toBe(shared);
+
+    await left.set('value', 'left');
+    await right.set('value', 'right');
+    await shared.set('value', 'root');
+    expect(left.snapshot('value').value).toBe('left');
+    expect(right.snapshot('value').value).toBe('right');
+    expect(shared.snapshot('value').value).toBe('root');
+
+    await left.remove('value');
+    expect(left.snapshot('value').value).toBeUndefined();
+    expect(right.snapshot('value').value).toBe('right');
+    expect(shared.snapshot('value').value).toBe('root');
+  });
+
   it('should not clash with other namespaces when creating buckets', async () => {
     const rootStorage = createMockStorage();
 

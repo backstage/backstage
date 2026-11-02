@@ -1,5 +1,12 @@
 # @backstage/plugin-app-node
 
+## 0.1.51-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
 ## 0.1.50
 
 ### Patch Changes

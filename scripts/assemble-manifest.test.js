@@ -39,7 +39,7 @@ test('publishes root package engines as release requirements', async () => {
         private: true,
         version: '1.55.2',
         workspaces: ['packages/*'],
-        engines: { node: '22 || 24' },
+        engines: { node: '^24.15.0 || ^26.13.0' },
       }),
     );
     await fs.writeFile(path.join(fixture, 'yarn.lock'), '');
@@ -62,7 +62,7 @@ test('publishes root package engines as release requirements', async () => {
     );
     assert.deepEqual(manifest, {
       releaseVersion: '1.55.2',
-      requirements: { node: '22 || 24' },
+      requirements: { node: '^24.15.0 || ^26.13.0' },
       packages: [{ name: '@backstage/example', version: '1.0.0' }],
     });
   } finally {

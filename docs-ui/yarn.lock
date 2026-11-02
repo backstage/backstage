@@ -1387,12 +1387,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.13.14":
-  version: 22.19.2
-  resolution: "@types/node@npm:22.19.2"
+"@types/node@npm:^24.0.0":
+  version: 24.19.2
+  resolution: "@types/node@npm:24.19.2"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/c7e72fde4aef120d984416f4aa01d23b0704eeed7a0a63cdf6178783361f3985abb02a65133b80f47226ad61f38a27fe82c3cd6dd6a62d5b82bc643fe54b9c97
+    undici-types: "npm:>=7.24.0 <7.24.7"
+  checksum: 10/5bc31df093f2866db0a2f9df0a1e99c2a46c3154ca2dc62ee14bde7af216d6361e4737e1023880921007ccb326b8559980e239e18a6fa927cda507da9383225c
   languageName: node
   linkType: hard
 
@@ -2370,7 +2370,7 @@ __metadata:
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@shikijs/transformers": "npm:^3.13.0"
     "@types/mdx": "npm:^2.0.13"
-    "@types/node": "npm:^22.13.14"
+    "@types/node": "npm:^24.0.0"
     "@types/react": "npm:19.2.10"
     "@types/react-dom": "npm:19.2.3"
     "@uiw/codemirror-themes": "npm:^4.23.7"
@@ -5956,10 +5956,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10/ec8f41aa4359d50f9b59fa61fe3efce3477cc681908c8f84354d8567bb3701fafdddf36ef6bff307024d3feb42c837cf6f670314ba37fc8145e219560e473d14
+"undici-types@npm:>=7.24.0 <7.24.7":
+  version: 7.24.6
+  resolution: "undici-types@npm:7.24.6"
+  checksum: 10/defc9538b952e3c15b8526596c591f7c1f0c7605ad27a2b7feddbea7ef2e3003f3eda2cdb051a3cb1a2185e3893100fd9cb925c799db99d48131ea63b5233d10
   languageName: node
   linkType: hard
 

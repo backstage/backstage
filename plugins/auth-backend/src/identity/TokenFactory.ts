@@ -199,7 +199,7 @@ export class TokenFactory implements TokenIssuer {
       .toJSDate();
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
-      const key = await generateKeyPair(this.algorithm);
+      const key = await generateKeyPair(this.algorithm, { extractable: true });
       const publicKey = await exportJWK(key.publicKey);
       const privateKey = await exportJWK(key.privateKey);
       publicKey.kid = privateKey.kid = uuid();

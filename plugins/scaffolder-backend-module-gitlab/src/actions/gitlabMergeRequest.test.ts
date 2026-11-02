@@ -212,11 +212,15 @@ const mockGitlabClient = {
     show: jest.fn(
       async (repoID: string | number, filePath: string, ref: string) => {
         if (repoID !== 'owner/repo') throw new Error('repo does not exist');
-        if (filePath !== 'source/auto.txt')
-          throw new Error('filePath does not exist');
+        if (!['source/auto.txt', 'source/unchanged.txt'].includes(filePath)) {
+          throw new Error('filePath does not exist', {
+            cause: { response: { status: 404 } },
+          });
+        }
         return {
-          file_name: 'auto.txt',
-          file_path: 'source/auto.txt',
+          file_name:
+            filePath === 'source/auto.txt' ? 'auto.txt' : 'unchanged.txt',
+          file_path: filePath,
           size: 11,
           encoding: 'base64',
           content: 'Zm9vLWJhci1iYXo=',
@@ -1345,6 +1349,150 @@ describe('createGitLabMergeRequest', () => {
           removeSourceBranch: false,
         },
       );
+    });
+
+    describe('when the repository tree listing fails', () => {
+      beforeEach(() => {
+        const timeoutError = new Error('Query timeout was reached');
+        timeoutError.name = 'GitbeakerTimeoutError';
+        mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce(
+          timeoutError,
+        );
+      });
+
+      it('checks each file and skips files with unchanged content', async () => {
+        const input = {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          title: 'Create my new MR',
+          branchName: 'new-mr',
+          description: 'MR description',
+          commitAction: 'auto',
+          targetPath: 'source',
+        };
+        mockDir.setContent({
+          [workspacePath]: {
+            source: {
+              'auto.txt': 'File exist',
+              'foo.txt': 'Hello there!',
+              'unchanged.txt': 'foo-bar-baz',
+            },
+          },
+        });
+
+        const ctx = createMockActionContext({ input, workspacePath });
+        await instance.handler(ctx);
+
+        expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+          'owner/repo',
+          'new-mr',
+          'Create my new MR',
+          expect.arrayContaining([
+            {
+              action: 'update',
+              filePath: 'source/auto.txt',
+              content: 'RmlsZSBleGlzdA==',
+              encoding: 'base64',
+              execute_filemode: false,
+            },
+            {
+              action: 'create',
+              filePath: 'source/foo.txt',
+              content: 'SGVsbG8gdGhlcmUh',
+              encoding: 'base64',
+              execute_filemode: false,
+            },
+          ]),
+        );
+        expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledTimes(3);
+        expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+          'owner/repo',
+          'source/auto.txt',
+          'main',
+        );
+        expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+          'owner/repo',
+          'source/foo.txt',
+          'main',
+        );
+        expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+          'owner/repo',
+          'source/unchanged.txt',
+          'main',
+        );
+        expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+          'owner/repo',
+          'new-mr',
+          'Create my new MR',
+          expect.not.arrayContaining([
+            expect.objectContaining({ filePath: 'source/unchanged.txt' }),
+          ]),
+        );
+      });
+
+      it('does not commit if an individual file check fails', async () => {
+        const input = {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          title: 'Create my new MR',
+          branchName: 'new-mr',
+          description: 'MR description',
+          commitAction: 'auto',
+        };
+        mockDir.setContent({
+          [workspacePath]: {
+            'foo.txt': 'Hello there!',
+          },
+        });
+        mockGitlabClient.RepositoryFiles.show.mockRejectedValueOnce(
+          new Error('Internal Server Error', {
+            cause: { response: { status: 500 } },
+          }),
+        );
+
+        const ctx = createMockActionContext({ input, workspacePath });
+        await expect(instance.handler(ctx)).rejects.toThrow(
+          'Internal Server Error',
+        );
+        expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      });
+    });
+
+    it('creates all files when the repository tree listing returns 404', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'auto',
+        targetPath: 'source',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'auto.txt': 'File exist', 'foo.txt': 'Hello there!' },
+        },
+      });
+      mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce(
+        new Error('Not Found', { cause: { response: { status: 404 } } }),
+      );
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        expect.arrayContaining([
+          expect.objectContaining({
+            action: 'create',
+            filePath: 'source/auto.txt',
+          }),
+          expect.objectContaining({
+            action: 'create',
+            filePath: 'source/foo.txt',
+          }),
+        ]),
+      );
+      expect(mockGitlabClient.RepositoryFiles.show).not.toHaveBeenCalled();
     });
   });
 

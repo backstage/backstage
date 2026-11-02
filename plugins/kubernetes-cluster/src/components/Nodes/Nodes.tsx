@@ -21,7 +21,7 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { INode } from 'kubernetes-models/v1';
+import type { INode } from 'kubernetes-models/v1';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
