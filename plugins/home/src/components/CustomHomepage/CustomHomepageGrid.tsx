@@ -268,7 +268,10 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     return availableWidgets.filter(widget => !usedWidgetNames.has(widget.name));
   };
 
-  const handleAdd = (widget: Widget) => {
+  const handleAdd = (
+    widget: Widget,
+    initialSettings: Record<string, any> = {},
+  ) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
       .toString(36)
       .slice(2)}`;
@@ -290,7 +293,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           isResizable: editMode,
           isDraggable: editMode,
         },
-        settings: {},
+        settings: initialSettings,
         movable: widget.movable,
         deletable: widget.deletable,
         resizable: widget.resizable,
@@ -299,10 +302,13 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     setAddWidgetDialogOpen(false);
   };
 
-  const handleAddFromDialog = ({ name }: AddWidgetDialogWidget) => {
+  const handleAddFromDialog = (
+    { name }: AddWidgetDialogWidget,
+    settings?: Record<string, unknown>,
+  ) => {
     const widget = getWidgetByName(name);
     if (widget) {
-      handleAdd(widget);
+      handleAdd(widget, settings);
     }
   };
 

@@ -29,7 +29,10 @@ export const AddWidgetDialog: {
 
 // @alpha
 export interface AddWidgetDialogProps {
-  handleAdd: (widget: AddWidgetDialogWidget) => void;
+  handleAdd: (
+    widget: AddWidgetDialogWidget,
+    settings?: Record<string, unknown>,
+  ) => void;
   onClose: () => void;
   open: boolean;
   widgets: AddWidgetDialogWidget[];
@@ -299,7 +302,6 @@ export default _default;
 export const homeTranslationRef: TranslationRef<
   'home',
   {
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'addWidgetDialog.noAvailableWidgets': 'All available widgets have been added to the dashboard.';
     readonly 'customHomepageButtons.cancel': 'Cancel';
@@ -309,11 +311,11 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.addWidget': 'Add widget';
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
-    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
+    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.disabled.title': 'Visit tracking is not enabled.';
     readonly 'visitList.disabled.description': 'Enable visit tracking in your app-config.yaml to see your most visited and recently visited pages here.';
@@ -323,6 +325,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';

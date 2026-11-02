@@ -42,8 +42,15 @@ export interface AddWidgetDialogProps {
   onClose: () => void;
   /** The widgets that can be added to the grid. */
   widgets: AddWidgetDialogWidget[];
-  /** Adds one of the provided widgets to the grid and closes the dialog. */
-  handleAdd: (widget: AddWidgetDialogWidget) => void;
+  /**
+   * Adds one of the provided widgets to the grid and closes the dialog.
+   * Optional initial settings are saved with the new widget, as if they had
+   * been entered in its settings form.
+   */
+  handleAdd: (
+    widget: AddWidgetDialogWidget,
+    settings?: Record<string, unknown>,
+  ) => void;
 }
 
 /**
