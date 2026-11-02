@@ -87,8 +87,8 @@ type InSets = {
 /**
  * Joins one set of entity IDs per distinct long `$in` list that is to be
  * matched in the JOIN form onto the root query, as a derived table that is
- * LEFT JOINed onto the candidate rows. This happens up front, since knex
- * compiles the joins before it runs the where clause callbacks.
+ * joined with a LEFT JOIN onto the candidate rows. This happens up front,
+ * since knex compiles the joins before it runs the where clause callbacks.
  */
 function joinLongInSets(options: {
   filter: FilterPredicate;

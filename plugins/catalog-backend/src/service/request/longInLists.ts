@@ -29,12 +29,12 @@
  * Long lists are therefore matched as a set of entity IDs that is computed
  * once per query, in one of two forms:
  *
- * - JOIN: the set is a derived table that is LEFT JOINed onto the candidate
- *   rows, and the condition becomes `alias.entity_id IS NOT NULL`. The planner
- *   can drive the query from the set, which is fast when the list decides
- *   which entities match (the owned entities page, late pages of a small kind
- *   such as battery scenario 20 for groups). It can also be anti-joined when
- *   negated (scenario 18).
+ * - JOIN: the set is a derived table, joined with a LEFT JOIN onto the
+ *   candidate rows, and the condition becomes `alias.entity_id IS NOT NULL`.
+ *   The planner can drive the query from the set, which is fast when the list
+ *   decides which entities match (the owned entities page, late pages of a
+ *   small kind such as battery scenario 20 for groups). It can also be
+ *   anti-joined when negated (scenario 18).
  * - IN: the condition becomes `entity_id IN (SELECT ...)`, a hashed set that
  *   is checked per row. This keeps the candidate rows in their order, so an
  *   ordered and limited page can still stop early. That matters when another
@@ -240,6 +240,10 @@ function chooseLongInForm(context: LongInContext): 'join' | 'in' {
   return 'join';
 }
 
+function countTrue(values: boolean[]): number {
+  return values.reduce((count, value) => count + (value ? 1 : 0), 0);
+}
+
 /**
  * A long `$in` list that is to be matched in the JOIN form.
  */
@@ -274,19 +278,17 @@ export function findJoinedLongInLists(
       if (!Array.isArray(list)) {
         return;
       }
+      // Classify each child once, so that asking whether any sibling of a
+      // child qualifies is a subtraction rather than a scan of the siblings
+      const qualifies = list.map(isAll ? isNarrowFilter : isBroadFilter);
+      const total = countTrue(qualifies);
       list.forEach((child, index) => {
-        const siblings = list.filter((_, i) => i !== index);
+        const bySibling = total - (qualifies[index] ? 1 : 0) > 0;
         visit(
           child,
           isAll
-            ? {
-                ...context,
-                narrowed: context.narrowed || siblings.some(isNarrowFilter),
-              }
-            : {
-                ...context,
-                alternated: context.alternated || siblings.some(isBroadFilter),
-              },
+            ? { ...context, narrowed: context.narrowed || bySibling }
+            : { ...context, alternated: context.alternated || bySibling },
         );
       });
       return;
@@ -294,15 +296,14 @@ export function findJoinedLongInLists(
 
     // A field expression; its other keys act as `$all` siblings of the list
     const entries = Object.entries(node);
-    for (const [keyAnyCase, value] of entries) {
+    const narrowEntries = entries.map(([k, v]) => isNarrowFilter({ [k]: v }));
+    const narrowTotal = countTrue(narrowEntries);
+    for (const [index, [keyAnyCase, value]] of entries.entries()) {
       if (!isLongInList(keyAnyCase, value as FilterPredicateValue)) {
         continue;
       }
       const narrowed =
-        context.narrowed ||
-        entries.some(
-          ([k, v]) => k !== keyAnyCase && isNarrowFilter({ [k]: v }),
-        );
+        context.narrowed || narrowTotal - (narrowEntries[index] ? 1 : 0) > 0;
       if (chooseLongInForm({ ...context, narrowed }) === 'join') {
         result.push({
           filter: node,

@@ -423,11 +423,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           applyEntityFilterToQuery(filterOptions);
         }
       };
-      if (cursor.filter) {
-        applyFilter(entityFilterToFilterPredicate(cursor.filter));
-      }
-      if (cursor.query) {
-        applyFilter(cursor.query);
+      // Cursors of permissioned requests carry the permission filter and the
+      // request filter separately. They are applied as one filter, the same
+      // way the first page combines them, since how a long `$in` list is
+      // matched depends on its siblings (see `request/longInLists.ts`).
+      const cursorFilters = [
+        ...(cursor.filter
+          ? [entityFilterToFilterPredicate(cursor.filter)]
+          : []),
+        ...(cursor.query ? [cursor.query] : []),
+      ];
+      if (cursorFilters.length === 1) {
+        applyFilter(cursorFilters[0]);
+      } else if (cursorFilters.length > 1) {
+        applyFilter({ $all: cursorFilters });
       }
 
       if (normalizedFullTextFilterTerm) {

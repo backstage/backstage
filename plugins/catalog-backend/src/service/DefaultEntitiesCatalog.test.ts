@@ -35,6 +35,8 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
+import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
@@ -2993,6 +2995,103 @@ describe.each(databases.eachSupportedId())(
         await expect(collect(permissionFilter(longClaims))).resolves.toEqual(
           expected,
         );
+      });
+
+      it('matches long $in lists the same way on every page of a permissioned query', async () => {
+        const inner = await setupFacetsCatalog(
+          ['a', 'b', 'c', 'd', 'e'].map(name => ({
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name },
+            spec: {},
+            relations: [
+              {
+                type: 'ownedBy',
+                targetRef: name === 'b' ? 'group:default/x' : 'group:default/a',
+              },
+              {
+                type: 'partOf',
+                targetRef:
+                  name === 'e' ? 'system:default/t' : 'system:default/s',
+              },
+            ],
+          })),
+        );
+        const claims = [
+          'group:default/a',
+          ...Array.from({ length: 20 }, (_, i) => `group:default/other-${i}`),
+        ];
+        const catalog = new AuthorizedEntitiesCatalog(
+          inner,
+          mockServices.permissions.mock({
+            authorizeConditional: async () => [
+              {
+                result: AuthorizeResult.CONDITIONAL,
+                pluginId: 'catalog',
+                resourceType: 'catalog-entity',
+                conditions: {
+                  rule: 'IS_ENTITY_OWNER',
+                  resourceType: 'catalog-entity',
+                  params: { claims },
+                },
+              },
+            ],
+          }),
+          () => ({ key: 'relations.ownedBy', values: claims }),
+        );
+
+        // Collects the form of the long list in each page's main query
+        const sqls: string[] = [];
+        const onQuery = (q: { sql: string }) => sqls.push(q.sql);
+        const forms = () => {
+          const result = sqls
+            .filter(sql => sql.includes('final_entities'))
+            .map(sql => {
+              if (sql.includes('in_set_')) {
+                return 'join';
+              }
+              return sql.includes('"entity_id" in (select') ? 'in' : 'row';
+            });
+          sqls.length = 0;
+          return result;
+        };
+
+        knex.on('query', onQuery);
+        try {
+          const names: string[][] = [];
+          const pageForms: string[][] = [];
+          let response = await catalog.queryEntities({
+            filter: { 'relations.partOf': 'system:default/s' },
+            orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          for (;;) {
+            names.push(
+              entitiesResponseToObjects(response.items).map(
+                e => e!.metadata.name,
+              ),
+            );
+            pageForms.push(forms());
+            if (!response.pageInfo.nextCursor) {
+              break;
+            }
+            response = await catalog.queryEntities({
+              cursor: response.pageInfo.nextCursor,
+              limit: 2,
+              credentials: mockCredentials.none(),
+            });
+          }
+
+          expect(names).toEqual([['a', 'c'], ['d']]);
+          // The partOf condition is narrower than the list on every page
+          expect(pageForms.flat()).not.toContain('join');
+          expect(pageForms.flat().includes('in')).toBe(
+            databaseId.startsWith('POSTGRES'),
+          );
+        } finally {
+          knex.removeListener('query', onQuery);
+        }
       });
 
       it('filters with both filter and query combined', async () => {
