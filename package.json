@@ -142,7 +142,7 @@
     "@types/jest": "^30",
     "@types/jsdom": "^27",
     "@types/memjs": "^1.3.3",
-    "@types/node": "^22.13.14",
+    "@types/node": "^24.0.0",
     "@types/webpack": "^5.28.0",
     "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",
@@ -176,7 +176,7 @@
   },
   "packageManager": "yarn@4.18.1",
   "engines": {
-    "node": "22 || 24"
+    "node": "^24.15.0 || ^26.13.0"
   },
   "madge": {
     "fileExtensions": [

@@ -35,17 +35,27 @@ import {
 } from './lib/tasks';
 
 const DEFAULT_BRANCH = 'master';
-// Uses the same 'N.x' format as GitHub Actions node-version matrices for easy find-and-replace.
+// The lowest supported version of each supported Node.js release line.
 // Keep in sync with the engines.node field in the root package.json.
-const SUPPORTED_NODE_VERSIONS = ['22.x', '24.x'];
+const MINIMUM_NODE_VERSIONS = ['24.15.0', '26.13.0'];
+const SUPPORTED_NODE_VERSIONS = MINIMUM_NODE_VERSIONS.map(v => `${v}+`);
+
+// Compares two versions of the same major
+function isBelowMinimum(version: string, minimum: string) {
+  const [, minor, patch] = version.split('.').map(Number);
+  const [, minimumMinor, minimumPatch] = minimum.split('.').map(Number);
+  return (
+    minor < minimumMinor || (minor === minimumMinor && patch < minimumPatch)
+  );
+}
 
 export default async (opts: OptionValues): Promise<void> => {
   // Prerequisite check — runs before the interactive prompt to fail fast
   let hasPrerequisiteError = false;
-  const supportedMajors = SUPPORTED_NODE_VERSIONS.map(v =>
-    parseInt(v.split('.')[0], 10),
-  );
   const [major, minor, patch] = process.versions.node.split('.').map(Number);
+  const minimumVersion = MINIMUM_NODE_VERSIONS.find(
+    v => Number(v.split('.')[0]) === major,
+  );
   const yarn = await tryCommandForVersion('yarn -v');
   let python = await tryCommandForVersion('python3 --version');
   if (python.error) {
@@ -81,11 +91,16 @@ export default async (opts: OptionValues): Promise<void> => {
       )}).`,
     );
     hasPrerequisiteError = true;
-  } else if (!supportedMajors.includes(major)) {
+  } else if (!minimumVersion) {
     Task.error(
       `Node version ${major} is not a supported LTS version. Please use a supported version (${SUPPORTED_NODE_VERSIONS.join(
         ' or ',
       )}).`,
+    );
+    hasPrerequisiteError = true;
+  } else if (isBelowMinimum(process.versions.node, minimumVersion)) {
+    Task.error(
+      `Node version ${major}.${minor}.${patch} is not supported. Please use ${minimumVersion} or later.`,
     );
     hasPrerequisiteError = true;
   }
