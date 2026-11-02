@@ -7,7 +7,7 @@ description: Reference for building, wiring, running, and testing Backstage fron
 
 This skill collects the checks and traps that matter when working on a plugin built with `createFrontendPlugin` from `@backstage/frontend-plugin-api`. Most of these fail silently or only at runtime, so `yarn tsc` and `yarn lint` will not catch them.
 
-It is a reference, not a procedure. Read only the reference that matches the task. The migration skills (`plugin-full-frontend-system-migration`, `plugin-new-frontend-system-support`, `app-frontend-system-migration`) link here from their steps.
+It is a reference, not a procedure. Read only the reference that matches the task. The `new-frontend-system-migration` skill links here from its steps.
 
 ## References
 

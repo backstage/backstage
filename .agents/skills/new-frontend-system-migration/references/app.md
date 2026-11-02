@@ -1,13 +1,8 @@
----
-name: app-frontend-system-migration
-description: Migrate a Backstage app from the old frontend system to the new one. Use this skill when converting an app to use the new extension-based frontend system, including the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.
----
+# Migrating an App to the New Frontend System
 
-# App Frontend System Migration Skill
+This guide migrates a Backstage app package (`packages/app`) from the old frontend system (`@backstage/app-defaults`) to the new extension-based frontend system (`@backstage/frontend-defaults`).
 
-This skill helps migrate a Backstage app package (`packages/app`) from the old frontend system (`@backstage/app-defaults`) to the new extension-based frontend system (`@backstage/frontend-defaults`).
-
-The migration follows a two-phase approach: first get the app running in hybrid mode with compatibility helpers, then gradually remove legacy code until the app is fully on the new system.
+The migration follows a two-phase approach: first get the app running in hybrid mode with compatibility helpers, then gradually remove legacy code until the app is fully on the new system. If the repository also has plugins to migrate, migrate them between the two phases, as described in `SKILL.md`, using `references/plugin.md`.
 
 ## Key Concepts
 
@@ -648,8 +643,9 @@ app:
 - `Invalid element inside FlatRoutes`: push `FeatureFlagged`/`RequirePermissions` wrappers into plugin code instead of the route table
 - Check the browser console for an `App startup encountered warnings:` block. Warnings such as `EXTENSION_IGNORED` and `FEATURE_FLAG_INVALID` do not stop the app, so something can be missing with no visible error. See `references/troubleshooting.md` in the `frontend-plugin-development` skill for these and other startup messages.
 
-## Reference
+## Further Reading
 
+- Migrating the plugins themselves: `references/plugin.md` in this skill
 - [App migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating)
 - [Architecture overview](https://backstage.io/docs/frontend-system/architecture/index)
 - [Extension blueprints](https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints)

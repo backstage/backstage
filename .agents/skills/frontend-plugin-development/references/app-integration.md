@@ -10,7 +10,7 @@ A plugin that is both listed in `createApp({ features: [...] })` and discovered 
 
 ## Remove legacy wiring in the same change
 
-When a plugin moves to the new frontend system, remove its legacy wiring from the app in the same change. A legacy route shadows the new plugin, and legacy entity page JSX renders next to the new extensions. The `app-frontend-system-migration` skill explains both.
+When a plugin moves to the new frontend system, remove its legacy wiring from the app in the same change. A legacy route shadows the new plugin, and legacy entity page JSX renders next to the new extensions. `references/app.md` in the `new-frontend-system-migration` skill explains both.
 
 - Legacy `<Route>` elements for the plugin's pages.
 - Entity page JSX for the plugin's tabs and cards, in every entity kind's page, not only the first one you find. See [Entity content](entity-content.md).

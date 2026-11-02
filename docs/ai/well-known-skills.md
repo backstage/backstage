@@ -19,9 +19,7 @@ npx skills add https://backstage.io
 
 ### Frontend System Migration
 
-- `app-frontend-system-migration`: Migrate a Backstage app from the old frontend system to the new one. Covers the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.
-- `plugin-new-frontend-system-support`: Add new frontend system support to an existing Backstage plugin while keeping the old system working. Use this for published or shared plugins that need to work in both old and new frontend system apps.
-- `plugin-full-frontend-system-migration`: Fully migrate a Backstage plugin to the new frontend system, dropping all old system support. Use this for internal plugins that only need to run in a single app, or when you are ready to remove backward compatibility entirely.
+- `new-frontend-system-migration`: Migrate a Backstage app, its frontend plugins, or both from the old frontend system to the new one. Covers the hybrid and full app migration, plugins that keep old-system support and plugins that drop it, and the order to follow when a repository has both an app and plugins.
 
 ### UI Migration
 

@@ -18,6 +18,12 @@ This section describes how to migrate an existing Backstage app package to use t
 > - Yarn workspaces and monorepo setup
 > - Access to run `yarn` commands and update dependencies
 
+:::tip
+
+To have an AI coding assistant do this migration, install the `new-frontend-system-migration` skill. It also migrates the app's plugins, in the right order. See [Published skills](../../ai/skills.md).
+
+:::
+
 ## Migration
 
 We recommend a **two-phase migration process** to ensure a smooth and manageable transition:
