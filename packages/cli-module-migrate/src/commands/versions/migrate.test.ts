@@ -19,7 +19,7 @@ import {
 } from '@backstage/backend-test-utils';
 import * as runObj from '@backstage/cli-common';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
-import migrate from './migrate';
+import migrate, { migrateMovedPackages } from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
 
@@ -57,9 +57,9 @@ function expectLogsToMatch(receivedLogs: String[], expected: String[]): void {
 
 describe('versions:migrate', () => {
   mockDir = createMockDirectory();
-  beforeAll(() => overrideTargetPaths(mockDir.path));
 
   beforeEach(() => {
+    overrideTargetPaths(mockDir.path);
     (runObj.run as jest.Mock).mockReturnValue({
       exitCode: null,
       waitForExit: jest.fn().mockResolvedValue(undefined),
@@ -169,6 +169,98 @@ describe('versions:migrate', () => {
         '@backstage/core': '^1.0.3',
         '@backstage/theme': '^1.0.0',
       },
+    });
+  });
+
+  it('should add catalog entries for moved packages that use a pnpm catalog', async () => {
+    // The detected package manager is cached per directory
+    const pnpmDir = createMockDirectory();
+    overrideTargetPaths(pnpmDir.path);
+    pnpmDir.setContent({
+      'package.json': JSON.stringify({ name: 'root' }),
+      'pnpm-workspace.yaml': `packages:
+  - packages/*
+
+catalog:
+  '@backstage/custom': ^1.0.1 # the old name
+
+catalogs:
+  next:
+    '@backstage/custom': ^1.1.0-next.0
+    '@backstage-community/custom': ^2.0.0
+`,
+      node_modules: {
+        '@backstage': {
+          custom: {
+            'package.json': JSON.stringify({
+              name: '@backstage/custom',
+              version: '1.0.1',
+              backstage: { moved: '@backstage-community/custom' },
+            }),
+          },
+        },
+      },
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: { '@backstage/custom': 'catalog:' },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: { '@backstage/custom': 'catalog:next' },
+          }),
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            dependencies: { '@backstage/custom': 'catalog:missing' },
+          }),
+        },
+      },
+    });
+
+    const { warn } = await withLogCollector(async () => {
+      await expect(migrateMovedPackages()).resolves.toBe(true);
+    });
+    // A catalog without an entry to copy leaves the dependency as it is
+    expect(warn).toEqual([
+      'Skipping the moved package @backstage/custom in c (dependencies), since the missing catalog has no entry for it',
+    ]);
+    await expect(
+      fs.readJson(pnpmDir.resolve('packages/c/package.json')),
+    ).resolves.toEqual({
+      name: 'c',
+      dependencies: { '@backstage/custom': 'catalog:missing' },
+    });
+
+    // The catalog that already has an entry for the new name is left alone
+    expect(await fs.readFile(pnpmDir.resolve('pnpm-workspace.yaml'), 'utf8'))
+      .toBe(`packages:
+  - packages/*
+
+catalog:
+  '@backstage/custom': ^1.0.1 # the old name
+  '@backstage-community/custom': ^1.0.1
+
+catalogs:
+  next:
+    '@backstage/custom': ^1.1.0-next.0
+    '@backstage-community/custom': ^2.0.0
+`);
+    await expect(
+      fs.readJson(pnpmDir.resolve('packages/a/package.json')),
+    ).resolves.toEqual({
+      name: 'a',
+      dependencies: { '@backstage-community/custom': 'catalog:' },
+    });
+    await expect(
+      fs.readJson(pnpmDir.resolve('packages/b/package.json')),
+    ).resolves.toEqual({
+      name: 'b',
+      dependencies: { '@backstage-community/custom': 'catalog:next' },
     });
   });
 

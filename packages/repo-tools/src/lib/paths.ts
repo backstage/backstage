@@ -17,7 +17,13 @@
 import { targetPaths } from '@backstage/cli-common';
 import { PackageGraph } from '@backstage/cli-node';
 import { Minimatch } from 'minimatch';
-import { isAbsolute, relative as relativePath } from 'node:path';
+import { existsSync } from 'node:fs';
+import {
+  dirname,
+  isAbsolute,
+  relative as relativePath,
+  resolve as resolvePath,
+} from 'node:path';
 
 /** @internal */
 export interface ResolvePackagesOptions {
@@ -38,8 +44,9 @@ export async function resolvePackagePaths(
     for (const path of providedPaths) {
       const matches = packages.some(
         ({ dir }) =>
-          new Minimatch(path).match(relativePath(targetPaths.rootDir, dir)) ||
-          isChildPath(dir, path),
+          new Minimatch(path).match(
+            relativePath(targetPaths.installationRootDir, dir),
+          ) || isChildPath(dir, path),
       );
       if (!matches) {
         invalidPaths.push(path);
@@ -54,8 +61,9 @@ export async function resolvePackagePaths(
     packages = packages.filter(({ dir }) =>
       providedPaths.some(
         path =>
-          new Minimatch(path).match(relativePath(targetPaths.rootDir, dir)) ||
-          isChildPath(dir, path),
+          new Minimatch(path).match(
+            relativePath(targetPaths.installationRootDir, dir),
+          ) || isChildPath(dir, path),
       ),
     );
   }
@@ -64,7 +72,7 @@ export async function resolvePackagePaths(
     packages = packages.filter(pkg =>
       include.some(pattern =>
         new Minimatch(pattern).match(
-          relativePath(targetPaths.rootDir, pkg.dir),
+          relativePath(targetPaths.installationRootDir, pkg.dir),
         ),
       ),
     );
@@ -75,13 +83,37 @@ export async function resolvePackagePaths(
       exclude.some(
         pattern =>
           !new Minimatch(pattern).match(
-            relativePath(targetPaths.rootDir, pkg.dir),
+            relativePath(targetPaths.installationRootDir, pkg.dir),
           ),
       ),
     );
   }
 
-  return packages.map(pkg => relativePath(targetPaths.rootDir, pkg.dir));
+  return packages.map(pkg =>
+    relativePath(targetPaths.installationRootDir, pkg.dir),
+  );
+}
+
+/**
+ * Resolves a path in the `node_modules` directory of the installation root,
+ * or of a directory above it up to the workspace root, since pnpm can install
+ * the tools of an installation in a subdirectory into the workspace root.
+ * Points into the installation root when the path is not found.
+ *
+ * @internal
+ */
+export function resolveNodeModulesPath(path: string): string {
+  const { installationRootDir, workspaceRootDir } = targetPaths;
+  for (let dir = installationRootDir; ; dir = dirname(dir)) {
+    const candidate = resolvePath(dir, 'node_modules', path);
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+    if (dir === workspaceRootDir || dirname(dir) === dir) {
+      break;
+    }
+  }
+  return resolvePath(installationRootDir, 'node_modules', path);
 }
 
 /** @internal */
