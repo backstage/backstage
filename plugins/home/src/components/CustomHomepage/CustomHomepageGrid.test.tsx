@@ -323,4 +323,103 @@ describe('CustomHomepageGrid', () => {
       screen.queryByText('Custom add widget dialog'),
     ).not.toBeInTheDocument();
   });
+
+  it('should save the initial settings a replacement dialog passes to handleAdd', async () => {
+    const mockStorage = mockApis.storage();
+    const ReplacementDialog = ({
+      open,
+      widgets,
+      handleAdd,
+    }: AddWidgetDialogProps) =>
+      open ? (
+        <div role="dialog">
+          {widgets.map(widget => (
+            <button
+              key={widget.name}
+              onClick={() => handleAdd(widget, { preset: 'byStatus' })}
+            >
+              {`Pick ${widget.name}`}
+            </button>
+          ))}
+        </div>
+      ) : null;
+    const swappableComponentsApi = {
+      getComponent: () => ReplacementDialog,
+    } as unknown as SwappableComponentsApi;
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [storageApiRef, mockStorage],
+          [swappableComponentsApiRef, swappableComponentsApi],
+        ]}
+      >
+        <CustomHomepageGrid config={twoWidgetConfig}>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Pick C' }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    const saved = mockStorage.forBucket('home.customHomepage').snapshot('home');
+    const grid = JSON.parse(saved.value as string);
+    const added = grid.pages.default.find((w: any) => w.id.startsWith('C__'));
+    expect(added.settings).toEqual({ preset: 'byStatus' });
+  });
+
+  it('should add a widget with empty settings when no initial settings are given', async () => {
+    const mockStorage = mockApis.storage();
+    const ReplacementDialog = ({
+      open,
+      widgets,
+      handleAdd,
+    }: AddWidgetDialogProps) =>
+      open ? (
+        <div role="dialog">
+          {widgets.map(widget => (
+            <button key={widget.name} onClick={() => handleAdd(widget)}>
+              {`Pick ${widget.name}`}
+            </button>
+          ))}
+        </div>
+      ) : null;
+    const swappableComponentsApi = {
+      getComponent: () => ReplacementDialog,
+    } as unknown as SwappableComponentsApi;
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [storageApiRef, mockStorage],
+          [swappableComponentsApiRef, swappableComponentsApi],
+        ]}
+      >
+        <CustomHomepageGrid config={twoWidgetConfig}>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Pick C' }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    const saved = mockStorage.forBucket('home.customHomepage').snapshot('home');
+    const grid = JSON.parse(saved.value as string);
+    const added = grid.pages.default.find((w: any) => w.id.startsWith('C__'));
+    expect(added.settings).toEqual({});
+  });
 });
