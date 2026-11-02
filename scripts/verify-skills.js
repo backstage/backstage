@@ -29,13 +29,15 @@ const {
  * each skill's SKILL.md name matches its directory, and each skill listed in
  * index.json, which are the ones published to backstage.io, has the same
  * description and files as its directory. Unlisted skills are only used
- * within this repository.
+ * within this repository. It also checks that docs/ai/well-known-skills.md
+ * lists exactly the published skills.
  *
  * It can be run with a `--fix` flag to automatically fix index.json.
  */
 
 const skillsDir = resolvePath(__dirname, '../.agents/skills');
 const indexPath = joinPath(skillsDir, 'index.json');
+const docsPath = resolvePath(__dirname, '../docs/ai/well-known-skills.md');
 
 function readFrontMatter(skillFile) {
   const content = fs.readFileSync(skillFile, 'utf8');
@@ -110,6 +112,26 @@ async function main(args) {
         `index.json files for '${entry.name}' do not match its directory`,
       );
       entry.files = skill.files;
+    }
+  }
+
+  const published = new Set(index.skills.map(entry => entry.name));
+  const documented = new Set(
+    Array.from(
+      fs.readFileSync(docsPath, 'utf8').matchAll(/^- `([^`]+)`:/gm),
+      match => match[1],
+    ),
+  );
+  for (const name of published) {
+    if (!documented.has(name)) {
+      errors.push(`docs/ai/well-known-skills.md does not list '${name}'`);
+    }
+  }
+  for (const name of documented) {
+    if (!published.has(name)) {
+      errors.push(
+        `docs/ai/well-known-skills.md lists '${name}', which is not published`,
+      );
     }
   }
 

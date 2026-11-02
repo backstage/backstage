@@ -89,6 +89,8 @@ node scripts/verify-skills.js --fix
 
 Run the same command after renaming or removing a published skill, or changing its description or files. CI runs the script without `--fix` and fails if the index is out of date.
 
+Also list the skill on the [well-known skills](./well-known-skills.md) page, under the section that fits it, and keep its entry there in line with what the skill covers. The script fails if the page lists a skill that isn't published, or leaves out one that is, but it can't tell when an entry's wording is out of date.
+
 ### Review process
 
 All changes to skills go through the standard Backstage pull request process. When authoring or reviewing a skill, consider:

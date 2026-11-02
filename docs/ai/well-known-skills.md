@@ -23,7 +23,7 @@ npx skills add https://backstage.io
 
 ### UI Migration
 
-- `mui-to-bui-migration`: Migrate Backstage plugins from Material UI (MUI) to Backstage UI (BUI). Covers component mapping, import updates, and styling pattern replacements.
+- `mui-to-bui-migration`: Migrate Backstage plugins from Material UI (MUI) to Backstage UI (BUI), either by running the `@backstage/mui4-to-bui-migration-recipe` codemod and finishing what it leaves, or with standalone guidance. Covers component mapping, import updates, and styling pattern replacements.
 
 ### Instrumentation
 
