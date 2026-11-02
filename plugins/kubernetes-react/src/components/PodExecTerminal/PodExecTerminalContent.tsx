@@ -110,6 +110,9 @@ export const PodExecTerminalContent = (props: PodExecTerminalProps) => {
     let cancelled = false;
     let socket: WebSocket | undefined;
     let connectionTimeout: ReturnType<typeof setTimeout> | undefined;
+    let probeTimeout: ReturnType<typeof setTimeout> | undefined;
+    let probeAbortController: AbortController | undefined;
+    let probeTimedOut = false;
 
     const terminal = new Terminal();
     const fitAddon = new FitAddon();
@@ -159,18 +162,14 @@ export const PodExecTerminalContent = (props: PodExecTerminalProps) => {
       socket.onerror = () => {
         clearConnectionTimeout();
         if (!opened) {
-          writeFailureMessage(t('podExecTerminal.errors.permissionDenied'));
+          writeFailureMessage(t('podExecTerminal.errors.connectionFailed'));
         }
       };
 
-      socket.onclose = event => {
+      socket.onclose = () => {
         clearConnectionTimeout();
         if (!opened) {
-          writeFailureMessage(
-            event.code === 1006 || event.code === 1008
-              ? t('podExecTerminal.errors.permissionDenied')
-              : t('podExecTerminal.errors.connectionFailed'),
-          );
+          writeFailureMessage(t('podExecTerminal.errors.connectionFailed'));
           return;
         }
 
@@ -180,6 +179,13 @@ export const PodExecTerminalContent = (props: PodExecTerminalProps) => {
 
     const start = async () => {
       terminal.writeln(t('podExecTerminal.starting'));
+      const abortController = new AbortController();
+      probeAbortController = abortController;
+      probeTimeout = setTimeout(() => {
+        probeTimedOut = true;
+        abortController.abort();
+        writeFailureMessage(t('podExecTerminal.errors.connectionFailed'));
+      }, CONNECTION_TIMEOUT_MS);
 
       try {
         const probeResponse = await fetchApi.fetch(
@@ -188,10 +194,11 @@ export const PodExecTerminalContent = (props: PodExecTerminalProps) => {
             headers: {
               [HEADER_KUBERNETES_CLUSTER]: cluster.name,
             },
+            signal: abortController.signal,
           },
         );
 
-        if (cancelled) {
+        if (cancelled || probeTimedOut) {
           return;
         }
 
@@ -200,14 +207,20 @@ export const PodExecTerminalContent = (props: PodExecTerminalProps) => {
           return;
         }
       } catch {
-        if (cancelled) {
+        if (cancelled || probeTimedOut) {
           return;
         }
         writeFailureMessage(t('podExecTerminal.errors.connectionFailed'));
         return;
+      } finally {
+        if (probeTimeout) {
+          clearTimeout(probeTimeout);
+          probeTimeout = undefined;
+        }
+        probeAbortController = undefined;
       }
 
-      if (cancelled) {
+      if (cancelled || probeTimedOut) {
         return;
       }
 
@@ -219,6 +232,10 @@ export const PodExecTerminalContent = (props: PodExecTerminalProps) => {
     return () => {
       cancelled = true;
       clearConnectionTimeout();
+      if (probeTimeout) {
+        clearTimeout(probeTimeout);
+      }
+      probeAbortController?.abort();
       socket?.close();
       terminal.dispose();
     };

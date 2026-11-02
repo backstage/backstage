@@ -35,11 +35,7 @@ const isPermissionDeniedError = (error: unknown): boolean => {
     message = error;
   }
 
-  return (
-    /\b403\b/.test(message) ||
-    /NotAllowedError/i.test(message) ||
-    /Unauthorized/i.test(message)
-  );
+  return /^Proxy request failed with 403(?:\s|,)/.test(message);
 };
 
 /**
