@@ -261,8 +261,8 @@ export function createPublishGitlabAction(options: {
           raw?: boolean | undefined;
           description?: string | undefined;
           protected?: boolean | undefined;
-          variable_type?: 'file' | 'env_var' | undefined;
           masked?: boolean | undefined;
+          variable_type?: 'file' | 'env_var' | undefined;
           environment_scope?: string | undefined;
           masked_and_hidden?: boolean | undefined;
         }[]

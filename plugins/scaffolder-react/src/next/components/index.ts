@@ -27,3 +27,9 @@ export * from './TemplateCategoryPicker';
 export * from './ScaffolderPageContextMenu';
 export * from './ScaffolderField';
 export * from './SecretWidget';
+export { ReviewStateContent } from './ReviewState/ReviewStateContent';
+export type {
+  ReviewDisplayValue,
+  ReviewItem,
+  ReviewStateContentProps,
+} from './ReviewState/ReviewStateContent';

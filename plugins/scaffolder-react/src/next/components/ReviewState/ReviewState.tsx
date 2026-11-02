@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StructuredMetadataTable } from '@backstage/core-components';
+import { ReviewStateContent, ReviewItem } from './ReviewStateContent';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { isJsonObject, formatKey, findSchemaForKey } from './util';
+import {
+  isJsonObject,
+  formatKey,
+  findSchemaForKey,
+  escapePointerSegment,
+} from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -33,7 +38,7 @@ function processSchema(
   value: JsonValue | undefined,
   schema: ParsedTemplateSchema,
   formState: JsonObject,
-): [string, JsonValue | undefined][] {
+): ReviewItem[] {
   const parsedSchema = new JSONSchema(schema.mergedSchema);
   const definitionInSchema = parsedSchema.getSchema({
     pointer: `#/${key}`,
@@ -43,13 +48,28 @@ function processSchema(
   const name =
     definitionInSchema?.['ui:backstage']?.review?.name ??
     definitionInSchema?.title ??
-    formatKey(key);
+    formatKey(key.replace(/~1/g, '/').replace(/~0/g, '~'));
+
+  const item = (
+    displayValue: JsonValue | undefined,
+    masked = false,
+  ): ReviewItem => ({
+    path: `/${key}`,
+    label: name,
+    // Detach objects and arrays from the state used by submission.
+    displayValue:
+      displayValue === undefined
+        ? undefined
+        : JSON.parse(JSON.stringify(displayValue)),
+    presentation: masked ? 'masked' : 'value',
+    fieldType: masked ? undefined : definitionInSchema?.['ui:field'],
+  });
 
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
     if (backstageReviewOptions) {
       if (backstageReviewOptions.mask) {
-        return [[name, backstageReviewOptions.mask]];
+        return [item(backstageReviewOptions.mask, true)];
       }
       if (backstageReviewOptions.show === false) {
         return [];
@@ -60,29 +80,33 @@ function processSchema(
       definitionInSchema['ui:widget'] === 'password' ||
       definitionInSchema['ui:field']?.toLowerCase() === 'secret'
     ) {
-      return [[name, '******']];
+      return [item('******', true)];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
-        [
-          name,
+        item(
           definitionInSchema.enumNames[
             definitionInSchema.enum.indexOf(value)
           ] || value,
-        ],
+        ),
       ];
     }
 
     if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
       // Recurse nested objects
       return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
-        processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
+        processSchema(
+          `${key}/${escapePointerSegment(nestedKey)}`,
+          nestedValue,
+          schema,
+          formState,
+        ),
       );
     }
   }
 
-  return [[name, value]];
+  return [item(value)];
 }
 
 /**
@@ -90,20 +114,28 @@ function processSchema(
  * @alpha
  */
 export const ReviewState = (props: ReviewStateProps) => {
-  const reviewData = Object.fromEntries(
-    Object.entries(props.formState)
-      .flatMap(([key, value]) => {
-        const schema = findSchemaForKey(key, props.schemas, props.formState);
-        return schema
-          ? processSchema(key, value, schema, props.formState)
-          : [[formatKey(key), value]];
-      })
-      .filter(prop => prop.length > 0),
+  const items: ReviewItem[] = Object.entries(props.formState).flatMap(
+    ([key, value]) => {
+      const schema = findSchemaForKey(key, props.schemas, props.formState);
+      return schema
+        ? processSchema(
+            escapePointerSegment(key),
+            value,
+            schema,
+            props.formState,
+          )
+        : [
+            {
+              path: `/${escapePointerSegment(key)}`,
+              label: formatKey(key),
+              displayValue:
+                value === undefined
+                  ? undefined
+                  : JSON.parse(JSON.stringify(value)),
+              presentation: 'value' as const,
+            },
+          ];
+    },
   );
-  return (
-    <StructuredMetadataTable
-      metadata={reviewData}
-      options={{ titleFormat: key => key }}
-    />
-  );
+  return <ReviewStateContent items={items} />;
 };

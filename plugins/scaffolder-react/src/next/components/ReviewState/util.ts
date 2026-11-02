@@ -19,6 +19,10 @@ import { startCase } from 'lodash';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 
+export function escapePointerSegment(key: string): string {
+  return key.replace(/~/g, '~0').replace(/\//g, '~1');
+}
+
 export function isJsonObject(value?: JsonValue): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -63,7 +67,7 @@ export function findSchemaForKey(
 
     const draft = new JSONSchema(schema);
     const res = draft.getSchema({
-      pointer: `#/${key}`,
+      pointer: `#/${escapePointerSegment(key)}`,
       data,
     });
 

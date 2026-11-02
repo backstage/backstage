@@ -228,7 +228,38 @@ export interface ParsedTemplateSchema {
 }
 
 // @alpha
+export type ReviewDisplayValue =
+  | string
+  | number
+  | boolean
+  | null
+  | readonly ReviewDisplayValue[]
+  | {
+      readonly [key: string]: ReviewDisplayValue | undefined;
+    };
+
+// @alpha
+export type ReviewItem = Readonly<{
+  path: string;
+  label: string;
+  displayValue: ReviewDisplayValue | undefined;
+  presentation: 'value' | 'masked';
+  fieldType?: string;
+}>;
+
+// @alpha
 export const ReviewState: (props: ReviewStateProps) => JSX_2.Element;
+
+// @alpha
+export const ReviewStateContent: {
+  (props: ReviewStateContentProps): JSX.Element | null;
+  ref: SwappableComponentRef<ReviewStateContentProps, ReviewStateContentProps>;
+};
+
+// @alpha
+export type ReviewStateContentProps = Readonly<{
+  items: readonly ReviewItem[];
+}>;
 
 // @alpha
 export type ReviewStateProps = {
