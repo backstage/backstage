@@ -28,9 +28,15 @@ import { styleText } from 'node:util';
 export function translateLegacyProxyOptions(
   proxy: unknown,
 ): DevServerProxyConfigArray | undefined {
-  // Any other shape is passed through for the dev server itself to validate.
+  if (proxy === undefined || proxy === null) {
+    return undefined;
+  }
+  // The dev server doesn't validate its options, and fails in confusing ways
+  // on anything other than an array.
   if (!Array.isArray(proxy)) {
-    return proxy as DevServerProxyConfigArray | undefined;
+    throw new Error(
+      'The "proxy" configuration in your package.json must be an array of proxy entries',
+    );
   }
 
   const outdated = new Set<string>();

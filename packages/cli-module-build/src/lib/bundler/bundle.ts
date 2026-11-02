@@ -210,6 +210,8 @@ async function build(
     all: false,
     warnings: true,
     errors: true,
+    // Rspack 2 colors the messages when it detects CI or a TTY
+    colors: false,
   });
   const { errors, warnings } = formatWebpackMessages({
     errors: serializedStats.errors,
