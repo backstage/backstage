@@ -139,35 +139,25 @@ Don't wrap every small component in its own context — prefer to set context on
 Use `mockApis.analytics()` from `@backstage/frontend-test-utils` — it returns a mock `AnalyticsApi` implementation with a `getEvents()` helper for assertions. Prefer one thorough test with multiple assertions over many small ones.
 
 ```tsx
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import { analyticsApiRef } from '@backstage/frontend-plugin-api';
-import {
-  mockApis,
-  TestApiProvider,
-  wrapInTestApp,
-} from '@backstage/frontend-test-utils';
+import { fireEvent, screen } from '@testing-library/react';
+import { mockApis, renderInTestApp } from '@backstage/frontend-test-utils';
 
 it('captures a deploy event with the service name', async () => {
   const analytics = mockApis.analytics();
 
-  render(
-    wrapInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
-        <DeployButton serviceName="payments-api" />
-      </TestApiProvider>,
-    ),
-  );
+  renderInTestApp(<DeployButton serviceName="payments-api" />, {
+    apis: [analytics],
+  });
 
   fireEvent.click(await screen.findByRole('button', { name: /deploy/i }));
 
-  await waitFor(() => {
-    expect(analytics.getEvents()[0]).toMatchObject({
-      action: 'deploy',
-      subject: 'payments-api',
-    });
-  });
+  expect(analytics.getEvents()).toContainEqual(
+    expect.objectContaining({ action: 'deploy', subject: 'payments-api' }),
+  );
 });
 ```
+
+The test app records a `navigate` event when it renders, so look the event up by its `action` instead of reading `getEvents()[0]`. Events are captured synchronously, so there is no need for `waitFor`.
 
 Assert on `action`, `subject`, and any `attributes`/`value` you explicitly set. Don't assert on auto-populated context keys like `pluginId` — those are the framework's responsibility.
 
