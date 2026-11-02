@@ -817,19 +817,9 @@ const appPlugin: OverridableFrontendPlugin<
     'app-root-element:app/alert-display': OverridableExtensionDefinition<{
       config: {
         transientTimeoutMs: number;
-        anchorOrigin: {
-          vertical: 'top' | 'bottom';
-          horizontal: 'center' | 'left' | 'right';
-        };
       };
       configInput: {
         transientTimeoutMs?: number | undefined;
-        anchorOrigin?:
-          | {
-              vertical?: 'top' | 'bottom' | undefined;
-              horizontal?: 'center' | 'left' | 'right' | undefined;
-            }
-          | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
