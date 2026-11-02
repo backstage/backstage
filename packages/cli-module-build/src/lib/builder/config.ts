@@ -278,7 +278,7 @@ export async function makeRollupConfigs(
         json(),
         yaml(),
         esbuild({
-          target: 'ES2023',
+          target: 'ES2024',
           minify: options.minify,
         }),
         cssEntryPoints({ entryPoints, targetDir }),

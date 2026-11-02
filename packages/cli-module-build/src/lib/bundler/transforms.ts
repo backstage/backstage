@@ -68,7 +68,7 @@ export const transforms = (options: TransformOptions): Transforms => {
             : 'builtin:swc-loader',
           options: {
             jsc: {
-              target: 'es2023',
+              target: 'es2024',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
@@ -98,7 +98,7 @@ export const transforms = (options: TransformOptions): Transforms => {
             : 'builtin:swc-loader',
           options: {
             jsc: {
-              target: 'es2023',
+              target: 'es2024',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',

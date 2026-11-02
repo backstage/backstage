@@ -61,7 +61,7 @@ addHook(
         ignoreDynamic: true,
       },
       jsc: {
-        target: 'es2023',
+        target: 'es2024',
         parser: {
           syntax: 'typescript',
         },
