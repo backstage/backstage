@@ -156,13 +156,13 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
     'https://example.com',
   );
   await user.click(screen.getByRole('button', { name: 'Query' }));
-  expect(appHistory.location).toMatchObject({
+  expect(appHistory.getSnapshot().location).toMatchObject({
     pathname: '/tools/alpha/section/item',
     search: '?view=docs',
     hash: '#intro',
   });
   await user.click(screen.getByRole('row', { name: 'Collection relative' }));
-  expect(appHistory.location).toMatchObject({
+  expect(appHistory.getSnapshot().location).toMatchObject({
     pathname: '/tools/alpha/section/sibling',
     state: { source: 'collection' },
   });
@@ -170,14 +170,16 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
   await user.click(
     await screen.findByRole('link', { name: 'Relative anchor' }),
   );
-  expect(appHistory.location.pathname).toBe('/tools/alpha/section/sibling');
+  expect(appHistory.getSnapshot().location.pathname).toBe(
+    '/tools/alpha/section/sibling',
+  );
   await user.click(screen.getByRole('link', { name: 'Other page anchor' }));
   expect(await screen.findByText('Other page')).toBeInTheDocument();
-  expect(appHistory.location.pathname).toBe('/catalog');
+  expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
   await act(async () => appHistory.navigate('/tools/alpha/section/item'));
   await user.click(
     await screen.findByRole('button', { name: 'Strict navigation' }),
   );
   expect(await screen.findByText('Other page')).toBeInTheDocument();
-  expect(appHistory.location.pathname).toBe('/catalog');
+  expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
 });

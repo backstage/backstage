@@ -193,19 +193,19 @@ it('preserves the frozen V2 contract through nested providers overriding V3', as
   fireEvent.click(screen.getByRole('tab', { name: 'Settings' }));
   expect(await screen.findByText('Settings content')).toBeVisible();
   fireEvent.click(screen.getByRole('link', { name: 'Delegated route' }));
-  expect(history.location).toMatchObject({
+  expect(history.getSnapshot().location).toMatchObject({
     pathname: '/catalog/items/42/details',
     state: { legacy: true },
   });
   fireEvent.click(screen.getByRole('button', { name: 'Empty route' }));
-  expect(history.location).toMatchObject({
+  expect(history.getSnapshot().location).toMatchObject({
     pathname: '/catalog/items/42',
     search: '',
     hash: '',
   });
   act(() => history.navigate('/catalog/items/42/deep?q=1#hash'));
   fireEvent.click(screen.getByRole('button', { name: 'Empty framework' }));
-  expect(history.location).toMatchObject({
+  expect(history.getSnapshot().location).toMatchObject({
     pathname: '/catalog/items/42/deep',
     search: '',
     hash: '',

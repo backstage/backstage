@@ -382,7 +382,9 @@ describe('multi-router coexistence', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('graph-subpage')).toBeInTheDocument();
-      expect(appHistory.location.pathname).toBe('/visualizer-pudding/graph');
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/visualizer-pudding/graph',
+      );
     });
     expect(screen.queryByTestId('tree-subpage')).not.toBeInTheDocument();
 

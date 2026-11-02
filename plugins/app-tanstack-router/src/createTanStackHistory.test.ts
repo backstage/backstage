@@ -17,6 +17,7 @@
 import { createTanStackHistory } from './createTanStackHistory';
 import type {
   AppHistoryApi,
+  AppHistorySnapshot,
   AppLocation,
   AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
@@ -32,36 +33,32 @@ function createMockAppHistory(initialLocation = '/') {
   };
 }
 
-/** Snapshots change immediately, while subscribers receive them later. */
+/** A custom host with location snapshots and delayed change notifications. */
 function deferNotifications(
   inner: ReturnType<typeof createFrameworkMockAppHistory>,
 ): AppHistoryApi {
+  let source = inner.getSnapshot();
+  let snapshot: AppHistorySnapshot = { location: source.location };
   return {
-    get location() {
-      return inner.location;
+    getSnapshot() {
+      const next = inner.getSnapshot();
+      if (next !== source) {
+        source = next;
+        snapshot = { location: next.location };
+      }
+      return snapshot;
     },
-    location$: {
-      subscribe(observer) {
-        const next =
-          typeof observer === 'function'
-            ? observer
-            : observer?.next?.bind(observer);
-        let replay = true;
-        const subscription = inner.location$.subscribe(location => {
-          if (replay) {
-            next?.(location);
-          } else {
-            void Promise.resolve().then(() => {
-              if (!subscription.closed) next?.(location);
-            });
-          }
+    subscribe(listener) {
+      let active = true;
+      const unsubscribe = inner.subscribe(() => {
+        void Promise.resolve().then(() => {
+          if (active) listener();
         });
-        replay = false;
-        return subscription;
-      },
-      [Symbol.observable]() {
-        return this;
-      },
+      });
+      return () => {
+        active = false;
+        unsubscribe();
+      };
     },
     navigate: inner.navigate.bind(inner),
     createHref: inner.createHref.bind(inner),
@@ -74,44 +71,81 @@ function createHostOwnedAppHistory(options: { withMetadata: boolean }): {
   navigatedTo: () => Array<string | number>;
 } {
   const inner = createMockAppHistory('/tools');
-  let action: 'PUSH' | 'REPLACE' | 'POP' = 'POP';
-
+  let source: AppHistorySnapshot | undefined;
+  let snapshot: AppHistorySnapshot;
   const appHistory: AppHistoryApi = {
-    get location() {
-      return inner.appHistory.location;
-    },
-    location$: inner.appHistory.location$,
-    navigate(to: string | number, navOptions?: AppNavigateOptions) {
-      if (typeof to !== 'number') {
-        action = navOptions?.replace ? 'REPLACE' : 'PUSH';
+    getSnapshot() {
+      const next = inner.appHistory.getSnapshot();
+      if (next !== source) {
+        source = next;
+        snapshot = {
+          location: next.location,
+          ...(options.withMetadata
+            ? {
+                action: next.action,
+                entry: { key: 'default', index: 0 },
+                length: 1,
+              }
+            : {}),
+        };
       }
-      (inner.appHistory.navigate as (t: any, o?: any) => void)(to, navOptions);
+      return snapshot;
     },
+    subscribe: inner.appHistory.subscribe,
+    navigate: inner.appHistory.navigate.bind(inner.appHistory),
     createHref: (...args) => inner.appHistory.createHref(...args),
   };
-
-  if (options.withMetadata) {
-    // Implemented the way any third-party history would: by looking the global
-    // capability symbol up by name, with no import from the framework.
-    Object.defineProperty(
-      appHistory,
-      Symbol.for('@backstage/app-history/metadata/v1'),
-      {
-        get: () => ({
-          action,
-          key: 'default',
-          index: 0,
-          length: 1,
-          canGoBack: false,
-        }),
-      },
-    );
-  }
-
   return { appHistory, navigatedTo: inner.navigatedTo };
 }
 
 describe('createTanStackHistory', () => {
+  it('uses independently available snapshot metadata without inventing entry positions', () => {
+    const inner = createFrameworkMockAppHistory({ initialLocation: '/tools' });
+    let source: AppHistorySnapshot | undefined;
+    let snapshot: AppHistorySnapshot;
+    let includeIndex = false;
+    const host: AppHistoryApi = {
+      getSnapshot() {
+        const next = inner.getSnapshot();
+        if (next !== source) {
+          source = next;
+          snapshot = {
+            location: next.location,
+            action: next.action,
+            entry: {
+              key: next.entry!.key,
+              ...(includeIndex ? { index: next.entry!.index } : {}),
+            },
+          };
+        }
+        return snapshot;
+      },
+      subscribe: inner.subscribe,
+      navigate: inner.navigate.bind(inner),
+      createHref: inner.createHref.bind(inner),
+    };
+    const history = createTanStackHistory(host);
+    const actions: unknown[] = [];
+    const unsubscribe = history.subscribe(event => actions.push(event.action));
+    const key = history.location.state.__TSR_key;
+    inner.navigate('/tools');
+    expect(actions).toEqual([{ type: 'PUSH' }]);
+    expect(history.location.state.__TSR_key).not.toBe(key);
+    expect(history.location.state.__TSR_index).toBe(0);
+    expect(history.length).toBe(1);
+    expect(history.canGoBack()).toBe(false);
+    inner.navigate(-1);
+    expect(history.location.state.__TSR_key).toBe(key);
+    expect(actions.at(-1)).toEqual({ type: 'GO', index: 0 });
+    includeIndex = true;
+    inner.navigate('/indexed');
+    expect(history.location.state.__TSR_index).toBe(1);
+    expect(history.canGoBack()).toBe(true);
+    expect(history.length).toBe(2);
+    unsubscribe();
+    history.destroy();
+  });
+
   it('should project an app-absolute location and never write window.history', () => {
     const { appHistory } = createMockAppHistory('/tools/a');
     const pushSpy = jest.spyOn(window.history, 'pushState');
@@ -287,7 +321,7 @@ describe('createTanStackHistory', () => {
     expect(history.location.state).toEqual(
       expect.objectContaining({ foo: 'bar', __TSR_index: expect.any(Number) }),
     );
-    expect(appHistory.location.state).toMatchObject({
+    expect(appHistory.getSnapshot().location.state).toMatchObject({
       foo: 'bar',
       __TSR_key: expect.any(String),
       __TSR_index: 1,
@@ -380,10 +414,8 @@ describe('createTanStackHistory', () => {
     inner.navigate('/tools/one');
     inner.navigate('/tools/two');
     const appHistory: AppHistoryApi = {
-      get location() {
-        return inner.location;
-      },
-      location$: inner.location$,
+      getSnapshot: deferNotifications(inner).getSnapshot,
+      subscribe: inner.subscribe,
       navigate(to: string | number, options?: AppNavigateOptions) {
         void Promise.resolve().then(() => {
           if (typeof to === 'number') {
@@ -426,7 +458,7 @@ describe('createTanStackHistory', () => {
     const actions: unknown[] = [];
     const unsubscribe = history.subscribe(event => actions.push(event.action));
     history.back();
-    expect(inner.location.pathname).toBe('/tools/one');
+    expect(inner.getSnapshot().location.pathname).toBe('/tools/one');
     expect(actions).toEqual([]);
     await Promise.resolve();
     expect(history.location.pathname).toBe('/tools/one');
@@ -453,26 +485,35 @@ describe('createTanStackHistory', () => {
 
   it('shares the host subscription and releases it when unused or destroyed', () => {
     const { appHistory } = createMockAppHistory('/tools');
-    const subscribe = jest.spyOn(appHistory.location$, 'subscribe');
+    const unsubscriptions: jest.Mock[] = [];
+    const hostSubscribe = appHistory.subscribe;
+    const subscribe = jest
+      .spyOn(appHistory, 'subscribe')
+      .mockImplementation(listener => {
+        const unsubscribe = jest.fn(hostSubscribe(listener));
+        unsubscriptions.push(unsubscribe);
+        return unsubscribe;
+      });
     const history = createTanStackHistory(appHistory);
     expect(subscribe).not.toHaveBeenCalled();
 
     const unsubscribeFirst = history.subscribe(() => {});
     const unsubscribeSecond = history.subscribe(() => {});
     expect(subscribe).toHaveBeenCalledTimes(1);
-    const first = subscribe.mock.results[0].value;
+    const first = unsubscriptions[0];
     unsubscribeFirst();
-    expect(first.closed).toBe(false);
+    expect(first).not.toHaveBeenCalled();
     unsubscribeSecond();
-    expect(first.closed).toBe(true);
+    expect(first).toHaveBeenCalledTimes(1);
 
     appHistory.navigate('/tools/reconnected');
     const seen: string[] = [];
     history.subscribe(({ location }) => seen.push(location.pathname));
     expect(subscribe).toHaveBeenCalledTimes(2);
     expect(seen).toEqual(['/tools/reconnected']);
+    expect(history.location.pathname).toBe('/tools/reconnected');
     history.destroy();
-    expect(subscribe.mock.results[1].value.closed).toBe(true);
+    expect(unsubscriptions[1]).toHaveBeenCalledTimes(1);
     expect(history.subscribers.size).toBe(0);
     appHistory.navigate('/tools/after-destroy');
     expect(seen).toEqual(['/tools/reconnected']);
@@ -556,32 +597,15 @@ describe('createTanStackHistory', () => {
       { pathname: '/tools', search: '', hash: '', state: undefined },
     ];
     let index = 0;
-    let notify: ((location: AppLocation) => void) | undefined;
+    let notify: (() => void) | undefined;
+    let snapshot: AppHistorySnapshot = { location: entries[index] };
     const appHistory: AppHistoryApi = {
-      get location() {
-        return entries[index];
-      },
-      location$: {
-        subscribe(observer) {
-          notify =
-            typeof observer === 'function'
-              ? observer
-              : observer?.next?.bind(observer);
-          notify?.(entries[index]);
-          let closed = false;
-          return {
-            get closed() {
-              return closed;
-            },
-            unsubscribe() {
-              closed = true;
-              notify = undefined;
-            },
-          };
-        },
-        [Symbol.observable]() {
-          return this;
-        },
+      getSnapshot: () => snapshot,
+      subscribe(listener) {
+        notify = listener;
+        return () => {
+          notify = undefined;
+        };
       },
       navigate(to: string | number, options?: AppNavigateOptions) {
         if (options?.replace && to === entries[index].pathname) {
@@ -598,7 +622,8 @@ describe('createTanStackHistory', () => {
           });
           index += 1;
         }
-        notify?.(entries[index]);
+        snapshot = { location: entries[index] };
+        notify?.();
       },
       createHref: to => to,
     };

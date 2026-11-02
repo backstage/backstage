@@ -16,12 +16,8 @@
 
 import type {
   AppHistoryApi,
-  AppLocation,
+  AppHistorySnapshot,
 } from '@backstage/frontend-plugin-api';
-import {
-  readAppHistoryMetadata,
-  type AppHistoryMetadata,
-} from '@internal/frontend';
 import {
   createHistory,
   parseHref,
@@ -52,7 +48,7 @@ function toTraversalAction(delta: number): HistoryNotifyAction {
  * Locations and destinations use app-absolute paths, excluding the deployment
  * basename. Only href creation adds that basename, through the app history.
  *
- * TanStack's entry fields project the framework's optional private metadata.
+ * TanStack's entry fields project the app history snapshot's optional metadata.
  * Without it, the adapter exposes a single synthetic slot (index 0, length 1,
  * cannot go back). Keys identify observed locations, not recoverable entries,
  * so entry-based restoration is unavailable. Push and replace require the host
@@ -72,10 +68,8 @@ function toTraversalAction(delta: number): HistoryNotifyAction {
 export function createTanStackHistory(
   appHistory: AppHistoryApi,
 ): RouterHistory {
-  function toHistoryLocation(
-    appLoc: AppLocation,
-    metadata: AppHistoryMetadata | undefined,
-  ): HistoryLocation {
+  function toHistoryLocation(snapshot: AppHistorySnapshot): HistoryLocation {
+    const { location: appLoc, entry } = snapshot;
     const href = `${appLoc.pathname}${appLoc.search}${appLoc.hash}`;
     let userState: Record<string, unknown> | undefined;
     if (isRecord(appLoc.state)) {
@@ -87,67 +81,46 @@ export function createTanStackHistory(
     location.state = {
       ...location.state,
       ...userState,
-      ...(metadata
-        ? {
-            key: metadata.key,
-            __TSR_key: metadata.key,
-            __TSR_index: metadata.index,
-          }
-        : { __TSR_index: 0 }),
+      ...(entry ? { key: entry.key, __TSR_key: entry.key } : {}),
+      __TSR_index: entry?.index ?? 0,
     };
     return location;
   }
 
-  let subscription: { unsubscribe(): void } | undefined;
-  let sourceLocation = appHistory.location;
-  let latestMetadata = readAppHistoryMetadata(appHistory);
-  let latestLocation = toHistoryLocation(sourceLocation, latestMetadata);
+  let unsubscribeFromHost: (() => void) | undefined;
+  let sourceSnapshot = appHistory.getSnapshot();
+  let latestLocation = toHistoryLocation(sourceSnapshot);
   let blockers: NavigationBlocker[] = [];
   let writing = false;
-  let writtenLocation: AppLocation | undefined;
-  let pendingEchoes = new WeakSet<AppLocation>();
 
-  function commit(location: AppLocation): void {
-    sourceLocation = location;
-    latestMetadata = readAppHistoryMetadata(appHistory);
-    latestLocation = toHistoryLocation(location, latestMetadata);
+  function commit(snapshot: AppHistorySnapshot): void {
+    sourceSnapshot = snapshot;
+    latestLocation = toHistoryLocation(snapshot);
   }
 
   function write(path: string, state: unknown, replace: boolean) {
     // Native history notifies after this callback returns. Suppress only the
-    // actual host write, so host navigation during an async blocker still flows.
+    // host write, so host navigation during an async blocker still flows.
     writing = true;
-    writtenLocation = undefined;
     try {
       appHistory.navigate(path, { state, replace });
-      const location = appHistory.location;
-      if (
-        subscription &&
-        writtenLocation !== location &&
-        sourceLocation !== location
-      ) {
-        pendingEchoes.add(location);
-      }
-      commit(location);
+      commit(appHistory.getSnapshot());
     } finally {
       writing = false;
     }
   }
 
-  function unsubscribeFromHost() {
-    subscription?.unsubscribe();
-    subscription = undefined;
-    pendingEchoes = new WeakSet();
-  }
-
   const history = createHistory({
     getLocation: () => {
-      if (!subscription) {
-        commit(appHistory.location);
+      if (!unsubscribeFromHost) {
+        commit(appHistory.getSnapshot());
       }
       return latestLocation;
     },
-    getLength: () => latestMetadata?.length ?? 1,
+    getLength: () => {
+      const snapshot = appHistory.getSnapshot();
+      return snapshot.length ?? (snapshot.entry?.index ?? 0) + 1;
+    },
     pushState: (path, state) => write(path, state, false),
     replaceState: (path, state) => write(path, state, true),
     go: delta => appHistory.navigate(delta),
@@ -160,7 +133,8 @@ export function createTanStackHistory(
     },
     notifyOnIndexChange: false,
     destroy: () => {
-      unsubscribeFromHost();
+      unsubscribeFromHost?.();
+      unsubscribeFromHost = undefined;
       history.subscribers.clear();
     },
   });
@@ -171,38 +145,36 @@ export function createTanStackHistory(
   const subscribe = history.subscribe;
   history.subscribe = callback => {
     const unsubscribe = subscribe(callback);
-    if (!subscription) {
-      subscription = appHistory.location$.subscribe(location => {
-        if (writing) {
-          writtenLocation = location;
+    if (!unsubscribeFromHost) {
+      const onChange = () => {
+        const snapshot = appHistory.getSnapshot();
+        if (writing || snapshot === sourceSnapshot) {
           return;
         }
-        if (pendingEchoes.delete(location)) {
-          return;
-        }
-        const metadata = readAppHistoryMetadata(appHistory);
-        if (
-          location === sourceLocation &&
-          metadata?.key === latestMetadata?.key &&
-          metadata?.action === latestMetadata?.action
-        ) {
-          return;
-        }
-        const previousIndex = latestMetadata?.index ?? 0;
-        commit(location);
-        if (metadata?.action === 'PUSH' || metadata?.action === 'REPLACE') {
-          history.notify({ type: metadata.action });
+        const previousIndex = sourceSnapshot.entry?.index;
+        commit(snapshot);
+        if (snapshot.action === 'PUSH' || snapshot.action === 'REPLACE') {
+          history.notify({ type: snapshot.action });
         } else {
+          const index = snapshot.entry?.index;
           history.notify(
-            toTraversalAction((metadata?.index ?? 0) - previousIndex),
+            toTraversalAction(
+              index !== undefined && previousIndex !== undefined
+                ? index - previousIndex
+                : 0,
+            ),
           );
         }
-      });
+      };
+      unsubscribeFromHost = appHistory.subscribe(onChange);
+      // Catch up on changes made while no TanStack consumer was subscribed.
+      onChange();
     }
     return () => {
       unsubscribe();
       if (history.subscribers.size === 0) {
-        unsubscribeFromHost();
+        unsubscribeFromHost?.();
+        unsubscribeFromHost = undefined;
       }
     };
   };

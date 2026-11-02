@@ -99,7 +99,7 @@ describe('implicit page router compatibility', () => {
     expect(
       await screen.findByRole('heading', { name: 'Edit form' }),
     ).toBeVisible();
-    expect(appHistory.location).toMatchObject({
+    expect(appHistory.getSnapshot().location).toMatchObject({
       pathname: '/legacy/alpha/edit',
       search: '?tab=details',
       hash: '#form',

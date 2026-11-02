@@ -30,7 +30,7 @@ import { createMemoryHistoryBackend } from '../../../frontend-app-api/src/routin
  */
 export interface MockAppHistoryOptions {
   /**
-   * Initial location for the mock app history's `location$`.
+   * Initial location for the mock app history's snapshot.
    * Defaults to `'/'`.
    *
    * Stands in for the browser URL, so a `basename` is stripped from it just as
@@ -49,7 +49,7 @@ export interface MockAppHistoryOptions {
    * not app-relative alone, and stripping the prefix back off
    * {@link MockAppHistoryOptions.initialLocation}.
    *
-   * `navigate` targets and `location$` emissions are app-relative on both
+   * `navigate` targets and snapshot locations are app-relative on both
    * sides of the basename, exactly as in production: the real implementation
    * prepends the basename on the way into the History API and strips it on the
    * way back out, so a round trip through it is invisible.

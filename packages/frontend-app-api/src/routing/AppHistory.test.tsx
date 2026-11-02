@@ -18,7 +18,10 @@ import {
   createMemoryHistoryBackend,
   createWindowHistoryBackend,
 } from './HistoryBackend';
-import type { AppLocation } from '@backstage/frontend-plugin-api';
+import type {
+  AppLocation,
+  AppHistorySnapshot,
+} from '@backstage/frontend-plugin-api';
 import { createAppHistory, type AppHistory } from './AppHistory';
 
 describe('AppHistory', () => {
@@ -64,12 +67,12 @@ describe('AppHistory', () => {
       const appHistory = createAppHistory();
       history = appHistory;
       const locations: string[] = [];
-      appHistory.location$.subscribe(location =>
-        locations.push(location.pathname),
+      appHistory.subscribe(() =>
+        locations.push(appHistory.getSnapshot().location.pathname),
       );
       try {
         appHistory.navigate('/b');
-        expect(locations).toEqual(['/a', '/b']);
+        expect(locations).toEqual(['/b']);
         for (const [delta, pathname, index] of [
           [-1, '/a', 0],
           [1, '/b', 1],
@@ -87,9 +90,9 @@ describe('AppHistory', () => {
             appHistory.navigate(delta);
           });
           expect(window.location.pathname).toBe(pathname);
-          expect(appHistory.location.pathname).toBe(pathname);
+          expect(appHistory.getSnapshot().location.pathname).toBe(pathname);
         }
-        expect(locations).toEqual(['/a', '/b', '/a', '/b']);
+        expect(locations).toEqual(['/b', '/a', '/b']);
       } finally {
         pushSpy.mockRestore();
       }
@@ -99,19 +102,19 @@ describe('AppHistory', () => {
   it('should expose a referentially stable current location', () => {
     // The accessor backs useSyncExternalStore's getSnapshot, which loops
     // forever if repeated reads return different references.
-    expect(history.location).toEqual({
+    expect(history.getSnapshot().location).toEqual({
       pathname: '/',
       search: '',
       hash: '',
       state: undefined,
     });
-    expect(history.location).toBe(history.location);
+    expect(history.getSnapshot().location).toBe(history.getSnapshot().location);
 
-    const before = history.location;
+    const before = history.getSnapshot().location;
     history.navigate('/catalog?kind=component#top');
 
-    expect(history.location).not.toBe(before);
-    expect(history.location).toEqual({
+    expect(history.getSnapshot().location).not.toBe(before);
+    expect(history.getSnapshot().location).toEqual({
       pathname: '/catalog',
       search: '?kind=component',
       hash: '#top',
@@ -120,17 +123,159 @@ describe('AppHistory', () => {
 
     // A redundant navigation must not mint a new reference, otherwise every
     // subscriber re-renders for a location that did not change.
-    const unchanged = history.location;
+    const unchanged = history.getSnapshot().location;
     history.navigate('/catalog?kind=component#top');
-    expect(history.location).toBe(unchanged);
+    expect(history.getSnapshot().location).toBe(unchanged);
 
     // Subscribers observe exactly what the accessor reports.
     const seen: unknown[] = [];
-    const sub = history.location$.subscribe(loc => seen.push(loc));
-    expect(seen[0]).toBe(history.location);
+    const sub = history.subscribe(() =>
+      seen.push(history.getSnapshot().location),
+    );
+    expect(seen).toEqual([]);
     history.navigate('/other');
-    expect(seen[1]).toBe(history.location);
-    sub.unsubscribe();
+    expect(seen[0]).toBe(history.getSnapshot().location);
+    sub();
+  });
+
+  it('publishes atomic history snapshots and preserves location and entry identities', () => {
+    const appHistory = createAppHistory({
+      history: createMemoryHistoryBackend(),
+    });
+    const { getSnapshot, subscribe } = appHistory;
+    const snapshots: AppHistorySnapshot[] = [];
+    const unsubscribe = subscribe(() => snapshots.push(getSnapshot()));
+    const initial = getSnapshot();
+    expect(getSnapshot()).toBe(initial);
+    expect(initial).toEqual({
+      location: { pathname: '/', search: '', hash: '', state: undefined },
+      entry: { key: expect.any(String), index: 0 },
+      length: 1,
+    });
+    expect(snapshots).toEqual([]);
+
+    appHistory.navigate('/');
+    const pushed = getSnapshot();
+    expect(snapshots).toEqual([pushed]);
+    expect(pushed).not.toBe(initial);
+    expect(pushed.location).toBe(initial.location);
+    expect(pushed.entry?.key).not.toBe(initial.entry?.key);
+    expect(pushed).toMatchObject({
+      action: 'PUSH',
+      entry: { index: 1 },
+      length: 2,
+    });
+
+    appHistory.navigate('/', { replace: true });
+    const replaced = getSnapshot();
+    expect(replaced).not.toBe(pushed);
+    expect(replaced.location).toBe(pushed.location);
+    expect(replaced.entry).toBe(pushed.entry);
+    expect(replaced.action).toBe('REPLACE');
+    appHistory.navigate('/', { replace: true });
+    expect(getSnapshot()).not.toBe(replaced);
+    expect(getSnapshot().entry).toBe(replaced.entry);
+    expect(snapshots).toHaveLength(3);
+
+    appHistory.navigate(-1);
+    expect(getSnapshot()).toMatchObject({
+      action: 'POP',
+      entry: initial.entry,
+      length: 2,
+    });
+    appHistory.navigate(1);
+    expect(getSnapshot()).toMatchObject({
+      action: 'POP',
+      entry: pushed.entry,
+      length: 2,
+    });
+    appHistory.navigate(-1);
+    appHistory.navigate('/other', { state: { from: 'root' } });
+    expect(getSnapshot()).toMatchObject({
+      action: 'PUSH',
+      entry: { index: 1 },
+      length: 2,
+      location: { pathname: '/other', state: { from: 'root' } },
+    });
+    expect(initial.location.pathname).toBe('/');
+    const count = snapshots.length;
+    appHistory.navigate(2);
+    expect(snapshots).toHaveLength(count);
+    expect(getSnapshot()).toBe(snapshots.at(-1));
+    unsubscribe();
+    appHistory.dispose();
+  });
+
+  it('allows long subscriber chains, rejects navigation cycles, and recovers after errors', () => {
+    const appHistory = createAppHistory({
+      history: createMemoryHistoryBackend({
+        initialEntries: ['/first', '/second'],
+      }),
+    });
+    try {
+      let remaining = 50;
+      const stopRedirecting = appHistory.subscribe(() => {
+        if (remaining > 0) {
+          remaining -= 1;
+          appHistory.navigate(`/redirect/${remaining}`, { replace: true });
+        }
+      });
+      appHistory.navigate('/redirect', { replace: true });
+      expect(remaining).toBe(0);
+      expect(appHistory.getSnapshot().location.pathname).toBe('/redirect/0');
+      stopRedirecting();
+
+      for (const navigate of [
+        () => appHistory.navigate('/loop', { replace: true }),
+        () =>
+          appHistory.navigate(
+            appHistory.getSnapshot().entry?.index === 0 ? 1 : -1,
+          ),
+      ]) {
+        const listener = jest.fn(navigate);
+        const unsubscribe = appHistory.subscribe(listener);
+        expect(navigate).toThrow(
+          /App history exceeded .* synchronous nested navigations/,
+        );
+        expect(listener.mock.calls.length).toBeGreaterThan(50);
+        expect(listener.mock.calls.length).toBeLessThan(1000);
+        unsubscribe();
+        expect(() =>
+          appHistory.navigate('/recovered', { replace: true }),
+        ).not.toThrow();
+        expect(appHistory.getSnapshot().location.pathname).toBe('/recovered');
+      }
+
+      // The bound applies to nested notifications, not the app's lifetime.
+      for (let index = 0; index < 150; index += 1) {
+        appHistory.navigate(`/independent/${index}`, { replace: true });
+      }
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/independent/149',
+      );
+    } finally {
+      appHistory.dispose();
+    }
+  });
+
+  it('reads stable snapshots after external writes without writing browser history', () => {
+    window.history.replaceState({ external: true }, '', '/external');
+    const push = jest.spyOn(window.history, 'pushState');
+    const replace = jest.spyOn(window.history, 'replaceState');
+    try {
+      const snapshot = history.getSnapshot();
+      expect(snapshot.location).toMatchObject({
+        pathname: '/external',
+        state: { external: true },
+      });
+      expect(history.getSnapshot()).toBe(snapshot);
+      expect(snapshot.action).toBeUndefined();
+      expect(push).not.toHaveBeenCalled();
+      expect(replace).not.toHaveBeenCalled();
+    } finally {
+      push.mockRestore();
+      replace.mockRestore();
+    }
   });
 
   describe('with memory history backend', () => {
@@ -151,9 +296,12 @@ describe('AppHistory', () => {
     it('should use the initial memory entry without touching window.history', () => {
       const windowBefore = window.location.pathname;
       const locations: string[] = [];
-      memoryHistory.location$.subscribe(loc => locations.push(loc.pathname));
+      memoryHistory.subscribe(() =>
+        locations.push(memoryHistory.getSnapshot().location.pathname),
+      );
 
-      expect(locations[0]).toBe('/start');
+      expect(locations).toEqual([]);
+      expect(memoryHistory.getSnapshot().location.pathname).toBe('/start');
       expect(window.location.pathname).toBe(windowBefore);
     });
 
@@ -162,9 +310,14 @@ describe('AppHistory', () => {
       memoryHistory.navigate('/catalog/entity/foo');
 
       const locations: string[] = [];
-      memoryHistory.location$.subscribe(loc => locations.push(loc.pathname));
+      memoryHistory.subscribe(() =>
+        locations.push(memoryHistory.getSnapshot().location.pathname),
+      );
 
-      expect(locations[locations.length - 1]).toBe('/catalog/entity/foo');
+      expect(locations).toEqual([]);
+      expect(memoryHistory.getSnapshot().location.pathname).toBe(
+        '/catalog/entity/foo',
+      );
       expect(memoryBackend.getLocation().pathname).toBe('/catalog/entity/foo');
       expect(window.location.pathname).toBe(windowBefore);
     });
@@ -173,11 +326,13 @@ describe('AppHistory', () => {
       memoryHistory.navigate('/first');
       memoryHistory.navigate('/second');
       const locations: string[] = [];
-      memoryHistory.location$.subscribe(loc => locations.push(loc.pathname));
+      memoryHistory.subscribe(() =>
+        locations.push(memoryHistory.getSnapshot().location.pathname),
+      );
 
       memoryHistory.navigate(-1);
 
-      expect(memoryHistory.location.pathname).toBe('/first');
+      expect(memoryHistory.getSnapshot().location.pathname).toBe('/first');
       expect(locations.at(-1)).toBe('/first');
     });
 
@@ -195,8 +350,10 @@ describe('AppHistory', () => {
       expect(memoryBackend.getLocation().pathname).toBe('/backstage/catalog');
 
       const locations: string[] = [];
-      memoryHistory.location$.subscribe(l => locations.push(l.pathname));
-      expect(locations).toContain('/catalog');
+      memoryHistory.subscribe(() =>
+        locations.push(memoryHistory.getSnapshot().location.pathname),
+      );
+      expect(memoryHistory.getSnapshot().location.pathname).toBe('/catalog');
     });
   });
 
@@ -211,39 +368,41 @@ describe('AppHistory', () => {
 
   it('should emit location on navigate', () => {
     const locations: string[] = [];
-    const sub = history.location$.subscribe(loc =>
-      locations.push(loc.pathname),
+    const sub = history.subscribe(() =>
+      locations.push(history.getSnapshot().location.pathname),
     );
     history.navigate('/catalog');
     expect(locations).toContain('/catalog');
-    sub.unsubscribe();
+    sub();
   });
 
-  it('should mark subscription as closed after unsubscribe', () => {
-    const sub = history.location$.subscribe(() => {});
-    expect(sub.closed).toBe(false);
-    sub.unsubscribe();
-    expect(sub.closed).toBe(true);
-  });
-
-  it('should preserve state through navigate and location$', () => {
-    const state = { from: '/login', returnTo: '/dashboard' };
-    history.navigate('/catalog/entity/foo', { state });
-
-    const locations: Array<{ state: unknown }> = [];
-    const sub = history.location$.subscribe(loc =>
-      locations.push({ state: loc.state }),
-    );
-
-    expect(locations[locations.length - 1].state).toEqual(state);
-    sub.unsubscribe();
-  });
-
-  it('should handle dispose', () => {
-    const sub = history.location$.subscribe(() => {});
+  it('unsubscribes independently and stops notifications after disposal', () => {
+    const listener = jest.fn();
+    const first = history.subscribe(listener);
+    const second = history.subscribe(listener);
+    expect(listener).not.toHaveBeenCalled();
+    history.navigate('/first');
+    expect(listener).toHaveBeenCalledTimes(2);
+    expect(listener).toHaveBeenLastCalledWith();
+    first();
+    first();
+    history.navigate('/second');
+    expect(listener).toHaveBeenCalledTimes(3);
     history.dispose();
-    expect(sub.closed).toBe(false); // sub itself is not auto-closed
-    // But no more emissions will occur from popstate
+    history.navigate('/third');
+    expect(listener).toHaveBeenCalledTimes(3);
+    second();
+  });
+
+  it('publishes navigation state before invoking subscribers', () => {
+    const state = { from: '/login', returnTo: '/dashboard' };
+    const listener = jest.fn(() => {
+      expect(history.getSnapshot().location.state).toBe(state);
+    });
+    const unsubscribe = history.subscribe(listener);
+    history.navigate('/catalog/entity/foo', { state });
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
   });
 
   it('should not dispatch popstate on navigate (only emit directly)', () => {
@@ -256,7 +415,9 @@ describe('AppHistory', () => {
 
   it('should emit exactly once per navigate call (no double-emission)', () => {
     const emissions: string[] = [];
-    history.location$.subscribe(loc => emissions.push(loc.pathname));
+    history.subscribe(() =>
+      emissions.push(history.getSnapshot().location.pathname),
+    );
     const countBefore = emissions.length;
 
     history.navigate('/catalog/foo');
@@ -269,7 +430,9 @@ describe('AppHistory', () => {
   it('should emit on popstate events (back/forward)', () => {
     history.navigate('/catalog/foo');
     const locations: string[] = [];
-    history.location$.subscribe(loc => locations.push(loc.pathname));
+    history.subscribe(() =>
+      locations.push(history.getSnapshot().location.pathname),
+    );
 
     window.history.pushState(null, '', '/other/page');
     window.dispatchEvent(new PopStateEvent('popstate'));
@@ -279,12 +442,14 @@ describe('AppHistory', () => {
 
   it('should emit hash changes when Navigation API is unavailable', () => {
     const locations: string[] = [];
-    history.location$.subscribe(loc => locations.push(loc.hash));
+    history.subscribe(() =>
+      locations.push(history.getSnapshot().location.hash),
+    );
 
     window.history.pushState(null, '', '/page#section');
     window.dispatchEvent(new HashChangeEvent('hashchange'));
 
-    expect(history.location.hash).toBe('#section');
+    expect(history.getSnapshot().location.hash).toBe('#section');
     expect(locations.at(-1)).toBe('#section');
   });
 
@@ -302,7 +467,7 @@ describe('AppHistory', () => {
     });
     history = createAppHistory();
     const seen: AppLocation[] = [];
-    history.location$.subscribe(loc => seen.push(loc));
+    history.subscribe(() => seen.push(history.getSnapshot().location));
 
     window.history.pushState({ source: 'native' }, '', '/native-entry');
     navigation.currentEntry = { key: 'native', index: 1 };
@@ -332,9 +497,9 @@ describe('AppHistory', () => {
       history: backend,
       basename: '/backstage',
     });
-    const before = appHistory.location;
+    const before = appHistory.getSnapshot().location;
     const listener = jest.fn();
-    const subscription = appHistory.location$.subscribe(listener);
+    const subscription = appHistory.subscribe(listener);
     listener.mockClear();
 
     for (const target of [
@@ -353,9 +518,9 @@ describe('AppHistory', () => {
         replace: true,
       });
     }
-    expect(appHistory.location).toBe(before);
+    expect(appHistory.getSnapshot().location).toBe(before);
     expect(listener).not.toHaveBeenCalled();
-    subscription.unsubscribe();
+    subscription();
     appHistory.dispose();
 
     // Only the path may carry a scheme. A query string or fragment that
@@ -376,7 +541,9 @@ describe('AppHistory', () => {
 
   it('should not emit after dispose', () => {
     const emissions: string[] = [];
-    history.location$.subscribe(loc => emissions.push(loc.pathname));
+    history.subscribe(() =>
+      emissions.push(history.getSnapshot().location.pathname),
+    );
     const countAfterSubscribe = emissions.length;
     history.dispose();
     window.history.pushState(null, '', '/new');
@@ -420,8 +587,8 @@ describe('AppHistory', () => {
     const firstListener = jest.fn();
     const secondListener = jest.fn();
     const independentListener = jest.fn();
-    first.location$.subscribe(firstListener);
-    second.location$.subscribe(secondListener);
+    first.subscribe(firstListener);
+    second.subscribe(secondListener);
     const unsubscribe = backend.listen(independentListener);
     firstListener.mockClear();
     secondListener.mockClear();
@@ -432,9 +599,8 @@ describe('AppHistory', () => {
 
     expect(firstListener).not.toHaveBeenCalled();
     expect(secondListener).toHaveBeenCalledTimes(1);
-    expect(secondListener).toHaveBeenLastCalledWith(
-      expect.objectContaining({ pathname: '/first' }),
-    );
+    expect(secondListener).toHaveBeenLastCalledWith();
+    expect(second.getSnapshot().location.pathname).toBe('/first');
     expect(independentListener).toHaveBeenCalledTimes(1);
 
     second.dispose();
@@ -444,25 +610,21 @@ describe('AppHistory', () => {
     expect(independentListener).toHaveBeenCalledTimes(1);
   });
 
-  it('should support observer object with next method', () => {
-    const locations: string[] = [];
-    const sub = history.location$.subscribe({
-      next: loc => locations.push(loc.pathname),
-    });
-    history.navigate('/test');
-    expect(locations).toContain('/test');
-    sub.unsubscribe();
-  });
-
   it('should handle subscriber adding new subscriber during emit', () => {
     const results: string[] = [];
-    const sub = history.location$.subscribe(loc => {
+    const sub = history.subscribe(() => {
+      const loc = history.getSnapshot().location;
+
       results.push(`first:${loc.pathname}`);
-      history.location$.subscribe(l => results.push(`nested:${l.pathname}`));
+      history.subscribe(() =>
+        results.push(`nested:${history.getSnapshot().location.pathname}`),
+      );
     });
     history.navigate('/test');
-    expect(results.filter(r => r.startsWith('first:')).length).toBe(2);
-    sub.unsubscribe();
+    expect(results).toEqual(['first:/test']);
+    history.navigate('/second');
+    expect(results).toEqual(['first:/test', 'first:/second', 'nested:/second']);
+    sub();
   });
 
   describe('createHref', () => {
@@ -519,25 +681,25 @@ describe('AppHistory', () => {
         expect(() => appHistory.navigate(target)).toThrow(
           'App routing requires',
         );
-        expect(appHistory.location.pathname).toBe('/catalog/foo');
+        expect(appHistory.getSnapshot().location.pathname).toBe('/catalog/foo');
       }
       expect(appHistory.createHref('/catalog/foo/../bar')).toBe('/catalog/bar');
       expect(appHistory.createHref('/widgets/')).toBe('/widgets/');
       appHistory.navigate('?tab=docs#intro');
-      expect(appHistory.location).toMatchObject({
+      expect(appHistory.getSnapshot().location).toMatchObject({
         pathname: '/catalog/foo',
         search: '?tab=docs',
         hash: '#intro',
       });
       expect(appHistory.createHref('')).toBe('/catalog/foo');
       appHistory.navigate('');
-      expect(appHistory.location).toMatchObject({
+      expect(appHistory.getSnapshot().location).toMatchObject({
         pathname: '/catalog/foo',
         search: '',
         hash: '',
       });
       appHistory.navigate('#latest');
-      expect(appHistory.location).toMatchObject({
+      expect(appHistory.getSnapshot().location).toMatchObject({
         pathname: '/catalog/foo',
         search: '',
         hash: '#latest',
@@ -574,19 +736,28 @@ describe('AppHistory', () => {
       expect(window.location.pathname).toBe('/backstage/catalog/entity/foo');
     });
 
-    it('should strip basename from location$ emissions', () => {
+    it('should strip basename from snapshots', () => {
       bnHistory.navigate('/catalog/entity/foo');
       const locations: string[] = [];
-      bnHistory.location$.subscribe(l => locations.push(l.pathname));
-      expect(locations).toContain('/catalog/entity/foo');
+      bnHistory.subscribe(() =>
+        locations.push(bnHistory.getSnapshot().location.pathname),
+      );
+      expect(locations).toEqual([]);
+      expect(bnHistory.getSnapshot().location.pathname).toBe(
+        '/catalog/entity/foo',
+      );
     });
 
     it('should not strip a path that only shares a basename prefix', () => {
       window.history.replaceState(null, '', '/backstage-extra/page');
       const locations: string[] = [];
-      bnHistory.location$.subscribe(l => locations.push(l.pathname));
-      expect(locations).toContain('/backstage-extra/page');
-      expect(locations).not.toContain('-extra/page');
+      bnHistory.subscribe(() =>
+        locations.push(bnHistory.getSnapshot().location.pathname),
+      );
+      expect(locations).toEqual([]);
+      expect(bnHistory.getSnapshot().location.pathname).toBe(
+        '/backstage-extra/page',
+      );
     });
 
     it('should prepend basename in createHref, but pass through targets that are not app-relative', () => {

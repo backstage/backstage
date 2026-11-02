@@ -16,23 +16,21 @@
 
 import type {
   AppHistoryApi,
+  AppHistoryAction,
+  AppHistorySnapshot,
   AppLocation,
   AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
-import type { Observable, Subscription } from '@backstage/types';
-import {
-  resolveAppTarget,
-  isExternalTarget,
-  appHistoryMetadataSymbol,
-  type AppHistoryAction,
-  type AppHistoryMetadata,
-} from '@internal/frontend';
+import { resolveAppTarget, isExternalTarget } from '@internal/frontend';
 import {
   createWindowHistoryBackend,
   type HistoryBackend,
 } from './HistoryBackend';
 
-type LocationHandler = (location: AppLocation) => void;
+type HistoryListener = () => void;
+
+// Allow long subscriber redirect chains, but stop cycles before stack exhaustion.
+const MAX_NESTED_NAVIGATIONS = 100;
 
 /**
  * Options for constructing an {@link AppHistory}.
@@ -53,10 +51,6 @@ export interface AppHistoryOptions {
  * AppHistory is the sole writer to app history (via a swappable backend) and
  * is the concrete implementation behind {@link AppHistoryApi}.
  *
- * The location$ observable never signals error or complete — it represents
- * a continuous location stream that lives for the duration of the app.
- * Calling dispose() stops emissions but does not signal complete to observers.
- *
  * Prefer {@link createAppHistory} over constructing this class.
  *
  * @internal
@@ -64,11 +58,11 @@ export interface AppHistoryOptions {
 export class AppHistory implements AppHistoryApi {
   private readonly basename: string;
   private readonly history: HistoryBackend;
-  private readonly subscribers: Set<LocationHandler> = new Set();
+  private readonly subscribers: Set<HistoryListener> = new Set();
   private readonly unlisten: () => void;
   private disposed = false;
-  private current: AppLocation;
-  private currentMetadata: AppHistoryMetadata;
+  private notificationDepth = 0;
+  private current: AppHistorySnapshot;
 
   /** @internal */
   static create(options?: AppHistoryOptions): AppHistory {
@@ -78,103 +72,55 @@ export class AppHistory implements AppHistoryApi {
   private constructor(options?: AppHistoryOptions) {
     this.basename = options?.basename ?? '';
     this.history = options?.history ?? createWindowHistoryBackend();
-    this.current = this.readLocation();
-    this.currentMetadata = this.readMetadata('POP');
+    const { key, index, length } = this.history.getEntry();
+    this.current = {
+      location: this.readLocation(),
+      entry: { key, index },
+      length,
+    };
 
     this.unlisten = this.history.listen(action => {
       this.emit(action);
     });
   }
 
-  /**
-   * The current location, as a stable reference that only changes when the
-   * location itself changes. Backs `getSnapshot` in `useSyncExternalStore`,
-   * which re-renders forever if repeated reads return new references.
-   */
-  get location(): AppLocation {
-    return this.refresh();
-  }
+  /** Reads live backend state while retaining unchanged snapshot references. */
+  readonly getSnapshot = (): AppHistorySnapshot => this.refresh();
 
-  /** Private compatibility facts consumed by first-party router adapters. */
-  get [appHistoryMetadataSymbol](): AppHistoryMetadata {
-    this.refresh();
-    return this.currentMetadata;
-  }
+  readonly subscribe = (listener: HistoryListener): (() => void) => {
+    // Each subscription owns a handler, even when callbacks are shared.
+    const handler = () => listener();
+    this.subscribers.add(handler);
+    return () => {
+      this.subscribers.delete(handler);
+    };
+  };
 
-  /**
-   * Re-reads the backend and returns the current location, reusing the
-   * previous object when nothing observable changed. Reading live keeps us
-   * honest about history writes we never saw (a direct `replaceState` by
-   * plugin code emits no event), while reusing the reference keeps the result
-   * safe to hand to `useSyncExternalStore`.
-   */
-  private refresh(action?: AppHistoryAction): AppLocation {
+  private refresh(action?: AppHistoryAction): AppHistorySnapshot {
     const next = this.readLocation();
-    const nextEntry = this.history.getEntry();
+    const { key, index, length } = this.history.getEntry();
+    const { location, entry } = this.current;
+    const locationChanged =
+      location.pathname !== next.pathname ||
+      location.search !== next.search ||
+      location.hash !== next.hash ||
+      !Object.is(location.state, next.state);
+    const entryChanged = entry?.key !== key || entry?.index !== index;
     if (
-      this.current.pathname !== next.pathname ||
-      this.current.search !== next.search ||
-      this.current.hash !== next.hash ||
-      !Object.is(this.current.state, next.state)
+      action ||
+      locationChanged ||
+      entryChanged ||
+      this.current.length !== length
     ) {
-      this.current = next;
-    }
-    const entryChanged =
-      this.currentMetadata.key !== nextEntry.key ||
-      this.currentMetadata.index !== nextEntry.index ||
-      this.currentMetadata.length !== nextEntry.length ||
-      this.currentMetadata.canGoBack !== nextEntry.canGoBack;
-    const nextAction =
-      action ?? (entryChanged ? 'POP' : this.currentMetadata.action);
-    if (entryChanged || this.currentMetadata.action !== nextAction) {
-      this.currentMetadata = {
-        ...nextEntry,
-        action: nextAction,
+      this.current = {
+        location: locationChanged ? next : location,
+        entry: entryChanged ? { key, index } : entry,
+        length,
+        action,
       };
     }
     return this.current;
   }
-
-  /** Observable of the current location (basename-stripped). */
-  readonly location$: Observable<AppLocation> = {
-    subscribe: (
-      observerOrOnNext?:
-        | { next?: (value: AppLocation) => void }
-        | ((value: AppLocation) => void),
-      _onError?: (error: Error) => void,
-      _onComplete?: () => void,
-    ): Subscription => {
-      let isClosed = false;
-      const onNext =
-        typeof observerOrOnNext === 'function'
-          ? observerOrOnNext
-          : observerOrOnNext?.next?.bind(observerOrOnNext);
-
-      const handler: LocationHandler = (loc: AppLocation) => {
-        if (!isClosed && onNext) {
-          onNext(loc);
-        }
-      };
-
-      this.subscribers.add(handler);
-
-      // Emit current location immediately on subscribe
-      handler(this.refresh());
-
-      return {
-        unsubscribe: () => {
-          isClosed = true;
-          this.subscribers.delete(handler);
-        },
-        get closed() {
-          return isClosed;
-        },
-      };
-    },
-    [Symbol.observable]() {
-      return this;
-    },
-  };
 
   /**
    * Navigate to an app-root-relative path or a browser-owned URL.
@@ -182,11 +128,16 @@ export class AppHistory implements AppHistoryApi {
   navigate(to: string, options?: AppNavigateOptions): void;
   navigate(delta: number): void;
   navigate(to: string | number, options?: AppNavigateOptions): void {
+    if (this.notificationDepth >= MAX_NESTED_NAVIGATIONS) {
+      throw new Error(
+        `App history exceeded ${MAX_NESTED_NAVIGATIONS} synchronous nested navigations. A history subscriber may be causing a navigation loop.`,
+      );
+    }
     if (typeof to === 'number') {
       this.history.go(to);
       return;
     }
-    const safeTo = resolveAppTarget(to, this.location.pathname);
+    const safeTo = resolveAppTarget(to, this.getSnapshot().location.pathname);
     if (isExternalTarget(safeTo)) {
       this.history.navigateExternal(safeTo, { replace: options?.replace });
       return;
@@ -222,7 +173,7 @@ export class AppHistory implements AppHistoryApi {
    * are replaced with `about:blank` and a warning, as in `navigate`.
    */
   createHref(to: string): string {
-    const safeTo = resolveAppTarget(to, this.location.pathname);
+    const safeTo = resolveAppTarget(to, this.getSnapshot().location.pathname);
     if (isExternalTarget(safeTo)) {
       return safeTo;
     }
@@ -251,10 +202,6 @@ export class AppHistory implements AppHistoryApi {
     };
   }
 
-  private readMetadata(action: AppHistoryAction): AppHistoryMetadata {
-    return { ...this.history.getEntry(), action };
-  }
-
   private stripBasename(pathname: string): string {
     if (
       this.basename &&
@@ -266,10 +213,15 @@ export class AppHistory implements AppHistoryApi {
   }
 
   private emit(action: AppHistoryAction): void {
-    const location = this.refresh(action);
-    const handlers = [...this.subscribers];
-    for (const handler of handlers) {
-      handler(location);
+    this.refresh(action);
+    this.notificationDepth += 1;
+    try {
+      const handlers = [...this.subscribers];
+      for (const handler of handlers) {
+        handler();
+      }
+    } finally {
+      this.notificationDepth -= 1;
     }
   }
 }

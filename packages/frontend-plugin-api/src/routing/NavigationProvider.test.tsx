@@ -57,14 +57,14 @@ it('defaults to framework navigation and keeps authored targets separate from br
   act(() =>
     result.current.navigate('/other', { state: { source: 'neutral' } }),
   );
-  expect(history.location).toMatchObject({
+  expect(history.getSnapshot().location).toMatchObject({
     pathname: '/other',
     state: { source: 'neutral' },
   });
   expect(result.current.pathname).toBe('/base/other');
   act(() => result.current.navigate('?view=new#top'));
   act(() => result.current.navigate(''));
-  expect(history.location).toMatchObject({
+  expect(history.getSnapshot().location).toMatchObject({
     pathname: '/other',
     search: '',
     hash: '',

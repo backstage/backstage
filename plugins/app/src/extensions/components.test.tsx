@@ -170,7 +170,7 @@ describe('PageLayout', () => {
       '/backstage/my-plugin/example/tasks',
     );
     fireEvent.click(overview);
-    expect(appHistory.location).toMatchObject({
+    expect(appHistory.getSnapshot().location).toMatchObject({
       pathname: '/my-plugin/example/tasks/overview',
       search: '?view=all',
       hash: '#details',
@@ -232,7 +232,7 @@ describe('PageLayout', () => {
         `/backstage/my-plugin/example/deep${href}`,
       );
       fireEvent.click(tab);
-      const { pathname, search, hash } = appHistory.location;
+      const { pathname, search, hash } = appHistory.getSnapshot().location;
       expect(pathname + search + hash).toBe(`/my-plugin/example/deep${href}`);
     }
   });

@@ -14,47 +14,28 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import type {
   AppHistoryApi,
   AppLocation,
 } from '@backstage/frontend-plugin-api';
 
+const noop = () => {};
+const emptySubscribe = () => noop;
+const emptyGetSnapshot = () => undefined;
+
 /**
- * Subscribes to an app history's location, or to nothing when there is no app
- * history (old frontend system).
- *
- * `AppHistoryApi.location` is a stable reference that only changes when the
- * location changes, so it is the `useSyncExternalStore` snapshot directly — no
- * local mirror of the observable is needed to keep the store from looping.
- *
- * The app history is passed in rather than resolved from the API holder here.
- * `@internal/frontend` is inlined into `@backstage/frontend-plugin-api`, so
- * importing `appHistoryApiRef` at runtime would close an import cycle. Callers
- * already hold the app history, or can read it with
- * `useApi(appHistoryApiRef)`.
+ * Reads the current app history snapshot's location.
+ * The API is supplied by the caller to avoid an inlined-package import cycle.
  */
 export function useAppHistoryLocation(
   appHistory: AppHistoryApi | undefined,
 ): AppLocation | undefined {
-  const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      if (!appHistory) {
-        return () => {};
-      }
-      const subscription = appHistory.location$.subscribe(() =>
-        onStoreChange(),
-      );
-      return () => subscription.unsubscribe();
-    },
-    [appHistory],
+  const getSnapshot = appHistory?.getSnapshot ?? emptyGetSnapshot;
+  const snapshot = useSyncExternalStore(
+    appHistory?.subscribe ?? emptySubscribe,
+    getSnapshot,
+    getSnapshot,
   );
-
-  const getSnapshot = useCallback(
-    (): AppLocation | undefined => appHistory?.location,
-    [appHistory],
-  );
-
-  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return snapshot?.location;
 }

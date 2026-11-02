@@ -18,27 +18,26 @@ import { AppLocation } from '@backstage/frontend-plugin-api';
 import { createMockAppHistory } from './createMockAppHistory';
 
 describe('createMockAppHistory', () => {
-  it('should emit the initial location synchronously on subscribe', () => {
+  it('reads the initial snapshot without replaying subscriptions', () => {
     const appHistory = createMockAppHistory({
       initialLocation: '/catalog?q=1#hash',
     });
-    const locs: AppLocation[] = [];
-    appHistory.location$.subscribe(l => locs.push(l));
-    expect(locs).toEqual([
-      {
-        pathname: '/catalog',
-        search: '?q=1',
-        hash: '#hash',
-        state: undefined,
-      },
-    ]);
+    const listener = jest.fn();
+    appHistory.subscribe(listener);
+    expect(listener).not.toHaveBeenCalled();
+    expect(appHistory.getSnapshot().location).toEqual({
+      pathname: '/catalog',
+      search: '?q=1',
+      hash: '#hash',
+      state: undefined,
+    });
   });
 
-  it('should update location$ and record navigate calls', () => {
+  it('should publish snapshots and record navigate calls', () => {
     const navigate = jest.fn();
     const appHistory = createMockAppHistory({ navigate });
     const locs: AppLocation[] = [];
-    appHistory.location$.subscribe(l => locs.push(l));
+    appHistory.subscribe(() => locs.push(appHistory.getSnapshot().location));
 
     appHistory.navigate('/tools', { state: { step: 1 } });
 
@@ -46,7 +45,7 @@ describe('createMockAppHistory', () => {
       { to: '/tools', options: { state: { step: 1 } } },
     ]);
     expect(navigate).toHaveBeenCalledWith('/tools', { state: { step: 1 } });
-    expect(locs[1]).toEqual({
+    expect(locs[0]).toEqual({
       pathname: '/tools',
       search: '',
       hash: '',
@@ -56,7 +55,9 @@ describe('createMockAppHistory', () => {
 
   it('records navigation order when a subscriber navigates again', () => {
     const appHistory = createMockAppHistory();
-    const subscription = appHistory.location$.subscribe(location => {
+    const subscription = appHistory.subscribe(() => {
+      const location = appHistory.getSnapshot().location;
+
       if (location.pathname === '/first') appHistory.navigate('/second');
     });
     appHistory.navigate('/first');
@@ -64,8 +65,8 @@ describe('createMockAppHistory', () => {
       '/first',
       '/second',
     ]);
-    expect(appHistory.location.pathname).toBe('/second');
-    subscription.unsubscribe();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/second');
+    subscription();
   });
 
   it('should preserve single-arg navigate arity for jest assertions', () => {
@@ -83,14 +84,14 @@ describe('createMockAppHistory', () => {
 
     appHistory.navigate(-1);
 
-    expect(appHistory.location.pathname).toBe('/first');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/first');
     expect(appHistory.navigateCalls.at(-1)).toEqual({ to: -1 });
   });
 
   it('should expose location as a stable reference that tracks navigation', () => {
     const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
 
-    const initial = appHistory.location;
+    const initial = appHistory.getSnapshot().location;
     expect(initial).toEqual({
       pathname: '/catalog',
       search: '',
@@ -98,51 +99,54 @@ describe('createMockAppHistory', () => {
       state: undefined,
     });
     // Repeated reads must be reference-equal, or useSyncExternalStore loops.
-    expect(appHistory.location).toBe(initial);
+    expect(appHistory.getSnapshot().location).toBe(initial);
 
     // Navigating to the location we are already on is not a change.
     appHistory.navigate('/catalog');
-    expect(appHistory.location).toBe(initial);
+    expect(appHistory.getSnapshot().location).toBe(initial);
 
     appHistory.navigate('/tools?tab=1', { state: { step: 1 } });
-    expect(appHistory.location).not.toBe(initial);
-    expect(appHistory.location).toEqual({
+    expect(appHistory.getSnapshot().location).not.toBe(initial);
+    expect(appHistory.getSnapshot().location).toEqual({
       pathname: '/tools',
       search: '?tab=1',
       hash: '',
       state: { step: 1 },
     });
 
-    // location$ hands out the same reference the accessor returns.
+    // A subscriber reads the same cached location as any other consumer.
     let emitted: AppLocation | undefined;
-    appHistory.location$.subscribe(l => {
+    appHistory.subscribe(() => {
+      const l = appHistory.getSnapshot().location;
+
       emitted = l;
     });
-    expect(emitted).toBe(appHistory.location);
+    expect(emitted).toBeUndefined();
+    appHistory.navigate('/another');
+    expect(emitted).toBe(appHistory.getSnapshot().location);
   });
 
-  it('should give every location$ subscription its own handler', () => {
+  it('should give every history subscription its own handler', () => {
     const appHistory = createMockAppHistory();
     const seen: string[] = [];
     // The real app history wraps each subscription in its own handler, so the
     // same function subscribing twice is two subscriptions.
-    const onNext = (l: AppLocation) => seen.push(l.pathname);
+    const onNext = () => seen.push(appHistory.getSnapshot().location.pathname);
 
-    const first = appHistory.location$.subscribe(onNext);
-    const second = appHistory.location$.subscribe(onNext);
-    expect(seen).toEqual(['/', '/']);
+    const first = appHistory.subscribe(onNext);
+    const second = appHistory.subscribe(onNext);
+    expect(seen).toEqual([]);
 
     appHistory.navigate('/catalog');
-    expect(seen).toEqual(['/', '/', '/catalog', '/catalog']);
+    expect(seen).toEqual(['/catalog', '/catalog']);
 
-    first.unsubscribe();
-    expect(first.closed).toBe(true);
-    expect(second.closed).toBe(false);
+    first();
+    first(); // Unsubscribing twice is harmless.
 
     appHistory.navigate('/tools');
-    expect(seen).toEqual(['/', '/', '/catalog', '/catalog', '/tools']);
+    expect(seen).toEqual(['/catalog', '/catalog', '/tools']);
 
-    second.unsubscribe();
+    second();
   });
 
   it('should read the initial location the way the real app history reads the browser', () => {
@@ -153,7 +157,7 @@ describe('createMockAppHistory', () => {
 
     // The initial location stands in for the browser URL, which carries the
     // deploy basename — and every location the API hands out is stripped of it.
-    expect(appHistory.location).toEqual({
+    expect(appHistory.getSnapshot().location).toEqual({
       pathname: '/catalog',
       search: '?q=1',
       hash: '#top',
@@ -163,7 +167,7 @@ describe('createMockAppHistory', () => {
     // navigate targets are app-relative and never stripped, so a path that
     // happens to repeat the basename stays exactly as navigated to.
     appHistory.navigate('/backstage/other');
-    expect(appHistory.location.pathname).toBe('/backstage/other');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/backstage/other');
   });
 
   it('should normalise hrefs the same way the real app history does', () => {
@@ -199,14 +203,14 @@ describe('createMockAppHistory', () => {
       '/backstage/search?q=https://example.com',
     );
 
-    const before = appHistory.location;
+    const before = appHistory.getSnapshot().location;
     appHistory.navigate('https://example.com/x');
     appHistory.navigate('mailto:support@example.com', { replace: true });
     expect(appHistory.navigateCalls).toEqual([
       { to: 'https://example.com/x', options: undefined },
       { to: 'mailto:support@example.com', options: { replace: true } },
     ]);
-    expect(appHistory.location).toBe(before);
+    expect(appHistory.getSnapshot().location).toBe(before);
     expect(() =>
       appHistory.navigate('/search?q=https://example.com'),
     ).not.toThrow();

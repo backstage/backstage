@@ -15,7 +15,7 @@
  */
 
 import { Link as BuiLink } from '@backstage/ui';
-import { ReactNode, useCallback, useSyncExternalStore } from 'react';
+import { ReactNode, useSyncExternalStore } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
@@ -47,18 +47,11 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  */
 function useAppLocation() {
   const appHistory = useApi(appHistoryApiRef);
-  const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      const subscription = appHistory.location$.subscribe(() =>
-        onStoreChange(),
-      );
-      return () => subscription.unsubscribe();
-    },
-    [appHistory],
-  );
-  // `AppHistoryApi.location` is a stable reference, so it is the snapshot.
-  const getSnapshot = useCallback(() => appHistory.location, [appHistory]);
-  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return useSyncExternalStore(
+    appHistory.subscribe,
+    appHistory.getSnapshot,
+    appHistory.getSnapshot,
+  ).location;
 }
 
 /**
@@ -663,7 +656,9 @@ describe('TanStack + RR v6 coexistence', () => {
       });
 
       await waitFor(() => {
-        expect(appHistory.location.pathname).toBe('/catalog-mix/overview/edit');
+        expect(appHistory.getSnapshot().location.pathname).toBe(
+          '/catalog-mix/overview/edit',
+        );
       });
       // Native links and BUI keep using the matched page scope.
       expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
@@ -715,7 +710,9 @@ describe('TanStack + RR v6 coexistence', () => {
         screen.getByTestId('v6-below-link').click();
       });
       await waitFor(() => {
-        expect(appHistory.location.pathname).toBe('/catalog-mix/create/edit');
+        expect(appHistory.getSnapshot().location.pathname).toBe(
+          '/catalog-mix/create/edit',
+        );
       });
       expect(screen.getByTestId('v6-up').textContent).toBe('/catalog-mix');
       expect(screen.getByTestId('v6-below').textContent).toBe(

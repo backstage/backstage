@@ -82,10 +82,12 @@ it('integrates React Aria anchors and non-anchor collection items using only the
     await screen.findByRole('link', { name: 'Relative anchor' }),
   ).toHaveAttribute('href', '/base/tools/section/sibling');
   await user.click(screen.getByRole('link', { name: 'Relative anchor' }));
-  expect(appHistory.location.pathname).toBe('/tools/section/sibling');
+  expect(appHistory.getSnapshot().location.pathname).toBe(
+    '/tools/section/sibling',
+  );
   const row = await screen.findByRole('row', { name: 'Other page' });
   expect(row.tagName).not.toBe('A');
   await user.click(row);
   expect(await screen.findByText('Catalog destination')).toBeInTheDocument();
-  expect(appHistory.location.pathname).toBe('/catalog');
+  expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
 });

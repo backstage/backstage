@@ -255,12 +255,13 @@ into the framework's public contract.
 The adapter uses TanStack's native history implementation for subscriptions,
 push and replace blockers, and navigation state. Backstage's app history owns
 the shared browser timeline. If your app provides a custom `AppHistoryApi`, a
-successful push or replace must update its `location` snapshot synchronously.
+successful push or replace must update `getSnapshot()` synchronously and notify
+subscribers before returning.
 Numeric history traversal may finish asynchronously and notify through
-`location$`. The built-in app history supports both requirements.
+`subscribe`. The built-in app history supports both requirements.
 
-Custom histories do not need private entry metadata. Without it, back
-availability and entry-based restoration are limited: the adapter cannot infer
+Custom histories can omit snapshot metadata they cannot report. Without entry
+indices and keys, back availability and entry-based restoration are limited: the adapter cannot infer
 a browser stack from the URLs it has visited.
 
 TanStack push and replace blockers apply to navigation through that adapter.
