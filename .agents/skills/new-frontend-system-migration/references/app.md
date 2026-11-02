@@ -643,7 +643,7 @@ app:
 - `Invalid element inside FlatRoutes`: push `FeatureFlagged`/`RequirePermissions` wrappers into plugin code instead of the route table
 - Check the browser console for an `App startup encountered warnings:` block. Warnings such as `EXTENSION_IGNORED` and `FEATURE_FLAG_INVALID` do not stop the app, so something can be missing with no visible error. See `references/troubleshooting.md` in the `frontend-plugin-development` skill for these and other startup messages.
 
-## Further Reading
+## Further reading
 
 - Migrating the plugins themselves: `references/plugin.md` in this skill
 - [App migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating)

@@ -1,6 +1,6 @@
 ---
 name: onboard-to-openapi-server
-description: Use this skill when the user wants to migrate an existing Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling. Optionally, can also add typed client generation and migrate router tests to the OpenAPI test wrapper.
+description: Migrate a Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling, and optionally generate a typed client and validate router tests against the spec. Use this skill when moving a backend plugin to `createOpenApiRouter` or adding an OpenAPI spec to an existing router.
 ---
 
 # OpenAPI Onboard Plugin
@@ -217,7 +217,7 @@ Only if the user wants to land this as a PR. Create changesets in `.changeset/` 
 
 Do not run `yarn changesets version`. Write the changeset markdown files directly.
 
-## Reference files in the upstream Backstage repo
+## Further reading
 
 These all live in [`backstage/backstage`](https://github.com/backstage/backstage); the user's workspace likely doesn't contain them. Browse via the links below.
 

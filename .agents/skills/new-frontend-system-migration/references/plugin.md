@@ -487,7 +487,7 @@ Items marked (A) or (B) apply to that path only.
 20. [ ] The dev app renders the page, with no `App startup encountered warnings` block in the browser console
 21. [ ] Tested in a new-system app, and for path B also in an old-system app
 
-## Further Reading
+## Further reading
 
 - [Plugin migration guide](https://backstage.io/docs/frontend-system/building-plugins/migrating)
 - [Extension blueprints](https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints)
