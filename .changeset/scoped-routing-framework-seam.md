@@ -4,7 +4,7 @@
 
 Added `RouterLink`, a routing anchor with no styles for composing custom UI components, including React Aria links, tabs, and menu items through their `render` prop. It accepts app-absolute destinations, query/hash targets, and external URLs and preserves native browser link interactions.
 
-Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useAppHref`, `useAppLocation`, and `useAppSearchParams`. `RouteLink` supports route-reference links, while `useRouteRef` and `useAppNavigate` can be combined for programmatic navigation.
+Added router-independent navigation through `AppHistoryApi`, `appHistoryApiRef`, `useAppNavigate`, `useAppHref`, `useAppLocation`, and `useAppSearchParams`. `AppHistoryApi` exposes a synchronous `getSnapshot()` / `subscribe()` store, including optional history action, entry identity, index, and tracked history length for routing adapters. `RouteLink` supports route-reference links, while `useRouteRef` and `useAppNavigate` can be combined for programmatic navigation.
 
 Added `RouteResolutionApi.resolvePath` to resolve an app-relative pathname into a matched route branch, optionally scoped to an app node and its ancestors. Matches include base paths, route patterns, and decoded parameters, and can be resolved independently of the browser location. `AppHistoryApi.navigate` now handles external URLs through browser navigation, honoring `replace`. Both `navigate` and `createHref` sanitize executable URL schemes. The `useRouteResolution` hook provides the current extension’s matched routing ancestry at the current location.
 

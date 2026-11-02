@@ -31,13 +31,6 @@ export {
 } from './AppRouting';
 export { useAppHistoryLocation } from './useAppHistoryLocation';
 export {
-  appHistoryMetadataSymbol,
-  readAppHistoryMetadata,
-  type AppHistoryAction,
-  type AppHistoryMetadata,
-  type AppHistoryWithMetadata,
-} from './AppHistoryMetadata';
-export {
   createAppHistoryRouter,
   type AdapterLocation,
   type AdapterPathMatch,

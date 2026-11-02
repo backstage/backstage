@@ -25,7 +25,12 @@ export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
 // AppLocation / AppNavigateOptions are the adopter-facing types.
 export type { AppLocation, AppNavigateOptions } from './AppLocation';
-export type { AppHistoryApi } from './AppHistoryApi';
+export type {
+  AppHistoryApi,
+  AppHistoryAction,
+  AppHistoryEntry,
+  AppHistorySnapshot,
+} from './AppHistoryApi';
 export { appHistoryApiRef } from './AppHistoryApi';
 export { useAppNavigate } from './useAppNavigate';
 export { useAppHref } from './useAppHref';

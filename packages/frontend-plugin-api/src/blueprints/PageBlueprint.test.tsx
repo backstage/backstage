@@ -514,7 +514,7 @@ describe('PageBlueprint', () => {
       expect(
         await screen.findByText(`first at ${basePath}/first`),
       ).toBeInTheDocument();
-      expect(appHistory.location).toMatchObject({
+      expect(appHistory.getSnapshot().location).toMatchObject({
         pathname: `${basePath}/first`,
         search: '?mode=test',
         hash: '#section',
@@ -670,20 +670,20 @@ describe('PageBlueprint', () => {
 
     expect(await screen.findByTestId('input-page')).toBeInTheDocument();
     // The URL says which tab is showing, and the query and fragment survive.
-    expect(appHistory.location.pathname).toBe('/mixed/input');
-    expect(appHistory.location.search).toBe('?tab=1');
-    expect(appHistory.location.hash).toBe('#here');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/mixed/input');
+    expect(appHistory.getSnapshot().location.search).toBe('?tab=1');
+    expect(appHistory.getSnapshot().location.hash).toBe('#here');
 
     await act(async () => {
       appHistory.navigate('/plain');
     });
     expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/plain');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/plain');
 
     await act(async () => {
       appHistory.navigate('/plain/deeper');
     });
     expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/plain/deeper');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/plain/deeper');
   });
 });

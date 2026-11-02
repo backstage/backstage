@@ -304,12 +304,13 @@ describe('Tools page', () => {
 
 `appHistory.navigate` also takes a number, so `appHistory.navigate(-1)` walks
 back through history the way a browser back button does. The current location is
-readable as `appHistory.location`, observable through `appHistory.location$`, and
+readable as `appHistory.getSnapshot().location`, observed through `appHistory.subscribe`, and
 `appHistory.createHref` resolves a path the way a rendered link would.
 
 Reach for this harness whenever the behavior under test depends on routing. If
 you mock `AppHistoryApi` yourself, keep to its four members: `navigate`,
-`location`, `location$`, and `createHref`.
+`getSnapshot`, `subscribe`, and `createHref`. Subscriptions do not replay the
+initial snapshot; read it explicitly.
 
 ## Routing library context in tests
 

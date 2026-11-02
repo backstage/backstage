@@ -144,19 +144,21 @@ it('uses the consuming library route for BUI links and preserves app-absolute ro
     'https://example.com',
   );
   await user.click(screen.getByRole('link', { name: 'Query' }));
-  expect(appHistory.location).toMatchObject({
+  expect(appHistory.getSnapshot().location).toMatchObject({
     pathname: '/tools/alpha/section/item',
     search: '?view=docs',
     hash: '#intro',
     state: { source: 'bui' },
   });
   await user.click(screen.getByRole('link', { name: 'BUI relative' }));
-  expect(appHistory.location.pathname).toBe('/tools/alpha/section/sibling');
+  expect(appHistory.getSnapshot().location.pathname).toBe(
+    '/tools/alpha/section/sibling',
+  );
   await user.click(screen.getByRole('link', { name: 'BUI other' }));
   expect(await screen.findByText('Other page')).toBeInTheDocument();
-  expect(appHistory.location.pathname).toBe('/catalog');
+  expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
   await act(async () => appHistory.navigate(-1));
   await user.click(await screen.findByRole('link', { name: 'Native other' }));
   expect(await screen.findByText('Other page')).toBeInTheDocument();
-  expect(appHistory.location.pathname).toBe('/catalog');
+  expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
 });

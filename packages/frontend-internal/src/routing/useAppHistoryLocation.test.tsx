@@ -53,9 +53,7 @@ describe('useAppHistoryLocation', () => {
       state,
     });
 
-    // Navigating to the location we are already on must not produce a new
-    // snapshot reference — that is the invariant `AppHistoryApi.location`
-    // guarantees, and the reason no local mirror of `location$` is needed.
+    // A new history entry at the same location preserves the nested location's identity.
     const previous = result.current;
     act(() => {
       appHistory.navigate('/create#top', { state });

@@ -249,11 +249,18 @@ describe('createTanStackPageRouter', () => {
   });
   it('keeps TanStack back availability consistent with a custom host without entry facts', async () => {
     const inner = createMockAppHistory({ initialLocation: '/tools' });
+    let source = inner.getSnapshot();
+    let snapshot = { location: source.location };
     const appHistory: AppHistoryApi = {
-      get location() {
-        return inner.location;
+      getSnapshot() {
+        const next = inner.getSnapshot();
+        if (next !== source) {
+          source = next;
+          snapshot = { location: next.location };
+        }
+        return snapshot;
       },
-      location$: inner.location$,
+      subscribe: inner.subscribe,
       navigate: inner.navigate.bind(inner),
       createHref: inner.createHref.bind(inner),
     };
@@ -296,6 +303,6 @@ describe('createTanStackPageRouter', () => {
     expect(screen.getByText('History back: false')).toBeInTheDocument();
     await act(async () => screen.getByRole('button', { name: 'Back' }).click());
     expect(await screen.findByText('Location: /tools')).toBeInTheDocument();
-    expect(inner.location.pathname).toBe('/tools');
+    expect(inner.getSnapshot().location.pathname).toBe('/tools');
   });
 });

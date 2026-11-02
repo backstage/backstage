@@ -223,7 +223,9 @@ describe('ReactRouterV6PageRouter wired path', () => {
       'General',
     );
     expect(screen.queryByTestId('opaque-index')).not.toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/opaque-v6/general');
+    expect(appHistory.getSnapshot().location.pathname).toBe(
+      '/opaque-v6/general',
+    );
   });
 
   it('should keep page content mounted while the concrete mount prefix changes', async () => {

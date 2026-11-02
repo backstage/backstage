@@ -16,7 +16,6 @@
 
 import { renderHook, act } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
-import { Observable, Subscription } from '@backstage/types';
 import {
   createMemoryRouter,
   MemoryRouter,
@@ -24,7 +23,11 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { useAppNavigate, useOptionalAppNavigate } from './useAppNavigate';
-import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
+import {
+  appHistoryApiRef,
+  type AppHistoryApi,
+  type AppHistorySnapshot,
+} from './AppHistoryApi';
 import type { AppLocation } from './AppLocation';
 import {
   TestApiProvider,
@@ -40,11 +43,7 @@ jest.mock('../components/AppNodeProvider', () => ({
   useAppNode: jest.fn(),
 }));
 
-/**
- * A hand-rolled `AppHistoryApi` matching the real implementation's contract:
- * `location$` emits synchronously on subscribe and `location` is a stable
- * reference that only changes when the location changes.
- */
+/** A public history store with controllable committed locations. */
 function createFakeAppHistory(
   initial: AppLocation,
   navigate: AppHistoryApi['navigate'] = jest.fn(),
@@ -52,50 +51,22 @@ function createFakeAppHistory(
   appHistory: AppHistoryApi;
   emit: (location: AppLocation) => void;
 } {
-  const subscribers = new Set<(value: AppLocation) => void>();
-  let current = initial;
-
-  const location$: Observable<AppLocation> = {
-    [Symbol.observable]() {
-      return this;
-    },
-    subscribe(observerOrNext): Subscription {
-      const next =
-        typeof observerOrNext === 'function'
-          ? observerOrNext
-          : observerOrNext?.next?.bind(observerOrNext);
-      if (next) {
-        subscribers.add(next);
-        next(current);
-      }
-      let closed = false;
-      return {
-        unsubscribe() {
-          if (next) {
-            subscribers.delete(next);
-          }
-          closed = true;
-        },
-        get closed() {
-          return closed;
-        },
-      };
-    },
-  };
-
+  const subscribers = new Set<() => void>();
+  let current: AppHistorySnapshot = { location: initial };
   return {
     appHistory: {
-      get location() {
-        return current;
+      getSnapshot: () => current,
+      subscribe(listener) {
+        subscribers.add(listener);
+        return () => subscribers.delete(listener);
       },
-      location$,
       navigate,
       createHref: (to: string) => to,
     },
     emit(location) {
-      current = location;
+      current = { location };
       for (const subscriber of subscribers) {
-        subscriber(location);
+        subscriber();
       }
     },
   };
@@ -193,7 +164,7 @@ describe('useAppNavigate', () => {
           state: { from: 'test' },
         }),
       );
-      expect(appHistory.location).toMatchObject({
+      expect(appHistory.getSnapshot().location).toMatchObject({
         pathname: '/tools/admin/details',
         state: { from: 'test' },
       });
@@ -203,26 +174,26 @@ describe('useAppNavigate', () => {
       rerender();
       act(() => appHistory.navigate('/tools/admin/other'));
       act(() => navigate('?view=docs#intro'));
-      expect(appHistory.location).toMatchObject({
+      expect(appHistory.getSnapshot().location).toMatchObject({
         pathname: '/tools/admin/other',
         search: '?view=docs',
         hash: '#intro',
       });
       act(() => navigate('#latest'));
-      expect(appHistory.location.hash).toBe('#latest');
+      expect(appHistory.getSnapshot().location.hash).toBe('#latest');
       expect(() => navigate('../create')).toThrow('App routing requires');
       act(() => navigate('/tools/create'));
-      expect(appHistory.location.pathname).toBe('/tools/create');
+      expect(appHistory.getSnapshot().location.pathname).toBe('/tools/create');
       act(() => navigate('/catalog'));
-      expect(appHistory.location.pathname).toBe('/catalog');
+      expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
       act(() => navigate(-1));
-      expect(appHistory.location.pathname).toBe('/tools/create');
+      expect(appHistory.getSnapshot().location.pathname).toBe('/tools/create');
       act(() => navigate('https://example.com', { replace: true }));
       expect(appHistory.navigateCalls.at(-1)).toEqual({
         to: 'https://example.com',
         options: { replace: true },
       });
-      expect(appHistory.location.pathname).toBe('/tools/create');
+      expect(appHistory.getSnapshot().location.pathname).toBe('/tools/create');
     } finally {
       jest.mocked(useAppNode).mockReset();
     }
@@ -243,7 +214,7 @@ describe('useAppNavigate', () => {
     });
     expect(() => result.current('details')).toThrow('App routing requires');
     act(() => result.current('/details'));
-    expect(appHistory.location.pathname).toBe('/details');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/details');
   });
 
   it('uses the app history when registered', () => {

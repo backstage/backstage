@@ -324,7 +324,7 @@ describe('mockApis', () => {
         replace: true,
         state: { step: 1 },
       });
-      expect(history.location).toEqual({
+      expect(history.getSnapshot().location).toEqual({
         pathname: '/tools',
         search: '',
         hash: '',
@@ -340,31 +340,30 @@ describe('mockApis', () => {
       history.navigate('mailto:support@example.com');
       expect(navigate).toHaveBeenCalledTimes(4);
       expect(navigate).toHaveBeenLastCalledWith('mailto:support@example.com');
-      expect(history.location.pathname).toBe('/only-path');
+      expect(history.getSnapshot().location.pathname).toBe('/only-path');
     });
 
-    it('gives every location$ subscription its own handler', () => {
+    it('gives every history subscription its own handler', () => {
       const history = mockApis.appHistory.mock();
       const seen: string[] = [];
       // The same function subscribing twice is two subscriptions, exactly as
       // it is on the real app history.
-      const onNext = (l: AppLocation) => seen.push(l.pathname);
+      const onNext = () => seen.push(history.getSnapshot().location.pathname);
 
-      const first = history.location$.subscribe(onNext);
-      const second = history.location$.subscribe(onNext);
-      expect(seen).toEqual(['/', '/']);
+      const first = history.subscribe(onNext);
+      const second = history.subscribe(onNext);
+      expect(seen).toEqual([]);
 
       history.navigate('/catalog');
-      expect(seen).toEqual(['/', '/', '/catalog', '/catalog']);
+      expect(seen).toEqual(['/catalog', '/catalog']);
 
-      first.unsubscribe();
-      expect(first.closed).toBe(true);
-      expect(second.closed).toBe(false);
+      first();
+      first(); // Unsubscribing twice is harmless.
 
       history.navigate('/tools');
-      expect(seen).toEqual(['/', '/', '/catalog', '/catalog', '/tools']);
+      expect(seen).toEqual(['/catalog', '/catalog', '/tools']);
 
-      second.unsubscribe();
+      second();
     });
 
     it('only stops tracking the location when a test asks it to', () => {
@@ -374,12 +373,15 @@ describe('mockApis', () => {
         hash: '',
         state: undefined,
       };
-      const history = mockApis.appHistory.mock({ location: pinned });
+      const snapshot = { location: pinned };
+      const history = mockApis.appHistory.mock({
+        getSnapshot: () => snapshot,
+      });
 
       history.navigate('/tools');
 
       expect(history.navigate).toHaveBeenCalledWith('/tools');
-      expect(history.location).toBe(pinned);
+      expect(history.getSnapshot().location).toBe(pinned);
     });
 
     it('has working defaults for everything a subscriber needs', () => {
@@ -388,7 +390,7 @@ describe('mockApis', () => {
       expect(history.createHref('/catalog')).toBe('/catalog');
       expect(history.createHref('/catalog/foo/edit')).toBe('/catalog/foo/edit');
       expect(history.createHref).toHaveBeenLastCalledWith('/catalog/foo/edit');
-      expect(history.location).toEqual({
+      expect(history.getSnapshot().location).toEqual({
         pathname: '/',
         search: '',
         hash: '',
@@ -396,16 +398,18 @@ describe('mockApis', () => {
       });
 
       const seen: AppLocation[] = [];
-      const subscription = history.location$.subscribe(l => seen.push(l));
-      expect(seen).toEqual([history.location]);
+      const subscription = history.subscribe(() =>
+        seen.push(history.getSnapshot().location),
+      );
+      expect(seen).toEqual([]);
 
       history.navigate('/tools');
 
       expect(history.navigate).toHaveBeenCalledWith('/tools');
-      expect(history.location.pathname).toBe('/tools');
-      expect(seen[1]).toBe(history.location);
+      expect(history.getSnapshot().location.pathname).toBe('/tools');
+      expect(seen[0]).toBe(history.getSnapshot().location);
 
-      subscription.unsubscribe();
+      subscription();
     });
   });
 
