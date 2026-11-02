@@ -764,11 +764,13 @@ export const SidebarContent = NavContentBlueprint.make({
 });
 ```
 
-The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item} />`) remains supported for backward compatibility. If you don't want to auto-populate the list, simply remove the rendering of that `SidebarGroup`.
+If your custom sidebar uses the removed flat `items` prop, use `navItems.rest()` to get the remaining items. Replace `item.to` with `item.href` and `item.text` with `item.title`. The `item.icon` value is a React element rather than a component type, so replace `<SidebarItem {...item} />` with `<SidebarItem icon={() => item.icon} to={item.href} text={item.title} />`, as shown above.
+
+If you don't want to auto-populate the list, remove the rendering of that `SidebarGroup`.
 
 You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 
-To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`, or disable the page extension in config with `page:<plugin-id>: false`.
+To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`. To disable the page entirely, disable its extension in config with `page:<plugin-id>: false`.
 
 #### App Root Routes
 
