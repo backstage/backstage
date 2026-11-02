@@ -38,7 +38,7 @@
     "postinstall": "husky || true",
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:all": "backstage-cli repo lint",
-    "lint:circular-deps": "madge --circular .",
+    "lint:circular-deps": "depcruise packages plugins",
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:peer-deps": "backstage-repo-tools peer-deps",
     "lint:type-deps": "backstage-repo-tools type-deps",
@@ -147,6 +147,7 @@
     "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",
     "cross-env": "^10.0.0",
+    "dependency-cruiser": "^18.7.2",
     "e2e-test": "workspace:*",
     "eslint": "^8.6.0",
     "eslint-plugin-node-import": "^1.0.5",
@@ -159,7 +160,6 @@
     "js-yaml": "^5.0.0",
     "jsdom": "^27",
     "lint-staged": "^16.0.0",
-    "madge": "^8.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^12.0.0",
     "prettier": "^2.2.1",
@@ -177,23 +177,6 @@
   "packageManager": "yarn@4.18.1",
   "engines": {
     "node": "^24.15.0 || ^26.13.0"
-  },
-  "madge": {
-    "fileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx"
-    ],
-    "detectiveOptions": {
-      "ts": {
-        "skipTypeImports": true
-      },
-      "tsx": {
-        "skipTypeImports": true
-      }
-    },
-    "tsConfig": "./tsconfig.json"
   },
   "resolutionsComments": {
     "@inquirer/type@npm:^4.0.5": "inquirer 13.4.3 declarations fail with TS2344 against @inquirer/type 4.1.1 when declaration files are checked. Keep its 4.0.x requests on 4.0.7 until Yeoman moves to Inquirer 14; see https://github.com/SBoudrias/Inquirer.js/issues/2244.",
