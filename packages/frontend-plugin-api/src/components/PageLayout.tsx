@@ -30,12 +30,6 @@ export interface PageLayoutTab {
 }
 
 /**
- * @deprecated Use {@link PageLayoutTab} instead
- * @public
- */
-export type PageTab = PageLayoutTab;
-
-/**
  * Props for the PageLayout component
  * @public
  */

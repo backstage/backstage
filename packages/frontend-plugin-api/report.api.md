@@ -1927,9 +1927,6 @@ export interface PageLayoutTab {
   label: string;
 }
 
-// @public @deprecated (undocumented)
-export type PageTab = PageLayoutTab;
-
 // @public
 export type PendingOAuthRequest = {
   provider: AuthProviderInfo;
@@ -1962,18 +1959,6 @@ export const pluginHeaderActionsApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public @deprecated (undocumented)
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends {
-    [name in string]: RouteRef | SubRouteRef;
-  },
-  TExternalRoutes extends {
-    [name in string]: ExternalRouteRef;
-  },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 // @public
 export type PluginWrapperApi = {
