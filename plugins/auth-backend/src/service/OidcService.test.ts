@@ -2019,5 +2019,171 @@ describe('OidcService', () => {
         });
       });
     });
+
+    describe('static clients', () => {
+      const redirectUri = 'https://integration.example.com/callback';
+      const staticClientsConfig = {
+        auth: {
+          clients: [
+            {
+              clientId: 'confidential-client',
+              clientName: 'Confidential Client',
+              clientSecret: 'super-secret',
+              redirectUris: [redirectUri],
+              scopes: ['openid'],
+            },
+            { clientId: 'public-client', redirectUris: [redirectUri] },
+          ],
+        },
+      };
+
+      async function createCode(
+        service: OidcService,
+        clientId: string,
+        extra: { codeChallenge?: string; codeChallengeMethod?: string } = {},
+      ) {
+        const authSession = await service.createAuthorizationSession({
+          clientId,
+          redirectUri,
+          responseType: 'code',
+          scope: 'openid',
+          ...extra,
+        });
+        const { redirectUrl } = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+        return new URL(redirectUrl).searchParams.get('code')!;
+      }
+
+      it('should authorize and authenticate confidential static clients', async () => {
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          config: staticClientsConfig,
+        });
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'token' });
+
+        const config = service.getConfiguration();
+        expect(config.token_endpoint_auth_methods_supported).toContain('none');
+        expect(config.revocation_endpoint).toBe(
+          'http://mock-base-url/v1/revoke',
+        );
+
+        await expect(
+          service.createAuthorizationSession({
+            clientId: 'confidential-client',
+            redirectUri: 'https://integration.example.com/other',
+            responseType: 'code',
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+        await expect(
+          service.createAuthorizationSession({
+            clientId: 'confidential-client',
+            redirectUri,
+            responseType: 'code',
+            scope: 'openid offline_access',
+          }),
+        ).rejects.toThrow("Invalid scope 'offline_access'");
+
+        await expect(
+          service.verifyClientCredentials({
+            clientId: 'confidential-client',
+            clientSecret: 'wrong',
+          }),
+        ).resolves.toBe(false);
+        await expect(
+          service.verifyClientCredentials({
+            clientId: 'confidential-client',
+            clientSecret: 'super-secret',
+          }),
+        ).resolves.toBe(true);
+        await expect(
+          service.verifyRevocationClient({ clientId: 'confidential-client' }),
+        ).resolves.toBe(false);
+
+        const unauthenticatedCode = await createCode(
+          service,
+          'confidential-client',
+        );
+        await expect(
+          service.exchangeCodeForToken({
+            code: unauthenticatedCode,
+            redirectUri,
+            grantType: 'authorization_code',
+          }),
+        ).rejects.toThrow('Authorization code was not issued to this client');
+
+        const code = await createCode(service, 'confidential-client');
+        await expect(
+          service.exchangeCodeForToken({
+            code,
+            redirectUri,
+            grantType: 'authorization_code',
+            authenticatedClientId: 'confidential-client',
+          }),
+        ).resolves.toEqual(expect.objectContaining({ accessToken: 'token' }));
+      });
+
+      it('should require PKCE for public static clients', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: staticClientsConfig,
+        });
+
+        await expect(
+          service.createAuthorizationSession({
+            clientId: 'public-client',
+            redirectUri,
+            responseType: 'code',
+          }),
+        ).rejects.toThrow('PKCE is required for public clients');
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: 'public-client',
+          redirectUri,
+          responseType: 'code',
+          codeChallenge: 'challenge',
+          codeChallengeMethod: 'plain',
+        });
+        expect(authSession.clientName).toBe('public-client');
+
+        await expect(
+          service.verifyRevocationClient({ clientId: 'public-client' }),
+        ).resolves.toBe(true);
+      });
+    });
+  });
+
+  describe('static client validation', () => {
+    it.each([
+      [
+        [
+          {
+            clientId: 'https://example.com/client.json',
+            redirectUris: ['a:b'],
+          },
+        ],
+        'client IDs must not be URLs',
+      ],
+      [
+        [
+          { clientId: 'dup', redirectUris: ['https://example.com/cb'] },
+          { clientId: 'dup', redirectUris: ['https://example.com/cb'] },
+        ],
+        "Duplicate client ID 'dup'",
+      ],
+      [
+        [{ clientId: 'empty', redirectUris: [] }],
+        'must have at least one redirect URI',
+      ],
+      [
+        [{ clientId: 'invalid', redirectUris: ['/relative'] }],
+        "Invalid redirect URI '/relative'",
+      ],
+    ])('should reject invalid config %#', async (clients, message) => {
+      await expect(
+        createOidcService({ config: { auth: { clients } } }),
+      ).rejects.toThrow(message);
+    });
   });
 });

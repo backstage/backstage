@@ -272,7 +272,7 @@ export class OidcRouter {
       );
     }
 
-    if (dcrEnabled || cimdEnabled) {
+    if (dcrEnabled || cimdEnabled || this.oidc.hasStaticClients()) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
@@ -439,6 +439,22 @@ export class OidcRouter {
         } = validateRequest(tokenRequestBodySchema, req.body);
 
         try {
+          // Authenticate if credentials are provided via Basic auth or body
+          const hasCredentials =
+            req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i) ||
+            (bodyClientId && bodyClientSecret);
+
+          let authenticatedClientId: string | undefined;
+          if (hasCredentials) {
+            const { clientId: authedId } = await authenticateClient({
+              req,
+              oidc: this.oidc,
+              bodyClientId,
+              bodyClientSecret,
+            });
+            authenticatedClientId = authedId;
+          }
+
           // Handle authorization_code grant type
           if (grantType === 'authorization_code') {
             if (!code || !redirectUri) {
@@ -454,6 +470,7 @@ export class OidcRouter {
               redirectUri,
               codeVerifier,
               grantType,
+              authenticatedClientId,
             });
 
             return res.json({
@@ -476,22 +493,6 @@ export class OidcRouter {
                 'Missing refresh_token parameter for refresh_token grant',
                 400,
               );
-            }
-
-            // Authenticate if credentials are provided via Basic auth or body
-            const hasCredentials =
-              req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i) ||
-              (bodyClientId && bodyClientSecret);
-
-            let authenticatedClientId: string | undefined;
-            if (hasCredentials) {
-              const { clientId: authedId } = await authenticateClient({
-                req,
-                oidc: this.oidc,
-                bodyClientId,
-                bodyClientSecret,
-              });
-              authenticatedClientId = authedId;
             }
 
             const result = await this.oidc.refreshAccessToken({

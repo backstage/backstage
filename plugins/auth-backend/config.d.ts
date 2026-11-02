@@ -180,6 +180,36 @@ export interface Config {
     };
 
     /**
+     * Pre-registered OAuth clients that can act on behalf of signed-in users
+     * through the auth backend's OIDC provider.
+     *
+     * Clients without a `clientSecret` are public clients and must use PKCE.
+     */
+    clients?: Array<{
+      /**
+       * The client ID. Must be unique and must not be a URL.
+       */
+      clientId: string;
+      /**
+       * The name shown to users when they approve the client. Defaults to the client ID.
+       */
+      clientName?: string;
+      /**
+       * The client secret. When set, the client must authenticate at the token endpoint.
+       * @visibility secret
+       */
+      clientSecret?: string;
+      /**
+       * The allowed redirect URIs, which must match exactly.
+       */
+      redirectUris: string[];
+      /**
+       * The scopes the client is allowed to request. Defaults to all supported scopes.
+       */
+      scopes?: string[];
+    }>;
+
+    /**
      * Configuration for Client ID Metadata Documents (CIMD)
      *
      * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
