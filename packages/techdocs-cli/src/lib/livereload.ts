@@ -54,10 +54,7 @@ const MKDOCS_LIVERELOAD_CALL_RE = /livereload\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*;?/;
  * Extract livereload parameters from mkdocs HTML and inject them as a custom element.
  * The injected element will later be read by the frontend addon even after DOM sanitization.
  *
- * Note:
- * - we don't add to <head> because of DomPurify sanitization.
- * - we add close to the body opening to avoid reading too far into the body.
- * - we should use streamed injection to improve performance.
+ * Note: we should use streamed injection to improve performance.
  */
 export function injectLivereloadParameters(html: string): string {
   const livereloadMatch = html.match(MKDOCS_LIVERELOAD_CALL_RE);
@@ -68,23 +65,33 @@ export function injectLivereloadParameters(html: string): string {
   }
 
   const [, epoch, requestId] = livereloadMatch;
-  // Insert a minimal custom element that the frontend addon can discover post-sanitization.
-  // Note: embedded app needs a custom config to allow the element to survive sanitization.
-  const liveReloadTag = `<${LIVE_RELOAD_ELEMENT} ${LIVE_RELOAD_ATTR_EPOCH}="${epoch}" ${LIVE_RELOAD_ATTR_REQUEST_ID}="${requestId}"></${LIVE_RELOAD_ELEMENT}>`;
-
-  // Naively find where to insert the livereload tag.
-  const bodyStart = html.match(BODY_START_RE);
-  const bodyStartIndex = bodyStart?.index ?? 0;
-  const bodyStartLength = bodyStart?.[0]?.length ?? 0;
-  if (bodyStartIndex === 0 || bodyStartLength === 0) {
-    return html;
-  }
-  const bodyEndIndex = bodyStartIndex + bodyStartLength;
-
-  return html.slice(0, bodyEndIndex) + liveReloadTag + html.slice(bodyEndIndex);
+  return injectLiveReloadElement(html, epoch, requestId);
 }
 
-function setCorsHeaders(response: http.ServerResponse) {
+/**
+ * Inserts the `<live-reload>` element right after `<body>` so the preview
+ * app's LiveReloadAddon can find it after DOM sanitization.
+ *
+ * Note:
+ * - we don't add to <head> because of DomPurify sanitization.
+ * - we add close to the body opening to avoid reading too far into the body.
+ */
+export function injectLiveReloadElement(
+  html: string,
+  epoch: string,
+  requestId: string,
+): string {
+  const bodyStart = html.match(BODY_START_RE);
+  if (!bodyStart || bodyStart.index === undefined) {
+    return html;
+  }
+  const insertAt = bodyStart.index + bodyStart[0].length;
+  // Note: embedded app needs a custom config to allow the element to survive sanitization.
+  const liveReloadTag = `<${LIVE_RELOAD_ELEMENT} ${LIVE_RELOAD_ATTR_EPOCH}="${epoch}" ${LIVE_RELOAD_ATTR_REQUEST_ID}="${requestId}"></${LIVE_RELOAD_ELEMENT}>`;
+  return html.slice(0, insertAt) + liveReloadTag + html.slice(insertAt);
+}
+
+export function setCorsHeaders(response: http.ServerResponse) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 }

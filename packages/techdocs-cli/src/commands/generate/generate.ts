@@ -32,7 +32,7 @@ import {
   getLogStream,
 } from '../../lib/utility';
 import { computeDirectoryEtag } from '../../lib/etag';
-import { getEngineConfig } from '../../lib/engineConfig';
+import { getEngineConfig } from '../../lib/engines';
 import { resolveEngine } from '../../lib/catalogEntity';
 
 const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
@@ -118,6 +118,14 @@ export default async function generate(opts: OptionValues) {
   const generators = await Generators.fromConfig(config, {
     logger,
   });
+  // Engines other than MkDocs ship their own generator; register the one for
+  // the detected engine so generators.get() below can resolve it.
+  if (engineConfig.createGenerator) {
+    generators.register(
+      engine,
+      engineConfig.createGenerator(config, { logger }),
+    );
+  }
 
   // Stamp the resolved engine onto the entity so that an explicit --engine
   // flag takes precedence over the catalog annotation in generators.get().

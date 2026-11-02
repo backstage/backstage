@@ -1,5 +1,13 @@
 # example-backend
 
+## 0.0.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-backend@2.4.1
+  - @backstage/plugin-techdocs-backend-module-zensical@0.1.0
+
 ## 0.0.55
 
 ### Patch Changes

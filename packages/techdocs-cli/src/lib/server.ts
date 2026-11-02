@@ -15,6 +15,7 @@
  */
 
 import { run, RunChildProcess, RunOnOutput } from '@backstage/cli-common';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 export const runEngineServer = (options: {
   port?: string;
@@ -29,7 +30,8 @@ export const runEngineServer = (options: {
 }): RunChildProcess => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
-  const dockerImage = options.dockerImage ?? 'spotify/techdocs';
+  const dockerImage =
+    options.dockerImage ?? TechdocsGenerator.defaultDockerImage;
 
   if (useDocker) {
     return run(

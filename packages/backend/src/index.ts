@@ -69,6 +69,7 @@ backend.add(
 );
 backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
+backend.add(import('@backstage/plugin-techdocs-backend-module-zensical'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 
