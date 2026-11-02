@@ -16,12 +16,15 @@
 
 import {
   coreApis,
-  alertApiRef,
   type AnalyticsApi,
+  type AnalyticsEvent,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
+  type ErrorApiError,
+  type ErrorApiErrorContext,
   type FetchApi,
+  type FeatureFlagsApi,
   type FeatureFlagState,
   type IdentityApi,
   type StorageApi,
@@ -37,6 +40,11 @@ import {
   type ToastApi,
   type ToastApiMessage,
 } from '@backstage/frontend-plugin-api';
+import {
+  alertApiRef,
+  type AlertApi,
+  type AlertMessage,
+} from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
   type PermissionApi,
@@ -118,7 +126,7 @@ function createObservableState<T>(initialValue: T) {
  */
 export namespace mockApis {
   /**
-   * Fake implementation of {@link @backstage/frontend-plugin-api#AlertApi}.
+   * Fake implementation of {@link @backstage/core-plugin-api#AlertApi}.
    *
    * @public
    * @example
@@ -129,22 +137,26 @@ export namespace mockApis {
    * expect(alertApi.getAlerts()).toHaveLength(1);
    * ```
    */
-  export function alert(): MockWithApiFactory<MockAlertApi> {
+  export function alert(): MockWithApiFactory<AlertApi> & {
+    clearAlerts(): void;
+    getAlerts(): AlertMessage[];
+    waitForAlert(
+      predicate: (alert: AlertMessage) => boolean,
+      timeoutMs?: number,
+    ): Promise<AlertMessage>;
+  } {
     const instance = new MockAlertApi();
-    return attachMockApiFactory(
-      alertApiRef,
-      instance,
-    ) as MockWithApiFactory<MockAlertApi>;
+    return attachMockApiFactory(alertApiRef, instance);
   }
   /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api#AlertApi}.
+   * Mock helpers for {@link @backstage/core-plugin-api#AlertApi}.
    *
    * @public
    */
   export namespace alert {
     /**
      * Creates a mock implementation of
-     * {@link @backstage/frontend-plugin-api#AlertApi}. All methods are
+     * {@link @backstage/core-plugin-api#AlertApi}. All methods are
      * replaced with jest mock functions, and you can optionally pass in a
      * subset of methods with an explicit implementation.
      *
@@ -171,12 +183,13 @@ export namespace mockApis {
    */
   export function featureFlags(options?: {
     initialStates?: Record<string, FeatureFlagState>;
-  }): MockWithApiFactory<MockFeatureFlagsApi> {
+  }): MockWithApiFactory<FeatureFlagsApi> & {
+    getState(): Record<string, FeatureFlagState>;
+    setState(states: Record<string, FeatureFlagState>): void;
+    clearState(): void;
+  } {
     const instance = new MockFeatureFlagsApi(options);
-    return attachMockApiFactory(
-      coreApis.featureFlags,
-      instance,
-    ) as MockWithApiFactory<MockFeatureFlagsApi>;
+    return attachMockApiFactory(coreApis.featureFlags, instance);
   }
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#FeatureFlagsApi}.
@@ -205,13 +218,11 @@ export namespace mockApis {
    *
    * @public
    */
-  export function analytics(): MockAnalyticsApi &
-    MockWithApiFactory<AnalyticsApi> {
+  export function analytics(): MockWithApiFactory<AnalyticsApi> & {
+    getEvents(): AnalyticsEvent[];
+  } {
     const instance = new MockAnalyticsApi();
-    return attachMockApiFactory(
-      coreApis.analytics,
-      instance,
-    ) as MockAnalyticsApi & MockWithApiFactory<AnalyticsApi>;
+    return attachMockApiFactory(coreApis.analytics, instance);
   }
 
   /**
@@ -231,13 +242,9 @@ export namespace mockApis {
    *
    * @public
    */
-  export function translation(): MockTranslationApi &
-    MockWithApiFactory<TranslationApi> {
+  export function translation(): MockWithApiFactory<TranslationApi> {
     const instance = MockTranslationApi.create();
-    return attachMockApiFactory(
-      coreApis.translation,
-      instance,
-    ) as MockTranslationApi & MockWithApiFactory<TranslationApi>;
+    return attachMockApiFactory(coreApis.translation, instance);
   }
 
   /**
@@ -264,10 +271,9 @@ export namespace mockApis {
    */
   export function config(options?: {
     data?: JsonObject;
-  }): MockConfigApi & MockWithApiFactory<ConfigApi> {
+  }): MockWithApiFactory<ConfigApi> {
     const instance = new MockConfigApi({ data: options?.data ?? {} });
-    return attachMockApiFactory(coreApis.config, instance) as MockConfigApi &
-      MockWithApiFactory<ConfigApi>;
+    return attachMockApiFactory(coreApis.config, instance);
   }
 
   /**
@@ -303,15 +309,14 @@ export namespace mockApis {
    */
   export function discovery(options?: {
     baseUrl?: string;
-  }): DiscoveryApi & MockWithApiFactory<DiscoveryApi> {
+  }): MockWithApiFactory<DiscoveryApi> {
     const baseUrl = options?.baseUrl ?? 'http://example.com';
     const instance: DiscoveryApi = {
       async getBaseUrl(pluginId: string) {
         return `${baseUrl}/api/${pluginId}`;
       },
     };
-    return attachMockApiFactory(coreApis.discovery, instance) as DiscoveryApi &
-      MockWithApiFactory<DiscoveryApi>;
+    return attachMockApiFactory(coreApis.discovery, instance);
   }
 
   /**
@@ -358,8 +363,7 @@ export namespace mockApis {
       },
       async signOut() {},
     };
-    return attachMockApiFactory(coreApis.identity, instance) as IdentityApi &
-      MockWithApiFactory<IdentityApi>;
+    return attachMockApiFactory(coreApis.identity, instance);
   }
 
   /**
@@ -388,17 +392,14 @@ export namespace mockApis {
       | ((
           request: EvaluatePermissionRequest,
         ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
-  }): MockPermissionApi & MockWithApiFactory<PermissionApi> {
+  }): MockWithApiFactory<PermissionApi> {
     const authorizeInput = options?.authorize;
     const handler =
       typeof authorizeInput === 'function'
         ? authorizeInput
         : () => authorizeInput ?? AuthorizeResult.ALLOW;
     const instance = new MockPermissionApi(handler);
-    return attachMockApiFactory(
-      permissionApiRef,
-      instance,
-    ) as MockPermissionApi & MockWithApiFactory<PermissionApi>;
+    return attachMockApiFactory(permissionApiRef, instance);
   }
 
   /**
@@ -419,10 +420,9 @@ export namespace mockApis {
    */
   export function storage(options?: {
     data?: JsonObject;
-  }): MockStorageApi & MockWithApiFactory<StorageApi> {
+  }): MockWithApiFactory<StorageApi> {
     const instance = MockStorageApi.create(options?.data);
-    return attachMockApiFactory(coreApis.storage, instance) as MockStorageApi &
-      MockWithApiFactory<StorageApi>;
+    return attachMockApiFactory(coreApis.storage, instance);
   }
 
   /**
@@ -447,10 +447,18 @@ export namespace mockApis {
    */
   export function error(options?: {
     collect?: boolean;
-  }): MockErrorApi & MockWithApiFactory<ErrorApi> {
+  }): MockWithApiFactory<ErrorApi> & {
+    getErrors(): Array<{
+      error: ErrorApiError;
+      context?: ErrorApiErrorContext;
+    }>;
+    waitForError(
+      pattern: RegExp,
+      timeoutMs?: number,
+    ): Promise<{ error: ErrorApiError; context?: ErrorApiErrorContext }>;
+  } {
     const instance = new MockErrorApi(options);
-    return attachMockApiFactory(coreApis.error, instance) as MockErrorApi &
-      MockWithApiFactory<ErrorApi>;
+    return attachMockApiFactory(coreApis.error, instance);
   }
 
   /**
@@ -472,10 +480,9 @@ export namespace mockApis {
    */
   export function fetch(
     options?: MockFetchApiOptions,
-  ): MockFetchApi & MockWithApiFactory<FetchApi> {
+  ): MockWithApiFactory<FetchApi> {
     const instance = new MockFetchApi(options);
-    return attachMockApiFactory(coreApis.fetch, instance) as MockFetchApi &
-      MockWithApiFactory<FetchApi>;
+    return attachMockApiFactory(coreApis.fetch, instance);
   }
 
   /**
