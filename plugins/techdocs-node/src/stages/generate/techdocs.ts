@@ -93,19 +93,11 @@ export class TechdocsGenerator implements GeneratorBase {
   }) {
     this.logger = options.logger;
     this.options = readGeneratorConfig(options.config, options.logger);
-    if (!options.containerRunner && this.options.runIn === 'kubernetes') {
-      if (!this.options.kubernetes) {
-        throw new Error(
-          `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
-        );
-      }
-      this.containerRunner = new KubernetesJobRunner(
-        this.options.kubernetes,
-        this.logger,
-      );
-    } else {
-      this.containerRunner = options.containerRunner;
-    }
+    this.containerRunner =
+      options.containerRunner ??
+      (this.options.runIn === 'kubernetes'
+        ? createKubernetesJobRunner(options.config, this.logger)
+        : undefined);
     this.scmIntegrations = options.scmIntegrations;
   }
 
@@ -333,6 +325,19 @@ export function readGeneratorConfig(
       'techdocs.generator.mkdocs.disableExternalFonts',
     ),
   };
+}
+
+export function createKubernetesJobRunner(
+  config: Config,
+  logger?: LoggerService,
+): TechDocsContainerRunner {
+  const kubernetes = readKubernetesOptions(config);
+  if (!kubernetes) {
+    throw new Error(
+      `'techdocs.generator.kubernetes' must be configured when 'techdocs.generator.runIn' is 'kubernetes'`,
+    );
+  }
+  return new KubernetesJobRunner(kubernetes, logger);
 }
 
 const NODE_AFFINITIES = ['preferred', 'required', 'none'];

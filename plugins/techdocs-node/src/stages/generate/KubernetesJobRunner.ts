@@ -262,7 +262,9 @@ export class KubernetesJobRunner implements TechDocsContainerRunner {
         .filter(e => e.isDirectory() && e.name.startsWith(WORK_DIR_PREFIX))
         .map(async e => {
           const dir = path.join(workRoot, e.name);
-          if ((await fs.stat(dir)).mtimeMs < cutoff) {
+          // Another runner sharing the volume may have removed it already
+          const stat = await fs.stat(dir).catch(() => undefined);
+          if (stat && stat.mtimeMs < cutoff) {
             await fs.remove(dir);
             this.logger?.info(`Removed stale TechDocs build directory ${dir}`);
           }

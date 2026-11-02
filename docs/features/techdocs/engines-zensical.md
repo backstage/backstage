@@ -59,7 +59,7 @@ MkDocs either way.
 ```yaml title="app-config.yaml"
 techdocs:
   generator:
-    runIn: docker # or 'local'
+    runIn: docker # or 'local' or 'kubernetes'
     zensical:
       dockerImage: ghcr.io/backstage/techdocs-zensical:<tag>
 ```
@@ -68,10 +68,10 @@ techdocs:
 
 `techdocs.generator.zensical.dockerImage`
 
-(Optional) The image used when `runIn` is `docker`. Defaults to a pinned
-release of `ghcr.io/backstage/techdocs-zensical`. If you set it, pin a release
-tag rather than `latest`, so builds don't change when a new image is
-published. TechDocs always runs the `zensical` command in the container,
+(Optional) The image used when `runIn` is `docker` or `kubernetes`. Defaults
+to a pinned release of `ghcr.io/backstage/techdocs-zensical`. If you set it,
+pin a release tag rather than `latest`, so builds don't change when a new image
+is published. TechDocs always runs the `zensical` command in the container,
 regardless of the image's entrypoint.
 
 Zensical builds ignore `techdocs.generator.dockerImage`, because that setting
@@ -86,6 +86,12 @@ Install Zensical and the Markdown extensions TechDocs enables:
 ```bash
 pip install zensical plantuml-markdown markdown-graphviz-inline mdx_truly_sane_lists
 ```
+
+### Running in Kubernetes
+
+With `runIn: kubernetes`, Zensical builds run as Kubernetes Jobs using the same
+`techdocs.generator.kubernetes` settings as MkDocs builds. See
+[Kubernetes](./configuration.md#kubernetes).
 
 ### Other settings
 
