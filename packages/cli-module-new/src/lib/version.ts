@@ -15,7 +15,7 @@
  */
 
 import semver from 'semver';
-import { Lockfile } from '@backstage/cli-node';
+import type { Lockfile } from '@backstage/cli-node/alpha';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
 /*
@@ -124,6 +124,15 @@ export function createPackageVersionProvider(
   lockfile?: Lockfile,
   options?: {
     preferBackstageProtocol?: boolean;
+    /**
+     * Widens a lockfile range that is an exact version to a caret range of it.
+     * pnpm lists packages that are only depended on transitively under their
+     * exact version, and a new package should get a range that keeps the
+     * version that is installed rather than pin it.
+     */
+    widenExactRanges?: boolean;
+    /** The entries of the default pnpm catalog, which `catalog:` refers to */
+    defaultCatalog?: Record<string, string>;
   },
 ) {
   return (name: string, versionHint?: string): string | undefined => {
@@ -143,7 +152,16 @@ export function createPackageVersionProvider(
       return 'backstage:^';
     }
 
-    // 3) fallback to current npm resolution
+    // 3) catalog: when the default catalog has the package, which workspaces
+    // that enforce catalogs require
+    if (
+      options?.defaultCatalog &&
+      Object.hasOwn(options.defaultCatalog, name)
+    ) {
+      return 'catalog:';
+    }
+
+    // 4) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
       return undefined;
@@ -155,6 +173,9 @@ export function createPackageVersionProvider(
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
+      if (options?.widenExactRanges && semver.valid(highestRange.range)) {
+        return `^${highestRange.range}`;
+      }
       return highestRange?.range;
     }
     if (packageVersion) {

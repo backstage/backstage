@@ -21,7 +21,8 @@ import yargs from 'yargs';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import type * as JestCli from 'jest-cli';
 import { relative as relativePath } from 'node:path';
-import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
+import { PackageGraph, SuccessCache } from '@backstage/cli-node';
+import { detectPackageManager, Lockfile } from '@backstage/cli-node/alpha';
 
 import {
   findOwnPaths,
@@ -67,16 +68,20 @@ interface TestGlobal extends Global {
 async function readPackageTreeHashes(graph: PackageGraph) {
   const pkgs = Array.from(graph.values()).map(pkg => ({
     ...pkg,
-    path: relativePath(targetPaths.rootDir, pkg.dir),
+    path: relativePath(targetPaths.installationRootDir, pkg.dir),
   }));
-  const output = await runOutput([
-    'git',
-    'ls-tree',
-    '--format=%(objectname)=%(path)',
-    'HEAD',
-    '--',
-    ...pkgs.map(pkg => pkg.path),
-  ]);
+  // Paths given to and printed by git ls-tree are relative to its working directory
+  const output = await runOutput(
+    [
+      'git',
+      'ls-tree',
+      '--format=%(objectname)=%(path)',
+      'HEAD',
+      '--',
+      ...pkgs.map(pkg => pkg.path),
+    ],
+    { cwd: targetPaths.installationRootDir },
+  );
 
   const map = new Map(
     output
@@ -351,16 +356,26 @@ export default async ({ args, info }: CliCommandContext) => {
     // Shared state for the bridge
     const projectHashes = new Map<string, string>();
     const outputSuccessCache = new Array<string>();
+    let cacheUnavailable = false;
 
     // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
     // are picked up by the config script itself, as well as the custom result processor.
     testGlobal.__backstageCli_jestSuccessCache = {
       // This is called by `config/jest.js` after the project configs have been gathered
       async filterConfigs(projectConfigs, globalRootConfig) {
+        // The cache keys depend on the lockfile, so without one there is no cache
+        const packageManager = await detectPackageManager();
+        let lockfile: Lockfile;
+        try {
+          lockfile = await packageManager.loadLockfile();
+        } catch (error) {
+          console.warn(
+            `Failed to read ${packageManager.lockfileName()}, running all tests without the success cache, ${error}`,
+          );
+          cacheUnavailable = true;
+          return projectConfigs;
+        }
         const cacheEntries = await cache.read();
-        const lockfile = await Lockfile.load(
-          targetPaths.resolveRoot('yarn.lock'),
-        );
         const getPackageTreeHash = await readPackageTreeHashes(graph);
 
         // Base hash shared by all projects
@@ -417,6 +432,11 @@ export default async ({ args, info }: CliCommandContext) => {
       },
       // This is called by `config/jestCacheResultProcess.cjs` after all tests have run
       async reportResults(results) {
+        // The cache is neither read nor written when it is unavailable
+        if (cacheUnavailable) {
+          return;
+        }
+
         const successful = new Set<string>();
         const failed = new Set<string>();
 
