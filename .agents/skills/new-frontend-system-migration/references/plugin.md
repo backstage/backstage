@@ -22,11 +22,20 @@ Feature discovery reads both the main entry and a declared `./alpha` entry, and 
 
 The steps below apply to both paths, unless a step is marked as one path only.
 
+### Migrating Part of a Plugin
+
+In large repositories, a plugin is often migrated a page or tab at a time. When the user asks for only part of a plugin, or the plugin already has a `createFrontendPlugin` with some pages still in the old plugin:
+
+1. Add the new extension, such as a `PageBlueprint` or `EntityContentBlueprint`, to the existing `createFrontendPlugin`, or create one if there is none yet.
+2. Remove the matching old extension, its export, and the app's legacy wiring for it. Before removing an export or a route ref, search the repository for other code that uses it.
+3. Leave the rest of the old plugin and its dependencies alone. Skip the steps that remove old-system code from the whole plugin until its last page has moved.
+
 ## Key Concepts
 
 - **Old system:** `createPlugin` from `@backstage/core-plugin-api`, pages via `createRoutableExtension`, routes defined in the app
 - **New system:** `createFrontendPlugin` from `@backstage/frontend-plugin-api`, pages via `PageBlueprint`, routes owned by the plugin
-- **Page shell:** Old-system pages render their own `Page`/`Header`/`PageWithHeader` from `@backstage/core-components`. In the new system, the framework's `PageLayout` renders `PluginHeader` from `@backstage/ui`, so new-system page components must not include their own page shell.
+- **Page shell:** Old-system pages render their own `Page`/`Header`/`PageWithHeader` from `@backstage/core-components`. In the new system, the framework's `PageLayout` renders `PluginHeader` from `@backstage/ui` above each page, unless the page sets `noHeader: true`. Step 4 explains how to handle the old shell.
+- **Wrapper packages:** Some repositories import `@backstage/*` packages through their own re-exports, such as `@internal/backstage/core-plugin-api`. Treat those imports like the package they re-export in every step.
 
 ## Step 1: Route Refs
 
@@ -73,7 +82,11 @@ Key differences:
 
 ### Path B: Reuse the Existing Route Refs
 
-Route refs created with `@backstage/core-plugin-api` work in the new system as they are. Pass them to `createFrontendPlugin`'s `routes`/`externalRoutes` and to `PageBlueprint`'s `routeRef`. There is no need for `convertLegacyRouteRef` or `compatWrapper` from `@backstage/core-compat-api`.
+Route refs created with `@backstage/core-plugin-api` work in the new system as they are. Pass them to `createFrontendPlugin`'s `routes`/`externalRoutes` and to `PageBlueprint`'s `routeRef`. Since Backstage 1.46 there is no need for `convertLegacyRouteRef` or `compatWrapper` from `@backstage/core-compat-api`, even if older code in the repository still uses them.
+
+### Both Paths: One Route Ref Per Extension
+
+The old system let several extensions share one mount point, for example a standalone page and an entity tab both using `rootRouteRef`. In the new system, a route ref points to one extension. Give the route ref to the extension that other plugins link to, usually the standalone page, and leave `routeRef` out of the others, since `PageBlueprint` and `EntityContentBlueprint` don't require one.
 
 ### Both Paths: Set Default Targets for External Route Refs
 
@@ -154,7 +167,7 @@ For path B with `./alpha`, add the entry to `package.json`:
 }
 ```
 
-Keep `"./package.json"` in `exports`, or discovery cannot read the package's role and skips it without a warning. Before adding `exports`, check for deep imports of the package from other packages, since `exports` blocks them. Read `references/plugin-packaging.md` in the `frontend-plugin-development` skill for these and the other `package.json` requirements, unique extension names, and declaring feature flags with `featureFlags` instead of registering them imperatively.
+A package without `exports` needs no change here: discovery reads its main entry. If the package has `exports`, or you add them, keep `"./package.json"` in them, or discovery cannot read the package's role and skips it without a warning. Before adding `exports`, check for deep imports of the package from other packages, since `exports` blocks them. Read `references/plugin-packaging.md` in the `frontend-plugin-development` skill for these and the other `package.json` requirements, unique extension names, and declaring feature flags with `featureFlags` instead of registering them imperatively.
 
 ## Step 3: API Factories to `ApiBlueprint`
 
@@ -240,7 +253,10 @@ export const myPage = PageBlueprint.make({
 
 The `title` and `icon` params on `PageBlueprint` are only needed if they differ from the plugin's own `title` and `icon`.
 
-The page component must **not** include `Page`, `Header`, or `PageWithHeader` from `@backstage/core-components`. For a subtitle or action buttons below the framework header, use `Header` from `@backstage/ui`, and move `ContentHeader` actions to its `customActions` prop:
+The framework renders the plugin's header above the page, so the old page shell (`Page`, `Header`, or `PageWithHeader` from `@backstage/core-components`) would show a second header. Choose one of two options, and ask the user if their request doesn't say:
+
+- **Keep the old shell for now.** Set `noHeader: true` on the `PageBlueprint` and leave the page component as it is. The page looks the same as before, and the change stays small. Moving to the new header can follow in a separate change.
+- **Move to the new header.** Remove the old shell from the page component. For a subtitle or actions below the framework header, use `Header` from `@backstage/ui`: move `ContentHeader` actions to its `customActions` prop, `HeaderLabel`s such as owner and lifecycle to its `metadata` prop, and a subtitle to `title` or `description`. The page title itself comes from the `PageBlueprint` or plugin `title`. For an action that belongs on every page of the plugin, such as a support button, use a `PluginHeaderActionBlueprint` extension instead.
 
 ```tsx
 import { Header } from '@backstage/ui';
@@ -261,7 +277,7 @@ export function MyPage() {
 }
 ```
 
-For pages that manage their own layout entirely, such as home pages and dashboards, set `noHeader: true` on the `PageBlueprint`.
+Pages that manage their own layout entirely, such as home pages and dashboards, also use `noHeader: true`.
 
 ### Path B: One Page, Two Shells
 
@@ -413,18 +429,18 @@ if (docsLink) {
 }
 ```
 
-For path A, replace every `@backstage/core-plugin-api` import with `@backstage/frontend-plugin-api`:
+For path A, replace every `@backstage/core-plugin-api` import with `@backstage/frontend-plugin-api`, including imports through the repository's own re-exports of it:
 
-| Old Import (`@backstage/core-plugin-api`)                                                              | New Import (`@backstage/frontend-plugin-api`)        |
-| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| `createPlugin`                                                                                         | `createFrontendPlugin`                               |
-| `createRouteRef`, `createSubRouteRef`, `createExternalRouteRef`                                        | Same names                                           |
-| `createApiRef`                                                                                         | `createApiRef`                                       |
-| `createApiFactory`                                                                                     | `ApiBlueprint.make`                                  |
-| `useApi`, `useRouteRef`                                                                                | Same names                                           |
-| `configApiRef`, `discoveryApiRef`, `fetchApiRef`, `identityApiRef`, `storageApiRef`, `analyticsApiRef` | Same names                                           |
-| `createRoutableExtension`                                                                              | `PageBlueprint.make`                                 |
-| `createComponentExtension`                                                                             | Depends on context: a blueprint or `createExtension` |
+| Old Import (`@backstage/core-plugin-api`)                                                              | New Import (`@backstage/frontend-plugin-api`)                                                                                    |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `createPlugin`                                                                                         | `createFrontendPlugin`                                                                                                           |
+| `createRouteRef`, `createSubRouteRef`, `createExternalRouteRef`                                        | Same names                                                                                                                       |
+| `createApiRef`                                                                                         | `createApiRef`                                                                                                                   |
+| `createApiFactory`                                                                                     | `ApiBlueprint.make`                                                                                                              |
+| `useApi`, `useRouteRef`                                                                                | Same names                                                                                                                       |
+| `configApiRef`, `discoveryApiRef`, `fetchApiRef`, `identityApiRef`, `storageApiRef`, `analyticsApiRef` | Same names                                                                                                                       |
+| `createRoutableExtension`                                                                              | `PageBlueprint.make`                                                                                                             |
+| `createComponentExtension`                                                                             | A plain component export, if other plugins or the app import and render it. Otherwise a blueprint, such as `EntityCardBlueprint` |
 
 ## Step 7: Refs and Translations (Path B)
 
@@ -439,27 +455,32 @@ Keep route refs, API refs, and translation refs exported from the main entry poi
 5. Remove internal `<Routes>`/`<Route>` trees if replaced by sub-pages
 6. Remove `@backstage/core-plugin-api` and `@backstage/core-compat-api` from `package.json` `dependencies`
 
+Before removing an export from the plugin's entry point, search the repository for code that imports it. Keep exports that other plugins use, such as helper functions and contexts.
+
 Page components should then use `@backstage/ui` components and patterns. Keep `Content` from `@backstage/core-components` for page body padding. See the `mui-to-bui-migration` skill for component migration.
 
 ## Step 9: Dev App and Tests
 
-For path A:
+For both paths, add a smoke test that installs the new plugin in a test app, opens its main page, and asserts on the page's content. Read `references/testing.md` in the `frontend-plugin-development` skill. This is the one test the migration requires.
 
-1. Move `dev/index.tsx` to `createDevApp` from `@backstage/frontend-dev-utils`, and replace `@backstage/dev-utils` with it in `devDependencies`. Port every `.registerApi(...)` call to an `ApiBlueprint` in a dev-only module. Dropping one compiles but throws `NotImplementedError` when the component that uses the API mounts. Read `references/dev-app.md` in the `frontend-plugin-development` skill.
-2. Replace `@backstage/test-utils` with `@backstage/frontend-test-utils` in `devDependencies` and test imports. Provide APIs to components through `renderInTestApp({ apis })` and to hooks through `TestApiProvider`.
+Existing tests can stay on `@backstage/test-utils`, or the repository's own wrappers around it, as long as they pass. Move a test to `@backstage/frontend-test-utils` when you change it anyway, providing APIs to components through `renderInTestApp({ apis })` and to hooks through `TestApiProvider`.
 
-For both paths, add a smoke test that installs the new plugin in a test app, opens its main page, and asserts on the page's content. Read `references/testing.md` in the `frontend-plugin-development` skill. For path B, keep the existing old-system tests passing.
+For path A, if the plugin has a dev app, move `dev/index.tsx` to `createDevApp` from `@backstage/frontend-dev-utils`, and replace `@backstage/dev-utils` with it in `devDependencies`. Port every `.registerApi(...)` call to an `ApiBlueprint` in a dev-only module. Dropping one compiles but throws `NotImplementedError` when the component that uses the API mounts. Read `references/dev-app.md` in the `frontend-plugin-development` skill.
+
+For path B, keep the old dev app working. In a repository with no app, add a new-system dev app next to it, so the new plugin can be checked by hand.
 
 ## Step 10: Remove the Old Wiring from the App
 
-If the plugin is installed in an app in the same repository, and that app uses the new `createApp`, remove the plugin's legacy wiring from the app in the same change: legacy `<Route>` elements and entity page JSX for its tabs and cards. Move redirect routes to the `app/routes` config, and check `app-config` before deleting JSX that an extension now replaces. Read `references/app-integration.md` in the `frontend-plugin-development` skill, and `references/app.md` in this skill for the app side.
+If the plugin is installed in an app in the same repository, and that app uses the new `createApp`, remove the plugin's legacy wiring from the app in the same change: legacy `<Route>` elements and entity page JSX for its tabs and cards. Move redirect routes declared in the app's routes to the `app/routes` config; redirects inside the plugin's own router can stay there. Check `app-config` before deleting JSX that an extension now replaces. Read `references/app-integration.md` in the `frontend-plugin-development` skill, and `references/app.md` in this skill for the app side.
 
 ## Examples in the Backstage Repository
 
-- **Path A:** `plugins/auth` has no `@backstage/core-plugin-api` dependency. `src/plugin.tsx` defines a `PageBlueprint` whose loader renders an internal router.
-- **Path B with `./alpha`:** `plugins/catalog` keeps `src/plugin.ts` and adds `src/alpha/plugin.tsx`. `src/components/CatalogPage/DefaultCatalogPage.tsx` has `BaseCatalogPage` (old shell) and `NfsBaseCatalogPage` (`Header` + `Content`).
-- **Sub-pages:** `plugins/scaffolder/src/alpha/extensions.tsx` uses a `PageBlueprint` without a loader and a `SubPageBlueprint` per tab.
-- **Header variant:** `plugins/notifications/src/components/NotificationsPage/NotificationsPage.tsx`.
+These live in [`backstage/backstage`](https://github.com/backstage/backstage) and are usually not in the repository you are migrating.
+
+- **Path A:** [`plugins/auth/src/plugin.tsx`](https://github.com/backstage/backstage/blob/master/plugins/auth/src/plugin.tsx) defines a `PageBlueprint` whose loader renders an internal router, with no `@backstage/core-plugin-api` dependency.
+- **Path B with `./alpha`:** `plugins/catalog` keeps [`src/plugin.ts`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/plugin.ts) and adds [`src/alpha/plugin.tsx`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/alpha/plugin.tsx). [`DefaultCatalogPage.tsx`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx) has `BaseCatalogPage` (old shell) and `NfsBaseCatalogPage` (`Header` + `Content`).
+- **Sub-pages:** [`plugins/scaffolder/src/alpha/extensions.tsx`](https://github.com/backstage/backstage/blob/master/plugins/scaffolder/src/alpha/extensions.tsx) uses a `PageBlueprint` without a loader and a `SubPageBlueprint` per tab.
+- **Header variant:** [`NotificationsPage.tsx`](https://github.com/backstage/backstage/blob/master/plugins/notifications/src/components/NotificationsPage/NotificationsPage.tsx).
 
 ## Checklist
 
@@ -468,20 +489,20 @@ Items marked (A) or (B) apply to that path only.
 1. [ ] Route refs: (A) moved to `@backstage/frontend-plugin-api`, (B) reused as they are
 2. [ ] `defaultTarget` set on external route refs
 3. [ ] `createFrontendPlugin` is the default export of the chosen entry, and `backstage.pluginId` matches its `pluginId`
-4. [ ] `package.json` `exports` match the chosen entry and keep `"./package.json"`
+4. [ ] If the package has `exports`, they match the chosen entry and keep `"./package.json"`
 5. [ ] API factories converted to `ApiBlueprint` extensions, with API refs using an explicit `pluginId`
-6. [ ] Pages converted to `PageBlueprint`, with no page shell in new-system page components
+6. [ ] Pages converted to `PageBlueprint`, either keeping the old shell with `noHeader: true` or moved to the new header
 7. [ ] Tab routing replaced with `SubPageBlueprint` where it fits
 8. [ ] Entity page tabs converted to `EntityContentBlueprint`, keeping the same filter
 9. [ ] Every extension of the same kind has a unique `name`
 10. [ ] `useRouteRef` returning `undefined` is handled in new-system code
 11. [ ] `@backstage/frontend-plugin-api` (and `@backstage/ui` if used) added to `dependencies`
 12. [ ] (A) `src/plugin.ts`, `src/alpha.tsx`, and `@backstage/core-plugin-api` and `@backstage/core-compat-api` dependencies removed
-13. [ ] (A) Dev app on `@backstage/frontend-dev-utils` with every registered API ported, and tests on `@backstage/frontend-test-utils`
+13. [ ] (A) Dev app, if any, on `@backstage/frontend-dev-utils` with every registered API ported
 14. [ ] (B) Refs and translations exported from the main entry, not duplicated in `./alpha`
 15. [ ] (B) Old-system pages and exports still work
 16. [ ] Smoke test that renders the new plugin's main page
-17. [ ] The plugin's legacy wiring removed from a new-system app in the same repository, with redirects moved to config
+17. [ ] The plugin's legacy wiring removed from a new-system app in the same repository, with the app's redirects moved to config, and no export removed that other code still imports
 18. [ ] `yarn tsc` and `yarn lint` pass
 19. [ ] `yarn build:api-reports` run, if the project uses API reports
 20. [ ] The dev app renders the page, with no `App startup encountered warnings` block in the browser console

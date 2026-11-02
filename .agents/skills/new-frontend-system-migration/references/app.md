@@ -1,6 +1,6 @@
 # Migrating an App to the New Frontend System
 
-This guide migrates a Backstage app package (`packages/app`) from the old frontend system (`@backstage/app-defaults`) to the new extension-based frontend system (`@backstage/frontend-defaults`).
+This guide migrates a Backstage app package, usually `packages/app`, from the old frontend system (`@backstage/app-defaults`) to the new extension-based frontend system (`@backstage/frontend-defaults`).
 
 The migration follows a two-phase approach: first get the app running in hybrid mode with compatibility helpers, then gradually remove legacy code until the app is fully on the new system. If the repository also has plugins to migrate, migrate them between the two phases, as described in `SKILL.md`, using `references/plugin.md`.
 
@@ -8,7 +8,7 @@ The migration follows a two-phase approach: first get the app running in hybrid 
 
 - **Old system:** `createApp` from `@backstage/app-defaults`, plugins installed via `<Route>` elements in `FlatRoutes`, manual app shell with `AppRouter` + `Root`
 - **New system:** `createApp` from `@backstage/frontend-defaults`, plugins installed as `features`, extensions wired into an extension tree, no manual app shell
-- **Feature discovery:** The new system can automatically discover and install plugins from your app's dependencies — no manual imports needed. This is the default for new apps and should be enabled early in migration.
+- **Feature discovery:** The new system can automatically discover and install plugins from your app's dependencies — no manual imports needed. This is the default for new apps, and should be turned on once the app runs in hybrid mode.
 - **Hybrid mode:** The new `createApp` with `convertLegacyAppRoot` and `convertLegacyAppOptions` from `@backstage/core-compat-api` to bridge old code
 
 ## Feature Discovery
@@ -24,7 +24,9 @@ app:
   packages: all
 ```
 
-This is the **recommended default** for all apps using the new frontend system. Enable it as early as Phase 1.
+This is the **recommended default** for all apps using the new frontend system. Turn it on at the end of Phase 1, once the app runs in hybrid mode, and not in the same change as the switch to the new `createApp`.
+
+Before turning it on, list the app's dependencies that already export a new-system plugin. Each one gets installed as soon as discovery is on: its pages and tabs appear, and it takes ownership of its APIs, so app-level overrides of those APIs stop applying unless they move to a module for that plugin (see Step 2). Use `exclude` below for plugins that aren't ready, such as one whose pages clash with an existing route.
 
 ### Filtering Discovered Packages
 
@@ -67,7 +69,7 @@ Plugins that are both manually imported in `features` and auto-discovered are de
 Omit `app.packages` from config entirely (not `app.packages: none` — just leave it out) to disable discovery. You might do this if:
 
 - You need full control over which plugins are loaded
-- You're in early Phase 1 and want to introduce features one at a time
+- You're still switching to the new `createApp` in Phase 1, and want to introduce features one at a time
 - You're running in an environment where the `@backstage/cli` webpack integration isn't available
 
 Feature discovery requires that the app is built using `@backstage/cli`, which is the default for all Backstage apps.
@@ -121,22 +123,23 @@ const app = createApp({
 });
 ```
 
+Check these before moving on, because they fail without an error:
+
+- **API overrides for plugin-owned APIs.** `convertLegacyAppOptions` installs every API in `apis` from the `app` plugin. An override of an API that a plugin owns, with an ID like `plugin.catalog.*`, is rejected as soon as that plugin is installed in the new system, and the plugin's default implementation is used instead. The only sign is an `API_FACTORY_CONFLICT` warning at startup. In hybrid mode this already happens in phase 1, because every legacy plugin with a route in `FlatRoutes` is installed with its own APIs. Move each such override into a `createFrontendModule` with that plugin's `pluginId` now, as shown under "Migrating `createApp` Options" in phase 2.
+- **Feature flags of legacy plugins.** The old `createApp` registered the feature flags that each plugin passed to `createPlugin`. `convertLegacyAppOptions` takes only the APIs from `plugins`, so pass those flags in its `featureFlags` option too.
+- **Route bindings.** `bindRoutes` is still an option of the new `createApp` and can stay as it is.
+
 ### Step 3: Convert the app root
 
-Use `convertLegacyAppRoot` to convert the entire app element tree (routes, sidebar, root elements) into features:
+Use `convertLegacyAppRoot` to convert the app element tree (routes, sidebar, root elements) into features:
 
 ```tsx
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
 
 const convertedRootFeatures = convertLegacyAppRoot(
-  <>
-    <AlertDisplay transientTimeoutMs={2500} />
-    <OAuthRequestDialog />
-    <AppRouter>
-      <VisitListener />
-      <Root>{routes}</Root>
-    </AppRouter>
-  </>,
+  <AppRouter>
+    <Root>{routes}</Root>
+  </AppRouter>,
 );
 
 const app = createApp({
@@ -147,6 +150,12 @@ export default app.createRoot();
 ```
 
 Note: `app.createRoot()` now takes **no arguments** and returns a React **element** (not a component).
+
+`convertLegacyAppRoot` keeps only the element directly inside `AppRouter` that wraps `FlatRoutes`, usually `Root`, and replaces its children with the converted routes. Everything else is dropped without an error: elements outside `AppRouter`, other children of `AppRouter`, and wrappers between `Root` and `FlatRoutes`. The new app already renders `AlertDisplay` and `OAuthRequestDialog` itself, so those can go. Before converting:
+
+- Move custom providers and global elements, such as context providers, sidebars, and analytics or survey loaders, inside the component that wraps `FlatRoutes`, so they are kept. In phase 2, move them to extensions, as described under "Migrating Root Elements".
+- If the app has its own alert or OAuth dialog UI, disable the built-in one, for example with `- app-root-element:app/alert-display: false` under `app.extensions` in `app-config.yaml`.
+- Give every route in `FlatRoutes` its own path. A catch-all `<Route path="/*">` that renders more routes inside it becomes a route at `/` after conversion, and its nested pages stop rendering.
 
 ### Step 4: Update `index.tsx`
 
@@ -504,6 +513,14 @@ Only one version of a plugin can be active in the app at a time. When legacy rou
 
 The practical consequence: when you migrate a plugin, remove _all_ of its legacy touchpoints — routes _and_ entity page extensions — at the same time.
 
+#### Plugins from npm That Don't Support the New System
+
+Before removing an npm plugin's legacy routes, check whether the installed version exports a new-system plugin: a default export of `createFrontendPlugin`, usually from its `./alpha` entry. Open its `package.json` `exports` and that entry in `node_modules`, or check its changelog.
+
+- **It does:** remove its legacy touchpoints as described above.
+- **A newer version does:** upgrade the plugin first, in its own change.
+- **No version does:** keep its legacy routes and entity page JSX for now, which keeps the app in hybrid mode. To finish the migration without it, wrap the plugin with `convertLegacyPlugin` and its pages with `convertLegacyPageExtension` from `@backstage/core-compat-api`, and install the result as a feature. See the [plugin conversion guide](https://backstage.io/docs/frontend-system/building-apps/plugin-conversion). If the plugin's code is in this repository, migrate it with `references/plugin.md` instead.
+
 ### Migrating Entity Pages
 
 Entity pages are typically the most complex part of the migration because they pull in content from many different plugins. The `entityPage` option in `convertLegacyAppRoot` provides a way to migrate them gradually.
@@ -608,15 +625,16 @@ app:
 
 ### Phase 1 (Hybrid)
 
-1. [ ] Add `@backstage/frontend-defaults` and `@backstage/core-compat-api` dependencies
-2. [ ] Switch `createApp` import to `@backstage/frontend-defaults`
-3. [ ] Enable feature discovery: add `app.packages: all` to `app-config.yaml`
-4. [ ] Wrap legacy options with `convertLegacyAppOptions`
-5. [ ] Wrap app element tree with `convertLegacyAppRoot`
+1. [ ] Backstage is on 1.49 or later, upgraded in a separate change if needed
+2. [ ] Add `@backstage/frontend-defaults` and `@backstage/core-compat-api` dependencies
+3. [ ] Switch `createApp` import to `@backstage/frontend-defaults`
+4. [ ] Wrap legacy options with `convertLegacyAppOptions`, pass legacy plugins' feature flags in `featureFlags`, and move overrides of plugin-owned APIs to modules for those plugins
+5. [ ] Wrap app element tree with `convertLegacyAppRoot`, with custom providers and global elements moved inside the component that wraps `FlatRoutes`, and no catch-all `/*` route
 6. [ ] Change `app.createRoot()` to take no arguments
 7. [ ] Update `index.tsx` to render element instead of component
 8. [ ] Update `App.test.tsx`
-9. [ ] Verify app starts and works in hybrid mode
+9. [ ] Verify app starts and works in hybrid mode, with no `API_FACTORY_CONFLICT` in the `App startup encountered warnings` block
+10. [ ] Enable feature discovery: add `app.packages: all` to `app-config.yaml`, excluding plugins that aren't ready
 
 ### Phase 2 (Full Migration)
 
@@ -627,7 +645,7 @@ app:
 5. [ ] Convert translations to `TranslationBlueprint`
 6. [ ] Migrate sidebar to `NavContentBlueprint`
 7. [ ] Remove built-in root elements (`AlertDisplay`, `OAuthRequestDialog`, etc.)
-8. [ ] Migrate routes from `FlatRoutes` to plugin features (one plugin at a time, removing all routes + entity content for each plugin together), moving redirect routes to the `app/routes` config
+8. [ ] Migrate routes from `FlatRoutes` to plugin features (one plugin at a time, removing all routes + entity content for each plugin together), moving redirect routes to the `app/routes` config, and upgrading or converting npm plugins that don't support the new system
 9. [ ] Set up entity page migration with `convertLegacyAppRoot(routes, { entityPage })`
 10. [ ] Migrate catalog plugin: remove catalog routes from `FlatRoutes`, install `catalogPlugin` as a feature
 11. [ ] Gradually remove legacy entity card/content JSX as each contributing plugin is migrated, after checking `app-config` does not disable or narrow the replacing extension
