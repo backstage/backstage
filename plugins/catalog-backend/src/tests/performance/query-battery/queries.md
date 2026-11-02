@@ -34,6 +34,14 @@ differently from short ones, so measure the `_perm` variants with at least 3,
 10 and 40 claims, and a list where a single claim owns a large share of the
 catalog.
 
+**Capture the generated SQL for long lists.** On PostgreSQL, an `$in` list of
+10 or more values on a field other than `kind`, `spec.type` and
+`spec.lifecycle` is compiled as a set of entity IDs, either joined or hashed,
+not as the per-row `EXISTS (... = ANY(:claims))` shown in the reference SQL.
+The reference SQL in this file is accurate only for short lists. For any
+variant with 10 or more claims, capture the SQL that the method call actually
+generates (for example with knex query logging) and measure that instead.
+
 For a faster run that relies on documented assumptions, see the
 [slim profile](./slim-profile.md). It must not be used without checking those
 assumptions first.
@@ -686,7 +694,9 @@ const permission = {
 ```
 
 In page queries, and in all queries on other databases, `<permission>` in the
-reference SQL below stands for:
+reference SQL below stands for the following. This is the short-list form
+(fewer than 10 claims); for longer lists, capture the generated SQL as
+described in [How to run](#how-to-run).
 
 ```sql
 (
@@ -1117,6 +1127,11 @@ catalog.queryEntities({
 });
 ```
 
+A cursor carries its own filter and ordering, and `queryEntities` ignores the
+top-level `filter` and `orderFields` when a cursor is given. Fetch a separate
+cursor for each kind and for each permission and claim-list variant, rather
+than reusing one and changing the filter.
+
 **Reference SQL**: Scenario 1 with the cursor condition added:
 
 ```sql
@@ -1179,7 +1194,9 @@ not with entities times list length.
 
 **Anti-patterns**:
 
-- Per-row `= ANY(array)` SubPlans (global anti-pattern 6).
+- Per-row `= ANY(array)` SubPlans (global anti-pattern 6) for lists on
+  fields other than `kind`, `spec.type` and `spec.lifecycle`. Per-row probes
+  of lists on those three fields are intended and are not a regression.
 - A negated list planned as a filter that scans a materialized set again for every
   row.
 
@@ -1204,7 +1221,9 @@ These should NEVER appear in any of the above queries:
    `EXISTS (... s.value = ANY(:values))` with a loop count in the tens of
    thousands. Each time the index scan restarts, it sorts the array again with
    collation-aware comparisons, so the cost per loop grows with the length of the array even
-   though only one index page is read.
+   though only one index page is read. Exception: lists on `kind`,
+   `spec.type` and `spec.lifecycle` are probed per row on purpose, since each
+   of their values matches a large share of the catalog (see scenario 21).
 
 Facets and count queries (scenarios 15-18) have no LIMIT and must visit the
 whole filtered set. For those queries, a bounded spill of an intermediate set

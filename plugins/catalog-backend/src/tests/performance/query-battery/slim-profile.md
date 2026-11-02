@@ -78,7 +78,8 @@ requested anyway. Never fall back to a smaller matrix silently.
 
 - Comparing the returned entity IDs with the baseline for every case that ran.
 - Checking plans for per-row `= ANY(array)` SubPlans, lost LIMIT
-  short-circuiting, and large sorts.
+  short-circuiting, and large sorts. Per-row probes of lists on `kind`,
+  `spec.type` and `spec.lifecycle` are intended and are not flagged.
 - Scenarios 12, 13, 14, 18, 19, 20 and 21, and the owned-entities page.
   These are known to be sensitive to how long lists are compiled.
 - On a replica: checking `pg_is_in_recovery()` first, running one query at a
