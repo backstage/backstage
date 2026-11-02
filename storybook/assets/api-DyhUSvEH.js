@@ -1,0 +1,1 @@
+import{c as s}from"./useAnalytics-Cik4L6Xq.js";const t=s({id:"plugin.search.queryservice"});class i{mockedResults;constructor(e){this.mockedResults=e}query(e,c){return Promise.resolve(this.mockedResults||{results:[]})}}export{i as M,t as s};
