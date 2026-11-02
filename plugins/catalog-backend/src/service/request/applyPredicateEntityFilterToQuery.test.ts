@@ -161,6 +161,24 @@ describe('PostgreSQL query generation', () => {
       expect(query.sql).toContain('exists');
     }
     expect(compile({ $any: [types, owned] }).sql).toContain(inSet);
+
+    // Large flat filters are analyzed in linear time, not by checking every
+    // sibling of every condition (16 million checks for this one)
+    const labels = Array.from({ length: 4000 }, (_, i) => ({
+      [`metadata.labels.l${i}`]: 'v',
+    }));
+    const start = Date.now();
+    const negated = labels.map(label => ({ $not: label }));
+    const narrowed = compile({ $all: [...labels, owned] as FilterPredicate[] });
+    const alternated = compile({
+      $any: [...negated, owned] as FilterPredicate[],
+    });
+    const joined = compile({ $all: [...negated, owned] as FilterPredicate[] });
+    expect(Date.now() - start).toBeLessThan(2000);
+    expect(narrowed.sql).toContain(inSet);
+    expect(alternated.sql).not.toContain(inSet);
+    expect(alternated.sql).toContain('"in_set_1"."entity_id" is not null');
+    expect(joined.sql).toContain('"in_set_1"."entity_id" is not null');
   });
 });
 
@@ -417,6 +435,67 @@ describe.each(databases.eachSupportedId())(
         await expect(
           query({ 'metadata.tags': { $in: ['java', 'backend', ...padding] } }),
         ).resolves.toEqual(['bare-e']);
+      });
+
+      it('filters with long $in lists next to narrow or broad conditions', async () => {
+        const padding = Array.from(
+          { length: IN_SUBQUERY_MIN_VALUES },
+          (_, i) => `other-${i}`,
+        );
+        // Each filter puts a long list next to a narrow condition in an $all,
+        // or next to a broad alternative in an $any, so that PostgreSQL uses
+        // the IN form; the results must match those of the short lists
+        const filters = (long: boolean): FilterPredicate[] => {
+          const tags = { $in: ['java', 'backend', ...(long ? padding : [])] };
+          const owners = {
+            $in: [
+              'group:default/team-a',
+              ...(long ? padding.map(p => `group:default/${p}`) : []),
+            ],
+          };
+          return [
+            {
+              $all: [
+                { 'relations.consumesApi': 'api:default/api-d' },
+                { 'relations.ownedBy': owners },
+              ],
+            },
+            { 'metadata.name': 'bare-e', 'metadata.tags': tags },
+            { $any: [{ kind: 'api' }, { 'metadata.tags': tags }] },
+            {
+              $any: [
+                { 'spec.lifecycle': 'experimental' },
+                { 'relations.ownedBy': owners },
+              ],
+            },
+          ];
+        };
+
+        const expected = [
+          ['service-a'],
+          ['bare-e'],
+          ['api-d', 'bare-e'],
+          ['service-a', 'service-b', 'website-c'],
+        ];
+        for (const [index, filter] of filters(false).entries()) {
+          await expect(query(filter)).resolves.toEqual(expected[index]);
+        }
+        const isPostgres = knex.client.config.client === 'pg';
+        for (const [index, filter] of filters(true).entries()) {
+          await expect(query(filter)).resolves.toEqual(expected[index]);
+          const q = knex('final_entities');
+          applyEntityFilterToQuery({
+            filter,
+            targetQuery: q,
+            onEntityIdField: 'final_entities.entity_id',
+            knex,
+          });
+          const sql = q.toString();
+          expect(
+            sql.includes('"final_entities"."entity_id" in (select') &&
+              !sql.includes('in_set_'),
+          ).toBe(isPostgres);
+        }
       });
     });
 
