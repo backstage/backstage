@@ -84,14 +84,7 @@ export default async (opts: OptionValues): Promise<void> => {
     );
   }
 
-  if (major % 2 !== 0) {
-    Task.error(
-      `Node version ${major} is an odd-numbered release and is not a supported LTS version. Please use an even-numbered LTS version (${SUPPORTED_NODE_VERSIONS.join(
-        ' or ',
-      )}).`,
-    );
-    hasPrerequisiteError = true;
-  } else if (!minimumVersion) {
+  if (!minimumVersion) {
     Task.error(
       `Node version ${major} is not a supported LTS version. Please use a supported version (${SUPPORTED_NODE_VERSIONS.join(
         ' or ',
