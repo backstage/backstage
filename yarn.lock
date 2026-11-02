@@ -199,14 +199,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:^15.3.5":
-  version: 15.3.5
-  resolution: "@apidevtools/json-schema-ref-parser@npm:15.3.5"
+"@apidevtools/json-schema-ref-parser@npm:^15.3.6":
+  version: 15.5.2
+  resolution: "@apidevtools/json-schema-ref-parser@npm:15.5.2"
   dependencies:
-    js-yaml: "npm:^4.1.1"
+    js-yaml: "npm:^5.2.2"
+    undici: "npm:^6.28.0"
   peerDependencies:
     "@types/json-schema": ^7.0.15
-  checksum: 10/dd597e7cfd3ae57121b29f6489e39502199a96dce072788497dd30fab3296ed4f6dd95da1ddd26ae3461594a75f1d563c0b894bf70cd43e690b08ed9af78aa83
+  checksum: 10/6c4d312f479f4ccca209a28d8674729c5470500cc347cf9e8b7fa474d6af81c6ef9d6ae6c42fbdca3fb44f9e505fa5c9542b7ab9fdb7647d969e1c4256deb85e
   languageName: node
   linkType: hard
 
@@ -4499,7 +4500,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi"
   dependencies:
-    "@apidevtools/json-schema-ref-parser": "npm:^15.3.5"
+    "@apidevtools/json-schema-ref-parser": "npm:^15.3.6"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -22261,6 +22262,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"argparse@npm:^3.0.3":
+  version: 3.0.4
+  resolution: "argparse@npm:3.0.4"
+  checksum: 10/682c0e8ff7a17b86bc48f46b83977f3207f70bef1e1bbe8653db92bf9860388536ff1728709b805f8df8ff4b561cfaec4bf912614b4c152acd05036fa22eb267
+  languageName: node
+  linkType: hard
+
 "args@npm:^5.0.0":
   version: 5.0.1
   resolution: "args@npm:5.0.1"
@@ -32985,6 +32993,17 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 10/2ce71b5d632abbd77da80447bf860e8a0264e54bffe94840984887d58b023761495b523727547904517a6107a1ef189854b361e0fc44995ee13a84f222d7bd42
+  languageName: node
+  linkType: hard
+
+"js-yaml@npm:^5.2.2":
+  version: 5.5.0
+  resolution: "js-yaml@npm:5.5.0"
+  dependencies:
+    argparse: "npm:^3.0.3"
+  bin:
+    js-yaml: bin/js-yaml.mjs
+  checksum: 10/c01359a4fe69a1c032e9e57d7387a1cbdfbbd45bc69924885a3c9a9a020e066627dc125f7b46f7b929186b5a65471ae5fa478d3f773e35f7ccdf57d32fcf369f
   languageName: node
   linkType: hard
 
@@ -45390,10 +45409,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.25.0":
-  version: 6.26.0
-  resolution: "undici@npm:6.26.0"
-  checksum: 10/a1715ee4304f58fecd61e0a8c3bd7064435cfbc98b3ec1414dba5e89de97d436b7e88dd094b06ff8440428bf36b56163fc88972118890826039865edf58bdfcf
+"undici@npm:^6.25.0, undici@npm:^6.28.0":
+  version: 6.29.1
+  resolution: "undici@npm:6.29.1"
+  checksum: 10/92acb64ec190fe3499dec69830fdfc48e28f6f19627bad7563cfd57c37b4e95379c12b8ac15a2e6a8739eaac358f17503a229c160d3dc8774141b1e270d8aa57
   languageName: node
   linkType: hard
 
