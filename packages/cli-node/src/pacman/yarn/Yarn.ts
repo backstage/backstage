@@ -14,77 +14,263 @@
  * limitations under the License.
  */
 
-import { ForwardedError, NotImplementedError } from '@backstage/errors';
-import { PackageInfo, PackageManager } from '../PackageManager';
+import { ForwardedError, NotFoundError } from '@backstage/errors';
+import {
+  PackageInfo,
+  PackageManager,
+  PackageManagerInstallOptions,
+} from '../PackageManager';
 import { Lockfile } from '../Lockfile';
+import { YarnLockfile } from './YarnLockfile';
 import { YarnVersion } from './types';
-import { run, runOutput, RunOptions } from '@backstage/cli-common';
+import { run, runOutput, RunOptions, targetPaths } from '@backstage/cli-common';
+import { hasBackstageYarnPlugin } from '../../yarn/yarnPlugin';
+import { resolve as resolvePath } from 'node:path';
 
+// Possible `yarn info` output from yarn classic
+type YarnClassicInfo = {
+  type: 'inspect';
+  data: PackageInfo | { type: string; data: unknown };
+};
+
+/**
+ * Options for {@link Yarn.create}.
+ *
+ * @alpha
+ */
+export type YarnCreateOptions = {
+  /**
+   * The root of the workspace that the instance is bound to. Defaults to the
+   * workspace root of the current working directory.
+   */
+  workspaceRootDir?: string;
+};
+
+/**
+ * The {@link PackageManager} implementation for Yarn, supporting both Yarn
+ * classic and modern Yarn.
+ *
+ * @remarks
+ *
+ * The version of Yarn is detected the first time a method needs it. Creating
+ * an instance does not run Yarn, so that the lockfile can be read where Yarn
+ * is not available, such as in the sandbox of a build system.
+ *
+ * @alpha
+ */
 export class Yarn implements PackageManager {
-  constructor(private readonly yarnVersion: YarnVersion) {}
-
-  static async create(dir?: string): Promise<Yarn> {
-    const yarnVersion = await detectYarnVersion(dir);
-    return new Yarn(yarnVersion);
+  /**
+   * Creates an instance bound to a workspace root, which uses the version of
+   * Yarn that runs in that directory.
+   */
+  static async create(options?: YarnCreateOptions): Promise<Yarn> {
+    return new Yarn(
+      resolvePath(options?.workspaceRootDir ?? targetPaths.workspaceRootDir),
+    );
   }
 
+  private constructor(private readonly workspaceRootDir: string) {}
+
+  private async yarnVersion(): Promise<YarnVersion> {
+    return detectYarnVersion(this.workspaceRootDir);
+  }
+
+  /** {@inheritDoc PackageManager.name} */
   name() {
     return 'yarn';
   }
 
-  version() {
-    return this.yarnVersion.version;
+  /** {@inheritDoc PackageManager.version} */
+  async version() {
+    return (await this.yarnVersion()).version;
   }
 
+  /** {@inheritDoc PackageManager.lockfileName} */
   lockfileName(): string {
     return 'yarn.lock';
   }
 
-  async pack(out: string, packageDir: string) {
+  /**
+   * Runs `yarn install` in the workspace root. An immutable install uses
+   * `--immutable`, or `--frozen-lockfile` with Yarn classic.
+   */
+  async install(options?: PackageManagerInstallOptions) {
+    const { immutable, offline, env, onStdout, onStderr } = options ?? {};
+    // The flags of immutable and offline installs differ between versions
+    const classic =
+      (immutable || offline) &&
+      (await this.yarnVersion()).codename === 'classic';
+
+    const args = ['install'];
+    if (immutable) {
+      args.push(classic ? '--frozen-lockfile' : '--immutable');
+    }
+    if (offline && classic) {
+      args.push('--offline');
+    }
+
+    await this.run(args, {
+      env: {
+        // We filter out all of the npm_* environment variables that are added when
+        // executing through yarn. This works around an issue where these variables
+        // incorrectly override local yarn or npm config in the project directory.
+        ...Object.fromEntries(
+          Object.entries(process.env).map(([name, value]) =>
+            name.startsWith('npm_') ? [name, undefined] : [name, value],
+          ),
+        ),
+        // Yarn enables immutable installs by default in CI, so we explicitly
+        // disable them when a mutable install has been requested.
+        ...(immutable === false
+          ? { YARN_ENABLE_IMMUTABLE_INSTALLS: 'false' }
+          : {}),
+        ...(offline && !classic ? { YARN_ENABLE_NETWORK: '0' } : {}),
+        ...env,
+      },
+      onStdout,
+      onStderr,
+    });
+  }
+
+  /** {@inheritDoc PackageManager.run} */
+  async run(args: string[], options?: RunOptions) {
+    const child = run(['yarn', ...args], {
+      ...options,
+      cwd: options?.cwd ?? this.workspaceRootDir,
+    });
+    await child.waitForExit();
+    // Waiting for the exit also succeeds when a signal ended the process
+    if (child.signalCode) {
+      throw new Error(
+        `Command 'yarn ${args.join(' ')}' was ended by ${child.signalCode}`,
+      );
+    }
+  }
+
+  /** Runs `yarn run <script> [args]`. */
+  async runScript(script: string, args: string[] = [], options?: RunOptions) {
+    await this.run(['run', script, ...args], options);
+  }
+
+  /**
+   * Runs `yarn workspace <workspace> run <script> [args]`, so that a script is
+   * not shadowed by a Yarn command with the same name, such as `pack`.
+   */
+  async runWorkspaceScript(
+    workspace: string,
+    script: string,
+    args: string[] = [],
+    options?: RunOptions,
+  ) {
+    await this.run(['workspace', workspace, 'run', script, ...args], options);
+  }
+
+  /**
+   * Runs `yarn pack` in the package directory, using `--filename` with Yarn
+   * classic and `--out` with modern Yarn.
+   */
+  async pack(output: string, packageDir: string, options?: RunOptions) {
     const outArg =
-      this.yarnVersion.codename === 'classic' ? '--filename' : '--out';
-    await this.run(['pack', outArg, out], {
+      (await this.yarnVersion()).codename === 'classic'
+        ? '--filename'
+        : '--out';
+    await this.run(['pack', outArg, output], {
+      ...options,
       cwd: packageDir,
     });
   }
 
-  async run(args: string[], options?: RunOptions) {
-    await run(['yarn', ...args], options).waitForExit();
+  /**
+   * Fetches package information using `yarn info` with Yarn classic and
+   * `yarn npm info` with modern Yarn.
+   */
+  async fetchPackageInfo(name: string): Promise<PackageInfo> {
+    const { codename } = await this.yarnVersion();
+
+    const cmd = codename === 'classic' ? ['info'] : ['npm', 'info'];
+    try {
+      const output = await runOutput(['yarn', ...cmd, '--json', name], {
+        cwd: this.workspaceRootDir,
+      });
+
+      if (!output) {
+        throw new NotFoundError(
+          `No package information found for package ${name}`,
+        );
+      }
+
+      if (codename === 'berry') {
+        return JSON.parse(output) as PackageInfo;
+      }
+
+      const info = JSON.parse(output) as YarnClassicInfo;
+      if (info.type !== 'inspect') {
+        throw new Error(`Received unknown yarn info for ${name}, ${output}`);
+      }
+
+      return info.data as PackageInfo;
+    } catch (error) {
+      if (codename === 'classic') {
+        throw error;
+      }
+
+      if (
+        error instanceof Error &&
+        'stdout' in error &&
+        typeof error.stdout === 'string' &&
+        error.stdout.includes('Response Code: 404')
+      ) {
+        throw new NotFoundError(
+          `No package information found for package ${name}`,
+        );
+      }
+
+      throw error;
+    }
   }
 
-  async fetchPackageInfo(): Promise<PackageInfo> {
-    throw new NotImplementedError();
-  }
-
+  /** Loads the `yarn.lock` file in the workspace root. */
   async loadLockfile(): Promise<Lockfile> {
-    throw new NotImplementedError();
+    return YarnLockfile.load(
+      resolvePath(this.workspaceRootDir, this.lockfileName()),
+    );
   }
 
-  async parseLockfile(): Promise<Lockfile> {
-    throw new NotImplementedError();
+  /** Parses the given `yarn.lock` contents. */
+  async parseLockfile(contents: string): Promise<Lockfile> {
+    return YarnLockfile.parse(contents);
   }
 
+  /**
+   * Whether the Backstage Yarn plugin is installed in the workspace, which
+   * provides the 'backstage:^' version protocol.
+   */
   async supportsBackstageVersionProtocol(): Promise<boolean> {
-    throw new NotImplementedError();
+    return hasBackstageYarnPlugin(this.workspaceRootDir);
   }
 
+  /** {@inheritDoc PackageManager.getCommandHint} */
+  getCommandHint(args: string[]): string {
+    return ['yarn', ...args].join(' ');
+  }
+
+  /** {@inheritDoc PackageManager.toString} */
   toString(): string {
-    return `${this.name()}@${this.yarnVersion.version}`;
+    return this.name();
   }
 }
 
 const versions = new Map<string, Promise<YarnVersion>>();
 
-function detectYarnVersion(dir?: string): Promise<YarnVersion> {
-  const cwd = dir ?? process.cwd();
-  if (versions.has(cwd)) {
-    return versions.get(cwd)!;
+function detectYarnVersion(dir: string): Promise<YarnVersion> {
+  if (versions.has(dir)) {
+    return versions.get(dir)!;
   }
 
   const promise = Promise.resolve().then(async () => {
     try {
       const stdout = await runOutput(['yarn', '--version'], {
-        cwd,
+        cwd: dir,
       });
       const versionString = stdout.trim();
       const codename: 'classic' | 'berry' = versionString.startsWith('1.')
@@ -96,6 +282,10 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
     }
   });
 
-  versions.set(cwd, promise);
+  versions.set(dir, promise);
+  // A failed version check is not cached, so that the next attempt runs again
+  promise.catch(() => {
+    versions.delete(dir);
+  });
   return promise;
 }
