@@ -654,10 +654,15 @@ describe('AppRoutes', () => {
     });
 
     // Prove the app history was constructed with basename: navigate writes
-    // under /backstage and location$ still emits the stripped app path.
+    // under /backstage and snapshots still expose the stripped app path.
     const locations: string[] = [];
-    appHistory.location$.subscribe(loc => locations.push(loc.pathname));
-    expect(locations[locations.length - 1]).toBe('/catalog/entities');
+    appHistory.subscribe(() =>
+      locations.push(appHistory.getSnapshot().location.pathname),
+    );
+    expect(locations).toEqual([]);
+    expect(appHistory.getSnapshot().location.pathname).toBe(
+      '/catalog/entities',
+    );
 
     await act(async () => {
       appHistory.navigate('/catalog/other');

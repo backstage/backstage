@@ -20,11 +20,11 @@
  * @public
  */
 export interface AppLocation {
-  pathname: string;
-  search: string;
-  hash: string;
+  readonly pathname: string;
+  readonly search: string;
+  readonly hash: string;
   /** User-visible navigation state for this location. */
-  state: unknown;
+  readonly state: unknown;
 }
 
 /**

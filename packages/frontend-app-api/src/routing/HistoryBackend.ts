@@ -175,6 +175,14 @@ export function createWindowHistoryBackend(): HistoryBackend {
     };
   };
 
+  let untrackedEntry:
+    | {
+        state: unknown;
+        href: string;
+        entry: HistoryEntryMetadata;
+      }
+    | undefined;
+
   const readEntry = (): HistoryEntryMetadata => {
     if (hasNavigationApi) {
       const currentEntry = navigation!.currentEntry!;
@@ -187,6 +195,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
     }
     const rawState = window.history.state;
     if (isStoredState(rawState)) {
+      untrackedEntry = undefined;
       const stored = rawState[STATE_KEY];
       const length = Math.max(
         fallbackEntry.length,
@@ -200,22 +209,23 @@ export function createWindowHistoryBackend(): HistoryBackend {
         canGoBack: stored.index > 0,
       };
     } else {
-      // Traversal may arrive at an entry created before AppHistory started.
-      // Give it a stable local identity without guessing a direction that the
-      // legacy History API does not reveal, and preserve its user state.
-      const length = Math.max(1, fallbackEntry.length);
-      const index = Math.min(fallbackEntry.index, length - 1);
-      fallbackEntry = {
-        key: createKey(),
-        index,
-        length,
-        canGoBack: index > 0,
-      };
-      window.history.replaceState(
-        wrapState(rawState, fallbackEntry),
-        '',
-        window.location.href,
-      );
+      // Reading a snapshot must not write browser history. Keep an untracked
+      // entry stable until an observed browser event can persist its identity.
+      const href = window.location.href;
+      if (
+        !untrackedEntry ||
+        !Object.is(untrackedEntry.state, rawState) ||
+        untrackedEntry.href !== href
+      ) {
+        const length = Math.max(1, fallbackEntry.length);
+        const index = Math.min(fallbackEntry.index, length - 1);
+        untrackedEntry = {
+          state: rawState,
+          href,
+          entry: { key: createKey(), index, length, canGoBack: index > 0 },
+        };
+      }
+      fallbackEntry = untrackedEntry.entry;
     }
     return fallbackEntry;
   };
@@ -295,6 +305,13 @@ export function createWindowHistoryBackend(): HistoryBackend {
         }
         const href = window.location.href;
         const key = readEntry().key;
+        if (!hasNavigationApi && !isStoredState(window.history.state)) {
+          window.history.replaceState(
+            wrapState(window.history.state, fallbackEntry),
+            '',
+            href,
+          );
+        }
         const state = window.history.state;
         if (
           href === lastHref &&

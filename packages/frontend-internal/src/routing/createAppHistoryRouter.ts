@@ -25,14 +25,10 @@ import {
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import type {
   AppHistoryApi,
-  AppLocation,
+  AppHistorySnapshot,
+  AppHistoryAction,
   RouteResolutionMatch,
 } from '@backstage/frontend-plugin-api';
-import {
-  readAppHistoryMetadata,
-  type AppHistoryAction,
-  type AppHistoryMetadata,
-} from './AppHistoryMetadata';
 import { expandOptionalSegments, matchPath } from './routePattern';
 import {
   observeReactRouterContext,
@@ -183,16 +179,11 @@ function normalizePattern(pattern: string): string {
  */
 const UNKEYED_LOCATION_KEY = 'default';
 
-function toAdapterLocation(
-  loc: AppLocation,
-  metadata: AppHistoryMetadata | undefined,
-): AdapterLocation {
+function toAdapterLocation(snapshot: AppHistorySnapshot): AdapterLocation {
   return {
-    pathname: loc.pathname,
-    search: loc.search,
-    hash: loc.hash,
-    state: loc.state ?? null,
-    key: metadata?.key ?? UNKEYED_LOCATION_KEY,
+    ...snapshot.location,
+    state: snapshot.location.state ?? null,
+    key: snapshot.entry?.key ?? UNKEYED_LOCATION_KEY,
   };
 }
 
@@ -262,43 +253,25 @@ export function createAppHistoryRouter(
   const normalizedPattern =
     routePattern === undefined ? undefined : normalizePattern(routePattern);
 
-  // useSyncExternalStore requires getSnapshot() to return a referentially
-  // stable value between store events, or it will loop forever re-rendering.
-  // Track the latest location in plain closure variables (updated only by the
-  // subscription callback below), mirroring how AppHistoryApi itself is
-  // implemented, rather than recomputing a fresh object on every call.
-  let sourceLocation: AppLocation = appHistory.location;
-  // `undefined` throughout when the history does not implement the metadata
-  // capability. Nothing here synthesizes a substitute: this adapter only needs
-  // a location key and a navigation type, and both have a defined meaning for
-  // a history that reports neither.
-  let latestMetadata: AppHistoryMetadata | undefined =
-    readAppHistoryMetadata(appHistory);
-  let latestLocation: AdapterLocation = toAdapterLocation(
-    sourceLocation,
-    latestMetadata,
-  );
+  let sourceSnapshot = appHistory.getSnapshot();
+  let latestLocation = toAdapterLocation(sourceSnapshot);
   const listeners = new Set<() => void>();
-  let subscription: { unsubscribe(): void } | undefined;
+  let unsubscribe: (() => void) | undefined;
+
+  function getSnapshot(): AdapterLocation {
+    const snapshot = appHistory.getSnapshot();
+    if (snapshot !== sourceSnapshot) {
+      sourceSnapshot = snapshot;
+      latestLocation = toAdapterLocation(snapshot);
+    }
+    return latestLocation;
+  }
 
   function subscribe(listener: () => void): () => void {
     listeners.add(listener);
-    if (!subscription) {
-      subscription = appHistory.location$.subscribe(loc => {
-        const metadata = readAppHistoryMetadata(appHistory);
-        // `AppHistoryApi.location` is a stable reference, so an observable
-        // that replays its current value on subscribe is a no-op here rather
-        // than a spurious re-render with an equal-but-new location object.
-        if (
-          loc === sourceLocation &&
-          metadata?.key === latestMetadata?.key &&
-          metadata?.action === latestMetadata?.action
-        ) {
-          return;
-        }
-        sourceLocation = loc;
-        latestMetadata = metadata;
-        latestLocation = toAdapterLocation(loc, metadata);
+    if (!unsubscribe) {
+      unsubscribe = appHistory.subscribe(() => {
+        getSnapshot();
         for (const each of listeners) {
           each();
         }
@@ -307,14 +280,10 @@ export function createAppHistoryRouter(
     return () => {
       listeners.delete(listener);
       if (listeners.size === 0) {
-        subscription?.unsubscribe();
-        subscription = undefined;
+        unsubscribe?.();
+        unsubscribe = undefined;
       }
     };
-  }
-
-  function getSnapshot(): AdapterLocation {
-    return latestLocation;
   }
 
   /**
@@ -533,7 +502,7 @@ export function createAppHistoryRouter(
               // A history without the metadata capability never tells us how it
               // arrived, and `POP` is what React Router reports for a location it
               // did not itself push or replace.
-              latestMetadata?.action ?? 'POP',
+              sourceSnapshot.action ?? 'POP',
             ),
           },
           onUse,

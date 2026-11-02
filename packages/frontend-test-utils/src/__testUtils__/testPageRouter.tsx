@@ -107,7 +107,9 @@ export function testPageRouter(adapter: {
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
       );
-      expect(appHistory.location.pathname).toBe('/things/alpha/overview');
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/things/alpha/overview',
+      );
 
       // A path deeper than the sub-page path still belongs to that sub-page.
       await act(async () => {
@@ -132,7 +134,9 @@ export function testPageRouter(adapter: {
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
       );
-      expect(appHistory.location.pathname).toBe('/things/beta/overview');
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/things/beta/overview',
+      );
 
       // Strip → navigate → emit → strip: an in-page link after the prefix
       // changed must target the new prefix exactly once.
@@ -141,7 +145,9 @@ export function testPageRouter(adapter: {
       });
 
       expect(await screen.findByTestId('deep')).toBeInTheDocument();
-      expect(appHistory.location.pathname).toBe('/things/beta/overview/deep');
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/things/beta/overview/deep',
+      );
     });
 
     it('should keep in-page state while the concrete mount prefix changes', async () => {
@@ -176,7 +182,9 @@ export function testPageRouter(adapter: {
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
       );
-      expect(appHistory.location.pathname).toBe('/things/beta/overview');
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/things/beta/overview',
+      );
       expect(screen.getByTestId('bumped')).toHaveTextContent('2');
     });
 
@@ -187,8 +195,8 @@ export function testPageRouter(adapter: {
         'overview',
       );
       expect(screen.getByTestId('lib-query')).toHaveTextContent('1');
-      expect(appHistory.location.search).toBe('?q=1');
-      expect(appHistory.location.hash).toBe('#frag');
+      expect(appHistory.getSnapshot().location.search).toBe('?q=1');
+      expect(appHistory.getSnapshot().location.hash).toBe('#frag');
       expect(screen.getByRole('link', { name: 'Deep' })).toHaveAttribute(
         'href',
         '/things/alpha/overview/deep',
@@ -214,7 +222,9 @@ export function testPageRouter(adapter: {
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'settings',
       );
-      expect(appHistory.location.pathname).toBe('/things/gamma/settings');
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/things/gamma/settings',
+      );
     });
   });
 }

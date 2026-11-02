@@ -505,8 +505,33 @@ function MyInvalidComponent() {
 ## Scoped plugin routing
 
 The app uses one `AppHistoryApi` for navigation. By default it owns browser
-history; apps can register a custom history implementation. Existing pages
-retain implicit React Router v6 matches while they migrate to explicit adapters.
+history; apps can register a custom history implementation.
+
+`AppHistoryApi` exposes a synchronous external store through `getSnapshot()`
+and `subscribe(listener)`. Snapshots contain the app-relative `location` and
+optional history `action`, `entry` (an opaque key and optional index), and
+`length`. Index and length describe the same host-tracked history range, which
+need not include the browser's entire session history. Unknown metadata is
+omitted rather than replaced with guessed values.
+
+Snapshots are immutable and cached until history changes. Every committed
+navigation publishes a new snapshot, including pushes or replacements at the
+same URL; the nested location retains its identity while its fields are
+unchanged. A push creates a new entry key, replacement preserves it, and
+traversal restores the selected entry's key. Subscribers read the updated
+snapshot when notified; subscribing does not immediately invoke the listener.
+The store functions have stable identities and can be passed directly to
+`useSyncExternalStore`. Ordinary plugin code can use `useAppLocation`, which
+returns the snapshot's location. The hook observes history changes, including
+metadata-only updates, while the returned location retains its identity when
+its fields are unchanged.
+
+Subscribers may navigate synchronously, for example to redirect to another page.
+The default history rejects excessively deep synchronous navigation chains with
+a diagnostic error to stop runaway subscriber cycles. Independent navigation requests
+are unaffected; the guard does not defer or schedule notifications.
+
+Existing pages retain implicit React Router v6 matches while they migrate to explicit adapters.
 The root React Router v6 context remains available for shared UI.
 
 The default history is created when first requested. Preparing an app without

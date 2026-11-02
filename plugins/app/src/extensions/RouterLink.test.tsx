@@ -102,7 +102,7 @@ describe('RouterLink composition', () => {
     expect(link).toHaveFocus();
     await user.keyboard('{Enter}');
     expect(history.navigateCalls).toHaveLength(1);
-    expect(history.location).toMatchObject({
+    expect(history.getSnapshot().location).toMatchObject({
       pathname: '/tools/details',
       state: { source: 'link' },
     });
@@ -143,7 +143,7 @@ describe('RouterLink composition', () => {
     const item = screen.getByRole('menuitem', { name: 'Details' });
     expect(item).toHaveAttribute('href', '/app/tools/details');
     await user.click(item);
-    expect(history.location.pathname).toBe('/tools/details');
+    expect(history.getSnapshot().location.pathname).toBe('/tools/details');
     expect(history.navigateCalls).toHaveLength(1);
   });
 
@@ -185,7 +185,7 @@ describe('RouterLink composition', () => {
     expect(overview).toHaveAttribute('aria-selected', 'true');
     expect(details).toHaveAttribute('href', '/app/tools/details');
     await user.click(details);
-    expect(history.location.pathname).toBe('/tools/details');
+    expect(history.getSnapshot().location.pathname).toBe('/tools/details');
     expect(details).toHaveAttribute('aria-selected', 'true');
     expect(history.navigateCalls).toHaveLength(1);
 
@@ -193,7 +193,7 @@ describe('RouterLink composition', () => {
     expect(overview).toHaveAttribute('aria-selected', 'true');
     overview.focus();
     await user.keyboard('{ArrowRight}{Enter}');
-    expect(history.location.pathname).toBe('/tools/details');
+    expect(history.getSnapshot().location.pathname).toBe('/tools/details');
     expect(details).toHaveAttribute('aria-selected', 'true');
   });
 });

@@ -183,7 +183,7 @@ describe('AppRoot', () => {
       const link = await screen.findByRole('link', { name: label });
       expect(link).toHaveAttribute('href', `/backstage${destination}`);
       fireEvent.click(link);
-      const { pathname, search, hash } = appHistory.location;
+      const { pathname, search, hash } = appHistory.getSnapshot().location;
       expect(pathname + search + hash).toBe(destination);
     }
   });

@@ -166,7 +166,7 @@ describe('React Router v6 nested inside React Router v6', () => {
     await act(async () => {
       screen.getByTestId('page-link').click();
     });
-    expect(appHistory.location.pathname).toBe('/e/alpha/edit');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/e/alpha/edit');
 
     // Unmigrated pages retain equivalent v6 matches through the fallback.
     await act(async () => {

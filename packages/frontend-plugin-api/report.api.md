@@ -173,18 +173,35 @@ export type ApiRefConfig = {
 };
 
 // @public
+export type AppHistoryAction = 'PUSH' | 'REPLACE' | 'POP';
+
+// @public
 export interface AppHistoryApi {
   createHref(to: string): string;
-  readonly location$: Observable<AppLocation>;
-  readonly location: AppLocation;
+  getSnapshot(): AppHistorySnapshot;
   navigate(path: string, options?: AppNavigateOptions): void;
   navigate(delta: number): void;
+  subscribe(listener: () => void): () => void;
 }
 
 // @public
 export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
   readonly $$type: '@backstage/ApiRef';
 };
+
+// @public
+export interface AppHistoryEntry {
+  readonly index?: number;
+  readonly key: string;
+}
+
+// @public
+export interface AppHistorySnapshot {
+  readonly action?: AppHistoryAction;
+  readonly entry?: AppHistoryEntry;
+  readonly length?: number;
+  readonly location: AppLocation;
+}
 
 // @public (undocumented)
 export type AppLanguageApi = {
@@ -222,12 +239,12 @@ export const appLifecycleApiRef: ApiRef_2<
 // @public
 export interface AppLocation {
   // (undocumented)
-  hash: string;
+  readonly hash: string;
   // (undocumented)
-  pathname: string;
+  readonly pathname: string;
   // (undocumented)
-  search: string;
-  state: unknown;
+  readonly search: string;
+  readonly state: unknown;
 }
 
 // @public
