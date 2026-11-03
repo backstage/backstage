@@ -31,15 +31,6 @@ export const alertDisplayAppRootElement =
     name: 'alert-display',
     configSchema: {
       transientTimeoutMs: z.number().default(5000),
-      anchorOrigin: z
-        .object({
-          vertical: z.enum(['top', 'bottom']).default('top'),
-          horizontal: z.enum(['left', 'center', 'right']).default('center'),
-        })
-        .default({
-          vertical: 'top',
-          horizontal: 'center',
-        }),
     },
     factory: (originalFactory, { config }) => {
       return originalFactory({

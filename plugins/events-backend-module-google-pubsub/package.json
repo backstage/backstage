@@ -40,7 +40,7 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@google-cloud/pubsub": "^4.10.0"
+    "@google-cloud/pubsub": "^6.3.2"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

@@ -2,7 +2,7 @@
   "skills": [
     {
       "name": "mui-to-bui-migration",
-      "description": "Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use when migrating MUI components and styles, running @backstage/mui4-to-bui-migration-recipe, or resolving TODO(backstage-codemod) after a BUI migration.",
+      "description": "Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use this skill when migrating MUI components and styles, running `@backstage/mui4-to-bui-migration-recipe`, or resolving `TODO(backstage-codemod)` comments after a BUI migration.",
       "files": [
         "SKILL.md",
         "references/standalone-migration.md",
@@ -11,19 +11,9 @@
       ]
     },
     {
-      "name": "app-frontend-system-migration",
-      "description": "Migrate a Backstage app from the old frontend system to the new one. Use this skill when converting an app to use the new extension-based frontend system, including the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.",
-      "files": ["SKILL.md"]
-    },
-    {
-      "name": "plugin-new-frontend-system-support",
-      "description": "Add new frontend system support to an existing Backstage plugin while keeping the old system working. Use this skill for published or shared plugins that need to work in both old and new frontend system apps.",
-      "files": ["SKILL.md"]
-    },
-    {
-      "name": "plugin-full-frontend-system-migration",
-      "description": "Fully migrate a Backstage plugin to the new frontend system, dropping all old system support. Use this skill for internal plugins that only need to run in a single app, or when you are ready to remove backward compatibility entirely.",
-      "files": ["SKILL.md"]
+      "name": "new-frontend-system-migration",
+      "description": "Migrate a Backstage app, its frontend plugins, or both from the old frontend system to the new one. Use this skill when moving an app to the new `createApp`, adding new frontend system support to a plugin while keeping the old system working, or moving a plugin to the new frontend system entirely.",
+      "files": ["SKILL.md", "references/app.md", "references/plugin.md"]
     },
     {
       "name": "frontend-plugin-development",
@@ -45,7 +35,7 @@
     },
     {
       "name": "onboard-to-openapi-server",
-      "description": "Use this skill when the user wants to migrate an existing Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling. Optionally, can also add typed client generation and migrate router tests to the OpenAPI test wrapper.",
+      "description": "Migrate a Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling, and optionally generate a typed client and validate router tests against the spec. Use this skill when moving a backend plugin to `createOpenApiRouter` or adding an OpenAPI spec to an existing router.",
       "files": ["SKILL.md"]
     },
     {

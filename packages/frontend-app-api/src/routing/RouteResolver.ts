@@ -54,7 +54,7 @@ function resolveTargetRef(
 
   if (OpaqueExternalRouteRef.isType(ref)) {
     let resolvedRoute = routeBindings.get(ref);
-    if (!resolvedRoute) {
+    if (!routeBindings.has(ref)) {
       const internal = OpaqueExternalRouteRef.toInternal(ref);
       const defaultTarget = internal.getDefaultTarget();
       if (defaultTarget) {
@@ -158,7 +158,10 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly routePaths: Map<RouteRef, string>;
   private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
   private readonly routeObjects: BackstageRouteObject[];
-  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly routeBindings: Map<
+    ExternalRouteRef,
+    RouteRef | SubRouteRef | undefined
+  >;
   private readonly appBasePath: string; // base path without a trailing slash
   private readonly routeAliasResolver: RouteAliasResolver;
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
@@ -171,7 +174,7 @@ export class RouteResolver implements RouteResolutionApi {
     routePaths: Map<RouteRef, string>,
     routeParents: Map<RouteRef, RouteRef | undefined>,
     routeObjects: BackstageRouteObject[],
-    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>,
     appBasePath: string, // base path without a trailing slash
     routeAliasResolver: RouteAliasResolver,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,

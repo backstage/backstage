@@ -49,7 +49,12 @@ import {
   isQueryEntitiesInitialRequest,
 } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import {
+  applySetEntityFilterToQuery,
+  needsSetFilter,
+} from './request/applySetEntityFilterToQuery';
 import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPredicate';
 import { processRawEntitiesResult } from './response';
 
@@ -403,23 +408,26 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // enabling a fast-path LIKE on the already-joined row.
     const applyPredicates = (
       q: Knex.QueryBuilder,
-      options?: { searchInScope?: boolean },
+      options?: { searchInScope?: boolean; asSet?: boolean },
     ) => {
-      if (cursor.filter) {
-        applyEntityFilterToQuery({
-          filter: entityFilterToFilterPredicate(cursor.filter),
+      const applyFilter = (filter: FilterPredicate) => {
+        const filterOptions = {
+          filter,
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
-        });
+        };
+        if (options?.asSet && this.useSetFilter(filter)) {
+          applySetEntityFilterToQuery(filterOptions);
+        } else {
+          applyEntityFilterToQuery(filterOptions);
+        }
+      };
+      if (cursor.filter) {
+        applyFilter(entityFilterToFilterPredicate(cursor.filter));
       }
       if (cursor.query) {
-        applyEntityFilterToQuery({
-          filter: cursor.query,
-          targetQuery: q,
-          onEntityIdField: 'final_entities.entity_id',
-          knex: this.database,
-        });
+        applyFilter(cursor.query);
       }
 
       if (normalizedFullTextFilterTerm) {
@@ -512,7 +520,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         );
       }
 
-      applyPredicates(countQuery);
+      applyPredicates(countQuery, { asSet: true });
     }
 
     const isOrderingDescending = sortField?.order === 'desc';
@@ -803,7 +811,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .groupBy(['search.key', 'search.original_value'])
       .orderBy(['search.key', 'search.original_value']);
 
-    if (request.filter) {
+    if (request.filter && this.useSetFilter(request.filter)) {
+      query.whereExists(
+        this.database('final_entities')
+          .select(this.database.raw('1'))
+          .whereRaw('?? = ??', ['final_entities.entity_id', 'search.entity_id'])
+          .whereNotNull('final_entities.final_entity'),
+      );
+      applySetEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: query,
+        onEntityIdField: 'search.entity_id',
+        knex: this.database,
+      });
+    } else if (request.filter) {
       // Build a subquery that finds matching entity IDs via
       // final_entities, so that the EXISTS-based filters correlate
       // against one-row-per-entity rather than the much larger search
@@ -847,6 +868,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return { facets };
+  }
+
+  // For queries over the whole filtered set; see query battery scenarios 15-19
+  private useSetFilter(filter: FilterPredicate): boolean {
+    return (
+      this.database.client.config.client === 'pg' && needsSetFilter(filter)
+    );
   }
 }
 
