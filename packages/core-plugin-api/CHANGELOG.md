@@ -1,5 +1,18 @@
 # @backstage/core-plugin-api
 
+## 1.12.12-next.1
+
+### Patch Changes
+
+- e55a4a8: Updated compatibility with the `FrontendPlugin` interface after removal of its deprecated `id` property, retaining support for older plugin instances.
+- 315f7bc: Made the legacy icon component and `withApis` compatibility APIs independent of `@backstage/frontend-plugin-api` so that they remain available to legacy frontend apps.
+
+  Deprecated `withApis`. Wrap class components in a function component that uses `useApi` instead.
+
+- e3d50c4: Updated `useApp` to support the new icons API. Its `getSystemIcon` and `getSystemIcons` methods continue to return icon components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
 ## 1.12.12-next.0
 
 ### Patch Changes

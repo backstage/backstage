@@ -1,5 +1,14 @@
 # @backstage/cli-module-new
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- e769ccb: Fix an issue where creating a new package with the `cli-module` role would crash during the installation phase due to an unhandled role mapping.
+- 33894d6: Fixed an issue where scaffolding templates on Windows could generate corrupted file names for files in subdirectories.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+
 ## 0.1.9-next.0
 
 ### Patch Changes

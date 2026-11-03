@@ -1,5 +1,27 @@
 # @backstage/frontend-app-api
 
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 8c6c842: **BREAKING**: Removed the deprecated `createSpecializedApp` and `CreateSpecializedAppOptions` exports. Use `prepareSpecializedApp(options).finalize()` and `PrepareSpecializedAppOptions` instead. For sign-in or asynchronous session preparation, render the bootstrap app and subscribe with `onFinalized()` instead of calling `finalize()`.
+
+  Replace `advanced.apis` with `advanced.sessionState` from a previously finalized app to reuse its APIs, identity, and predicate context. Register custom APIs through `ApiBlueprint` extensions rather than passing an arbitrary API holder. Pass a supplied config API through the top-level `config` option. To reuse an identity supplied through the API holder, configure a sign-in page that calls `onSignInSuccess(identityApi)` and use the bootstrap/`onFinalized()` flow; an `ApiBlueprint` cannot override the app's identity proxy.
+
+### Patch Changes
+
+- d514e4d: Updated app options to use the `ExtensionFactoryMiddleware` type from `@backstage/frontend-app-api` instead of the deprecated export from `@backstage/frontend-plugin-api`. Middleware behavior is unchanged.
+- e55a4a8: Updated plugin identity handling to use `pluginId`, while preserving support for older plugin instances that only expose `id`.
+- c147b7a: Fixed disabled external route bindings falling back to their default targets during link resolution.
+
+  Navigation analytics now use the most specific routed extension even when it has no route reference, including nested extensions with an empty path.
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.5.8-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/core-app-api@1.20.7-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
 ## 0.16.10-next.0
 
 ### Patch Changes

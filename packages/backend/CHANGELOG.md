@@ -1,5 +1,29 @@
 # example-backend
 
+## 0.0.56-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.1
+  - @backstage/plugin-auth-backend@0.30.3-next.1
+  - @backstage/plugin-catalog-backend@4.0.3-next.1
+  - @backstage/plugin-notifications-backend@0.6.11-next.1
+  - @backstage/plugin-catalog-backend-module-ai-model@0.1.6-next.1
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.9-next.1
+  - @backstage/plugin-kubernetes-backend@0.21.13-next.1
+  - @backstage/plugin-scaffolder-backend@4.3.0-next.1
+  - @backstage/plugin-events-backend@0.6.8-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@2.0.2-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.1
+  - @backstage/plugin-mcp-actions-backend@0.2.4-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.21-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.20-next.1
+  - @backstage/plugin-techdocs-backend@2.4.2-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.26-next.1
+  - @backstage/plugin-catalog-backend-module-logs@0.1.28-next.1
+  - @backstage/plugin-signals-backend@0.3.21-next.1
+
 ## 0.0.56-next.0
 
 ### Patch Changes

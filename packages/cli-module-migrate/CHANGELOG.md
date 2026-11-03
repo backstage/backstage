@@ -1,5 +1,13 @@
 # @backstage/cli-module-migrate
 
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+  - @backstage/release-manifests@0.0.16-next.0
+
 ## 0.2.3-next.0
 
 ### Patch Changes
