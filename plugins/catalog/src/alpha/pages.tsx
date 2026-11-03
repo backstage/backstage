@@ -56,8 +56,8 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
       textFilterFields: z =>
         z
           .union([
-            z.array(z.string()),
-            z.record(z.string(), z.array(z.string())),
+            z.array(z.string()).min(1),
+            z.record(z.string(), z.array(z.string()).min(1)),
           ])
           .default([
             'metadata.name',
