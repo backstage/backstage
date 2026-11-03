@@ -89,7 +89,6 @@ Route references can be used to link to page in the same plugin, or to pages in 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -97,7 +96,6 @@ export const IndexPage = () => {
   // highlight-next-line
   const getDetailsPath = useRouteRef(detailsRouteRef);
   return (
-    <ReactRouterV6PageRouter>
     <div>
       <h1>Index Page</h1>
       {/* highlight-next-line */}
@@ -115,7 +113,6 @@ export const IndexPage = () => {
         </a>
       )}
     </div>
-    </ReactRouterV6PageRouter>
   );
 };
 ```
@@ -354,16 +351,23 @@ The nested route inherits all parameters from its ancestors, so
 Sub-route refs are framework routing, so `useRouteRef` and `useRouteRefParams`
 resolve them in any page. Registering the sub-route as an actual React Router
 `<Route>`, as the example below does, is a separate decision: it needs React
-Router context, which a page only has if it renders an adapter. The page
-extension at the end of this section is what supplies it.
+Router context. Existing v6 pages retain implicit compatibility; an explicit
+adapter in the lazy page component migrates away from that fallback.
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from '../routes';
 import { DetailsPage } from './DetailsPage';
 
-export const IndexPage = () => {
+export const IndexPage = () => (
+  <ReactRouterV6PageRouter>
+    <IndexPageContent />
+  </ReactRouterV6PageRouter>
+);
+
+const IndexPageContent = () => {
   const { pathname } = useLocation();
 
   // highlight-start
@@ -581,13 +585,14 @@ parameter consumers. It does not resolve link destinations. Custom framework
 integrations can use `AppHistoryApi.createHref` and `navigate` directly.
 
 React Router's own APIs — `useParams`, `useNavigate`, `useLocation`, `<Routes>`
-and relative `Link` targets — read React Router context. A page needs an
-adapter for that context to include its own route match. See
+and relative `Link` targets — read React Router context. Existing v6 pages
+retain implicit page matches; explicit adapters migrate away from that fallback. See
 [Page routers](#page-routers) below.
 
 ### Absolute and cross-plugin navigation
 
-A page adapter owns navigation within its own page and nothing beyond it. Resolving a route ref to a concrete path and handing it to React Router's `navigate`, or pointing a React Router `Link` at an absolute `to` string, reaches past that boundary and can break.
+Page adapters scope relative navigation to their page. App-absolute destinations,
+including paths resolved from route refs, also support cross-plugin navigation.
 
 For navigation that does cross the boundary, `@backstage/frontend-plugin-api` exports `useAppNavigate` and `useAppHref`. The pair mirrors the `navigate` and `useHref` props of [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html). `useAppNavigate` reads the app's `AppHistoryApi` when one is registered and falls back to React Router when it is not, so the same plugin code runs under both the new and the old frontend system. That fallback is also why the example below imports `useRouteRef` from `@backstage/core-plugin-api`, which resolves route refs in either system.
 

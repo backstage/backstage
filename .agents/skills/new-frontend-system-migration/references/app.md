@@ -155,9 +155,9 @@ that content; pages using only framework routing do not need an adapter.
 Preserve the old frontend system's behavior.
 
 Prefer framework routing, which needs no router at all. If the page only needs
-parameters and hrefs, use `useRouteRef`, `useRouteRefParams` and `useHref` from
+parameters and hrefs, use `useRouteRef`, `useRouteRefParams` and `useAppHref` from
 `@backstage/frontend-plugin-api`. This is usually the better answer, and it is
-the only one that keeps working when the page has no adapter.
+avoids coupling the page to a router library.
 
 A page that genuinely routes with its library renders that library's adapter
 **inside its lazily loaded component** — render-time, plain React, no extension wiring:
@@ -236,7 +236,7 @@ See [Choose a router for a page](https://backstage.io/docs/frontend-system/build
 
 ### Step 3: Convert the app root
 
-Use `convertLegacyAppRoot` to convert the entire app element tree (routes, sidebar, root elements) into features:
+Use `convertLegacyAppRoot` to extract the root containing `FlatRoutes` and convert it into features. Conversion does not preserve the entire element tree: arbitrary siblings and intervening wrappers are discarded. Before conversion, move custom providers to app root wrapper extensions and global elements to app root element extensions. Recreate custom options such as alert timeouts in those extensions:
 
 ```tsx
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';

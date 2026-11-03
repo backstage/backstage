@@ -66,7 +66,8 @@ it.
 The adapter is scoped where the page component renders it. TanStack Router publishes
 its own React context, so it can nest with adapters from other libraries.
 The app also retains a root React Router v6 projection for shared components;
-page content that uses v6 needs its own adapter for page-relative routing.
+page content using v6 retains implicit page-relative compatibility. An explicit
+adapter migrates that content away from the fallback.
 
 Rendering it in a sub-page's component scopes it to that sub-page, because the
 sub-page's app node determines its routing scope. Sibling tabs may declare
@@ -177,10 +178,10 @@ later host notifications for that write are ignored. Back, forward, and `go`
 notify subscribers when the host emits the resulting location, which can be
 asynchronous.
 
-The public interface reports locations and accepts navigation requests; it does
-not report entry identity, stack position, traversal completion, or operation
-correlation.
-Without the optional internal entry metadata used by the built-in history, the
+The public `AppHistorySnapshot` optionally exposes entry identity and stack
+position through `entry`, `index`, and `length`. It does not report traversal
+completion or operation correlation.
+Without this optional entry metadata, the
 adapter exposes one synthetic slot: `history.length` is `1`, `__TSR_index` is
 `0`, and both `history.canGoBack()` and TanStack's `useCanGoBack()` return `false`.
 Back, forward, and `go` still delegate to the host even with this conservative

@@ -338,20 +338,25 @@ Old plugins often use React Router `<Route>` trees inside a router component. Re
 Keep drill-down routing inside a `PageBlueprint` `loader`. If its content uses React Router `<Routes>`, render the matching page adapter at that mount:
 
 ```tsx
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
-
 export const myPage = PageBlueprint.make({
   params: {
     path: '/my-plugin',
     routeRef: rootRouteRef,
-    loader: () =>
-      import('./components/Router').then(m => (
-        <ReactRouterV6PageRouter>
-          <m.MyPluginRouter />
-        </ReactRouterV6PageRouter>
-      )),
+    loader: () => import('./components/Router').then(m => <m.MyPluginRouter />),
   },
 });
+```
+
+In the lazy `components/Router` module, wrap the component that uses router hooks:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+export const MyPluginRouter = () => (
+  <ReactRouterV6PageRouter>
+    <MyPluginRouterContent />
+  </ReactRouterV6PageRouter>
+);
 ```
 
 Add the adapter package as a dependency. Use the v7 or TanStack adapter when the content uses that router instead. Each page or sub-page scopes its own adapter; don't wrap unrelated entity content or cards. If content only reads params or builds links, use framework `useRouteRefParams`, `useRouteRef`, and `useAppHref` instead of a router adapter. `renderInTestApp` accepts the same adapter through `router` when testing a bare page.
