@@ -27,6 +27,22 @@ import { useAppSearchParams } from './useAppSearchParams';
 describe.each(['app history', 'legacy router'])(
   '%s location and query hooks',
   mode => {
+    it('clears defaults when the initial query is empty', () => {
+      const history = createMockAppHistory({ initialLocation: '/page' });
+      const wrapper = ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider apis={[[appHistoryApiRef, history]]}>
+          {children}
+        </TestApiProvider>
+      );
+      const { result } = renderHook(
+        () => useAppSearchParams({ view: 'list' }),
+        { wrapper },
+      );
+      expect(result.current[0].get('view')).toBe('list');
+      act(() => result.current[1]({}));
+      expect(result.current[0].has('view')).toBe(false);
+    });
+
     it('reads the location, updates repeated query values, clears defaults, and traverses history', () => {
       const history = createMockAppHistory({
         initialLocation: '/base/page?tag=one&tag=two#section',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { AppNavigateOptions } from './AppLocation';
 import { useAppLocation } from './useAppLocation';
 import { useAppNavigate } from './useAppNavigate';
@@ -67,10 +67,10 @@ export function useAppSearchParams(
   const location = useAppLocation();
   const navigate = useAppNavigate();
   const defaults = useRef(createSearchParams(defaultInit));
-  const hasSet = useRef(false);
+  const [hasSet, setHasSet] = useState(false);
   const searchParams = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    if (!hasSet.current) {
+    if (!hasSet) {
       defaults.current.forEach((_, key) => {
         if (!params.has(key)) {
           defaults.current
@@ -80,7 +80,7 @@ export function useAppSearchParams(
       });
     }
     return params;
-  }, [location.search]);
+  }, [location.search, hasSet]);
   const setSearchParams = useCallback<SetAppSearchParams>(
     (next, options) => {
       const params = createSearchParams(
@@ -88,7 +88,7 @@ export function useAppSearchParams(
           ? next(new URLSearchParams(searchParams))
           : next,
       );
-      hasSet.current = true;
+      setHasSet(true);
       navigate(`${location.pathname}?${params}`, options);
     },
     [navigate, location.pathname, searchParams],
