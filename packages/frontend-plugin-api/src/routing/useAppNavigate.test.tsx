@@ -38,6 +38,9 @@ import { useAppNode } from '../components/AppNodeProvider';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { useAppHref } from './useAppHref';
 
+import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
+import { createVersionedContextForTesting } from '@backstage/version-bridge';
+
 jest.mock('../components/AppNodeProvider', () => ({
   ...jest.requireActual('../components/AppNodeProvider'),
   useAppNode: jest.fn(),
@@ -276,6 +279,50 @@ describe('useAppNavigate', () => {
     expect(locationPathname).toBe('/start');
   });
 
+  it.each(['/search', '/base/search', '/baseball/search'])(
+    'composes legacy route refs with navigation and hrefs under a configured basename: %s',
+    pathname => {
+      const context = createVersionedContextForTesting('routing-context');
+      const routeRef = createRouteRef({ id: 'search' });
+      const routeUrl = `/base${pathname}?q=1#section`;
+      context.set({ 1: { resolve: () => () => routeUrl } });
+      try {
+        const { result } = renderHook(
+          () => {
+            const route = useRouteRef(routeRef);
+            return {
+              route,
+              navigate: useAppNavigate(),
+              href: useAppHref(route()),
+              queryHref: useAppHref('?next=1'),
+              location: useLocation(),
+            };
+          },
+          {
+            wrapper: ({ children }: PropsWithChildren<{}>) => (
+              <TestApiProvider apis={[]}>
+                <MemoryRouter basename="/base" initialEntries={['/base/start']}>
+                  {children}
+                </MemoryRouter>
+              </TestApiProvider>
+            ),
+          },
+        );
+        expect(result.current.route()).toBe(routeUrl);
+        expect(result.current.href).toBe(routeUrl);
+        act(() => result.current.navigate(result.current.route()));
+        expect(result.current.location).toMatchObject({
+          pathname,
+          search: '?q=1',
+          hash: '#section',
+        });
+        expect(result.current.queryHref).toBe(`/base${pathname}?next=1`);
+      } finally {
+        context.reset();
+      }
+    },
+  );
+
   it('lets a data router own basename handling', () => {
     let navigate: ReturnType<typeof useAppNavigate> | undefined;
     const router = createMemoryRouter(
@@ -305,7 +352,7 @@ describe('useAppNavigate', () => {
     });
 
     act(() => {
-      navigate!('/search');
+      navigate!('/backstage/search');
     });
 
     expect(router.state.location.pathname).toBe('/backstage/search');

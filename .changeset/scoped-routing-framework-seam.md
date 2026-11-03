@@ -19,3 +19,5 @@ See [scoped plugin routing](https://backstage.io/docs/frontend-system/architectu
 Added `useNavigation` and `NavigationProvider` for component-library-neutral navigation bound to each consumer’s route scope. `RouterLink` now follows this context, including adapter-relative targets. Explicit framework navigation hooks remain app-absolute. Generated hrefs include the deployment basename; navigation accepts the original target.
 
 The implicit compatibility peer accepts React Router v6 (`^6.30.2`) or v7 (`^7.18.3`). Apps must supply React Router DOM even when using another page router.
+
+In old frontend apps, `useAppNavigate` and `useAppHref` also accept legacy route-ref URLs that already contain the configured deployment basename, without adding that basename twice.
