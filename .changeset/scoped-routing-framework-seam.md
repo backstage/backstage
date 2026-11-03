@@ -17,3 +17,5 @@ Framework routing hooks work without a page adapter and retain old frontend comp
 See [scoped plugin routing](https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing) for navigation semantics and [page routers](https://backstage.io/docs/frontend-system/building-plugins/page-routers) for integration examples.
 
 Added `useNavigation` and `NavigationProvider` for component-library-neutral navigation bound to each consumer’s route scope. `RouterLink` now follows this context, including adapter-relative targets. Explicit framework navigation hooks remain app-absolute. Generated hrefs include the deployment basename; navigation accepts the original target.
+
+The implicit compatibility peer accepts React Router v6 (`^6.30.2`) or v7 (`^7.18.3`). Apps must supply React Router DOM even when using another page router.
