@@ -3170,7 +3170,7 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.30.2
+    react-router-dom: ^6.30.2 || ^7.18.3
   peerDependenciesMeta:
     "@types/react":
       optional: true
