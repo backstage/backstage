@@ -2712,6 +2712,7 @@ __metadata:
     msw: "npm:^2.0.0"
     prop-types: "npm:^15.7.2"
     react: "npm:^18.0.2"
+    react-aria-components: "npm:~1.17.0"
     react-dom: "npm:^18.0.2"
     react-router-beta: "npm:react-router@6.0.0-beta.0"
     react-router-dom: "npm:^6.30.2"
