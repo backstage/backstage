@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '../system';
-import { IconComponent, IconElement } from '../../icons';
+import { IconElement } from '../../icons';
 
 /**
  * API for accessing app icons.
@@ -28,11 +28,6 @@ export interface IconsApi {
    */
   icon(key: string): IconElement | undefined;
 
-  /**
-   * @deprecated Use {@link IconsApi.icon} instead.
-   */
-  getIcon(key: string): IconComponent | undefined;
-
   listIconKeys(): string[];
 }
 
@@ -43,6 +38,6 @@ export interface IconsApi {
  * @deprecated Use {@link coreApis.icons} instead.
  */
 export const iconsApiRef = createApiRef<IconsApi>().with({
-  id: 'core.icons',
+  id: 'core.icons.v2',
   pluginId: 'app',
 });
