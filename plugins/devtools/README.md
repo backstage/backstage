@@ -134,7 +134,7 @@ With this setup you can add or remove the tabs as you'd like or add your own sim
 
 ### Adding Tabs From Other Plugins
 
-You can also add tabs to show content from other plugins that fit well with the other DevTools content. New tabs can be added by attaching `SubPagePluprints` to the `page:devtools` extension.
+You can also add tabs to show content from other plugins that fit well with the other DevTools content. New tabs can be added by attaching `SubPageBlueprints` to the `page:devtools` extension.
 
 Create an extension and/or load a 3rd party extension to add additional tabs.
 
