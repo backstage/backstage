@@ -1,82 +1,86 @@
-[![headline](docs/assets/headline.png)](https://backstage.io/)
+<!-- vale off -->
 
-# [Backstage](https://backstage.io)
+˙[ssǝɔoɹd ǝsɐǝlǝɹ ʎʇᴉɹnɔǝs](SECURITY.md) ǝʇǝldɯoɔ ɹno ǝǝs ʻslᴉɐʇǝp ɹǝɥʇɹnɟ ɹoℲ
 
-English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md) \| [日本語](README-ja_JP.md)
+˙qnHʇᴉ⅁ uɐɥʇ ɹǝɥʇɐɹ [ɯɐɹƃoɹd ʎʇunoq-ƃnq](https://hackerone.com/spotify) s‘ʎɟᴉʇodS ƃuᴉsn sǝnssᴉ ʎʇᴉɹnɔǝs ǝʌᴉʇᴉsuǝs ʇɹodǝɹ ǝsɐǝlԀ
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
-[![Discord](https://img.shields.io/discord/687207715902193673?logo=discord&label=Discord&color=5865F2&logoColor=white)](https://discord.gg/backstage-687207715902193673)
-![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
-[![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
+## ʎʇᴉɹnɔǝS
+
+[0˙2-ƎSNƎƆI˥/sǝsuǝɔᴉl/ƃɹo˙ǝɥɔɐdɐ˙ʍʍʍ//:dʇʇɥ](http://www.apache.org/licenses/LICENSE-2.0) :0˙2 uoᴉsɹǝΛ ʻǝsuǝɔᴉ˥ ǝɥɔɐd∀ ǝɥʇ ɹǝpun pǝsuǝɔᴉ˥
+
+[ǝƃɐsn-ʞɹɐɯǝpɐɹʇ/ƃɹo˙uoᴉʇɐpunoɟxnuᴉl˙ʍʍʍ//:sdʇʇɥ](https://www.linuxfoundation.org/trademark-usage) :ǝƃɐd ǝƃɐs∩ ʞɹɐɯǝpɐɹ⊥ ɹno ǝǝs ǝsɐǝld ʻuoᴉʇɐpunoℲ xnuᴉ˥ ǝɥ⊥ ɟo sʞɹɐɯǝpɐɹʇ ɟo ʇsᴉl ɐ ɹoℲ ˙sʞɹɐɯǝpɐɹʇ sǝsn puɐ sʞɹɐɯǝpɐɹʇ pǝɹǝʇsᴉƃǝɹ sɐɥ uoᴉʇɐpunoℲ xnuᴉ˥ ǝɥ⊥ ˙pǝʌɹǝsǝɹ sʇɥƃᴉɹ ll∀ ˙sɹoɥʇn∀ ǝƃɐʇsʞɔɐ𐐒 ǝɥ⊥ © 9202-0202 ʇɥƃᴉɹʎdoƆ
+
+## ǝsuǝɔᴉ˥
+
+˙ʎɹoʇᴉsodǝɹ [ʎʇᴉunɯɯoɔ/ǝƃɐʇsʞɔɐq](https://github.com/backstage/community) ǝɥʇ uᴉ ʇuǝɯnɔop [pɯ˙ƎƆN∀NᴚƎΛO⅁](https://github.com/backstage/community/blob/main/GOVERNANCE.md) ǝɥʇ ǝǝS
+
+## ǝɔuɐuɹǝʌo⅁
+
+- ❤️ ɹɐʇs ɐ ǝʌol plnoʍ ǝʍ ʻʇɔǝɾoɹd ƃuᴉʇsǝɹǝʇuᴉ uɐ sᴉ ʇᴉ ʞuᴉɥʇ ɹo ǝƃɐʇsʞɔɐ𐐒 ƃuᴉsn ǝɹɐ noʎ ɟI - ⭐️ ɹɐʇs ɐ sn ǝʌᴉ⅁
+- ʎʇᴉunɯɯoɔ ǝƃɐʇsʞɔɐ𐐒 ǝɹoldxǝ puɐ sdnʇǝǝɯ ʎlɥʇuoɯ uᴉoſ - [suoᴉssǝS ʎʇᴉunɯɯoƆ ǝƃɐʇsʞɔɐ𐐒](https://github.com/backstage/community)
+- ɹǝʇʇǝlsʍǝu lᴉɐɯǝ ɹno oʇ ǝqᴉɹɔsqnS - [ɹǝʇʇǝlsʍǝN](https://spoti.fi/backstagenewsletter)
+- sǝʇɐpdn puɐ sʇuǝɯǝɔunouu∀ - [ƃol𐐒](https://backstage.io/blog/)
+- ǝƃɐʇsʞɔɐ𐐒 ƃuᴉsn ʎpɐǝɹlɐ sǝᴉuɐdɯoƆ - [sɹǝʇdop∀](ADOPTERS.md)
+- lloɹ ǝʍ ʍoɥ sᴉ sᴉɥ⊥ - [ʇɔnpuoƆ ɟo ǝpoƆ](CODE_OF_CONDUCT.md)
+- suoᴉʇsǝnΌ pǝʞs∀ ʎlʇuǝnbǝɹℲ - [Ό∀Ⅎ](https://backstage.io/docs/faq)
+- uoᴉʇɔǝɹᴉp lɐɔᴉuɥɔǝʇ ǝɥʇ ǝdɐɥs dlǝH - [sƆℲᴚ](https://github.com/backstage/backstage/labels/rfc)
+- ǝʇnqᴉɹʇuoɔ oʇ ʇuɐʍ noʎ ɟᴉ ǝɹǝɥ ʇɹɐʇS - [ǝƃɐʇsʞɔɐ𐐒 oʇ ƃuᴉʇnqᴉɹʇuoƆ](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
+- ʇɔǝɾoɹd ǝɥʇ ssnɔsᴉp ɹo ʇɹoddns ʇǝ⅁ - [ɯooɹʇɐɥɔ pɹoɔsᴉᗡ](https://discord.gg/backstage-687207715902193673)
+
+:sǝɔɹnosǝɹ ƃuᴉʍolloɟ ǝɥʇ ǝsn uɐɔ noʎ ʻʎʇᴉunɯɯoɔ ɹno ɥʇᴉʍ ǝƃɐƃuǝ o⊥
+
+## ʎʇᴉunɯɯoƆ
+
+- [sʇuǝuodɯoɔ I∩ - ʞooqʎɹoʇS](https://backstage.io/storybook)
+- [ǝƃɐʇsʞɔɐ𐐒 ɹoɟ ƃuᴉuƃᴉsǝᗡ](https://backstage.io/docs/dls/design)
+- ([suoᴉsᴉɔǝᗡ](https://backstage.io/docs/architecture-decisions/)) [ǝɹnʇɔǝʇᴉɥɔɹ∀](https://backstage.io/docs/overview/architecture-overview)
+- [ƃolɐʇɐƆ ǝɹɐʍʇɟoS](https://backstage.io/docs/features/software-catalog/)
+- [uoᴉʇɐʇuǝɯnɔop uᴉɐW](https://backstage.io/docs)
+
+:sǝpnlɔuᴉ ǝƃɐʇsʞɔɐ𐐒 ɟo uoᴉʇɐʇuǝɯnɔop ǝɥ⊥
+
+## uoᴉʇɐʇuǝɯnɔoᗡ
+
+˙[uoᴉʇɐʇuǝɯnɔop pǝʇɹɐʇS ƃuᴉʇʇǝ⅁](https://backstage.io/docs/getting-started) ǝɥʇ ǝǝs ʻǝƃɐʇsʞɔɐ𐐒 ƃuᴉsn ʇɹɐʇs o⊥
+
+## pǝʇɹɐʇS ƃuᴉʇʇǝ⅁
+
+˙[dɐɯpɐoᴚ ǝɥʇ](https://backstage.io/docs/overview/roadmap) ǝǝs ʻsǝuoʇsǝlᴉɯ pǝɹǝʌᴉlǝp ƃuᴉpnlɔuᴉ dɐɯpɐoɹ ʇɔǝɾoɹd pǝlᴉɐʇǝp ǝɥʇ ʇnoqɐ uoᴉʇɐɯɹoɟuᴉ ɹoℲ
+
+## dɐɯpɐoɹ ʇɔǝɾoɹԀ
+
+˙[ʇuǝɯǝɔunouuɐ](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation) ǝɥʇ ǝǝs ʻuoᴉʇɐɯɹoɟuᴉ ǝɹoɯ ɹoℲ ˙ʇɔǝɾoɹd lǝʌǝl uoᴉʇɐqnɔuI uɐ sɐ [(ℲƆNƆ) uoᴉʇɐpunoℲ ƃuᴉʇndɯoƆ ǝʌᴉʇɐN pnolƆ](https://www.cncf.io) ǝɥʇ ʎq pǝʇsoɥ ʍou sᴉ ʇnq ʎɟᴉʇodS ʎq pǝʇɐǝɹɔ sɐʍ ǝƃɐʇsʞɔɐ𐐒
+
+- ʎʇᴉlɐuoᴉʇɔunɟ puɐ ʎʇᴉlᴉqɐzᴉɯoʇsnɔ s‘ǝƃɐʇsʞɔɐ𐐒 puɐdxǝ ɹǝɥʇɹnɟ ʇɐɥʇ [suᴉƃnld ǝɔɹnos uǝdo](https://github.com/backstage/backstage/tree/master/plugins) ɟo ɯǝʇsʎsoɔǝ ƃuᴉʍoɹƃ ɐ ʻsnlԀ
+- ɥɔɐoɹddɐ "ǝpoɔ ǝʞᴉl sɔop" ɐ ƃuᴉsn ʻuoᴉʇɐʇuǝɯnɔop lɐɔᴉuɥɔǝʇ ǝsn puɐ ʻpuᴉɟ ʻuᴉɐʇuᴉɐɯ ʻǝʇɐǝɹɔ oʇ ʎsɐǝ ʇᴉ ƃuᴉʞɐɯ ɹoɟ [sɔoᗡɥɔǝ⊥ ǝƃɐʇsʞɔɐ𐐒](https://backstage.io/docs/features/techdocs/)
+- sǝɔᴉʇɔɐɹd ʇsǝq s‘uoᴉʇɐzᴉuɐƃɹo ɹnoʎ ɥʇᴉʍ ƃuᴉlooʇ ɹnoʎ ƃuᴉzᴉpɹɐpuɐʇs puɐ sʇɔǝɾoɹd ʍǝu dn ƃuᴉuuᴉds ʎlʞɔᴉnb ɹoɟ [sǝʇɐldɯǝ⊥ ǝɹɐʍʇɟoS ǝƃɐʇsʞɔɐ𐐒](https://backstage.io/docs/features/software-templates/)
+- slǝpoɯ ˥W puɐ ʻsǝʇᴉsqǝʍ ʻsǝuᴉlǝdᴉd ɐʇɐp ʻsǝᴉɹɐɹqᴉl ʻsǝɔᴉʌɹǝsoɹɔᴉɯ sɐ ɥɔns ǝɹɐʍʇɟos ɹnoʎ llɐ ƃuᴉƃɐuɐɯ ɹoɟ [ƃolɐʇɐƆ ǝɹɐʍʇɟoS ǝƃɐʇsʞɔɐ𐐒](https://backstage.io/docs/features/software-catalog/)
+
+:sǝpnlɔuᴉ ǝƃɐʇsʞɔɐ𐐒 ʻxoq ǝɥʇ ɟo ʇnO
+
+![ƃolɐʇɐɔ-ǝɹɐʍʇɟos](docs/assets/header.png)
+
+˙puǝ oʇ puǝ ɯoɹɟ ʇuǝɯuoɹᴉʌuǝ ʇuǝɯdolǝʌǝp pǝuᴉlɯɐǝɹʇs ɐ ǝʇɐǝɹɔ oʇ uoᴉʇɐʇuǝɯnɔop puɐ ʻsǝɔᴉʌɹǝs ʻƃuᴉlooʇ ǝɹnʇɔnɹʇsɐɹɟuᴉ ɹnoʎ llɐ sǝᴉɟᴉun ǝƃɐʇsʞɔɐ𐐒
+
+˙ʎɯouoʇnɐ ƃuᴉsᴉɯoɹdɯoɔ ʇnoɥʇᴉʍ ʎlʞɔᴉnb ǝpoɔ ʎʇᴉlɐnb-ɥƃᴉɥ dᴉɥs oʇ sɯɐǝʇ ʇɔnpoɹd ɹnoʎ sǝlqɐuǝ puɐ ǝɹnʇɔnɹʇsɐɹɟuᴉ puɐ sǝɔᴉʌɹǝsoɹɔᴉɯ ɹnoʎ oʇ ɹǝpɹo sǝɹoʇsǝɹ ǝƃɐʇsʞɔɐ𐐒 ʻƃolɐʇɐɔ ǝɹɐʍʇɟos pǝzᴉlɐɹʇuǝɔ ɐ ʎq pǝɹǝʍoԀ ˙slɐʇɹod ɹǝdolǝʌǝp ƃuᴉplᴉnq ɹoɟ ʞɹoʍǝɯɐɹɟ ǝɔɹnos uǝdo uɐ sᴉ [ǝƃɐʇsʞɔɐ𐐒](https://backstage.io/)
+
+## ¿ǝƃɐʇsʞɔɐ𐐒 sᴉ ʇɐɥM
+
+> ˙ʇsnƃn∀ ɟo ƃuᴉuuᴉƃǝq ǝɥʇ lᴉʇun ʍols ʇᴉq ɐ uᴉɐɯǝɹ ʎɐɯ sƃuᴉɥʇ ʇnq ʻsʎɐpᴉloɥ ɹǝɯɯns ǝɥʇ ɹǝʇɟɐ ǝɯnsǝɹ llᴉʍ ǝɔᴉʌɹǝs lɐɯɹoN ˙poᴉɹǝd ʎɐpᴉloɥ ɹǝɯɯns ǝɥʇ ƃuᴉɹnp lɐnsn uɐɥʇ ɹǝʍols ǝq ʎɐɯ sʍǝᴉʌǝɹ puɐ sǝsuodsǝɹ ɹǝuᴉɐʇuᴉɐW **:ǝɔᴉʇou ʎɐpᴉloɥ ɹǝɯɯnS** ☀️
+
+[![pɹɐɔǝɹoɔS ℲSSuǝdO](https://api.securityscorecards.dev/projects/github.com/backstage/backstage/badge)](https://securityscorecards.dev/viewer/?uri=github.com/backstage/backstage)
+[![sǝɔᴉʇɔɐɹԀ ʇsǝ𐐒 ℲSSuǝdO](https://bestpractices.coreinfrastructure.org/projects/7678/badge)](https://bestpractices.coreinfrastructure.org/projects/7678)
 [![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
-[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7678/badge)](https://bestpractices.coreinfrastructure.org/projects/7678)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/backstage/backstage/badge)](https://securityscorecards.dev/viewer/?uri=github.com/backstage/backstage)
+[![ʌoɔǝpoƆ](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
+![ǝlʎʇs ǝpoƆ](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
+[![pɹoɔsᴉᗡ](https://img.shields.io/discord/687207715902193673?logo=discord&label=Discord&color=5865F2&logoColor=white)](https://discord.gg/backstage-687207715902193673)
+[![snʇɐʇS ℲƆNƆ](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
+[![ǝsuǝɔᴉ˥](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> ☀️ **Summer holiday notice:** Maintainer responses and reviews may be slower than usual during the summer holiday period. Normal service will resume after the summer holidays, but things may remain a bit slow until the beginning of August.
+[語本日](README-ja_JP.md) \| [sᴉɐɔ̧uɐɹℲ](README-fr_FR.md) \| [版文中](README-zh_Hans.md) \| [어국한](README-ko_kr.md) \| ɥsᴉlƃuƎ
 
-## What is Backstage?
+# [ǝƃɐʇsʞɔɐ𐐒](https://backstage.io)
 
-[Backstage](https://backstage.io/) is an open source framework for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.
+[![ǝuᴉlpɐǝɥ](docs/assets/headline.png)](https://backstage.io/)
 
-Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
-
-![software-catalog](docs/assets/header.png)
-
-Out of the box, Backstage includes:
-
-- [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software such as microservices, libraries, data pipelines, websites, and ML models
-- [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
-- [Backstage TechDocs](https://backstage.io/docs/features/techdocs/) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
-- Plus, a growing ecosystem of [open source plugins](https://github.com/backstage/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
-
-Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as an Incubation level project. For more information, see the [announcement](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
-
-## Project roadmap
-
-For information about the detailed project roadmap including delivered milestones, see [the Roadmap](https://backstage.io/docs/overview/roadmap).
-
-## Getting Started
-
-To start using Backstage, see the [Getting Started documentation](https://backstage.io/docs/getting-started).
-
-## Documentation
-
-The documentation of Backstage includes:
-
-- [Main documentation](https://backstage.io/docs)
-- [Software Catalog](https://backstage.io/docs/features/software-catalog/)
-- [Architecture](https://backstage.io/docs/overview/architecture-overview) ([Decisions](https://backstage.io/docs/architecture-decisions/))
-- [Designing for Backstage](https://backstage.io/docs/dls/design)
-- [Storybook - UI components](https://backstage.io/storybook)
-
-## Community
-
-To engage with our community, you can use the following resources:
-
-- [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
-- [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
-- [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
-- [FAQ](https://backstage.io/docs/faq) - Frequently Asked Questions
-- [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
-- [Adopters](ADOPTERS.md) - Companies already using Backstage
-- [Blog](https://backstage.io/blog/) - Announcements and updates
-- [Newsletter](https://spoti.fi/backstagenewsletter) - Subscribe to our email newsletter
-- [Backstage Community Sessions](https://github.com/backstage/community) - Join monthly meetups and explore Backstage community
-- Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
-
-## Governance
-
-See the [GOVERNANCE.md](https://github.com/backstage/community/blob/main/GOVERNANCE.md) document in the [backstage/community](https://github.com/backstage/community) repository.
-
-## License
-
-Copyright 2020-2026 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
-
-Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
-
-## Security
-
-Please report sensitive security issues using Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
-
-For further details, see our complete [security release process](SECURITY.md).
+<!-- vale on -->
