@@ -15,11 +15,11 @@ This package is part of scoped plugin routing,
 
 ## Installation
 
-React Router v6 is a peer dependency, so install it alongside the adapter:
+`react-router-dom` v6 is a peer dependency, so install it alongside the adapter:
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/plugin-app-react-router-v6 react-router@^6 react-router-dom@^6
+yarn add @backstage/plugin-app-react-router-v6 react-router-dom@^6
 ```
 
 ## Usage

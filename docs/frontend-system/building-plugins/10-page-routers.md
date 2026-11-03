@@ -113,8 +113,8 @@ migrate away from that fallback:
 yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-react-router-v6
 ```
 
-The package expects `react-router` and `react-router-dom` version 6 as peer
-dependencies, which a plugin using those APIs already has. Render
+The package expects `react-router-dom` version 6 as a peer
+dependency, which a plugin using those APIs already has. Render
 `ReactRouterV6PageRouter` in the lazy page component, as shown above.
 
 ## Use React Router v7

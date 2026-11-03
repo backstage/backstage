@@ -2761,14 +2761,12 @@ __metadata:
     prop-types: "npm:^15.7.2"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router: "npm:^6.30.2"
     react-router-dom: "npm:^6.30.2"
     use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router: ^6.30.2
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
@@ -3484,14 +3482,12 @@ __metadata:
     "@types/use-sync-external-store": "npm:^1.7.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router: "npm:^6.30.6"
     react-router-dom: "npm:^6.30.6"
     use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router: ^6.30.6
     react-router-dom: ^6.30.6
   peerDependenciesMeta:
     "@types/react":
@@ -3584,7 +3580,6 @@ __metadata:
     "@types/use-sync-external-store": "npm:^1.7.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.30.2"
     use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@tanstack/history": ^1.131.2
@@ -3592,7 +3587,6 @@ __metadata:
     "@types/react": ^18.0.0
     react: ^18.0.0
     react-dom: ^18.0.0
-    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -40214,7 +40208,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.30.6, react-router@npm:^6.30.2, react-router@npm:^6.30.6":
+"react-router@npm:6.30.6, react-router@npm:^6.30.2":
   version: 6.30.6
   resolution: "react-router@npm:6.30.6"
   dependencies:
