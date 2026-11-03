@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { type AppError, prepareSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  type AppError,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
 import {
   coreExtensionData,
   ExtensionDefinition,
