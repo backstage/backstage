@@ -117,6 +117,14 @@ export const ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE =
   'kubernetes.io/aws-assume-role';
 
 /**
+ * Annotation for selecting credentials configured for an AWS account.
+ *
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID =
+  'kubernetes.io/aws-account-id';
+
+/**
  * Annotation for specifying the AWS ID of a cluster when signing STS tokens
  *
  * @public

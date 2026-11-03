@@ -144,47 +144,6 @@ describe('NavContentBlueprint', () => {
     `);
   });
 
-  it('should return a valid component with legacy items', () => {
-    const extension = NavContentBlueprint.make({
-      name: 'test',
-      params: {
-        component: ({ items }) => (
-          <div>
-            Items:
-            {items.map((item, index) => (
-              <a key={index} href={item.to}>
-                {item.title}
-              </a>
-            ))}
-          </div>
-        ),
-      },
-    });
-
-    const tester = createExtensionTester(extension);
-    const Component = tester.get(NavContentBlueprint.dataRefs.component);
-
-    render(
-      <Component
-        navItems={mockNavItems([])}
-        items={[
-          {
-            to: '/',
-            text: 'Home',
-            title: 'Home',
-            icon: () => null,
-            routeRef,
-          },
-        ]}
-      />,
-    );
-
-    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
-      'href',
-      '/',
-    );
-  });
-
   it('should isolate errors thrown by nav content', async () => {
     const extension = NavContentBlueprint.make({
       name: 'test',
@@ -202,7 +161,7 @@ describe('NavContentBlueprint', () => {
     };
 
     const { error } = await withLogCollector(['error'], async () => {
-      renderInTestApp(<Component navItems={mockNavItems([])} items={[]} />, {
+      renderInTestApp(<Component navItems={mockNavItems([])} />, {
         apis: [[errorApiRef, errorApi]],
       });
     });
@@ -265,7 +224,7 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} items={[]} />);
+    render(<Component navItems={mockNavItems(items)} />);
 
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
       'href',
@@ -326,7 +285,7 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} items={[]} />);
+    render(<Component navItems={mockNavItems(items)} />);
 
     const homeLink = screen.getByText('Home');
     expect(homeLink).toBeInTheDocument();
@@ -389,7 +348,7 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} items={[]} />);
+    render(<Component navItems={mockNavItems(items)} />);
 
     expect(screen.getByText('Catalog').closest('nav')).toBeTruthy();
     expect(screen.queryByText('DevTools')?.closest('nav')).toBeFalsy();

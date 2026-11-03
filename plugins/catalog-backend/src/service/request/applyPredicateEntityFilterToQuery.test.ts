@@ -203,6 +203,18 @@ describe.each(databases.eachSupportedId())(
           /top-level primitive values are not supported/,
         );
       });
+
+      it.each([
+        [{ $all: [{ kind: 'api' }], $any: [{ kind: 'component' }] }],
+        [{ kind: 'component', $not: { 'spec.type': 'service' } }],
+        [{ $any: 'component' }],
+        [{ $unknown: [] }],
+        [{ $all: [{ $not: { kind: 'api' }, kind: 'component' }] }],
+      ])('throws on malformed operator object %j', async filter => {
+        await expect(query(filter as any)).rejects.toThrow(
+          /operators must be a single \$all or \$any with an array, or \$not/,
+        );
+      });
     });
 
     describe('$all', () => {

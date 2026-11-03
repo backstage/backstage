@@ -1,7 +1,3 @@
----
-alwaysApply: true
----
-
 Backstage is an open platform for building developer portals. This is a TypeScript monorepo using Yarn workspaces.
 
 ## Key Directories
@@ -73,3 +69,9 @@ Never make changes to the release notes in `/docs/releases` unless explicitly as
 ## Repository Structure
 
 See `/docs/contribute/project-structure.md` for a detailed description of the repository structure.
+
+## Skills
+
+Agent skills live in `/.agents/skills` (also linked as `/.claude/skills`), each in a `<name>/SKILL.md` file. Only the skills listed in `/.agents/skills/index.json` are published to adopters. See `/docs/ai/skills.md` before adding or changing a skill.
+
+Update a skill only when it misled you during the task: its guidance was wrong, out of date, or missed a trap you hit, and you confirmed the correct behavior. Keep the fix to the smallest change that would have prevented the mistake, and mention it in the pull request description. Don't add notes about the task itself, restate what the docs already cover, or touch skills that worked as written.

@@ -269,6 +269,13 @@ components:
 
         Each parameter can be followed by `asc` for ascending lexicographical order or
         `desc` for descending (reverse) lexicographical order.
+
+        **Note:** although `orderField` accepts a list, the `entities/by-query`
+        endpoint currently applies only the first value; any additional order
+        fields are ignored (the backend logs a warning). Multi-field ordering is
+        tracked in https://github.com/backstage/backstage/issues/17560. For
+        multi-field ordering today, use the legacy `GET /entities` `order`
+        parameter.
       required: false
       allowReserved: true
       schema:

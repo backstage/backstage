@@ -98,6 +98,27 @@ export const eventsModuleYourFeature = createBackendModule({
 });
 ```
 
+The validator receives parsed query parameters in `request.query`. To return a
+plain-text response, set the rejection's `contentType`; responses default to
+`application/json`. For example, a webhook validation request can return its
+query token without publishing an event:
+
+```ts
+events.addHttpPostIngress({
+  topic: 'your-topic',
+  validator: async (request, context) => {
+    const validationToken = request.query.validationToken;
+    if (typeof validationToken === 'string') {
+      context.reject({
+        status: 200,
+        payload: validationToken,
+        contentType: 'text/plain',
+      });
+    }
+  },
+});
+```
+
 ### Request Body Parse
 
 We need to parse the request body before we can validate it. We have some default parsers but you can provide your own when necessary.

@@ -27,17 +27,79 @@ import {
   coreApis,
   ApiBlueprint,
   createFrontendModule,
+  createFrontendPlugin,
   type FrontendFeature,
   coreExtensionData,
   createExtension,
   type StorageApi,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
+import type { AppError } from '@backstage/frontend-app-api';
 import { renderInTestApp } from './renderInTestApp';
 import { renderTestApp } from './renderTestApp';
 import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 describe('renderInTestApp', () => {
+  it('should throw for app errors that would show the error page', () => {
+    const conflictingPlugin = createFrontendPlugin({
+      pluginId: 'conflict',
+      extensions: [
+        ApiBlueprint.make({
+          name: 'discovery',
+          params: defineParams =>
+            defineParams({
+              api: coreApis.discovery,
+              deps: {},
+              factory: () => ({ getBaseUrl: async () => '' }),
+            }),
+        }),
+      ],
+    });
+
+    expect(() =>
+      renderInTestApp(<div />, { features: [conflictingPlugin] }),
+    ).toThrow(
+      /API 'core.discovery' is already provided by plugin 'app'[^]*error\.code === 'API_FACTORY_CONFLICT'/,
+    );
+  });
+
+  describe('with an app warning', () => {
+    const pluginWithInvalidFlag = createFrontendPlugin({
+      pluginId: 'flags',
+      featureFlags: [{ name: 'Invalid_Flag' }],
+    });
+
+    it('should throw by default', () => {
+      expect(() =>
+        renderInTestApp(<div />, { features: [pluginWithInvalidFlag] }),
+      ).toThrow(
+        /declared invalid feature flag 'Invalid_Flag'[^]*error => error\.code === 'FEATURE_FLAG_INVALID'/,
+      );
+    });
+
+    it('should not throw for an expected error code', () => {
+      renderInTestApp(<div>rendered</div>, {
+        features: [pluginWithInvalidFlag],
+        isExpectedError: error => error.code === 'FEATURE_FLAG_INVALID',
+      });
+
+      expect(screen.getByText('rendered')).toBeInTheDocument();
+    });
+
+    it('should not throw for an error matched by its context', () => {
+      const isExpectedError = (error: AppError) =>
+        error.code === 'FEATURE_FLAG_INVALID' &&
+        error.context.pluginId === 'flags';
+
+      renderInTestApp(<div>rendered</div>, {
+        features: [pluginWithInvalidFlag],
+        isExpectedError,
+      });
+
+      expect(screen.getByText('rendered')).toBeInTheDocument();
+    });
+  });
+
   it.each(['component', 'extensions'])(
     'uses isolated fake defaults with explicit overrides for %s rendering',
     async mode => {

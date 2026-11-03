@@ -86,39 +86,6 @@ export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public @deprecated
-export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
-  kind: 'analytics';
-  params: <TDeps extends { [name in string]: unknown }>(
-    params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams_2<AnalyticsImplementationFactory<{}>>;
-  output: ExtensionDataRef_2<
-    AnalyticsImplementationFactory<{}>,
-    'core.analytics.factory',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnalyticsImplementationFactory<{}>,
-      'core.analytics.factory',
-      {}
-    >;
-  };
-}>;
-
-// @public @deprecated (undocumented)
-export type AnalyticsImplementationFactory<
-  Deps extends {
-    [name in string]: unknown;
-  } = {},
-> = {
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): AnalyticsImplementation;
-};
-
 // @public
 export type AnalyticsTracker = {
   captureEvent: (
@@ -1944,9 +1911,6 @@ export interface PageLayoutTab {
   label: string;
 }
 
-// @public @deprecated (undocumented)
-export type PageTab = PageLayoutTab;
-
 // @public
 export type PendingOAuthRequest = {
   provider: AuthProviderInfo;
@@ -1979,18 +1943,6 @@ export const pluginHeaderActionsApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public @deprecated (undocumented)
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends {
-    [name in string]: RouteRef | SubRouteRef;
-  },
-  TExternalRoutes extends {
-    [name in string]: ExternalRouteRef;
-  },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 // @public
 export type PluginWrapperApi = {
