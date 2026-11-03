@@ -74,6 +74,22 @@ describe('<WarningPanel />', () => {
     await renderInTestApp(<WarningPanel {...propsErrorMessage} />);
     expect(screen.getByText('Error: Mock title')).toBeInTheDocument();
   });
+
+  it('exposes the severity on the root element, defaulting to warning', async () => {
+    await renderInTestApp(
+      <>
+        <WarningPanel title="Default" />
+        <WarningPanel severity="warning" title="Warning" />
+        <WarningPanel severity="error" title="Error" />
+        <WarningPanel severity="info" title="Info" />
+      </>,
+    );
+
+    expect(
+      screen.getAllByRole('alert').map(el => el.getAttribute('data-severity')),
+    ).toEqual(['warning', 'warning', 'error', 'info']);
+  });
+
   it('renders a title formatted by markdown', async () => {
     await renderInTestApp(
       <WarningPanel
