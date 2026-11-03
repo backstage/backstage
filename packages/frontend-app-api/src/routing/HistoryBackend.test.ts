@@ -210,7 +210,7 @@ describe('HistoryBackend', () => {
       const pushed = history.getEntry();
 
       expect(pushed.key).not.toBe(initial.key);
-      expect(pushed.index).toBe(initial.index + 1);
+      expect(pushed.index).toBe(initial.index! + 1);
       expect(pushed.canGoBack).toBe(true);
       expect(history.getLocation().state).toBe('user-state');
 
@@ -234,7 +234,7 @@ describe('HistoryBackend', () => {
       history.push('/owned');
       const pushed = history.getEntry();
       expect(pushed).toMatchObject({ index: 1, length: 2, canGoBack: true });
-      expect(pushed.index).toBeLessThan(pushed.length);
+      expect(pushed.index).toBeLessThan(pushed.length!);
     });
 
     it('should assign stable metadata to an unknown entry reached by traversal', () => {
@@ -248,8 +248,9 @@ describe('HistoryBackend', () => {
       const unknown = history.getEntry();
 
       expect(unknown.key).not.toBe(initial.key);
-      expect(unknown.index).toBeGreaterThanOrEqual(0);
-      expect(unknown.index).toBeLessThan(unknown.length);
+      expect(unknown.index).toBeUndefined();
+      expect(unknown.length).toBeUndefined();
+      expect(unknown.canGoBack).toBeUndefined();
       expect(history.getLocation().state).toEqual({ outside: true });
 
       // Browsers can dispatch both events for one fragment traversal. The
@@ -257,6 +258,13 @@ describe('HistoryBackend', () => {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
       expect(listener).toHaveBeenCalledTimes(1);
       expect(history.getEntry()).toEqual(unknown);
+      history.replace('/page#replaced');
+      expect(history.getEntry()).toEqual(unknown);
+      history.push('/after-unknown');
+      expect(history.getEntry()).toMatchObject({ canGoBack: true });
+      expect(history.getEntry().index).toBeUndefined();
+      expect(history.getEntry().length).toBeUndefined();
+
       unsubscribe();
     });
 
@@ -290,15 +298,37 @@ describe('HistoryBackend', () => {
       unsubscribe();
     });
 
-    it('should observe hash navigation when Navigation API is unavailable', () => {
+    it('should omit unknown coordinates for native hash navigation and restore them on back', async () => {
+      window.history.replaceState(null, '', '/page');
       const history = createWindowHistoryBackend();
-      const listener = jest.fn();
-      const unsubscribe = history.listen(listener);
+      const initial = history.getEntry();
+      const unsubscribe = history.listen(jest.fn());
+      const hashChanged = new Promise<void>(resolve => {
+        const onHashChange = (event: HashChangeEvent) => {
+          if (event.newURL.endsWith('/page#section')) {
+            window.removeEventListener('hashchange', onHashChange);
+            resolve();
+          }
+        };
+        window.addEventListener('hashchange', onHashChange);
+      });
+      window.location.hash = '#section';
+      await hashChanged;
 
-      window.history.pushState(null, '', '/page#section');
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      const unknown = history.getEntry();
+      expect(unknown.key).not.toBe(initial.key);
+      expect(unknown.index).toBeUndefined();
+      expect(unknown.length).toBeUndefined();
+      expect(unknown.canGoBack).toBeUndefined();
+      expect(history.getEntry()).toEqual(unknown);
 
-      expect(listener).toHaveBeenCalledTimes(1);
+      const popped = new Promise(resolve =>
+        window.addEventListener('popstate', resolve, { once: true }),
+      );
+      window.history.back();
+      await popped;
+      expect(history.getEntry()).toEqual(initial);
+      expect(history.getLocation().hash).toBe('');
       unsubscribe();
     });
   });

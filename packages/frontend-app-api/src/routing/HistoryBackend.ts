@@ -28,9 +28,9 @@ export interface HistoryWriteOptions {
 /** Metadata for the currently selected browser history entry. @internal */
 export interface HistoryEntryMetadata {
   key: string;
-  index: number;
-  length: number;
-  canGoBack: boolean;
+  index?: number;
+  length?: number;
+  canGoBack?: boolean;
 }
 
 /** The observable kind of a history change. @internal */
@@ -79,7 +79,7 @@ export interface HistoryBackend {
 export function createWindowHistoryBackend(): HistoryBackend {
   const STATE_KEY = '__backstage_app_history_v1';
   type StoredState = {
-    [STATE_KEY]: { key: string; index: number; length?: number };
+    [STATE_KEY]: HistoryEntryMetadata;
     userState: unknown;
   };
   type NavigationLike = EventTarget & {
@@ -108,21 +108,24 @@ export function createWindowHistoryBackend(): HistoryBackend {
     const metadata = (state as Partial<StoredState>)[STATE_KEY];
     return (
       typeof metadata?.key === 'string' &&
-      Number.isInteger(metadata.index) &&
-      metadata.index >= 0 &&
+      (metadata.index === undefined ||
+        (Number.isInteger(metadata.index) && metadata.index >= 0)) &&
       (metadata.length === undefined ||
-        (Number.isInteger(metadata.length) && metadata.length > metadata.index))
+        (metadata.index !== undefined &&
+          Number.isInteger(metadata.length) &&
+          metadata.length > metadata.index))
     );
   };
 
   const wrapState = (
     userState: unknown,
-    entry: Pick<HistoryEntryMetadata, 'key' | 'index' | 'length'>,
+    entry: HistoryEntryMetadata,
   ): StoredState => ({
     [STATE_KEY]: {
       key: entry.key,
       index: entry.index,
       length: entry.length,
+      canGoBack: entry.canGoBack,
     },
     userState,
   });
@@ -138,19 +141,23 @@ export function createWindowHistoryBackend(): HistoryBackend {
     };
   } else if (isStoredState(window.history.state)) {
     const stored = window.history.state[STATE_KEY];
-    const length = Math.max(stored.index + 1, stored.length ?? 0);
+    const length =
+      stored.index === undefined
+        ? undefined
+        : Math.max(stored.index + 1, stored.length ?? 0);
     fallbackEntry = {
       key: stored.key,
       index: stored.index,
       length,
-      canGoBack: stored.index > 0,
+      canGoBack:
+        stored.index === undefined ? stored.canGoBack : stored.index > 0,
     };
   } else {
     // The legacy History API exposes the total session-history length, but
     // not which entry is current. In particular, a reload can have forward
     // entries, so `history.length - 1` is not a truthful current index. Start
-    // a local app-owned coordinate system and persist it into every entry we
-    // encounter; it is exact for those entries from this point onward.
+    // a local app-owned coordinate system. Entries reached outside our writes
+    // have unknown coordinates and must not inherit this position.
     fallbackEntry = {
       key: createKey(),
       index: 0,
@@ -197,16 +204,20 @@ export function createWindowHistoryBackend(): HistoryBackend {
     if (isStoredState(rawState)) {
       untrackedEntry = undefined;
       const stored = rawState[STATE_KEY];
-      const length = Math.max(
-        fallbackEntry.length,
-        stored.index + 1,
-        stored.length ?? 0,
-      );
+      const length =
+        stored.index === undefined
+          ? undefined
+          : Math.max(
+              fallbackEntry.length ?? 0,
+              stored.index + 1,
+              stored.length ?? 0,
+            );
       fallbackEntry = {
         key: stored.key,
         index: stored.index,
         length,
-        canGoBack: stored.index > 0,
+        canGoBack:
+          stored.index === undefined ? stored.canGoBack : stored.index > 0,
       };
     } else {
       // Reading a snapshot must not write browser history. Keep an untracked
@@ -217,12 +228,10 @@ export function createWindowHistoryBackend(): HistoryBackend {
         !Object.is(untrackedEntry.state, rawState) ||
         untrackedEntry.href !== href
       ) {
-        const length = Math.max(1, fallbackEntry.length);
-        const index = Math.min(fallbackEntry.index, length - 1);
         untrackedEntry = {
           state: rawState,
           href,
-          entry: { key: createKey(), index, length, canGoBack: index > 0 },
+          entry: { key: createKey() },
         };
       }
       fallbackEntry = untrackedEntry.entry;
@@ -241,8 +250,14 @@ export function createWindowHistoryBackend(): HistoryBackend {
         } else {
           fallbackEntry = {
             key: createKey(),
-            index: fallbackEntry.index + 1,
-            length: fallbackEntry.index + 2,
+            index:
+              fallbackEntry.index === undefined
+                ? undefined
+                : fallbackEntry.index + 1,
+            length:
+              fallbackEntry.index === undefined
+                ? undefined
+                : fallbackEntry.index + 2,
             canGoBack: true,
           };
           window.history.pushState(
