@@ -63,7 +63,10 @@ requested anyway. Never fall back to a smaller matrix silently.
 ### C5. Skip the unfiltered stream
 
 - **Cut:** skip streaming the whole catalog without a request filter.
-- **Assumption:** its SQL is identical to the baseline's (C2).
+- **Assumption:** its SQL is identical to the baseline's (C2). This only
+  holds for claim lists under the threshold: with 10 or more claims the
+  permission filter's ownership list is long, the SQL differs, and the
+  stream must run.
 - **Check:** as in C2. If the SQL differs, it must run.
 - **Invalidated by:** changes to the permission filter used, or to the
   streaming query itself (cursor or ordering).
