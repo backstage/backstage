@@ -14,9 +14,11 @@ We will use the OpenTelemetry Node SDK and the `auto-instrumentations-node` pack
 
 Backstage packages, such as the catalog, use the OpenTelemetry API to send custom traces and metrics.
 The `auto-instrumentations-node` will automatically create spans for code called in libraries like Express.
+Adding `@opentelemetry/api` directly to your backend makes sure that the SDK and the Backstage packages share a single version of the API that the SDK supports.
 
 ```bash
 yarn --cwd packages/backend add \
+    @opentelemetry/api \
     @opentelemetry/sdk-node \
     @opentelemetry/auto-instrumentations-node \
     @opentelemetry/exporter-prometheus \
@@ -136,13 +138,7 @@ You can now start your Backstage instance as usual, using `yarn start` and you'l
 
 If you are having issues getting metrics or traces working there are some helpful diagnostic tools from OpenTelemetry you can use that can help.
 
-First we need to the `@opentelemetry/api` package:
-
-```bash
-yarn --cwd packages/backend add @opentelemetry/api
-```
-
-Then we want to add the following snippet before the `sdk.start()` call:
+Add the following snippet before the `sdk.start()` call:
 
 ```js
 const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
