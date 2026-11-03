@@ -18,6 +18,7 @@ import {
   AppRootElementBlueprint,
   createFrontendModule,
   createSwappableComponent,
+  swappableComponentsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';

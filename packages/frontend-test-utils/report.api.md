@@ -7,17 +7,21 @@ import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppError } from '@backstage/frontend-app-api';
+import { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
 import { AppLifecycleApi } from '@backstage/frontend-plugin-api';
+import { AppNavigateOptions } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
 import { AppThemeApi } from '@backstage/frontend-plugin-api';
 import { AppTreeApi } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { DialogApi } from '@backstage/frontend-plugin-api';
@@ -47,10 +51,12 @@ import { PluginHeaderActionsApi } from '@backstage/frontend-plugin-api';
 import { PluginWrapperApi } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { RenderResult } from '@testing-library/react';
+import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
+import { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/frontend-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { SwappableComponentsApi } from '@backstage/frontend-plugin-api';
 import { ToastApi } from '@backstage/frontend-plugin-api';
 import { ToastApiMessage } from '@backstage/frontend-plugin-api';
@@ -92,6 +98,16 @@ export function createExtensionTester<
     isExpectedError?: (error: AppError) => boolean;
   },
 ): ExtensionTester<NonNullable<T['output']>>;
+
+// @public
+export function createMockAppHistory(
+  options?: MockAppHistoryOptions,
+): MockAppHistory;
+
+// @public
+export function createMockRouteResolutionApi(
+  options?: MockRouteResolutionApiOptions,
+): MockRouteResolutionApi;
 
 // @public (undocumented)
 export class ExtensionQuery<UOutput extends ExtensionDataRef> {
@@ -169,6 +185,15 @@ export namespace mockApis {
       mock: (
         partialImpl?: Partial<AnalyticsApi> | undefined,
       ) => ApiMock<AnalyticsApi>;
+  }
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi>;
+  export namespace appHistory {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AppHistoryApi> | undefined,
+      ) => ApiMock<AppHistoryApi>;
   }
   export function appLanguage(options?: {
     defaultLanguage?: string;
@@ -317,6 +342,9 @@ export namespace mockApis {
       partialImpl?: Partial<PluginWrapperApi> | undefined,
     ) => ApiMock<PluginWrapperApi>;
   }
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
   export namespace routeResolution {
     const mock: (
       partialImpl?: Partial<RouteResolutionApi> | undefined,
@@ -353,6 +381,21 @@ export namespace mockApis {
 }
 
 // @public
+export interface MockAppHistory extends AppHistoryApi {
+  navigateCalls: Array<{
+    to: string | number;
+    options?: AppNavigateOptions;
+  }>;
+}
+
+// @public
+export interface MockAppHistoryOptions {
+  basename?: string;
+  initialLocation?: string;
+  navigate?: jest.Mock | AppHistoryApi['navigate'];
+}
+
+// @public
 export interface MockFetchApiOptions {
   baseImplementation?: undefined | 'none' | typeof fetch;
   injectIdentityAuth?:
@@ -371,6 +414,34 @@ export interface MockFetchApiOptions {
 }
 
 // @public
+export interface MockRouteResolutionApi extends RouteResolutionApi {
+  resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+  resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+}
+
+// @public
+export interface MockRouteResolutionApiOptions {
+  resolve?: RouteResolutionApi['resolve'];
+  resolvePath?:
+    | {
+        matches: ReadonlyArray<
+          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+        >;
+      }
+    | RouteResolutionApi['resolvePath'];
+  routes?:
+    | ReadonlyMap<MockRouteResolutionRouteRef, string>
+    | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
+}
+
+// @public
+export type MockRouteResolutionRouteRef =
+  | RouteRef<AnyRouteRefParams>
+  | SubRouteRef<AnyRouteRefParams>
+  | ExternalRouteRef<AnyRouteRefParams>;
+
+// @public
 export type MockWithApiFactory<TApi> = TApi & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
 };
@@ -381,12 +452,12 @@ export { registerMswTestHooks };
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export function renderTestApp<const TApiPairs extends any[] = any[]>(
   options?: RenderTestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
@@ -430,9 +501,18 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
   features?: FrontendFeature[];
   mountPath?: string;
+  router?: ComponentType<{
+    children?: ReactNode;
+  }>;
+  renderAs?: 'page' | 'chrome';
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
   isExpectedError?: (error: AppError) => boolean;
+};
+
+// @public
+export type TestAppRenderResult = RenderResult & {
+  appHistory: AppHistoryApi;
 };
 
 export { withLogCollector };

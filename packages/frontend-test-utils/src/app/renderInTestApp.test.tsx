@@ -44,8 +44,6 @@ import {
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
-  Routes,
-  Route,
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
   UNSAFE_RouteContext,
@@ -55,7 +53,6 @@ import {
   Link,
 } from 'react-router-dom';
 import type { AppError } from '@backstage/frontend-app-api';
-import { usePageMount } from '@internal/frontend';
 import { renderInTestApp } from './renderInTestApp';
 import { renderTestApp } from './renderTestApp';
 import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';

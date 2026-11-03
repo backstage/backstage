@@ -43,7 +43,7 @@ import {
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/createSpecializedApp';
+import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/prepareSpecializedApp';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
