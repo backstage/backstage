@@ -16,7 +16,10 @@
 
 import { type ComponentType, type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { type AppError, prepareSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  type AppError,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
 import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
