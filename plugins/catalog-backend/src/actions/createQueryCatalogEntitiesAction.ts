@@ -141,8 +141,32 @@ export const createQueryCatalogEntitiesAction = ({
           return value;
         };
 
+        // The predicate schema admits primitives at the root (nested values such as
+        // `$contains` need them), so some MCP/LLM clients send the whole query as a
+        // JSON string. Parse strings holding a JSON object, and leave everything
+        // else untouched so it behaves as before.
+        const objectFromJsonString = (value: unknown) => {
+          if (typeof value !== 'string') {
+            return value;
+          }
+          try {
+            const parsed = JSON.parse(value);
+            return typeof parsed === 'object' &&
+              parsed !== null &&
+              !Array.isArray(parsed)
+              ? parsed
+              : value;
+          } catch {
+            return value;
+          }
+        };
+
         return z.object({
-          query: createZodV3FilterPredicateSchema(z)
+          query: z
+            .preprocess(
+              objectFromJsonString,
+              createZodV3FilterPredicateSchema(z),
+            )
             .optional()
             .describe(
               'Entity predicate query. Supports field matching, $all, $any, $not, $exists, $in, $contains, and $hasPrefix operators.',

@@ -310,6 +310,57 @@ describe('createQueryCatalogEntitiesAction', () => {
     }
   });
 
+  it('should parse a JSON object string query into an object', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock.mock();
+    mockCatalog.queryEntities.mockResolvedValue({
+      items: [],
+      totalItems: 0,
+      pageInfo: {},
+    });
+    createQueryCatalogEntitiesAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    await mockActionsRegistry.invoke({
+      id: 'test:query-catalog-entities',
+      input: { query: '{"kind":"Component"}' } as any,
+    });
+
+    expect(mockCatalog.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({ query: { kind: 'Component' } }),
+      expect.anything(),
+    );
+  });
+
+  it('should leave string queries that are not JSON objects untouched', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock.mock();
+    mockCatalog.queryEntities.mockResolvedValue({
+      items: [],
+      totalItems: 0,
+      pageInfo: {},
+    });
+    createQueryCatalogEntitiesAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    for (const query of ['not json', '["kind"]', '42']) {
+      mockCatalog.queryEntities.mockClear();
+      await mockActionsRegistry.invoke({
+        id: 'test:query-catalog-entities',
+        input: { query } as any,
+      });
+
+      expect(mockCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({ query }),
+        expect.anything(),
+      );
+    }
+  });
+
   it('should support cursor-based pagination', async () => {
     const { invoke } = createCatalogQueryAction();
 
