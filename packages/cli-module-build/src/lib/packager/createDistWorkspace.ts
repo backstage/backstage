@@ -35,6 +35,7 @@ import {
   BuildOptions,
   buildPackages,
   getOutputsForRole,
+  getEntryPointsForRole,
   Output,
 } from '../builder';
 import { compilePackageConfigSchemas, productionPack } from './productionPack';
@@ -213,6 +214,7 @@ export async function createDistWorkspace(
         standardBuilds.push({
           targetDir: pkg.dir,
           packageJson: pkg.packageJson,
+          entryPoints: getEntryPointsForRole(role, pkg.packageJson),
           outputs: outputs,
           logPrefix: `${chalk.cyan(
             relativePath(targetPaths.rootDir, pkg.dir),

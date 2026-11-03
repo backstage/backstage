@@ -16,7 +16,11 @@
 
 import { cli } from 'cleye';
 import fs from 'fs-extra';
-import { buildPackage, Output } from '../../../lib/builder';
+import {
+  buildPackage,
+  getEntryPointsForRole,
+  Output,
+} from '../../../lib/builder';
 import { findRoleFromCommand } from '../../../lib/role';
 import {
   BackstagePackageJson,
@@ -157,6 +161,7 @@ export default async ({ args, info }: CliCommandContext) => {
   return buildPackage({
     outputs,
     packageJson,
+    entryPoints: getEntryPointsForRole(resolvedRole, packageJson),
     minify: Boolean(minify),
     workspacePackages: await PackageGraph.listTargetPackages(),
   });

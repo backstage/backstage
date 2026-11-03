@@ -24,8 +24,7 @@ export interface EntryPoint {
   ext: string;
 }
 
-// Unless explicitly specified in exports, the index entrypoint is always
-// assumed to be at src/index.ts for backwards compatibility.
+// Fall back to the conventional source entry point for backwards compatibility.
 const defaultIndex = {
   mount: '.',
   path: 'src/index.ts',
@@ -85,5 +84,6 @@ export function readEntryPoints(pkg: BackstagePackageJson): Array<EntryPoint> {
     return entryPoints;
   }
 
-  return [defaultIndex];
+  const entry = pkg.module || pkg.main;
+  return entry ? [parseEntryPoint('.', entry)] : [defaultIndex];
 }
