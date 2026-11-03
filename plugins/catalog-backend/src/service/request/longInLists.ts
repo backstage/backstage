@@ -132,10 +132,26 @@ export function isLongInList(
 
 /**
  * Identifies a distinct list, so that a list that appears several times in a
- * filter is only joined once.
+ * filter is only joined once. Keys and values are matched case-insensitively,
+ * so the ID ignores case and object key order.
  */
 export function longInListId(key: string, value: FilterPredicateValue): string {
-  return `${key}\0${JSON.stringify(value)}`;
+  return `${key.toLowerCase()}\0${JSON.stringify(normalizeForId(value))}`;
+}
+
+function normalizeForId(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value.toLowerCase();
+  }
+  if (Array.isArray(value)) {
+    return value.map(normalizeForId);
+  }
+  if (isObject(value)) {
+    return Object.entries(value)
+      .map(([k, v]) => [k.toLowerCase(), normalizeForId(v)] as const)
+      .sort(([a], [b]) => a.localeCompare(b));
+  }
+  return value;
 }
 
 /**

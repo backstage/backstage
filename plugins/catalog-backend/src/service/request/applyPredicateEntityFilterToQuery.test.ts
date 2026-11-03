@@ -102,6 +102,16 @@ describe('PostgreSQL query generation', () => {
     }
     expect(short.sql).toContain('exists');
     expect(short.sql).not.toContain('in_set');
+
+    // The same list in another case or key order reuses the joined set
+    const repeated = compile({
+      $all: [
+        { 'relations.ownedBy': { $in: values } },
+        { 'RELATIONS.OWNEDBY': { $in: values.map(v => v.toUpperCase()) } },
+      ],
+    });
+    expect(repeated.sql).toContain('"in_set_1"');
+    expect(repeated.sql).not.toContain('"in_set_2"');
   });
 
   it('chooses between a joined set and an IN set for long $in lists', () => {
@@ -435,6 +445,27 @@ describe.each(databases.eachSupportedId())(
         await expect(
           query({ 'metadata.tags': { $in: ['java', 'backend', ...padding] } }),
         ).resolves.toEqual(['bare-e']);
+        // Non-string values are matched like in the short form
+        await expect(
+          query({
+            'relations.ownedBy': {
+              $in: ['group:default/team-b', ...padding.map((_, i) => i)],
+            },
+          }),
+        ).resolves.toEqual(['service-b']);
+        // Lists differing only in case or key order are joined once
+        await expect(
+          query({
+            $all: [
+              { 'relations.ownedBy': owners },
+              {
+                'Relations.OwnedBy': {
+                  $in: owners.$in.map(v => v.toUpperCase()),
+                },
+              },
+            ],
+          }),
+        ).resolves.toEqual(['service-a', 'website-c']);
       });
 
       it('filters with long $in lists next to narrow or broad conditions', async () => {
