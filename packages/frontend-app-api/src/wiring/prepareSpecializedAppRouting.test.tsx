@@ -22,13 +22,10 @@ import {
   createExtension,
   createFrontendPlugin,
   featureFlagsApiRef,
-  type ApiHolder,
-  type ApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import {
-  createSessionStateFromApis,
   prepareSpecializedApp,
   type CreateSpecializedAppInternalOptions,
 } from './prepareSpecializedApp';
@@ -56,15 +53,10 @@ function makeAppPlugin(extraExtensions: Array<any> = []) {
  * option of the deprecated `createSpecializedApp`, or the API holder of an app
  * that has already been prepared once.
  */
-function makeSessionApis(apis: { appHistory?: AppHistoryApi }): ApiHolder {
-  return {
-    get<T>(ref: ApiRef<T>): T | undefined {
-      if (apis.appHistory && ref.id === appHistoryApiRef.id) {
-        return apis.appHistory as T;
-      }
-      return undefined;
-    },
-  };
+function createSessionState(appHistory: AppHistoryApi) {
+  return prepareSpecializedApp({
+    features: [makeAppPlugin([makeAppHistoryApi(appHistory)])],
+  }).finalize().sessionState;
 }
 
 function makeAppHistoryApi(appHistory: AppHistoryApi) {
@@ -278,9 +270,7 @@ describe('prepareSpecializedApp', () => {
         advanced: {
           // The shape `createSpecializedApp({ advanced: { apis } })` builds for
           // a caller that hands the app a holder of its own.
-          sessionState: createSessionStateFromApis(
-            makeSessionApis({ appHistory }),
-          ),
+          sessionState: createSessionState(appHistory),
         },
         __internal: {
           onDispose: teardown => {
@@ -303,13 +293,10 @@ describe('prepareSpecializedApp', () => {
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
     });
 
-    it('should create the default app history when a reused session has none', () => {
+    it('should create the default app history when requested', () => {
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
-        advanced: {
-          sessionState: createSessionStateFromApis(makeSessionApis({})),
-        },
         __internal: {
           onDispose: teardown => {
             dispose = teardown;
@@ -318,12 +305,10 @@ describe('prepareSpecializedApp', () => {
       } as CreateSpecializedAppInternalOptions);
       const app = preparedApp.finalize();
 
-      // Nothing has asked for a history yet, so the holder has not been asked
-      // either — that question is what defers construction of the default.
+      // Nothing has asked for a history yet, so construction is deferred.
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
 
-      // A holder without a history still gets one, rather than the app being
-      // left unable to navigate.
+      // The default is created on first use.
       expect(app.apis.get(appHistoryApiRef)).toBeDefined();
       const attached = popstateListeners(addEventListenerSpy);
       expect(attached).toHaveLength(1);
@@ -340,9 +325,6 @@ describe('prepareSpecializedApp', () => {
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
-        advanced: {
-          sessionState: createSessionStateFromApis(makeSessionApis({})),
-        },
         __internal: {
           onDispose: teardown => {
             dispose = teardown;
