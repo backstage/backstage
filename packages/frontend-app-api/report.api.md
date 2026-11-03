@@ -10,7 +10,6 @@ import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { ExtensionDataContainer } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDataValue } from '@backstage/frontend-plugin-api';
-import { ExtensionFactoryMiddleware as ExtensionFactoryMiddleware_2 } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -247,8 +246,8 @@ export type PrepareSpecializedAppOptions = {
   advanced?: {
     sessionState?: SpecializedAppSessionState;
     extensionFactoryMiddleware?:
-      | ExtensionFactoryMiddleware_2
-      | ExtensionFactoryMiddleware_2[];
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
     pluginInfoResolver?: FrontendPluginInfoResolver;
   };
 };

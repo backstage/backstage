@@ -58,7 +58,6 @@ export {
 export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,
-  type ExtensionFactoryMiddleware,
   type FrontendFeature,
 } from './types';
 export {

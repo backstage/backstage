@@ -34,7 +34,6 @@ import {
   SubRouteRef,
   type AnyRouteRefParams,
   type AppNode,
-  type ExtensionFactoryMiddleware,
   type IdentityApi,
 } from '@backstage/frontend-plugin-api';
 import { matchRoutes } from 'react-router-dom';
@@ -55,6 +54,7 @@ import {
 } from './FrontendApiRegistry';
 import { type ExtensionPredicateContext } from './predicates';
 import { type ErrorCollector } from './createErrorCollector';
+import { type ExtensionFactoryMiddleware } from './types';
 
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 export class AppTreeApiProxy implements AppTreeApi {
