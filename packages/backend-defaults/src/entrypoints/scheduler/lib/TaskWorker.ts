@@ -264,13 +264,28 @@ export class TaskWorker {
     taskSettings: TaskSettingsV2,
     signal: AbortSignal,
   ): Promise<
-    { result: 'claim-lost' } | { result: 'failed' } | { result: 'completed' }
+    | { result: 'abort' }
+    | { result: 'claim-lost' }
+    | { result: 'failed' }
+    | { result: 'completed' }
   > {
     const ticket = uuid();
 
     const claimed = await this.tryClaimTask(ticket, taskSettings);
     if (!claimed) {
       return { result: 'claim-lost' };
+    }
+
+    if (signal.aborted) {
+      await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .where('id', '=', this.taskId)
+        .where('current_run_ticket', '=', ticket)
+        .update({
+          current_run_ticket: this.knex.raw('null'),
+          current_run_started_at: this.knex.raw('null'),
+          current_run_expires_at: this.knex.raw('null'),
+        });
+      return { result: 'abort' };
     }
 
     // Abort the task execution either if the worker is stopped, or if the
@@ -283,6 +298,9 @@ export class TaskWorker {
     let livenessHandle: ReturnType<typeof setTimeout> | undefined;
     const scheduleLivenessCheck = () => {
       livenessHandle = setTimeout(async () => {
+        if (taskAbortController.signal.aborted) {
+          return;
+        }
         await this.checkLiveness(ticket, taskAbortController);
         if (!taskAbortController.signal.aborted) {
           scheduleLivenessCheck();

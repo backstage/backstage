@@ -35,7 +35,7 @@ const databases = TestDatabases.create({
   ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
 });
 
-const addShutdownHook = jest.fn();
+const addBeforeShutdownHook = jest.fn();
 
 async function init(id: TestDatabaseId) {
   const knex = await databases.init(id);
@@ -46,8 +46,8 @@ async function init(id: TestDatabaseId) {
     mockServices.logger.mock(),
     metricsServiceMock.mock(),
     {
-      addShutdownHook,
-      addBeforeShutdownHook: jest.fn(),
+      addBeforeShutdownHook,
+      addShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
     },
   );
@@ -112,7 +112,7 @@ describe.each(databases.eachSupportedId())(
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       });
 
-      it('aborts the task if shutdown hook is invoked', async () => {
+      it('aborts the task when before-shutdown hook is invoked', async () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
@@ -127,12 +127,12 @@ describe.each(databases.eachSupportedId())(
           scope: 'global',
         });
 
-        const shutdownHook = addShutdownHook.mock.calls[0][0];
+        const beforeShutdownHook = addBeforeShutdownHook.mock.calls[0][0];
         const abortSignal = await promise;
         expect(abortSignal.aborted).toBe(false);
 
-        // Should be aborted after the shutdown hook is invoked
-        await shutdownHook();
+        // Should be aborted after the before-shutdown hook is invoked
+        await beforeShutdownHook();
         expect(abortSignal.aborted).toBe(true);
       });
     });
@@ -348,7 +348,7 @@ describe('PluginTaskManagerImpl, local scope', () => {
       expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
     }, 60_000);
 
-    it('aborts the task if shutdown hook is invoked', async () => {
+    it('aborts the task when before-shutdown hook is invoked', async () => {
       const { manager } = await init('SQLITE_3');
 
       const fn = jest.fn();
@@ -363,12 +363,12 @@ describe('PluginTaskManagerImpl, local scope', () => {
         scope: 'local',
       });
 
-      const shutdownHook = addShutdownHook.mock.calls[0][0];
+      const beforeShutdownHook = addBeforeShutdownHook.mock.calls[0][0];
       const abortSignal = await promise;
       expect(abortSignal.aborted).toBe(false);
 
-      // Should be aborted after the shutdown hook is invoked
-      await shutdownHook();
+      // Should be aborted after the before-shutdown hook is invoked
+      await beforeShutdownHook();
       expect(abortSignal.aborted).toBe(true);
     }, 60_000);
   });
