@@ -116,7 +116,7 @@ export function getGiteaRequestOptions(config: GiteaIntegrationConfig): {
   const { username, password } = config;
 
   if (!password) {
-    return headers;
+    return { headers };
   }
 
   if (username) {
