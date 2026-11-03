@@ -82,3 +82,17 @@ export const DataRouterContext: Context<object> =
 export function useRouterContext<T>(context: Context<T>): T | undefined {
   return unwrapReactRouterContext(useContext(context)) ?? undefined;
 }
+
+/** Legacy route refs include the configured basename; framework targets do not. */
+export function stripLegacyBasename(to: string, basename = '/'): string {
+  const base = basename.replace(/\/+$/, '');
+  if (!base || !to.toLowerCase().startsWith(base.toLowerCase())) {
+    return to;
+  }
+  const rest = to.slice(base.length);
+  if (rest && !/^[/?#]/.test(rest)) {
+    return to;
+  }
+  // Strip exactly one configured basename, never repeated arbitrary segments.
+  return rest.startsWith('/') ? rest : `/${rest}`;
+}

@@ -24,6 +24,7 @@ import {
   LocationContext,
   NavigationContext,
   useRouterContext,
+  stripLegacyBasename,
 } from './reactRouterContext';
 
 /** Adapts framework targets to a legacy React Router without requiring one. */
@@ -48,7 +49,10 @@ function useOptionalReactRouterNavigate():
         return;
       }
       const resolved = parsePath(
-        resolveAppTarget(pathOrDelta, location?.pathname ?? '/'),
+        resolveAppTarget(
+          stripLegacyBasename(pathOrDelta, navigation.basename),
+          location?.pathname ?? '/',
+        ),
       );
       if (!dataRouter && navigation.basename !== '/') {
         resolved.pathname =
@@ -94,7 +98,8 @@ export function useOptionalAppNavigate():
  *
  * Prefer this in shared plugin code that must run under both the new and old
  * frontend systems. Paths must start with `/` and exclude the deployment
- * basename. Relative paths belong to routing adapters and are rejected.
+ * basename. The old frontend fallback also accepts legacy route-ref URLs that
+ * already include its configured basename. Relative paths belong to routing adapters and are rejected.
  * With app history, navigation reads the latest location when called, including
  * for empty, query-only, and hash-only targets. A number traverses that many history
  * entries. External URLs are supported when app history is registered; the old
