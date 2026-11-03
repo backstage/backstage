@@ -461,6 +461,35 @@ describe('renderInTestApp', () => {
     });
   });
 
+  it.each(['component', 'app'])(
+    'honors explicit history overrides in %s rendering',
+    async mode => {
+      const history = mockApis.appHistory({ initialLocation: '/custom' });
+      function Probe() {
+        const activeHistory = useApi(appHistoryApiRef);
+        expect(activeHistory).toBe(history);
+        return <div>Custom history</div>;
+      }
+      const apis = [[appHistoryApiRef, history] as const];
+      const result =
+        mode === 'component'
+          ? renderInTestApp(<Probe />, { apis })
+          : renderTestApp({
+              apis,
+              extensions: [
+                createExtension({
+                  name: 'history-probe',
+                  attachTo: { id: 'app/root', input: 'elements' },
+                  output: [coreExtensionData.reactElement],
+                  factory: () => [coreExtensionData.reactElement(<Probe />)],
+                }),
+              ],
+            });
+      expect(await screen.findByText('Custom history')).toBeInTheDocument();
+      expect(result.appHistory).toBe(history);
+    },
+  );
+
   it('should drive navigation through the in-memory app history', async () => {
     const LocationProbe = () => {
       const navigation = useApi(appHistoryApiRef);

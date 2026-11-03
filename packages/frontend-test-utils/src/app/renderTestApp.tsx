@@ -146,15 +146,15 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
 ): TestAppRenderResult {
   const extensions = [...(options?.extensions ?? [])];
   const configData = options?.config ?? DEFAULT_MOCK_CONFIG;
-  const appHistory = createTestNavigation({
+  const defaultAppHistory = createTestNavigation({
     initialEntries: options?.initialRouteEntries,
     config: configData,
   });
 
-  const { features, apiFactoryOverrides, externalBindings } =
+  const { appHistory, features, apiFactoryOverrides, externalBindings } =
     prepareTestAppFeatures({
       extensions,
-      appHistory,
+      appHistory: defaultAppHistory,
       appPluginOverride: testAppPlugin,
       mountedRoutes: options?.mountedRoutes,
       features: options?.features,
