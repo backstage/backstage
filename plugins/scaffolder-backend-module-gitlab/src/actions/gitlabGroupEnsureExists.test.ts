@@ -21,6 +21,9 @@ import { getClient } from '../util';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
+  Namespaces: {
+    show: jest.fn(),
+  },
   Groups: {
     show: jest.fn(),
     create: jest.fn(),
@@ -43,6 +46,12 @@ jest.mock('../util', () => ({
 describe('gitlab:group:ensureExists', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGitlabClient.Groups.show.mockReset();
+    mockGitlabClient.Groups.create.mockReset();
+    mockGitlabClient.Namespaces.show.mockReset();
+    mockGitlabClient.Namespaces.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
   });
 
   const config = mockServices.rootConfig({
@@ -233,6 +242,90 @@ describe('gitlab:group:ensureExists', () => {
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
   });
 
+  it.each([['my-username'], [{ name: 'My User', slug: 'my-username' }]])(
+    'should reuse an existing user namespace for path %j',
+    async pathItem => {
+      mockGitlabClient.Groups.show.mockRejectedValueOnce({
+        cause: { response: { status: 404 } },
+      });
+      mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+        id: 123,
+        kind: 'user',
+        full_path: 'my-username',
+      });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=repo&owner=my-username',
+          path: [pathItem],
+        },
+      });
+
+      expect(mockGitlabClient.Groups.show).toHaveBeenCalledWith('my-username');
+      expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith(
+        'my-username',
+      );
+      expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+      expect(mockContext.output).toHaveBeenCalledWith('groupId', 123);
+    },
+  );
+
+  it.each([['my-username/subgroup'], ['my-username', 'subgroup']])(
+    'should reject subgroups under a user namespace for path %j',
+    async (...path) => {
+      mockGitlabClient.Groups.show.mockRejectedValueOnce({
+        cause: { response: { status: 404 } },
+      });
+      mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+        id: 123,
+        kind: 'user',
+        full_path: 'my-username',
+      });
+
+      await expect(
+        action.handler({
+          ...mockContext,
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=my-username',
+            path,
+          },
+        }),
+      ).rejects.toThrow(
+        'Cannot create subgroups under user namespace "my-username"',
+      );
+
+      expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+      expect(mockContext.output).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([401, 403, 500])(
+    'should propagate API errors with status %i',
+    async status => {
+      const error = { cause: { response: { status } } };
+      const input = { repoUrl: 'gitlab.com', path: ['foo'] };
+      mockGitlabClient.Groups.show.mockRejectedValueOnce(error);
+
+      await expect(action.handler({ ...mockContext, input })).rejects.toBe(
+        error,
+      );
+      expect(mockGitlabClient.Namespaces.show).not.toHaveBeenCalled();
+      expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+
+      mockGitlabClient.Groups.show.mockRejectedValueOnce({
+        cause: { response: { status: 404 } },
+      });
+      mockGitlabClient.Namespaces.show.mockRejectedValueOnce(error);
+
+      await expect(action.handler({ ...mockContext, input })).rejects.toBe(
+        error,
+      );
+      expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+      expect(mockContext.output).not.toHaveBeenCalled();
+    },
+  );
+
   it('should not call API on dryRun', async () => {
     await action.handler({
       ...mockContext,
@@ -244,6 +337,7 @@ describe('gitlab:group:ensureExists', () => {
     });
 
     expect(mockGitlabClient.Groups.show).not.toHaveBeenCalled();
+    expect(mockGitlabClient.Namespaces.show).not.toHaveBeenCalled();
     expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
