@@ -199,12 +199,25 @@ export function EntityHeader(props: {
   const selectedInspectEntityDialogTab = searchParams.get('inspect');
 
   const setInspectEntityDialogTab = useCallback(
-    (newTab: string) => setSearchParams(`inspect=${newTab}`),
+    (newTab: string) =>
+      setSearchParams(
+        prev => {
+          const newParams = new URLSearchParams(prev);
+          newParams.set('inspect', newTab);
+          return newParams;
+        },
+        { replace: true },
+      ),
     [setSearchParams],
   );
 
   const closeInspectEntityDialog = useCallback(
-    () => setSearchParams(),
+    () =>
+      setSearchParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.delete('inspect');
+        return newParams;
+      }),
     [setSearchParams],
   );
 

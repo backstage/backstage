@@ -94,7 +94,11 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
         return {
           title: t('entityContextMenu.inspectMenuTitle'),
           onClick: async () => {
-            setSearchParams('inspect');
+            setSearchParams(prev => {
+              const next = new URLSearchParams(prev);
+              next.set('inspect', '');
+              return next;
+            });
           },
         };
       },

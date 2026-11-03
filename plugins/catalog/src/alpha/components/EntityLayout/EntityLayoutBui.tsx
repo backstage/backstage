@@ -67,11 +67,14 @@ function InspectEntityDialogHost() {
   const selectedTab = searchParams.get('inspect');
   const setSelectedTab = useCallback(
     (tab: string) =>
-      setSearchParams(params => {
-        const next = new URLSearchParams(params);
-        next.set('inspect', tab);
-        return next;
-      }),
+      setSearchParams(
+        params => {
+          const next = new URLSearchParams(params);
+          next.set('inspect', tab);
+          return next;
+        },
+        { replace: true },
+      ),
     [setSearchParams],
   );
   const close = useCallback(
