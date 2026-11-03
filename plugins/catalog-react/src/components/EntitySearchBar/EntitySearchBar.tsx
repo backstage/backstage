@@ -38,9 +38,11 @@ function resolveFilterFields(
     return undefined;
   }
 
-  // If config is an array, use it directly for all kinds
+  // If config is an array, use it directly for all kinds. An empty array
+  // is treated as unset, since it would otherwise send an empty fields
+  // list to the backend and match nothing.
   if (Array.isArray(config)) {
-    return config;
+    return config.length > 0 ? config : undefined;
   }
 
   // If config is a record, look up by kind (case-insensitive)
@@ -49,7 +51,7 @@ function resolveFilterFields(
     const matchingKey = Object.keys(config).find(
       key => key.toLowerCase() === normalizedKind,
     );
-    if (matchingKey) {
+    if (matchingKey && config[matchingKey].length > 0) {
       return config[matchingKey];
     }
   }

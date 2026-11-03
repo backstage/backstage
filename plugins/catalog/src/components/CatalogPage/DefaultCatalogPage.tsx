@@ -73,13 +73,7 @@ function CatalogPageContent(props: BaseCatalogPageProps) {
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const {
-    filters,
-    content = <CatalogTable />,
-    pagination,
-    textFilterFields,
-    exportSettings,
-  } = props;
+  const { pagination, textFilterFields, exportSettings } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);

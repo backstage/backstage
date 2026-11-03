@@ -160,7 +160,14 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 /**
- * Filters entities where the text matches spec, title or tags.
+ * Filters entities by matching free text against a set of fields.
+ *
+ * When pagination is disabled, filtering happens client-side against
+ * `metadata.name`, `metadata.title`, `spec.profile.displayName`, and an
+ * exact match on `metadata.tags`. When pagination is enabled, filtering is
+ * delegated to the catalog backend's full-text search instead, matching
+ * `metadata.name`, `metadata.title`, and `spec.profile.displayName` by
+ * default, or the fields passed in via `fields`.
  * @public
  */
 export class EntityTextFilter implements EntityFilter {

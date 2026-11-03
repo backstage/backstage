@@ -108,19 +108,30 @@ There are many options that can be set using `tableOptions`, the full list of se
 
 ## Text Filter Fields
 
-By default, the catalog text filter matches against `metadata.name`, `metadata.title`, and `spec.profile.displayName`. When [pagination](#pagination) is enabled, you can customize which fields are filtered using the `textFilterFields` prop:
+By default, the catalog text filter matches against `metadata.name`, `metadata.title`, and `spec.profile.displayName`. When [pagination](#pagination) is disabled, the filter also matches `metadata.tags` exactly and runs client-side. When pagination is enabled, matching is delegated to the catalog backend's full-text search, and you can customize which fields it searches using the `textFilterFields` config of the `page:catalog` extension:
 
-```tsx title="packages/app/src/App.tsx"
-// Same fields for all kinds
-<CatalogIndexPage textFilterFields={['metadata.name', 'spec.type']} />
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    # Same fields for all kinds
+    - page:catalog:
+        config:
+          textFilterFields:
+            - metadata.name
+            - spec.type
 
-// Different fields per kind
-<CatalogIndexPage
-  textFilterFields={{
-    component: ['metadata.name', 'metadata.title', 'spec.type'],
-    user: ['metadata.name', 'spec.profile.displayName', 'spec.profile.email'],
-  }}
-/>
+    # Different fields per kind
+    - page:catalog:
+        config:
+          textFilterFields:
+            component:
+              - metadata.name
+              - metadata.title
+              - spec.type
+            user:
+              - metadata.name
+              - spec.profile.displayName
+              - spec.profile.email
 ```
 
 ## Customize Columns
