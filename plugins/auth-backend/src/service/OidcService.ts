@@ -395,6 +395,7 @@ export class OidcService {
             'https://claude.ai/*',
             'https://vscode.dev/*',
             'https://chatgpt.com/oauth/codex/*/client.json',
+            'https://cursor.com/oauth/mcp-client.json',
             cliClientId,
           ],
       allowedRedirectUriPatterns:

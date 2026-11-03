@@ -107,7 +107,7 @@ export const apis: AnyApiFactory[] = [
 ];
 
 // Or, when building for the new frontend system:
-import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 export const acmeAnalyticsImplementation =
   AnalyticsImplementationBlueprint.make({
@@ -165,7 +165,7 @@ export const apis: AnyApiFactory[] = [
 ];
 
 // Or, when building for the new frontend system:
-import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 export const acmeAnalyticsImplementation =
   AnalyticsImplementationBlueprint.make({

@@ -191,25 +191,6 @@ export type CreateAppRouteBinder = <
   >,
 ) => void;
 
-// @public @deprecated
-export function createSpecializedApp(
-  options?: CreateSpecializedAppOptions,
-): FinalizedSpecializedApp;
-
-// @public @deprecated
-export type CreateSpecializedAppOptions = {
-  features?: FrontendFeature[];
-  config?: ConfigApi;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  advanced?: {
-    apis?: ApiHolder;
-    extensionFactoryMiddleware?:
-      | ExtensionFactoryMiddleware
-      | ExtensionFactoryMiddleware[];
-    pluginInfoResolver?: FrontendPluginInfoResolver;
-  };
-};
-
 // @public (undocumented)
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {

@@ -94,7 +94,7 @@
     "@jest/environment-jsdom-abstract": "^30.5.0",
     "@types/fs-extra": "^11.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.13.14",
+    "@types/node": "^24.0.0",
     "jest": "^30.5.0",
     "jsdom": "^27.1.0",
     "nodemon": "^3.0.1"

@@ -967,7 +967,7 @@ relative value if the target theme has a custom spacing function.
 Done when: every item is addressed for the agreed target and retained MUI usage
 is recorded. Return to the main skill's remaining-work and verification steps.
 
-## Reference
+## Further reading
 
 - [BUI documentation](https://ui.backstage.io)
 - [Remix icons](https://remixicon.com/)

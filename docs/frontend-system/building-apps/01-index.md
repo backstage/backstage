@@ -14,7 +14,7 @@ A Backstage App is a monorepo setup that includes everything you need to run Bac
 To create a new Backstage app we recommend using the `@backstage/create-app` command line, and the easiest way to run this package is with `npx`:
 
 :::note
-The create-app CLI requires Node.js Active LTS Release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
+The create-app CLI requires a supported Node.js release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
 :::
 
 ```sh

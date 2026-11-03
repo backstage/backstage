@@ -20,4 +20,4 @@ The MCP server uses the Streamable HTTP transport and supports OAuth authenticat
 
 [Published skills](./skills.md) are self-contained guidance files that teach AI coding assistants how to perform common Backstage engineering tasks. Skills are published to a [well-known endpoint](https://backstage.io/.well-known/skills/) on `backstage.io` and can be installed into any repository with the [`skills.sh`](https://skills.sh/) tool.
 
-Skills cover tasks such as migrating plugins to the new frontend system, instrumenting analytics events, and migrating from Material UI (MUI) to Backstage UI (BUI). See the [well-known skills](./well-known-skills.md) page for the full list.
+Skills cover tasks such as migrating apps and plugins to the new frontend system, instrumenting analytics events, and migrating from Material UI (MUI) to Backstage UI (BUI). See the [well-known skills](./well-known-skills.md) page for the full list.

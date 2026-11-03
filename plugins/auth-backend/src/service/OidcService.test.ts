@@ -1258,6 +1258,40 @@ describe('OidcService', () => {
           );
         });
 
+        it('should accept the Cursor client ID with default CIMD patterns', async () => {
+          const cursorClientId = 'https://cursor.com/oauth/mcp-client.json';
+          mockFetchCimdMetadata.mockResolvedValueOnce({
+            ...cimdMetadata,
+            clientId: cursorClientId,
+            redirectUris: ['http://localhost:8787/callback'],
+          });
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cursorClientId,
+              redirectUri: 'http://localhost:8787/callback',
+              responseType: 'code',
+              scope: 'openid',
+              ...pkceParams,
+            }),
+          ).resolves.toEqual(
+            expect.objectContaining({ clientName: 'CIMD Test Client' }),
+          );
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
+            clientId: cursorClientId,
+            validatedUrl: expect.any(URL),
+            skipSsrfCheck: true,
+          });
+        });
+
         it('should accept loopback redirect URIs with default CIMD patterns', async () => {
           const { service } = await createOidcService({
             databaseId,

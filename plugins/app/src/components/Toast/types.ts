@@ -82,7 +82,8 @@ export interface ToastApiMessageContainerProps {
 }
 
 /**
- * Props for the ToastDisplay component (AlertApi bridge)
+ * Props for the ToastDisplay component (AlertApi bridge).
+ * Toasts use fixed bottom-center positioning.
  * @public
  */
 export interface ToastApiMessageDisplayProps {
@@ -91,12 +92,4 @@ export interface ToastApiMessageDisplayProps {
    * Defaults to 5000ms.
    */
   transientTimeoutMs?: number;
-  /**
-   * Position of the toast on screen.
-   * @deprecated Toast uses fixed bottom-center positioning. This prop is ignored.
-   */
-  anchorOrigin?: {
-    vertical: 'top' | 'bottom';
-    horizontal: 'left' | 'center' | 'right';
-  };
 }

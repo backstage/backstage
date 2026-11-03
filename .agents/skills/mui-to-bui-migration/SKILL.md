@@ -1,10 +1,6 @@
 ---
 name: mui-to-bui-migration
-description: |
-  Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone
-  guidance. Use when migrating MUI components and styles, running
-  @backstage/mui4-to-bui-migration-recipe, or resolving TODO(backstage-codemod)
-  after a BUI migration.
+description: Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use this skill when migrating MUI components and styles, running `@backstage/mui4-to-bui-migration-recipe`, or resolving `TODO(backstage-codemod)` comments after a BUI migration.
 ---
 
 # MUI to BUI migration

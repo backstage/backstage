@@ -86,39 +86,6 @@ export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public @deprecated
-export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
-  kind: 'analytics';
-  params: <TDeps extends { [name in string]: unknown }>(
-    params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams_2<AnalyticsImplementationFactory<{}>>;
-  output: ExtensionDataRef_2<
-    AnalyticsImplementationFactory<{}>,
-    'core.analytics.factory',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnalyticsImplementationFactory<{}>,
-      'core.analytics.factory',
-      {}
-    >;
-  };
-}>;
-
-// @public @deprecated (undocumented)
-export type AnalyticsImplementationFactory<
-  Deps extends {
-    [name in string]: unknown;
-  } = {},
-> = {
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): AnalyticsImplementation;
-};
-
 // @public
 export type AnalyticsTracker = {
   captureEvent: (
@@ -982,20 +949,6 @@ export interface DialogApi {
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
   ): DialogApiDialog<TResult>;
-  // @deprecated
-  show<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: {
-          dialog: DialogApiDialog<TResult | undefined>;
-        }) => JSX.Element),
-  ): DialogApiDialog<TResult | undefined>;
-  // @deprecated
-  showModal<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
-  ): DialogApiDialog<TResult>;
 }
 
 // @public
@@ -1012,7 +965,7 @@ export interface DialogApiDialog<TResult = void> {
 }
 
 // @public @deprecated
-export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog'> & {
+export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1568,15 +1521,13 @@ export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
-  // @deprecated (undocumented)
-  getIcon(key: string): IconComponent | undefined;
   icon(key: string): IconElement | undefined;
   // (undocumented)
   listIconKeys(): string[];
 }
 
 // @public @deprecated
-export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons'> & {
+export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1948,9 +1899,6 @@ export interface PageLayoutTab {
   label: string;
 }
 
-// @public @deprecated (undocumented)
-export type PageTab = PageLayoutTab;
-
 // @public
 export type PendingOAuthRequest = {
   provider: AuthProviderInfo;
@@ -1983,18 +1931,6 @@ export const pluginHeaderActionsApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public @deprecated (undocumented)
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends {
-    [name in string]: RouteRef | SubRouteRef;
-  },
-  TExternalRoutes extends {
-    [name in string]: ExternalRouteRef;
-  },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 // @public
 export type PluginWrapperApi = {
