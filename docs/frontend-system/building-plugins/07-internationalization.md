@@ -409,7 +409,6 @@ Create a `TranslationBlueprint` extension for each resource and register the ext
 import { createApp } from '@backstage/frontend-defaults';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { TranslationBlueprint } from '@backstage/plugin-app-react';
-import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import translationResources from './translations/resources';
 
 const appModuleTranslations = createFrontendModule({
@@ -424,8 +423,7 @@ const appModuleTranslations = createFrontendModule({
 
 const app = createApp({
   features: [
-    catalogPlugin,
-    // ...your other existing features
+    // ...your existing features
     appModuleTranslations,
   ],
 });
