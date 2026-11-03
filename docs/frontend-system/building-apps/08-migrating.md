@@ -463,13 +463,13 @@ depends on what it actually did:
   `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
 - If it installed a different router library, render that library's page router
   inside the lazily loaded component of each page that needs it. A page or sub-page that
-  declares no adapter does not get its own route match. See
+  declares no adapter retains implicit React Router v6 matches for compatibility. See
   [Choose a router for a page](../building-plugins/10-page-routers.md).
 
 Pages that `convertLegacyAppRoot` converts for you already have a React Router
 v6 adapter: the converter declares one at each route it collects, so a legacy
-page keeps working without its author changing anything. Only pages you migrate
-by hand need an adapter you declare yourself. It belongs on the page. An entity
+page keeps working without its author changing anything. Pages you migrate
+by hand can declare an explicit adapter to migrate away from implicit compatibility. It belongs on the page. An entity
 content or card extension never declares one, because that content already
 renders inside the adapter its page declared.
 
@@ -507,7 +507,7 @@ predicate context is evaluated after the app history is selected. Such a
 factory is rejected with an error.
 
 A custom history supplies location, navigation and href resolution. The public
-interface does not include entry keys or stack positions. Router features
+`AppHistorySnapshot` optionally includes `entry`, `index`, and `length` metadata. Router features
 that depend on those details can have reduced behavior with a custom history;
 see the adapter's documentation. Tests can use the memory history provided by
 `renderInTestApp` and `renderTestApp`.

@@ -105,8 +105,9 @@ app at all.
 
 ## Use React Router v6
 
-Existing plugins that already use `react-router-dom` v6 need this adapter to
-keep their relative links, nested `<Routes>` and `useParams` working:
+Existing plugins using `react-router-dom` v6 retain implicit compatibility for
+relative links, nested `<Routes>` and `useParams`. Add this explicit adapter to
+migrate away from that fallback:
 
 ```shell
 yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-react-router-v6
@@ -491,10 +492,9 @@ directly.
 ## Support for other libraries
 
 The three adapters above are the supported ones, and they are maintained in the
-Backstage repository. Adapters are not a plugin-side extension point: the mount
-an adapter scopes itself to is read from framework internals rather than from
-`@backstage/frontend-plugin-api`, so adding a library is a contribution to
-Backstage rather than something a plugin writes for itself.
+Backstage repository. Adapters are not a plugin-side extension point: adapters obtain their mount through the public `useRouteResolution` API,
+but adding a supported library remains a contribution to Backstage rather
+than a plugin-side extension point.
 
 If your plugin needs a library that is not covered here, open an issue. The
 existing adapters are small, and their source in `plugins/app-react-router-v6`,
