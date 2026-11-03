@@ -465,6 +465,7 @@ export interface ConfigurableExtensionDataRef<
 
 // @public
 export namespace coreApis {
+  const appHistory: typeof appHistoryApiRef;
   const analytics: typeof analyticsApiRef;
   const appLanguage: typeof appLanguageApiRef;
   const appLifecycle: typeof appLifecycleApiRef;
