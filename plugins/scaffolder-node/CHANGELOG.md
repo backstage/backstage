@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.4.0-next.0
+
 ## 0.13.9-next.0
 
 ### Patch Changes

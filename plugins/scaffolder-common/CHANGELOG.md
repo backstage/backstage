@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.4.0-next.0
+
+### Minor Changes
+
+- ff0ef74: Added support for `when` conditions on parameter steps, allowing templates to show or hide wizard steps based on earlier answers, for example `${{ parameters.cloudProvider === 'AWS' }}`. Also added the alpha `resolveParameterSteps` and `filterHiddenStepValues` helpers for working out which steps are visible and removing values from hidden steps.
+
 ## 2.3.1
 
 ### Patch Changes

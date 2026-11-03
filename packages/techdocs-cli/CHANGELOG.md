@@ -1,5 +1,11 @@
 # @techdocs/cli
 
+## 1.14.1-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 1.14.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-react
 
+## 3.0.0-next.1
+
+### Minor Changes
+
+- ff0ef74: The scaffolder wizard now shows or hides parameter steps based on their `when` condition, and values from hidden steps are left out of the submitted parameters.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-scaffolder-common@2.4.0-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
 ## 3.0.0-next.0
 
 ### Minor Changes
