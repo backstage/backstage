@@ -32,6 +32,7 @@ import {
   EntityListPagination,
   EntityListProvider,
   EntityOwnerPickerProps,
+  TextFilterFieldsConfig,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
@@ -55,6 +56,7 @@ export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  textFilterFields?: TextFilterFieldsConfig;
   exportSettings?: CatalogExportSettings;
 };
 
@@ -71,7 +73,13 @@ function CatalogPageContent(props: BaseCatalogPageProps) {
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { pagination, exportSettings } = props;
+  const {
+    filters,
+    content = <CatalogTable />,
+    pagination,
+    textFilterFields,
+    exportSettings,
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -97,7 +105,10 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   );
 
   return (
-    <EntityListProvider pagination={pagination}>
+    <EntityListProvider
+      pagination={pagination}
+      textFilterFields={textFilterFields}
+    >
       <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
         <Content>
           <ContentHeader title="">{headerActions}</ContentHeader>
@@ -110,7 +121,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
 
 /** @internal */
 export function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
-  const { pagination, exportSettings } = props;
+  const { pagination, textFilterFields, exportSettings } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -121,7 +132,10 @@ export function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   });
 
   return (
-    <EntityListProvider pagination={pagination}>
+    <EntityListProvider
+      pagination={pagination}
+      textFilterFields={textFilterFields}
+    >
       <Header
         title={t('indexPage.title', { orgName })}
         customActions={
@@ -170,6 +184,7 @@ export interface DefaultCatalogPageProps {
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
   exportSettings?: CatalogExportSettings;
+  textFilterFields?: TextFilterFieldsConfig;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -185,6 +200,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     filters,
     initiallySelectedNamespaces,
     exportSettings,
+    textFilterFields,
   } = props;
 
   return (
@@ -209,6 +225,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
       }
       pagination={pagination}
       exportSettings={exportSettings}
+      textFilterFields={textFilterFields}
     />
   );
 }
@@ -227,6 +244,7 @@ export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
     filters,
     initiallySelectedNamespaces,
     exportSettings,
+    textFilterFields,
   } = props;
 
   return (
@@ -251,6 +269,7 @@ export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
       }
       pagination={pagination}
       exportSettings={exportSettings}
+      textFilterFields={textFilterFields}
     />
   );
 }

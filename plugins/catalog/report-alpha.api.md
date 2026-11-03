@@ -1129,6 +1129,7 @@ const _default: OverridableFrontendPlugin<
               disableBuiltinExporters?: boolean | undefined;
             }
           | undefined;
+        textFilterFields: string[] | Record<string, string[]>;
         path: string | undefined;
         title: string | undefined;
       };
@@ -1141,6 +1142,7 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
             }
           | undefined;
+        textFilterFields?: string[] | Record<string, string[]> | undefined;
         exportSettings?:
           | {
               enabled?: boolean | undefined;

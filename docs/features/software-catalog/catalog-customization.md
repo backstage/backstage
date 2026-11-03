@@ -64,6 +64,73 @@ This will display an "Export selection" button on the catalog index page that al
 
 For advanced export customization like custom export formats, create a frontend module that provides a catalog export extension:
 
+```tsx title="packages/app/src/App.tsx"
+<Route
+  path="/catalog"
+  element={<CatalogIndexPage initiallySelectedFilter="all" />}
+/>
+```
+
+Possible options are: owned, starred, or all
+
+## Initially Selected Kind
+
+By default, the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+
+```tsx title="packages/app/src/App.tsx"
+<Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
+```
+
+Possible options are all the [default Kinds](system-model.md) as well as any custom Kinds that you have added.
+
+## Owner Picker Mode
+
+The Owner filter by default will only contain a list of Users and/or Groups that actually own an entity in the Catalog, now you may have reason to change this. Here's how:
+
+```tsx title="packages/app/src/App.tsx"
+<Route path="/catalog" element={<CatalogIndexPage ownerPickerMode="all" />} />
+```
+
+Possible options are: owners-only or all
+
+## Table Options
+
+The tables used within Backstage are built on top of [`@material-table/core`](https://material-table-core.github.io/) and the `CatalogIndexPage` has a `tableOptions` prop that allows you to customize the underlying table to a certain extent, but there are some hard coded Backstage settings that can't be changed. Here's an example of how to use this prop to disable the search filter field in the table's header:
+
+```tsx title="packages/app/src/App.tsx"
+<Route
+  path="/catalog"
+  element={<CatalogIndexPage tableOptions={{ search: false }} />}
+/>
+```
+
+There are many options that can be set using `tableOptions`, the full list of settings can be found in the [`@material-table/core` `Options` interface](https://github.com/material-table-core/core/blob/v3.1.0/types/index.d.ts#L323) (this link goes to `v3.1.0` of `@material-table/core` as that is the version currently used by Backstage).
+
+## Text Filter Fields
+
+By default, the catalog text filter matches against `metadata.name`, `metadata.title`, and `spec.profile.displayName`. When [pagination](#pagination) is enabled, you can customize which fields are filtered using the `textFilterFields` prop:
+
+```tsx title="packages/app/src/App.tsx"
+// Same fields for all kinds
+<CatalogIndexPage textFilterFields={['metadata.name', 'spec.type']} />
+
+// Different fields per kind
+<CatalogIndexPage
+  textFilterFields={{
+    component: ['metadata.name', 'metadata.title', 'spec.type'],
+    user: ['metadata.name', 'spec.profile.displayName', 'spec.profile.email'],
+  }}
+/>
+```
+
+## Customize Columns
+
+The columns you see in the `CatalogIndexPage` were selected to be a good starting point for most, but there may be cases where you would like to add or remove columns from existing or custom Kinds.
+
+### Adding a column to an existing Kind
+
+Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
+
 ```tsx title="src/catalogExportExtension.tsx"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { CatalogExportConfigBlueprint } from '@backstage/plugin-catalog/alpha';
