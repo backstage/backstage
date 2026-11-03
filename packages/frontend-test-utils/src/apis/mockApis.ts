@@ -16,7 +16,6 @@
 
 import {
   coreApis,
-  alertApiRef,
   appHistoryApiRef,
   routeResolutionApiRef,
   type AnalyticsApi,
