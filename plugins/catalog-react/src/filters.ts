@@ -175,6 +175,8 @@ export class EntityTextFilter implements EntityFilter {
     'metadata.name',
     'metadata.title',
     'spec.profile.displayName',
+    'spec.target',
+    'spec.targets',
   ];
 
   readonly value: string;
@@ -219,7 +221,6 @@ export class EntityTextFilter implements EntityFilter {
   getFullTextFilters() {
     return {
       term: this.value,
-      // Update this to be more dynamic based on table columns.
       fields: this.fields ?? EntityTextFilter.DEFAULT_FIELDS,
     };
   }
