@@ -2,7 +2,7 @@
 '@backstage/frontend-plugin-api': minor
 ---
 
-Removed the deprecated `withApis` export. Wrap class components in a function component that uses `useApi` instead:
+**BREAKING**: Removed the deprecated `withApis` export. Wrap class components in a function component that uses `useApi` instead:
 
 ```tsx
 import { errorApiRef, useApi } from '@backstage/frontend-plugin-api';
