@@ -51,11 +51,25 @@ export function prepareTestAppFeatures(options: {
   /** Where synthetic mounted-route extensions attach. */
   mountedRouteAttachTo: { id: string; input: string };
 }): {
+  appHistory: AppHistoryApi;
   features: FrontendFeature[];
   apiFactoryOverrides: ReturnType<typeof createApiFactory>[];
   externalBindings: Map<ExternalRouteRef, RouteRef>;
 } {
-  const { appHistory } = options;
+  const callerApiFactories = (options.apis ?? []).map(entry => {
+    const mockFactory = getMockApiFactory(entry);
+    if (mockFactory) {
+      return mockFactory;
+    }
+    const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
+    return createApiFactory(apiRef, implementation);
+  });
+  const historyOverride = callerApiFactories.find(
+    factory => factory.api === appHistoryApiRef,
+  );
+  const appHistory: AppHistoryApi = historyOverride
+    ? historyOverride.factory({})
+    : options.appHistory;
   const extensions = [...options.extensions];
   const externalBindings = new Map<ExternalRouteRef, RouteRef>();
 
@@ -117,18 +131,10 @@ export function prepareTestAppFeatures(options: {
   }
 
   const apiFactoryOverrides = [
-    // Prefer the in-memory app history over any production default
-    // registered in phase APIs (first registration wins).
+    ...callerApiFactories,
+    // Prefer test history over production defaults (first registration wins).
     createApiFactory(appHistoryApiRef, appHistory),
-    ...(options.apis ?? []).map(entry => {
-      const mockFactory = getMockApiFactory(entry);
-      if (mockFactory) {
-        return mockFactory;
-      }
-      const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
-      return createApiFactory(apiRef, implementation);
-    }),
   ];
 
-  return { features, apiFactoryOverrides, externalBindings };
+  return { appHistory, features, apiFactoryOverrides, externalBindings };
 }

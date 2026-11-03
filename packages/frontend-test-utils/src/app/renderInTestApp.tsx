@@ -236,7 +236,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   // what lets that root mount host routes below it.
   const mountPath = options?.mountPath ?? (PageRouter ? '/*' : undefined);
   const configData = options?.config ?? DEFAULT_MOCK_CONFIG;
-  const appHistory = createTestNavigation({
+  const defaultAppHistory = createTestNavigation({
     initialEntries: options?.initialRouteEntries,
     config: configData,
   });
@@ -303,10 +303,10 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     }),
   ];
 
-  const { features, apiFactoryOverrides, externalBindings } =
+  const { appHistory, features, apiFactoryOverrides, externalBindings } =
     prepareTestAppFeatures({
       extensions,
-      appHistory,
+      appHistory: defaultAppHistory,
       appPluginOverride: testAppPlugin,
       mountedRoutes: options?.mountedRoutes,
       features: options?.features,
