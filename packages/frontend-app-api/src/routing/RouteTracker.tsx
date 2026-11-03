@@ -41,7 +41,8 @@ const getExtensionContext = (
     // Use the most specific mounted extension, including pages without route refs.
     const routeMatch = matches
       ?.filter(
-        match => match?.routeObject.appNode || match?.routeObject.routeRefs?.size > 0,
+        match =>
+          match?.routeObject.appNode || match?.routeObject.routeRefs?.size > 0,
       )
       .pop();
     const routeObject = routeMatch?.routeObject;

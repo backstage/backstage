@@ -115,7 +115,6 @@ describe('RouteTracker', () => {
           {
             path: '',
             caseSensitive: false,
-            element: <div />,
             routeRefs: new Set(),
             appNode: {
               spec: {
@@ -128,11 +127,17 @@ describe('RouteTracker', () => {
       },
     ];
     render(
-      <MemoryRouter initialEntries={['/path/foo/bar']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routes} />
-        </TestApiProvider>
-      </MemoryRouter>,
+      <TestApiProvider
+        apis={[
+          [analyticsApiRef, mockedAnalytics],
+          [
+            appHistoryApiRef,
+            createMockAppHistory({ initialLocation: '/path/foo/bar' }),
+          ],
+        ]}
+      >
+        <RouteTracker routeObjects={routes} />
+      </TestApiProvider>,
     );
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith(
       expect.objectContaining({
