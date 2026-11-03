@@ -83,8 +83,7 @@ export interface MockAppHistory extends AppHistoryApi {
  * (and the returned `appHistory`) for navigation across a full test app.
  *
  * Also available as `mockApis.appHistory()`. Pair with
- * {@link createMockRouteResolutionApi} for `RouteLink` /
- * `useRouteRef` tests.
+ * {@link createMockRouteResolutionApi} for `useRouteRef` tests.
  *
  * @public
  * @example

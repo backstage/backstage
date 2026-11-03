@@ -2096,24 +2096,6 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 ) => string;
 
 // @public
-export const RouteLink: <TParams extends AnyRouteRefParams>(
-  props: RouteLinkProps<TParams> & {
-    ref?: React.ForwardedRef<HTMLAnchorElement>;
-  },
-) => JSX.Element | null;
-
-// @public
-export type RouteLinkProps<TParams extends AnyRouteRefParams> = {
-  routeRef:
-    | RouteRef<TParams>
-    | SubRouteRef<TParams>
-    | ExternalRouteRef<TParams>;
-  params?: TParams;
-  replace?: boolean;
-  children?: ReactNode;
-} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
-
-// @public
 export interface RouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
