@@ -30,7 +30,7 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  *
  * Existing sub-pages retain implicit React Router v6 matches for compatibility.
  * To select a library explicitly, render its adapter inside the sub-page's
- * `loader`. Adapters compose, so a sub-page may use a different routing library
+ * lazily loaded component. Adapters compose, so a sub-page may use a different routing library
  * from its parent page.
  *
  * @public
@@ -45,14 +45,20 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  *     path: 'overview',
  *     title: 'Overview',
  *     routeRef: overviewRouteRef,
- *     loader: () =>
- *       import('./components/Overview').then(m => (
- *         <ReactRouterV6PageRouter>
- *           <m.Overview />
- *         </ReactRouterV6PageRouter>
- *       )),
+ *     loader: () => import('./components/Overview').then(m => <m.Overview />),
  *   },
  * });
+ * ```
+ *
+ * In the lazy component module:
+ * ```tsx
+ * import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+ *
+ * export const Overview = () => (
+ *   <ReactRouterV6PageRouter>
+ *     <OverviewContent />
+ *   </ReactRouterV6PageRouter>
+ * );
  * ```
  */
 export const SubPageBlueprint = createExtensionBlueprint({

@@ -181,20 +181,26 @@ function PluginPageShell(props: {
  *
  * Existing pages retain implicit React Router v6 matches for compatibility.
  * Development warnings identify consumers of that fallback. Pages can migrate
- * independently by rendering an explicit adapter inside their `loader`:
+ * independently by rendering an explicit adapter inside their lazily loaded component:
  *
  * ```tsx
  * PageBlueprint.make({
  *   params: {
  *     path: '/catalog',
- *     loader: () =>
- *       import('./Page').then(m => (
- *         <ReactRouterV6PageRouter>
- *           <m.Page />
- *         </ReactRouterV6PageRouter>
- *       )),
+ *     loader: () => import('./Page').then(m => <m.Page />),
  *   },
  * });
+ * ```
+ *
+ * In the lazy component module:
+ * ```tsx
+ * import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+ *
+ * export const Page = () => (
+ *   <ReactRouterV6PageRouter>
+ *     <PageContent />
+ *   </ReactRouterV6PageRouter>
+ * );
  * ```
  *
  * Adapters are added rather than selected, so they nest: a sub-page written
