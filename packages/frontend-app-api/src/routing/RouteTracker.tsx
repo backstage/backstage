@@ -72,7 +72,7 @@ const getExtensionContext = (
 
     return {
       params,
-      pluginId: plugin?.id || 'root',
+      pluginId: plugin?.pluginId || 'root',
       extensionId: extension?.id || 'App',
     };
   } catch {

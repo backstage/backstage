@@ -53,45 +53,48 @@ function createValidatingMockFeatureFlagsApi(): FeatureFlagsApi & {
 }
 
 describe('registerFeatureFlagDeclarationsInHolder', () => {
-  it('should isolate invalid flags and still register valid ones from a plugin', () => {
-    const featureFlagsApi = createValidatingMockFeatureFlagsApi();
-    const collector = createErrorCollector();
+  it.each(['id', 'pluginId'])(
+    'should isolate invalid flags and still register valid ones from a plugin without %s',
+    key => {
+      const featureFlagsApi = createValidatingMockFeatureFlagsApi();
+      const collector = createErrorCollector();
 
-    const plugin = createFrontendPlugin({
-      pluginId: 'test',
-      featureFlags: [
-        { name: 'valid-flag' },
-        { name: 'bad/flag' },
-        { name: 'another-valid' },
-      ],
-      extensions: [],
-    });
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        featureFlags: [
+          { name: 'valid-flag' },
+          { name: 'bad/flag' },
+          { name: 'another-valid' },
+        ],
+        extensions: [],
+      });
 
-    registerFeatureFlagDeclarationsInHolder(
-      {
-        get: ref =>
-          (ref.id === featureFlagsApiRef.id
-            ? featureFlagsApi
-            : undefined) as any,
-      },
-      [plugin],
-      collector,
-    );
+      registerFeatureFlagDeclarationsInHolder(
+        {
+          get: ref =>
+            (ref.id === featureFlagsApiRef.id
+              ? featureFlagsApi
+              : undefined) as any,
+        },
+        [Object.assign(plugin, { [key]: undefined })],
+        collector,
+      );
 
-    expect(featureFlagsApi.flags).toEqual([
-      expect.objectContaining({ name: 'valid-flag', pluginId: 'test' }),
-      expect.objectContaining({ name: 'another-valid', pluginId: 'test' }),
-    ]);
+      expect(featureFlagsApi.flags).toEqual([
+        expect.objectContaining({ name: 'valid-flag', pluginId: 'test' }),
+        expect.objectContaining({ name: 'another-valid', pluginId: 'test' }),
+      ]);
 
-    const errors = collector.collectErrors()!;
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatchObject({
-      code: 'FEATURE_FLAG_INVALID',
-      context: { pluginId: 'test', flagName: 'bad/flag' },
-    });
-    expect(errors[0].message).toContain("Plugin 'test'");
-    expect(errors[0].message).toContain("'bad/flag'");
-  });
+      const errors = collector.collectErrors()!;
+      expect(errors).toHaveLength(1);
+      expect(errors[0]).toMatchObject({
+        code: 'FEATURE_FLAG_INVALID',
+        context: { pluginId: 'test', flagName: 'bad/flag' },
+      });
+      expect(errors[0].message).toContain("Plugin 'test'");
+      expect(errors[0].message).toContain("'bad/flag'");
+    },
+  );
 
   it('should report each invalid flag independently across multiple plugins', () => {
     const featureFlagsApi = createValidatingMockFeatureFlagsApi();
