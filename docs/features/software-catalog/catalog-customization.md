@@ -108,7 +108,7 @@ There are many options that can be set using `tableOptions`, the full list of se
 
 ## Text Filter Fields
 
-By default, the catalog text filter matches against `metadata.name`, `metadata.title`, and `spec.profile.displayName`. When [pagination](#pagination) is disabled, the filter also matches `metadata.tags` exactly and runs client-side. When pagination is enabled, matching is delegated to the catalog backend's full-text search, and you can customize which fields it searches using the `textFilterFields` config of the `page:catalog` extension:
+By default, the catalog text filter matches against `metadata.name`, `metadata.title`, and `spec.profile.displayName`. When [pagination](#catalog-index-page) is disabled, the filter also matches `metadata.tags` exactly and runs client-side. When pagination is enabled, matching is delegated to the catalog backend's full-text search, and you can customize which fields it searches using the `textFilterFields` config of the `page:catalog` extension:
 
 ```yaml title="app-config.yaml"
 app:
