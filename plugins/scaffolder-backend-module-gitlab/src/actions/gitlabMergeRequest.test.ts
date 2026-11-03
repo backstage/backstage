@@ -275,6 +275,43 @@ describe('createGitLabMergeRequest', () => {
     instance = createPublishGitlabMergeRequestAction({ integrations });
   });
 
+  it.each([
+    { name: 'omitted', input: {}, expected: {} },
+    { name: 'undefined', input: { squash: undefined }, expected: {} },
+    { name: 'true', input: { squash: true }, expected: { squash: true } },
+    { name: 'false', input: { squash: false }, expected: { squash: false } },
+  ])('handles squash when $name', async ({ input, expected }) => {
+    mockDir.setContent({ [workspacePath]: {} });
+    const ctx = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        ...input,
+      },
+      workspacePath,
+    });
+
+    await instance.handler(ctx);
+
+    expect(mockGitlabClient.MergeRequests.create.mock.calls).toStrictEqual([
+      [
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: undefined,
+          removeSourceBranch: false,
+          assigneeId: undefined,
+          reviewerIds: undefined,
+          labels: undefined,
+          ...expected,
+        },
+      ],
+    ]);
+  });
+
   describe('createGitLabMergeRequestWithSpecifiedTargetBranch', () => {
     it('removeSourceBranch is false by default when not passed in options', async () => {
       const input = {

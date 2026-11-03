@@ -162,6 +162,13 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .describe(
               'Option to delete source branch once the MR has been merged. Default: `false`',
             ),
+        squash: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Squash commits into a single commit on merge. If omitted, use the GitLab project squash setting. Project settings may override this value.',
+            ),
         assignee: z =>
           z
             .string()
@@ -212,6 +219,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         description,
         repoUrl,
         removeSourceBranch,
+        squash,
         targetPath,
         sourcePath,
         title,
@@ -430,6 +438,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
                 removeSourceBranch: removeSourceBranch
                   ? removeSourceBranch
                   : false,
+                ...(squash !== undefined && { squash }),
                 assigneeId,
                 reviewerIds,
                 labels,
