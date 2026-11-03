@@ -544,9 +544,9 @@ For the design background, see [RFC #33603](https://github.com/backstage/backsta
 
 Route refs work in every page, with or without a routing library. `useRouteRef`
 resolves a route ref to a path, `useRouteRefParams` reads the parameters the
-route pattern names, `useAppHref` turns an app-absolute path into a browser-ready
-href, and `RouteLink` renders a link straight from a route ref. None of them
-require a page router, so a plugin using only these hooks needs no adapter.
+route pattern names, and `useAppHref` turns an app-absolute path into a browser-ready
+href. None of them require a page router, so a plugin using only these hooks
+needs no adapter.
 
 `useRouteRefParams` returns exactly the parameter names declared by the supplied
 route ref. Parameters that the current location does not bind have the value
@@ -608,28 +608,33 @@ export function useNavigateToSearchQuery() {
 
 `useAppHref` is the counterpart that resolves a path to a browser-ready href, for a plain `<a>` for example, with the same React Router fallback.
 
-For declarative cross-plugin links, `RouteLink` takes the route ref directly so that no absolute `to` string has to be built:
+For declarative cross-plugin links, resolve the route ref with `useRouteRef` and pass the path to a BUI `Link`:
 
 ```tsx
-import { RouteLink } from '@backstage/frontend-plugin-api';
+import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { Link } from '@backstage/ui';
 
 export function EntityNameLink(props: {
   kind: string;
   namespace: string;
   name: string;
 }) {
+  const entityHref = useRouteRef(entityRouteRef);
+  if (!entityHref) {
+    return <>{props.name}</>;
+  }
+
   return (
-    <RouteLink
-      routeRef={entityRouteRef}
-      params={{
+    <Link
+      href={entityHref({
         kind: props.kind,
         namespace: props.namespace,
         name: props.name,
-      }}
+      })}
     >
       {props.name}
-    </RouteLink>
+    </Link>
   );
 }
 ```

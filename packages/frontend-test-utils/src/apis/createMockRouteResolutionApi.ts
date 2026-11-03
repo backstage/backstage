@@ -79,7 +79,7 @@ export interface MockRouteResolutionApiOptions {
 
 /**
  * A mock {@link @backstage/frontend-plugin-api#RouteResolutionApi} for unit
- * tests of `RouteLink`, `useRouteRef`, and components that resolve
+ * tests of `useRouteRef` and components that resolve
  * route refs under the new frontend system.
  *
  * @public
@@ -136,7 +136,7 @@ function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
  * custom implementation (including always returning `undefined`).
  *
  * Also available as `mockApis.routeResolution()`. Pair with
- * {@link createMockAppHistory} for NFS `RouteLink` / `useRouteRef` tests.
+ * {@link createMockAppHistory} for new frontend system `useRouteRef` tests.
  *
  * @public
  * @example

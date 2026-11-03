@@ -21,13 +21,13 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   useRouteResolution,
   PageBlueprint,
-  RouteLink,
   SubPageBlueprint,
   appHistoryApiRef,
   createFrontendPlugin,
   createRouteRef,
   useApi,
   useAppNavigate,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
@@ -84,19 +84,21 @@ describe('multi-router coexistence', () => {
   it('should coexist as peer pages, each declaring its own adapter', async () => {
     const CatalogV6Page = () => {
       const location = useAppHistoryLocation(useApi(appHistoryApiRef));
+      const settingsHref = useRouteRef(settingsRouteRef);
       return (
         <div data-testid="catalog-page">
           <div data-testid="adapter">v6</div>
           <div data-testid="pathname">{location?.pathname}</div>
-          <RouteLink routeRef={settingsRouteRef} data-testid="to-settings">
+          <BuiLink href={settingsHref?.()} data-testid="to-settings">
             Settings (v7)
-          </RouteLink>
+          </BuiLink>
         </div>
       );
     };
 
     const SettingsV7Page = () => {
       const location = useLocation();
+      const catalogHref = useRouteRef(catalogRouteRef);
       return (
         <div data-testid="settings-page">
           <div data-testid="adapter">v7</div>
@@ -104,9 +106,9 @@ describe('multi-router coexistence', () => {
           <Link to="./general" data-testid="in-plugin-general">
             General
           </Link>
-          <RouteLink routeRef={catalogRouteRef} data-testid="to-catalog">
+          <BuiLink href={catalogHref?.()} data-testid="to-catalog">
             Catalog (v6)
-          </RouteLink>
+          </BuiLink>
         </div>
       );
     };
@@ -273,6 +275,7 @@ describe('multi-router coexistence', () => {
     const TreeV7SubPage = () => {
       const location = useLocation();
       const pageMount = useRouteResolution().matches.at(-1);
+      const homeHref = useRouteRef(homeRouteRef);
       return (
         <div data-testid="tree-subpage">
           <div data-testid="adapter">v7</div>
@@ -286,9 +289,9 @@ describe('multi-router coexistence', () => {
           <Link to="../graph" data-testid="to-graph">
             Graph tab
           </Link>
-          <RouteLink routeRef={homeRouteRef} data-testid="to-home">
+          <BuiLink href={homeHref?.()} data-testid="to-home">
             Home (v6)
-          </RouteLink>
+          </BuiLink>
         </div>
       );
     };
