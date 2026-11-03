@@ -153,6 +153,44 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
       };
     }>;
+    'sub-page:devtools/external-dependencies': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'external-dependencies';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
     'sub-page:devtools/info': OverridableExtensionDefinition<{
       kind: 'sub-page';
       name: 'info';
