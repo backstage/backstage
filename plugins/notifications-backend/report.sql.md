@@ -35,7 +35,7 @@
 
 ### Indices
 
-- `broadcast_user_idx` (`broadcast_id`, `user`) unique
+- `broadcast_user_pkey` (`broadcast_id`, `user`) unique primary
 
 ## Table `notification`
 
@@ -76,5 +76,5 @@
 
 ### Indices
 
-- `user_settings_unique_idx` (`settings_key_hash`) unique
+- `user_settings_pkey` (`settings_key_hash`) unique primary
 - `user_settings_user_idx` (`user`)
