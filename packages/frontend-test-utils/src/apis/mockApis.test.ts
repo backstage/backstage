@@ -103,6 +103,10 @@ describe('mockApis', () => {
       expect(factory.api).toBe(coreApis[name]);
       expect(factory.deps).toEqual({});
       expect(factory.factory({})).toBe(mock);
+      if (name === 'appHistory') {
+        // Methods preserve in-memory navigation and supply a default location snapshot.
+        continue;
+      }
       if (name === 'routeResolution') {
         // resolvePath supplies an empty match list by default.
         continue;
