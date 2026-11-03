@@ -27,6 +27,7 @@ import {
   LocationContext,
   NavigationContext,
   useRouterContext,
+  stripLegacyBasename,
 } from './reactRouterContext';
 
 /**
@@ -37,7 +38,9 @@ import {
  * (old frontend system).
  *
  * Paths must start with `/` and are relative to the app root, excluding the
- * deployment basename. Empty, query-only, and hash-only targets use the current path.
+ * deployment basename. The old frontend fallback also accepts legacy route-ref
+ * URLs that include its configured basename. Empty, query-only, and hash-only
+ * targets use the current path.
  * Relative paths belong to routing adapters and are rejected by this hook.
  * External URLs are returned unchanged.
  *
@@ -80,7 +83,7 @@ export function useAppCreateHref(): (to: string) => string {
       return appHistory.createHref(to);
     }
     const safeTo = resolveAppTarget(
-      to,
+      stripLegacyBasename(to, navigation?.basename),
       routerLocation?.pathname ?? APP_ROOT_PATH.pathname,
     );
     if (isExternalTarget(safeTo)) {
