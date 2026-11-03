@@ -1416,6 +1416,207 @@ describe('postgres', () => {
       await Promise.all(clients.map(client => client.destroy()));
     });
 
+    it('uses the plugin connection credentials and role for database creation', async () => {
+      const count = jest.fn().mockResolvedValue([{ count: '0' }]);
+      const where = jest.fn().mockReturnValue({ count });
+      const admin = {
+        from: jest.fn().mockReturnValue({ where }),
+        raw: jest.fn().mockResolvedValue(undefined),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createAdminClient = jest.fn().mockResolvedValue(admin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+          plugin: {
+            plugin1: {
+              connection: {
+                host: 'plugin-host',
+                user: 'plugin-user',
+                password: 'plugin-password',
+                database: 'plugin-db',
+              },
+              role: 'plugin-role',
+            },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const client = await connector.getClient('plugin1', deps);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(1);
+      expect(createAdminClient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          client: 'pg',
+          role: 'plugin-role',
+          connection: expect.objectContaining({
+            host: 'plugin-host',
+            user: 'plugin-user',
+            password: 'plugin-password',
+            database: 'postgres',
+          }),
+        }),
+      );
+      expect(admin.raw).toHaveBeenCalledWith('CREATE DATABASE ??', [
+        'plugin-db',
+      ]);
+      await connector.shutdown();
+      await client.destroy();
+    });
+
+    it('does not share admin clients between plugins with different credentials', async () => {
+      const createAdminClient = jest.fn().mockImplementation(async () => ({
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            count: jest.fn().mockResolvedValue([{ count: '1' }]),
+          }),
+        }),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      }));
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost', user: 'base', password: 'base' },
+          plugin: {
+            plugin1: { connection: { user: 'user1', password: 'pw1' } },
+            plugin2: { connection: { user: 'user2', password: 'pw2' } },
+            plugin3: { connection: { user: 'user1', password: 'pw1' } },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const clients = await Promise.all([
+        connector.getClient('plugin1', deps),
+        connector.getClient('plugin2', deps),
+        connector.getClient('plugin3', deps),
+      ]);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(2);
+      expect(createAdminClient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          connection: expect.objectContaining({
+            user: 'user1',
+            password: 'pw1',
+          }),
+        }),
+      );
+      expect(createAdminClient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          connection: expect.objectContaining({
+            user: 'user2',
+            password: 'pw2',
+          }),
+        }),
+      );
+      await connector.shutdown();
+      await Promise.all(clients.map(client => client.destroy()));
+    });
+
+    it('shares admin clients regardless of connection property order', async () => {
+      const createAdminClient = jest.fn().mockImplementation(async () => ({
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            count: jest.fn().mockResolvedValue([{ count: '1' }]),
+          }),
+        }),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      }));
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+          plugin: {
+            plugin1: { connection: { user: 'user1', password: 'pw1' } },
+            plugin2: { connection: { password: 'pw1', user: 'user1' } },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const clients = await Promise.all([
+        connector.getClient('plugin1', deps),
+        connector.getClient('plugin2', deps),
+      ]);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(1);
+      await connector.shutdown();
+      await Promise.all(clients.map(client => client.destroy()));
+    });
+
+    it('does not create admin pools once shutdown has started', async () => {
+      const createAdminClient = jest.fn();
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      await connector.shutdown();
+
+      await expect(connector.getClient('plugin1', deps)).rejects.toThrow(
+        'PostgreSQL connector is shutting down',
+      );
+      expect(createAdminClient).not.toHaveBeenCalled();
+    });
+
+    it('creates schemas with the plugin connection credentials and role', async () => {
+      const admin = {
+        raw: jest.fn().mockResolvedValue(undefined),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createAdminClient = jest.fn().mockResolvedValue(admin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost', database: 'shared' },
+          pluginDivisionMode: 'schema',
+          ensureExists: false,
+          ensureSchemaExists: true,
+          plugin: {
+            plugin1: {
+              connection: { user: 'plugin-user', password: 'plugin-password' },
+              role: 'plugin-role',
+            },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const client = await connector.getClient('plugin1', deps);
+
+      expect(createAdminClient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          role: 'plugin-role',
+          connection: expect.objectContaining({
+            user: 'plugin-user',
+            password: 'plugin-password',
+            database: 'shared',
+          }),
+        }),
+      );
+      expect(admin.raw).toHaveBeenCalledWith(
+        'CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??',
+        ['plugin1', 'plugin-role'],
+      );
+      await connector.shutdown();
+      await client.destroy();
+    });
+
     it('recreates the admin client when a database operation and cleanup fail', async () => {
       const firstAdmin = {
         from: jest.fn().mockReturnValue({
@@ -1595,6 +1796,36 @@ describe('postgres', () => {
           }),
         ),
       ).toBeTruthy();
+    });
+
+    it('sets the role from the overrides over the base config role', async () => {
+      const setRoleQueries = async (overrides?: Knex.Config) => {
+        const database = await createPgDatabaseClient(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              host: 'acme',
+              user: 'foo',
+              password: 'bar',
+              database: 'foodb',
+            },
+            role: 'base-role',
+          }),
+          overrides,
+        );
+        const query = jest.fn().mockResolvedValue(undefined);
+        (database.client.pool as any).emitter.emit('createSuccess', 1, {
+          query,
+        });
+        await new Promise(resolve => setImmediate(resolve));
+        await database.destroy();
+        return query.mock.calls.map(call => call[0]);
+      };
+
+      await expect(setRoleQueries()).resolves.toEqual(['SET ROLE "base-role"']);
+      await expect(
+        setRoleQueries({ role: 'plugin-role' } as Knex.Config),
+      ).resolves.toEqual(['SET ROLE "plugin-role"']);
     });
 
     it('attempts to read an ssl cert', async () => {
@@ -1964,6 +2195,42 @@ describe('computePgPluginConfig', () => {
         user: 'plugin',
         password: 'pass',
         port: '5432',
+      });
+    });
+  });
+
+  describe('adminConnection', () => {
+    it('keeps the plugin credentials but drops the database and generated application_name', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', user: 'base', password: 'base-pw' },
+        plugin: {
+          test: {
+            connection: {
+              user: 'plugin',
+              password: 'plugin-pw',
+              database: 'plugin-db',
+            },
+          },
+        },
+      });
+      const result = computePgPluginConfig(config, 'test', 'backstage_plugin_');
+      expect(result.adminConnection).toEqual({
+        host: 'localhost',
+        user: 'plugin',
+        password: 'plugin-pw',
+      });
+    });
+
+    it('keeps an explicitly configured application_name', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', application_name: 'custom' },
+      });
+      const result = computePgPluginConfig(config, 'test', 'backstage_plugin_');
+      expect(result.adminConnection).toEqual({
+        host: 'localhost',
+        application_name: 'custom',
       });
     });
   });
