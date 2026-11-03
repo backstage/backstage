@@ -33,7 +33,14 @@ const prometheus = new PrometheusExporter({ host: '0.0.0.0' });
 const sdk = new NodeSDK({
   // traceExporter: ...,
   metricReaders: [prometheus],
-  instrumentations: [getNodeAutoInstrumentations()],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      // The knex instrumentation creates spans without a name for SQLite
+      // connections without a filename, such as the in-memory database used
+      // here, which makes the OTLP trace exporter throw.
+      '@opentelemetry/instrumentation-knex': { enabled: false },
+    }),
+  ],
 });
 
 sdk.start();
