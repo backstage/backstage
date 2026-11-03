@@ -20,13 +20,13 @@ import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
-  RouteLink,
   SubPageBlueprint,
   appHistoryApiRef,
   createFrontendPlugin,
   createRouteRef,
   useApi,
   useAppNavigate,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import {
   Link as TanStackLink,
@@ -79,6 +79,7 @@ describe('TanStack + RR v6 coexistence', () => {
   it('should coexist as peer pages, each declaring its own adapter', async () => {
     const CatalogV6Page = () => {
       const location = useAppLocation();
+      const toolsHref = useRouteRef(toolsRouteRef);
       // A v6 hook, answered by the v6 adapter this page declared. Without
       // one it would resolve from the app root and come back as `/deep`.
       const resolved = useV6ResolvedPath('./deep');
@@ -87,9 +88,9 @@ describe('TanStack + RR v6 coexistence', () => {
           <div data-testid="adapter">v6</div>
           <div data-testid="pathname">{location.pathname}</div>
           <div data-testid="v6-resolved">{resolved.pathname}</div>
-          <RouteLink routeRef={toolsRouteRef} data-testid="to-tools">
+          <BuiLink href={toolsHref?.()} data-testid="to-tools">
             Tools (TanStack)
-          </RouteLink>
+          </BuiLink>
         </div>
       );
     };
@@ -97,14 +98,15 @@ describe('TanStack + RR v6 coexistence', () => {
     const ToolsPage = () => {
       const location = useAppLocation();
       const scoped = useTanStackLocation();
+      const catalogHref = useRouteRef(catalogRouteRef);
       return (
         <div data-testid="tools-page">
           <div data-testid="adapter">tanstack</div>
           <div data-testid="pathname">{location.pathname}</div>
           <div data-testid="scoped-pathname">{scoped.pathname}</div>
-          <RouteLink routeRef={catalogRouteRef} data-testid="to-catalog">
+          <BuiLink href={catalogHref?.()} data-testid="to-catalog">
             Catalog (v6)
-          </RouteLink>
+          </BuiLink>
         </div>
       );
     };
@@ -234,15 +236,16 @@ describe('TanStack + RR v6 coexistence', () => {
     const TreeTanStackSubPage = () => {
       const appLocation = useAppLocation();
       const scopedLocation = useTanStackLocation();
+      const homeHref = useRouteRef(homeRouteRef);
       return (
         <div data-testid="tree-subpage">
           <div data-testid="adapter">tanstack</div>
           <div data-testid="pathname">{appLocation.pathname}</div>
           {/* Scoped to the sub-page's own mount, not to its parent page. */}
           <div data-testid="scoped-pathname">{scopedLocation.pathname}</div>
-          <RouteLink routeRef={homeRouteRef} data-testid="to-home">
+          <BuiLink href={homeHref?.()} data-testid="to-home">
             Home (v6)
-          </RouteLink>
+          </BuiLink>
         </div>
       );
     };
