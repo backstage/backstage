@@ -50,8 +50,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@standard-schema/spec": "^1.1.0",
-    "use-sync-external-store": "^1.4.0",
-    "zen-observable": "^0.10.0"
+    "use-sync-external-store": "^1.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

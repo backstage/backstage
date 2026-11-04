@@ -15,4 +15,4 @@
  */
 
 export * from './OpaqueApiRef';
-export * from './subscribeToTranslationChanges';
+export * from './createTranslatedMessagesSource';

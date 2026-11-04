@@ -17,7 +17,8 @@
 import { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/frontend-test-utils';
-import { appLanguageApiRef, translationApiRef } from '../apis';
+import { translationApiRef } from '../apis';
+import { createTranslatedMessagesSource } from '@internal/frontend';
 import { createTranslationRef } from './TranslationRef';
 import { createTranslationResource } from './TranslationResource';
 import { useTranslatedTitles } from './useTranslatedTitles';
@@ -26,7 +27,7 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi';
 
-it('retains titles during loading and reconnects a failed merged stream on language changes', async () => {
+it('publishes complete title groups, batches notifications, and preserves titles while loading', async () => {
   const ref = createTranslationRef({
     id: 'titles',
     messages: { main: 'Main', other: 'Other' },
@@ -42,7 +43,7 @@ it('retains titles during loading and reconnects a failed merged stream on langu
     secondaryRef('title'),
   ];
   const languageApi = AppLanguageSelector.create({
-    availableLanguages: ['en', 'sv', 'de'],
+    availableLanguages: ['en', 'sv'],
   });
   let resolve!: (value: { default: { main: string; other: string } }) => void;
   const pending = new Promise<{ default: { main: string; other: string } }>(
@@ -57,36 +58,26 @@ it('retains titles during loading and reconnects a failed merged stream on langu
   const api = I18nextTranslationApi.create({
     languageApi,
     resources: [
-      createTranslationResource({
-        ref,
-        translations: {
-          sv: () => pending,
-          de: async () => {
-            throw new Error('offline');
-          },
-        },
-      }),
+      createTranslationResource({ ref, translations: { sv: () => pending } }),
       createTranslationResource({
         ref: secondaryRef,
-        translations: {
-          sv: async () => ({ default: { title: 'Andra' } }),
-          de: () => secondaryPending,
-        },
+        translations: { sv: () => secondaryPending },
       }),
     ],
   });
   const observe = jest.spyOn(api, 'translation$');
+  const read = jest.spyOn(api, 'getTranslation');
+  const renders: Array<readonly (string | undefined)[]> = [];
   const { result, rerender, unmount } = renderHook(
-    ({ titles }) => useTranslatedTitles(titles),
+    ({ titles }) => {
+      const values = useTranslatedTitles(titles);
+      renders.push(values);
+      return values;
+    },
     {
       initialProps: { titles: selections },
       wrapper: ({ children }: { children: ReactNode }) => (
-        <TestApiProvider
-          apis={[
-            [translationApiRef, api],
-            [appLanguageApiRef, languageApi],
-          ]}
-        >
+        <TestApiProvider apis={[[translationApiRef, api]]}>
           {children}
         </TestApiProvider>
       ),
@@ -96,27 +87,59 @@ it('retains titles during loading and reconnects a failed merged stream on langu
   expect(observe).toHaveBeenCalledTimes(2);
   act(() => languageApi.setLanguage('sv'));
   expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
-  await waitFor(() =>
-    expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']),
-  );
+  await act(async () => resolveSecondary({ default: { title: 'Andra' } }));
+  expect(api.getTranslation(secondaryRef).ready).toBe(true);
+  expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
   await act(async () => resolve({ default: { main: '', other: 'Annat' } }));
   expect(result.current).toEqual(['', undefined, 'Annat', 'Andra']);
-  act(() => languageApi.setLanguage('de'));
-  await waitFor(() =>
-    expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']),
+  expect(new Set(renders.map(values => JSON.stringify(values)))).toEqual(
+    new Set([
+      JSON.stringify(['Main', undefined, 'Other', 'Secondary']),
+      JSON.stringify(['', undefined, 'Annat', 'Andra']),
+    ]),
   );
-  await act(async () => resolveSecondary({ default: { title: 'Zweite' } }));
-  expect(api.getTranslation(secondaryRef).t('title')).toBe('Zweite');
-  expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']);
+
+  read.mockClear();
+  await act(async () => languageApi.setLanguage('en'));
+  expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
+  expect(read).toHaveBeenCalledTimes(2);
   expect(observe).toHaveBeenCalledTimes(2);
-  act(() => languageApi.setLanguage('sv'));
-  await waitFor(() =>
-    expect(result.current).toEqual(['', undefined, 'Annat', 'Andra']),
-  );
-  expect(observe).toHaveBeenCalledTimes(4);
   rerender({ titles: [secondaryRef('title'), ref('other')] });
-  expect(result.current).toEqual(['Andra', 'Annat']);
+  expect(result.current).toEqual(['Secondary', 'Other']);
   rerender({ titles: [] });
   expect(result.current).toEqual([]);
   unmount();
+  const subscriptions = observe.mock.calls.length;
+  await act(async () => languageApi.setLanguage('sv'));
+  expect(observe).toHaveBeenCalledTimes(subscriptions);
+});
+
+it('exposes a failed resource through the grouped snapshot', async () => {
+  const ref = createTranslationRef({
+    id: 'failed-titles',
+    messages: { title: 'Title' },
+  });
+  const api = I18nextTranslationApi.create({
+    languageApi: AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
+      defaultLanguage: 'sv',
+    }),
+    resources: [
+      createTranslationResource({
+        ref,
+        translations: {
+          sv: async () => {
+            throw new Error('offline');
+          },
+        },
+      }),
+    ],
+  });
+  const source = createTranslatedMessagesSource(api, [ref('title')]);
+  expect(source.getSnapshot()).toEqual([undefined]);
+  const onChange = jest.fn();
+  const unsubscribe = source.subscribe(onChange);
+  await waitFor(() => expect(() => source.getSnapshot()).toThrow('offline'));
+  expect(onChange).toHaveBeenCalled();
+  unsubscribe();
 });
