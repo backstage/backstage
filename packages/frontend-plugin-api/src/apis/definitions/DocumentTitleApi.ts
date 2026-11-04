@@ -22,8 +22,7 @@ import { createApiRef } from '../system';
  * @remarks
  *
  * The app collects page title segments registered with
- * {@link PageTitle} and
- * {@link usePageTitle}, and passes them to this
+ * the page blueprints and {@link usePageTitle}, and passes them to this
  * API whenever they change. The default implementation formats the segments
  * using a configurable template and sets `document.title`. Replace this API to
  * change the format, or to write the title through a different library.

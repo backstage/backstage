@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
-import {
-  createVersionedContext,
-  createVersionedValueMap,
-  useVersionedContext,
-} from '@backstage/version-bridge';
+import { useEffect, useRef } from 'react';
+import { useVersionedContext } from '@backstage/version-bridge';
+import type { AppNode } from '../apis/definitions/AppTreeApi';
+import { useAppNode } from '../components/AppNodeProvider';
+import { coreExtensionData } from '../wiring/coreExtensionData';
 
 interface Registration {
   update(title: string): void;
@@ -27,36 +26,61 @@ interface Registration {
 }
 
 interface PageTitleContextValue {
-  register(entry: { title: string; depth: number }): Registration;
+  register(entry: {
+    node: AppNode;
+    title: string;
+    kind: 'default' | 'custom';
+  }): Registration;
 }
 
-// These keys must match the ones used by the page title registry in @backstage/plugin-app.
+// This key must match the one used by the page title registry in @backstage/plugin-app.
 const CONTEXT_KEY = 'page-title-context';
-const DEPTH_KEY = 'page-title-depth';
 
 type ContextMap = { 1: PageTitleContextValue };
-type DepthMap = { 1: number };
 
-const DepthContext = createVersionedContext<DepthMap>(DEPTH_KEY);
+/**
+ * Finds the closest node, starting at the given one, that has a route path.
+ * Only those nodes own a segment of the document title.
+ *
+ * @internal
+ */
+export function findRoutableNode(node?: AppNode): AppNode | undefined {
+  for (let current = node; current; current = current.edges.attachedTo?.node) {
+    if (current.instance?.getData(coreExtensionData.routePath) !== undefined) {
+      return current;
+    }
+  }
+  return undefined;
+}
 
-function useTitleRegistration(title: string | undefined, depth: number) {
+/**
+ * Registers a title for a node for as long as the calling component is
+ * mounted.
+ *
+ * @internal
+ */
+export function useNodeTitle(
+  node: AppNode | undefined,
+  title: string | undefined,
+  kind: 'default' | 'custom',
+) {
   const ctx = useVersionedContext<ContextMap>(CONTEXT_KEY);
   const register = ctx?.atVersion(1)?.register;
   const registrationRef = useRef<Registration | null>(null);
   const hasTitle = Boolean(title);
 
   useEffect(() => {
-    if (!register || !hasTitle) {
+    if (!register || !node || !hasTitle) {
       return undefined;
     }
-    const registration = register({ title: title!, depth });
+    const registration = register({ node, title: title!, kind });
     registrationRef.current = registration;
     return () => {
       registration.unregister();
       registrationRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [register, depth, hasTitle]);
+  }, [register, node, kind, hasTitle]);
 
   useEffect(() => {
     if (title) {
@@ -66,54 +90,27 @@ function useTitleRegistration(title: string | undefined, depth: number) {
 }
 
 /**
- * Adds a segment to the document title for as long as it is mounted.
+ * Sets the document title segment of the page or sub-page that the calling
+ * component is rendered within, for as long as the component is mounted.
  *
  * @remarks
  *
- * Segments nest: a `PageTitle` or {@link usePageTitle} rendered within the
- * children of this component adds a segment after this one. How the segments
- * are turned into the final document title is decided by the app, see
+ * Each page and sub-page contributes one segment to the document title, which
+ * by default is its title. This hook replaces that segment, for example with
+ * the name of the item that the page is showing. When called from within an
+ * extension that does not have a route path of its own, such as a card, it
+ * applies to the closest enclosing page.
+ *
+ * Passing an empty or undefined title keeps the default segment, which is
+ * useful while the title is still loading. How the segments are turned into
+ * the final document title is decided by the app, see
  * {@link DocumentTitleApi}.
- *
- * Pages and sub-pages created with the page blueprints register their titles
- * automatically, so this is only needed for additional segments, such as the
- * name of the item that a page is showing.
- *
- * @alpha
- */
-export function PageTitle(props: { title?: string; children?: ReactNode }) {
-  const depthCtx = useVersionedContext<DepthMap>(DEPTH_KEY);
-  const depth = depthCtx?.atVersion(1) ?? 0;
-
-  useTitleRegistration(props.title, depth);
-
-  const depthValue = useMemo(
-    () => createVersionedValueMap({ 1: depth + 1 }),
-    [depth],
-  );
-
-  return (
-    <DepthContext.Provider value={depthValue}>
-      {props.children}
-    </DepthContext.Provider>
-  );
-}
-
-/**
- * Adds a segment to the document title for as long as the calling component is
- * mounted.
- *
- * @remarks
- *
- * This is a hook version of {@link PageTitle}, for use in the innermost
- * component of a page. Passing an empty or undefined title adds no segment,
- * which is useful while the title is still loading.
  *
  * @example
  * ```tsx
- * function EntityPageContent() {
- *   const { entity } = useEntity();
- *   usePageTitle(entity.metadata.title ?? entity.metadata.name);
+ * function ItemPage() {
+ *   const item = useItem();
+ *   usePageTitle(item?.name);
  *   // ...
  * }
  * ```
@@ -121,6 +118,5 @@ export function PageTitle(props: { title?: string; children?: ReactNode }) {
  * @alpha
  */
 export function usePageTitle(title: string | undefined): void {
-  const depthCtx = useVersionedContext<DepthMap>(DEPTH_KEY);
-  useTitleRegistration(title, depthCtx?.atVersion(1) ?? 0);
+  useNodeTitle(findRoutableNode(useAppNode()), title, 'custom');
 }

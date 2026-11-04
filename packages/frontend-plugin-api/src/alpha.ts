@@ -65,4 +65,4 @@ export {
   type DocumentTitleApi,
   documentTitleApiRef,
 } from './apis/definitions/DocumentTitleApi';
-export { PageTitle, usePageTitle } from './pageTitle';
+export { usePageTitle } from './pageTitle';

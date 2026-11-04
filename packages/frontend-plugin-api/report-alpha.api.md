@@ -13,7 +13,6 @@ import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plug
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 
@@ -572,12 +571,6 @@ export interface OverridableExtensionDefinition<
     };
   }>;
 }
-
-// @alpha
-export function PageTitle(props: {
-  title?: string;
-  children?: ReactNode;
-}): JSX_3.Element;
 
 // @public
 export type PluginWrapperApi = {

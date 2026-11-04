@@ -26,7 +26,7 @@ import {
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
 import { useApi } from '../apis/system';
 import { BreadcrumbEntry } from '../breadcrumbs';
-import { PageTitle } from '../pageTitle';
+import { useNodeTitle } from '../pageTitle';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
@@ -109,17 +109,15 @@ export const PageBlueprint = createExtensionBlueprint({
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
         return (
-          <PageTitle title={resolvedTitle}>
-            <PageLayout
-              title={resolvedTitle}
-              icon={resolvedIcon}
-              noHeader={noHeader}
-              titleLink={titleLink}
-              headerActions={headerActions}
-            >
-              {ExtensionBoundary.lazy(node, loader)}
-            </PageLayout>
-          </PageTitle>
+          <PageLayout
+            title={resolvedTitle}
+            icon={resolvedIcon}
+            noHeader={noHeader}
+            titleLink={titleLink}
+            headerActions={headerActions}
+          >
+            {ExtensionBoundary.lazy(node, loader)}
+          </PageLayout>
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);
@@ -144,48 +142,48 @@ export const PageBlueprint = createExtensionBlueprint({
 
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        // This page has no extension boundary of its own, so it registers its
+        // document title segment here
+        useNodeTitle(node, resolvedTitle, 'default');
         return (
-          <PageTitle title={resolvedTitle}>
-            <PageLayout
-              title={resolvedTitle}
-              icon={resolvedIcon}
-              tabs={tabs}
-              titleLink={titleLink}
-              headerActions={headerActions}
-            >
-              <Routes>
-                {firstPagePath && (
+          <PageLayout
+            title={resolvedTitle}
+            icon={resolvedIcon}
+            tabs={tabs}
+            titleLink={titleLink}
+            headerActions={headerActions}
+          >
+            <Routes>
+              {firstPagePath && (
+                <Route
+                  index
+                  element={<Navigate to={firstPagePath} replace />}
+                />
+              )}
+              {inputs.pages.map((page, index) => {
+                const path = page.get(coreExtensionData.routePath);
+                const tabTitle = page.get(coreExtensionData.title);
+                const element = page.get(coreExtensionData.reactElement);
+                return (
                   <Route
-                    index
-                    element={<Navigate to={firstPagePath} replace />}
+                    key={index}
+                    path={`${path}/*`}
+                    element={
+                      // The key makes sure that switching between sub-pages
+                      // remounts the breadcrumb and sub-page content, rather
+                      // than reusing them while the previous content is shown
+                      <BreadcrumbEntry
+                        key={path}
+                        entry={{ label: tabTitle || path, href: path }}
+                      >
+                        {element}
+                      </BreadcrumbEntry>
+                    }
                   />
-                )}
-                {inputs.pages.map((page, index) => {
-                  const path = page.get(coreExtensionData.routePath);
-                  const tabTitle = page.get(coreExtensionData.title);
-                  const element = page.get(coreExtensionData.reactElement);
-                  return (
-                    <Route
-                      key={index}
-                      path={`${path}/*`}
-                      element={
-                        // The key makes sure that switching between sub-pages
-                        // remounts the title and breadcrumb, rather than
-                        // reusing them while the previous content is shown
-                        <PageTitle key={path} title={tabTitle || path}>
-                          <BreadcrumbEntry
-                            entry={{ label: tabTitle || path, href: path }}
-                          >
-                            {element}
-                          </BreadcrumbEntry>
-                        </PageTitle>
-                      }
-                    />
-                  );
-                })}
-              </Routes>
-            </PageLayout>
-          </PageTitle>
+                );
+              })}
+            </Routes>
+          </PageLayout>
         );
       };
 
@@ -196,15 +194,14 @@ export const PageBlueprint = createExtensionBlueprint({
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        useNodeTitle(node, resolvedTitle, 'default');
         return (
-          <PageTitle title={resolvedTitle}>
-            <PageLayout
-              title={resolvedTitle}
-              icon={resolvedIcon}
-              titleLink={titleLink}
-              headerActions={headerActions}
-            />
-          </PageTitle>
+          <PageLayout
+            title={resolvedTitle}
+            icon={resolvedIcon}
+            titleLink={titleLink}
+            headerActions={headerActions}
+          />
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { PageTitle, usePageTitle } from './PageTitle';
+export { usePageTitle, useNodeTitle, findRoutableNode } from './PageTitle';

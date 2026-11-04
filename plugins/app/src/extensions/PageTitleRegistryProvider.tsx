@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useApiHolder } from '@backstage/frontend-plugin-api';
+import { AppNode, useApiHolder } from '@backstage/frontend-plugin-api';
 import { documentTitleApiRef } from '@backstage/frontend-plugin-api/alpha';
 import {
   createVersionedContext,
@@ -28,8 +28,9 @@ interface Registration {
 }
 
 interface TitleRecord {
+  node: AppNode;
   title: string;
-  depth: number;
+  kind: 'default' | 'custom';
 }
 
 type ContextMap = {
@@ -39,10 +40,39 @@ type ContextMap = {
 const PageTitleContext =
   createVersionedContext<ContextMap>('page-title-context');
 
+function getDepth(node: AppNode): number {
+  let depth = 0;
+  for (let n = node.edges.attachedTo?.node; n; n = n.edges.attachedTo?.node) {
+    depth += 1;
+  }
+  return depth;
+}
+
 /**
- * Collects the page title segments registered with `PageTitle` and
- * `usePageTitle` from `@backstage/frontend-plugin-api`, and forwards them to
- * the `DocumentTitleApi` whenever they change.
+ * Turns the registered titles into one segment per app node, ordered by
+ * their position in the app tree. A custom title replaces the default title
+ * of the same node.
+ */
+function toSegments(records: TitleRecord[]): string[] {
+  const byNode = new Map<AppNode, { default?: string; custom?: string }>();
+  for (const record of records) {
+    const entry = byNode.get(record.node) ?? {};
+    entry[record.kind] = record.title;
+    byNode.set(record.node, entry);
+  }
+  // The sort is stable, so nodes at the same depth keep their mount order
+  return Array.from(byNode, ([node, entry]) => ({
+    depth: getDepth(node),
+    title: entry.custom ?? entry.default!,
+  }))
+    .sort((a, b) => a.depth - b.depth)
+    .map(s => s.title);
+}
+
+/**
+ * Collects the page titles registered by the page blueprints, extension
+ * boundaries and `usePageTitle` from `@backstage/frontend-plugin-api`, and
+ * forwards them to the `DocumentTitleApi` whenever they change.
  *
  * @internal
  */
@@ -57,10 +87,7 @@ export function PageTitleRegistryProvider(props: { children: ReactNode }) {
         1: {
           register(entry: TitleRecord): Registration {
             const record = { ...entry };
-            // The sort is stable, so segments at the same depth keep their mount order
-            setRecords(prev =>
-              [...prev, record].sort((a, b) => a.depth - b.depth),
-            );
+            setRecords(prev => [...prev, record]);
             return {
               update(title: string) {
                 if (record.title === title) return;
@@ -85,7 +112,7 @@ export function PageTitleRegistryProvider(props: { children: ReactNode }) {
     if (!documentTitleApi) {
       return;
     }
-    const segments = records.map(r => r.title);
+    const segments = toSegments(records);
     const last = lastSegmentsRef.current;
     if (
       last &&

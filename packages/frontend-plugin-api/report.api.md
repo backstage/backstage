@@ -2116,6 +2116,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   };
   output:
     | ExtensionDataRef_2<string, 'core.routing.path', {}>
+    | ExtensionDataRef_2<string, 'core.title', {}>
     | ExtensionDataRef_2<
         RouteRef<AnyRouteRefParams_2>,
         'core.routing.ref',
@@ -2124,7 +2125,6 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
         }
       >
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
-    | ExtensionDataRef_2<string, 'core.title', {}>
     | ExtensionDataRef_2<
         IconElement,
         'core.icon',

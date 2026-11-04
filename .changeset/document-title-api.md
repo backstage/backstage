@@ -2,4 +2,4 @@
 '@backstage/frontend-plugin-api': patch
 ---
 
-Added `PageTitle` and `usePageTitle` to the `/alpha` entry point, for adding segments to the browser's document title, along with the `DocumentTitleApi` and `documentTitleApiRef` that write the final title. Pages and sub-pages created with `PageBlueprint` and `SubPageBlueprint` now register their titles automatically.
+Added `usePageTitle` to the `/alpha` entry point, for customizing the browser's document title of a page or sub-page, along with the `DocumentTitleApi` and `documentTitleApiRef` that write the final title. Pages, sub-pages, and other extensions with a route path now contribute their titles to the document title automatically.

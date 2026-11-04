@@ -128,7 +128,7 @@ describe('DocumentTitleApi', () => {
     titleSetter.mockRestore();
   });
 
-  it('sets the document title from pages, sub-pages and custom segments', async () => {
+  it('sets the document title from pages and sub-pages, with custom titles replacing defaults', async () => {
     renderTestApp({
       features: [plugin],
       config: { app: { title: 'My Portal' } },
@@ -138,7 +138,7 @@ describe('DocumentTitleApi', () => {
     const titleSetter = jest.spyOn(document, 'title', 'set');
     const rename = await screen.findByRole('button', { name: 'Rename' });
     await waitFor(() =>
-      expect(document.title).toBe('first-item | Details | Things | My Portal'),
+      expect(document.title).toBe('first-item | Things | My Portal'),
     );
     // The title is written once the content has loaded, not for every
     // intermediate registration
@@ -149,7 +149,7 @@ describe('DocumentTitleApi', () => {
 
     await userEvent.click(rename);
     await waitFor(() =>
-      expect(document.title).toBe('second-item | Details | Things | My Portal'),
+      expect(document.title).toBe('second-item | Things | My Portal'),
     );
     expect(titleSetter).toHaveBeenCalledTimes(writesAfterLoad + 1);
 
