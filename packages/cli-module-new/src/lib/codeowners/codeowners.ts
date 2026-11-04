@@ -88,8 +88,9 @@ export async function addCodeownersEntry(
     : ownedPath;
   const normalizedPath = `/${relativePath
     .split(path.sep)
-    .join('/')
-    .replace(/^\/+|\/+$/g, '')}/`;
+    .flatMap(part => part.split('/'))
+    .filter(Boolean)
+    .join('/')}/`;
 
   const content = await fs.readFile(filePath, 'utf8');
   const separator = content.length === 0 || content.endsWith('\n') ? '' : '\n';
