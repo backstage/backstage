@@ -107,6 +107,7 @@ export const PageBlueprint = createExtensionBlueprint({
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        useNodeTitle(node, resolvedTitle, 'default');
 
         return (
           <PageLayout
@@ -142,8 +143,6 @@ export const PageBlueprint = createExtensionBlueprint({
 
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-        // This page has no extension boundary of its own, so it registers its
-        // document title segment here
         useNodeTitle(node, resolvedTitle, 'default');
         return (
           <PageLayout

@@ -91,7 +91,7 @@ Extensions that provides default apis inputs for the `App` extension.
 
 ### Document title
 
-The `api:app/document-title` extension sets the browser's document title. Each page, sub-page, or other extension with a route path that is currently shown contributes one segment, which defaults to its title. Plugins can replace that segment using `usePageTitle` from `@backstage/frontend-plugin-api/alpha`. The extension combines the segments with the `app.title` configuration value, which defaults to `Backstage`.
+The `api:app/document-title` extension sets the browser's document title. Each page and sub-page that is currently shown contributes one segment, which defaults to its title. Plugins can replace that segment using `usePageTitle` from `@backstage/frontend-plugin-api/alpha`. The extension combines the segments with the `app.title` configuration value, which defaults to `Backstage`.
 
 With the default configuration, a sub-page titled `Overview` within the `Catalog` page gets the title `Overview | Catalog | Backstage`. Pages without any registered segments use the app title alone.
 

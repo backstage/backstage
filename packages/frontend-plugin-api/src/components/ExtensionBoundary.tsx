@@ -36,7 +36,6 @@ import {
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
-import { findRoutableNode, useNodeTitle } from '../pageTitle';
 
 function useOptionalErrorApi(): ErrorApi | undefined {
   try {
@@ -73,27 +72,6 @@ const RouteTracker = (props: RouteTrackerProps) => {
 
   return <>{children}</>;
 };
-
-/**
- * The default document title segment of a node with a route path: its own
- * title, or the plugin title if it is the outermost routable node of its plugin.
- */
-function getDefaultTitle(node: AppNode): string | undefined {
-  const title = node.instance?.getData(coreExtensionData.title);
-  if (title) {
-    return title;
-  }
-  const parent = findRoutableNode(node.edges.attachedTo?.node);
-  if (parent?.spec.plugin.pluginId === node.spec.plugin.pluginId) {
-    return undefined;
-  }
-  return node.spec.plugin.title ?? node.spec.plugin.pluginId;
-}
-
-function DefaultPageTitle(props: { node: AppNode }) {
-  useNodeTitle(props.node, getDefaultTitle(props.node), 'default');
-  return null;
-}
 
 /** @public */
 export interface ExtensionBoundaryProps {
@@ -151,7 +129,6 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   return (
     <AppNodeProvider node={node}>
-      {hasRoutePathOutput && <DefaultPageTitle node={node} />}
       <Suspense fallback={<Progress />}>{content}</Suspense>
     </AppNodeProvider>
   );

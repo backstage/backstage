@@ -41,10 +41,8 @@ type ContextMap = { 1: PageTitleContextValue };
 /**
  * Finds the closest node, starting at the given one, that has a route path.
  * Only those nodes own a segment of the document title.
- *
- * @internal
  */
-export function findRoutableNode(node?: AppNode): AppNode | undefined {
+function findRoutableNode(node?: AppNode): AppNode | undefined {
   for (let current = node; current; current = current.edges.attachedTo?.node) {
     if (current.instance?.getData(coreExtensionData.routePath) !== undefined) {
       return current;
