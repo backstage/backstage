@@ -26,7 +26,6 @@ import { SearchFilterResultTypeBlueprintParams } from '@backstage/plugin-search-
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
@@ -154,8 +153,13 @@ const _default: OverridableFrontendPlugin<
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -300,8 +304,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -332,8 +341,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -396,8 +410,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -428,8 +447,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }

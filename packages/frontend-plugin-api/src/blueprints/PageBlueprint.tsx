@@ -15,9 +15,7 @@
  */
 
 import { JSX } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
-import { createSnapshotSourceCollection } from '@internal/frontend';
-import { SnapshotSource } from '@backstage/types/alpha';
+import { useTranslatedTitles } from '../translation/useTranslatedTitles';
 import { TranslationRefTuple } from '../translation/TranslationRef';
 import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -65,7 +63,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
-      coreExtensionData.titleSource.optional(),
+      coreExtensionData.titleTranslation.optional(),
       coreExtensionData.icon.optional(),
     ]),
   },
@@ -74,7 +72,7 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
-    coreExtensionData.titleSource.optional(),
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
@@ -96,7 +94,7 @@ export const PageBlueprint = createExtensionBlueprint({
     },
     { config, node, inputs, apis },
   ) {
-    const { title, source } = resolveTranslationTitle(
+    const { title, translation } = resolveTranslationTitle(
       params.title,
       config.title,
       apis,
@@ -110,35 +108,24 @@ export const PageBlueprint = createExtensionBlueprint({
     const titleRouteRef =
       (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
 
-    const titleSource: SnapshotSource<string> = source ?? {
-      getSnapshot: () => resolvedTitle,
-      subscribe: () => () => {},
-    };
-    if (source) {
-      yield coreExtensionData.titleSource(source);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
     }
-    const childTitlesSource = createSnapshotSourceCollection(
-      params.loader
+    const selections = [
+      translation,
+      ...(params.loader
         ? []
-        : inputs.pages.map(
-            page =>
-              page.get(coreExtensionData.titleSource) ?? {
-                getSnapshot: () =>
-                  page.get(coreExtensionData.title) ??
-                  page.get(coreExtensionData.routePath),
-                subscribe: () => () => {},
-              },
-          ),
-    );
+        : inputs.pages.map(page =>
+            page.get(coreExtensionData.titleTranslation),
+          )),
+    ];
 
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
       const content = ExtensionBoundary.lazy(node, params.loader);
       const PageContent = () => {
-        const currentTitle = useSyncExternalStore(
-          titleSource.subscribe,
-          titleSource.getSnapshot,
-        );
+        const translatedTitles = useTranslatedTitles(selections);
+        const currentTitle = translatedTitles[0] ?? resolvedTitle;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
@@ -159,18 +146,15 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else if (inputs.pages.length > 0) {
       const PageContent = () => {
-        const currentTitle = useSyncExternalStore(
-          titleSource.subscribe,
-          titleSource.getSnapshot,
-        );
-        const childTitles = useSyncExternalStore(
-          childTitlesSource.subscribe,
-          childTitlesSource.getSnapshot,
-        );
+        const translatedTitles = useTranslatedTitles(selections);
+        const currentTitle = translatedTitles[0] ?? resolvedTitle;
+
         const pages = inputs.pages.map((page, index) => {
           const path = page.get(coreExtensionData.routePath);
           const tabTitle =
-            childTitles[index] ?? page.get(coreExtensionData.title) ?? path;
+            translatedTitles[index + 1] ??
+            page.get(coreExtensionData.title) ??
+            path;
           return { page, path, title: tabTitle };
         });
         const tabs: PageLayoutTab[] = pages.map(
@@ -226,10 +210,8 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
-        const currentTitle = useSyncExternalStore(
-          titleSource.subscribe,
-          titleSource.getSnapshot,
-        );
+        const translatedTitles = useTranslatedTitles(selections);
+        const currentTitle = translatedTitles[0] ?? resolvedTitle;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);

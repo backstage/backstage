@@ -13,7 +13,6 @@ import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
@@ -53,8 +52,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -85,8 +89,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -135,8 +144,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -191,8 +205,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -236,8 +255,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }

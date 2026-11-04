@@ -22,7 +22,6 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
@@ -305,8 +304,13 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       >
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
-        SnapshotSource<string>,
-        'core.titleSource',
+        TranslationRefTuple<
+          string,
+          {
+            [x: string]: string;
+          }
+        >,
+        'core.titleTranslation',
         {
           optional: true;
         }
@@ -361,9 +365,14 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       'catalog.entity-content-title',
       {}
     >;
-    titleSource: ConfigurableExtensionDataRef<
-      SnapshotSource<string>,
-      'core.titleSource',
+    titleTranslation: ConfigurableExtensionDataRef<
+      TranslationRefTuple<
+        string,
+        {
+          [x: string]: string;
+        }
+      >,
+      'core.titleTranslation',
       {}
     >;
     filterFunction: ConfigurableExtensionDataRef<

@@ -16,7 +16,7 @@
 
 import { createApiRef } from '../system';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
-import { TranslationRef } from '../../translation';
+import { TranslationRef, TranslationRefTuple } from '../../translation';
 import { JSX } from 'react';
 
 /**
@@ -346,6 +346,13 @@ export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
 
 /** @public */
 export type TranslationApi = {
+  /**
+   * Returns the message declared by the ref, synchronously and without loading
+   * resources. Independent of the selected language and installed overrides.
+   * Throws if the selected message is not declared by the ref.
+   */
+  getDefaultMessage(translation: TranslationRefTuple): string;
+
   getTranslation<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,
   ): TranslationSnapshot<TMessages>;

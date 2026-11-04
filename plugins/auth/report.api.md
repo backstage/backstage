@@ -12,7 +12,6 @@ import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -51,8 +50,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -83,8 +87,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }

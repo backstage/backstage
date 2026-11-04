@@ -39,7 +39,6 @@ import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import { SnapshotSource } from '@backstage/types/alpha';
 import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -902,8 +901,13 @@ const _default: OverridableFrontendPlugin<
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -1177,8 +1181,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -1209,8 +1218,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -1320,8 +1334,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -1352,8 +1371,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -1422,8 +1446,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }

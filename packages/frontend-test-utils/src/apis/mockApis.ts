@@ -259,6 +259,7 @@ export namespace mockApis {
      * @public
      */
     export const mock = createApiMock(coreApis.translation, () => ({
+      getDefaultMessage: jest.fn(),
       getTranslation: jest.fn(),
       translation$: jest.fn(),
     }));

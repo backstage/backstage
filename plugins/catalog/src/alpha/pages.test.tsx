@@ -296,7 +296,12 @@ describe('Entity page', () => {
         );
       }
       await renderInTestApp(tester.reactElement(), {
-        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        apis: [
+          mockCatalogApi,
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+          [translationApiRef, translationApi],
+          [appLanguageApiRef, languageApi],
+        ],
         mountPath: '/catalog/:namespace/:kind/:name',
         initialRouteEntries: [`${entityPath}/overview`],
         config: {

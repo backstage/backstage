@@ -36,7 +36,6 @@ import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alph
 import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderTemplateFilterHook } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -220,8 +219,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -252,8 +256,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -468,8 +477,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -513,8 +527,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -556,8 +575,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -635,8 +659,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -695,8 +724,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }

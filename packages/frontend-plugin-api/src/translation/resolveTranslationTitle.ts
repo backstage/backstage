@@ -14,35 +14,36 @@
  * limitations under the License.
  */
 
-import { SnapshotSource } from '@backstage/types/alpha';
-import { ApiHolder } from '../apis';
-import {
-  TranslationRefTuple,
-  toInternalTranslationRef,
-} from './TranslationRef';
-import { createTranslationTitleSource } from './createTranslationTitleSource';
+import { ApiHolder, translationApiRef } from '../apis';
+import { TranslationRefTuple } from './TranslationRef';
 
 /** @internal */
 export function resolveTranslationTitle(
   title: string | TranslationRefTuple,
   configuredTitle: string | undefined,
   apis: ApiHolder,
-): { title: string; source?: SnapshotSource<string> };
+): { title: string; translation?: TranslationRefTuple };
 export function resolveTranslationTitle(
   title: string | TranslationRefTuple | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
-): { title: string | undefined; source?: SnapshotSource<string> };
+): { title: string | undefined; translation?: TranslationRefTuple };
 export function resolveTranslationTitle(
   title: string | TranslationRefTuple | undefined,
   configuredTitle: string | undefined,
   apis: ApiHolder,
-): { title: string | undefined; source?: SnapshotSource<string> } {
+): { title: string | undefined; translation?: TranslationRefTuple } {
   if (typeof title !== 'object' || title === null) {
     return { title: configuredTitle ?? title };
   }
   const { ref, key } = title;
-  const defaultTitle = toInternalTranslationRef(ref).getDefaultMessages()[key];
+  const api = apis.get(translationApiRef);
+  if (!api) {
+    throw new Error(
+      'Translation API is required to resolve a translated title',
+    );
+  }
+  const defaultTitle = api.getDefaultMessage(title);
   if (typeof defaultTitle !== 'string') {
     throw new Error(`Unknown title translation key '${key}' in '${ref.id}'`);
   }
@@ -54,10 +55,6 @@ export function resolveTranslationTitle(
   const fallback = configuredTitle ?? defaultTitle;
   return {
     title: fallback,
-    source: createTranslationTitleSource({
-      translation: title,
-      fallback,
-      apis,
-    }),
+    translation: title,
   };
 }

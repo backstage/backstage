@@ -21,7 +21,6 @@ import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
@@ -85,8 +84,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            SnapshotSource<string>,
-            'core.titleSource',
+            TranslationRefTuple<
+              string,
+              {
+                [x: string]: string;
+              }
+            >,
+            'core.titleTranslation',
             {
               optional: true;
             }
@@ -117,8 +121,13 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              SnapshotSource<string>,
-              'core.titleSource',
+              TranslationRefTuple<
+                string,
+                {
+                  [x: string]: string;
+                }
+              >,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -245,8 +254,13 @@ export const searchPage: OverridableExtensionDefinition<{
         }
       >
     | ExtensionDataRef<
-        SnapshotSource<string>,
-        'core.titleSource',
+        TranslationRefTuple<
+          string,
+          {
+            [x: string]: string;
+          }
+        >,
+        'core.titleTranslation',
         {
           optional: true;
         }
@@ -277,8 +291,13 @@ export const searchPage: OverridableExtensionDefinition<{
           }
         >
       | ConfigurableExtensionDataRef<
-          SnapshotSource<string>,
-          'core.titleSource',
+          TranslationRefTuple<
+            string,
+            {
+              [x: string]: string;
+            }
+          >,
+          'core.titleTranslation',
           {
             optional: true;
           }

@@ -15,7 +15,6 @@
  */
 
 import { ComponentType, ReactElement, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
 import {
@@ -26,7 +25,7 @@ import {
   type EntityContentGroupDefinitions,
   type EntityHeaderLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
-import { createSnapshotSourceCollection } from './createSnapshotSourceCollection';
+import { useTranslatedTitles } from './useTranslatedTitles';
 import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';
 import { EntityLayout } from './EntityLayout';
 import { EntityLayoutBui } from './EntityLayout/EntityLayoutBui';
@@ -52,26 +51,17 @@ export interface CatalogEntityPageProps {
 }
 
 export function CatalogEntityPage(props: CatalogEntityPageProps) {
-  const titleSource = useMemo(
-    () =>
-      createSnapshotSourceCollection(
-        props.routes.map(
-          route =>
-            route.titleSource ?? {
-              getSnapshot: () => route.title,
-              subscribe: () => () => {},
-            },
-        ),
-      ),
+  const selections = useMemo(
+    () => props.routes.map(route => route.titleTranslation),
     [props.routes],
   );
-  const titles = useSyncExternalStore(
-    titleSource.subscribe,
-    titleSource.getSnapshot,
-  );
+  const titles = useTranslatedTitles(selections);
   const routes = useMemo(
     () =>
-      props.routes.map((route, index) => ({ ...route, title: titles[index] })),
+      props.routes.map((route, index) => ({
+        ...route,
+        title: titles[index] ?? route.title,
+      })),
     [props.routes, titles],
   );
   const routeParams = useRouteRefParams(entityRouteRef);

@@ -21,7 +21,6 @@ import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { ReactNode } from 'react';
-import { SnapshotSource } from '@backstage/types/alpha';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 
@@ -433,9 +432,14 @@ export namespace coreApis {
 // @public (undocumented)
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
-  titleSource: ConfigurableExtensionDataRef_2<
-    SnapshotSource<string>,
-    'core.titleSource',
+  titleTranslation: ConfigurableExtensionDataRef_2<
+    TranslationRefTuple<
+      string,
+      {
+        [x: string]: string;
+      }
+    >,
+    'core.titleTranslation',
     {}
   >;
   icon: ConfigurableExtensionDataRef_2<IconElement, 'core.icon', {}>;
@@ -1817,8 +1821,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
         }
       >
     | ExtensionDataRef_2<
-        SnapshotSource<string>,
-        'core.titleSource',
+        TranslationRefTuple<
+          string,
+          {
+            [x: string]: string;
+          }
+        >,
+        'core.titleTranslation',
         {
           optional: true;
         }
@@ -1849,8 +1858,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           }
         >
       | ConfigurableExtensionDataRef_2<
-          SnapshotSource<string>,
-          'core.titleSource',
+          TranslationRefTuple<
+            string,
+            {
+              [x: string]: string;
+            }
+          >,
+          'core.titleTranslation',
           {
             optional: true;
           }
@@ -2146,8 +2160,13 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<string, 'core.title', {}>
     | ExtensionDataRef_2<
-        SnapshotSource<string>,
-        'core.titleSource',
+        TranslationRefTuple<
+          string,
+          {
+            [x: string]: string;
+          }
+        >,
+        'core.titleTranslation',
         {
           optional: true;
         }
@@ -2243,6 +2262,7 @@ export const toastApiRef: ApiRef<ToastApi>;
 
 // @public (undocumented)
 export type TranslationApi = {
+  getDefaultMessage(translation: TranslationRefTuple): string;
   getTranslation<
     TMessages extends {
       [key in string]: string;

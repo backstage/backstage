@@ -50,7 +50,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
-    coreExtensionData.titleSource.optional(),
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
   ],
@@ -87,14 +87,14 @@ export const SubPageBlueprint = createExtensionBlueprint({
     { config, node, apis },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
-    const { title, source } = resolveTranslationTitle(
+    const { title, translation } = resolveTranslationTitle(
       params.title,
       config.title,
       apis,
     );
     yield coreExtensionData.title(title);
-    if (source) {
-      yield coreExtensionData.titleSource(source);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
     }
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),

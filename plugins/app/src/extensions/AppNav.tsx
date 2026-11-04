@@ -36,8 +36,7 @@ import {
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
-import { createSnapshotSourceCollection } from '@internal/frontend';
+import { useTranslatedTitles } from './useTranslatedTitles';
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -155,30 +154,19 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
-  const titleSource = useMemo(() => {
+  const selections = useMemo(() => {
     const pages =
       appTreeApi
         .getTree()
         .tree.nodes.get('app/routes')
         ?.edges.attachments.get('routes') ?? [];
-    return createSnapshotSourceCollection(
-      pages.map(page => {
-        const source = page.spec.disabled
-          ? undefined
-          : page.instance?.getData(coreExtensionData.titleSource);
-        return (
-          source ?? {
-            getSnapshot: () => undefined,
-            subscribe: () => () => {},
-          }
-        );
-      }),
+    return pages.map(page =>
+      page.spec.disabled
+        ? undefined
+        : page.instance?.getData(coreExtensionData.titleTranslation),
     );
   }, [appTreeApi]);
-  const translatedTitles = useSyncExternalStore(
-    titleSource.subscribe,
-    titleSource.getSnapshot,
-  );
+  const translatedTitles = useTranslatedTitles(selections);
 
   // New navItems: discover pages from the extension tree, merged with nav items.
   const navItems = useMemo(() => {

@@ -93,7 +93,7 @@ describe('PageBlueprint', () => {
                 "config": {
                   "optional": true,
                 },
-                "id": "core.titleSource",
+                "id": "core.titleTranslation",
                 "optional": [Function],
                 "toString": [Function],
               },
@@ -139,7 +139,7 @@ describe('PageBlueprint', () => {
             "config": {
               "optional": true,
             },
-            "id": "core.titleSource",
+            "id": "core.titleTranslation",
             "optional": [Function],
             "toString": [Function],
           },

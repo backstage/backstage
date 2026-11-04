@@ -15,7 +15,7 @@
  */
 
 import { JSX } from 'react';
-import { SnapshotSource } from '@backstage/types/alpha';
+import { TranslationRefTuple } from '../translation/TranslationRef';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing/RouteRef';
 import { createExtensionDataRef } from './createExtensionDataRef';
@@ -23,9 +23,9 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 /** @public */
 export const coreExtensionData = {
   title: createExtensionDataRef<string>().with({ id: 'core.title' }),
-  /** A runtime title shared by the extension and consumers that opt in. */
-  titleSource: createExtensionDataRef<SnapshotSource<string>>().with({
-    id: 'core.titleSource',
+  /** A translation message for consumers that opt in to translated titles. */
+  titleTranslation: createExtensionDataRef<TranslationRefTuple>().with({
+    id: 'core.titleTranslation',
   }),
   /** An icon element for the extension. Should be exactly 24x24 pixels. */
   icon: createExtensionDataRef<IconElement>().with({ id: 'core.icon' }),

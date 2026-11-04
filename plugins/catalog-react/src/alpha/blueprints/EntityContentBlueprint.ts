@@ -50,7 +50,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routePath,
     entityContentTitleDataRef,
-    coreExtensionData.titleSource.optional(),
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.routeRef.optional(),
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
@@ -59,7 +59,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
   ],
   dataRefs: {
     title: entityContentTitleDataRef,
-    titleSource: coreExtensionData.titleSource,
+    titleTranslation: coreExtensionData.titleTranslation,
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
     group: entityContentGroupDataRef,
@@ -103,7 +103,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     // As this is marked as BREAKING ALPHA, it doesn't affect the public API so it falls in range and gets picked
     // up by packages that depend on `catalog-react`.
     const path = config.path ?? params.path ?? params.defaultPath;
-    const { title, source } = resolveTranslationTitle({
+    const { title, translation } = resolveTranslationTitle({
       title: params.title ?? params.defaultTitle,
       configuredTitle: config.title,
       apis,
@@ -118,8 +118,8 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     yield coreExtensionData.routePath(path);
 
     yield entityContentTitleDataRef(title);
-    if (source) {
-      yield coreExtensionData.titleSource(source);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
     }
 
     if (params.routeRef) {

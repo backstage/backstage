@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-import { SnapshotSource } from '@backstage/types/alpha';
-import { ApiHolder, TranslationRefTuple } from '@backstage/frontend-plugin-api';
-// Internal protocol access, bundled with catalog-react rather than exposed as a public API.
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalTranslationRef } from '../../../../../packages/frontend-plugin-api/src/translation/TranslationRef';
-import { createTranslationTitleSource } from './createTranslationTitleSource';
+import {
+  ApiHolder,
+  TranslationRefTuple,
+  translationApiRef,
+} from '@backstage/frontend-plugin-api';
 
 /** @internal */
 export function resolveTranslationTitle(options: {
   title: string | TranslationRefTuple;
   configuredTitle: string | undefined;
   apis: ApiHolder;
-}): { title: string; source?: SnapshotSource<string> } {
+}): { title: string; translation?: TranslationRefTuple } {
   const { title, configuredTitle, apis } = options;
   if (typeof title !== 'object' || title === null) {
     return { title: configuredTitle ?? title };
   }
   const { ref, key } = title;
-  const defaultTitle = toInternalTranslationRef(ref).getDefaultMessages()[key];
+  const api = apis.get(translationApiRef);
+  if (!api) {
+    throw new Error(
+      'Translation API is required to resolve a translated title',
+    );
+  }
+  const defaultTitle = api.getDefaultMessage(title);
   if (typeof defaultTitle !== 'string') {
     throw new Error(`Unknown title translation key '${key}' in '${ref.id}'`);
   }
@@ -44,10 +49,6 @@ export function resolveTranslationTitle(options: {
   const fallback = configuredTitle ?? defaultTitle;
   return {
     title: fallback,
-    source: createTranslationTitleSource({
-      translation: title,
-      fallback,
-      apis,
-    }),
+    translation: title,
   };
 }

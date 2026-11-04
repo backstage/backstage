@@ -25,6 +25,37 @@ import { AppLanguageSelector } from '../AppLanguageApi';
 import { I18nextTranslationApi } from './I18nextTranslationApi';
 import { render } from '@testing-library/react';
 
+it('reads declared defaults synchronously without loading translations or applying locale overrides', () => {
+  const load = jest.fn(async () => ({
+    default: { title: 'Localized', empty: '', template: null },
+  }));
+  const ref = createTranslationRef({
+    id: 'defaults',
+    messages: { title: 'Declared', empty: '', template: 'Hello {{name}}' },
+  });
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv'],
+    defaultLanguage: 'sv',
+  });
+  const api = I18nextTranslationApi.create({
+    languageApi,
+    resources: [
+      createTranslationMessages({ ref, messages: { title: 'App override' } }),
+      createTranslationResource({ ref, translations: { sv: load } }),
+    ],
+  });
+  expect(api.getDefaultMessage(ref('title'))).toBe('Declared');
+  expect(api.getDefaultMessage(ref('empty'))).toBe('');
+  expect(api.getDefaultMessage(ref('template'))).toBe('Hello {{name}}');
+  expect(load).not.toHaveBeenCalled();
+  languageApi.setLanguage('en');
+  expect(api.getDefaultMessage(ref('title'))).toBe('Declared');
+  // @ts-expect-error Unknown keys are not declared by this ref.
+  expect(() => api.getDefaultMessage(ref('missing'))).toThrow(
+    "Unknown translation key 'missing'",
+  );
+});
+
 const plainRef = createTranslationRef({
   id: 'plain',
   messages: { foo: 'Foo' },

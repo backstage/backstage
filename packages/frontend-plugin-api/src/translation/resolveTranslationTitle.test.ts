@@ -23,8 +23,11 @@ import { TestApiRegistry } from '@backstage/test-utils';
 import { createTranslationRef } from './TranslationRef';
 import { resolveTranslationTitle } from './resolveTranslationTitle';
 
-it('preserves static titles, resolves defaults without an API, and rejects invalid message selections', () => {
-  const apis = TestApiRegistry.from();
+it('preserves static titles, resolves synchronous defaults, and rejects invalid message selections', () => {
+  const api = I18nextTranslationApi.create({
+    languageApi: AppLanguageSelector.create(),
+  });
+  const apis = TestApiRegistry.from([translationApiRef, api]);
   const ref = createTranslationRef({
     id: 'titles',
     messages: {
@@ -47,22 +50,19 @@ it('preserves static titles, resolves defaults without an API, and rejects inval
   });
   const resolved = resolveTranslationTitle(translation, undefined, apis);
   expect(resolved.title).toBe('Default');
-  expect(resolved.source?.getSnapshot()).toBe('Default');
+  expect(resolved.translation).toBe(translation);
   const configured = resolveTranslationTitle(translation, 'Configured', apis);
   expect(configured.title).toBe('Configured');
-  expect(configured.source?.getSnapshot()).toBe('Configured');
-  const api = I18nextTranslationApi.create({
-    languageApi: AppLanguageSelector.create(),
-  });
+  expect(configured.translation).toBe(translation);
   const resolvedDefault = resolveTranslationTitle(
     translation,
     'Configured',
     TestApiRegistry.from([translationApiRef, api]),
   );
   expect(resolvedDefault.title).toBe('Configured');
-  expect(resolvedDefault.source?.getSnapshot()).toBe('Default');
+  expect(resolvedDefault.translation).toBe(translation);
   expect(() => resolveTranslationTitle(invalid, undefined, apis)).toThrow(
-    "Unknown title translation key 'missing'",
+    "Unknown translation key 'missing'",
   );
   expect(() =>
     resolveTranslationTitle(ref('interpolated'), undefined, apis),

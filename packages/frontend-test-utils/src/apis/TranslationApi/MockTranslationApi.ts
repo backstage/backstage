@@ -17,6 +17,7 @@
 import {
   TranslationApi,
   TranslationRef,
+  TranslationRefTuple,
   TranslationSnapshot,
 } from '@backstage/frontend-plugin-api';
 import { createInstance as createI18n, type i18n as I18n } from 'i18next';
@@ -69,6 +70,15 @@ export class MockTranslationApi implements TranslationApi {
   private constructor(i18n: I18n, interpolator: JsxInterpolator) {
     this.#i18n = i18n;
     this.#interpolator = interpolator;
+  }
+
+  getDefaultMessage(translation: TranslationRefTuple): string {
+    const { ref, key } = translation;
+    const message = toInternalTranslationRef(ref).getDefaultMessages()[key];
+    if (typeof message !== 'string') {
+      throw new Error(`Unknown translation key '${key}' in '${ref.id}'`);
+    }
+    return message;
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(

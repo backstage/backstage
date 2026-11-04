@@ -372,7 +372,8 @@ Install translations using the existing `TranslationBlueprint` and translation
 resources described above. No additional title bundles or APIs are required.
 Existing string title parameters keep their behavior.
 
-The blueprint reads the ref's declared default message synchronously to provide a
+The blueprint uses `TranslationApi.getDefaultMessage(selection)` to read the ref's
+declared default message synchronously and provide a
 plain title during initial loading. A configured `title` supplies that plain
 fallback instead. Every resolved API value takes precedence over configured and
 plain titles, including when the API resolves to the ref's declared default.
@@ -384,6 +385,22 @@ Message keys are checked by TypeScript when calling the ref and validated again
 when the extension is instantiated. Titles must not
 require interpolation or pluralization arguments, or contain nested `$t(...)`
 references, so the declared default is directly usable as a string.
+
+### Consuming title translations
+
+Extensions keep their existing static title string and can additionally provide
+`coreExtensionData.titleTranslation`, containing a `TranslationRefTuple` with
+`ref` and `key`. Consumers resolve that selection through the translation API
+and subscribe to `translation$(selection.ref)` for language changes. Until a
+translation is ready, use the static title; retain the last resolved title while
+another language loads. This keeps extension data independent of subscriptions
+and React rendering.
+
+`translationApi.getDefaultMessage(selection)` returns the message declared by
+the ref synchronously, including raw interpolation placeholders. It does
+not load resources or apply the selected language or installed message overrides.
+It throws for an undeclared key. Custom translation API implementations must
+implement this method as well.
 
 ### Using the CLI for full translation workflows
 

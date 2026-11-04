@@ -20,6 +20,7 @@ import {
   TranslationFunction,
   TranslationMessages,
   TranslationRef,
+  TranslationRefTuple,
   TranslationResource,
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
@@ -331,6 +332,15 @@ export class I18nextTranslationApi implements TranslationApi {
     this.#loader = loader;
     this.#language = language;
     this.#jsxInterpolator = jsxInterpolator;
+  }
+
+  getDefaultMessage(translation: TranslationRefTuple): string {
+    const { ref, key } = translation;
+    const message = toInternalTranslationRef(ref).getDefaultMessages()[key];
+    if (typeof message !== 'string') {
+      throw new Error(`Unknown translation key '${key}' in '${ref.id}'`);
+    }
+    return message;
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(

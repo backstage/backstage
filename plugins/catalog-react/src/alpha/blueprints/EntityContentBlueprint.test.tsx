@@ -17,6 +17,7 @@ import { EntityContentBlueprint } from './EntityContentBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
+  mockApis,
 } from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
@@ -67,7 +68,7 @@ describe('EntityContentBlueprint', () => {
             "config": {
               "optional": true,
             },
-            "id": "core.titleSource",
+            "id": "core.titleTranslation",
             "optional": [Function],
             "toString": [Function],
           },
@@ -158,22 +159,23 @@ describe('EntityContentBlueprint', () => {
         loader: async () => <div>Translated content</div>,
       },
     });
-    const tester = createExtensionTester(extension);
+    const tester = createExtensionTester(extension, {
+      apis: [mockApis.translation()],
+    });
     expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Default');
     expect(
-      tester.get(EntityContentBlueprint.dataRefs.titleSource)?.getSnapshot(),
-    ).toBe('Default');
+      tester.get(EntityContentBlueprint.dataRefs.titleTranslation),
+    ).toEqual(ref('title'));
     const configured = createExtensionTester(extension, {
+      apis: [mockApis.translation()],
       config: { title: 'Configured' },
     });
     expect(configured.get(EntityContentBlueprint.dataRefs.title)).toBe(
       'Configured',
     );
     expect(
-      configured
-        .get(EntityContentBlueprint.dataRefs.titleSource)
-        ?.getSnapshot(),
-    ).toBe('Configured');
+      configured.get(EntityContentBlueprint.dataRefs.titleTranslation),
+    ).toEqual(ref('title'));
     expect(() =>
       createExtensionTester(
         EntityContentBlueprint.make({
@@ -184,6 +186,7 @@ describe('EntityContentBlueprint', () => {
             loader: async () => <div />,
           },
         }),
+        { apis: [mockApis.translation()] },
       ).get(EntityContentBlueprint.dataRefs.title),
     ).toThrow('must not contain interpolation or nested translations');
   });
