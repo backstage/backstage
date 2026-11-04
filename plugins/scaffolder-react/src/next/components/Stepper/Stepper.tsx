@@ -226,6 +226,21 @@ export const Stepper = (stepperProps: StepperProps) => {
     );
   }, [visibleSteps, activeStep, validators, apiHolder]);
 
+  // Validation results only apply to the form and navigation state submitted.
+  // Keep this identity stable across progress/error renders, but invalidate it
+  // when the user edits values or the manifest/cursor/completion changes.
+  const validationState = useMemo(
+    () => ({
+      stepsState,
+      validatedSteps,
+      manifest: props.manifest,
+      displayedStepIndex,
+    }),
+    [stepsState, validatedSteps, props.manifest, displayedStepIndex],
+  );
+  const latestValidationState = useRef<typeof validationState>();
+  latestValidationState.current = validationState;
+
   const handleBack = useCallback(() => {
     setActiveStep(activeStep - 1);
   }, [activeStep, setActiveStep]);
@@ -244,6 +259,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
+      latestValidationState.current = undefined;
       setStepsState(current => {
         return { ...current, ...e.formData };
       });
@@ -265,13 +281,15 @@ export const Stepper = (stepperProps: StepperProps) => {
       setIsValidating(true);
 
       const returnedValidation = await validation(formData);
+      setIsValidating(false);
+      if (latestValidationState.current !== validationState) {
+        return;
+      }
 
       setStepsState(current => ({
         ...current,
         ...formData,
       }));
-
-      setIsValidating(false);
 
       if (hasErrors(returnedValidation)) {
         setErrors(returnedValidation);
@@ -299,6 +317,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     },
     [
       validation,
+      validationState,
       analytics,
       activeStep,
       displayedStepIndex,

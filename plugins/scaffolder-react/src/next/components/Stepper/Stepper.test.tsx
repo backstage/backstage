@@ -27,6 +27,147 @@ import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
   it.each([false, true])(
+    'discards pending validation after visibility changes (stale error: %s)',
+    async staleError => {
+      let finishValidation: () => void;
+      const pendingValidation = new Promise<void>(resolve => {
+        finishValidation = resolve;
+      });
+      const validateCurrent = jest
+        .fn(async (_value: unknown, _errors: FieldValidation) => {})
+        .mockImplementationOnce(
+          async (_value: unknown, errors: FieldValidation) => {
+            await pendingValidation;
+            if (staleError) errors.addError('Outdated validation error');
+          },
+        );
+      const validateEarlier = jest.fn(
+        async (value: unknown, errors: FieldValidation) => {
+          if (value !== 'approved') errors.addError('Enter approved value');
+        },
+      );
+      const ToggleField = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<boolean>) => (
+        <input
+          aria-label="Show earlier"
+          type="checkbox"
+          checked={formData ?? false}
+          onChange={event => onChange(event.target.checked)}
+        />
+      );
+      const onCreate = jest.fn();
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Pending validation',
+              steps: [
+                {
+                  title: 'Earlier',
+                  when: '${{ parameters.enabled }}',
+                  schema: {
+                    required: ['earlier'],
+                    properties: {
+                      earlier: { type: 'string', 'ui:field': 'Earlier' },
+                    },
+                  },
+                },
+                {
+                  title: 'Current',
+                  schema: {
+                    properties: {
+                      enabled: { type: 'boolean', 'ui:field': 'Toggle' },
+                      note: { type: 'string' },
+                    },
+                  },
+                },
+              ],
+            }}
+            extensions={[
+              {
+                name: 'Earlier',
+                component: ({
+                  formData,
+                  onChange,
+                }: FieldExtensionComponentProps<string>) => (
+                  <input
+                    aria-label="Earlier value"
+                    value={formData ?? ''}
+                    onChange={event => onChange(event.target.value)}
+                  />
+                ),
+                validation: validateEarlier,
+              },
+              {
+                name: 'Toggle',
+                component: ToggleField,
+                validation: validateCurrent,
+              },
+            ]}
+            initialState={{
+              enabled: true,
+              earlier: 'approved',
+              note: 'original',
+            }}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      const toggle = await screen.findByRole('checkbox', {
+        name: 'Show earlier',
+      });
+      expect(validateEarlier).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await waitFor(() => expect(validateCurrent).toHaveBeenCalledTimes(1));
+      fireEvent.click(toggle);
+      fireEvent.click(toggle);
+      fireEvent.change(screen.getByRole('textbox', { name: 'note' }), {
+        target: { value: 'edited while validating' },
+      });
+      await act(async () => {
+        finishValidation!();
+        await pendingValidation;
+      });
+      expect(
+        screen.getByRole('checkbox', { name: 'Show earlier' }),
+      ).toBeChecked();
+      expect(screen.getByRole('textbox', { name: 'note' })).toHaveValue(
+        'edited while validating',
+      );
+      expect(
+        screen.queryByText('Outdated validation error'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      const earlier = await screen.findByRole('textbox', {
+        name: 'Earlier value',
+      });
+      fireEvent.change(earlier, { target: { value: 'invalid' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/Enter approved value/),
+      ).not.toHaveLength(0);
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.change(earlier, { target: { value: 'approved' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          enabled: true,
+          earlier: 'approved',
+          note: 'edited while validating',
+        }),
+      );
+    },
+  );
+
+  it.each([false, true])(
     'validates a newly revealed earlier step before review (previously validated: %s)',
     async previouslyValidated => {
       const onCreate = jest.fn();
