@@ -336,8 +336,7 @@ Go to the Settings page — you should see a language select dropdown. Switch la
 
 Page and sub-page blueprints accept either a plain title string or a message
 reference. To enable a translated title, select a message from your plugin's
-existing translation ref. Calling the ref checks the key against its declared
-messages and returns a `TranslationRefTuple` object with `ref` and `key` properties:
+existing translation ref:
 
 ```tsx
 PageBlueprint.make({
@@ -372,19 +371,16 @@ Install translations using the existing `TranslationBlueprint` and translation
 resources described above. No additional title bundles or APIs are required.
 Existing string title parameters keep their behavior.
 
-The blueprint uses `TranslationApi.getDefaultMessage(selection)` to read the ref's
-declared default message synchronously and provide a
-plain title during initial loading. A configured `title` supplies that plain
-fallback instead. Every resolved API value takes precedence over configured and
+Before translations load, the title falls back to the message declared by the ref.
+A configured `title` supplies that fallback instead. Every resolved API value takes precedence over configured and
 plain titles, including when the API resolves to the ref's declared default.
 Missing locale messages use the translation API's existing fallback.
 Later language changes retain the previously resolved title while loading, without
 remounting page content. Failed loads use the translation API's fallback when available.
 
-Message keys are checked by TypeScript when calling the ref and validated again
-when the extension is instantiated. Titles must not
-require interpolation or pluralization arguments, or contain nested `$t(...)`
-references, so the declared default is directly usable as a string.
+TypeScript checks the selected key and rejects title messages that require
+replacement values or a plural count. Nested messages are supported when none
+of the referenced messages require values.
 
 ### Consuming title translations
 
@@ -396,11 +392,14 @@ translation is ready, use the static title; retain the last resolved title while
 another language loads. This keeps extension data independent of subscriptions
 and React rendering.
 
-`translationApi.getDefaultMessage(selection)` returns the message declared by
-the ref synchronously, including raw interpolation placeholders. It does
-not load resources or apply the selected language or installed message overrides.
-It throws for an undeclared key. Custom translation API implementations must
-implement this method as well.
+For synchronous fallback text, use
+`translationApi.getDefaultMessage(selection, options?)`. It formats the message
+declared by the ref, including nested messages and optional replacement values
+or plural counts. Omitting the values leaves replacement placeholders intact;
+plural messages use the other form. The result is independent of the selected
+language and installed message overrides, and no locale resources are loaded.
+An undeclared key throws an error. Custom translation API implementations must
+provide this method as well.
 
 ### Using the CLI for full translation workflows
 
