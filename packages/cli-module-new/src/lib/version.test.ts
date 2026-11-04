@@ -90,7 +90,8 @@ describe('createPackageVersionProvider', () => {
 
     expect(provider('a', '0.1.5')).toBe('^0.1.0');
     expect(provider('b', '1.0.0')).toBe('*');
-    // The hint is a minimum, so the highest existing range is preferred
+    // The hint is a minimum within its major (0 here), so the highest
+    // existing range is preferred
     expect(provider('c', '0.1.0')).toBe('^0.3.4');
     expect(provider('c', '0.1.6')).toBe('^0.3.4');
     expect(provider('c', '0.2.0')).toBe('^0.3.4');
@@ -144,8 +145,12 @@ describe('createPackageVersionProvider', () => {
     const lockfile = await Lockfile.load(mockDir.resolve('yarn.lock'));
     const provider = createPackageVersionProvider(lockfile);
 
-    expect(provider('@testing-library/react', '14.0.0')).toBe('^16.3.0');
-    expect(provider('@testing-library/react', '12.0.0')).toBe('^16.3.0');
+    // Newer majors are not picked up
+    expect(provider('@testing-library/react', '14.0.0')).toBe('^14.0.0');
+    expect(provider('@testing-library/react', '12.0.0')).toBe('^12.1.3');
+    // Newer versions within the same major are
+    expect(provider('@testing-library/react', '16.0.0')).toBe('^16.3.0');
+    expect(provider('@testing-library/react', '12.1.4')).toBe('^12.1.3');
     expect(provider('@testing-library/react', '17.0.0')).toBe('^17.0.0');
     // Prerelease lockfile versions are only picked for prerelease hints
     expect(provider('d', '1.0.0')).toBe('^1.2.0');
