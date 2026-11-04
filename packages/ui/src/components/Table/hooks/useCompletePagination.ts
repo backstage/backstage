@@ -62,7 +62,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   // (Infinity after `type: 'none'`) computes a NaN offset that sticks.
   const [previousDefaultPageSize, setPreviousDefaultPageSize] =
     useState(defaultPageSize);
-  if (previousDefaultPageSize !== defaultPageSize) {
+  if (!Object.is(previousDefaultPageSize, defaultPageSize)) {
     setPreviousDefaultPageSize(defaultPageSize);
     setPageSize(defaultPageSize);
     setOffset(0);
