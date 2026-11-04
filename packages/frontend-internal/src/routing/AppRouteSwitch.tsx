@@ -200,8 +200,16 @@ function resolveRedirectTarget(
             : value.split('/').map(encodeURIComponent).join('/');
         });
       const pathname = substituteParams(template.pathname ?? '/');
-      const search = substituteParams(template.search ?? location.search);
-      const hash = substituteParams(template.hash ?? location.hash);
+      // Omitted components inherit the incoming location verbatim; only
+      // components authored on the template are treated as templates.
+      const search =
+        template.search === undefined
+          ? location.search
+          : substituteParams(template.search);
+      const hash =
+        template.hash === undefined
+          ? location.hash
+          : substituteParams(template.hash);
       return `${pathname}${search}${hash}`;
     }
   }
