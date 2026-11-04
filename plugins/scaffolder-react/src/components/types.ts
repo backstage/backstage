@@ -50,11 +50,30 @@ export type FormProps = Pick<
  */
 export type ReviewStepProps = {
   disableButtons: boolean;
+  /**
+   * The values that will be submitted, with values from hidden steps removed.
+   */
   formData: JsonObject;
+  /**
+   * The complete form state, including values from hidden steps. Pass this as
+   * `schemaFormState` when rendering a `ReviewState` so that conditional
+   * schemas such as `dependencies` are resolved and review masks still apply.
+   */
+  schemaFormState?: JsonObject;
   handleBack: () => void;
   handleReset: () => void;
   handleCreate: () => void;
   steps: {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+  }[];
+  /**
+   * All parameter steps, including steps hidden by a `when` condition. Pass
+   * this as `maskSchemas` when rendering a `ReviewState` so that fields any
+   * step marks as a password or secret stay masked.
+   */
+  allSteps?: {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
