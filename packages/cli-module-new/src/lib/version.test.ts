@@ -137,7 +137,7 @@ describe('createPackageVersionProvider', () => {
 "react@^18.0.2", "react@^16.13.1 || ^17.0.0 || ^18.0.0":
   version "18.3.1"
 
-"e@npm:^1.0.0":
+"e@file:../e":
   version "1.5.0"
 `,
     });
