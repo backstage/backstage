@@ -1,0 +1,66 @@
+{
+  "name": "@backstage/plugin-ai-gateway-react",
+  "version": "0.0.0",
+  "description": "Web library for the ai-gateway plugin",
+  "backstage": {
+    "role": "web-library",
+    "pluginId": "ai-gateway",
+    "pluginPackages": [
+      "@backstage/plugin-ai-gateway-backend",
+      "@backstage/plugin-ai-gateway-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/ai-gateway-react"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "cross-fetch": "^4.0.0",
+    "uri-template": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "msw": "^2.0.0"
+  }
+}
