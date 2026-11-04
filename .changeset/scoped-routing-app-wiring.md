@@ -14,4 +14,6 @@ Custom `appHistoryApiRef` factories must be available during initialization. Fac
 
 History entries reached outside app-owned navigation omit index, length, and back availability when these cannot be known, rather than reporting guessed positions.
 
-Configured redirects substitute route parameters in the path, query, and fragment. Matching redirects are ranked by specificity rather than declaration order, so a specific route takes precedence over a general prefix.
+Configured redirects and pages are ranked together by specificity, with redirects winning equal-pattern ties. Redirect templates support embedded route parameters and repeated splats in paths, queries, and fragments. Authored trailing slashes are preserved, and explicitly empty query or fragment components clear incoming values.
+
+Deployment basenames match case-insensitively. Persisted React Router history entries retain their user state when reloading or navigating Back after upgrading. React Router location keys refresh on replacement independently of stable framework history entry keys.

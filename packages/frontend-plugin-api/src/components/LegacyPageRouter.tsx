@@ -21,15 +21,59 @@ import {
   UNSAFE_NavigationContext,
   UNSAFE_RouteContext,
   matchPath,
+  useLocation,
+  useNavigate,
 } from 'react-router-dom';
 import {
   createAppHistoryRouter,
+  resolveAppPath,
+  createPath,
+  isExternalTarget,
+  sanitizeHref,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
 import { useRouteResolution } from '../routing/useRouteResolution';
-import { useApiHolder } from '../apis/system';
+import {
+  NavigationProvider,
+  type Navigation,
+} from '../routing/NavigationProvider';
+import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
+
+/** Called by each navigation consumer, inside its own React Router route context. */
+function useLegacyNavigation(): Navigation {
+  const history = useApi(appHistoryApiRef);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { matches } = useContext(UNSAFE_RouteContext);
+  const contributing = matches.filter(
+    (match, index) => index === 0 || !!match.route.path,
+  );
+  const bases = contributing.map(match => match.pathnameBase);
+  return {
+    navigate: (to, options) => {
+      const safeTo = sanitizeHref(to);
+      if (isExternalTarget(safeTo)) {
+        history.navigate(safeTo, options);
+      } else {
+        navigate(safeTo, options);
+      }
+    },
+    createHref: to => {
+      const safeTo = sanitizeHref(to);
+      return history.createHref(
+        isExternalTarget(safeTo)
+          ? safeTo
+          : createPath(resolveAppPath(safeTo, bases, location.pathname)),
+      );
+    },
+    pathname: new URL(
+      history.createHref(location.pathname),
+      'http://backstage.local',
+    ).pathname,
+  };
+}
 
 const LegacyPageRouterContext = createContext<AppNode | undefined>(undefined);
 const warnedExtensions = new WeakMap<AppHistoryApi, Set<string>>();
@@ -86,7 +130,11 @@ export function LegacyPageRouter(props: {
   }
   return (
     <LegacyPageRouterContext.Provider value={node}>
-      <router.Router mounts={mounts}>{children}</router.Router>
+      <router.Router mounts={mounts}>
+        <NavigationProvider useNavigation={useLegacyNavigation}>
+          {children}
+        </NavigationProvider>
+      </router.Router>
     </LegacyPageRouterContext.Provider>
   );
 }

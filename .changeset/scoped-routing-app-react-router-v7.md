@@ -13,3 +13,5 @@ See the [page router guide](https://backstage.io/docs/frontend-system/building-p
 The adapter supplies the public contextual navigation contract for any component library, including BUI, without depending on BUI at runtime.
 
 Same-origin absolute links under the deployment basename navigate within the app without duplicating the basename. Cross-origin links remain external, and repeated path segments are preserved.
+
+Links to encoded paths retain native browser-router active states. React Router location keys refresh on push and replacement and restore on history traversal, without changing framework entry identity.

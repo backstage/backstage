@@ -29,10 +29,10 @@ import type {
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 import {
   expandOptionalSegments,
-  generatePath,
   matchPath,
   routePriority,
 } from './routePattern';
+import { parsePath } from './AppRouting';
 
 interface PluginErrorBoundaryProps {
   basePath: string;
@@ -153,27 +153,23 @@ function matchRedirect(
     return { ...exact.params, '*': exact.params['*'] ?? '' };
   }
 
-  const partial = matchPath(normalizedFrom, pathname, false);
-  if (partial) {
-    const rest = pathname
-      .slice(partial.matchedPathname.length)
-      .replace(/^\//, '');
-    return { ...partial.params, '*': rest };
-  }
-
-  return null;
+  return matchPath(`${normalizedFrom}/*`, pathname, true)?.params ?? null;
 }
 
 function resolveRedirectTarget(
   redirects: AppRouteRedirect[] | undefined,
   location: { pathname: string; search: string; hash: string },
+  pagePattern?: string,
 ): string | undefined {
   if (!redirects?.length) {
     return undefined;
   }
   // Rank concrete branches like React Router's former `from/*` routes.
   // Stable sorting preserves declaration order for equally specific patterns.
-  const candidates = redirects
+  const candidates = [
+    ...redirects,
+    ...(pagePattern ? [{ from: pagePattern, to: undefined }] : []),
+  ]
     .flatMap(redirect =>
       expandOptionalSegments(redirect.from).map(from => {
         const normalized = from.replace(/\/$/, '') || '/';
@@ -188,18 +184,24 @@ function resolveRedirectTarget(
   for (const redirect of candidates) {
     const params = matchRedirect(redirect.from, location.pathname);
     if (params) {
-      const template = new URL(redirect.to, 'http://localhost');
-      const pathname = generatePath(template.pathname, params);
-      // Preserve the incoming search/hash unless the redirect template
-      // declares its own.
+      // Pages and redirects share ranking; redirects win equal-pattern ties.
+      if (redirect.to === undefined) {
+        return undefined;
+      }
+      const template = parsePath(redirect.to);
+      // Redirects are URL templates, not route patterns: embedded parameters,
+      // every splat, and authored separators must survive interpolation.
       const substituteParams = (value: string) =>
-        value.replace(/:([\w-]+)/g, (placeholder, name) =>
-          params[name] === undefined
-            ? placeholder
-            : encodeURIComponent(params[name]),
-        );
-      const search = substituteParams(template.search) || location.search;
-      const hash = substituteParams(template.hash) || location.hash;
+        value.replace(/:([\w-]+)|\*/g, (placeholder, name) => {
+          const value = params[name ?? '*'];
+          if (value === undefined) return placeholder;
+          return name
+            ? encodeURIComponent(value)
+            : value.split('/').map(encodeURIComponent).join('/');
+        });
+      const pathname = substituteParams(template.pathname ?? '/');
+      const search = substituteParams(template.search ?? location.search);
+      const hash = substituteParams(template.hash ?? location.hash);
       return `${pathname}${search}${hash}`;
     }
   }
@@ -214,7 +216,11 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
   const { history, matches, pages, redirects, fallback } = props;
   const location = useAppHistoryLocation(history)!;
   const match = matches.find(candidate => pages.has(candidate.node.spec.id));
-  const redirectTarget = resolveRedirectTarget(redirects, location);
+  const redirectTarget = resolveRedirectTarget(
+    redirects,
+    location,
+    match?.routePattern,
+  );
 
   useEffect(() => {
     if (redirectTarget) {
