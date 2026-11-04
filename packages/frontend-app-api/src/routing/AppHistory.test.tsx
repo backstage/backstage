@@ -731,6 +731,19 @@ describe('AppHistory', () => {
       bnHistory.dispose();
     });
 
+    it('strips mixed-case basenames without changing the remainder or matching partial segments', () => {
+      for (const [path, expected] of [
+        ['/BACKSTAGE/Catalog', '/Catalog'],
+        ['/BACKSTAGE', '/'],
+        ['/BACKSTAGE-extra/Catalog', '/BACKSTAGE-extra/Catalog'],
+      ]) {
+        window.history.replaceState(null, '', path);
+        const history = createAppHistory({ basename: '/backstage' });
+        expect(history.getSnapshot().location.pathname).toBe(expected);
+        history.dispose();
+      }
+    });
+
     it('should prepend basename on navigate', () => {
       bnHistory.navigate('/catalog/entity/foo');
       expect(window.location.pathname).toBe('/backstage/catalog/entity/foo');

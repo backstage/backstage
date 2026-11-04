@@ -522,7 +522,7 @@ Snapshots are immutable and cached until history changes. Every committed
 navigation publishes a new snapshot, including pushes or replacements at the
 same URL; the nested location retains its identity while its fields are
 unchanged. A push creates a new entry key, replacement preserves it, and
-traversal restores the selected entry's key. Subscribers read the updated
+traversal restores the selected entry's key. React Router adapters maintain separate location keys: push and replacement create new location keys, while traversal restores them. Subscribers read the updated
 snapshot when notified; subscribing does not immediately invoke the listener.
 The store functions have stable identities and can be passed directly to
 `useSyncExternalStore`. Ordinary plugin code can use `useAppLocation`, which
@@ -760,7 +760,7 @@ Routing adapters supply a component-library-neutral `NavigationProvider`. Its
 hook runs at each consumer's route scope and returns href creation, navigation,
 and the current browser pathname. Generated hrefs and pathname include the
 deployment basename; navigation accepts the original authored target. Outside
-adapters the default uses app history with strict framework semantics.
+explicit or implicit page adapters, the default uses app history with strict framework semantics.
 
 Backstage UI receives a `useNavigation` hook through `BUIProvider`. The app binds
 that hook to the public `useNavigation` contract. Other component libraries can
@@ -776,3 +776,9 @@ plugins using React Aria directly can [compose with RouterLink](../building-plug
 An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
 
 A router library can block navigation that starts inside its own page, but not navigation that starts anywhere else, because `AppHistoryApi` has no shared blocker contract.
+
+### Redirect compatibility
+
+Configured redirects and pages share specificity ranking. A more specific page takes precedence over a broad redirect; a redirect wins an equal-pattern tie. Redirect destinations are URL templates: named parameters can be embedded in segments, and splats can appear anywhere in the path, query, or fragment. Parameter values are URL-encoded, retaining splat path separators. Trailing slashes are preserved. Omitted query and fragment components inherit the incoming values; explicitly empty components (`?` and `#`) clear them.
+
+Deployment basenames match case-insensitively without changing the spelling of the remaining path. When upgrading an existing React Router app, persisted browser history entries retain their user state both on reload and when reached through Back or Forward navigation.

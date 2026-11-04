@@ -205,7 +205,8 @@ export class AppHistory implements AppHistoryApi {
   private stripBasename(pathname: string): string {
     if (
       this.basename &&
-      (pathname === this.basename || pathname.startsWith(`${this.basename}/`))
+      (pathname.toLowerCase() === this.basename.toLowerCase() ||
+        pathname.toLowerCase().startsWith(`${this.basename.toLowerCase()}/`))
     ) {
       return pathname.slice(this.basename.length) || '/';
     }

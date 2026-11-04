@@ -148,12 +148,12 @@ describe('RootHistoryRouter', () => {
     goSpy.mockRestore();
   });
 
-  it('should project stable entry keys and truthful navigation types', () => {
+  it('should refresh location keys on replace and restore them on traversal', () => {
     const history = createAppHistory({
       history: createMemoryHistoryBackend({ initialEntries: ['/start'] }),
     });
 
-    render(
+    const view = render(
       <RootHistoryRouter history={history}>
         <ChromeProbe />
       </RootHistoryRouter>,
@@ -169,12 +169,24 @@ describe('RootHistoryRouter', () => {
     expect(screen.getByTestId('navigation-type')).toHaveTextContent('PUSH');
 
     act(() => screen.getByRole('button', { name: 'Replace' }).click());
-    expect(screen.getByTestId('key').textContent).toBe(pushedKey);
+    const replacedKey = screen.getByTestId('key').textContent;
+    expect(replacedKey).not.toBe(pushedKey);
     expect(screen.getByTestId('navigation-type')).toHaveTextContent('REPLACE');
+
+    view.unmount();
+    render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+    expect(screen.getByTestId('key').textContent).toBe(replacedKey);
 
     act(() => screen.getByRole('button', { name: 'Back' }).click());
     expect(screen.getByTestId('key').textContent).toBe(initialKey);
     expect(screen.getByTestId('navigation-type')).toHaveTextContent('POP');
+
+    act(() => history.navigate(1));
+    expect(screen.getByTestId('key').textContent).toBe(replacedKey);
 
     history.dispose();
   });

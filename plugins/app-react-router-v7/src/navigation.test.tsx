@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { act, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
@@ -32,6 +32,7 @@ import {
   Outlet,
   Link,
   NavLink,
+  BrowserRouter,
   useLocation,
 } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
@@ -244,4 +245,41 @@ it('reconciles same-origin absolute links with exactly one deployment basename',
   expect(appHistory.getSnapshot().location.pathname).toBe('/base/foo');
   await user.click(screen.getByRole('link', { name: 'Repeated app path' }));
   expect(appHistory.getSnapshot().location.pathname).toBe('/base/foo');
+});
+
+it('matches BrowserRouter encoded-path NavLink active state with a basename', async () => {
+  const link = (
+    <NavLink to="/docs/hello world" end>
+      Encoded document
+    </NavLink>
+  );
+  window.history.replaceState(null, '', '/base/docs/hello%20world');
+  const native = render(<BrowserRouter basename="/base">{link}</BrowserRouter>);
+  expect(
+    screen.getByRole('link', { name: 'Encoded document' }),
+  ).toHaveAttribute('aria-current', 'page');
+  const href = (
+    screen.getByRole('link', { name: 'Encoded document' }) as HTMLAnchorElement
+  ).href;
+  native.unmount();
+  const page = PageBlueprint.make({
+    name: 'encoded',
+    params: {
+      path: '/docs/:name',
+      loader: async () => (
+        <ReactRouterV7PageRouter>{link}</ReactRouterV7PageRouter>
+      ),
+    },
+  });
+  renderTestApp({
+    extensions: [page],
+    initialRouteEntries: ['/docs/hello%20world'],
+    config: { app: { baseUrl: 'http://localhost/base' } },
+  });
+  const projected = await screen.findByRole('link', {
+    name: 'Encoded document',
+  });
+  expect(projected).toHaveAttribute('aria-current', 'page');
+  expect((projected as HTMLAnchorElement).href).toBe(href);
+  window.history.replaceState(null, '', '/');
 });

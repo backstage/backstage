@@ -22,6 +22,7 @@ import {
 } from '@backstage/frontend-test-utils';
 import { AppRouteSwitch } from './AppRouteSwitch';
 import {
+  PageBlueprint,
   coreExtensionData,
   createExtension,
   createRouteRef,
@@ -76,6 +77,75 @@ const otherPage = createExtension({
 });
 
 describe('AppRouteSwitch', () => {
+  it.each([
+    ['/old/a%20b/c%23d', '/old', '/new/*', '/new/a%20b/c%23d'],
+    [
+      '/old/a%23b',
+      '/old/:id',
+      '/new/:id.json?q=:id#:id',
+      '/new/a%23b.json?q=a%23b#a%23b',
+    ],
+    ['/old/report', '/old/:id', '/new/:id.json', '/new/report.json'],
+    ['/old/a/b', '/old', '/new/*/edit', '/new/a/b/edit'],
+    ['/old/a/b', '/old', '/search?path=*#*', '/search?path=a/b#a/b'],
+    ['/old?filter=stale#old', '/old', '/new?#', '/new'],
+    ['/old', '/old', '/new/', '/new/'],
+  ])(
+    'preserves redirect templates from %s matching %s to %s',
+    (initialLocation, from, to, expected) => {
+      const history = createMockAppHistory({ initialLocation });
+      render(
+        <AppRouteSwitch
+          history={history}
+          matches={[]}
+          pages={new Map()}
+          redirects={[{ from, to }]}
+          fallback={<p>Not found</p>}
+        />,
+      );
+      const { pathname, search, hash } = history.getSnapshot().location;
+      expect(`${pathname}${search}${hash}`).toBe(expected);
+    },
+  );
+
+  it.each(['/catalog', '/catalog/special'])(
+    'ranks pages together with redirects from %s',
+    async from => {
+      const { appHistory } = renderTestApp({
+        extensions: [
+          PageBlueprint.make({
+            name: 'special',
+            params: {
+              path: '/catalog/special',
+              loader: async () => <p>Catalog special</p>,
+            },
+          }),
+          otherPage,
+        ],
+        initialRouteEntries: ['/catalog/special'],
+        config: {
+          app: {
+            extensions: [
+              {
+                'app/routes': {
+                  config: { redirects: [{ from, to: '/other' }] },
+                },
+              },
+            ],
+          },
+        },
+      });
+      if (from === '/catalog') {
+        expect(await screen.findByText('Catalog special')).toBeInTheDocument();
+        expect(appHistory.getSnapshot().location.pathname).toBe(
+          '/catalog/special',
+        );
+      } else {
+        expect(await screen.findByText('Other page')).toBeInTheDocument();
+      }
+    },
+  );
+
   it.each([false, true])(
     'ranks specific redirects before general ones (specific first: %s)',
     specificFirst => {

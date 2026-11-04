@@ -174,17 +174,44 @@ function normalizePattern(pattern: string): string {
 
 /**
  * The location key React Router itself uses for an entry it has no key for.
- * A history that does not implement the metadata capability has no keys to
- * project, so every location it reports carries this one.
+ * Without entry metadata, initial and traversed locations use this fallback.
  */
 const UNKEYED_LOCATION_KEY = 'default';
 
-function toAdapterLocation(snapshot: AppHistorySnapshot): AdapterLocation {
-  return {
+// All projections of one history share location identity, including page routers
+// that unmount and remount. Entry identity itself remains owned by AppHistory.
+const adapterLocations = new WeakMap<
+  AppHistoryApi,
+  {
+    snapshot: AppHistorySnapshot;
+    location: AdapterLocation;
+    keys: Map<string, string>;
+  }
+>();
+
+function toAdapterLocation(
+  history: AppHistoryApi,
+  snapshot: AppHistorySnapshot,
+): AdapterLocation {
+  const previous = adapterLocations.get(history);
+  if (previous?.snapshot === snapshot) return previous.location;
+  const keys = previous?.keys ?? new Map<string, string>();
+  const entryKey = snapshot.entry?.key;
+  let key = entryKey ? keys.get(entryKey) ?? entryKey : UNKEYED_LOCATION_KEY;
+  if (
+    previous &&
+    (snapshot.action === 'PUSH' || snapshot.action === 'REPLACE')
+  ) {
+    key = Math.random().toString(36).slice(2, 10);
+  }
+  if (entryKey) keys.set(entryKey, key);
+  const location = {
     ...snapshot.location,
     state: snapshot.location.state ?? null,
-    key: snapshot.entry?.key ?? UNKEYED_LOCATION_KEY,
+    key,
   };
+  adapterLocations.set(history, { snapshot, location, keys });
+  return location;
 }
 
 function toNavigationType(
@@ -274,7 +301,7 @@ export function createAppHistoryRouter(
     routePattern === undefined ? undefined : normalizePattern(routePattern);
 
   let sourceSnapshot = appHistory.getSnapshot();
-  let latestLocation = toAdapterLocation(sourceSnapshot);
+  let latestLocation = toAdapterLocation(appHistory, sourceSnapshot);
   const listeners = new Set<() => void>();
   let unsubscribe: (() => void) | undefined;
 
@@ -282,7 +309,7 @@ export function createAppHistoryRouter(
     const snapshot = appHistory.getSnapshot();
     if (snapshot !== sourceSnapshot) {
       sourceSnapshot = snapshot;
-      latestLocation = toAdapterLocation(snapshot);
+      latestLocation = toAdapterLocation(appHistory, snapshot);
     }
     return latestLocation;
   }
@@ -538,6 +565,14 @@ export function createAppHistoryRouter(
               ? to
               : `${to.pathname ?? ''}${to.search ?? ''}${to.hash ?? ''}`;
           return appHistory.createHref(stripBasename(path));
+        },
+        encodeLocation(to: AdapterTo) {
+          // BrowserRouter encodes locations without adding the deployment basename.
+          const url = new URL(
+            toPath(to, latestLocation.pathname).replace(/ $/, '%20'),
+            'http://localhost',
+          );
+          return { pathname: url.pathname, search: url.search, hash: url.hash };
         },
         go(delta: number): void {
           appHistory.navigate(delta);

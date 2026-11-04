@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Link as BuiLink } from '@backstage/ui';
 import { useState } from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
 import {
@@ -55,6 +56,7 @@ describe('implicit page router compatibility', () => {
             {location.hash}
           </span>
           <button onClick={() => setCount(count + 1)}>Count {count}</button>
+          <BuiLink href="edit?tab=details#form">BUI Edit</BuiLink>
           <Link to="edit?tab=details#form">Edit</Link>
           <Link to="/other">Other page</Link>
           <button onClick={() => navigate('/legacy/beta', { replace: true })}>
@@ -91,11 +93,11 @@ describe('implicit page router compatibility', () => {
       await screen.findByRole('heading', { name: 'Legacy alpha' }),
     ).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Count 0' }));
-    expect(screen.getByRole('link', { name: 'Edit' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'BUI Edit' })).toHaveAttribute(
       'href',
       '/backstage/legacy/alpha/edit?tab=details#form',
     );
-    fireEvent.click(screen.getByRole('link', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('link', { name: 'BUI Edit' }));
     expect(
       await screen.findByRole('heading', { name: 'Edit form' }),
     ).toBeVisible();
