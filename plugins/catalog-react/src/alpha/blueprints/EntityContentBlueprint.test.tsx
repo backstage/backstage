@@ -146,7 +146,7 @@ describe('EntityContentBlueprint', () => {
     expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Test');
   });
 
-  it('resolves translated defaults and configured fallbacks while preserving static title data', () => {
+  it('resolves available translations and configured fallbacks while preserving static title data', () => {
     const ref = createTranslationRef({
       id: 'entity-titles',
       messages: { title: 'Default', interpolated: 'Hello {{name}}' },
@@ -166,8 +166,17 @@ describe('EntityContentBlueprint', () => {
     expect(
       tester.get(EntityContentBlueprint.dataRefs.titleTranslation),
     ).toEqual(ref('title'));
+    const api = mockApis.translation.mock();
+    api.getTranslation.mockReturnValue({
+      ready: false,
+      t: jest.fn().mockReturnValue('Available title'),
+    });
+    const loading = createExtensionTester(extension, { apis: [api] });
+    expect(loading.get(EntityContentBlueprint.dataRefs.title)).toBe(
+      'Available title',
+    );
     const configured = createExtensionTester(extension, {
-      apis: [mockApis.translation()],
+      apis: [api],
       config: { title: 'Configured' },
     });
     expect(configured.get(EntityContentBlueprint.dataRefs.title)).toBe(
@@ -176,6 +185,7 @@ describe('EntityContentBlueprint', () => {
     expect(
       configured.get(EntityContentBlueprint.dataRefs.titleTranslation),
     ).toEqual(ref('title'));
+    expect(api.getTranslation).toHaveBeenCalledTimes(1);
     EntityContentBlueprint.make({
       name: 'interpolated',
       params: {

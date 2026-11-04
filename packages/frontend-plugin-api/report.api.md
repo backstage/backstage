@@ -2242,10 +2242,6 @@ export const toastApiRef: ApiRef<ToastApi>;
 
 // @public (undocumented)
 export type TranslationApi = {
-  getDefaultMessage<TOptions extends {} | undefined>(
-    translation: TranslationRefTuple<TOptions>,
-    options?: NoInfer<TOptions>,
-  ): string;
   getTranslation<
     TMessages extends {
       [key in string]: string;
@@ -2415,19 +2411,15 @@ export interface TranslationResourceOptions<
   translations: TTranslations;
 }
 
-// @public (undocumented)
+// @public
 export type TranslationSnapshot<
   TMessages extends {
     [key in string]: string;
   },
-> =
-  | {
-      ready: false;
-    }
-  | {
-      ready: true;
-      t: TranslationFunction<TMessages>;
-    };
+> = {
+  ready: boolean;
+  t: TranslationFunction<TMessages>;
+};
 
 // @public
 export type TypesToApiRefs<T> = {

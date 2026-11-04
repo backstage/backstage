@@ -108,7 +108,10 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     const title =
       config.title ??
       (typeof params.title === 'object'
-        ? apis.get(translationApiRef)!.getDefaultMessage(params.title)
+        ? apis
+            .get(translationApiRef)!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
         : params.title ?? params.defaultTitle);
     const icon = config.icon ?? params.icon;
     const group = config.group ?? params.group ?? params.defaultGroup;

@@ -25,14 +25,35 @@ import { AppLanguageSelector } from '../AppLanguageApi';
 import { I18nextTranslationApi } from './I18nextTranslationApi';
 import { render } from '@testing-library/react';
 
-it('reads declared defaults synchronously without loading translations or applying locale overrides', () => {
-  const load = jest.fn(async () => ({
-    default: { title: 'Localized', empty: '', template: null },
-  }));
+it('provides a translator while loading, using available overrides and the existing language fallback', async () => {
   const ref = createTranslationRef({
-    id: 'defaults',
-    messages: { title: 'Declared', empty: '', template: 'Hello {{name}}' },
+    id: 'fallbacks',
+    messages: {
+      title: 'Declared',
+      empty: '',
+      greeting: 'Hello {{name}}',
+      nested: '$t(greeting)',
+      nestedPlain: '$t(title)',
+      number: '{{amount, number}}',
+      items_one: 'One item',
+      items_other: '{{count}} items',
+    },
   });
+  const translations = {
+    title: 'Localized',
+    empty: null,
+    greeting: null,
+    nested: null,
+    nestedPlain: null,
+    number: null,
+    items_one: null,
+    items_other: null,
+  };
+  let resolve!: (value: { default: typeof translations }) => void;
+  const pending = new Promise<{ default: typeof translations }>(r => {
+    resolve = r;
+  });
+  const load = jest.fn(() => pending);
   const languageApi = AppLanguageSelector.create({
     availableLanguages: ['en', 'sv'],
     defaultLanguage: 'sv',
@@ -44,63 +65,32 @@ it('reads declared defaults synchronously without loading translations or applyi
       createTranslationResource({ ref, translations: { sv: load } }),
     ],
   });
-  expect(api.getDefaultMessage(ref('title'))).toBe('Declared');
-  expect(api.getDefaultMessage(ref('empty'))).toBe('');
-  expect(api.getDefaultMessage(ref('template'))).toBe('Hello {{name}}');
+  const loading = api.getTranslation(ref);
+  expect(loading.ready).toBe(false);
+  expect(loading.t('title')).toBe('App override');
+  expect(loading.t('empty')).toBe('');
+  expect(loading.t('greeting', { name: 'Ada' })).toBe('Hello Ada');
+  expect(loading.t('nested', { name: 'Ada' })).toBe('Hello Ada');
+  expect(loading.t('nestedPlain')).toBe('App override');
+  expect(loading.t('items', { count: 1 })).toBe('One item');
+  expect(loading.t('items', { count: 2 })).toBe('2 items');
   expect(load).not.toHaveBeenCalled();
-  languageApi.setLanguage('en');
-  expect(api.getDefaultMessage(ref('title'))).toBe('Declared');
-  // @ts-expect-error Unknown keys are not declared by this ref.
-  expect(() => api.getDefaultMessage(ref('missing'))).toThrow(
-    "Unknown translation key 'missing'",
-  );
-});
 
-it('formats declared default messages with optional typed values, nesting, and plural counts', () => {
-  const ref = createTranslationRef({
-    id: 'formatted-defaults',
-    messages: {
-      plain: 'Plain',
-      greeting: 'Hello {{name}}',
-      number: '{{amount, number}}',
-      nested: '$t(greeting)',
-      nestedPlain: '$t(plain)',
-      nestedPlural: '$t(items)',
-      items_one: 'One item',
-      items_other: '{{count}} items',
-    },
-  });
-  const api = I18nextTranslationApi.create({
-    languageApi: AppLanguageSelector.create(),
-  });
-  expect(api.getDefaultMessage(ref('greeting'), { name: 'Ada' })).toBe(
-    'Hello Ada',
-  );
-  expect(api.getDefaultMessage(ref('greeting'))).toBe('Hello {{name}}');
-  expect(api.getDefaultMessage(ref('number'), { amount: 1234.5 })).toBe(
-    '1,234.5',
-  );
-  expect(api.getDefaultMessage(ref('nested'), { name: 'Ada' })).toBe(
-    'Hello Ada',
-  );
-  expect(api.getDefaultMessage(ref('nestedPlain'))).toBe('Plain');
-  expect(api.getDefaultMessage(ref('items'), { count: 1 })).toBe('One item');
-  expect(api.getDefaultMessage(ref('items'), { count: 2 })).toBe('2 items');
-  expect(api.getDefaultMessage(ref('items'))).toBe('{{count}} items');
-  expect(api.getDefaultMessage(ref('nestedPlural'))).toBe('{{count}} items');
-  expect(api.getDefaultMessage(ref('nestedPlural'), { count: 2 })).toBe(
-    '2 items',
-  );
-  // Check invalid argument types without executing those calls.
-  // eslint-disable-next-line no-constant-condition
-  if (false) {
-    // @ts-expect-error The selected message requires a name rather than another key.
-    api.getDefaultMessage(ref('greeting'), { wrong: 'Ada' });
-    // @ts-expect-error Number formatting requires a number.
-    api.getDefaultMessage(ref('number'), { amount: '1234' });
-    // @ts-expect-error A supplied options object must contain the required values.
-    api.getDefaultMessage(ref('greeting'), {});
-  }
+  const next = waitForNext(api.translation$(ref));
+  expect(load).toHaveBeenCalledTimes(1);
+  expect(api.getTranslation(ref).ready).toBe(false);
+  resolve({ default: translations });
+  const loaded = await next;
+  expect(loaded.ready).toBe(true);
+  expect(loaded.t('title')).toBe('Localized');
+  expect(loaded.t('greeting', { name: 'Ada' })).toBe('Hello Ada');
+  expect(api.getTranslation(ref).t('title')).toBe('Localized');
+
+  languageApi.setLanguage('en');
+  const english = api.getTranslation(ref);
+  expect(english.ready).toBe(true);
+  expect(english.t('title')).toBe('App override');
+  expect(english.t('number', { amount: 1234.5 })).toBe('1,234.5');
 });
 
 const plainRef = createTranslationRef({

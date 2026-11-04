@@ -17,6 +17,7 @@ import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import {
   createExtensionTester,
+  mockApis,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import {
@@ -25,9 +26,41 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { waitFor } from '@testing-library/react';
+import { createTranslationRef } from '../translation';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
+
+  it('uses available translations during loading unless a fallback title is configured', () => {
+    const ref = createTranslationRef({
+      id: 'page-title',
+      messages: { title: 'Declared title' },
+    });
+    const t = jest.fn().mockReturnValue('Available title');
+    const api = mockApis.translation.mock();
+    api.getTranslation.mockReturnValue({ ready: false, t });
+    const extension = PageBlueprint.make({
+      params: {
+        path: '/test',
+        title: ref('title'),
+        loader: async () => <div>Page</div>,
+      },
+    });
+    const tester = createExtensionTester(extension, { apis: [api] });
+    expect(tester.get(coreExtensionData.title)).toBe('Available title');
+    expect(tester.get(coreExtensionData.titleTranslation)).toEqual(
+      ref('title'),
+    );
+    expect(api.getTranslation).toHaveBeenCalledWith(ref);
+    expect(t).toHaveBeenCalledWith('title');
+
+    const configured = createExtensionTester(extension, {
+      apis: [api],
+      config: { title: 'Configured' },
+    });
+    expect(configured.get(coreExtensionData.title)).toBe('Configured');
+    expect(api.getTranslation).toHaveBeenCalledTimes(1);
+  });
 
   it('should return an extension when calling make with sensible defaults', () => {
     const myPage = PageBlueprint.make({

@@ -6,18 +6,12 @@
 import { Observable } from '@backstage/types';
 import { TranslationApi } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
-import { TranslationRefTuple } from '@backstage/core-plugin-api/alpha';
 import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
 
 // @alpha @deprecated (undocumented)
 export class MockTranslationApi implements TranslationApi {
   // (undocumented)
   static create(): MockTranslationApi;
-  // (undocumented)
-  getDefaultMessage<TOptions extends {} | undefined>(
-    translation: TranslationRefTuple<TOptions>,
-    options?: NoInfer<TOptions>,
-  ): string;
   // (undocumented)
   getTranslation<
     TMessages extends {

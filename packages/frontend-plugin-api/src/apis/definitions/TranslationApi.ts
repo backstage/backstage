@@ -16,7 +16,7 @@
 
 import { createApiRef } from '../system';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
-import { TranslationRef, TranslationRefTuple } from '../../translation';
+import { TranslationRef } from '../../translation';
 import { JSX } from 'react';
 
 /**
@@ -375,24 +375,20 @@ export type TranslationFunction<TMessages extends { [key in string]: string }> =
       }
     : never;
 
-/** @public */
+/**
+ * A synchronous translation snapshot, with fallback messages available while resources load.
+ * @public
+ */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
-  { ready: false } | { ready: true; t: TranslationFunction<TMessages> };
+  {
+    /** Whether resources for the selected language have finished loading. */
+    ready: boolean;
+    /** Translates using the currently available messages and language fallbacks. */
+    t: TranslationFunction<TMessages>;
+  };
 
 /** @public */
 export type TranslationApi = {
-  /**
-   * Returns the message declared by the ref, synchronously and without loading
-   * resources. Independent of the selected language and installed overrides.
-   * Optional values use the same formatting options as translations. Omitting
-   * them leaves replacement placeholders intact; plural messages use the other form.
-   * Throws if the selected message is not declared by the ref.
-   */
-  getDefaultMessage<TOptions extends {} | undefined>(
-    translation: TranslationRefTuple<TOptions>,
-    options?: NoInfer<TOptions>,
-  ): string;
-
   getTranslation<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,
   ): TranslationSnapshot<TMessages>;

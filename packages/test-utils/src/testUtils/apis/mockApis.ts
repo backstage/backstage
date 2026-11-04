@@ -374,7 +374,6 @@ export namespace mockApis {
   export namespace translation {
     export const factory = simpleFactory(translationApiRef, translation);
     export const mock = simpleMock(translationApiRef, () => ({
-      getDefaultMessage: jest.fn(),
       getTranslation: jest.fn(),
       translation$: jest.fn(),
     }));

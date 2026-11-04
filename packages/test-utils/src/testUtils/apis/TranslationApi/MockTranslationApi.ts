@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { getDefaultMessage } from '../../../../../core-app-api/src/apis/implementations/TranslationApi/getDefaultMessage';
 import {
   TranslationApi,
   TranslationRef,
-  TranslationRefTuple,
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
 import { createInstance as createI18n, type i18n as I18n } from 'i18next';
@@ -73,13 +70,6 @@ export class MockTranslationApi implements TranslationApi {
   private constructor(i18n: I18n, interpolator: JsxInterpolator) {
     this.#i18n = i18n;
     this.#interpolator = interpolator;
-  }
-
-  getDefaultMessage<TOptions extends {} | undefined>(
-    translation: TranslationRefTuple<TOptions>,
-    options?: NoInfer<TOptions>,
-  ): string {
-    return getDefaultMessage(translation, options);
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(
