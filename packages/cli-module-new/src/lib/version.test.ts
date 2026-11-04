@@ -90,13 +90,16 @@ describe('createPackageVersionProvider', () => {
 
     expect(provider('a', '0.1.5')).toBe('^0.1.0');
     expect(provider('b', '1.0.0')).toBe('*');
-    expect(provider('c', '0.1.0')).toBe('^0.1.0');
-    expect(provider('c', '0.1.6')).toBe('^0.1.4');
-    expect(provider('c', '0.2.0')).toBe('^0.2.0');
-    expect(provider('c', '0.2.6')).toBe('^0.2.4');
+    // The hint is a minimum, so the highest existing range is preferred
+    expect(provider('c', '0.1.0')).toBe('^0.3.4');
+    expect(provider('c', '0.1.6')).toBe('^0.3.4');
+    expect(provider('c', '0.2.0')).toBe('^0.3.4');
+    expect(provider('c', '0.2.6')).toBe('^0.3.4');
     expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
-    expect(provider('c', '0.3.0')).toBe('^0.3.0');
+    expect(provider('c', '0.3.0')).toBe('^0.3.4');
     expect(provider('c', '0.3.6')).toBe('^0.3.4');
+    // Nothing new enough in the lockfile
+    expect(provider('c', '0.4.0')).toBe('^0.4.0');
 
     // No special handling for @types packages.
     expect(provider('@types/t', '1.4.2')).toBe('^1.2.3');
@@ -113,6 +116,47 @@ describe('createPackageVersionProvider', () => {
       `^${packageVersions['@backstage/frontend-dev-utils']}`,
     );
     expect(provider('unknown-package')).toBeUndefined();
+  });
+
+  it('should prefer newer existing ranges over the version hint', async () => {
+    mockDir.setContent({
+      'yarn.lock': `${HEADER}
+"@testing-library/react@^16.3.0":
+  version "16.3.0"
+
+"@testing-library/react@^12.1.3":
+  version "12.1.5"
+
+"d@^2.0.0-next.1":
+  version "2.0.0-next.3"
+
+"d@^1.2.0":
+  version "1.2.3"
+
+"react@^18.0.2", "react@^16.13.1 || ^17.0.0 || ^18.0.0":
+  version "18.3.1"
+
+"e@npm:^1.0.0":
+  version "1.5.0"
+`,
+    });
+
+    const lockfile = await Lockfile.load(mockDir.resolve('yarn.lock'));
+    const provider = createPackageVersionProvider(lockfile);
+
+    expect(provider('@testing-library/react', '14.0.0')).toBe('^16.3.0');
+    expect(provider('@testing-library/react', '12.0.0')).toBe('^16.3.0');
+    expect(provider('@testing-library/react', '17.0.0')).toBe('^17.0.0');
+    // Prerelease lockfile versions are only picked for prerelease hints
+    expect(provider('d', '1.0.0')).toBe('^1.2.0');
+    expect(provider('d', '2.0.0-next.0')).toBe('2.0.0-next.0');
+    // Range hints keep the existing matching behaviour
+    expect(provider('react', '^16.13.1 || ^17.0.0 || ^18.0.0')).toBe(
+      '^16.13.1 || ^17.0.0 || ^18.0.0',
+    );
+    expect(provider('react', '17.0.0')).toBe('^16.13.1 || ^17.0.0 || ^18.0.0');
+    // Non-semver ranges are ignored
+    expect(provider('e', '1.0.0')).toBe('^1.0.0');
   });
 
   describe('with backstage protocol options', () => {

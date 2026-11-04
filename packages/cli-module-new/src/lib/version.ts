@@ -149,6 +149,41 @@ export function createPackageVersionProvider(
       return undefined;
     }
 
+    // Treat a plain, non-prerelease version hint as a minimum version, and
+    // prefer the highest existing range that resolves to at least that
+    // version. This avoids duplicating dependencies that are already on a
+    // newer version in the repo.
+    if (
+      versionHint &&
+      lockfileEntries &&
+      semver.valid(versionHint) &&
+      !semver.prerelease(versionHint)
+    ) {
+      const newerEntries = lockfileEntries.filter(
+        entry =>
+          semver.validRange(entry.range) &&
+          semver.valid(entry.version) &&
+          !semver.prerelease(entry.version) &&
+          semver.gte(entry.version, versionHint),
+      );
+      if (newerEntries.length > 0) {
+        const highestVersion = semver.maxSatisfying(
+          newerEntries.map(entry => entry.version),
+          '*',
+        );
+        const highestEntries = newerEntries.filter(
+          entry => entry.version === highestVersion,
+        );
+        // Among equal versions, prefer the last range that also accepts the
+        // hint, matching the behavior below
+        const preferred = highestEntries.filter(entry =>
+          semver.satisfies(versionHint, entry.range),
+        );
+        return (preferred.length ? preferred : highestEntries).slice(-1)[0]
+          .range;
+      }
+    }
+
     const validRanges = lockfileEntries?.filter(entry =>
       semver.satisfies(targetVersion, entry.range),
     );
