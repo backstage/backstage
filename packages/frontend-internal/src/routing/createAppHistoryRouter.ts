@@ -218,8 +218,10 @@ function toPath(to: AdapterTo, currentPathname: string): string {
  * `window.history` via push/replace) — `AppHistoryApi` remains the sole
  * history authority. The location fed into React Router context is the real
  * app-absolute location (not translated/scoped), so React Router's own
- * relative-path resolution produces app-absolute targets that are handed to
- * `appHistory.navigate` unchanged.
+ * relative-path resolution produces app-absolute targets. React Router's
+ * navigation basename is removed before handing targets to app history, which
+ * owns applying it to browser URLs. This also lets React Router recognize
+ * same-origin absolute links within the deployment basename.
  *
  * With a `routePattern`, the injected `UNSAFE_RouteContext` reproduces the
  * match a real `<Route path={`${routePattern}/*`}>` would have produced for
@@ -249,6 +251,24 @@ export function createAppHistoryRouter(
   options: CreateAppHistoryRouterOptions = {},
 ): AppHistoryRouterResult {
   const { routePattern, navigationContextExtras = {}, onUse } = options;
+  const basename = appHistory.createHref('/').replace(/\/+$/, '') || '/';
+
+  // React Router adds its navigation basename to resolved paths. Remove exactly
+  // that prefix before app history applies it, including for absolute Link URLs.
+  // LocationContext remains app-absolute, as in a native React Router.
+  function stripBasename(path: string): string {
+    if (
+      basename === '/' ||
+      !path.toLowerCase().startsWith(basename.toLowerCase())
+    ) {
+      return path;
+    }
+    const rest = path.slice(basename.length);
+    if (rest && !/^[/?#]/.test(rest)) {
+      return path;
+    }
+    return rest.startsWith('/') ? rest : `/${rest}`;
+  }
 
   const normalizedPattern =
     routePattern === undefined ? undefined : normalizePattern(routePattern);
@@ -517,26 +537,30 @@ export function createAppHistoryRouter(
             typeof to === 'string'
               ? to
               : `${to.pathname ?? ''}${to.search ?? ''}${to.hash ?? ''}`;
-          return appHistory.createHref(path);
+          return appHistory.createHref(stripBasename(path));
         },
         go(delta: number): void {
           appHistory.navigate(delta);
         },
-        // React Router resolves relative `to` targets against the pathname we
-        // supply via LocationContext (the real app-absolute pathname), so the
-        // resolved path handed to push/replace is already app-absolute — no
-        // further translation needed.
+        // React Router resolves against the app-absolute location, then adds
+        // the navigation basename; app history owns applying that basename.
         push(to: AdapterTo, state?: any): void {
-          appHistory.navigate(toPath(to, latestLocation.pathname), {
-            replace: false,
-            state,
-          });
+          appHistory.navigate(
+            stripBasename(toPath(to, latestLocation.pathname)),
+            {
+              replace: false,
+              state,
+            },
+          );
         },
         replace(to: AdapterTo, state?: any): void {
-          appHistory.navigate(toPath(to, latestLocation.pathname), {
-            replace: true,
-            state,
-          });
+          appHistory.navigate(
+            stripBasename(toPath(to, latestLocation.pathname)),
+            {
+              replace: true,
+              state,
+            },
+          );
         },
       }),
       // latestLocation / appHistory / options are stable for this router
@@ -549,7 +573,7 @@ export function createAppHistoryRouter(
       () =>
         observeReactRouterContext(
           {
-            basename: '/',
+            basename,
             navigator,
             static: false,
             ...navigationContextExtras,
