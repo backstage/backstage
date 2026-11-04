@@ -117,6 +117,25 @@ export function createWindowHistoryBackend(): HistoryBackend {
     );
   };
 
+  const readUserState = (state: unknown): unknown => {
+    if (isStoredState(state)) return state.userState;
+    // Import persisted React Router history without exposing its envelope or
+    // mixing its history coordinates with the framework's local coordinates.
+    if (
+      typeof state === 'object' &&
+      state !== null &&
+      'usr' in state &&
+      'key' in state &&
+      typeof state.key === 'string' &&
+      'idx' in state &&
+      Number.isInteger(state.idx) &&
+      Number(state.idx) >= 0
+    ) {
+      return state.usr;
+    }
+    return state;
+  };
+
   const wrapState = (
     userState: unknown,
     entry: HistoryEntryMetadata,
@@ -165,7 +184,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
       canGoBack: false,
     };
     window.history.replaceState(
-      wrapState(window.history.state, fallbackEntry),
+      wrapState(readUserState(window.history.state), fallbackEntry),
       '',
       window.location.href,
     );
@@ -177,8 +196,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
       pathname: window.location.pathname,
       search: window.location.search,
       hash: window.location.hash,
-      state:
-        (isStoredState(rawState) ? rawState.userState : rawState) ?? undefined,
+      state: readUserState(rawState) ?? undefined,
     };
   };
 
@@ -322,7 +340,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
         const key = readEntry().key;
         if (!hasNavigationApi && !isStoredState(window.history.state)) {
           window.history.replaceState(
-            wrapState(window.history.state, fallbackEntry),
+            wrapState(readUserState(window.history.state), fallbackEntry),
             '',
             href,
           );

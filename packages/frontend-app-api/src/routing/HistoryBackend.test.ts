@@ -138,6 +138,40 @@ describe('HistoryBackend', () => {
       });
     });
 
+    it('imports React Router user state on initialization', () => {
+      window.history.replaceState(
+        { usr: { from: '/catalog' }, key: 'old', idx: 1 },
+        '',
+        '/legacy',
+      );
+      const history = createWindowHistoryBackend();
+      expect(history.getLocation().state).toEqual({ from: '/catalog' });
+    });
+
+    it('imports React Router user state on back navigation', async () => {
+      const history = createWindowHistoryBackend();
+      window.history.pushState(
+        { usr: { from: '/older' }, key: 'older', idx: 2 },
+        '',
+        '/older',
+      );
+      history.push('/new');
+      const popped = new Promise<void>(resolve => {
+        const onPop = () => {
+          if (window.location.pathname === '/older') {
+            window.removeEventListener('popstate', onPop);
+            resolve();
+          }
+        };
+        window.addEventListener('popstate', onPop);
+      });
+      const unsubscribe = history.listen(() => {});
+      history.go(-1);
+      await popped;
+      expect(history.getLocation().state).toEqual({ from: '/older' });
+      unsubscribe();
+    });
+
     it('should read pre-existing window.history state', () => {
       window.history.replaceState({ legacy: true }, '', '/legacy');
       const history = createWindowHistoryBackend();

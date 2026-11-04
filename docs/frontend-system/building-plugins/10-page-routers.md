@@ -18,7 +18,7 @@ router. BUI controls inside an adapter use that library's relative semantics at
 the control's route scope. App-absolute paths and route-ref destinations work
 across plugins through both BUI and the library's own navigation APIs.
 
-Existing new frontend system pages retain implicit React Router v6 routing.
+Existing new frontend system pages retain implicit React Router v6 routing, including relative BUI links resolved at each control's route scope. An explicit page adapter overrides this compatibility navigation context. Framework hooks such as `useAppHref` and `useAppNavigate` still require app-absolute paths.
 Route parameters, relative links and nested routes continue to work without
 an immediate migration. In development, consuming this fallback logs a warning
 once per extension per app instance. Render an explicit page adapter to migrate
