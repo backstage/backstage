@@ -414,9 +414,6 @@ export namespace coreApis {
   const config: typeof configApiRef;
   const dialog: typeof dialogApiRef;
   const discovery: typeof discoveryApiRef;
-  const documentTitle: ApiRef_2<DocumentTitleApi, 'core.document-title'> & {
-    readonly $$type: '@backstage/ApiRef';
-  };
   const error: typeof errorApiRef;
   const featureFlags: typeof featureFlagsApiRef;
   const fetch: typeof fetchApiRef;
@@ -980,11 +977,6 @@ export type DiscoveryApi = {
 export const discoveryApiRef: ApiRef_2<DiscoveryApi, 'core.discovery'> & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public
-export interface DocumentTitleApi {
-  setTitle(options: { segments: string[] }): void;
-}
 
 // @public
 export type ErrorApi = {
@@ -1905,12 +1897,6 @@ export interface PageLayoutTab {
 }
 
 // @public
-export function PageTitle(props: {
-  title?: string;
-  children?: ReactNode;
-}): JSX_3.Element;
-
-// @public
 export type PendingOAuthRequest = {
   provider: AuthProviderInfo;
   reject(): void;
@@ -2422,9 +2408,6 @@ export function useAppNode(): AppNode | undefined;
 export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
-
-// @public
-export function usePageTitle(title: string | undefined): void;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

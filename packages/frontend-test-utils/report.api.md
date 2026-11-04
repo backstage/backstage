@@ -23,7 +23,6 @@ import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { DialogApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
-import { DocumentTitleApi } from '@backstage/frontend-plugin-api';
 import { ErrorApi } from '@backstage/frontend-plugin-api';
 import { ErrorApiError } from '@backstage/frontend-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/frontend-plugin-api';
@@ -225,15 +224,6 @@ export namespace mockApis {
       mock: (
         partialImpl?: Partial<DiscoveryApi> | undefined,
       ) => ApiMock<DiscoveryApi>;
-  }
-  export function documentTitle(): MockWithApiFactory<DocumentTitleApi> & {
-    getSegments(): string[];
-  };
-  export namespace documentTitle {
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<DocumentTitleApi> | undefined,
-      ) => ApiMock<DocumentTitleApi>;
   }
   export function error(options?: {
     collect?: boolean;

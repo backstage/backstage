@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import { coreApis, useApiHolder } from '@backstage/frontend-plugin-api';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useApiHolder } from '@backstage/frontend-plugin-api';
+import { documentTitleApiRef } from '@backstage/frontend-plugin-api/alpha';
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -52,33 +47,56 @@ const PageTitleContext =
  * @internal
  */
 export function PageTitleRegistryProvider(props: { children: ReactNode }) {
-  const documentTitleApi = useApiHolder().get(coreApis.documentTitle);
+  const documentTitleApi = useApiHolder().get(documentTitleApiRef);
   const [records, setRecords] = useState<TitleRecord[]>([]);
 
-  const register = useCallback((entry: TitleRecord): Registration => {
-    const record = { ...entry };
-    // The sort is stable, so segments at the same depth keep their mount order
-    setRecords(prev => [...prev, record].sort((a, b) => a.depth - b.depth));
-    return {
-      update(title: string) {
-        if (record.title === title) return;
-        record.title = title;
-        setRecords(prev => [...prev]);
-      },
-      unregister() {
-        setRecords(prev => prev.filter(r => r !== record));
-      },
-    };
-  }, []);
-
-  useEffect(() => {
-    documentTitleApi?.setTitle({ segments: records.map(r => r.title) });
-  }, [documentTitleApi, records]);
-
+  // The registry never changes, so the context value is created only once
   const value = useMemo(
-    () => createVersionedValueMap({ 1: { register } }),
-    [register],
+    () =>
+      createVersionedValueMap({
+        1: {
+          register(entry: TitleRecord): Registration {
+            const record = { ...entry };
+            // The sort is stable, so segments at the same depth keep their mount order
+            setRecords(prev =>
+              [...prev, record].sort((a, b) => a.depth - b.depth),
+            );
+            return {
+              update(title: string) {
+                if (record.title === title) return;
+                record.title = title;
+                setRecords(prev => [...prev]);
+              },
+              unregister() {
+                setRecords(prev => prev.filter(r => r !== record));
+              },
+            };
+          },
+        },
+      }),
+    [],
   );
+
+  // Only forward the segments when they have actually changed, since the
+  // records are also replaced when for example a segment is removed and added
+  // back with the same title
+  const lastSegmentsRef = useRef<string[] | undefined>(undefined);
+  useEffect(() => {
+    if (!documentTitleApi) {
+      return;
+    }
+    const segments = records.map(r => r.title);
+    const last = lastSegmentsRef.current;
+    if (
+      last &&
+      last.length === segments.length &&
+      last.every((segment, index) => segment === segments[index])
+    ) {
+      return;
+    }
+    lastSegmentsRef.current = segments;
+    documentTitleApi.setTitle({ segments });
+  }, [documentTitleApi, records]);
 
   return (
     <PageTitleContext.Provider value={value}>

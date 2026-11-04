@@ -79,7 +79,7 @@ function useTitleRegistration(title: string | undefined, depth: number) {
  * automatically, so this is only needed for additional segments, such as the
  * name of the item that a page is showing.
  *
- * @public
+ * @alpha
  */
 export function PageTitle(props: { title?: string; children?: ReactNode }) {
   const depthCtx = useVersionedContext<DepthMap>(DEPTH_KEY);
@@ -118,7 +118,7 @@ export function PageTitle(props: { title?: string; children?: ReactNode }) {
  * }
  * ```
  *
- * @public
+ * @alpha
  */
 export function usePageTitle(title: string | undefined): void {
   const depthCtx = useVersionedContext<DepthMap>(DEPTH_KEY);

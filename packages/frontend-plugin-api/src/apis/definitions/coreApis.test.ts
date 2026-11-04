@@ -43,13 +43,7 @@ describe('coreApis', () => {
       translation: apis.translationApiRef,
     };
 
-    // APIs added after the switch to coreApis have no standalone ref
-    const withoutStandaloneRef = ['documentTitle'];
-
-    expect(Object.keys(coreApis).sort()).toEqual(
-      [...Object.keys(refs), ...withoutStandaloneRef].sort(),
-    );
-    expect(coreApis.documentTitle.id).toBe('core.document-title');
+    expect(Object.keys(coreApis).sort()).toEqual(Object.keys(refs).sort());
     for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
       expect(coreApis[name]).toBe(refs[name]);
       expect(coreApis[name].id).toBe(refs[name].id);

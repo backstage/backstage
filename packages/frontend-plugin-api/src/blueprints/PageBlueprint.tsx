@@ -169,7 +169,10 @@ export const PageBlueprint = createExtensionBlueprint({
                       key={index}
                       path={`${path}/*`}
                       element={
-                        <PageTitle title={tabTitle || path}>
+                        // The key makes sure that switching between sub-pages
+                        // remounts the title and breadcrumb, rather than
+                        // reusing them while the previous content is shown
+                        <PageTitle key={path} title={tabTitle || path}>
                           <BreadcrumbEntry
                             entry={{ label: tabTitle || path, href: path }}
                           >

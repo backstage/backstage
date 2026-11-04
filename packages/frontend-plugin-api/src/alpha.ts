@@ -61,3 +61,8 @@ export {
   type PluginWrapperApi,
   pluginWrapperApiRef,
 } from './apis/definitions/PluginWrapperApi';
+export {
+  type DocumentTitleApi,
+  documentTitleApiRef,
+} from './apis/definitions/DocumentTitleApi';
+export { PageTitle, usePageTitle } from './pageTitle';

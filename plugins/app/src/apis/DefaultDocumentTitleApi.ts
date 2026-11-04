@@ -14,34 +14,60 @@
  * limitations under the License.
  */
 
-import { DocumentTitleApi } from '@backstage/frontend-plugin-api';
+import { ConfigApi } from '@backstage/frontend-plugin-api';
+import { DocumentTitleApi } from '@backstage/frontend-plugin-api/alpha';
+
+const DEFAULT_APP_TITLE = 'Backstage';
+
+function readAppTitle(configApi: ConfigApi) {
+  return configApi.getOptionalString('app.title') ?? DEFAULT_APP_TITLE;
+}
 
 /**
  * Default implementation of the {@link DocumentTitleApi}, which formats the
  * title segments using a template and writes the result to `document.title`.
  *
+ * @remarks
+ *
+ * The app title is read from the `app.title` configuration value, and the
+ * document title is updated if that value changes.
+ *
  * @internal
  */
 export class DefaultDocumentTitleApi implements DocumentTitleApi {
-  readonly #appTitle: string;
   readonly #template: string;
   readonly #separator: string;
   readonly #order: 'innermost-first' | 'outermost-first';
+  #appTitle: string;
+  #segments: string[] | undefined;
 
   constructor(options: {
-    appTitle: string;
+    configApi: ConfigApi;
     template: string;
     separator: string;
     order: 'innermost-first' | 'outermost-first';
   }) {
-    this.#appTitle = options.appTitle;
     this.#template = options.template;
     this.#separator = options.separator;
     this.#order = options.order;
+
+    const { configApi } = options;
+    this.#appTitle = readAppTitle(configApi);
+    configApi.subscribe?.(() => {
+      const appTitle = readAppTitle(configApi);
+      if (appTitle !== this.#appTitle) {
+        this.#appTitle = appTitle;
+        // Only rewrite the title if it has been set at least once
+        if (this.#segments) {
+          this.#write();
+        }
+      }
+    });
   }
 
   setTitle(options: { segments: string[] }): void {
-    document.title = this.format(options.segments);
+    this.#segments = [...options.segments];
+    this.#write();
   }
 
   format(segments: string[]): string {
@@ -53,5 +79,12 @@ export class DefaultDocumentTitleApi implements DocumentTitleApi {
     return this.#template
       .replaceAll('{page}', ordered.join(this.#separator))
       .replaceAll('{app}', this.#appTitle);
+  }
+
+  #write() {
+    const title = this.format(this.#segments ?? []);
+    if (document.title !== title) {
+      document.title = title;
+    }
   }
 }

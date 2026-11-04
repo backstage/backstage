@@ -20,7 +20,6 @@ import {
   type AnalyticsEvent,
   type ConfigApi,
   type DiscoveryApi,
-  type DocumentTitleApi,
   type ErrorApi,
   type ErrorApiError,
   type ErrorApiErrorContext,
@@ -328,39 +327,6 @@ export namespace mockApis {
   export namespace discovery {
     export const mock = createApiMock(coreApis.discovery, () => ({
       getBaseUrl: jest.fn(),
-    }));
-  }
-
-  /**
-   * Fake implementation of
-   * {@link @backstage/frontend-plugin-api#DocumentTitleApi}, which records the
-   * segments of the latest title rather than writing to the document.
-   *
-   * @public
-   */
-  export function documentTitle(): MockWithApiFactory<DocumentTitleApi> & {
-    getSegments(): string[];
-  } {
-    let segments: string[] = [];
-    return attachMockApiFactory<
-      DocumentTitleApi,
-      DocumentTitleApi & { getSegments(): string[] }
-    >(coreApis.documentTitle, {
-      setTitle(options: { segments: string[] }) {
-        segments = [...options.segments];
-      },
-      getSegments: () => segments,
-    });
-  }
-
-  /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api#DocumentTitleApi}.
-   *
-   * @public
-   */
-  export namespace documentTitle {
-    export const mock = createApiMock(coreApis.documentTitle, () => ({
-      setTitle: jest.fn(),
     }));
   }
 

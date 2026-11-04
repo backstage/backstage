@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  ApiBlueprint,
-  configApiRef,
-  coreApis,
-} from '@backstage/frontend-plugin-api';
+import { ApiBlueprint, coreApis } from '@backstage/frontend-plugin-api';
+import { documentTitleApiRef } from '@backstage/frontend-plugin-api/alpha';
 import { z } from 'zod/v4';
 import { DefaultDocumentTitleApi } from '../apis/DefaultDocumentTitleApi';
 
@@ -34,11 +31,11 @@ export const DocumentTitleApi = ApiBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory(defineParams =>
       defineParams({
-        api: coreApis.documentTitle,
-        deps: { configApi: configApiRef },
+        api: documentTitleApiRef,
+        deps: { configApi: coreApis.config },
         factory: ({ configApi }) =>
           new DefaultDocumentTitleApi({
-            appTitle: configApi.getOptionalString('app.title') ?? 'Backstage',
+            configApi,
             template: config.template,
             separator: config.separator,
             order: config.order,

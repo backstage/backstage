@@ -21,8 +21,9 @@ import {
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
-  usePageTitle,
 } from '@backstage/frontend-plugin-api';
+import { usePageTitle } from '@backstage/frontend-plugin-api/alpha';
+import { ConfigReader } from '@backstage/config';
 import { useState } from 'react';
 import { DefaultDocumentTitleApi } from '../apis/DefaultDocumentTitleApi';
 
@@ -67,7 +68,7 @@ describe('DocumentTitleApi', () => {
 
   it('formats segments using the template', () => {
     const api = new DefaultDocumentTitleApi({
-      appTitle: 'My Portal',
+      configApi: new ConfigReader({ app: { title: 'My Portal' } }),
       template: '{page} | {app}',
       separator: ' | ',
       order: 'innermost-first',
@@ -78,14 +79,53 @@ describe('DocumentTitleApi', () => {
     );
 
     const outermostFirst = new DefaultDocumentTitleApi({
-      appTitle: 'My Portal',
+      configApi: new ConfigReader({}),
       template: '{app}: {page}',
       separator: ' / ',
       order: 'outermost-first',
     });
     expect(outermostFirst.format(['Catalog', 'Overview'])).toBe(
-      'My Portal: Catalog / Overview',
+      'Backstage: Catalog / Overview',
     );
+  });
+
+  it('follows changes to the app title, and only writes changed titles', () => {
+    let appTitle = 'First Portal';
+    let onChange: () => void = () => {};
+    const configApi = Object.assign(new ConfigReader({}), {
+      getOptionalString: () => appTitle,
+      subscribe(listener: () => void) {
+        onChange = listener;
+        return { unsubscribe: () => {} };
+      },
+    });
+    const titleSetter = jest.spyOn(document, 'title', 'set');
+    const api = new DefaultDocumentTitleApi({
+      configApi,
+      template: '{page} | {app}',
+      separator: ' | ',
+      order: 'innermost-first',
+    });
+
+    // Nothing is written until the first title is set
+    appTitle = 'Second Portal';
+    onChange();
+    expect(titleSetter).not.toHaveBeenCalled();
+
+    api.setTitle({ segments: ['Catalog'] });
+    api.setTitle({ segments: ['Catalog'] });
+    expect(titleSetter).toHaveBeenCalledTimes(1);
+    expect(document.title).toBe('Catalog | Second Portal');
+
+    onChange();
+    expect(titleSetter).toHaveBeenCalledTimes(1);
+
+    appTitle = 'Third Portal';
+    onChange();
+    expect(titleSetter).toHaveBeenCalledTimes(2);
+    expect(document.title).toBe('Catalog | Third Portal');
+
+    titleSetter.mockRestore();
   });
 
   it('sets the document title from pages, sub-pages and custom segments', async () => {
@@ -95,21 +135,35 @@ describe('DocumentTitleApi', () => {
       initialRouteEntries: ['/things/details'],
     });
 
+    const titleSetter = jest.spyOn(document, 'title', 'set');
     const rename = await screen.findByRole('button', { name: 'Rename' });
     await waitFor(() =>
       expect(document.title).toBe('first-item | Details | Things | My Portal'),
+    );
+    // The title is written once the content has loaded, not for every
+    // intermediate registration
+    const writesAfterLoad = titleSetter.mock.calls.length;
+    expect(new Set(titleSetter.mock.calls.map(([t]) => t)).size).toBe(
+      writesAfterLoad,
     );
 
     await userEvent.click(rename);
     await waitFor(() =>
       expect(document.title).toBe('second-item | Details | Things | My Portal'),
     );
+    expect(titleSetter).toHaveBeenCalledTimes(writesAfterLoad + 1);
+
+    // Re-rendering with an unchanged title writes nothing
+    await userEvent.click(rename);
+    expect(titleSetter).toHaveBeenCalledTimes(writesAfterLoad + 1);
 
     await userEvent.click(screen.getByRole('tab', { name: 'Other' }));
     await screen.findByText('Other content');
     await waitFor(() =>
       expect(document.title).toBe('Other | Things | My Portal'),
     );
+    expect(titleSetter).toHaveBeenCalledTimes(writesAfterLoad + 2);
+    titleSetter.mockRestore();
   });
 
   it('can be configured through extension config', async () => {

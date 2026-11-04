@@ -21,10 +21,10 @@ Page extensions provide content for a particular route in the app. By default pa
 
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
-The page title and the titles of its sub-pages are also used for the browser's document title. To add more detail, such as the name of the item a page is showing, call `usePageTitle` from within the page content:
+The page title and the titles of its sub-pages are also used for the browser's document title. To add more detail, such as the name of the item a page is showing, call `usePageTitle` from within the page content. This API is currently in alpha:
 
 ```tsx
-import { usePageTitle } from '@backstage/frontend-plugin-api';
+import { usePageTitle } from '@backstage/frontend-plugin-api/alpha';
 
 function ItemDetails(props: { item: Item }) {
   usePageTitle(props.item.name);

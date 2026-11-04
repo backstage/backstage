@@ -35,8 +35,6 @@ import { storageApiRef } from './StorageApi';
 import { swappableComponentsApiRef } from './SwappableComponentsApi';
 import { toastApiRef } from './ToastApi';
 import { translationApiRef } from './TranslationApi';
-import type { DocumentTitleApi } from './DocumentTitleApi';
-import { createApiRef } from '../system';
 
 /**
  * References to the core Utility APIs provided by the frontend system.
@@ -104,16 +102,6 @@ export namespace coreApis {
    * @public
    */
   export const discovery: typeof discoveryApiRef = discoveryApiRef;
-
-  /**
-   * The API reference for {@link DocumentTitleApi}.
-   *
-   * @public
-   */
-  export const documentTitle = createApiRef<DocumentTitleApi>().with({
-    id: 'core.document-title',
-    pluginId: 'app',
-  });
 
   /**
    * The API reference for {@link ErrorApi}.

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '../system';
+
 /**
  * Writes the document title of the app.
  *
  * @remarks
  *
  * The app collects page title segments registered with
- * {@link @backstage/frontend-plugin-api#PageTitle} and
- * {@link @backstage/frontend-plugin-api#usePageTitle}, and passes them to this
+ * {@link PageTitle} and
+ * {@link usePageTitle}, and passes them to this
  * API whenever they change. The default implementation formats the segments
  * using a configurable template and sets `document.title`. Replace this API to
  * change the format, or to write the title through a different library.
@@ -29,7 +31,7 @@
  * Plugins should not call this API directly, but register title segments
  * instead.
  *
- * @public
+ * @alpha
  */
 export interface DocumentTitleApi {
   /**
@@ -43,3 +45,13 @@ export interface DocumentTitleApi {
     segments: string[];
   }): void;
 }
+
+/**
+ * The {@link ApiRef} of {@link DocumentTitleApi}.
+ *
+ * @alpha
+ */
+export const documentTitleApiRef = createApiRef<DocumentTitleApi>().with({
+  id: 'core.document-title',
+  pluginId: 'app',
+});
