@@ -240,15 +240,27 @@ export function resolveParameterSteps(
   steps: ReadonlyArray<{ schema: JsonObject; when?: unknown }>,
 ): { visible: boolean[]; values: Record<string, JsonValue> } {
   const resolved: Array<{ schema: JsonObject; visible: boolean }> = [];
+  // Values are only filtered when a step with a condition needs them, and
+  // only once an earlier step is hidden, rather than once for every step.
+  let filtered = values;
+  let anyHidden = false;
+  let stale = false;
   for (const step of steps) {
     const condition = step.when;
-    const visible =
-      (typeof condition !== 'string' && typeof condition !== 'boolean') ||
-      evaluateCondition(condition, filterHiddenStepValues(values, resolved));
+    let visible = true;
+    if (typeof condition === 'string' || typeof condition === 'boolean') {
+      if (stale) {
+        filtered = filterHiddenStepValues(values, resolved);
+        stale = false;
+      }
+      visible = evaluateCondition(condition, filtered);
+    }
     resolved.push({ schema: step.schema, visible });
+    anyHidden = anyHidden || !visible;
+    stale = anyHidden;
   }
   return {
     visible: resolved.map(step => step.visible),
-    values: filterHiddenStepValues(values, resolved),
+    values: stale ? filterHiddenStepValues(values, resolved) : filtered,
   };
 }
