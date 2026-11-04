@@ -16,7 +16,7 @@
 
 import { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/frontend-test-utils';
 import { appLanguageApiRef, translationApiRef } from '../apis';
 import { createTranslationRef } from './TranslationRef';
 import { createTranslationResource } from './TranslationResource';
@@ -26,7 +26,7 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi';
 
-it('retains resolved titles during loading, handles empty titles, and recovers after a failed locale', async () => {
+it('retains titles during loading and reconnects a failed merged stream on language changes', async () => {
   const ref = createTranslationRef({
     id: 'titles',
     messages: { main: 'Main', other: 'Other' },
@@ -106,11 +106,14 @@ it('retains resolved titles during loading, handles empty titles, and recovers a
     expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']),
   );
   await act(async () => resolveSecondary({ default: { title: 'Zweite' } }));
-  expect(result.current).toEqual(['Main', undefined, 'Other', 'Zweite']);
+  expect(api.getTranslation(secondaryRef).t('title')).toBe('Zweite');
+  expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']);
+  expect(observe).toHaveBeenCalledTimes(2);
   act(() => languageApi.setLanguage('sv'));
   await waitFor(() =>
     expect(result.current).toEqual(['', undefined, 'Annat', 'Andra']),
   );
+  expect(observe).toHaveBeenCalledTimes(4);
   rerender({ titles: [secondaryRef('title'), ref('other')] });
   expect(result.current).toEqual(['Andra', 'Annat']);
   rerender({ titles: [] });

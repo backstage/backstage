@@ -19,7 +19,6 @@ import type {
   TranslationApi,
   TranslationRef,
 } from '@backstage/frontend-plugin-api';
-import Observable from 'zen-observable';
 import { merge } from 'zen-observable/extras';
 
 /** @internal */
@@ -35,28 +34,14 @@ export function subscribeToTranslationChanges(options: {
     onChange();
     return () => {};
   }
-  let failed = false;
   const subscribe = () =>
-    merge(
-      ...refs.map(
-        ref =>
-          new Observable<void>(observer =>
-            translationApi.translation$(ref).subscribe({
-              next: () => observer.next(),
-              error: () => {
-                // Keep other resources updating after an error; reconnect on the next language change.
-                failed = true;
-                observer.next();
-              },
-            }),
-          ),
-      ),
-    ).subscribe(onChange);
+    merge(...refs.map(ref => translationApi.translation$(ref))).subscribe({
+      next: onChange,
+      error: onChange,
+    });
   let subscription = subscribe();
   const languageSubscription = languageApi.language$().subscribe(() => {
-    if (failed) {
-      failed = false;
-      subscription.unsubscribe();
+    if (subscription.closed) {
       subscription = subscribe();
     }
     onChange();
