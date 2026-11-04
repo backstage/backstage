@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { hasErrors } from './utils';
+import { customizeValidator } from '@rjsf/validator-ajv8';
+import { getValidationData, hasErrors } from './utils';
 
 describe('hasErrors', () => {
   it('should return false for empty _errors', () => {
@@ -88,5 +89,82 @@ describe('hasErrors', () => {
     };
 
     expect(hasErrors(errors)).toBe(true);
+  });
+});
+
+describe('getValidationData', () => {
+  const validator = customizeValidator();
+
+  it('tracks nested declared values, references and complete custom-field inputs without unrelated values', () => {
+    const schema = {
+      definitions: {
+        Connection: { properties: { username: { type: 'string' } } },
+      },
+      properties: {
+        connection: { $ref: '#/definitions/Connection' },
+        custom: {
+          type: 'object',
+          'ui:field': 'Custom',
+          properties: { value: { type: 'string' } },
+        },
+        rows: { type: 'array', items: { type: 'string' } },
+      },
+    };
+    const data = {
+      connection: { username: 'original', other: 'unrelated' },
+      custom: { value: 'original', context: 'needed' },
+      rows: ['original'],
+      unrelated: 'ignore',
+    };
+    const inputs = getValidationData(schema, data, validator);
+    data.connection.username = 'edited';
+    data.custom.value = 'edited';
+    data.rows.push('edited');
+    expect(inputs).toEqual({
+      connection: { username: 'original' },
+      custom: { value: 'original', context: 'needed' },
+      rows: ['original'],
+    });
+    expect(getValidationData({}, data, validator)).toEqual({});
+    expect(
+      getValidationData({ required: ['unrelated'] }, data, validator),
+    ).toEqual({ unrelated: 'ignore' });
+  });
+
+  it('tracks dependency selectors and the active branch even when the selector is not a declared property', () => {
+    const schema = {
+      dependencies: {
+        mode: {
+          oneOf: [
+            {
+              properties: {
+                mode: { const: 'create' },
+                name: { type: 'string' },
+              },
+            },
+            {
+              properties: {
+                mode: { const: 'manage' },
+                project: { type: 'string' },
+              },
+            },
+          ],
+        },
+      },
+    };
+    expect(
+      getValidationData(
+        schema,
+        { mode: 'create', name: 'new', project: 'retained' },
+        validator,
+      ),
+    ).toEqual({ mode: 'create', name: 'new' });
+    expect(
+      getValidationData(
+        schema,
+        { mode: 'manage', name: 'retained', project: 'existing' },
+        validator,
+      ),
+    ).toEqual({ mode: 'manage', project: 'existing' });
   });
 });

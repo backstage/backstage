@@ -23,7 +23,7 @@ import {
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
 import { resolveParameterSteps } from '@backstage/plugin-scaffolder-common/alpha';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import MuiStep from '@material-ui/core/Step';
@@ -34,7 +34,7 @@ import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import { customizeValidator } from '@rjsf/validator-ajv8';
 import ajvErrors from 'ajv-errors';
-import { merge } from 'lodash';
+import { cloneDeep, isEqual, merge } from 'lodash';
 import {
   ComponentType,
   useCallback,
@@ -57,7 +57,7 @@ import {
 } from './createAsyncValidators';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
-import { hasErrors } from './utils';
+import { getValidationData, hasErrors } from './utils';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -133,7 +133,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   // stays the same when other steps are shown or hidden.
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
-  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(new Set());
+  const [validatedSteps, setValidatedSteps] = useState(
+    new Map<number, { step: (typeof steps)[number]; inputs: JsonObject }>(),
+  );
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
@@ -150,13 +152,22 @@ export const Stepper = (stepperProps: StepperProps) => {
   }, [steps, stepsState]);
 
   const visibleIndices = new Set(visibleSteps.map(step => steps.indexOf(step)));
-  if ([...validatedSteps].some(index => !visibleIndices.has(index))) {
-    setValidatedSteps(
-      new Set([...validatedSteps].filter(index => visibleIndices.has(index))),
-    );
+  const currentValidations = new Map(
+    [...validatedSteps].filter(
+      ([index, completed]) =>
+        visibleIndices.has(index) &&
+        isEqual(completed.step, steps[index]) &&
+        isEqual(
+          completed.inputs,
+          getValidationData(steps[index].mergedSchema, stepsState, validator),
+        ),
+    ),
+  );
+  if (currentValidations.size !== validatedSteps.size) {
+    setValidatedSteps(currentValidations);
   }
   const pendingStepIndex = steps.findIndex(
-    (_, index) => visibleIndices.has(index) && !validatedSteps.has(index),
+    (_, index) => visibleIndices.has(index) && !currentValidations.has(index),
   );
   // Reconcile the stored cursor with the displayed step before visibility can
   // change again. Otherwise a previously hidden step can steal the cursor.
@@ -265,7 +276,7 @@ export const Stepper = (stepperProps: StepperProps) => {
       });
       setValidatedSteps(current => {
         if (!current.has(displayedStepIndex)) return current;
-        const updated = new Set(current);
+        const updated = new Map(current);
         updated.delete(displayedStepIndex);
         return updated;
       });
@@ -299,7 +310,14 @@ export const Stepper = (stepperProps: StepperProps) => {
         analytics.captureEvent('click', `Next Step (${stepNum})`);
         // Move to the next step that is visible with the submitted values.
         const current = displayedStepIndex;
-        const validated = new Set(validatedSteps).add(current);
+        const validated = new Map(validatedSteps).set(current, {
+          step: cloneDeep(steps[current]),
+          inputs: getValidationData(
+            steps[current].mergedSchema,
+            { ...stepsState, ...formData },
+            validator,
+          ),
+        });
         setValidatedSteps(validated);
         const { visible } = resolveParameterSteps(
           { ...stepsState, ...formData },

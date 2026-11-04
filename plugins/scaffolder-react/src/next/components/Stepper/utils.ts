@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 import type { JsonObject, JsonValue } from '@backstage/types';
-import type { FieldValidation } from '@rjsf/utils';
+import {
+  retrieveSchema,
+  type FieldValidation,
+  type RJSFSchema,
+  type ValidatorType,
+} from '@rjsf/utils';
+import { cloneDeep } from 'lodash';
 import { FormValidation } from './createAsyncValidators';
 
 function isFieldValidation(error: any): error is FieldValidation {
@@ -45,4 +51,53 @@ export function hasErrors(errors?: FormValidation): boolean {
 
 export function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+// Capture only the inputs described by a step, using its active schema branches.
+// Custom fields and opaque objects receive their complete value as validator input.
+export function getValidationData(
+  schema: JsonObject,
+  formData: JsonObject,
+  validator: ValidatorType,
+): JsonObject {
+  function project(
+    currentSchema: RJSFSchema,
+    data: JsonValue,
+    root = false,
+  ): JsonValue {
+    if (!isObject(data)) return cloneDeep(data);
+    const resolved = retrieveSchema(validator, currentSchema, schema, data);
+    if (
+      (!root && (resolved['ui:field'] || !resolved.properties)) ||
+      resolved.additionalProperties ||
+      resolved.patternProperties
+    ) {
+      return cloneDeep(data);
+    }
+    const triggers =
+      currentSchema.if && typeof currentSchema.if === 'object'
+        ? currentSchema.if.properties
+        : undefined;
+    const keys = new Set([
+      ...Object.keys(resolved.properties ?? {}),
+      ...(resolved.required ?? []),
+      ...Object.keys(currentSchema.dependencies ?? {}),
+      ...Object.keys(currentSchema.dependentSchemas ?? {}),
+      ...Object.keys(triggers ?? {}),
+    ]);
+    return Object.fromEntries(
+      [...keys]
+        .filter(key => Object.hasOwn(data, key))
+        .map(key => {
+          const property = resolved.properties?.[key];
+          return [
+            key,
+            property && typeof property === 'object'
+              ? project(property, data[key] as JsonValue)
+              : cloneDeep(data[key]),
+          ];
+        }),
+    );
+  }
+  return project(schema, formData, true) as JsonObject;
 }

@@ -510,7 +510,7 @@ The `when` field supports:
 - **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
 - **Boolean values:** `when: true` or `when: false`
 
-Changing a condition does not move the user away from the current step while it remains visible. Before review, the wizard returns to any visible step that has not passed frontend validation. A step that is hidden and later shown must be validated again, even when its previous values are restored. If values or step visibility change while custom validation is running, its result is discarded and the user must validate the updated form before continuing.
+Changing a condition does not move the user away from the current step while it remains visible. Before review, the wizard returns to any visible step that has not passed frontend validation. A step that is hidden and later shown must be validated again, even when its previous values are restored. Validation also becomes pending when the step definition changes or another page changes its declared input values. If values or step visibility change while custom validation is running, its result is discarded and the user must validate the updated form before continuing.
 
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 

@@ -26,6 +26,185 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it.each(['insert', 'reorder', 'schema'])(
+    'revalidates steps after a manifest %s while review is open',
+    async change => {
+      const onCreate = jest.fn();
+      const validateFirst = jest.fn();
+      const manifest: TemplateParameterSchema = {
+        title: 'Changing definitions',
+        steps: [
+          {
+            title: 'First',
+            schema: {
+              properties: { shared: { type: 'string', 'ui:field': 'Shared' } },
+            },
+          },
+          {
+            title: 'Last',
+            schema: { properties: { last: { type: 'string' } } },
+          },
+        ],
+      };
+      const Shared = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<string>) => (
+        <input
+          aria-label="Shared"
+          value={formData ?? ''}
+          onChange={event => onChange(event.target.value)}
+        />
+      );
+      const renderStepper = (current: TemplateParameterSchema) => (
+        <SecretsContextProvider>
+          <Stepper
+            manifest={current}
+            initialState={{ shared: 'approved' }}
+            extensions={[
+              { name: 'Shared', component: Shared, validation: validateFirst },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>
+      );
+      const { rerender } = await renderInTestApp(renderStepper(manifest));
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      await screen.findByRole('textbox', { name: 'last' });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      validateFirst.mockClear();
+      const required = {
+        title: 'Required',
+        schema: {
+          required: ['newValue'],
+          properties: { newValue: { type: 'string' } },
+        },
+      };
+      const replacements: Record<string, TemplateParameterSchema['steps']> = {
+        insert: [required, ...manifest.steps],
+        reorder: [manifest.steps[1], manifest.steps[0]],
+        schema: [
+          {
+            ...manifest.steps[0],
+            schema: { ...manifest.steps[0].schema, ...required.schema },
+          },
+          manifest.steps[1],
+        ],
+      };
+      rerender(renderStepper({ ...manifest, steps: replacements[change] }));
+      if (screen.queryByRole('button', { name: 'Create' })) {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      }
+      if (
+        change === 'insert' &&
+        screen.queryByRole('textbox', { name: 'last' })
+      ) {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      }
+      if (change === 'reorder') {
+        fireEvent.click(await screen.findByRole('button', { name: 'Next' }));
+        await screen.findByRole('textbox', { name: 'Shared' });
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+        await screen.findByRole('button', { name: 'Create' });
+      } else {
+        const input = await screen.findByRole('textbox', { name: 'newValue' });
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await screen.findByRole('textbox', { name: 'newValue' });
+        fireEvent.change(input, { target: { value: 'configured' } });
+      }
+      expect(validateFirst).toHaveBeenCalledTimes(change === 'reorder' ? 1 : 0);
+      expect(onCreate).not.toHaveBeenCalled();
+    },
+  );
+
+  it('revalidates a shared custom field edited by a later step without invalidating unrelated fields', async () => {
+    const onCreate = jest.fn();
+    const validateShared = jest.fn(
+      async (value: unknown, errors: FieldValidation) => {
+        if (value !== 'approved')
+          errors.addError('Shared value must be approved');
+      },
+    );
+    const Shared = ({
+      formData,
+      onChange,
+    }: FieldExtensionComponentProps<string>) => (
+      <input
+        aria-label="Shared"
+        value={formData ?? ''}
+        onChange={event => onChange(event.target.value)}
+      />
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Shared inputs',
+            steps: [
+              {
+                title: 'Validate shared',
+                schema: {
+                  properties: {
+                    shared: { type: 'string', 'ui:field': 'Shared' },
+                  },
+                },
+              },
+              {
+                title: 'Edit shared',
+                schema: {
+                  properties: {
+                    shared: { type: 'string' },
+                    unrelated: { type: 'string' },
+                  },
+                },
+              },
+            ],
+          }}
+          initialState={{ shared: 'approved' }}
+          extensions={[
+            { name: 'Shared', component: Shared, validation: validateShared },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(
+      await screen.findByRole('textbox', { name: 'unrelated' }),
+      { target: { value: 'other' } },
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('button', { name: 'Create' });
+    expect(validateShared).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'shared' }), {
+      target: { value: 'invalid' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('textbox', { name: 'Shared' });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(
+      await screen.findAllByText('Shared value must be approved'),
+    ).not.toHaveLength(0);
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Shared' }), {
+      target: { value: 'approved' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        shared: 'approved',
+        unrelated: 'other',
+      }),
+    );
+  });
+
   it.each([false, true])(
     'discards pending validation after visibility changes (stale error: %s)',
     async staleError => {
@@ -723,6 +902,17 @@ describe('Stepper', () => {
       fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
+    // Changing a shared input on step 2 invalidates step 1's completion.
+    expect(await screen.findByRole('textbox', { name: 'Foo - 1' })).toHaveValue(
+      'value 2',
+    );
+    expect(onCreate).not.toHaveBeenCalled();
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
     await act(async () => {
       fireEvent.click(getByRole('button', { name: 'Create' }));
     });
