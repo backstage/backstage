@@ -219,7 +219,7 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -251,7 +251,7 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              TranslationRefTuple<{}, string>,
+              TranslationRefTuple<undefined>,
               'core.titleTranslation',
               {
                 optional: true;
@@ -467,7 +467,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -512,7 +512,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -555,7 +555,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -634,7 +634,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -694,7 +694,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;

@@ -32,7 +32,7 @@ export interface TranslationRef<
   /** Selects a message key, checked against this ref's declared messages. */
   <TKey extends TranslationMessageKey<TMessages>>(
     key: TKey,
-  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>, TKey>;
+  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>>;
 
   $$type: '@backstage/TranslationRef';
 
@@ -48,15 +48,14 @@ export interface TranslationRef<
  * @public
  */
 export interface TranslationRefTuple<
-  TOptions extends {} = {},
-  TKey extends string = string,
+  TOptions extends {} | undefined = undefined,
 > {
   /** The ref that owns the selected message; its catalog is erased from the tuple. */
   readonly ref: TranslationRef;
   /** The selected message key. */
-  readonly key: TKey;
-  /** For type inference only; must not be accessed at runtime. Encodes accepted formatting values. */
-  readonly T: (options: TOptions) => void;
+  readonly key: string;
+  /** For type inference only; undefined when no formatting values are required. Must not be accessed at runtime. */
+  readonly T: TOptions;
 }
 
 /** @internal */
@@ -169,21 +168,12 @@ export function createTranslationRef<
     <TKey extends TranslationMessageKey<FlattenedMessages<TNestedMessages>>>(
       key: TKey,
     ) =>
-      Object.defineProperty(
-        {
-          ref: ref as unknown as TranslationRef,
-          key,
-        },
-        'T',
-        {
-          get() {
-            throw new Error('Not implemented');
-          },
-        },
-      ) as TranslationRefTuple<
-        TranslationMessageOptions<FlattenedMessages<TNestedMessages>, TKey>,
-        TKey
-      >,
+      ({
+        ref: ref as unknown as TranslationRef,
+        key,
+      } as unknown as TranslationRefTuple<
+        TranslationMessageOptions<FlattenedMessages<TNestedMessages>, TKey>
+      >),
     {
       $$type: '@backstage/TranslationRef' as const,
       version: 'v1' as const,

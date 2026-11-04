@@ -38,8 +38,7 @@ describe('createTranslationRef', () => {
     });
     expect(ref('key')).toEqual({ ref, key: 'key' });
     expect(ref('key').ref).toBe(ref);
-    const selectedKey: keyof typeof ref.T = ref('key').key;
-    expect(selectedKey).toBe('key');
+    expect(ref('key').key).toBe('key');
     expect(String(ref)).toBe('TranslationRef{id=test}');
     expect(() => ref.T).toThrow('Not implemented');
     // @ts-expect-error Unknown keys cannot be selected from this ref.
@@ -49,7 +48,7 @@ describe('createTranslationRef', () => {
     ref('nested');
   });
 
-  it('carries only inferred formatting options and the selected key in tuple types', () => {
+  it('carries only inferred formatting options in tuple types', () => {
     const ref = createTranslationRef({
       id: 'titles',
       messages: {
@@ -88,10 +87,11 @@ describe('createTranslationRef', () => {
       'deepest',
       'items',
     ]);
-    const selection: TranslationRefTuple<{ name: string }> =
-      ref('interpolation');
+    const selection: TranslationRefTuple<
+      { name: string } | { replace: { name: string } }
+    > = ref('interpolation');
     expect(selection).toEqual({ ref, key: 'interpolation' });
-    expect(() => selection.T).toThrow('Not implemented');
+    expect(selection.T).toBeUndefined();
     // @ts-expect-error Use a checked selector rather than constructing an unchecked tuple.
     const unchecked: TranslationRefTuple = { ref, key: 'interpolation' };
     expect(unchecked.key).toBe('interpolation');

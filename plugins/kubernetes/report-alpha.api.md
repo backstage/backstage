@@ -116,7 +116,7 @@ const _default: OverridableFrontendPlugin<
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;

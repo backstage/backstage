@@ -74,7 +74,7 @@ export class MockTranslationApi implements TranslationApi {
     this.#interpolator = interpolator;
   }
 
-  getDefaultMessage<TOptions extends {}>(
+  getDefaultMessage<TOptions extends {} | undefined>(
     translation: TranslationRefTuple<TOptions>,
     options?: NoInfer<TOptions>,
   ): string {

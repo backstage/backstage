@@ -49,7 +49,7 @@ const examplePlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -81,7 +81,7 @@ const examplePlugin: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              TranslationRefTuple<{}, string>,
+              TranslationRefTuple<undefined>,
               'core.titleTranslation',
               {
                 optional: true;

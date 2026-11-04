@@ -304,7 +304,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       >
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
-        TranslationRefTuple<{}, string>,
+        TranslationRefTuple<undefined>,
         'core.titleTranslation',
         {
           optional: true;
@@ -361,7 +361,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       {}
     >;
     titleTranslation: ConfigurableExtensionDataRef<
-      TranslationRefTuple<{}, string>,
+      TranslationRefTuple<undefined>,
       'core.titleTranslation',
       {}
     >;

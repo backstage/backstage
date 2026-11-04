@@ -331,14 +331,14 @@ type TupleMessageKeys<
 export type TranslationMessageOptions<
   TMessages extends { [key: string]: string },
   TKey extends TranslationMessageKey<TMessages>,
-> = NonNullable<
-  TranslationFunctionOptions<
-    TupleMessageKeys<TKey, CollapsedMessages<TMessages>>,
-    PluralKeys<TMessages>,
-    CollapsedMessages<TMessages>,
-    string
-  >[0]
->;
+> = TranslationFunctionOptions<
+  TupleMessageKeys<TKey, CollapsedMessages<TMessages>>,
+  PluralKeys<TMessages>,
+  CollapsedMessages<TMessages>,
+  string
+> extends [options: infer TOptions extends {}]
+  ? TOptions
+  : undefined;
 
 /** @public */
 export type TranslationFunction<TMessages extends { [key in string]: string }> =
@@ -388,7 +388,7 @@ export type TranslationApi = {
    * them leaves replacement placeholders intact; plural messages use the other form.
    * Throws if the selected message is not declared by the ref.
    */
-  getDefaultMessage<TOptions extends {}>(
+  getDefaultMessage<TOptions extends {} | undefined>(
     translation: TranslationRefTuple<TOptions>,
     options?: NoInfer<TOptions>,
   ): string;

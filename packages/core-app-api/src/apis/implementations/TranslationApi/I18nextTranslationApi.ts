@@ -335,7 +335,7 @@ export class I18nextTranslationApi implements TranslationApi {
     this.#jsxInterpolator = jsxInterpolator;
   }
 
-  getDefaultMessage<TOptions extends {}>(
+  getDefaultMessage<TOptions extends {} | undefined>(
     translation: TranslationRefTuple<TOptions>,
     options?: NoInfer<TOptions>,
   ): string {

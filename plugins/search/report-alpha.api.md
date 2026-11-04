@@ -84,7 +84,7 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            TranslationRefTuple<{}, string>,
+            TranslationRefTuple<undefined>,
             'core.titleTranslation',
             {
               optional: true;
@@ -116,7 +116,7 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              TranslationRefTuple<{}, string>,
+              TranslationRefTuple<undefined>,
               'core.titleTranslation',
               {
                 optional: true;
@@ -244,7 +244,7 @@ export const searchPage: OverridableExtensionDefinition<{
         }
       >
     | ExtensionDataRef<
-        TranslationRefTuple<{}, string>,
+        TranslationRefTuple<undefined>,
         'core.titleTranslation',
         {
           optional: true;
@@ -276,7 +276,7 @@ export const searchPage: OverridableExtensionDefinition<{
           }
         >
       | ConfigurableExtensionDataRef<
-          TranslationRefTuple<{}, string>,
+          TranslationRefTuple<undefined>,
           'core.titleTranslation',
           {
             optional: true;

@@ -433,7 +433,7 @@ export namespace coreApis {
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
   titleTranslation: ConfigurableExtensionDataRef_2<
-    TranslationRefTuple<{}, string>,
+    TranslationRefTuple<undefined>,
     'core.titleTranslation',
     {}
   >;
@@ -1816,7 +1816,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
         }
       >
     | ExtensionDataRef_2<
-        TranslationRefTuple<{}, string>,
+        TranslationRefTuple<undefined>,
         'core.titleTranslation',
         {
           optional: true;
@@ -1848,7 +1848,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           }
         >
       | ConfigurableExtensionDataRef_2<
-          TranslationRefTuple<{}, string>,
+          TranslationRefTuple<undefined>,
           'core.titleTranslation',
           {
             optional: true;
@@ -2145,7 +2145,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<string, 'core.title', {}>
     | ExtensionDataRef_2<
-        TranslationRefTuple<{}, string>,
+        TranslationRefTuple<undefined>,
         'core.titleTranslation',
         {
           optional: true;
@@ -2242,7 +2242,7 @@ export const toastApiRef: ApiRef<ToastApi>;
 
 // @public (undocumented)
 export type TranslationApi = {
-  getDefaultMessage<TOptions extends {}>(
+  getDefaultMessage<TOptions extends {} | undefined>(
     translation: TranslationRefTuple<TOptions>,
     options?: NoInfer<TOptions>,
   ): string;
@@ -2349,7 +2349,7 @@ export interface TranslationRef<
   $$type: '@backstage/TranslationRef';
   <TKey extends TranslationMessageKey<TMessages>>(
     key: TKey,
-  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>, TKey>;
+  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>>;
   // (undocumented)
   id: TId;
   // (undocumented)
@@ -2378,12 +2378,11 @@ export interface TranslationRefOptions<
 
 // @public
 export interface TranslationRefTuple<
-  TOptions extends {} = {},
-  TKey extends string = string,
+  TOptions extends {} | undefined = undefined,
 > {
-  readonly key: TKey;
+  readonly key: string;
   readonly ref: TranslationRef;
-  readonly T: (options: TOptions) => void;
+  readonly T: TOptions;
 }
 
 // @public (undocumented)
