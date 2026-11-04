@@ -112,12 +112,15 @@ function withDetectedModuleType(resolved) {
   if (resolved.format) {
     return resolved;
   }
-  // Happens when there's a package.json without an explicit "type" field. Use the default.
-  if (resolved.format === null) {
-    return { ...resolved, format: DEFAULT_MODULE_FORMAT };
-  }
-
   const ext = extname(resolved.url);
+
+  // A typeless package.json; Node.js detects the format of JavaScript files at
+  // load time, but TypeScript needs to stay CommonJS to go through our transform
+  if (resolved.format === null) {
+    return TS_EXTS.includes(ext)
+      ? { ...resolved, format: DEFAULT_MODULE_FORMAT }
+      : resolved;
+  }
 
   const explicitFormat = moduleTypeTable[ext];
   if (explicitFormat) {
@@ -139,10 +142,12 @@ function withDetectedModuleType(resolved) {
   }
 
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-  return {
-    ...resolved,
-    format: packageJson.type ?? DEFAULT_MODULE_FORMAT,
-  };
+  if (packageJson.type) {
+    return { ...resolved, format: packageJson.type };
+  }
+  return TS_EXTS.includes(ext)
+    ? { ...resolved, format: DEFAULT_MODULE_FORMAT }
+    : resolved;
 }
 
 /**
