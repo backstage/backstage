@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { subscribeToTranslationChanges } from '@internal/frontend';
 import { appLanguageApiRef, translationApiRef, useApi } from '../apis';
 import { TranslationRefTuple } from './TranslationRef';
 
@@ -48,39 +49,15 @@ export function useTranslatedTitles(
           : { selections, values: next };
       });
     };
-    const refs = [
-      ...new Set(
-        selections.flatMap(selection => (selection ? [selection.ref] : [])),
-      ),
-    ];
-    const subscriptions = refs.map(ref => {
-      let failed = false;
-      const subscribe = () =>
-        api.translation$(ref).subscribe({
-          next: update,
-          error: () => {
-            failed = true;
-            update();
-          },
-        });
-      let subscription = subscribe();
-      const languageSubscription = languageApi.language$().subscribe(() => {
-        if (failed) {
-          failed = false;
-          subscription.unsubscribe();
-          subscription = subscribe();
-        }
-        update();
-      });
-      return () => {
-        subscription.unsubscribe();
-        languageSubscription.unsubscribe();
-      };
+    const unsubscribe = subscribeToTranslationChanges({
+      translationApi: api,
+      languageApi,
+      refs: selections.flatMap(selection => (selection ? [selection.ref] : [])),
+      onChange: update,
     });
-    update();
     return () => {
       active = false;
-      subscriptions.forEach(stop => stop());
+      unsubscribe();
     };
     // read captures only the API and selections included below.
     // eslint-disable-next-line react-hooks/exhaustive-deps

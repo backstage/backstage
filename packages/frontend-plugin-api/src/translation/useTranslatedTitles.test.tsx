@@ -31,7 +31,16 @@ it('retains resolved titles during loading, handles empty titles, and recovers a
     id: 'titles',
     messages: { main: 'Main', other: 'Other' },
   });
-  const selections = [ref('main'), undefined, ref('other')];
+  const secondaryRef = createTranslationRef({
+    id: 'secondary',
+    messages: { title: 'Secondary' },
+  });
+  const selections = [
+    ref('main'),
+    undefined,
+    ref('other'),
+    secondaryRef('title'),
+  ];
   const languageApi = AppLanguageSelector.create({
     availableLanguages: ['en', 'sv', 'de'],
   });
@@ -41,6 +50,10 @@ it('retains resolved titles during loading, handles empty titles, and recovers a
       resolve = r;
     },
   );
+  let resolveSecondary!: (value: { default: { title: string } }) => void;
+  const secondaryPending = new Promise<{ default: { title: string } }>(r => {
+    resolveSecondary = r;
+  });
   const api = I18nextTranslationApi.create({
     languageApi,
     resources: [
@@ -53,12 +66,20 @@ it('retains resolved titles during loading, handles empty titles, and recovers a
           },
         },
       }),
+      createTranslationResource({
+        ref: secondaryRef,
+        translations: {
+          sv: async () => ({ default: { title: 'Andra' } }),
+          de: () => secondaryPending,
+        },
+      }),
     ],
   });
   const observe = jest.spyOn(api, 'translation$');
-  const { result, unmount } = renderHook(
-    () => useTranslatedTitles(selections),
+  const { result, rerender, unmount } = renderHook(
+    ({ titles }) => useTranslatedTitles(titles),
     {
+      initialProps: { titles: selections },
       wrapper: ({ children }: { children: ReactNode }) => (
         <TestApiProvider
           apis={[
@@ -71,17 +92,28 @@ it('retains resolved titles during loading, handles empty titles, and recovers a
       ),
     },
   );
-  expect(result.current).toEqual(['Main', undefined, 'Other']);
-  expect(observe).toHaveBeenCalledTimes(1);
+  expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
+  expect(observe).toHaveBeenCalledTimes(2);
   act(() => languageApi.setLanguage('sv'));
-  expect(result.current).toEqual(['Main', undefined, 'Other']);
+  expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
+  await waitFor(() =>
+    expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']),
+  );
   await act(async () => resolve({ default: { main: '', other: 'Annat' } }));
-  expect(result.current).toEqual(['', undefined, 'Annat']);
+  expect(result.current).toEqual(['', undefined, 'Annat', 'Andra']);
   act(() => languageApi.setLanguage('de'));
   await waitFor(() =>
-    expect(result.current).toEqual(['Main', undefined, 'Other']),
+    expect(result.current).toEqual(['Main', undefined, 'Other', 'Andra']),
   );
+  await act(async () => resolveSecondary({ default: { title: 'Zweite' } }));
+  expect(result.current).toEqual(['Main', undefined, 'Other', 'Zweite']);
   act(() => languageApi.setLanguage('sv'));
-  await waitFor(() => expect(result.current).toEqual(['', undefined, 'Annat']));
+  await waitFor(() =>
+    expect(result.current).toEqual(['', undefined, 'Annat', 'Andra']),
+  );
+  rerender({ titles: [secondaryRef('title'), ref('other')] });
+  expect(result.current).toEqual(['Andra', 'Annat']);
+  rerender({ titles: [] });
+  expect(result.current).toEqual([]);
   unmount();
 });

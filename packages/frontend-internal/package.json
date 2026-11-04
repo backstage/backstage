@@ -26,7 +26,8 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@backstage/version-bridge": "workspace:^"
+    "@backstage/version-bridge": "workspace:^",
+    "zen-observable": "^0.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -35,6 +36,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0"
+    "@testing-library/react": "^16.0.0",
+    "@types/zen-observable": "^0.8.0"
   }
 }
