@@ -15,8 +15,12 @@
  */
 
 import { useState } from 'react';
-import { act, screen } from '@testing-library/react';
-import { renderTestApp } from '@backstage/frontend-test-utils';
+import { act, render, screen } from '@testing-library/react';
+import {
+  createMockAppHistory,
+  renderTestApp,
+} from '@backstage/frontend-test-utils';
+import { AppRouteSwitch } from './AppRouteSwitch';
 import {
   coreExtensionData,
   createExtension,
@@ -72,6 +76,87 @@ const otherPage = createExtension({
 });
 
 describe('AppRouteSwitch', () => {
+  it.each([false, true])(
+    'ranks specific redirects before general ones (specific first: %s)',
+    specificFirst => {
+      const history = createMockAppHistory({ initialLocation: '/old/special' });
+      const general = { from: '/old', to: '/general' };
+      const specific = { from: '/old/special', to: '/specific' };
+      render(
+        <AppRouteSwitch
+          history={history}
+          matches={[]}
+          pages={new Map()}
+          redirects={specificFirst ? [specific, general] : [general, specific]}
+          fallback={<p>Not found</p>}
+        />,
+      );
+      expect(history.getSnapshot().location.pathname).toBe('/specific');
+    },
+  );
+
+  it.each([
+    ['/old/special', ['/old/:id', '/old/special'], '/winner-1'],
+    ['/old/special', ['/old/*', '/old/:id'], '/winner-1'],
+    ['/old/special', ['/old/:id?/:extra?', '/old/:name'], '/winner-0'],
+    ['/old/special', ['/old/:name', '/old/:id?/:extra?'], '/winner-0'],
+    ['/old/special', ['/old/:id', '/old/:name'], '/winner-0'],
+  ])(
+    'uses React Router ranking and stable ties for %s with %j',
+    (initialLocation, patterns, expected) => {
+      const history = createMockAppHistory({ initialLocation });
+      render(
+        <AppRouteSwitch
+          history={history}
+          matches={[]}
+          pages={new Map()}
+          redirects={patterns.map((from, index) => ({
+            from,
+            to: `/winner-${index}`,
+          }))}
+          fallback={<p>Not found</p>}
+        />,
+      );
+      expect(history.getSnapshot().location.pathname).toBe(expected);
+    },
+  );
+
+  it.each([
+    [
+      '/old/abc',
+      '/search?entity=:id#item-:id',
+      '/search',
+      '?entity=abc',
+      '#item-abc',
+    ],
+    [
+      '/old/abc/details',
+      '/new/:id/*?entity=:id#item-:id',
+      '/new/abc/details',
+      '?entity=abc',
+      '#item-abc',
+    ],
+  ])(
+    'substitutes redirect parameters in path, query, and fragment from %s',
+    (initialLocation, to, pathname, search, hash) => {
+      const history = createMockAppHistory({ initialLocation });
+      render(
+        <AppRouteSwitch
+          history={history}
+          matches={[]}
+          pages={new Map()}
+          redirects={[{ from: '/old/:id', to }]}
+          fallback={<p>Not found</p>}
+        />,
+      );
+      expect(history.getSnapshot().location).toMatchObject({
+        pathname,
+        search,
+        hash,
+      });
+    },
+  );
+
   it('preserves page state while route parameters and plugin paths change', async () => {
     const { appHistory } = renderTestApp({
       extensions: [entityPage],

@@ -11,3 +11,5 @@ The adapter renders children unchanged when no page mount or app history is avai
 See the [page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-react-router-v6) for setup and nesting examples.
 
 The adapter supplies the public contextual navigation contract for any component library, including BUI, without depending on BUI at runtime.
+
+Same-origin absolute links under the deployment basename navigate within the app without duplicating the basename. Cross-origin links remain external, and repeated path segments are preserved.

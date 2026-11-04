@@ -27,7 +27,12 @@ import type {
   RouteResolutionMatch,
 } from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
-import { generatePath, matchPath } from './routePattern';
+import {
+  expandOptionalSegments,
+  generatePath,
+  matchPath,
+  routePriority,
+} from './routePattern';
 
 interface PluginErrorBoundaryProps {
   basePath: string;
@@ -104,7 +109,10 @@ class PluginErrorBoundary extends Component<
 export interface AppRouteRedirect {
   /** App-absolute path pattern to match. */
   from: string;
-  /** Target path; may include `:param` and `*` substitutions from `from`. */
+  /**
+   * Target path; `:param` substitutions apply to path, query, and fragment.
+   * A trailing path `*` substitutes the unmatched remainder of `from`.
+   */
   to: string;
 }
 
@@ -163,15 +171,35 @@ function resolveRedirectTarget(
   if (!redirects?.length) {
     return undefined;
   }
-  for (const redirect of redirects) {
+  // Rank concrete branches like React Router's former `from/*` routes.
+  // Stable sorting preserves declaration order for equally specific patterns.
+  const candidates = redirects
+    .flatMap(redirect =>
+      expandOptionalSegments(redirect.from).map(from => {
+        const normalized = from.replace(/\/$/, '') || '/';
+        const pattern =
+          normalized === '/' || normalized.endsWith('/*')
+            ? normalized
+            : `${normalized}/*`;
+        return { ...redirect, from, priority: routePriority(pattern) };
+      }),
+    )
+    .sort((a, b) => b.priority - a.priority);
+  for (const redirect of candidates) {
     const params = matchRedirect(redirect.from, location.pathname);
     if (params) {
       const template = new URL(redirect.to, 'http://localhost');
       const pathname = generatePath(template.pathname, params);
       // Preserve the incoming search/hash unless the redirect template
       // declares its own.
-      const search = template.search || location.search;
-      const hash = template.hash || location.hash;
+      const substituteParams = (value: string) =>
+        value.replace(/:([\w-]+)/g, (placeholder, name) =>
+          params[name] === undefined
+            ? placeholder
+            : encodeURIComponent(params[name]),
+        );
+      const search = substituteParams(template.search) || location.search;
+      const hash = substituteParams(template.hash) || location.hash;
       return `${pathname}${search}${hash}`;
     }
   }

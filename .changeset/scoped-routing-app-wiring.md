@@ -13,3 +13,5 @@ Default history is created only when requested. Disposing it preserves other lis
 Custom `appHistoryApiRef` factories must be available during initialization. Factories gated by an `if` predicate are rejected; remove predicates from the factory extension and its attachment path. See the [app migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating#components).
 
 History entries reached outside app-owned navigation omit index, length, and back availability when these cannot be known, rather than reporting guessed positions.
+
+Configured redirects substitute route parameters in the path, query, and fragment. Matching redirects are ranked by specificity rather than declaration order, so a specific route takes precedence over a general prefix.
