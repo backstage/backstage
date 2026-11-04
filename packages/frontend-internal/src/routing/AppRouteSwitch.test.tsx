@@ -206,6 +206,15 @@ describe('AppRouteSwitch', () => {
       '?entity=abc',
       '#item-abc',
     ],
+    [
+      // Incoming search and hash inherit verbatim; their placeholders are not
+      // redirect template parameters.
+      '/old/report?q=:id#*',
+      '/new',
+      '/new',
+      '?q=:id',
+      '#*',
+    ],
   ])(
     'substitutes redirect parameters in path, query, and fragment from %s',
     (initialLocation, to, pathname, search, hash) => {
