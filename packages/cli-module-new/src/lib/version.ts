@@ -151,8 +151,8 @@ export function createPackageVersionProvider(
 
     // Treat a plain, non-prerelease version hint as a minimum version, and
     // prefer the highest existing range that resolves to at least that
-    // version within the same major. This avoids duplicating dependencies that are already on a
-    // newer version in the repo.
+    // version within the same major. This avoids duplicating dependencies
+    // that are already on a newer version in the repo.
     if (
       versionHint &&
       lockfileEntries &&

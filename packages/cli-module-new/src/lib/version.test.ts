@@ -155,7 +155,8 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@testing-library/react', '16.0.0')).toBe('^16.3.0');
     expect(provider('@testing-library/react', '12.1.4')).toBe('^12.1.3');
     expect(provider('@testing-library/react', '17.0.0')).toBe('^17.0.0');
-    // Prerelease lockfile versions are only picked for prerelease hints
+    // Prerelease lockfile versions are not reused for stable hints, and
+    // prerelease hints keep the existing matching behaviour
     expect(provider('d', '1.0.0')).toBe('^1.2.0');
     expect(provider('d', '2.0.0-next.0')).toBe('2.0.0-next.0');
     // Range hints keep the existing matching behaviour
