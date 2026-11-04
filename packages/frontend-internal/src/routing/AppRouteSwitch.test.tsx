@@ -108,9 +108,12 @@ describe('AppRouteSwitch', () => {
     },
   );
 
-  it.each(['/catalog', '/catalog/special'])(
+  it.each([
+    ['/catalog', 'Catalog special', '/catalog/special'],
+    ['/catalog/special', 'Other page', '/other'],
+  ])(
     'ranks pages together with redirects from %s',
-    async from => {
+    async (from, expectedPage, expectedPath) => {
       const { appHistory } = renderTestApp({
         extensions: [
           PageBlueprint.make({
@@ -135,14 +138,8 @@ describe('AppRouteSwitch', () => {
           },
         },
       });
-      if (from === '/catalog') {
-        expect(await screen.findByText('Catalog special')).toBeInTheDocument();
-        expect(appHistory.getSnapshot().location.pathname).toBe(
-          '/catalog/special',
-        );
-      } else {
-        expect(await screen.findByText('Other page')).toBeInTheDocument();
-      }
+      expect(await screen.findByText(expectedPage)).toBeInTheDocument();
+      expect(appHistory.getSnapshot().location.pathname).toBe(expectedPath);
     },
   );
 

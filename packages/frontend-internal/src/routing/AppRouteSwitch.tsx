@@ -193,11 +193,11 @@ function resolveRedirectTarget(
       // every splat, and authored separators must survive interpolation.
       const substituteParams = (value: string) =>
         value.replace(/:([\w-]+)|\*/g, (placeholder, name) => {
-          const value = params[name ?? '*'];
-          if (value === undefined) return placeholder;
+          const param = params[name ?? '*'];
+          if (param === undefined) return placeholder;
           return name
-            ? encodeURIComponent(value)
-            : value.split('/').map(encodeURIComponent).join('/');
+            ? encodeURIComponent(param)
+            : param.split('/').map(encodeURIComponent).join('/');
         });
       const pathname = substituteParams(template.pathname ?? '/');
       // Omitted components inherit the incoming location verbatim; only

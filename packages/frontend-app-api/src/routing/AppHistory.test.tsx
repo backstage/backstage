@@ -738,9 +738,9 @@ describe('AppHistory', () => {
         ['/BACKSTAGE-extra/Catalog', '/BACKSTAGE-extra/Catalog'],
       ]) {
         window.history.replaceState(null, '', path);
-        const history = createAppHistory({ basename: '/backstage' });
-        expect(history.getSnapshot().location.pathname).toBe(expected);
-        history.dispose();
+        const appHistory = createAppHistory({ basename: '/backstage' });
+        expect(appHistory.getSnapshot().location.pathname).toBe(expected);
+        appHistory.dispose();
       }
     });
 
