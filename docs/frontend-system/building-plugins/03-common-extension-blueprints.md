@@ -21,6 +21,19 @@ Page extensions provide content for a particular route in the app. By default pa
 
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
+The page title and the titles of its sub-pages are also used for the browser's document title. To add more detail, such as the name of the item a page is showing, call `usePageTitle` from within the page content:
+
+```tsx
+import { usePageTitle } from '@backstage/frontend-plugin-api';
+
+function ItemDetails(props: { item: Item }) {
+  usePageTitle(props.item.name);
+  // ...
+}
+```
+
+The segment is added after the titles of the enclosing pages, and is removed when the component is no longer rendered. To nest further segments within your own content, wrap it in the `PageTitle` component instead. See [Document title](../building-apps/03-built-in-extensions.md#document-title) for how the app formats the final title.
+
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.

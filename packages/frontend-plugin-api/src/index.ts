@@ -30,6 +30,7 @@ export * from './schema';
 export * from './apis/system';
 export * from './translation';
 export * from './breadcrumbs';
+export * from './pageTitle';
 export * from './wiring';
 
 export type {

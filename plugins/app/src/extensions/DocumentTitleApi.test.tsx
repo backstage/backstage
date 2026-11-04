@@ -1,0 +1,141 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import {
+  PageBlueprint,
+  SubPageBlueprint,
+  createFrontendPlugin,
+  usePageTitle,
+} from '@backstage/frontend-plugin-api';
+import { useState } from 'react';
+import { DefaultDocumentTitleApi } from '../apis/DefaultDocumentTitleApi';
+
+function ItemDetails() {
+  const [name, setName] = useState('first-item');
+  usePageTitle(name);
+  return (
+    <button type="button" onClick={() => setName('second-item')}>
+      Rename
+    </button>
+  );
+}
+
+const plugin = createFrontendPlugin({
+  pluginId: 'things',
+  title: 'Things',
+  extensions: [
+    PageBlueprint.make({ params: { path: '/things' } }),
+    SubPageBlueprint.make({
+      name: 'details',
+      params: {
+        path: 'details',
+        title: 'Details',
+        loader: async () => <ItemDetails />,
+      },
+    }),
+    SubPageBlueprint.make({
+      name: 'other',
+      params: {
+        path: 'other',
+        title: 'Other',
+        loader: async () => <div>Other content</div>,
+      },
+    }),
+  ],
+});
+
+describe('DocumentTitleApi', () => {
+  afterEach(() => {
+    document.title = '';
+  });
+
+  it('formats segments using the template', () => {
+    const api = new DefaultDocumentTitleApi({
+      appTitle: 'My Portal',
+      template: '{page} | {app}',
+      separator: ' | ',
+      order: 'innermost-first',
+    });
+    expect(api.format([])).toBe('My Portal');
+    expect(api.format(['Catalog', 'Overview'])).toBe(
+      'Overview | Catalog | My Portal',
+    );
+
+    const outermostFirst = new DefaultDocumentTitleApi({
+      appTitle: 'My Portal',
+      template: '{app}: {page}',
+      separator: ' / ',
+      order: 'outermost-first',
+    });
+    expect(outermostFirst.format(['Catalog', 'Overview'])).toBe(
+      'My Portal: Catalog / Overview',
+    );
+  });
+
+  it('sets the document title from pages, sub-pages and custom segments', async () => {
+    renderTestApp({
+      features: [plugin],
+      config: { app: { title: 'My Portal' } },
+      initialRouteEntries: ['/things/details'],
+    });
+
+    const rename = await screen.findByRole('button', { name: 'Rename' });
+    await waitFor(() =>
+      expect(document.title).toBe('first-item | Details | Things | My Portal'),
+    );
+
+    await userEvent.click(rename);
+    await waitFor(() =>
+      expect(document.title).toBe('second-item | Details | Things | My Portal'),
+    );
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Other' }));
+    await screen.findByText('Other content');
+    await waitFor(() =>
+      expect(document.title).toBe('Other | Things | My Portal'),
+    );
+  });
+
+  it('can be configured through extension config', async () => {
+    renderTestApp({
+      features: [plugin],
+      config: {
+        app: {
+          title: 'My Portal',
+          extensions: [
+            {
+              'api:app/document-title': {
+                config: {
+                  template: '{app} - {page}',
+                  order: 'outermost-first',
+                },
+              },
+            },
+          ],
+        },
+      },
+      initialRouteEntries: ['/things/other'],
+    });
+
+    await screen.findByText('Other content');
+    await waitFor(() =>
+      expect(document.title).toBe('My Portal - Things | Other'),
+    );
+  });
+});
