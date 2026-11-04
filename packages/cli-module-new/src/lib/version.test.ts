@@ -90,12 +90,12 @@ describe('createPackageVersionProvider', () => {
 
     expect(provider('a', '0.1.5')).toBe('^0.1.0');
     expect(provider('b', '1.0.0')).toBe('*');
-    // The hint is a minimum within its major (0 here), so the highest
-    // existing range is preferred
-    expect(provider('c', '0.1.0')).toBe('^0.3.4');
-    expect(provider('c', '0.1.6')).toBe('^0.3.4');
-    expect(provider('c', '0.2.0')).toBe('^0.3.4');
-    expect(provider('c', '0.2.6')).toBe('^0.3.4');
+    // For 0.x the hint is a minimum within its minor, so newer compatible
+    // ranges are preferred but breaking 0.x minors are not
+    expect(provider('c', '0.1.0')).toBe('^0.1.4');
+    expect(provider('c', '0.1.6')).toBe('^0.1.4');
+    expect(provider('c', '0.2.0')).toBe('^0.2.4');
+    expect(provider('c', '0.2.6')).toBe('^0.2.4');
     expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
     expect(provider('c', '0.3.0')).toBe('^0.3.4');
     expect(provider('c', '0.3.6')).toBe('^0.3.4');

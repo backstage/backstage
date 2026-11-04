@@ -150,9 +150,10 @@ export function createPackageVersionProvider(
     }
 
     // Treat a plain, non-prerelease version hint as a minimum version, and
-    // prefer the highest existing range that resolves to at least that
-    // version within the same major. This avoids duplicating dependencies
-    // that are already on a newer version in the repo.
+    // prefer the highest existing range whose resolved version is compatible
+    // with it in caret terms: the same major, or the same minor for 0.x. This
+    // avoids duplicating dependencies that are already on a newer compatible
+    // version in the repo.
     if (
       versionHint &&
       lockfileEntries &&
@@ -165,8 +166,7 @@ export function createPackageVersionProvider(
           semver.valid(entry.version) &&
           semver.satisfies(entry.version, entry.range) &&
           !semver.prerelease(entry.version) &&
-          semver.gte(entry.version, versionHint) &&
-          semver.major(entry.version) === semver.major(versionHint),
+          semver.satisfies(entry.version, `^${versionHint}`),
       );
       if (newerEntries.length > 0) {
         const highestVersion = semver.maxSatisfying(
