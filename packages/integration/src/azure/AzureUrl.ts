@@ -98,7 +98,10 @@ export class AzureUrl {
 
   #baseUrl = (...parts: string[]): URL => {
     const url = new URL(this.#origin);
-    url.pathname = parts.map(part => encodeURIComponent(part)).join('/');
+    url.pathname = parts
+      .flatMap(part => part.split('/'))
+      .map(part => encodeURIComponent(part))
+      .join('/');
     return url;
   };
 
