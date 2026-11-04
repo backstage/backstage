@@ -33,9 +33,9 @@ export type ReviewStateProps = {
    */
   schemaFormState?: JsonObject;
   /**
-   * All parameter steps, including hidden ones. A field is masked or left out
-   * of the review if any of these steps marks it as a password or secret, or
-   * sets a review mask for it. Defaults to `schemas`.
+   * All parameter steps, including hidden ones. A field is masked on review
+   * if any of these steps marks it as a password or secret, or sets a review
+   * mask for it. Defaults to `schemas`.
    */
   maskSchemas?: ParsedTemplateSchema[];
 };
@@ -45,6 +45,7 @@ type ReviewOverride = [string, JsonValue | undefined][] | undefined;
 function getReviewOverride(
   name: string,
   definition: JsonSchema | undefined,
+  includeHidden: boolean,
 ): ReviewOverride {
   if (!definition) {
     return undefined;
@@ -53,7 +54,7 @@ function getReviewOverride(
   if (reviewOptions?.mask) {
     return [[name, reviewOptions.mask]];
   }
-  if (reviewOptions?.show === false) {
+  if (includeHidden && reviewOptions?.show === false) {
     return [];
   }
   if (
@@ -84,7 +85,7 @@ function processSchema(
     formatKey(key);
 
   const override =
-    getReviewOverride(name, definitionInSchema) ??
+    getReviewOverride(name, definitionInSchema, true) ??
     maskSchemas
       .filter(other => other !== schema)
       .map(other =>
@@ -94,6 +95,8 @@ function processSchema(
             pointer: `#/${key}`,
             data: formState,
           }),
+          // Only masks apply across steps, another step can't hide a field.
+          false,
         ),
       )
       .find(result => result !== undefined);
