@@ -29,6 +29,7 @@ import type {
   AppHistoryAction,
   RouteResolutionMatch,
 } from '@backstage/frontend-plugin-api';
+import { normalizeBasePath } from './AppRouting';
 import { expandOptionalSegments, matchPath } from './routePattern';
 import {
   observeReactRouterContext,
@@ -278,7 +279,7 @@ export function createAppHistoryRouter(
   options: CreateAppHistoryRouterOptions = {},
 ): AppHistoryRouterResult {
   const { routePattern, navigationContextExtras = {}, onUse } = options;
-  const basename = appHistory.createHref('/').replace(/\/+$/, '') || '/';
+  const basename = normalizeBasePath(appHistory.createHref('/')) || '/';
 
   // React Router adds its navigation basename to resolved paths. Remove exactly
   // that prefix before app history applies it, including for absolute Link URLs.

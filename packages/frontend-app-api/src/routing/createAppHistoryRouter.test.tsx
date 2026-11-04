@@ -104,6 +104,33 @@ function readOnce(element: ReactNode) {
 }
 
 describe('createAppHistoryRouter', () => {
+  it('normalizes library-provided basenames without backtracking', () => {
+    const slashes = '/'.repeat(5000);
+    for (const [href, expected] of [
+      ['', '/'],
+      ['/', '/'],
+      [slashes, '/'],
+      [`/backstage${slashes}`, '/backstage'],
+      [`/a${slashes}b`, `/a${slashes}b`],
+    ]) {
+      const history = createMockAppHistory({ initialLocation: '/' });
+      jest.spyOn(history, 'createHref').mockReturnValue(href);
+      const { Router } = createAppHistoryRouter(v6Bindings, history);
+      let basename: string | undefined;
+      const ReadBasename = () => {
+        basename = useContext(UNSAFE_NavigationContext).basename;
+        return null;
+      };
+      const { unmount } = render(
+        <Router>
+          <ReadBasename />
+        </Router>,
+      );
+      expect(basename).toBe(expected);
+      unmount();
+    }
+  });
+
   /**
    * A sub-page is a mount inside its parent page's mount, which is two route
    * matches deep in React Router's terms. The oracle is the real thing: the
