@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { named } from './esm.js';
-import { plain } from './cjs.js';
+import { named } from 'typeless-dep';
+import { plain } from 'typeless-dep/cjs';
 
 console.log(JSON.stringify({ named, plain }));
