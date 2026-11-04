@@ -45,6 +45,95 @@ import {
 } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 
+// When declarations share a name that only differs in case, or have the same
+// name but different kinds, such as a variable and an interface or namespace,
+// API Documenter generates the same filename for them, and the pages overwrite
+// each other. The kind that comes first in this list keeps the plain filename,
+// while the others get a suffix with their kind.
+const FILENAME_KIND_PRIORITY: string[] = [
+  ApiItemKind.Class,
+  ApiItemKind.Function,
+  ApiItemKind.Variable,
+  ApiItemKind.Enum,
+  ApiItemKind.Namespace,
+  ApiItemKind.Interface,
+  ApiItemKind.TypeAlias,
+];
+
+// These kinds don't contribute a segment to the filename
+const SKIPPED_FILENAME_KINDS: string[] = [
+  ApiItemKind.Model,
+  ApiItemKind.EntryPoint,
+  ApiItemKind.EnumMember,
+  ApiItemKind.Package,
+];
+
+function getKindPriority(kind: string) {
+  const index = FILENAME_KIND_PRIORITY.indexOf(kind);
+  return index === -1 ? FILENAME_KIND_PRIORITY.length : index;
+}
+
+// Orders declarations that share a filename, the first one keeps the plain
+// filename. Same-kind declarations whose names only differ in case are ordered
+// by name, so that the result is stable.
+function compareCollidingItems(a: ApiItem, b: ApiItem) {
+  const byKind = getKindPriority(a.kind) - getKindPriority(b.kind);
+  if (byKind !== 0) {
+    return byKind;
+  }
+  if (a.displayName === b.displayName) {
+    return 0;
+  }
+  return a.displayName < b.displayName ? -1 : 1;
+}
+
+// Returns a suffix for the item if it shares its filename with a sibling that
+// takes precedence over it. Overloads have the same name and kind, and are
+// already handled by API Documenter.
+function getCollisionSuffix(item: ApiItem): string {
+  const name = item.displayName.toLowerCase();
+  const siblings: readonly ApiItem[] = item.parent?.members ?? [];
+  const colliding = siblings
+    .filter(
+      sibling =>
+        sibling === item ||
+        (sibling.displayName.toLowerCase() === name &&
+          (sibling.kind !== item.kind ||
+            sibling.displayName !== item.displayName)),
+    )
+    .sort(compareCollidingItems);
+  if (colliding[0] === item) {
+    return '';
+  }
+
+  // Declarations of the same kind get a number instead
+  const sameKind = colliding.filter(sibling => sibling.kind === item.kind);
+  const kindSuffix =
+    colliding[0].kind === item.kind ? '' : `-${item.kind.toLowerCase()}`;
+  const index = sameKind.indexOf(item);
+  const isFirstOfKind = index === 0 && kindSuffix !== '';
+  return isFirstOfKind ? kindSuffix : `${kindSuffix}-${index + 1}`;
+}
+
+export function disambiguateFilename(
+  filename: string,
+  apiItem: ApiItem,
+): string {
+  const segments = filename.slice(0, -'.md'.length).split('.');
+  const items = apiItem
+    .getHierarchy()
+    .filter(item => !SKIPPED_FILENAME_KINDS.includes(item.kind));
+
+  // The first segment is the package name, followed by one for each item
+  if (segments.length !== items.length + 1) {
+    return filename;
+  }
+  items.forEach((item, index) => {
+    segments[index + 1] += getCollisionSuffix(item);
+  });
+  return `${segments.join('.')}.md`;
+}
+
 /*
 WARNING: Bring a blanket if you're gonna read the code below
 
@@ -445,7 +534,11 @@ export async function buildDocs({
     }
 
     private _getFilenameForApiItem(apiItem: ApiItem): string {
-      const filename: string = super._getFilenameForApiItem(apiItem);
+      let filename: string = super._getFilenameForApiItem(apiItem);
+
+      if (filename !== 'index.md') {
+        filename = disambiguateFilename(filename, apiItem);
+      }
 
       if (filename.includes('.html.')) {
         return filename.replace(/\.html\./g, '._html.');
