@@ -26,7 +26,14 @@ import {
   RouterLink,
 } from '@backstage/frontend-plugin-api';
 
-import { Routes, Route, Outlet } from 'react-router';
+import {
+  Routes,
+  Route,
+  Outlet,
+  Link,
+  NavLink,
+  useLocation,
+} from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
 it('binds neutral anchors and collection navigation to nested routes', async () => {
@@ -155,4 +162,86 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
   );
   expect(await screen.findByText('Other page')).toBeInTheDocument();
   expect(appHistory.getSnapshot().location.pathname).toBe('/catalog');
+});
+
+it('reconciles same-origin absolute links with exactly one deployment basename', async () => {
+  const user = userEvent.setup();
+  function Controls() {
+    const location = useLocation();
+    return (
+      <>
+        <output aria-label="Router pathname">{location.pathname}</output>
+        <Link to={`${window.location.origin}/base/catalog?q=1#item`}>
+          Same origin
+        </Link>
+        <Link to={`${window.location.origin}/base/base/foo`}>
+          Repeated absolute
+        </Link>
+        <Link to="/base/foo" replace>
+          Repeated app path
+        </Link>
+        <NavLink to="/catalog">Catalog active state</NavLink>
+        <Link to="/baseball">Prefix boundary</Link>
+        <Link to="https://elsewhere.example/base/catalog">Cross origin</Link>
+      </>
+    );
+  }
+  const page = PageBlueprint.make({
+    name: 'links',
+    params: {
+      path: '/*',
+      loader: async () => (
+        <ReactRouterV7PageRouter>
+          <Controls />
+        </ReactRouterV7PageRouter>
+      ),
+    },
+  });
+  const { appHistory } = renderTestApp({
+    extensions: [page],
+    config: {
+      app: { baseUrl: `${window.location.origin}/base` },
+      backend: { baseUrl: 'http://localhost:7007' },
+    },
+  });
+  expect(
+    await screen.findByRole('link', { name: 'Same origin' }),
+  ).toHaveAttribute('href', `${window.location.origin}/base/catalog?q=1#item`);
+  expect(
+    screen.getByRole('link', { name: 'Repeated app path' }),
+  ).toHaveAttribute('href', '/base/base/foo');
+  expect(screen.getByRole('link', { name: 'Prefix boundary' })).toHaveAttribute(
+    'href',
+    '/base/baseball',
+  );
+  const external = screen.getByRole('link', { name: 'Cross origin' });
+  expect(external).toHaveAttribute(
+    'href',
+    'https://elsewhere.example/base/catalog',
+  );
+  // Prevent jsdom's document navigation while verifying RR leaves this external.
+  let externalPrevented = false;
+  external.addEventListener('click', event => {
+    externalPrevented = event.defaultPrevented;
+    event.preventDefault();
+  });
+  await user.click(external);
+  expect(externalPrevented).toBe(false);
+  expect(appHistory.getSnapshot().location.pathname).toBe('/');
+  await user.click(screen.getByRole('link', { name: 'Same origin' }));
+  expect(appHistory.getSnapshot().location).toMatchObject({
+    pathname: '/catalog',
+    search: '?q=1',
+    hash: '#item',
+  });
+  expect(
+    screen.getByRole('status', { name: 'Router pathname' }),
+  ).toHaveTextContent('/catalog');
+  expect(
+    screen.getByRole('link', { name: 'Catalog active state' }),
+  ).toHaveAttribute('aria-current', 'page');
+  await user.click(screen.getByRole('link', { name: 'Repeated absolute' }));
+  expect(appHistory.getSnapshot().location.pathname).toBe('/base/foo');
+  await user.click(screen.getByRole('link', { name: 'Repeated app path' }));
+  expect(appHistory.getSnapshot().location.pathname).toBe('/base/foo');
 });
