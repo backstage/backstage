@@ -371,9 +371,11 @@ Install translations using the existing `TranslationBlueprint` and translation
 resources described above. No additional title bundles or APIs are required.
 Existing string title parameters keep their behavior.
 
-Before translations load, the title falls back to the message declared by the ref.
-A configured `title` supplies that fallback instead. Every resolved API value takes precedence over configured and
-plain titles, including when the API resolves to the ref's declared default.
+Before translations finish loading, the title uses messages already available
+through the translation API, including installed overrides and default-language
+fallbacks. A configured `title` supplies that fallback instead. Every resolved
+API value takes precedence over configured and plain titles, including when the
+API resolves to a default-language message.
 Missing locale messages use the translation API's existing fallback.
 Later language changes retain the previously resolved title while loading, without
 remounting page content. Failed loads use the translation API's fallback when available.
@@ -392,14 +394,18 @@ translation is ready, use the static title; retain the last resolved title while
 another language loads. This keeps extension data independent of subscriptions
 and React rendering.
 
-For synchronous fallback text, use
-`translationApi.getDefaultMessage(selection, options?)`. It formats the message
-declared by the ref, including nested messages and optional replacement values
-or plural counts. Omitting the values leaves replacement placeholders intact;
-plural messages use the other form. The result is independent of the selected
-language and installed message overrides, and no locale resources are loaded.
-An undeclared key throws an error. Custom translation API implementations must
-provide this method as well.
+Translation snapshots always include a `t` function, even while resources are
+loading. For synchronous fallback text, call
+`translationApi.getTranslation(ref).t(key)`. It uses the messages already
+available for the selected language and the API's normal language fallbacks,
+including installed overrides. Formatting values use the existing translation
+function's argument types.
+
+The snapshot's `ready` flag indicates whether resources for the selected
+language have finished loading. Reading a snapshot does not load resources;
+subscribe to `translation$(ref)` to start loading and receive resolved updates.
+`useTranslationRef` continues to wait for ready translations.
+Custom translation API implementations must provide `t` on loading snapshots too.
 
 ### Using the CLI for full translation workflows
 
