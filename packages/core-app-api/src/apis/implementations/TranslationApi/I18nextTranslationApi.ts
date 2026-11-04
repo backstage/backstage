@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDefaultMessage } from './getDefaultMessage';
 import {
   AppLanguageApi,
   TranslationApi,
@@ -334,13 +335,11 @@ export class I18nextTranslationApi implements TranslationApi {
     this.#jsxInterpolator = jsxInterpolator;
   }
 
-  getDefaultMessage(translation: TranslationRefTuple): string {
-    const { ref, key } = translation;
-    const message = toInternalTranslationRef(ref).getDefaultMessages()[key];
-    if (typeof message !== 'string') {
-      throw new Error(`Unknown translation key '${key}' in '${ref.id}'`);
-    }
-    return message;
+  getDefaultMessage<TOptions extends {}>(
+    translation: TranslationRefTuple<TOptions>,
+    options?: NoInfer<TOptions>,
+  ): string {
+    return getDefaultMessage(translation, options);
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(

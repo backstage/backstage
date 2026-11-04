@@ -27,7 +27,9 @@ export function useTranslatedTitles(
   const read = (previous?: readonly (string | undefined)[]) =>
     selections.map((selection, index) => {
       if (!selection) return undefined;
-      const snapshot = api.getTranslation(selection.ref);
+      const snapshot = api.getTranslation<Record<string, string>>(
+        selection.ref,
+      );
       return snapshot.ready ? snapshot.t(selection.key) : previous?.[index];
     });
   const [state, setState] = useState(() => ({ selections, values: read() }));

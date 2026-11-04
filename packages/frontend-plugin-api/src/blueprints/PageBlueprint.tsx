@@ -15,9 +15,9 @@
  */
 
 import { JSX } from 'react';
+import { translationApiRef } from '../apis';
 import { useTranslatedTitles } from '../translation/useTranslatedTitles';
 import { TranslationRefTuple } from '../translation/TranslationRef';
-import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
@@ -94,11 +94,13 @@ export const PageBlueprint = createExtensionBlueprint({
     },
     { config, node, inputs, apis },
   ) {
-    const { title, translation } = resolveTranslationTitle(
-      params.title,
-      config.title,
-      apis,
-    );
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? apis.get(translationApiRef)!.getDefaultMessage(params.title)
+        : params.title);
     const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;

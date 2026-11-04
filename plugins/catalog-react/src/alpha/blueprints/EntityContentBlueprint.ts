@@ -20,6 +20,7 @@ import {
   ExtensionBoundary,
   RouteRef,
   TranslationRefTuple,
+  translationApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
   entityContentTitleDataRef,
@@ -37,7 +38,6 @@ import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { Entity } from '@backstage/catalog-model';
 import { ReactElement } from 'react';
 import { z } from 'zod/v4';
-import { resolveTranslationTitle } from './resolveTranslationTitle';
 
 /**
  * @alpha
@@ -103,11 +103,13 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     // As this is marked as BREAKING ALPHA, it doesn't affect the public API so it falls in range and gets picked
     // up by packages that depend on `catalog-react`.
     const path = config.path ?? params.path ?? params.defaultPath;
-    const { title, translation } = resolveTranslationTitle({
-      title: params.title ?? params.defaultTitle,
-      configuredTitle: config.title,
-      apis,
-    });
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? apis.get(translationApiRef)!.getDefaultMessage(params.title)
+        : params.title ?? params.defaultTitle);
     const icon = config.icon ?? params.icon;
     const group = config.group ?? params.group ?? params.defaultGroup;
 

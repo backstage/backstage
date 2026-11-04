@@ -176,19 +176,15 @@ describe('EntityContentBlueprint', () => {
     expect(
       configured.get(EntityContentBlueprint.dataRefs.titleTranslation),
     ).toEqual(ref('title'));
-    expect(() =>
-      createExtensionTester(
-        EntityContentBlueprint.make({
-          name: 'interpolated',
-          params: {
-            path: '/invalid',
-            title: ref('interpolated'),
-            loader: async () => <div />,
-          },
-        }),
-        { apis: [mockApis.translation()] },
-      ).get(EntityContentBlueprint.dataRefs.title),
-    ).toThrow('must not contain interpolation or nested translations');
+    EntityContentBlueprint.make({
+      name: 'interpolated',
+      params: {
+        path: '/invalid',
+        // @ts-expect-error Entity content titles cannot require interpolation values.
+        title: ref('interpolated'),
+        loader: async () => <div />,
+      },
+    });
   });
 
   it('should emit the correct filter output', () => {

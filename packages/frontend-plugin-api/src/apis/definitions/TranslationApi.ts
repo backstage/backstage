@@ -305,6 +305,41 @@ type TranslationFunctionOptions<
   >
 >;
 
+/** @ignore */
+export type TranslationMessageKey<TMessages extends { [key: string]: string }> =
+  keyof CollapsedMessages<TMessages> & string;
+
+/**
+ * Tracks visited keys so nested messages can be inspected without recursing through cycles.
+ * @ignore
+ */
+type TupleMessageKeys<
+  TKey extends keyof TMessages,
+  TMessages extends { [key: string]: string },
+  TSeen = never,
+> = TKey extends TSeen
+  ? never
+  :
+      | TKey
+      | TupleMessageKeys<
+          Extract<NestingKeysFromMessage<TMessages[TKey]>, keyof TMessages>,
+          TMessages,
+          TSeen | TKey
+        >;
+
+/** @ignore */
+export type TranslationMessageOptions<
+  TMessages extends { [key: string]: string },
+  TKey extends TranslationMessageKey<TMessages>,
+> = NonNullable<
+  TranslationFunctionOptions<
+    TupleMessageKeys<TKey, CollapsedMessages<TMessages>>,
+    PluralKeys<TMessages>,
+    CollapsedMessages<TMessages>,
+    string
+  >[0]
+>;
+
 /** @public */
 export type TranslationFunction<TMessages extends { [key in string]: string }> =
   CollapsedMessages<TMessages> extends infer IMessages extends {
@@ -349,9 +384,14 @@ export type TranslationApi = {
   /**
    * Returns the message declared by the ref, synchronously and without loading
    * resources. Independent of the selected language and installed overrides.
+   * Optional values use the same formatting options as translations. Omitting
+   * them leaves replacement placeholders intact; plural messages use the other form.
    * Throws if the selected message is not declared by the ref.
    */
-  getDefaultMessage(translation: TranslationRefTuple): string;
+  getDefaultMessage<TOptions extends {}>(
+    translation: TranslationRefTuple<TOptions>,
+    options?: NoInfer<TOptions>,
+  ): string;
 
   getTranslation<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,

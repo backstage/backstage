@@ -433,12 +433,7 @@ export namespace coreApis {
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
   titleTranslation: ConfigurableExtensionDataRef_2<
-    TranslationRefTuple<
-      string,
-      {
-        [x: string]: string;
-      }
-    >,
+    TranslationRefTuple<{}, string>,
     'core.titleTranslation',
     {}
   >;
@@ -1821,12 +1816,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
         }
       >
     | ExtensionDataRef_2<
-        TranslationRefTuple<
-          string,
-          {
-            [x: string]: string;
-          }
-        >,
+        TranslationRefTuple<{}, string>,
         'core.titleTranslation',
         {
           optional: true;
@@ -1858,12 +1848,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           }
         >
       | ConfigurableExtensionDataRef_2<
-          TranslationRefTuple<
-            string,
-            {
-              [x: string]: string;
-            }
-          >,
+          TranslationRefTuple<{}, string>,
           'core.titleTranslation',
           {
             optional: true;
@@ -2160,12 +2145,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<string, 'core.title', {}>
     | ExtensionDataRef_2<
-        TranslationRefTuple<
-          string,
-          {
-            [x: string]: string;
-          }
-        >,
+        TranslationRefTuple<{}, string>,
         'core.titleTranslation',
         {
           optional: true;
@@ -2262,7 +2242,10 @@ export const toastApiRef: ApiRef<ToastApi>;
 
 // @public (undocumented)
 export type TranslationApi = {
-  getDefaultMessage(translation: TranslationRefTuple): string;
+  getDefaultMessage<TOptions extends {}>(
+    translation: TranslationRefTuple<TOptions>,
+    options?: NoInfer<TOptions>,
+  ): string;
   getTranslation<
     TMessages extends {
       [key in string]: string;
@@ -2364,7 +2347,9 @@ export interface TranslationRef<
 > {
   // (undocumented)
   $$type: '@backstage/TranslationRef';
-  (key: keyof TMessages & string): TranslationRefTuple<TId, TMessages>;
+  <TKey extends TranslationMessageKey<TMessages>>(
+    key: TKey,
+  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>, TKey>;
   // (undocumented)
   id: TId;
   // (undocumented)
@@ -2393,15 +2378,12 @@ export interface TranslationRefOptions<
 
 // @public
 export interface TranslationRefTuple<
-  TId extends string = string,
-  TMessages extends {
-    [key in string]: string;
-  } = {
-    [key in string]: string;
-  },
+  TOptions extends {} = {},
+  TKey extends string = string,
 > {
-  readonly key: keyof TMessages extends infer TKey ? TKey & string : never;
-  readonly ref: TranslationRef<TId, TMessages>;
+  readonly key: TKey;
+  readonly ref: TranslationRef;
+  readonly T: (options: TOptions) => void;
 }
 
 // @public (undocumented)

@@ -69,12 +69,7 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            TranslationRefTuple<
-              string,
-              {
-                [x: string]: string;
-              }
-            >,
+            TranslationRefTuple<{}, string>,
             'core.titleTranslation',
             {
               optional: true;
@@ -106,12 +101,7 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              TranslationRefTuple<
-                string,
-                {
-                  [x: string]: string;
-                }
-              >,
+              TranslationRefTuple<{}, string>,
               'core.titleTranslation',
               {
                 optional: true;
@@ -163,12 +153,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<
-              string,
-              {
-                [x: string]: string;
-              }
-            >,
+            TranslationRefTuple<{}, string>,
             'core.titleTranslation',
             {
               optional: true;

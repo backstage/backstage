@@ -48,12 +48,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            TranslationRefTuple<
-              string,
-              {
-                [x: string]: string;
-              }
-            >,
+            TranslationRefTuple<{}, string>,
             'core.titleTranslation',
             {
               optional: true;
@@ -85,12 +80,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              TranslationRefTuple<
-                string,
-                {
-                  [x: string]: string;
-                }
-              >,
+              TranslationRefTuple<{}, string>,
               'core.titleTranslation',
               {
                 optional: true;
@@ -153,12 +143,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<
-              string,
-              {
-                [x: string]: string;
-              }
-            >,
+            TranslationRefTuple<{}, string>,
             'core.titleTranslation',
             {
               optional: true;
@@ -203,12 +188,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<
-              string,
-              {
-                [x: string]: string;
-              }
-            >,
+            TranslationRefTuple<{}, string>,
             'core.titleTranslation',
             {
               optional: true;
@@ -253,12 +233,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
-            TranslationRefTuple<
-              string,
-              {
-                [x: string]: string;
-              }
-            >,
+            TranslationRefTuple<{}, string>,
             'core.titleTranslation',
             {
               optional: true;

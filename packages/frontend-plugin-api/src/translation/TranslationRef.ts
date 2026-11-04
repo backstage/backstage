@@ -19,13 +19,20 @@ import {
   TranslationResource,
 } from './TranslationResource';
 
+import {
+  TranslationMessageKey,
+  TranslationMessageOptions,
+} from '../apis/definitions/TranslationApi';
+
 /** @public */
 export interface TranslationRef<
   TId extends string = string,
   TMessages extends { [key in string]: string } = { [key in string]: string },
 > {
   /** Selects a message key, checked against this ref's declared messages. */
-  (key: keyof TMessages & string): TranslationRefTuple<TId, TMessages>;
+  <TKey extends TranslationMessageKey<TMessages>>(
+    key: TKey,
+  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>, TKey>;
 
   $$type: '@backstage/TranslationRef';
 
@@ -41,14 +48,15 @@ export interface TranslationRef<
  * @public
  */
 export interface TranslationRefTuple<
-  TId extends string = string,
-  TMessages extends { [key in string]: string } = { [key in string]: string },
+  TOptions extends {} = {},
+  TKey extends string = string,
 > {
-  /** The ref that owns the selected message. */
-  readonly ref: TranslationRef<TId, TMessages>;
+  /** The ref that owns the selected message; its catalog is erased from the tuple. */
+  readonly ref: TranslationRef;
   /** The selected message key. */
-  // Defer key extraction so typed refs remain assignable to refs with unknown messages.
-  readonly key: keyof TMessages extends infer TKey ? TKey & string : never;
+  readonly key: TKey;
+  /** For type inference only; must not be accessed at runtime. Encodes accepted formatting values. */
+  readonly T: (options: TOptions) => void;
 }
 
 /** @internal */
@@ -158,15 +166,24 @@ export function createTranslationRef<
     TId,
     FlattenedMessages<TNestedMessages>
   > = Object.assign(
-    (
-      key: keyof FlattenedMessages<TNestedMessages> & string,
-    ): TranslationRefTuple<TId, FlattenedMessages<TNestedMessages>> => ({
-      ref,
-      key: key as unknown as TranslationRefTuple<
-        TId,
-        FlattenedMessages<TNestedMessages>
-      >['key'],
-    }),
+    <TKey extends TranslationMessageKey<FlattenedMessages<TNestedMessages>>>(
+      key: TKey,
+    ) =>
+      Object.defineProperty(
+        {
+          ref: ref as unknown as TranslationRef,
+          key,
+        },
+        'T',
+        {
+          get() {
+            throw new Error('Not implemented');
+          },
+        },
+      ) as TranslationRefTuple<
+        TranslationMessageOptions<FlattenedMessages<TNestedMessages>, TKey>,
+        TKey
+      >,
     {
       $$type: '@backstage/TranslationRef' as const,
       version: 'v1' as const,

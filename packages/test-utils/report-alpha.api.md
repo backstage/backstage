@@ -14,7 +14,10 @@ export class MockTranslationApi implements TranslationApi {
   // (undocumented)
   static create(): MockTranslationApi;
   // (undocumented)
-  getDefaultMessage(translation: TranslationRefTuple): string;
+  getDefaultMessage<TOptions extends {}>(
+    translation: TranslationRefTuple<TOptions>,
+    options?: NoInfer<TOptions>,
+  ): string;
   // (undocumented)
   getTranslation<
     TMessages extends {

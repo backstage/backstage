@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { getDefaultMessage } from '../../../../core-app-api/src/apis/implementations/TranslationApi/getDefaultMessage';
 import {
   TranslationApi,
   TranslationRef,
@@ -72,13 +74,11 @@ export class MockTranslationApi implements TranslationApi {
     this.#interpolator = interpolator;
   }
 
-  getDefaultMessage(translation: TranslationRefTuple): string {
-    const { ref, key } = translation;
-    const message = toInternalTranslationRef(ref).getDefaultMessages()[key];
-    if (typeof message !== 'string') {
-      throw new Error(`Unknown translation key '${key}' in '${ref.id}'`);
-    }
-    return message;
+  getDefaultMessage<TOptions extends {}>(
+    translation: TranslationRefTuple<TOptions>,
+    options?: NoInfer<TOptions>,
+  ): string {
+    return getDefaultMessage(translation, options);
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(

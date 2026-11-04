@@ -56,6 +56,53 @@ it('reads declared defaults synchronously without loading translations or applyi
   );
 });
 
+it('formats declared default messages with optional typed values, nesting, and plural counts', () => {
+  const ref = createTranslationRef({
+    id: 'formatted-defaults',
+    messages: {
+      plain: 'Plain',
+      greeting: 'Hello {{name}}',
+      number: '{{amount, number}}',
+      nested: '$t(greeting)',
+      nestedPlain: '$t(plain)',
+      nestedPlural: '$t(items)',
+      items_one: 'One item',
+      items_other: '{{count}} items',
+    },
+  });
+  const api = I18nextTranslationApi.create({
+    languageApi: AppLanguageSelector.create(),
+  });
+  expect(api.getDefaultMessage(ref('greeting'), { name: 'Ada' })).toBe(
+    'Hello Ada',
+  );
+  expect(api.getDefaultMessage(ref('greeting'))).toBe('Hello {{name}}');
+  expect(api.getDefaultMessage(ref('number'), { amount: 1234.5 })).toBe(
+    '1,234.5',
+  );
+  expect(api.getDefaultMessage(ref('nested'), { name: 'Ada' })).toBe(
+    'Hello Ada',
+  );
+  expect(api.getDefaultMessage(ref('nestedPlain'))).toBe('Plain');
+  expect(api.getDefaultMessage(ref('items'), { count: 1 })).toBe('One item');
+  expect(api.getDefaultMessage(ref('items'), { count: 2 })).toBe('2 items');
+  expect(api.getDefaultMessage(ref('items'))).toBe('{{count}} items');
+  expect(api.getDefaultMessage(ref('nestedPlural'))).toBe('{{count}} items');
+  expect(api.getDefaultMessage(ref('nestedPlural'), { count: 2 })).toBe(
+    '2 items',
+  );
+  // Check invalid argument types without executing those calls.
+  // eslint-disable-next-line no-constant-condition
+  if (false) {
+    // @ts-expect-error The selected message requires a name rather than another key.
+    api.getDefaultMessage(ref('greeting'), { wrong: 'Ada' });
+    // @ts-expect-error Number formatting requires a number.
+    api.getDefaultMessage(ref('number'), { amount: '1234' });
+    // @ts-expect-error A supplied options object must contain the required values.
+    api.getDefaultMessage(ref('greeting'), {});
+  }
+});
+
 const plainRef = createTranslationRef({
   id: 'plain',
   messages: { foo: 'Foo' },

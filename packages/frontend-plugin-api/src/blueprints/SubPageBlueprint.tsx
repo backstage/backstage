@@ -15,7 +15,7 @@
  */
 
 import { TranslationRefTuple } from '../translation/TranslationRef';
-import { resolveTranslationTitle } from '../translation/resolveTranslationTitle';
+import { translationApiRef } from '../apis';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
@@ -87,11 +87,13 @@ export const SubPageBlueprint = createExtensionBlueprint({
     { config, node, apis },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
-    const { title, translation } = resolveTranslationTitle(
-      params.title,
-      config.title,
-      apis,
-    );
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? apis.get(translationApiRef)!.getDefaultMessage(params.title)
+        : params.title);
     yield coreExtensionData.title(title);
     if (translation) {
       yield coreExtensionData.titleTranslation(translation);

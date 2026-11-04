@@ -15,6 +15,7 @@
  */
 import {
   createTranslationRef,
+  TranslationRefTuple,
   toInternalTranslationRef,
 } from './TranslationRef';
 import { toInternalTranslationResource } from './TranslationResource';
@@ -46,6 +47,54 @@ describe('createTranslationRef', () => {
     expect(ref('nested.title')).toEqual({ ref, key: 'nested.title' });
     // @ts-expect-error Only flattened message keys can be selected.
     ref('nested');
+  });
+
+  it('carries only inferred formatting options and the selected key in tuple types', () => {
+    const ref = createTranslationRef({
+      id: 'titles',
+      messages: {
+        plain: 'Plain',
+        interpolation: 'Hello {{name}}',
+        formatted: '{{value, number}}',
+        nested: '$t(interpolation)',
+        deep: '$t(nested)',
+        deeper: '$t(deep)',
+        deepest: '$t(deeper)',
+        nestedPlain: '$t(plain)',
+        items_one: 'One',
+        items_other: '{{count}} items',
+      },
+    });
+    const titles: TranslationRefTuple[] = [
+      ref('plain'),
+      ref('nestedPlain'),
+      // @ts-expect-error Interpolated messages require values.
+      ref('interpolation'),
+      // @ts-expect-error Formatted messages require values.
+      ref('formatted'),
+      // @ts-expect-error Nested messages inherit required values.
+      ref('nested'),
+      // @ts-expect-error Deeply nested values are checked too.
+      ref('deepest'),
+      // @ts-expect-error Plural messages require a count.
+      ref('items'),
+    ];
+    expect(titles.map(title => title.key)).toEqual([
+      'plain',
+      'nestedPlain',
+      'interpolation',
+      'formatted',
+      'nested',
+      'deepest',
+      'items',
+    ]);
+    const selection: TranslationRefTuple<{ name: string }> =
+      ref('interpolation');
+    expect(selection).toEqual({ ref, key: 'interpolation' });
+    expect(() => selection.T).toThrow('Not implemented');
+    // @ts-expect-error Use a checked selector rather than constructing an unchecked tuple.
+    const unchecked: TranslationRefTuple = { ref, key: 'interpolation' };
+    expect(unchecked.key).toBe('interpolation');
   });
 
   it('should create a TranslationRef instance with nested messages', () => {
