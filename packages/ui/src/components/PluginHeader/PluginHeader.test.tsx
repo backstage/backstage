@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { PluginHeader } from './PluginHeader';
 import type { PluginHeaderProps } from './types';
 
 function renderPluginHeader(props: PluginHeaderProps = {}, initialEntry = '/') {
   return render(
-    <MemoryRouter initialEntries={[initialEntry]}>
+    <TestRouter initialEntries={[initialEntry]}>
       <BUIProvider>
         <PluginHeader {...props} />
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 
@@ -36,7 +37,7 @@ function LocationStatus() {
 
 function renderNestedPluginHeader(props: PluginHeaderProps) {
   return render(
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity']}
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -54,7 +55,7 @@ function renderNestedPluginHeader(props: PluginHeaderProps) {
           />
         </Routes>
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 

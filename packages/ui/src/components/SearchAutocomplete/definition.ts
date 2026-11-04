@@ -65,7 +65,6 @@ export const SearchAutocompleteItemDefinition =
       root: 'bui-SearchAutocompleteItem',
       itemContent: 'bui-SearchAutocompleteItemContent',
     },
-    navigation: { type: 'anchor' },
     propDefs: {
       children: {},
       className: {},

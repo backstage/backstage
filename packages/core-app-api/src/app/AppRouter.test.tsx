@@ -22,9 +22,13 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { InternalAppContext } from './InternalAppContext';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BUIProvider, Link } from '@backstage/ui';
+import { useVersionedContext } from '@backstage/version-bridge';
+import { Link as AriaLink } from 'react-aria-components';
+import * as ReactRouter from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { AppRouter } from './AppRouter';
 import useAsync from 'react-use/esm/useAsync';
 import { AppContextProvider } from './AppContext';
@@ -37,10 +41,121 @@ function UserRefDisplay() {
   return <div>ref: {value?.userEntityRef}</div>;
 }
 
+// Frozen V2 consumer contract, independent of the current BUI provider type.
+type LegacyRouting = {
+  Link: typeof ReactRouter.Link;
+  useHref: typeof ReactRouter.useHref;
+  useInRouterContext: typeof ReactRouter.useInRouterContext;
+  useLocation: typeof ReactRouter.useLocation;
+  useNavigate: typeof ReactRouter.useNavigate;
+  useResolvedPath: typeof ReactRouter.useResolvedPath;
+  createRouterOptions(
+    action: () => void,
+    options?: ReactRouter.NavigateOptions,
+  ): ReactRouter.NavigateOptions;
+};
+
+function FrozenV2Consumer() {
+  const { routing } = useVersionedContext<{ 2: { routing: LegacyRouting } }>(
+    'bui',
+  )!.atVersion(2)!;
+  const location = routing.useLocation();
+  const resolved = routing.useResolvedPath('create');
+  const navigate = routing.useNavigate();
+  const href = routing.useHref('create');
+  const active = location.pathname === resolved.pathname;
+  return (
+    <>
+      <routing.Link to="create" aria-current={active ? 'page' : undefined}>
+        Legacy create
+      </routing.Link>
+      <AriaLink
+        href={href}
+        routerOptions={
+          routing.createRouterOptions(() => navigate('create')) as never
+        }
+      >
+        Legacy delegated
+      </AriaLink>
+      <span>
+        {routing.useInRouterContext()
+          ? 'Legacy router present'
+          : 'No legacy router'}
+      </span>
+    </>
+  );
+}
+
 describe('AppRouter', () => {
   const mockComponents = {
     Router: MemoryRouter,
   } as AppComponents;
+
+  it('provides scoped navigation and the frozen BUI V2 contract through the legacy app router', () => {
+    const appIdentityProxy = new AppIdentityProxy();
+    function Location() {
+      const { pathname } = useLocation();
+      return <output>{pathname}</output>;
+    }
+    const components = {
+      Router: (props: React.ComponentProps<typeof MemoryRouter>) => (
+        <MemoryRouter
+          {...props}
+          initialEntries={['/app/catalog']}
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        />
+      ),
+    } as AppComponents;
+    render(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, appIdentityProxy],
+          [
+            configApiRef,
+            new ConfigReader({ app: { baseUrl: 'http://localhost/app' } }),
+          ],
+        ]}
+      >
+        <InternalAppContext.Provider
+          value={{ routeObjects: [], appIdentityProxy }}
+        >
+          <AppContextProvider
+            appContext={{ getComponents: () => components } as any}
+          >
+            <AppRouter>
+              <Location />
+              <Routes>
+                <Route
+                  path="catalog"
+                  element={
+                    <BUIProvider>
+                      <Link href="create">Create</Link>
+                      <FrozenV2Consumer />
+                    </BUIProvider>
+                  }
+                >
+                  <Route path="*" element={null} />
+                </Route>
+              </Routes>
+            </AppRouter>
+          </AppContextProvider>
+        </InternalAppContext.Provider>
+      </TestApiProvider>,
+    );
+    const link = screen.getByRole('link', { name: 'Create' });
+    expect(link).toHaveAttribute('href', '/app/catalog/create');
+    const legacyLink = screen.getByRole('link', { name: 'Legacy create' });
+    expect(legacyLink).toHaveAttribute('href', '/app/catalog/create');
+    expect(legacyLink).not.toHaveAttribute('aria-current');
+    expect(screen.getByText('Legacy router present')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('link', { name: 'Legacy delegated' }));
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/create');
+    expect(legacyLink).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(legacyLink);
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/create');
+    fireEvent.click(link);
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/create');
+  });
 
   it('should fall back to guest if there is no sign-in page', async () => {
     const appIdentityProxy = new AppIdentityProxy();

@@ -23,30 +23,22 @@ import {
 } from '../../hooks/useDefinition';
 import { ButtonLinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
-import {
-  getReactAriaAnchorProps,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 type ButtonLinkViewProps = {
   definitionResult: UseDefinitionResult<
     typeof ButtonLinkDefinition,
     ButtonLinkProps
   >;
-  navigation: AnchorNavigation;
   forwardedRef: Ref<HTMLAnchorElement>;
 };
 
 function ButtonLinkView({
   definitionResult,
-  navigation,
   forwardedRef,
 }: ButtonLinkViewProps) {
   const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
   const { classes, iconStart, iconEnd, children } = ownProps;
-  const navigationProps = restProps.isDisabled
-    ? { href: undefined, routerOptions: undefined, render: undefined }
-    : getReactAriaAnchorProps(navigation, restProps);
 
   const handlePress: typeof restProps.onPress = e => {
     restProps.onPress?.(e);
@@ -64,8 +56,7 @@ function ButtonLinkView({
       className={classes.root}
       ref={forwardedRef}
       {...dataAttributes}
-      {...restProps}
-      {...navigationProps}
+      {...(restProps as React.ComponentProps<typeof RALink>)}
       onPress={handlePress}
     >
       <span className={classes.content}>
@@ -85,14 +76,14 @@ function ButtonLinkView({
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const definitionResult = useDefinition(ButtonLinkDefinition, props);
-    const Navigation = definitionResult.navigation;
 
     return (
-      <Navigation
-        props={definitionResult.restProps}
-        view={ButtonLinkView}
-        viewProps={{ definitionResult, forwardedRef: ref }}
-      />
+      <BUIRoutingProvider>
+        <ButtonLinkView
+          definitionResult={definitionResult}
+          forwardedRef={ref}
+        />
+      </BUIRoutingProvider>
     );
   },
 );
