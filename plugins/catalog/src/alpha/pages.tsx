@@ -162,6 +162,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       coreExtensionData.routePath,
       coreExtensionData.routeRef.optional(),
       EntityContentBlueprint.dataRefs.title,
+      EntityContentBlueprint.dataRefs.titleSource.optional(),
       EntityContentBlueprint.dataRefs.filterFunction.optional(),
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
       EntityContentBlueprint.dataRefs.group.optional(),
@@ -256,6 +257,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           group: output.get(EntityContentBlueprint.dataRefs.group),
           path: output.get(coreExtensionData.routePath),
           title: output.get(EntityContentBlueprint.dataRefs.title),
+          titleSource: output.get(EntityContentBlueprint.dataRefs.titleSource),
           icon: output.get(EntityContentBlueprint.dataRefs.icon),
           if: buildFilterFn(
             output.get(EntityContentBlueprint.dataRefs.filterFunction),

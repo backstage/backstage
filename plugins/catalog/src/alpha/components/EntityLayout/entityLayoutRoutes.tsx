@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { SnapshotSource } from '@backstage/types/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { ReactElement } from 'react';
 
 export type EntityLayoutRoute = {
   path: string;
   title: string;
+  titleSource?: SnapshotSource<string>;
   group?: string;
   icon?: string | ReactElement;
   children: JSX.Element;

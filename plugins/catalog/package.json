@@ -90,6 +90,7 @@
     "pluralize": "^8.0.0",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4",
+    "use-sync-external-store": "^1.4.0",
     "zen-observable": "^0.10.0",
     "zod": "^4.0.0"
   },
@@ -106,6 +107,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/pluralize": "^0.0.33",
     "@types/react": "^18.0.0",
+    "@types/use-sync-external-store": "^1.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.30.2",

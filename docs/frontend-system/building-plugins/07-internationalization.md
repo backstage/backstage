@@ -350,6 +350,24 @@ PageBlueprint.make({
 ```
 
 `SubPageBlueprint` accepts the same title form for its tab and breadcrumb label.
+`EntityContentBlueprint` from `@backstage/plugin-catalog-react/alpha` also accepts
+message references for entity content titles:
+
+```tsx
+EntityContentBlueprint.make({
+  name: 'overview',
+  params: {
+    path: '/overview',
+    title: myPluginTranslationRef('entityPage.overview'),
+    loader: () => import('./EntityOverview').then(m => <m.EntityOverview />),
+  },
+});
+```
+
+Both catalog entity page layouts update tab labels, grouped tab ordering, and the
+active content's document title when the language changes, preserving mounted
+content and form state.
+
 Install translations using the existing `TranslationBlueprint` and translation
 resources described above. No additional title bundles or APIs are required.
 Existing string title parameters keep their behavior.

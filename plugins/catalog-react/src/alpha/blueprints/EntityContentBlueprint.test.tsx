@@ -23,6 +23,7 @@ import {
   createExtension,
   createExtensionInput,
   createRouteRef,
+  createTranslationRef,
 } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { waitFor, screen } from '@testing-library/react';
@@ -61,6 +62,15 @@ describe('EntityContentBlueprint', () => {
           [Function],
           [Function],
           [Function],
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "core.titleSource",
+            "optional": [Function],
+            "toString": [Function],
+          },
           {
             "$$type": "@backstage/ExtensionDataRef",
             "config": {
@@ -133,6 +143,49 @@ describe('EntityContentBlueprint', () => {
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
     expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Test');
+  });
+
+  it('resolves translated defaults and configured fallbacks while preserving static title data', () => {
+    const ref = createTranslationRef({
+      id: 'entity-titles',
+      messages: { title: 'Default', interpolated: 'Hello {{name}}' },
+    });
+    const extension = EntityContentBlueprint.make({
+      name: 'translated',
+      params: {
+        path: '/translated',
+        title: ref('title'),
+        loader: async () => <div>Translated content</div>,
+      },
+    });
+    const tester = createExtensionTester(extension);
+    expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Default');
+    expect(
+      tester.get(EntityContentBlueprint.dataRefs.titleSource)?.getSnapshot(),
+    ).toBe('Default');
+    const configured = createExtensionTester(extension, {
+      config: { title: 'Configured' },
+    });
+    expect(configured.get(EntityContentBlueprint.dataRefs.title)).toBe(
+      'Configured',
+    );
+    expect(
+      configured
+        .get(EntityContentBlueprint.dataRefs.titleSource)
+        ?.getSnapshot(),
+    ).toBe('Configured');
+    expect(() =>
+      createExtensionTester(
+        EntityContentBlueprint.make({
+          name: 'interpolated',
+          params: {
+            path: '/invalid',
+            title: ref('interpolated'),
+            loader: async () => <div />,
+          },
+        }),
+      ).get(EntityContentBlueprint.dataRefs.title),
+    ).toThrow('must not contain interpolation or nested translations');
   });
 
   it('should emit the correct filter output', () => {

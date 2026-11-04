@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ComponentType, ReactElement } from 'react';
+import { ComponentType, ReactElement, useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
 import {
@@ -25,6 +26,7 @@ import {
   type EntityContentGroupDefinitions,
   type EntityHeaderLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
+import { createSnapshotSourceCollection } from './createSnapshotSourceCollection';
 import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';
 import { EntityLayout } from './EntityLayout';
 import { EntityLayoutBui } from './EntityLayout/EntityLayoutBui';
@@ -50,6 +52,28 @@ export interface CatalogEntityPageProps {
 }
 
 export function CatalogEntityPage(props: CatalogEntityPageProps) {
+  const titleSource = useMemo(
+    () =>
+      createSnapshotSourceCollection(
+        props.routes.map(
+          route =>
+            route.titleSource ?? {
+              getSnapshot: () => route.title,
+              subscribe: () => () => {},
+            },
+        ),
+      ),
+    [props.routes],
+  );
+  const titles = useSyncExternalStore(
+    titleSource.subscribe,
+    titleSource.getSnapshot,
+  );
+  const routes = useMemo(
+    () =>
+      props.routes.map((route, index) => ({ ...route, title: titles[index] })),
+    [props.routes, titles],
+  );
   const routeParams = useRouteRefParams(entityRouteRef);
   const entityFromUrl = useEntityFromUrl();
   const matchesRoute =
@@ -78,7 +102,7 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
   const layout =
     HeaderComponent || !legacyHeader ? (
       <EntityLayoutBui
-        routes={props.routes}
+        routes={routes}
         HeaderComponent={HeaderComponent}
         contextMenuItems={filteredMenuItems}
         groupDefinitions={props.groupDefinitions}
@@ -86,7 +110,7 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
       />
     ) : (
       <EntityLayout
-        routes={props.routes}
+        routes={routes}
         header={legacyHeader}
         contextMenuItems={filteredMenuItems}
         groupDefinitions={props.groupDefinitions}

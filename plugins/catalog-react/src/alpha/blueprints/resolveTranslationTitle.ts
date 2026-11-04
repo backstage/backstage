@@ -1,0 +1,53 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { SnapshotSource } from '@backstage/types/alpha';
+import { ApiHolder, TranslationRefTuple } from '@backstage/frontend-plugin-api';
+// Internal protocol access, bundled with catalog-react rather than exposed as a public API.
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalTranslationRef } from '../../../../../packages/frontend-plugin-api/src/translation/TranslationRef';
+import { createTranslationTitleSource } from './createTranslationTitleSource';
+
+/** @internal */
+export function resolveTranslationTitle(options: {
+  title: string | TranslationRefTuple;
+  configuredTitle: string | undefined;
+  apis: ApiHolder;
+}): { title: string; source?: SnapshotSource<string> } {
+  const { title, configuredTitle, apis } = options;
+  if (typeof title !== 'object' || title === null) {
+    return { title: configuredTitle ?? title };
+  }
+  const { ref, key } = title;
+  const defaultTitle = toInternalTranslationRef(ref).getDefaultMessages()[key];
+  if (typeof defaultTitle !== 'string') {
+    throw new Error(`Unknown title translation key '${key}' in '${ref.id}'`);
+  }
+  if (defaultTitle.includes('{{') || defaultTitle.includes('$t(')) {
+    throw new Error(
+      `Title translation '${ref.id}:${key}' must not contain interpolation or nested translations`,
+    );
+  }
+  const fallback = configuredTitle ?? defaultTitle;
+  return {
+    title: fallback,
+    source: createTranslationTitleSource({
+      translation: title,
+      fallback,
+      apis,
+    }),
+  };
+}
