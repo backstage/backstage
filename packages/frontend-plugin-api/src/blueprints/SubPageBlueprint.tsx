@@ -18,6 +18,7 @@ import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
+import { useNodeTitle } from '../pageTitle';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
 
 /**
@@ -84,10 +85,14 @@ export const SubPageBlueprint = createExtensionBlueprint({
     { config, node },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
-    yield coreExtensionData.title(config.title ?? params.title);
-    yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader),
-    );
+    const title = config.title ?? params.title;
+    const content = ExtensionBoundary.lazy(node, params.loader);
+    const SubPageContent = () => {
+      useNodeTitle(node, title, 'default');
+      return content;
+    };
+    yield coreExtensionData.title(title);
+    yield coreExtensionData.reactElement(<SubPageContent />);
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }

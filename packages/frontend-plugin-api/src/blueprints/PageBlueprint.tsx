@@ -26,6 +26,7 @@ import {
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
 import { useApi } from '../apis/system';
 import { BreadcrumbEntry } from '../breadcrumbs';
+import { useNodeTitle } from '../pageTitle';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
@@ -106,6 +107,7 @@ export const PageBlueprint = createExtensionBlueprint({
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        useNodeTitle(node, resolvedTitle, 'default');
 
         return (
           <PageLayout
@@ -141,6 +143,7 @@ export const PageBlueprint = createExtensionBlueprint({
 
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        useNodeTitle(node, resolvedTitle, 'default');
         return (
           <PageLayout
             title={resolvedTitle}
@@ -165,7 +168,11 @@ export const PageBlueprint = createExtensionBlueprint({
                     key={index}
                     path={`${path}/*`}
                     element={
+                      // The key makes sure that switching between sub-pages
+                      // remounts the breadcrumb and sub-page content, rather
+                      // than reusing them while the previous content is shown
                       <BreadcrumbEntry
+                        key={path}
                         entry={{ label: tabTitle || path, href: path }}
                       >
                         {element}
@@ -186,6 +193,7 @@ export const PageBlueprint = createExtensionBlueprint({
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        useNodeTitle(node, resolvedTitle, 'default');
         return (
           <PageLayout
             title={resolvedTitle}
