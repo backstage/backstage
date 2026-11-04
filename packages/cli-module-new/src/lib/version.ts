@@ -163,6 +163,7 @@ export function createPackageVersionProvider(
         entry =>
           semver.validRange(entry.range) &&
           semver.valid(entry.version) &&
+          semver.satisfies(entry.version, entry.range) &&
           !semver.prerelease(entry.version) &&
           semver.gte(entry.version, versionHint) &&
           semver.major(entry.version) === semver.major(versionHint),

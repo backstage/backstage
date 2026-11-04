@@ -139,6 +139,9 @@ describe('createPackageVersionProvider', () => {
 
 "e@file:../e":
   version "1.5.0"
+
+"f@^16.0.0":
+  version "17.6.0"
 `,
     });
 
@@ -162,6 +165,9 @@ describe('createPackageVersionProvider', () => {
     expect(provider('react', '17.0.0')).toBe('^16.13.1 || ^17.0.0 || ^18.0.0');
     // Non-semver ranges are ignored
     expect(provider('e', '1.0.0')).toBe('^1.0.0');
+    // Ranges whose resolved version is outside the range (e.g. forced by
+    // Yarn resolutions) are not reused
+    expect(provider('f', '17.2.4')).toBe('^17.2.4');
   });
 
   describe('with backstage protocol options', () => {
