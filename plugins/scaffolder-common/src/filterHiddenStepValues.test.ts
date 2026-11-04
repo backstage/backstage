@@ -231,6 +231,40 @@ describe('filterHiddenStepValues', () => {
 });
 
 describe('resolveParameterSteps', () => {
+  it.each([
+    'create',
+    'manage',
+    'adopt',
+    'create-environment',
+    'manage-environment',
+  ])('preserves the shared context for the %s workflow', workflow => {
+    const values = {
+      request: {
+        workflow,
+        context: { revision: 'original-revision', environment: 'development' },
+        configuration: { name: 'previously-entered-value' },
+      },
+    };
+    const steps = [
+      { schema: { properties: { request: { type: 'object' } } } },
+      {
+        when: "${{ parameters.request.workflow in ['create', 'create-environment', 'manage-environment'] }}",
+        schema: {
+          properties: {
+            request: { properties: { configuration: { type: 'object' } } },
+          },
+        },
+      },
+    ];
+    const result = resolveParameterSteps(values, steps);
+    expect(result.visible).toEqual([
+      true,
+      ['create', 'create-environment', 'manage-environment'].includes(workflow),
+    ]);
+    expect(result.values).toEqual(values);
+    expect(values.request.context.revision).toBe('original-revision');
+  });
+
   it('evaluates conditions in order against values from visible steps', () => {
     const steps = [
       { schema: { properties: { provider: { type: 'string' } } } },

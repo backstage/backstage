@@ -133,6 +133,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   // stays the same when other steps are shown or hidden.
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
+  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(new Set());
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
@@ -148,12 +149,36 @@ export const Stepper = (stepperProps: StepperProps) => {
     };
   }, [steps, stepsState]);
 
-  // If the active step is hidden, move on to the next visible step.
+  const visibleIndices = new Set(visibleSteps.map(step => steps.indexOf(step)));
+  if ([...validatedSteps].some(index => !visibleIndices.has(index))) {
+    setValidatedSteps(
+      new Set([...validatedSteps].filter(index => visibleIndices.has(index))),
+    );
+  }
+  const pendingStepIndex = steps.findIndex(
+    (_, index) => visibleIndices.has(index) && !validatedSteps.has(index),
+  );
+  // Reconcile the stored cursor with the displayed step before visibility can
+  // change again. Otherwise a previously hidden step can steal the cursor.
   const nextVisibleStep = visibleSteps.findIndex(
     step => steps.indexOf(step) >= activeStepIndex,
   );
-  const activeStep =
+  let activeStep =
     nextVisibleStep === -1 ? visibleSteps.length : nextVisibleStep;
+  if (
+    activeStepIndex < steps.length &&
+    activeStep === visibleSteps.length &&
+    pendingStepIndex !== -1
+  ) {
+    activeStep = visibleSteps.indexOf(steps[pendingStepIndex]);
+  }
+  const displayedStepIndex =
+    activeStep < visibleSteps.length
+      ? steps.indexOf(visibleSteps[activeStep])
+      : steps.length;
+  if (activeStepIndex !== displayedStepIndex) {
+    setActiveStepIndex(displayedStepIndex);
+  }
 
   const setActiveStep = useCallback(
     (step: number) =>
@@ -222,8 +247,14 @@ export const Stepper = (stepperProps: StepperProps) => {
       setStepsState(current => {
         return { ...current, ...e.formData };
       });
+      setValidatedSteps(current => {
+        if (!current.has(displayedStepIndex)) return current;
+        const updated = new Set(current);
+        updated.delete(displayedStepIndex);
+        return updated;
+      });
     },
-    [setStepsState],
+    [displayedStepIndex],
   );
 
   const handleNext = useCallback(
@@ -249,7 +280,9 @@ export const Stepper = (stepperProps: StepperProps) => {
         const stepNum = activeStep + 1;
         analytics.captureEvent('click', `Next Step (${stepNum})`);
         // Move to the next step that is visible with the submitted values.
-        const current = steps.indexOf(visibleSteps[activeStep]);
+        const current = displayedStepIndex;
+        const validated = new Set(validatedSteps).add(current);
+        setValidatedSteps(validated);
         const { visible } = resolveParameterSteps(
           { ...stepsState, ...formData },
           steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
@@ -257,10 +290,22 @@ export const Stepper = (stepperProps: StepperProps) => {
         const next = visible.findIndex(
           (isVisible, index) => isVisible && index > current,
         );
-        setActiveStepIndex(next === -1 ? steps.length : next);
+        const pending = visible.findIndex(
+          (isVisible, index) => isVisible && !validated.has(index),
+        );
+        const reviewOrPending = pending === -1 ? steps.length : pending;
+        setActiveStepIndex(next === -1 ? reviewOrPending : next);
       }
     },
-    [validation, analytics, activeStep, steps, visibleSteps, stepsState],
+    [
+      validation,
+      analytics,
+      activeStep,
+      displayedStepIndex,
+      steps,
+      stepsState,
+      validatedSteps,
+    ],
   );
 
   useEffect(() => {
@@ -290,6 +335,11 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = useCallback(async () => {
+    // A manifest update can reveal a step while review is already open.
+    if (pendingStepIndex !== -1) {
+      setActiveStepIndex(pendingStepIndex);
+      return;
+    }
     setIsCreating(true);
     analytics.captureEvent('click', `${createLabel}`);
     try {
@@ -297,7 +347,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     } finally {
       setIsCreating(false);
     }
-  }, [analytics, createLabel, filteredFormState, onCreate]);
+  }, [analytics, createLabel, filteredFormState, onCreate, pendingStepIndex]);
 
   return (
     <>

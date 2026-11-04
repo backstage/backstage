@@ -510,6 +510,8 @@ The `when` field supports:
 - **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
 - **Boolean values:** `when: true` or `when: false`
 
+Changing a condition does not move the user away from the current step while it remains visible. Before review, the wizard returns to any visible step that has not passed frontend validation. A step that is hidden and later shown must be validated again, even when its previous values are restored.
+
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Filtering follows nested fields and array items, so a hidden field can be removed without removing visible fields in the same object. Fields shared with a visible step are retained, including values explicitly allowed by `additionalProperties`. Local `$ref` references are resolved within each parameter step schema. If a reference can't be resolved, the values are kept rather than filtered. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.
