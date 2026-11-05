@@ -19,9 +19,9 @@ connections:
   - type: jira
     host: example.atlassian.net
     deployment: cloud
-    baseUrl: https://example.atlassian.net
+    baseUrl: https://example.atlassian.net/
     # Required when using scoped Cloud API tokens:
-    apiBaseUrl: https://api.atlassian.com/ex/jira/00000000-0000-4000-8000-000000000000
+    apiBaseUrl: https://api.atlassian.com/ex/jira/00000000-0000-4000-8000-000000000000/
     auth:
       - method: apiToken
         email: reader@example.com
@@ -30,7 +30,7 @@ connections:
   - type: jira
     host: jira.example.com:8443
     deployment: datacenter
-    baseUrl: https://jira.example.com:8443/jira
+    baseUrl: https://jira.example.com:8443/jira/
     auth:
       - method: pat
         token: dummy-datacenter-personal-access-token
@@ -119,6 +119,10 @@ request. Use a relative REST path so the request keeps `/ex/jira/<cloudId>` or
 the Data Center context prefix. The endpoint requires authentication, so the
 example accepts only `apiToken` and `pat`.
 
+The URL example uses the trailing slashes in the configuration above.
+Connections accept roots with or without a trailing slash; this example needs
+one so relative requests keep the configured context path.
+
 ```ts
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import {
@@ -143,10 +147,8 @@ export const examplePlugin = createBackendPlugin({
         });
         const root = connection.apiBaseUrl ?? connection.baseUrl;
         const version = connection.deployment === 'cloud' ? '3' : '2';
-        const url = new URL(
-          `rest/api/${version}/myself`,
-          `${root.replace(/\/$/, '')}/`,
-        );
+        // The example base URL ends with / so new URL() preserves the context path.
+        const url = new URL(`rest/api/${version}/myself`, root);
         const auth = connection.auth;
         const authorization =
           auth.method === 'apiToken'
