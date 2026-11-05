@@ -6,6 +6,7 @@ description: Documentation landing page.
 
 ## Understand, try, and administer Backstage
 
+<div className="docLandingPageTable">
 <table>
   <tr>
     <th>Understand Backstage</th>
@@ -79,9 +80,11 @@ description: Documentation landing page.
     </td>
   </tr>
 </table>
+</div>
 
 ## Plugin Development, references, and how to contribute
 
+<div className="docLandingPageTable">
 <table>
   <tr>
     <th>Plugin Development</th>
@@ -121,3 +124,4 @@ description: Documentation landing page.
     </td>
   </tr>
 </table>
+</div>

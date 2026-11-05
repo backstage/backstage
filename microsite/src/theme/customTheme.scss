@@ -176,6 +176,18 @@ table {
   display: table;
 }
 
+.docLandingPageTable {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (max-width: 768px) {
+  .docLandingPageTable table {
+    min-width: 760px;
+  }
+}
+
 /* #endregion */
 
 /* For the docusaurus-pushfeedback plugin */
