@@ -20,7 +20,6 @@ import {
   getRepoRoot,
   getRepoPrefix,
   parseCatalogFileFolder,
-  parseSourceLocationPath,
   repoUrlFromRemote,
 } from './gitRemote';
 
@@ -110,51 +109,6 @@ describe('parseCatalogFileFolder', () => {
       parseCatalogFileFolder('file:/work/repo/catalog-info.yaml', repo),
     ).toBeUndefined();
     expect(parseCatalogFileFolder('', repo)).toBeUndefined();
-  });
-});
-
-describe('parseSourceLocationPath', () => {
-  const repo = 'https://github.com/acme/mono';
-
-  it('returns the possible repo-relative folders for each ref split', () => {
-    expect(parseSourceLocationPath(`url:${repo}/tree/main/`, repo)).toEqual([
-      [],
-    ]);
-    expect(
-      parseSourceLocationPath(`url:${repo}/tree/main/services/api`, repo),
-    ).toEqual([['services', 'api'], ['api']]);
-    expect(
-      parseSourceLocationPath(`url:${repo}/blob/main/services/api/`, repo),
-    ).toEqual([['services', 'api'], ['api']]);
-    expect(
-      parseSourceLocationPath(`url:${repo}/tree/feature/x/svc`, repo),
-    ).toEqual([['x', 'svc'], ['svc']]);
-    expect(
-      parseSourceLocationPath(`URL:${repo.toUpperCase()}/tree/main/a`, repo),
-    ).toEqual([['a']]);
-    expect(
-      parseSourceLocationPath(
-        'url:https://gitlab.com/g/sub/repo/-/tree/main/svc',
-        'https://gitlab.com/g/sub/repo',
-      ),
-    ).toEqual([['svc']]);
-  });
-
-  it('returns undefined for other repos, other shapes and file locations', () => {
-    expect(
-      parseSourceLocationPath(`url:${repo}-other/tree/main/a`, repo),
-    ).toBeUndefined();
-    expect(
-      parseSourceLocationPath(
-        'url:https://github.com/acme/other/tree/main/a',
-        repo,
-      ),
-    ).toBeUndefined();
-    expect(
-      parseSourceLocationPath(`url:${repo}/issues/1`, repo),
-    ).toBeUndefined();
-    expect(parseSourceLocationPath(`url:${repo}/tree`, repo)).toBeUndefined();
-    expect(parseSourceLocationPath('file:/work/repo', repo)).toBeUndefined();
   });
 });
 

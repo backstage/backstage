@@ -34,7 +34,6 @@ import {
   getOriginUrl,
   getRepoPrefix,
   parseCatalogFileFolder,
-  parseSourceLocationPath,
   repoUrlFromRemote,
 } from './gitRemote';
 import { fetchIdentity } from './identity';
@@ -62,7 +61,6 @@ export interface ResolvedContext {
 const isKind = (ref: string, kind: string) =>
   parseEntityRef(ref).kind.toLocaleLowerCase('en-US') === kind;
 
-const SOURCE_LOCATION = 'backstage.io/source-location';
 const MANAGED_BY_LOCATION = 'backstage.io/managed-by-location';
 
 interface ComponentCandidate {
@@ -71,25 +69,26 @@ interface ComponentCandidate {
   folders: string[][];
 }
 
-async function queryComponentsByLocation(options: {
+async function queryRegisteredComponents(options: {
   client: CatalogReader;
   token: string;
   repoUrl: string;
-  annotation: string;
-  parse: (location: string, repoUrl: string) => string[][] | undefined;
 }): Promise<ComponentCandidate[]> {
-  const { client, token, repoUrl, annotation, parse } = options;
-  // A path type that cannot start with `$`, which marks predicate operators.
-  const path: `metadata.${string}` = `metadata.annotations.${annotation}`;
-  const hasLocationPrefix: FilterPredicateExpression = {};
-  hasLocationPrefix[path] = { $hasPrefix: `url:${repoUrl}/` };
+  const { client, token, repoUrl } = options;
   const query: FilterPredicate = {
-    $all: [{ kind: 'Component' }, hasLocationPrefix],
+    $all: [
+      { kind: 'Component' },
+      {
+        [`metadata.annotations.${MANAGED_BY_LOCATION}`]: {
+          $hasPrefix: `url:${repoUrl}/`,
+        },
+      },
+    ],
   };
   const entities = await queryAllEntities(client, { query }, token);
   return entities.flatMap(entity => {
-    const folders = parse(
-      entity.metadata.annotations?.[annotation] ?? '',
+    const folders = parseCatalogFileFolder(
+      entity.metadata.annotations?.[MANAGED_BY_LOCATION] ?? '',
       repoUrl,
     );
     return folders ? [{ entity, folders }] : [];
@@ -105,18 +104,11 @@ const listRefs = (candidates: ComponentCandidate[]) =>
 /**
  * Finds the component to resolve against. With an explicit entity, that
  * entity is fetched. Otherwise the component is matched against the current
- * folder in the git remote repository:
- *
- * 1. Components whose `backstage.io/managed-by-location` is a catalog file in
- *    this repository. The catalog always sets this annotation itself, so it
- *    cannot be claimed by an entity from another location. The folder of the
- *    catalog file that is the nearest ancestor of the current folder wins.
- * 2. Only when that finds nothing, components whose self-declared
- *    `backstage.io/source-location` is the current folder or one of its
- *    ancestors. This covers components registered from another repository,
- *    such as a central catalog repository. Because any entity can declare
- *    this annotation, a match is only accepted when exactly one component
- *    declares it, and a warning is reported.
+ * folder in the git remote repository: components whose
+ * `backstage.io/managed-by-location` is a catalog file in this repository are
+ * considered. The catalog always sets this annotation itself, so it cannot be
+ * claimed by an entity from another location. The folder of the catalog file
+ * that is the nearest ancestor of the current folder wins.
  */
 export async function findComponent(options: {
   client: CatalogReader;
@@ -125,12 +117,8 @@ export async function findComponent(options: {
   remoteUrl?: string;
   /** The current folder relative to the repository root, empty at the root. */
   repoPrefix?: string;
-  /** Reports a warning, defaults to writing a line to standard error. */
-  warn?: (message: string) => void;
 }): Promise<Entity> {
   const { client, token } = options;
-  const warn =
-    options.warn ?? ((message: string) => process.stderr.write(`${message}\n`));
   if (options.entity) {
     const refString = stringifyEntityRef(
       parseEntityRef(options.entity, {
@@ -149,20 +137,16 @@ export async function findComponent(options: {
   }
   const repoUrl = repoUrlFromRemote(options.remoteUrl);
   const folder = (options.repoPrefix ?? '').split('/').filter(Boolean);
-  const location =
-    folder.length > 0 ? `${repoUrl}/${folder.join('/')}` : repoUrl;
   // The current folder first, then each ancestor up to the repo root.
   const ancestors = folder.map((_, i) =>
     folder.slice(0, folder.length - i).join('/'),
   );
   ancestors.push('');
 
-  const registered = await queryComponentsByLocation({
+  const registered = await queryRegisteredComponents({
     client,
     token,
     repoUrl,
-    annotation: MANAGED_BY_LOCATION,
-    parse: parseCatalogFileFolder,
   });
   for (const wanted of ancestors) {
     const matches = registered.filter(c => isAt(c, wanted));
@@ -178,31 +162,10 @@ export async function findComponent(options: {
     }
   }
 
-  const declared = (
-    await queryComponentsByLocation({
-      client,
-      token,
-      repoUrl,
-      annotation: SOURCE_LOCATION,
-      parse: parseSourceLocationPath,
-    })
-  ).filter(c => ancestors.some(wanted => isAt(c, wanted)));
-  if (declared.length === 1) {
-    const ref = entityRefOf(declared[0].entity);
-    warn(
-      `Warning: no Component is registered from a catalog file at or above ${location}, so ${ref} was matched by its self-declared ${SOURCE_LOCATION} annotation. Use --entity to select the component explicitly.`,
-    );
-    return declared[0].entity;
-  }
-  if (declared.length > 1) {
-    throw new Error(
-      `No Component is registered from a catalog file at or above ${location}, and multiple Components declare a ${SOURCE_LOCATION} at or above it: ${listRefs(
-        declared,
-      )}. Use --entity to select one.`,
-    );
-  }
+  const location =
+    folder.length > 0 ? `${repoUrl}/${folder.join('/')}` : repoUrl;
   throw new Error(
-    `No Component registered from a catalog file or with a ${SOURCE_LOCATION} at or above ${location} was found in the catalog. Use --entity to select the component.`,
+    `No Component registered from a catalog file at or above ${location} was found in the catalog. Use --entity to select the component.`,
   );
 }
 
