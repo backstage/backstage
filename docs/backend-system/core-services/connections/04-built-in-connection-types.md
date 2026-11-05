@@ -44,6 +44,8 @@ selection rules, and a typed consumption example.
 
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
+- [Snyk](./types/snyk.md) supports API token authentication against regional
+  API hosts.
 
 ## Common behavior
 

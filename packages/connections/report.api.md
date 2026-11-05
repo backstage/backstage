@@ -474,6 +474,21 @@ export const connectionTypes: {
       apiKey?: string | undefined;
     }[];
   }>;
+  readonly snyk: ConnectionTypeDefinition<{
+    type: 'snyk';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
 };
 
 // @public (undocumented)
