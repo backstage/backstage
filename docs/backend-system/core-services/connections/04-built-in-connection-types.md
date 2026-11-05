@@ -45,6 +45,11 @@ selection rules, and a typed consumption example.
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
 
+## Incident management
+
+- [PagerDuty](./types/pagerduty.md) supports REST API tokens, with account-host
+  lookup and explicit regional REST endpoints.
+
 ## Common behavior
 
 Every [configured connection](./01-concepts.md#configured-connection) supports the
