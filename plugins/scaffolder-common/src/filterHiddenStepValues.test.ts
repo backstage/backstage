@@ -235,7 +235,7 @@ describe('resolveParameterSteps', () => {
     const values = {
       request: {
         enabled: false,
-        context: { revision: 'existing-revision', environment: 'development' },
+        context: { revision: 'existing-revision', category: 'example' },
         configuration: { name: 'previously-entered-value' },
       },
       hiddenOnly: 'not-submitted',

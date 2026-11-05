@@ -113,15 +113,15 @@ describe('getValidationData', () => {
     const schema = {
       properties: { name: { type: 'string', 'ui:field': 'Custom' } },
     };
-    const data = { name: 'unchanged', project: 'approved' };
+    const data = { name: 'unchanged', context: 'approved' };
     const snapshot = getValidationData(
       schema,
       data,
       validator,
       new Set(['Custom']),
     );
-    data.project = 'blocked';
-    expect(snapshot.values).toEqual({ name: 'unchanged', project: 'approved' });
+    data.context = 'blocked';
+    expect(snapshot.values).toEqual({ name: 'unchanged', context: 'approved' });
     expect(
       getValidationData(schema, data, validator, new Set(['Custom'])),
     ).not.toEqual(snapshot);
@@ -243,14 +243,14 @@ describe('getValidationData', () => {
           oneOf: [
             {
               properties: {
-                mode: { const: 'create' },
+                mode: { const: 'first' },
                 name: { type: 'string' },
               },
             },
             {
               properties: {
-                mode: { const: 'manage' },
-                project: { type: 'string' },
+                mode: { const: 'second' },
+                context: { type: 'string' },
               },
             },
           ],
@@ -260,16 +260,16 @@ describe('getValidationData', () => {
     expect(
       getValidationData(
         schema,
-        { mode: 'create', name: 'new', project: 'retained' },
+        { mode: 'first', name: 'new', context: 'retained' },
         validator,
       ).values,
-    ).toEqual({ mode: 'create', name: 'new' });
+    ).toEqual({ mode: 'first', name: 'new' });
     expect(
       getValidationData(
         schema,
-        { mode: 'manage', name: 'retained', project: 'existing' },
+        { mode: 'second', name: 'retained', context: 'existing' },
         validator,
       ).values,
-    ).toEqual({ mode: 'manage', project: 'existing' });
+    ).toEqual({ mode: 'second', context: 'existing' });
   });
 });

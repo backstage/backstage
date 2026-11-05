@@ -25,24 +25,24 @@ it('completes a workflow with a standard first-page validator without revisiting
   const onCreate = jest.fn();
   const validate = jest.fn(entityNamePickerValidation);
   const manifest = {
-    title: 'Standard project',
+    title: 'Example template',
     steps: [
       {
-        title: 'Project',
+        title: 'Entity details',
         schema: {
           required: ['name'],
           properties: {
             name: {
               type: 'string',
-              title: 'Project name',
+              title: 'Entity name',
               'ui:field': 'EntityNamePicker',
             },
           },
         },
       },
       {
-        title: 'Environment',
-        schema: { properties: { environment: { type: 'string' } } },
+        title: 'Additional information',
+        schema: { properties: { description: { type: 'string' } } },
       },
     ],
   };
@@ -58,7 +58,7 @@ it('completes a workflow with a standard first-page validator without revisiting
     >
       <EmbeddableWorkflow
         namespace="default"
-        templateName="project"
+        templateName="example-template"
         onCreate={onCreate}
         onError={() => null}
         extensions={[
@@ -72,25 +72,25 @@ it('completes a workflow with a standard first-page validator without revisiting
     </TestApiProvider>,
   );
   fireEvent.change(
-    await screen.findByRole('textbox', { name: /Project name/ }),
-    { target: { value: 'my-project' } },
+    await screen.findByRole('textbox', { name: /Entity name/ }),
+    { target: { value: 'example-entity' } },
   );
   fireEvent.click(screen.getByRole('button', { name: 'Next' }));
   fireEvent.change(
-    await screen.findByRole('textbox', { name: 'environment' }),
-    { target: { value: 'development' } },
+    await screen.findByRole('textbox', { name: 'description' }),
+    { target: { value: 'Example description' } },
   );
   fireEvent.click(screen.getByRole('button', { name: 'Review' }));
   await screen.findByRole('button', { name: 'Create' });
   expect(
-    screen.queryByRole('textbox', { name: /Project name/ }),
+    screen.queryByRole('textbox', { name: /Entity name/ }),
   ).not.toBeInTheDocument();
   expect(validate).toHaveBeenCalledTimes(2);
   fireEvent.click(screen.getByRole('button', { name: 'Create' }));
   await waitFor(() =>
     expect(onCreate).toHaveBeenCalledWith({
-      name: 'my-project',
-      environment: 'development',
+      name: 'example-entity',
+      description: 'Example description',
     }),
   );
 });

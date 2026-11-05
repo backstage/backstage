@@ -32,15 +32,15 @@ describe('Stepper', () => {
       <SecretsContextProvider>
         <Stepper
           manifest={{
-            title: 'Project setup',
+            title: 'Example form',
             steps: [
-              { title: 'Project details', schema: { properties: {} } },
+              { title: 'General information', schema: { properties: {} } },
               {
                 title: 'Optional settings',
                 when: '${{ parameters.optional }}',
                 schema: { properties: {} },
               },
-              { title: 'Environments', schema: { properties: {} } },
+              { title: 'Additional information', schema: { properties: {} } },
             ],
           }}
           initialState={{ optional: false }}
@@ -50,11 +50,11 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
     expect(
-      screen.getByRole('button', { name: 'Project details, Step 1' }),
-    ).toHaveTextContent('Project details');
+      screen.getByRole('button', { name: 'General information, Step 1' }),
+    ).toHaveTextContent('General information');
     expect(
-      screen.getByRole('button', { name: 'Environments, Step 2' }),
-    ).toHaveTextContent('Environments');
+      screen.getByRole('button', { name: 'Additional information, Step 2' }),
+    ).toHaveTextContent('Additional information');
     expect(screen.queryByText('Optional settings')).not.toBeInTheDocument();
   });
 
@@ -410,16 +410,16 @@ describe('Stepper', () => {
             title: 'Shared object',
             steps: [
               {
-                title: 'Project',
+                title: 'Shared data',
                 schema: {
                   properties: {
-                    projectChange: { type: 'object', 'ui:field': 'Shared' },
+                    request: { type: 'object', 'ui:field': 'Shared' },
                   },
                 },
               },
             ],
           }}
-          initialState={{ projectChange: { name: 'original' } }}
+          initialState={{ request: { name: 'original' } }}
           extensions={[
             { name: 'Shared', component: Shared, validation: validate },
           ]}
@@ -444,7 +444,7 @@ describe('Stepper', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
     await waitFor(() =>
       expect(onCreate).toHaveBeenCalledWith({
-        projectChange: { name: 'edited' },
+        request: { name: 'edited' },
       }),
     );
     expect(validate).toHaveBeenCalledTimes(2);
@@ -642,8 +642,8 @@ describe('Stepper', () => {
           errors: FieldValidation,
           context: { formData: JsonObject },
         ) => {
-          if (context.formData.project !== 'approved')
-            errors.addError('Project is not approved');
+          if (context.formData.context !== 'approved')
+            errors.addError('Context is not approved');
         },
       );
       const Custom = ({ formData }: FieldExtensionComponentProps<string>) => (
@@ -664,12 +664,12 @@ describe('Stepper', () => {
                   },
                 },
                 {
-                  title: 'Project',
-                  schema: { properties: { project: { type: 'string' } } },
+                  title: 'Context',
+                  schema: { properties: { context: { type: 'string' } } },
                 },
               ],
             }}
-            initialState={{ name: 'existing', project: 'approved' }}
+            initialState={{ name: 'existing', context: 'approved' }}
             extensions={[
               { name: 'Custom', component: Custom, validation: validate },
             ]}
@@ -679,16 +679,16 @@ describe('Stepper', () => {
       );
       // Pages that have not been visited are still reached through validation.
       expect(
-        screen.getByRole('button', { name: 'Project, Step 2' }),
+        screen.getByRole('button', { name: 'Context, Step 2' }),
       ).toBeDisabled();
-      fireEvent.click(screen.getByLabelText('Project, Step 2'));
+      fireEvent.click(screen.getByLabelText('Context, Step 2'));
       expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
       expect(
-        screen.queryByRole('textbox', { name: 'project' }),
+        screen.queryByRole('textbox', { name: 'context' }),
       ).not.toBeInTheDocument();
       fireEvent.click(screen.getByRole('button', { name: 'Next' }));
       fireEvent.change(
-        await screen.findByRole('textbox', { name: 'project' }),
+        await screen.findByRole('textbox', { name: 'context' }),
         {
           target: { value: 'blocked' },
         },
@@ -696,20 +696,20 @@ describe('Stepper', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
       await screen.findByRole('textbox', { name: 'Name' });
       expect(
-        await screen.findAllByText('Project is not approved'),
+        await screen.findAllByText('Context is not approved'),
       ).not.toHaveLength(0);
       expect(validate).toHaveBeenCalledTimes(2);
       expect(onCreate).not.toHaveBeenCalled();
       await user.tab();
-      const projectButton = screen.getByRole('button', {
-        name: 'Project, Step 2',
+      const contextButton = screen.getByRole('button', {
+        name: 'Context, Step 2',
       });
-      expect(projectButton).toHaveFocus();
+      expect(contextButton).toHaveFocus();
       await user.keyboard(key);
-      const project = await screen.findByRole('textbox', { name: 'project' });
-      expect(project).toHaveValue('blocked');
+      const context = await screen.findByRole('textbox', { name: 'context' });
+      expect(context).toHaveValue('blocked');
       expect(
-        screen.queryByText('Project is not approved'),
+        screen.queryByText('Context is not approved'),
       ).not.toBeInTheDocument();
       // Automatic checking still blocks review until the later input is fixed.
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
@@ -718,11 +718,11 @@ describe('Stepper', () => {
         screen.queryByRole('button', { name: 'Create' }),
       ).not.toBeInTheDocument();
       act(() =>
-        screen.getByRole('button', { name: 'Project, Step 2' }).focus(),
+        screen.getByRole('button', { name: 'Context, Step 2' }).focus(),
       );
       await user.keyboard(key);
       fireEvent.change(
-        await screen.findByRole('textbox', { name: 'project' }),
+        await screen.findByRole('textbox', { name: 'context' }),
         {
           target: { value: 'approved' },
         },
@@ -733,7 +733,7 @@ describe('Stepper', () => {
       await waitFor(() =>
         expect(onCreate).toHaveBeenCalledWith({
           name: 'existing',
-          project: 'approved',
+          context: 'approved',
         }),
       );
       // A later failure supersedes the old success, even after restoring its context.
