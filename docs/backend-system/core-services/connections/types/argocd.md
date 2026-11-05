@@ -19,14 +19,14 @@ connections:
   - type: argocd
     title: Production Argo CD
     host: argocd.example.com
-    baseUrl: https://argocd.example.com/argo-cd
+    baseUrl: https://argocd.example.com/argo-cd/
     auth:
       - method: token
         token: dummy-production-api-token
   - type: argocd
     title: Staging Argo CD
     host: argocd-staging.example.com:8443
-    baseUrl: https://argocd-staging.example.com:8443
+    baseUrl: https://argocd-staging.example.com:8443/
     auth:
       - method: token
         token: dummy-staging-api-token
@@ -93,8 +93,10 @@ configuration order decides.
 ## Consume an Argo CD connection
 
 A backend plugin or module must first [declare the `argocd` connection type](../03-consuming-connections.md#declare-and-resolve-the-connection)
-and obtain its connections service. The helper below uses the configured
-deployment root to keep the path prefix when building an API request:
+and obtain its connections service. This example needs a trailing slash on the
+configured deployment root so relative URL paths keep the deployment prefix.
+Connections accept URLs with or without a trailing slash; the slash is a
+prerequisite for this example, not a validation requirement.
 
 ```ts
 import type { Connection, ConnectionsService } from '@backstage/connections';
@@ -108,18 +110,17 @@ export async function listArgoCdApplications(
     query: { url: deploymentUrl },
     authMethods: ['token'],
   });
-  const deploymentRoot = `${connection.baseUrl.replace(/\/+$/, '')}/`;
-  const url = new URL('api/v1/applications', deploymentRoot);
+  // The example base URL ends with / so new URL() preserves the context path.
+  const url = new URL('api/v1/applications', connection.baseUrl);
   return fetch(url, {
     headers: { Authorization: `Bearer ${connection.auth.token}` },
   });
 }
 ```
 
-For both `https://argocd.example.com/argo-cd` and
-`https://argocd.example.com/argo-cd/`, the resulting URL is
-`https://argocd.example.com/argo-cd/api/v1/applications`. Handle API failures and
-permissions in the consuming plugin.
+With the configured base URL `https://argocd.example.com/argo-cd/`, the resulting
+URL is `https://argocd.example.com/argo-cd/api/v1/applications`. Handle API failures
+and permissions in the consuming plugin.
 
 ## Existing plugin configuration
 
