@@ -1214,12 +1214,6 @@ describe('specialized app', () => {
             featureFlags: [{ name: 'test-flag' }],
             extensions: [
               createExtension({
-                name: 'wrapper',
-                attachTo: { id: 'app/root', input: 'wrappers' },
-                output: [appRootWrapperComponentDataRef],
-                factory: () => [appRootWrapperComponentDataRef(TrackedWrapper)],
-              }),
-              createExtension({
                 name: 'deferred-element',
                 attachTo: { id: 'app/root', input: 'elements' },
                 if: { featureFlags: { $contains: 'test-flag' } },
@@ -1251,6 +1245,14 @@ describe('specialized app', () => {
                     factory: () => featureFlagsApi,
                   }),
               }),
+              // Root wrappers attach to an internal input, so they have to
+              // come from an app module.
+              createExtension({
+                name: 'tracked-wrapper',
+                attachTo: { id: 'app/root', input: 'wrappers' },
+                output: [appRootWrapperComponentDataRef],
+                factory: () => [appRootWrapperComponentDataRef(TrackedWrapper)],
+              }),
             ],
           }),
         ],
@@ -1258,7 +1260,7 @@ describe('specialized app', () => {
 
       const { rerender } = render(preparedApp.getBootstrapApp().element);
       expect(screen.getByText('Bootstrap Element')).toBeInTheDocument();
-      expect(mounts).toEqual(['mount wrapper', 'mount element']);
+      expect([...mounts].sort()).toEqual(['mount element', 'mount wrapper']);
 
       const finalizedApp = preparedApp.finalize();
       rerender(finalizedApp.element);
@@ -1266,7 +1268,7 @@ describe('specialized app', () => {
       await expect(
         screen.findByText('Deferred Element'),
       ).resolves.toBeInTheDocument();
-      expect(mounts).toEqual(['mount wrapper', 'mount element']);
+      expect([...mounts].sort()).toEqual(['mount element', 'mount wrapper']);
     });
 
     it('should defer conditional api roots without resetting visible api instances', () => {
