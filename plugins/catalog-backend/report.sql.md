@@ -7,6 +7,17 @@
 - `location_update_log_id_seq` (bigint)
 - `refresh_state_references_id_seq` (bigint)
 
+## Table `catalog_generation_counter`
+
+| Column       | Type      | Nullable | Max Length | Default |
+| ------------ | --------- | -------- | ---------- | ------- |
+| `generation` | `bigint`  | false    | -          | -       |
+| `id`         | `integer` | false    | -          | -       |
+
+### Indices
+
+- `catalog_generation_counter_pkey` (`id`) unique primary
+
 ## Table `final_entities`
 
 | Column            | Type                       | Nullable | Max Length | Default |
@@ -14,12 +25,14 @@
 | `entity_id`       | `character varying`        | false    | 255        | -       |
 | `entity_ref`      | `character varying`        | false    | 255        | -       |
 | `final_entity`    | `text`                     | true     | -          | -       |
+| `generation`      | `bigint`                   | true     | -          | -       |
 | `hash`            | `character varying`        | false    | 255        | -       |
 | `last_updated_at` | `timestamp with time zone` | true     | -          | -       |
 
 ### Indices
 
 - `final_entities_entity_ref_uniq` (`entity_ref`) unique
+- `final_entities_generation_idx` (`generation`, `entity_ref`)
 - `final_entities_pkey` (`entity_id`) unique primary
 
 ## Table `location_update_log`
