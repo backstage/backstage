@@ -653,7 +653,9 @@ export const Stepper = (stepperProps: StepperProps) => {
           return (
             <MuiStep key={steps.indexOf(step)}>
               <MuiStepButton
-                aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
+                aria-label={`${step.title}, ${t('stepper.stepIndexLabel', {
+                  index: index + 1,
+                })}`}
                 disabled={!isAllowedLabelClick}
                 onClick={() => {
                   if (isAllowedLabelClick) {

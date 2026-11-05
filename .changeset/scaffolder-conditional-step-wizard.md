@@ -12,4 +12,4 @@ Users can reach previously visited visible steps using the mouse or keyboard to 
 
 Changes during asynchronous validation preserve the latest input and ask the user to continue again. Field synchronization without an effective change does not interrupt validation. Review and creation remain blocked until the necessary checks pass.
 
-Step labels are now buttons. Tests that select wizard buttons by position may need to select them by accessible name instead.
+Step labels are now buttons. Their accessible names include the visible title and step number. Tests that select wizard buttons by position may need to select them by accessible name instead.

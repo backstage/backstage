@@ -27,6 +27,37 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it('includes each visible step title and position in its accessible name', async () => {
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Project setup',
+            steps: [
+              { title: 'Project details', schema: { properties: {} } },
+              {
+                title: 'Optional settings',
+                when: '${{ parameters.optional }}',
+                schema: { properties: {} },
+              },
+              { title: 'Environments', schema: { properties: {} } },
+            ],
+          }}
+          initialState={{ optional: false }}
+          extensions={[]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
+    );
+    expect(
+      screen.getByRole('button', { name: 'Project details, Step 1' }),
+    ).toHaveTextContent('Project details');
+    expect(
+      screen.getByRole('button', { name: 'Environments, Step 2' }),
+    ).toHaveTextContent('Environments');
+    expect(screen.queryByText('Optional settings')).not.toBeInTheDocument();
+  });
+
   it.each(['manual', 'automatic'] as const)(
     'does not reuse a successful completion after a failed %s retry',
     async retry => {
@@ -74,7 +105,7 @@ describe('Stepper', () => {
       await screen.findByRole('button', { name: 'Create' });
       rejected = true;
       if (retry === 'manual') {
-        fireEvent.click(screen.getByRole('button', { name: 'Step 1' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Name, Step 1' }));
         fireEvent.click(screen.getByRole('button', { name: 'Next' }));
       } else {
         fireEvent.click(screen.getByRole('button', { name: 'Back' }));
@@ -87,7 +118,7 @@ describe('Stepper', () => {
         await screen.findAllByText('Remote check failed'),
       ).not.toHaveLength(0);
       expect(validate).toHaveBeenCalledTimes(2);
-      fireEvent.click(screen.getByRole('button', { name: 'Step 2' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Later, Step 2' }));
       // Returning to the old inputs must not restore the old API-backed success.
       fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
         target: { value: 'unchanged' },
@@ -102,7 +133,7 @@ describe('Stepper', () => {
       ).not.toBeInTheDocument();
       expect(onCreate).not.toHaveBeenCalled();
       rejected = false;
-      fireEvent.click(screen.getByRole('button', { name: 'Step 2' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Later, Step 2' }));
       await screen.findByRole('textbox', { name: 'note' });
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
       // A successful retry proceeds directly; another Name-page visit is unnecessary.
@@ -174,7 +205,7 @@ describe('Stepper', () => {
         screen.queryByRole('button', { name: 'Create' }),
       ).not.toBeInTheDocument();
       expect(onCreate).not.toHaveBeenCalled();
-      fireEvent.click(screen.getByRole('button', { name: 'Step 2' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Mode, Step 2' }));
       fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
         target: { value: 'allowed' },
       });
@@ -580,7 +611,7 @@ describe('Stepper', () => {
       screen.queryByRole('button', { name: 'Create' }),
     ).not.toBeInTheDocument();
     expect(onCreate).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Step 3' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Context, Step 3' }));
     fireEvent.change(await screen.findByRole('textbox', { name: 'context' }), {
       target: { value: 'approved' },
     });
@@ -647,8 +678,10 @@ describe('Stepper', () => {
         </SecretsContextProvider>,
       );
       // Pages that have not been visited are still reached through validation.
-      expect(screen.getByRole('button', { name: 'Step 2' })).toBeDisabled();
-      fireEvent.click(screen.getByLabelText('Step 2'));
+      expect(
+        screen.getByRole('button', { name: 'Project, Step 2' }),
+      ).toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Project, Step 2'));
       expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
       expect(
         screen.queryByRole('textbox', { name: 'project' }),
@@ -668,7 +701,9 @@ describe('Stepper', () => {
       expect(validate).toHaveBeenCalledTimes(2);
       expect(onCreate).not.toHaveBeenCalled();
       await user.tab();
-      const projectButton = screen.getByRole('button', { name: 'Step 2' });
+      const projectButton = screen.getByRole('button', {
+        name: 'Project, Step 2',
+      });
       expect(projectButton).toHaveFocus();
       await user.keyboard(key);
       const project = await screen.findByRole('textbox', { name: 'project' });
@@ -682,7 +717,9 @@ describe('Stepper', () => {
       expect(
         screen.queryByRole('button', { name: 'Create' }),
       ).not.toBeInTheDocument();
-      act(() => screen.getByRole('button', { name: 'Step 2' }).focus());
+      act(() =>
+        screen.getByRole('button', { name: 'Project, Step 2' }).focus(),
+      );
       await user.keyboard(key);
       fireEvent.change(
         await screen.findByRole('textbox', { name: 'project' }),
@@ -1495,7 +1532,7 @@ describe('Stepper', () => {
     });
 
     await act(async () => {
-      fireEvent.click(getByLabelText('Step 1'));
+      fireEvent.click(getByLabelText('Step 1, Step 1'));
     });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(

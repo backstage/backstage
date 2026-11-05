@@ -520,7 +520,9 @@ Users can reach previously visited visible steps using the mouse or keyboard to 
 
 Review and creation remain blocked until all visible steps have passed the necessary validation. Changes made while review is open are checked before creation; a newly revealed page must still be visited. If the parameters are checked again from review, review remains open so the user can confirm them before selecting **Create** again.
 
-If values, definitions, or visibility change during asynchronous validation, its result is discarded. The latest input is preserved and the wizard asks the user to check the changes and continue again. Field synchronization that does not change any values does not interrupt validation. Step labels are accessible buttons; integration tests should select wizard buttons by accessible name rather than position.
+If values, definitions, or visibility change during asynchronous validation, its result is discarded. The latest input is preserved and the wizard asks the user to check the changes and continue again. Field synchronization that does not change any values does not interrupt validation.
+
+Step labels are accessible buttons. Their accessible names include the visible title followed by the step number, for example, `Environments, Step 2`. Integration tests should select wizard buttons by accessible name rather than position.
 
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 
