@@ -474,6 +474,34 @@ export const connectionTypes: {
       apiKey?: string | undefined;
     }[];
   }>;
+  readonly jira: ConnectionTypeDefinition<{
+    type: 'jira';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+      deployment: 'cloud' | 'datacenter';
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly (
+      | {
+          method: 'none';
+        }
+      | {
+          method: 'apiToken';
+          email: string;
+          token: string;
+        }
+      | {
+          method: 'pat';
+          token: string;
+        }
+    )[];
+  }>;
 };
 
 // @public (undocumented)

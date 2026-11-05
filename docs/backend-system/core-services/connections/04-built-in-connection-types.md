@@ -45,6 +45,11 @@ selection rules, and a typed consumption example.
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
 
+## Issue tracking
+
+- [Jira](./types/jira.md) supports Cloud API tokens, Data Center personal access
+  tokens, and explicit unauthenticated access.
+
 ## Common behavior
 
 Every [configured connection](./01-concepts.md#configured-connection) supports the
