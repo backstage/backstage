@@ -143,6 +143,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   // stays the same when other steps are shown or hidden.
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
+  const [visitedSteps, setVisitedSteps] = useState(
+    new Map<number, (typeof steps)[number]>(),
+  );
   const [validatedSteps, setValidatedSteps] = useState(
     new Map<number, { step: (typeof steps)[number]; inputs: JsonObject }>(),
   );
@@ -204,6 +207,24 @@ export const Stepper = (stepperProps: StepperProps) => {
       : steps.length;
   if (activeStepIndex !== displayedStepIndex) {
     setActiveStepIndex(displayedStepIndex);
+  }
+
+  // Revalidation can return to an earlier page whose validator depends on a
+  // later page. Keep those visited pages reachable so users can fix the input.
+  const currentVisits = new Map(
+    [...visitedSteps].filter(
+      ([index, step]) =>
+        visibleIndices.has(index) && isEqual(step, steps[index]),
+    ),
+  );
+  if (
+    displayedStepIndex < steps.length &&
+    !currentVisits.has(displayedStepIndex)
+  ) {
+    currentVisits.set(displayedStepIndex, cloneDeep(steps[displayedStepIndex]));
+  }
+  if (!isEqual(currentVisits, visitedSteps)) {
+    setVisitedSteps(currentVisits);
   }
 
   const setActiveStep = useCallback(
@@ -407,14 +428,19 @@ export const Stepper = (stepperProps: StepperProps) => {
         style={{ overflowX: 'auto' }}
       >
         {visibleSteps.map((step, index) => {
-          const isAllowedLabelClick = activeStep > index;
+          const isAllowedLabelClick =
+            activeStep > index ||
+            (index > activeStep && currentVisits.has(steps.indexOf(step)));
           return (
             <MuiStep key={steps.indexOf(step)}>
               <MuiStepLabel
                 aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
                 style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
                 onClick={() => {
-                  if (isAllowedLabelClick) setActiveStep(index);
+                  if (isAllowedLabelClick) {
+                    setErrors(undefined);
+                    setActiveStep(index);
+                  }
                 }}
               >
                 {step.title}

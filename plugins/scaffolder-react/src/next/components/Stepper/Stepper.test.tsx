@@ -69,6 +69,12 @@ describe('Stepper', () => {
         />
       </SecretsContextProvider>,
     );
+    // Pages that have not been visited are still reached through validation.
+    fireEvent.click(screen.getByLabelText('Step 2'));
+    expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'project' }),
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.change(await screen.findByRole('textbox', { name: 'project' }), {
       target: { value: 'blocked' },
@@ -81,10 +87,34 @@ describe('Stepper', () => {
     ).not.toHaveLength(0);
     expect(validate).toHaveBeenCalledTimes(2);
     expect(onCreate).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByLabelText('Step 2'));
+    const project = await screen.findByRole('textbox', { name: 'project' });
+    expect(project).toHaveValue('blocked');
+    expect(
+      screen.queryByText('Project is not approved'),
+    ).not.toBeInTheDocument();
+    // Visiting the later page does not bypass the pending earlier validation.
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('textbox', { name: 'Name' });
     expect(
       screen.queryByRole('button', { name: 'Create' }),
     ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText('Step 2'));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'project' }), {
+      target: { value: 'approved' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('textbox', { name: 'Name' });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        name: 'existing',
+        project: 'approved',
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(3);
   });
 
   it.each(['allOf', '$ref'])(
