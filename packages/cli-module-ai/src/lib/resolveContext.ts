@@ -29,8 +29,9 @@ import {
 } from './catalogClient';
 import {
   getOriginUrl,
-  parseGitRemote,
-  projectSlugAnnotation,
+  getRepoPrefix,
+  parseSourceLocationPath,
+  repoUrlFromRemote,
 } from './gitRemote';
 import { fetchIdentity } from './identity';
 import { resolveAuth } from './resolveAuth';
@@ -62,6 +63,8 @@ export async function findComponent(options: {
   token: string;
   entity?: string;
   remoteUrl?: string;
+  /** The current folder relative to the repository root, empty at the root. */
+  repoPrefix?: string;
 }): Promise<Entity> {
   const { client, token } = options;
   if (options.entity) {
@@ -80,30 +83,51 @@ export async function findComponent(options: {
   if (!options.remoteUrl) {
     throw new Error('Either an entity or a git remote URL is required');
   }
-  const remote = parseGitRemote(options.remoteUrl);
-  const annotation = projectSlugAnnotation(remote);
+  const repoUrl = repoUrlFromRemote(options.remoteUrl);
+  const folder = (options.repoPrefix ?? '').split('/').filter(Boolean);
+  const location =
+    folder.length > 0 ? `${repoUrl}/${folder.join('/')}` : repoUrl;
   const query: FilterPredicate = {
     $all: [
       { kind: 'Component' },
-      remote.provider === 'github'
-        ? { 'metadata.annotations.github.com/project-slug': remote.fullName }
-        : { 'metadata.annotations.gitlab.com/project-slug': remote.fullName },
+      {
+        'metadata.annotations.backstage.io/source-location': {
+          $hasPrefix: `url:${repoUrl}/`,
+        },
+      },
     ],
   };
-  const matches = await queryAllEntities(client, { query }, token);
-  if (matches.length === 0) {
-    throw new Error(
-      `No Component with ${annotation}=${remote.fullName} was found in the catalog. Use --entity to select the component.`,
+  const candidates = (await queryAllEntities(client, { query }, token)).flatMap(
+    entity => {
+      const folders = parseSourceLocationPath(
+        entity.metadata.annotations?.['backstage.io/source-location'] ?? '',
+        repoUrl,
+      );
+      return folders ? [{ entity, folders }] : [];
+    },
+  );
+  // Try the current folder first, then each ancestor up to the repo root.
+  for (let depth = folder.length; depth >= 0; depth--) {
+    const wanted = folder.slice(0, depth).join('/');
+    const matches = candidates.filter(c =>
+      c.folders.some(f => f.join('/') === wanted),
     );
+    if (matches.length === 1) {
+      return matches[0].entity;
+    }
+    if (matches.length > 1) {
+      throw new Error(
+        `Multiple Components have a source location at ${repoUrl}${
+          wanted ? `/${wanted}` : ''
+        }: ${matches
+          .map(m => entityRefOf(m.entity))
+          .join(', ')}. Use --entity to select one.`,
+      );
+    }
   }
-  if (matches.length > 1) {
-    throw new Error(
-      `Multiple Components match ${annotation}=${remote.fullName}: ${matches
-        .map(entityRefOf)
-        .join(', ')}. Use --entity to select one.`,
-    );
-  }
-  return matches[0];
+  throw new Error(
+    `No Component with a backstage.io/source-location at or above ${location} was found in the catalog. Use --entity to select the component.`,
+  );
 }
 
 export function readOwnerAndSystem(component: Entity): {
@@ -235,11 +259,13 @@ export async function resolveSelection(
   const identity = await fetchIdentity(baseUrl, accessToken);
 
   const remoteUrl = options.entity ? undefined : await getOriginUrl();
+  const repoPrefix = options.entity ? undefined : await getRepoPrefix();
   const component = await findComponent({
     client,
     token: accessToken,
     entity: options.entity,
     remoteUrl,
+    repoPrefix,
   });
   const { owner, system } = readOwnerAndSystem(component);
 

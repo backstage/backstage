@@ -24,7 +24,7 @@ Before using the AI commands you need:
 - A signed-in session on your Backstage instance, created with [`auth login`](./module-auth.md#auth-login).
 - A catalog backend that has the AI model module installed and supports `$contains` predicate queries on entity relations. See [AI in the Catalog](../../ai/ai-in-the-catalog.md).
 - Node.js 22.20 or later for `ai skills sync`, because `skills` requires it. The command fails before installing anything on an older version, and `--dry-run` works on any version.
-- A git `origin` remote on GitHub or GitLab that matches a catalog component, or the `--entity` option.
+- A git `origin` remote, and a catalog component whose `backstage.io/source-location` annotation points at the current folder or one of its parent folders in that repository, or the `--entity` option. The component with the nearest matching folder is used. The catalog sets this annotation for entities that are registered from a URL.
 
 ## ai resolve
 
@@ -72,7 +72,7 @@ Skipped (1)
 ### Examples
 
 ```bash
-# Resolve against the component that matches the git origin remote
+# Resolve against the component whose source location is nearest to the current folder
 yarn backstage-cli ai resolve
 
 # Machine-readable output
@@ -360,7 +360,7 @@ is detected, the command fails and asks you to pass `--agent`.
 
 - If you are not logged in, or the token was rejected, the command fails with a message pointing to `backstage-cli auth login`.
 - If there is no git remote or no matching component, the command fails with a message suggesting `--entity`.
-- If more than one component matches the repository, the command fails and lists the candidates. Pass `--entity` to choose one.
+- If more than one component has a source location at the same nearest folder, the command fails and lists the candidates. Pass `--entity` to choose one.
 - A skill that cannot be installed is reported as skipped with the reason. This never fails the command on its own.
 - If `skills add` exits with a non-zero code, the command reports which skill failed, continues with the remaining skills, and exits with a non-zero code at the end.
 
@@ -393,4 +393,4 @@ sets `GH_HOST` for that one invocation only.
 - Rules are not handled. Only skills are installed.
 - Skills with a ref that contains `/`, GitHub Enterprise hosts with a port, and refs or paths that contain `#`, `?`, or `\` are skipped.
 - Source locations without the GitLab `/-/` form must have exactly an `owner/repo` path before `/tree/`. GitLab sources in nested groups need the `/-/tree/` form.
-- Only GitHub and GitLab `origin` remotes can be matched to a component automatically. For other hosts, pass `--entity`.
+- Components are matched through source locations in the GitHub `/tree/` or GitLab `/-/tree/` form. For other hosts, or when the source location is longer than 200 characters, pass `--entity`.

@@ -17,6 +17,7 @@
 const mockResolveAuth = jest.fn();
 const mockFetchIdentity = jest.fn();
 const mockGetOriginUrl = jest.fn();
+const mockGetRepoPrefix = jest.fn();
 const mockClient: jest.Mocked<CatalogReader> = {
   queryEntities: jest.fn(),
   getEntitiesByRefs: jest.fn(),
@@ -35,6 +36,7 @@ jest.mock('./catalogClient', () => ({
 jest.mock('./gitRemote', () => ({
   ...jest.requireActual('./gitRemote'),
   getOriginUrl: (...args: unknown[]) => mockGetOriginUrl(...args),
+  getRepoPrefix: (...args: unknown[]) => mockGetRepoPrefix(...args),
 }));
 
 import type { Entity } from '@backstage/catalog-model';
@@ -125,48 +127,85 @@ describe('queryAllEntities', () => {
 });
 
 describe('findComponent', () => {
-  it('queries by project slug annotation for the remote host and handles 0, 1 and many matches', async () => {
-    mockClient.queryEntities.mockResolvedValue(page([component('svc')]));
-    const found = await findComponent({
-      client: mockClient,
-      token: 'tok',
-      remoteUrl: 'git@gitlab.acme.com:group/sub/repo.git',
+  it('picks the component whose source location is the nearest ancestor of the current folder', async () => {
+    const at = (name: string, path: string) => ({
+      ...component(name),
+      metadata: {
+        ...component(name).metadata,
+        annotations: {
+          'backstage.io/source-location': `url:https://github.acme.com/acme/mono/tree/main/${path}`,
+        },
+      },
     });
-    expect(found.metadata.name).toBe('svc');
+    const root = at('root', '');
+    const api = at('api', 'services/api');
+    const web = at('web', 'services/web');
+    mockClient.queryEntities.mockResolvedValue(
+      page([root, api, web, component('no-location')]),
+    );
+    const find = (repoPrefix: string) =>
+      findComponent({
+        client: mockClient,
+        token: 'tok',
+        remoteUrl: 'git@github.acme.com:acme/mono.git',
+        repoPrefix,
+      });
+
+    expect((await find('services/api')).metadata.name).toBe('api');
+    expect((await find('services/api/src/deep')).metadata.name).toBe('api');
+    expect((await find('services/web')).metadata.name).toBe('web');
+    expect((await find('services')).metadata.name).toBe('root');
+    expect((await find('')).metadata.name).toBe('root');
     expect(mockClient.queryEntities).toHaveBeenCalledWith(
       {
         query: {
           $all: [
             { kind: 'Component' },
             {
-              'metadata.annotations.gitlab.com/project-slug': 'group/sub/repo',
+              'metadata.annotations.backstage.io/source-location': {
+                $hasPrefix: 'url:https://github.acme.com/acme/mono/',
+              },
             },
           ],
         },
       },
       { token: 'tok' },
     );
+  });
 
-    mockClient.queryEntities.mockResolvedValue(page([]));
-    await expect(
-      findComponent({
-        client: mockClient,
-        token: 'tok',
-        remoteUrl: 'git@github.com:a/b.git',
-      }),
-    ).rejects.toThrow(/No Component.*a\/b.*--entity/);
+  it('fails on ties and when nothing matches, pointing at --entity', async () => {
+    const at = (name: string, path: string) => ({
+      ...component(name),
+      metadata: {
+        ...component(name).metadata,
+        annotations: {
+          'backstage.io/source-location': `url:https://github.com/a/b/tree/main/${path}`,
+        },
+      },
+    });
+    const options = {
+      client: mockClient,
+      token: 'tok',
+      remoteUrl: 'git@github.com:a/b.git',
+    };
 
     mockClient.queryEntities.mockResolvedValue(
-      page([component('one'), component('two')]),
+      page([at('one', 'svc'), at('two', 'svc')]),
     );
     await expect(
-      findComponent({
-        client: mockClient,
-        token: 'tok',
-        remoteUrl: 'git@github.com:a/b.git',
-      }),
+      findComponent({ ...options, repoPrefix: 'svc/src' }),
     ).rejects.toThrow(
-      /component:default\/one.*component:default\/two.*--entity/s,
+      /b\/svc: component:default\/one, component:default\/two.*--entity/s,
+    );
+
+    mockClient.queryEntities.mockResolvedValue(page([at('other', 'other')]));
+    await expect(
+      findComponent({ ...options, repoPrefix: 'svc' }),
+    ).rejects.toThrow(/at or above https:\/\/github.com\/a\/b\/svc.*--entity/);
+
+    mockClient.queryEntities.mockResolvedValue(page([]));
+    await expect(findComponent({ ...options, repoPrefix: '' })).rejects.toThrow(
+      /at or above https:\/\/github.com\/a\/b was.*--entity/,
     );
   });
 
@@ -311,10 +350,21 @@ describe('resolveSelection', () => {
       ent: ['user:default/jane', 'group:default/team-a'],
     });
     mockGetOriginUrl.mockResolvedValue('git@github.com:acme/svc.git');
-    const comp = component('svc', [
-      rel('ownedBy', 'group:default/team-a'),
-      rel('partOf', 'system:default/payments'),
-    ]);
+    mockGetRepoPrefix.mockResolvedValue('');
+    const comp = {
+      ...component('svc', [
+        rel('ownedBy', 'group:default/team-a'),
+        rel('partOf', 'system:default/payments'),
+      ]),
+      metadata: {
+        name: 'svc',
+        namespace: 'default',
+        annotations: {
+          'backstage.io/source-location':
+            'url:https://github.com/acme/svc/tree/main/',
+        },
+      },
+    };
     const dep = skill('base', 'group:default/elsewhere');
     let skillQuery: unknown;
     mockClient.queryEntities.mockImplementation(async request => {
