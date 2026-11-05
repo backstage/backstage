@@ -170,3 +170,54 @@ describe('getOpenApiSpecRoute', () => {
     expect(getOpenApiSpecRoute('api/test')).toEqual('api/test/openapi.json');
   });
 });
+
+describe('createRouter OpenAPI 3.1 specs', () => {
+  // `openapi-merge@2` validates `openapi` version and walks the document more
+  // thoroughly than v1 even for a single input, which is what
+  // `createValidatedOpenApiRouter` calls into to prepend the plugin's mount path
+  // to its spec. Guards against regressions where v2's walker mishandles a
+  // 3.1-only construct that reaches `GET /openapi.json`.
+  const spec31 = {
+    openapi: '3.1.0',
+    info: { title: 'test', version: '1' },
+    paths: {
+      '/ping': {
+        get: {
+          operationId: 'ping',
+          responses: {
+            '200': {
+              description: 'OK',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      // Array-form nullable: valid in OpenAPI 3.1, no
+                      // equivalent in 3.0 (which uses `nullable: true`).
+                      note: { type: ['string', 'null'] },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  } as const;
+
+  it('serves the spec at GET /openapi.json for an OpenAPI 3.1 input', async () => {
+    const router = createValidatedOpenApiRouter(spec31);
+    const app = express().use(router);
+
+    const response = await request(app).get(OPENAPI_SPEC_ROUTE).expect(200);
+
+    expect(response.body.openapi).toBe('3.1.0');
+    expect(response.body.paths).toHaveProperty('/ping');
+    expect(
+      response.body.paths['/ping'].get.responses['200'].content[
+        'application/json'
+      ].schema.properties.note.type,
+    ).toEqual(['string', 'null']);
+  });
+});
