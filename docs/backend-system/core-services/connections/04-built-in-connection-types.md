@@ -45,6 +45,11 @@ selection rules, and a typed consumption example.
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
 
+## Observability
+
+- [Datadog](./types/datadog.md) supports API-key/application-key pairs for
+  regional catalog API endpoints.
+
 ## Common behavior
 
 Every [configured connection](./01-concepts.md#configured-connection) supports the

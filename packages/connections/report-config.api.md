@@ -310,6 +310,22 @@ export const connectionTypes: {
         }
     )[];
   }>;
+  readonly datadog: ConnectionTypeDefinition<{
+    type: 'datadog';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+    };
+    auth: readonly {
+      method: 'apiKey';
+      apiKey: string;
+      applicationKey: string;
+    }[];
+  }>;
   readonly gerrit: ConnectionTypeDefinition<{
     type: 'gerrit';
     cardinality: 'multiton';
