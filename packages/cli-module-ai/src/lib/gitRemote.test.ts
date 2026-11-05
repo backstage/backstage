@@ -19,6 +19,7 @@ import {
   getOriginUrl,
   getRepoRoot,
   getRepoPrefix,
+  isLocationInRepo,
   parseSourceLocationPath,
   repoUrlFromRemote,
 } from './gitRemote';
@@ -59,6 +60,23 @@ describe('getRepoPrefix', () => {
     await expect(
       getRepoPrefix(jest.fn().mockRejectedValue(new Error('not a repo'))),
     ).rejects.toThrow(/not a repo.*--entity/);
+  });
+});
+
+describe('isLocationInRepo', () => {
+  it('only accepts url locations inside the same repository', () => {
+    const repo = 'https://github.com/acme/mono';
+    expect(
+      isLocationInRepo(`url:${repo}/blob/main/catalog-info.yaml`, repo),
+    ).toBe(true);
+    expect(
+      isLocationInRepo(`url:${repo.toUpperCase()}/blob/main/a.yaml`, repo),
+    ).toBe(true);
+    expect(isLocationInRepo(`url:${repo}-other/blob/main/a.yaml`, repo)).toBe(
+      false,
+    );
+    expect(isLocationInRepo(`file:${repo}/a.yaml`, repo)).toBe(false);
+    expect(isLocationInRepo('', repo)).toBe(false);
   });
 });
 

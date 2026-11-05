@@ -71,6 +71,16 @@ export async function getRepoPrefix(
 }
 
 /**
+ * Returns whether a `url:` location reference points into the given
+ * repository, comparing the canonical `https://<host>/<full name>/` prefix.
+ */
+export function isLocationInRepo(location: string, repoUrl: string): boolean {
+  return location
+    .toLocaleLowerCase('en-US')
+    .startsWith(`url:${repoUrl}/`.toLocaleLowerCase('en-US'));
+}
+
+/**
  * Parses a `backstage.io/source-location` annotation value that points into
  * the given repository, as `<repo>/tree/<ref>/<path>` (GitHub) or
  * `<repo>/-/tree/<ref>/<path>` (GitLab), also with `blob`. Returns the

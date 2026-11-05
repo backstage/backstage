@@ -134,14 +134,20 @@ describe('findComponent', () => {
         ...component(name).metadata,
         annotations: {
           'backstage.io/source-location': `url:https://github.acme.com/acme/mono/tree/main/${path}`,
+          'backstage.io/managed-by-origin-location':
+            'url:https://github.acme.com/acme/mono/blob/main/catalog-info.yaml',
         },
       },
     });
     const root = at('root', '');
     const api = at('api', 'services/api');
     const web = at('web', 'services/web');
+    // Claims a folder of this repository, but was registered from another one.
+    const spoofed = at('spoofed', 'services/api/src');
+    spoofed.metadata.annotations['backstage.io/managed-by-origin-location'] =
+      'url:https://github.acme.com/evil/mono/blob/main/catalog-info.yaml';
     mockClient.queryEntities.mockResolvedValue(
-      page([root, api, web, component('no-location')]),
+      page([root, api, web, spoofed, component('no-location')]),
     );
     const find = (repoPrefix: string) =>
       findComponent({
@@ -153,6 +159,7 @@ describe('findComponent', () => {
 
     expect((await find('services/api')).metadata.name).toBe('api');
     expect((await find('services/api/src/deep')).metadata.name).toBe('api');
+    expect((await find('services/api/src')).metadata.name).toBe('api');
     expect((await find('services/web')).metadata.name).toBe('web');
     expect((await find('services')).metadata.name).toBe('root');
     expect((await find('')).metadata.name).toBe('root');
@@ -163,6 +170,11 @@ describe('findComponent', () => {
             { kind: 'Component' },
             {
               'metadata.annotations.backstage.io/source-location': {
+                $hasPrefix: 'url:https://github.acme.com/acme/mono/',
+              },
+            },
+            {
+              'metadata.annotations.backstage.io/managed-by-origin-location': {
                 $hasPrefix: 'url:https://github.acme.com/acme/mono/',
               },
             },
@@ -180,6 +192,8 @@ describe('findComponent', () => {
         ...component(name).metadata,
         annotations: {
           'backstage.io/source-location': `url:https://github.com/a/b/tree/main/${path}`,
+          'backstage.io/managed-by-origin-location':
+            'url:https://github.com/a/b/blob/main/catalog-info.yaml',
         },
       },
     });
@@ -362,6 +376,8 @@ describe('resolveSelection', () => {
         annotations: {
           'backstage.io/source-location':
             'url:https://github.com/acme/svc/tree/main/',
+          'backstage.io/managed-by-origin-location':
+            'url:https://github.com/acme/svc/blob/main/catalog-info.yaml',
         },
       },
     };
