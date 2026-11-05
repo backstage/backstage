@@ -16,7 +16,14 @@
 
 import { IncomingMessage } from 'node:http';
 import { Socket } from 'node:net';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  ServiceFactoryTester,
+} from '@backstage/backend-test-utils';
+import { randomBytes } from 'node:crypto';
+import { SignJWT } from 'jose';
+import { authServiceFactory } from '../../auth/authServiceFactory';
 import { authenticateWebSocket } from './authenticateWebSocket';
 
 function request(headers: IncomingMessage['headers']): IncomingMessage {
@@ -94,6 +101,78 @@ describe('authenticateWebSocket', () => {
           authPolicy: 'authenticated',
         }),
       ).rejects.toThrow('Missing or invalid');
+    }
+  });
+
+  it('tries later credentials after expired or invalid legacy tokens', async () => {
+    const key = randomBytes(32);
+    const data = {
+      backend: {
+        baseUrl: 'http://localhost',
+        auth: {
+          externalAccess: [
+            {
+              type: 'legacy',
+              options: {
+                secret: key.toString('base64'),
+                subject: 'legacy-test',
+              },
+            },
+          ],
+        },
+      },
+    };
+    const config = mockServices.rootConfig({ data });
+    const auth = await ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: [
+        mockServices.rootConfig.factory({ data }),
+        mockServices.discovery.factory(),
+      ],
+    }).getSubject();
+    const valid = await new SignJWT({ sub: 'backstage-server' })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('1h')
+      .sign(key);
+    const credentials = await auth.authenticate(valid);
+    const expired = await new SignJWT({ sub: 'backstage-server' })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime(0)
+      .sign(key);
+    const notYetValid = await new SignJWT({ sub: 'backstage-server' })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setNotBefore('1h')
+      .sign(key);
+    for (const token of [expired, notYetValid]) {
+      await expect(auth.authenticate(token)).rejects.toMatchObject({
+        name: 'AuthenticationError',
+      });
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          authPolicy: 'authenticated',
+          request: request({ 'sec-websocket-protocol': `${token}, ${valid}` }),
+        }),
+      ).resolves.toEqual({ credentials, authProtocol: valid });
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          authPolicy: 'authenticated',
+          request: request({
+            'sec-websocket-protocol': token,
+            authorization: `Bearer ${valid}`,
+          }),
+        }),
+      ).resolves.toEqual({ credentials, authProtocol: undefined });
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          authPolicy: 'authenticated',
+          request: request({ 'sec-websocket-protocol': token }),
+        }),
+      ).rejects.toMatchObject({ name: 'AuthenticationError' });
     }
   });
 
