@@ -44,6 +44,8 @@ selection rules, and a typed consumption example.
 
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
+- [SonarQube](./types/sonarqube.md) supports Server and Cloud instances with
+  Bearer tokens, explicit Basic token compatibility, and anonymous access.
 
 ## Common behavior
 
