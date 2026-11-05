@@ -29,6 +29,7 @@ import {
 } from './catalogClient';
 import {
   getOriginUrl,
+  isLocationInRepo,
   getRepoPrefix,
   parseSourceLocationPath,
   repoUrlFromRemote,
@@ -95,10 +96,25 @@ export async function findComponent(options: {
           $hasPrefix: `url:${repoUrl}/`,
         },
       },
+      {
+        'metadata.annotations.backstage.io/managed-by-origin-location': {
+          $hasPrefix: `url:${repoUrl}/`,
+        },
+      },
     ],
   };
   const candidates = (await queryAllEntities(client, { query }, token)).flatMap(
     entity => {
+      // The source location is self-declared, but the catalog always sets the
+      // origin location itself, so only trust entities that were registered
+      // from this repository.
+      const origin =
+        entity.metadata.annotations?.[
+          'backstage.io/managed-by-origin-location'
+        ] ?? '';
+      if (!isLocationInRepo(origin, repoUrl)) {
+        return [];
+      }
       const folders = parseSourceLocationPath(
         entity.metadata.annotations?.['backstage.io/source-location'] ?? '',
         repoUrl,
