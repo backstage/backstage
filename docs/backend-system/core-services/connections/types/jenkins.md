@@ -19,7 +19,7 @@ configuration file.
 connections:
   - type: jenkins
     host: ci.example.com:8443
-    baseUrl: https://ci.example.com:8443/jenkins
+    baseUrl: https://ci.example.com:8443/jenkins/
     auth:
       - method: apiToken
         username: backstage-bot
@@ -101,8 +101,9 @@ the plugin makes the HTTP request and handles authentication errors.
 
 Pass the backend's injected `ConnectionsService` to this function. The lookup
 returns `Connection<'jenkins', 'apiToken'>`, so the plugin can read the username
-and API token with their types checked. The URL construction keeps the context
-path for base URLs ending in either `/jenkins` or `/jenkins/`.
+and API token with their types checked. This example assumes the configured base
+URL ends in `/jenkins/` so the relative job path stays under that prefix.
+Connections also accept base URLs without a trailing slash.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -114,9 +115,8 @@ async function readExampleJob(connections: ConnectionsService) {
     authMethods: ['apiToken'],
   });
 
-  // A trailing slash and a relative path preserve the controller context path.
-  const controllerUrl = `${connection.baseUrl.replace(/\/+$/, '')}/`;
-  const url = new URL('job/example/api/json', controllerUrl);
+  // The example base URL ends with / so new URL() preserves the context path.
+  const url = new URL('job/example/api/json', connection.baseUrl);
   const credentials = Buffer.from(
     `${connection.auth.username}:${connection.auth.apiToken}`,
     'utf8',
