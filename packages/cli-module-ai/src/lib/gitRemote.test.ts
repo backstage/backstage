@@ -18,46 +18,92 @@ import {
   getMainCheckoutRoot,
   getOriginUrl,
   getRepoRoot,
-  parseGitRemote,
-  projectSlugAnnotation,
+  getRepoPrefix,
+  parseSourceLocationPath,
+  repoUrlFromRemote,
 } from './gitRemote';
 
-describe('parseGitRemote', () => {
-  it('parses ssh and https remotes for GitHub, GitLab and Enterprise hosts', () => {
-    expect(parseGitRemote('git@github.com:backstage/backstage.git')).toEqual({
-      host: 'github.com',
-      fullName: 'backstage/backstage',
-      provider: 'github',
-    });
-    expect(parseGitRemote('https://github.com/backstage/backstage')).toEqual({
-      host: 'github.com',
-      fullName: 'backstage/backstage',
-      provider: 'github',
-    });
-    expect(parseGitRemote('https://github.acme.com/org/repo.git')).toEqual({
-      host: 'github.acme.com',
-      fullName: 'org/repo',
-      provider: 'github',
-    });
-    expect(parseGitRemote('git@gitlab.com:group/sub/repo.git')).toEqual({
-      host: 'gitlab.com',
-      fullName: 'group/sub/repo',
-      provider: 'gitlab',
-    });
-    expect(
-      projectSlugAnnotation(parseGitRemote('git@github.acme.com:o/r.git')),
-    ).toBe('github.com/project-slug');
-    expect(
-      projectSlugAnnotation(parseGitRemote('https://gitlab.acme.com/o/r.git')),
-    ).toBe('gitlab.com/project-slug');
+describe('repoUrlFromRemote', () => {
+  it('normalizes ssh, https and .git remotes, GitLab subgroups and Enterprise hosts', () => {
+    expect(repoUrlFromRemote('git@github.com:backstage/backstage.git')).toBe(
+      'https://github.com/backstage/backstage',
+    );
+    expect(repoUrlFromRemote('https://github.com/backstage/backstage')).toBe(
+      'https://github.com/backstage/backstage',
+    );
+    expect(repoUrlFromRemote('https://github.acme.com/org/repo.git\n')).toBe(
+      'https://github.acme.com/org/repo',
+    );
+    expect(repoUrlFromRemote('git@gitlab.com:group/sub/repo.git')).toBe(
+      'https://gitlab.com/group/sub/repo',
+    );
+    expect(repoUrlFromRemote('git@git.acme.com:o/r.git')).toBe(
+      'https://git.acme.com/o/r',
+    );
   });
 
-  it('rejects remotes that do not parse or use unsupported hosts, pointing at --entity', () => {
-    expect(() => parseGitRemote('https://bitbucket.org/a/b.git')).toThrow(
-      /Unsupported git host "bitbucket.org".*--entity/,
-    );
-    expect(() => parseGitRemote('')).toThrow(/--entity/);
-    expect(() => parseGitRemote('nonsense')).toThrow(/--entity/);
+  it('rejects remotes that do not parse, pointing at --entity', () => {
+    expect(() => repoUrlFromRemote('')).toThrow(/--entity/);
+    expect(() => repoUrlFromRemote('nonsense')).toThrow(/--entity/);
+  });
+});
+
+describe('getRepoPrefix', () => {
+  it('returns the folder without a trailing slash, empty at the root', async () => {
+    const exec = jest.fn().mockResolvedValue({ stdout: 'packages/a/\n' });
+    await expect(getRepoPrefix(exec)).resolves.toBe('packages/a');
+    expect(exec).toHaveBeenCalledWith('git', ['rev-parse', '--show-prefix']);
+    await expect(
+      getRepoPrefix(jest.fn().mockResolvedValue({ stdout: '\n' })),
+    ).resolves.toBe('');
+    await expect(
+      getRepoPrefix(jest.fn().mockRejectedValue(new Error('not a repo'))),
+    ).rejects.toThrow(/not a repo.*--entity/);
+  });
+});
+
+describe('parseSourceLocationPath', () => {
+  const repo = 'https://github.com/acme/mono';
+
+  it('returns the possible repo-relative folders for each ref split', () => {
+    expect(parseSourceLocationPath(`url:${repo}/tree/main/`, repo)).toEqual([
+      [],
+    ]);
+    expect(
+      parseSourceLocationPath(`url:${repo}/tree/main/services/api`, repo),
+    ).toEqual([['services', 'api'], ['api']]);
+    expect(
+      parseSourceLocationPath(`url:${repo}/blob/main/services/api/`, repo),
+    ).toEqual([['services', 'api'], ['api']]);
+    expect(
+      parseSourceLocationPath(`url:${repo}/tree/feature/x/svc`, repo),
+    ).toEqual([['x', 'svc'], ['svc']]);
+    expect(
+      parseSourceLocationPath(`URL:${repo.toUpperCase()}/tree/main/a`, repo),
+    ).toEqual([['a']]);
+    expect(
+      parseSourceLocationPath(
+        'url:https://gitlab.com/g/sub/repo/-/tree/main/svc',
+        'https://gitlab.com/g/sub/repo',
+      ),
+    ).toEqual([['svc']]);
+  });
+
+  it('returns undefined for other repos, other shapes and file locations', () => {
+    expect(
+      parseSourceLocationPath(`url:${repo}-other/tree/main/a`, repo),
+    ).toBeUndefined();
+    expect(
+      parseSourceLocationPath(
+        'url:https://github.com/acme/other/tree/main/a',
+        repo,
+      ),
+    ).toBeUndefined();
+    expect(
+      parseSourceLocationPath(`url:${repo}/issues/1`, repo),
+    ).toBeUndefined();
+    expect(parseSourceLocationPath(`url:${repo}/tree`, repo)).toBeUndefined();
+    expect(parseSourceLocationPath('file:/work/repo', repo)).toBeUndefined();
   });
 });
 
