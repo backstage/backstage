@@ -24,12 +24,15 @@ import { cloneDeep } from 'lodash';
 import { FormValidation } from './createAsyncValidators';
 
 function isFieldValidation(error: any): error is FieldValidation {
-  return !!error && '__errors' in error;
+  return !!error && typeof error === 'object' && '__errors' in error;
 }
 
 export function hasErrors(errors?: FormValidation): boolean {
-  if (!errors) {
+  if (!errors || typeof errors !== 'object') {
     return false;
+  }
+  if (isFieldValidation(errors) && (errors.__errors ?? []).length > 0) {
+    return true;
   }
 
   for (const error of Object.values(errors)) {

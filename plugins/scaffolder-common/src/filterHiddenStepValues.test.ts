@@ -231,38 +231,41 @@ describe('filterHiddenStepValues', () => {
 });
 
 describe('resolveParameterSteps', () => {
-  it.each([
-    'create',
-    'manage',
-    'adopt',
-    'create-environment',
-    'manage-environment',
-  ])('preserves the shared context for the %s workflow', workflow => {
+  it('preserves nested shared context while filtering hidden-only fields', () => {
     const values = {
       request: {
-        workflow,
-        context: { revision: 'original-revision', environment: 'development' },
+        enabled: false,
+        context: { revision: 'existing-revision', environment: 'development' },
         configuration: { name: 'previously-entered-value' },
       },
+      hiddenOnly: 'not-submitted',
     };
     const steps = [
       { schema: { properties: { request: { type: 'object' } } } },
       {
-        when: "${{ parameters.request.workflow in ['create', 'create-environment', 'manage-environment'] }}",
+        when: '${{ parameters.request.enabled }}',
         schema: {
           properties: {
             request: { properties: { configuration: { type: 'object' } } },
+            hiddenOnly: { type: 'string' },
           },
         },
       },
     ];
-    const result = resolveParameterSteps(values, steps);
-    expect(result.visible).toEqual([
-      true,
-      ['create', 'create-environment', 'manage-environment'].includes(workflow),
-    ]);
-    expect(result.values).toEqual(values);
-    expect(values.request.context.revision).toBe('original-revision');
+    const hidden = resolveParameterSteps(values, steps);
+    expect(hidden.visible).toEqual([true, false]);
+    expect(hidden.values).toEqual({ request: values.request });
+    const revealed = resolveParameterSteps(
+      { ...values, request: { ...values.request, enabled: true } },
+      steps,
+    );
+    expect(revealed.visible).toEqual([true, true]);
+    expect(revealed.values).toEqual({
+      ...values,
+      request: { ...values.request, enabled: true },
+    });
+    expect(values.request.context.revision).toBe('existing-revision');
+    expect(values.hiddenOnly).toBe('not-submitted');
   });
 
   it('evaluates conditions in order against values from visible steps', () => {

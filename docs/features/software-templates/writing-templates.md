@@ -510,7 +510,13 @@ The `when` field supports:
 - **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
 - **Boolean values:** `when: true` or `when: false`
 
-Changing a condition does not move the user away from the current step while it remains visible. Before review, the wizard returns to any visible step that has not passed frontend validation. A step that is hidden and later shown must be validated again, even when its previous values are restored. Validation also becomes pending when the step definition, effective validation constraints, or declared input values change. For steps with custom validators, changes to any form value require validation again because validators can use the whole form as context. Users can return to previously visited visible steps using the mouse or keyboard to correct those values; pending validation still prevents review and creation. If values or step visibility change while custom validation is running, its result is discarded and the user must validate the updated form before continuing.
+Changing a condition does not move the user away from the current step while it remains visible. A step that is hidden and later shown must be visited and validated again, even when its previous values are restored. Changing a step definition or its order also requires a new visit.
+
+Before review, the wizard checks visible steps whose validation may be out of date. Previously visited steps are checked automatically against their current inputs and effective constraints. Custom validators are also checked when the form context changes, because they can read values from other pages. Successful checks continue to the next pending step or review without another visit. Failed checks open the page that needs correction. Users can reach previously visited visible steps using the mouse or keyboard to correct values on another page. A voluntary return still follows the ordinary page order.
+
+Review and creation remain blocked until all visible steps have passed the necessary validation. Changes made while review is open are checked before creation; a newly revealed page must still be visited. If the parameters are checked again from review, review remains open so the user can confirm them before selecting **Create** again.
+
+If values, definitions, or visibility change during asynchronous validation, its result is discarded. The latest input is preserved and the wizard asks the user to check the changes and continue again. Field synchronization that does not change any values does not interrupt validation. Step labels are accessible buttons; integration tests should select wizard buttons by accessible name rather than position.
 
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 

@@ -27,6 +27,422 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  async function renderSynchronizedField(staleFailure = false) {
+    const user = userEvent.setup();
+    const onCreate = jest.fn();
+    let finishFirst!: () => void;
+    let finishSecond!: () => void;
+    const first = new Promise<void>(resolve => {
+      finishFirst = resolve;
+    });
+    const second = new Promise<void>(resolve => {
+      finishSecond = resolve;
+    });
+    const validate = jest
+      .fn()
+      .mockImplementationOnce(async (_value, errors) => {
+        await first;
+        if (staleFailure) errors.addError('Stale failure');
+      })
+      .mockImplementationOnce(async () => {
+        await second;
+      });
+    const Sync = ({
+      formData,
+      onChange,
+    }: FieldExtensionComponentProps<string>) => (
+      <>
+        <input
+          aria-label="Synchronized value"
+          value={formData ?? ''}
+          onChange={event => onChange(event.target.value)}
+        />
+        <button type="button" onClick={() => onChange(formData)}>
+          Synchronize
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            onChange('temporary');
+            onChange(formData);
+          }}
+        >
+          Edit and restore
+        </button>
+      </>
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Synchronization',
+            steps: [
+              {
+                title: 'Value',
+                schema: {
+                  properties: { value: { type: 'string', 'ui:field': 'Sync' } },
+                },
+              },
+            ],
+          }}
+          initialState={{ value: 'original' }}
+          extensions={[{ name: 'Sync', component: Sync, validation: validate }]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    return {
+      user,
+      onCreate,
+      validate,
+      first,
+      second,
+      finishFirst,
+      finishSecond,
+    };
+  }
+
+  it('continues validation after a synchronization with no effective change', async () => {
+    const { user, onCreate, validate, first, finishFirst } =
+      await renderSynchronizedField();
+    await user.click(screen.getByRole('button', { name: 'Synchronize' }));
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(validate).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      finishFirst();
+      await first;
+    });
+    await user.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ value: 'original' }),
+    );
+    expect(validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the last value when a field edits and restores it in the same event', async () => {
+    const { user, onCreate, first, second, finishFirst, finishSecond } =
+      await renderSynchronizedField();
+    await user.click(screen.getByRole('button', { name: 'Edit and restore' }));
+    expect(
+      screen.getByRole('textbox', { name: 'Synchronized value' }),
+    ).toHaveValue('original');
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    await act(async () => {
+      finishFirst();
+      await first;
+    });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Review' }));
+    await act(async () => {
+      finishSecond();
+      await second;
+    });
+    await user.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ value: 'original' }),
+    );
+  });
+
+  it('preserves edits and ignores a late result while a newer validation runs', async () => {
+    const {
+      user,
+      onCreate,
+      validate,
+      first,
+      second,
+      finishFirst,
+      finishSecond,
+    } = await renderSynchronizedField(true);
+    await user.type(
+      screen.getByRole('textbox', { name: 'Synchronized value' }),
+      '-edited',
+    );
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Review' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    await act(async () => {
+      finishFirst();
+      await first;
+    });
+    expect(screen.queryByText('Stale failure')).not.toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'Synchronized value' }),
+    ).toHaveValue('original-edited');
+    await act(async () => {
+      finishSecond();
+      await second;
+    });
+    await user.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ value: 'original-edited' }),
+    );
+    expect(validate).toHaveBeenCalledTimes(2);
+  });
+
+  it('detects a mutated nested value emitted by a shared field during validation', async () => {
+    let finish!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finish = resolve;
+    });
+    const validate = jest
+      .fn(async () => {})
+      .mockImplementationOnce(async () => {
+        await pending;
+      });
+    const onCreate = jest.fn();
+    const Shared = ({
+      formData,
+      onChange,
+    }: FieldExtensionComponentProps<{ name: string }>) => (
+      <button
+        type="button"
+        onClick={() => {
+          formData!.name = 'edited';
+          onChange(formData);
+        }}
+      >
+        Edit shared object
+      </button>
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Shared object',
+            steps: [
+              {
+                title: 'Project',
+                schema: {
+                  properties: {
+                    projectChange: { type: 'object', 'ui:field': 'Shared' },
+                  },
+                },
+              },
+            ],
+          }}
+          initialState={{ projectChange: { name: 'original' } }}
+          extensions={[
+            { name: 'Shared', component: Shared, validation: validate },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    fireEvent.click(screen.getByRole('button', { name: 'Edit shared object' }));
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    await act(async () => {
+      finish();
+      await pending;
+    });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        projectChange: { name: 'edited' },
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(2);
+  });
+
+  it('interrupts validation when the manifest reveals a page and still requires its visit', async () => {
+    let finish!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finish = resolve;
+    });
+    const validate = jest
+      .fn()
+      .mockImplementationOnce(async (_value, errors) => {
+        await pending;
+        errors.addError('Old manifest failure');
+      });
+    const onCreate = jest.fn();
+    const Current = ({ formData }: FieldExtensionComponentProps<string>) => (
+      <input aria-label="Current value" value={formData ?? ''} readOnly />
+    );
+    const manifest: TemplateParameterSchema = {
+      title: 'Revealed page',
+      steps: [
+        {
+          title: 'Earlier',
+          when: false,
+          schema: {
+            required: ['earlier'],
+            properties: { earlier: { type: 'string' } },
+          },
+        },
+        {
+          title: 'Current',
+          schema: {
+            properties: { current: { type: 'string', 'ui:field': 'Current' } },
+          },
+        },
+      ],
+    };
+    const extensions = [
+      { name: 'Current', component: Current, validation: validate },
+    ];
+    const renderStepper = (definition: TemplateParameterSchema) => (
+      <SecretsContextProvider>
+        <Stepper
+          manifest={definition}
+          initialState={{ earlier: 'prefilled', current: 'value' }}
+          extensions={extensions}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>
+    );
+    const { rerender } = await renderInTestApp(renderStepper(manifest));
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    rerender(
+      renderStepper({
+        ...manifest,
+        steps: [{ ...manifest.steps[0], when: true }, manifest.steps[1]],
+      }),
+    );
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Review' })).toBeEnabled();
+    await act(async () => {
+      finish();
+      await pending;
+    });
+    expect(screen.queryByText('Old manifest failure')).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    expect(await screen.findByRole('textbox', { name: 'earlier' })).toHaveValue(
+      'prefilled',
+    );
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        earlier: 'prefilled',
+        current: 'value',
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(2);
+  });
+
+  it('checks several cross-page validators without a navigation cycle', async () => {
+    const onCreate = jest.fn();
+    const validate = jest.fn(
+      async (
+        _value: unknown,
+        errors: FieldValidation,
+        context: { formData: JsonObject },
+      ) => {
+        if (context.formData.context !== 'approved')
+          errors.addError('Fix the context');
+      },
+    );
+    const Field = ({ formData }: FieldExtensionComponentProps<string>) => (
+      <input aria-label="Validated value" value={formData ?? ''} readOnly />
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Cross-page checks',
+            steps: [
+              {
+                title: 'First',
+                schema: {
+                  properties: {
+                    first: { type: 'string', 'ui:field': 'Checked' },
+                  },
+                },
+              },
+              {
+                title: 'Second',
+                schema: {
+                  properties: {
+                    second: { type: 'string', 'ui:field': 'Checked' },
+                  },
+                },
+              },
+              {
+                title: 'Context',
+                schema: {
+                  properties: {
+                    context: { type: 'string' },
+                    note: { type: 'string' },
+                  },
+                },
+              },
+            ],
+          }}
+          initialState={{ first: 'one', second: 'two', context: 'approved' }}
+          extensions={[
+            { name: 'Checked', component: Field, validation: validate },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByRole('button', { name: 'Back' });
+    await waitFor(() => expect(validate).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
+      target: { value: 'changed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('button', { name: 'Create' });
+    expect(validate).toHaveBeenCalledTimes(4);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'context' }), {
+      target: { value: 'blocked' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    expect(await screen.findAllByText('Fix the context')).not.toHaveLength(0);
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Step 3' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'context' }), {
+      target: { value: 'approved' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'note' }), {
+      target: { value: 'fixed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        first: 'one',
+        second: 'two',
+        context: 'approved',
+        note: 'fixed',
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(7);
+  });
+
   it.each(['{Enter}', ' '])(
     'recovers from failed context validation using %s to reach a later page',
     async key => {
@@ -89,7 +505,6 @@ describe('Stepper', () => {
       );
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
       await screen.findByRole('textbox', { name: 'Name' });
-      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
       expect(
         await screen.findAllByText('Project is not approved'),
       ).not.toHaveLength(0);
@@ -104,7 +519,7 @@ describe('Stepper', () => {
       expect(
         screen.queryByText('Project is not approved'),
       ).not.toBeInTheDocument();
-      // Visiting the later page does not bypass the pending earlier validation.
+      // Automatic checking still blocks review until the later input is fixed.
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
       await screen.findByRole('textbox', { name: 'Name' });
       expect(
@@ -119,9 +534,7 @@ describe('Stepper', () => {
         },
       );
       fireEvent.click(screen.getByRole('button', { name: 'Review' }));
-      await screen.findByRole('textbox', { name: 'Name' });
-      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+      // Successful context validation does not require another Name-page visit.
       fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
       await waitFor(() =>
         expect(onCreate).toHaveBeenCalledWith({
@@ -129,28 +542,34 @@ describe('Stepper', () => {
           project: 'approved',
         }),
       );
+      // Restoring the original, successfully checked context needs no extra call.
       expect(validate).toHaveBeenCalledTimes(3);
     },
   );
 
-  it.each(['allOf', '$ref'])(
+  it.each(['if.required', 'allOf', '$ref'] as const)(
     'revalidates constraints changed through %s by a later page',
     async composition => {
       const onCreate = jest.fn();
       const condition = {
-        if: { properties: { mode: { const: 'strict' } }, required: ['mode'] },
+        if:
+          composition === 'if.required'
+            ? { required: ['mode'] }
+            : { properties: { mode: { const: 'strict' } }, required: ['mode'] },
         then: {
           properties: { answer: { minLength: 8 } },
           required: ['answer'],
         },
       };
-      const composed =
-        composition === 'allOf'
-          ? { allOf: [condition] }
-          : {
-              definitions: { conditional: condition },
-              $ref: '#/definitions/conditional',
-            };
+      const compositions = {
+        'if.required': condition,
+        allOf: { allOf: [condition] },
+        $ref: {
+          definitions: { conditional: condition },
+          $ref: '#/definitions/conditional',
+        },
+      };
+      const composed = compositions[composition];
       await renderInTestApp(
         <SecretsContextProvider>
           <Stepper
@@ -171,7 +590,10 @@ describe('Stepper', () => {
                 },
               ],
             }}
-            initialState={{ answer: 'short', mode: 'relaxed' }}
+            initialState={{
+              answer: 'short',
+              ...(composition === 'if.required' ? {} : { mode: 'relaxed' }),
+            }}
             extensions={[]}
             onCreate={onCreate}
           />
@@ -191,7 +613,7 @@ describe('Stepper', () => {
       expect(onCreate).not.toHaveBeenCalled();
       fireEvent.change(answer, { target: { value: 'long enough' } });
       fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+      // The intervening page is already valid; recovery goes straight to review.
       fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
       await waitFor(() =>
         expect(onCreate).toHaveBeenCalledWith({
@@ -351,9 +773,7 @@ describe('Stepper', () => {
       { target: { value: 'other' } },
     );
     fireEvent.click(screen.getByRole('button', { name: 'Review' }));
-    await screen.findByRole('textbox', { name: 'Shared' });
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+    // A context-only change is checked without sending the user back.
     await screen.findByRole('button', { name: 'Create' });
     expect(validateShared).toHaveBeenCalledTimes(2);
     fireEvent.click(screen.getByRole('button', { name: 'Back' }));
@@ -365,7 +785,6 @@ describe('Stepper', () => {
     expect(
       screen.queryByRole('button', { name: 'Create' }),
     ).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(
       await screen.findAllByText('Shared value must be approved'),
     ).not.toHaveLength(0);
@@ -374,7 +793,6 @@ describe('Stepper', () => {
       target: { value: 'approved' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
     await waitFor(() =>
       expect(onCreate).toHaveBeenCalledWith({
@@ -513,7 +931,6 @@ describe('Stepper', () => {
       expect(onCreate).not.toHaveBeenCalled();
       fireEvent.change(earlier, { target: { value: 'approved' } });
       fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
       fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
       await waitFor(() =>
         expect(onCreate).toHaveBeenCalledWith({
@@ -621,7 +1038,6 @@ describe('Stepper', () => {
       ).not.toBeInTheDocument();
       fireEvent.change(earlier, { target: { value: 'approved' } });
       fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
       fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
       await waitFor(() =>
         expect(onCreate).toHaveBeenCalledWith({
@@ -1081,17 +1497,14 @@ describe('Stepper', () => {
       fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
-    // Changing a shared input on step 2 invalidates step 1's completion.
-    expect(await screen.findByRole('textbox', { name: 'Foo - 1' })).toHaveValue(
-      'value 2',
-    );
+    // The changed shared input is checked automatically before review.
+    expect(
+      await screen.findByRole('button', { name: 'Create' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Foo - 1' }),
+    ).not.toBeInTheDocument();
     expect(onCreate).not.toHaveBeenCalled();
-    await act(async () => {
-      fireEvent.click(getByRole('button', { name: 'Next' }));
-    });
-    await act(async () => {
-      fireEvent.click(getByRole('button', { name: 'Review' }));
-    });
     await act(async () => {
       fireEvent.click(getByRole('button', { name: 'Create' }));
     });

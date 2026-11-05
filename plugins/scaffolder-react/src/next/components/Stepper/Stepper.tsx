@@ -26,6 +26,8 @@ import { resolveParameterSteps } from '@backstage/plugin-scaffolder-common/alpha
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Alert from '@material-ui/lab/Alert';
+import { useDeepCompareMemo } from '@react-hookz/web';
 import MuiStep from '@material-ui/core/Step';
 import MuiStepButton from '@material-ui/core/StepButton';
 import MuiStepLabel from '@material-ui/core/StepLabel';
@@ -128,9 +130,13 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = t('stepper.reviewButtonText'),
   } = components;
   const analytics = useAnalytics();
-  const { presentation, steps } = useTemplateSchema(props.manifest);
+  const parsed = useTemplateSchema(props.manifest);
+  const { presentation } = parsed;
+  // Parsing creates fresh objects on every render. Keep definitions stable so
+  // progress and error renders do not repeat completion reconciliation.
+  const steps = useDeepCompareMemo(() => parsed.steps, [parsed.steps]);
   const apiHolder = useApiHolder();
-  const validators = useMemo(() => {
+  const validators = useDeepCompareMemo(() => {
     return Object.fromEntries(
       props.extensions.map(({ name, validation }) => [name, validation]),
     );
@@ -142,17 +148,32 @@ export const Stepper = (stepperProps: StepperProps) => {
   );
   // Index into `steps` rather than `visibleSteps`, so that the active step
   // stays the same when other steps are shown or hidden.
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
+  type CompletedStep = {
+    step: (typeof steps)[number];
+    inputs: JsonObject;
+    formData: JsonObject;
+    validators: typeof validators;
+  };
+  const [navigation, setNavigation] = useState({
+    activeStepIndex: 0,
+    visitedSteps: new Map<number, (typeof steps)[number]>(),
+    validatedSteps: new Map<number, CompletedStep>(),
+  });
+  const { activeStepIndex, visitedSteps, validatedSteps } = navigation;
+  const setActiveStepIndex = useCallback((index: number) => {
+    setNavigation(current => ({ ...current, activeStepIndex: index }));
+  }, []);
   const [isValidating, setIsValidating] = useState(false);
-  const [visitedSteps, setVisitedSteps] = useState(
-    new Map<number, (typeof steps)[number]>(),
-  );
-  const [validatedSteps, setValidatedSteps] = useState(
-    new Map<number, { step: (typeof steps)[number]; inputs: JsonObject }>(),
-  );
+  const [validationInterrupted, setValidationInterrupted] = useState(false);
+  const returnToPending = useRef(false);
+  const validationAttempt = useRef(0);
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
+
+  // Field effects can emit several updates before React renders again.
+  const latestFormData = useRef(stepsState);
+  latestFormData.current = stepsState;
 
   const { visibleSteps, filteredFormState } = useMemo(() => {
     const resolved = resolveParameterSteps(
@@ -165,26 +186,40 @@ export const Stepper = (stepperProps: StepperProps) => {
     };
   }, [steps, stepsState]);
 
-  const visibleIndices = new Set(visibleSteps.map(step => steps.indexOf(step)));
-  const currentValidations = new Map(
-    [...validatedSteps].filter(
-      ([index, completed]) =>
-        visibleIndices.has(index) &&
-        isEqual(completed.step, steps[index]) &&
-        isEqual(
-          completed.inputs,
-          getValidationData(
-            steps[index].mergedSchema,
-            stepsState,
-            validator,
-            customValidatorNames,
-          ),
-        ),
-    ),
+  const visibleIndices = useMemo(
+    () => new Set(visibleSteps.map(step => steps.indexOf(step))),
+    [steps, visibleSteps],
   );
-  if (currentValidations.size !== validatedSteps.size) {
-    setValidatedSteps(currentValidations);
-  }
+  const definedValidations = useMemo(
+    () =>
+      new Map(
+        [...validatedSteps].filter(([index, completed]) =>
+          isEqual(completed.step, steps[index]),
+        ),
+      ),
+    [validatedSteps, steps],
+  );
+  const applicableValidations = useMemo(
+    () =>
+      new Map(
+        [...definedValidations].filter(([index]) => visibleIndices.has(index)),
+      ),
+    [definedValidations, visibleIndices],
+  );
+  // A changed context requires checking, not necessarily another page visit.
+  // Resolve schemas and compare validation inputs only when continuing, rather
+  // than on each keystroke. Form data is replaced only on effective changes.
+  const currentValidations = useMemo(
+    () =>
+      new Map(
+        [...applicableValidations].filter(
+          ([, completed]) =>
+            completed.formData === stepsState &&
+            completed.validators === validators,
+        ),
+      ),
+    [applicableValidations, stepsState, validators],
+  );
   const pendingStepIndex = steps.findIndex(
     (_, index) => visibleIndices.has(index) && !currentValidations.has(index),
   );
@@ -206,26 +241,42 @@ export const Stepper = (stepperProps: StepperProps) => {
     activeStep < visibleSteps.length
       ? steps.indexOf(visibleSteps[activeStep])
       : steps.length;
-  if (activeStepIndex !== displayedStepIndex) {
-    setActiveStepIndex(displayedStepIndex);
-  }
 
   // Revalidation can return to an earlier page whose validator depends on a
   // later page. Keep those visited pages reachable so users can fix the input.
-  const currentVisits = new Map(
-    [...visitedSteps].filter(
-      ([index, step]) =>
-        visibleIndices.has(index) && isEqual(step, steps[index]),
-    ),
+  const definedVisits = useMemo(
+    () =>
+      new Map(
+        [...visitedSteps].filter(([index, step]) =>
+          isEqual(step, steps[index]),
+        ),
+      ),
+    [visitedSteps, steps],
   );
+  const currentVisits = useMemo(() => {
+    const visits = new Map(
+      [...definedVisits].filter(([index]) => visibleIndices.has(index)),
+    );
+    if (displayedStepIndex < steps.length && !visits.has(displayedStepIndex)) {
+      visits.set(displayedStepIndex, cloneDeep(steps[displayedStepIndex]));
+    }
+    return visits.size === visitedSteps.size &&
+      [...visits].every(([index, step]) => visitedSteps.get(index) === step)
+      ? visitedSteps
+      : visits;
+  }, [definedVisits, visitedSteps, steps, visibleIndices, displayedStepIndex]);
+  // Reconcile visibility, completion and the cursor together before children
+  // can dispatch events. Moving this to an effect would expose stale completion.
   if (
-    displayedStepIndex < steps.length &&
-    !currentVisits.has(displayedStepIndex)
+    activeStepIndex !== displayedStepIndex ||
+    applicableValidations.size !== validatedSteps.size ||
+    currentVisits !== visitedSteps
   ) {
-    currentVisits.set(displayedStepIndex, cloneDeep(steps[displayedStepIndex]));
-  }
-  if (!isEqual(currentVisits, visitedSteps)) {
-    setVisitedSteps(currentVisits);
+    setNavigation({
+      activeStepIndex: displayedStepIndex,
+      visitedSteps: currentVisits,
+      validatedSteps: applicableValidations,
+    });
   }
 
   const setActiveStep = useCallback(
@@ -235,7 +286,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           ? steps.indexOf(visibleSteps[step])
           : steps.length,
       ),
-    [steps, visibleSteps],
+    [steps, visibleSteps, setActiveStepIndex],
   );
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
@@ -275,15 +326,33 @@ export const Stepper = (stepperProps: StepperProps) => {
     () => ({
       stepsState,
       validatedSteps,
-      manifest: props.manifest,
+      steps,
+      validators,
       displayedStepIndex,
     }),
-    [stepsState, validatedSteps, props.manifest, displayedStepIndex],
+    [stepsState, validatedSteps, steps, validators, displayedStepIndex],
   );
   const latestValidationState = useRef<typeof validationState>();
   latestValidationState.current = validationState;
 
+  const validationInFlight = useRef<typeof validationState>();
+  useEffect(() => {
+    // Completion is guarded synchronously above. This only releases progress
+    // controls when a new definition/cursor cancels an outstanding request.
+    if (
+      validationInFlight.current &&
+      validationInFlight.current !== validationState
+    ) {
+      validationAttempt.current += 1;
+      validationInFlight.current = undefined;
+      setIsValidating(false);
+      setValidationInterrupted(true);
+    }
+  }, [validationState]);
+
   const handleBack = useCallback(() => {
+    returnToPending.current = false;
+    setValidationInterrupted(false);
     setActiveStep(activeStep - 1);
   }, [activeStep, setActiveStep]);
 
@@ -301,68 +370,159 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
+      const updated = { ...latestFormData.current, ...e.formData };
+      // RJSF and field effects can emit onChange without changing any value.
+      if (isEqual(updated, latestFormData.current)) return;
+      latestFormData.current = updated;
       latestValidationState.current = undefined;
-      setStepsState(current => {
-        return { ...current, ...e.formData };
-      });
-      setValidatedSteps(current => {
-        if (!current.has(displayedStepIndex)) return current;
-        const updated = new Map(current);
-        updated.delete(displayedStepIndex);
-        return updated;
-      });
+      validationAttempt.current += 1;
+      validationInFlight.current = undefined;
+      if (isValidating) {
+        setIsValidating(false);
+        setValidationInterrupted(true);
+      }
+      setStepsState(updated);
     },
-    [displayedStepIndex],
+    [isValidating],
+  );
+
+  const continueToReview = useCallback(
+    async (
+      data: Record<string, JsonValue>,
+      completed: Map<number, CompletedStep>,
+      isCurrent: () => boolean,
+    ) => {
+      const { visible } = resolveParameterSteps(
+        data,
+        steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
+      );
+      for (const [index, step] of steps.entries()) {
+        if (!visible[index]) continue;
+        const previous = completed.get(index);
+        if (previous?.formData === data && previous.validators === validators)
+          continue;
+        // Automatic checks must not bypass a newly revealed or replaced page.
+        if (!currentVisits.has(index)) {
+          return { completed, index, errors: undefined };
+        }
+        const inputs = getValidationData(
+          step.mergedSchema,
+          data,
+          validator,
+          customValidatorNames,
+        );
+        if (
+          !previous ||
+          previous.validators !== validators ||
+          !isEqual(previous.inputs, inputs)
+        ) {
+          const schemaErrors = validator.validateFormData(
+            data,
+            step.schema,
+            undefined,
+            props.formProps?.transformErrors,
+            merge({}, propUiSchema, step.uiSchema),
+          ).errorSchema;
+          const errorsForStep = hasErrors(schemaErrors as FormValidation)
+            ? (schemaErrors as FormValidation)
+            : await createAsyncValidators(step.mergedSchema, validators, {
+                apiHolder,
+              })(data);
+          if (!isCurrent()) return undefined;
+          if (hasErrors(errorsForStep)) {
+            return { completed, index, errors: errorsForStep };
+          }
+        }
+        completed.set(index, {
+          step: cloneDeep(step),
+          inputs,
+          formData: data,
+          validators,
+        });
+      }
+      return { completed, index: steps.length, errors: undefined };
+    },
+    [
+      steps,
+      currentVisits,
+      customValidatorNames,
+      validators,
+      apiHolder,
+      props.formProps?.transformErrors,
+      propUiSchema,
+    ],
   );
 
   const handleNext = useCallback(
     async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
-      // The validation should never throw, as the validators are wrapped in a try/catch.
-      // This makes it fine to set and unset state without try/catch.
+      const attempt = ++validationAttempt.current;
+      validationInFlight.current = validationState;
+      const isCurrent = () =>
+        validationAttempt.current === attempt &&
+        latestValidationState.current === validationState;
       setErrors(undefined);
+      setValidationInterrupted(false);
       setIsValidating(true);
-
       const returnedValidation = await validation(formData);
-      setIsValidating(false);
-      if (latestValidationState.current !== validationState) {
+      if (!isCurrent()) {
+        if (validationAttempt.current === attempt) {
+          setIsValidating(false);
+          setValidationInterrupted(true);
+        }
         return;
       }
-
-      setStepsState(current => ({
-        ...current,
-        ...formData,
-      }));
-
       if (hasErrors(returnedValidation)) {
+        validationInFlight.current = undefined;
+        setIsValidating(false);
         setErrors(returnedValidation);
-      } else {
-        setErrors(undefined);
-        const stepNum = activeStep + 1;
-        analytics.captureEvent('click', `Next Step (${stepNum})`);
-        // Move to the next step that is visible with the submitted values.
-        const current = displayedStepIndex;
-        const validated = new Map(validatedSteps).set(current, {
-          step: cloneDeep(steps[current]),
-          inputs: getValidationData(
-            steps[current].mergedSchema,
-            { ...stepsState, ...formData },
-            validator,
-            customValidatorNames,
-          ),
-        });
-        setValidatedSteps(validated);
-        const { visible } = resolveParameterSteps(
-          { ...stepsState, ...formData },
-          steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
-        );
-        const next = visible.findIndex(
-          (isVisible, index) => isVisible && index > current,
-        );
-        const pending = visible.findIndex(
-          (isVisible, index) => isVisible && !validated.has(index),
-        );
-        const reviewOrPending = pending === -1 ? steps.length : pending;
-        setActiveStepIndex(next === -1 ? reviewOrPending : next);
+        return;
+      }
+      const updated = { ...stepsState, ...formData };
+      const data = isEqual(updated, stepsState) ? stepsState : updated;
+      const completed = new Map(applicableValidations).set(displayedStepIndex, {
+        step: cloneDeep(steps[displayedStepIndex]),
+        inputs: getValidationData(
+          steps[displayedStepIndex].mergedSchema,
+          data,
+          validator,
+          customValidatorNames,
+        ),
+        formData: data,
+        validators,
+      });
+      analytics.captureEvent('click', `Next Step (${activeStep + 1})`);
+      const { visible } = resolveParameterSteps(
+        data,
+        steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
+      );
+      const next = visible.findIndex(
+        (isVisible, index) => isVisible && index > displayedStepIndex,
+      );
+      const result =
+        returnToPending.current || next === -1
+          ? await continueToReview(data, completed, isCurrent)
+          : { completed, index: next, errors: undefined };
+      if (!isCurrent()) {
+        if (validationAttempt.current === attempt) {
+          setIsValidating(false);
+          setValidationInterrupted(true);
+        }
+        return;
+      }
+      validationInFlight.current = undefined;
+      setIsValidating(false);
+      if (result) {
+        returnToPending.current =
+          (returnToPending.current || next === -1) &&
+          result.index < steps.length;
+        setErrors(result.errors);
+        latestFormData.current = data;
+        setStepsState(data);
+        setNavigation(current => ({
+          ...current,
+          activeStepIndex: result.index,
+          validatedSteps: result.completed,
+        }));
       }
     },
     [
@@ -373,8 +533,10 @@ export const Stepper = (stepperProps: StepperProps) => {
       displayedStepIndex,
       steps,
       stepsState,
-      validatedSteps,
+      applicableValidations,
       customValidatorNames,
+      validators,
+      continueToReview,
     ],
   );
 
@@ -405,9 +567,40 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = useCallback(async () => {
-    // A manifest update can reveal a step while review is already open.
     if (pendingStepIndex !== -1) {
-      setActiveStepIndex(pendingStepIndex);
+      const attempt = ++validationAttempt.current;
+      validationInFlight.current = validationState;
+      const isCurrent = () =>
+        validationAttempt.current === attempt &&
+        latestValidationState.current === validationState;
+      setErrors(undefined);
+      setValidationInterrupted(false);
+      setIsValidating(true);
+      const result = await continueToReview(
+        stepsState,
+        new Map(applicableValidations),
+        isCurrent,
+      );
+      if (!isCurrent()) {
+        if (validationAttempt.current === attempt) {
+          setIsValidating(false);
+          setValidationInterrupted(true);
+        }
+        return;
+      }
+      validationInFlight.current = undefined;
+      setIsValidating(false);
+      if (result) {
+        returnToPending.current = result.index < steps.length;
+        setErrors(result.errors);
+        setNavigation(current => ({
+          ...current,
+          activeStepIndex: result.index,
+          validatedSteps: result.completed,
+        }));
+      }
+      // Reaching review again is deliberate: users see the checked parameters
+      // before a subsequent Create submits them.
       return;
     }
     setIsCreating(true);
@@ -417,11 +610,25 @@ export const Stepper = (stepperProps: StepperProps) => {
     } finally {
       setIsCreating(false);
     }
-  }, [analytics, createLabel, filteredFormState, onCreate, pendingStepIndex]);
+  }, [
+    analytics,
+    createLabel,
+    filteredFormState,
+    onCreate,
+    pendingStepIndex,
+    validationState,
+    stepsState,
+    applicableValidations,
+    continueToReview,
+    steps.length,
+  ]);
 
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
+      {validationInterrupted && (
+        <Alert severity="info">{t('stepper.validationInterrupted')}</Alert>
+      )}
       <MuiStepper
         activeStep={activeStep}
         alternativeLabel
@@ -439,6 +646,11 @@ export const Stepper = (stepperProps: StepperProps) => {
                 disabled={!isAllowedLabelClick}
                 onClick={() => {
                   if (isAllowedLabelClick) {
+                    validationAttempt.current += 1;
+                    validationInFlight.current = undefined;
+                    setIsValidating(false);
+                    setValidationInterrupted(false);
+                    returnToPending.current = false;
                     setErrors(undefined);
                     setActiveStep(index);
                   }
@@ -519,7 +731,7 @@ export const Stepper = (stepperProps: StepperProps) => {
               </Button>
               <Button
                 variant="primary"
-                isDisabled={isCreating}
+                isDisabled={isCreating || isValidating}
                 onPress={handleCreate}
               >
                 {createLabel}
