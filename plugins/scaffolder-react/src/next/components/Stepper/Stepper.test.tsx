@@ -17,6 +17,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { JsonObject, JsonValue } from '@backstage/types';
 import type { FieldValidation, RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useEffect } from 'react';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
@@ -26,96 +27,111 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
-  it('reruns a custom validator when a later page changes its context', async () => {
-    const onCreate = jest.fn();
-    const validate = jest.fn(
-      async (
-        _value: unknown,
-        errors: FieldValidation,
-        context: { formData: JsonObject },
-      ) => {
-        if (context.formData.project !== 'approved')
-          errors.addError('Project is not approved');
-      },
-    );
-    const Custom = ({ formData }: FieldExtensionComponentProps<string>) => (
-      <input aria-label="Name" value={formData ?? ''} readOnly />
-    );
-    await renderInTestApp(
-      <SecretsContextProvider>
-        <Stepper
-          manifest={{
-            title: 'Context validation',
-            steps: [
-              {
-                title: 'Name',
-                schema: {
-                  properties: {
-                    name: { type: 'string', 'ui:field': 'Custom' },
+  it.each(['{Enter}', ' '])(
+    'recovers from failed context validation using %s to reach a later page',
+    async key => {
+      const user = userEvent.setup();
+      const onCreate = jest.fn();
+      const validate = jest.fn(
+        async (
+          _value: unknown,
+          errors: FieldValidation,
+          context: { formData: JsonObject },
+        ) => {
+          if (context.formData.project !== 'approved')
+            errors.addError('Project is not approved');
+        },
+      );
+      const Custom = ({ formData }: FieldExtensionComponentProps<string>) => (
+        <input aria-label="Name" value={formData ?? ''} readOnly />
+      );
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Context validation',
+              steps: [
+                {
+                  title: 'Name',
+                  schema: {
+                    properties: {
+                      name: { type: 'string', 'ui:field': 'Custom' },
+                    },
                   },
                 },
-              },
-              {
-                title: 'Project',
-                schema: { properties: { project: { type: 'string' } } },
-              },
-            ],
-          }}
-          initialState={{ name: 'existing', project: 'approved' }}
-          extensions={[
-            { name: 'Custom', component: Custom, validation: validate },
-          ]}
-          onCreate={onCreate}
-        />
-      </SecretsContextProvider>,
-    );
-    // Pages that have not been visited are still reached through validation.
-    fireEvent.click(screen.getByLabelText('Step 2'));
-    expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
-    expect(
-      screen.queryByRole('textbox', { name: 'project' }),
-    ).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    fireEvent.change(await screen.findByRole('textbox', { name: 'project' }), {
-      target: { value: 'blocked' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
-    await screen.findByRole('textbox', { name: 'Name' });
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(
-      await screen.findAllByText('Project is not approved'),
-    ).not.toHaveLength(0);
-    expect(validate).toHaveBeenCalledTimes(2);
-    expect(onCreate).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByLabelText('Step 2'));
-    const project = await screen.findByRole('textbox', { name: 'project' });
-    expect(project).toHaveValue('blocked');
-    expect(
-      screen.queryByText('Project is not approved'),
-    ).not.toBeInTheDocument();
-    // Visiting the later page does not bypass the pending earlier validation.
-    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
-    await screen.findByRole('textbox', { name: 'Name' });
-    expect(
-      screen.queryByRole('button', { name: 'Create' }),
-    ).not.toBeInTheDocument();
-    fireEvent.click(screen.getByLabelText('Step 2'));
-    fireEvent.change(await screen.findByRole('textbox', { name: 'project' }), {
-      target: { value: 'approved' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
-    await screen.findByRole('textbox', { name: 'Name' });
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
-    await waitFor(() =>
-      expect(onCreate).toHaveBeenCalledWith({
-        name: 'existing',
-        project: 'approved',
-      }),
-    );
-    expect(validate).toHaveBeenCalledTimes(3);
-  });
+                {
+                  title: 'Project',
+                  schema: { properties: { project: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={{ name: 'existing', project: 'approved' }}
+            extensions={[
+              { name: 'Custom', component: Custom, validation: validate },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      // Pages that have not been visited are still reached through validation.
+      expect(screen.getByRole('button', { name: 'Step 2' })).toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Step 2'));
+      expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+      expect(
+        screen.queryByRole('textbox', { name: 'project' }),
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(
+        await screen.findByRole('textbox', { name: 'project' }),
+        {
+          target: { value: 'blocked' },
+        },
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('textbox', { name: 'Name' });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText('Project is not approved'),
+      ).not.toHaveLength(0);
+      expect(validate).toHaveBeenCalledTimes(2);
+      expect(onCreate).not.toHaveBeenCalled();
+      await user.tab();
+      const projectButton = screen.getByRole('button', { name: 'Step 2' });
+      expect(projectButton).toHaveFocus();
+      await user.keyboard(key);
+      const project = await screen.findByRole('textbox', { name: 'project' });
+      expect(project).toHaveValue('blocked');
+      expect(
+        screen.queryByText('Project is not approved'),
+      ).not.toBeInTheDocument();
+      // Visiting the later page does not bypass the pending earlier validation.
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('textbox', { name: 'Name' });
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      act(() => screen.getByRole('button', { name: 'Step 2' }).focus());
+      await user.keyboard(key);
+      fireEvent.change(
+        await screen.findByRole('textbox', { name: 'project' }),
+        {
+          target: { value: 'approved' },
+        },
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('textbox', { name: 'Name' });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          name: 'existing',
+          project: 'approved',
+        }),
+      );
+      expect(validate).toHaveBeenCalledTimes(3);
+    },
+  );
 
   it.each(['allOf', '$ref'])(
     'revalidates constraints changed through %s by a later page',

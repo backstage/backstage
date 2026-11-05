@@ -27,6 +27,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import MuiStep from '@material-ui/core/Step';
+import MuiStepButton from '@material-ui/core/StepButton';
 import MuiStepLabel from '@material-ui/core/StepLabel';
 import MuiStepper from '@material-ui/core/Stepper';
 import { makeStyles } from '@material-ui/core/styles';
@@ -433,9 +434,9 @@ export const Stepper = (stepperProps: StepperProps) => {
             (index > activeStep && currentVisits.has(steps.indexOf(step)));
           return (
             <MuiStep key={steps.indexOf(step)}>
-              <MuiStepLabel
+              <MuiStepButton
                 aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
-                style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
+                disabled={!isAllowedLabelClick}
                 onClick={() => {
                   if (isAllowedLabelClick) {
                     setErrors(undefined);
@@ -444,7 +445,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 }}
               >
                 {step.title}
-              </MuiStepLabel>
+              </MuiStepButton>
             </MuiStep>
           );
         })}
