@@ -128,74 +128,48 @@ describe('queryAllEntities', () => {
 
 describe('findComponent', () => {
   const repo = 'https://github.acme.com/acme/mono';
-  // A component read from a catalog file (managed-by-location, set by the
-  // catalog) that declares a source location (self-declared).
-  const located = (
-    name: string,
-    locations: { managedBy?: string; source?: string },
-  ): Entity => ({
+  // A component read from a catalog file, as the catalog records in the
+  // managed-by-location annotation.
+  const located = (name: string, managedBy: string): Entity => ({
     ...component(name),
     metadata: {
       ...component(name).metadata,
-      annotations: {
-        ...(locations.managedBy && {
-          'backstage.io/managed-by-location': `url:${locations.managedBy}`,
-        }),
-        ...(locations.source && {
-          'backstage.io/source-location': `url:${locations.source}`,
-        }),
-      },
+      annotations: { 'backstage.io/managed-by-location': `url:${managedBy}` },
     },
   });
-  // Answers the managed-by-location and source-location queries separately,
-  // like the catalog would for the given prefix filters.
-  const catalog = (registered: Entity[], declared: Entity[]) =>
-    mockClient.queryEntities.mockImplementation(async request =>
-      page(
-        JSON.stringify(request).includes('managed-by-location')
-          ? registered
-          : declared,
-      ),
-    );
-  const find = (repoPrefix: string, warn = jest.fn()) =>
+  const catalog = (registered: Entity[]) =>
+    mockClient.queryEntities.mockImplementation(async () => page(registered));
+  const find = (repoPrefix: string) =>
     findComponent({
       client: mockClient,
       token: 'tok',
       remoteUrl: 'git@github.acme.com:acme/mono.git',
       repoPrefix,
-      warn,
     });
 
-  it('picks the component whose catalog file is in the nearest ancestor folder, ignoring spoofed source locations', async () => {
-    const root = located('root', {
-      managedBy: `${repo}/blob/main/catalog-info.yaml`,
-      source: `${repo}/tree/main/`,
-    });
-    const api = located('api', {
-      managedBy: `${repo}/blob/main/services/api/catalog-info.yaml`,
-    });
-    const web = located('web', {
-      managedBy: `${repo}/blob/main/services/web/catalog-info.yaml`,
-    });
-    // Claims a folder of this repository, but was read from another one.
-    const spoofed = located('spoofed', {
-      managedBy:
-        'https://github.acme.com/evil/mono/blob/main/catalog-info.yaml',
-      source: `${repo}/tree/main/services/api/src`,
-    });
-    catalog([root, api, web, component('no-location')], [root, spoofed]);
-    const warn = jest.fn();
-
-    expect((await find('services/api', warn)).metadata.name).toBe('api');
-    expect((await find('services/api/src/deep', warn)).metadata.name).toBe(
+  it('picks the component whose catalog file is in the nearest ancestor folder', async () => {
+    const root = located('root', `${repo}/blob/main/catalog-info.yaml`);
+    const api = located(
       'api',
+      `${repo}/blob/main/services/api/catalog-info.yaml`,
     );
-    expect((await find('services/api/src', warn)).metadata.name).toBe('api');
-    expect((await find('services/web', warn)).metadata.name).toBe('web');
-    expect((await find('services', warn)).metadata.name).toBe('root');
-    expect((await find('', warn)).metadata.name).toBe('root');
-    expect(warn).not.toHaveBeenCalled();
-    // Only the trusted annotation is queried when it matches.
+    const web = located(
+      'web',
+      `${repo}/blob/main/services/web/catalog-info.yaml`,
+    );
+    // Read from another repository, so it never matches.
+    const elsewhere = located(
+      'elsewhere',
+      'https://github.acme.com/evil/mono/blob/main/services/api/catalog-info.yaml',
+    );
+    catalog([root, api, web, elsewhere, component('no-location')]);
+
+    expect((await find('services/api')).metadata.name).toBe('api');
+    expect((await find('services/api/src/deep')).metadata.name).toBe('api');
+    expect((await find('services/api/src')).metadata.name).toBe('api');
+    expect((await find('services/web')).metadata.name).toBe('web');
+    expect((await find('services')).metadata.name).toBe('root');
+    expect((await find('')).metadata.name).toBe('root');
     expect(mockClient.queryEntities).toHaveBeenCalledTimes(6);
     expect(mockClient.queryEntities).toHaveBeenCalledWith(
       {
@@ -215,83 +189,35 @@ describe('findComponent', () => {
   });
 
   it('fails when several catalog files in the nearest folder define a component, pointing at --entity', async () => {
-    catalog(
-      [
-        located('one', {
-          managedBy: `${repo}/blob/main/svc/catalog-info.yaml`,
-        }),
-        located('two', {
-          managedBy: `${repo}/blob/main/svc/catalog-info.yaml`,
-        }),
-        located('top', { managedBy: `${repo}/blob/main/catalog-info.yaml` }),
-      ],
-      [],
-    );
+    catalog([
+      located('one', `${repo}/blob/main/svc/catalog-info.yaml`),
+      located('two', `${repo}/blob/main/svc/catalog-info.yaml`),
+      located('top', `${repo}/blob/main/catalog-info.yaml`),
+    ]);
     await expect(find('svc/src')).rejects.toThrow(
       /registered from a catalog file in .*mono\/svc: component:default\/one, component:default\/two.*--entity/,
     );
     expect(mockClient.queryEntities).toHaveBeenCalledTimes(1);
   });
 
-  it('falls back to a single self-declared source location with a warning, as for a central catalog repository', async () => {
-    // Registered from a central catalog repository, not from this one.
-    const svc = located('svc', {
-      managedBy: 'https://github.acme.com/acme/catalog/blob/main/svc.yaml',
-      source: `${repo}/tree/main/services/svc`,
-    });
-    // A component of this repository whose folder is not an ancestor.
-    const other = located('other', {
-      managedBy: `${repo}/blob/main/other/catalog-info.yaml`,
-      source: `${repo}/tree/main/other`,
-    });
-    catalog([other], [svc, other]);
-    const warn = jest.fn();
-
-    expect((await find('services/svc/src', warn)).metadata.name).toBe('svc');
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn.mock.calls[0][0]).toMatch(
-      /^Warning: no Component is registered from a catalog file at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src, so component:default\/svc was matched by its self-declared backstage.io\/source-location annotation.*--entity/,
-    );
-    expect(mockClient.queryEntities).toHaveBeenLastCalledWith(
-      {
-        query: {
-          $all: [
-            { kind: 'Component' },
-            {
-              'metadata.annotations.backstage.io/source-location': {
-                $hasPrefix: `url:${repo}/`,
-              },
-            },
-          ],
+  it('fails pointing at --entity when no catalog file matches, ignoring self-declared source locations', async () => {
+    const declared: Entity = {
+      ...component('declared'),
+      metadata: {
+        ...component('declared').metadata,
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://github.acme.com/acme/catalog/blob/main/svc.yaml',
+          'backstage.io/source-location': `url:${repo}/tree/main/services/svc`,
         },
       },
-      { token: 'tok' },
-    );
-  });
-
-  it('rejects the fallback when several components declare a source location at any depth, and fails when nothing matches', async () => {
-    const legit = located('legit', {
-      managedBy: 'https://github.acme.com/acme/catalog/blob/main/svc.yaml',
-      source: `${repo}/tree/main/services/svc`,
-    });
-    // A spoof at a shallower folder still blocks the fallback.
-    const spoofed = located('spoofed', {
-      managedBy: 'https://github.acme.com/evil/x/blob/main/catalog-info.yaml',
-      source: `${repo}/tree/main/`,
-    });
-    catalog([], [legit, spoofed]);
-    const warn = jest.fn();
-    await expect(find('services/svc', warn)).rejects.toThrow(
-      /multiple Components declare a backstage.io\/source-location.*component:default\/legit, component:default\/spoofed.*--entity/,
-    );
-    expect(warn).not.toHaveBeenCalled();
-
-    catalog([], []);
-    await expect(find('svc')).rejects.toThrow(
-      /at or above https:\/\/github.acme.com\/acme\/mono\/svc was.*--entity/,
+    };
+    catalog([declared, located('other', `${repo}/blob/main/other/c.yaml`)]);
+    await expect(find('services/svc/src')).rejects.toThrow(
+      /No Component registered from a catalog file at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src was found.*--entity/,
     );
     await expect(find('')).rejects.toThrow(
-      /at or above https:\/\/github.acme.com\/acme\/mono was.*--entity/,
+      /at or above https:\/\/github.acme.com\/acme\/mono was found.*--entity/,
     );
   });
 
