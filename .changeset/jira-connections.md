@@ -2,4 +2,4 @@
 '@backstage/connections': patch
 ---
 
-Added Jira connections with separate Cloud API token and Data Center personal access token authentication, explicit anonymous access, and configurable API roots for scoped Cloud tokens and Data Center context paths.
+Added Jira as a connection type, with Cloud API tokens, Data Center personal access tokens and explicitly configured anonymous access. API roots can include scoped Cloud gateway paths and Data Center context paths.
