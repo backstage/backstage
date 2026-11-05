@@ -71,13 +71,23 @@ export async function getRepoPrefix(
 }
 
 /**
- * Returns whether a `url:` location reference points into the given
- * repository, comparing the canonical `https://<host>/<full name>/` prefix.
+ * Parses a `backstage.io/managed-by-location` annotation value, which is the
+ * URL of the catalog file that an entity was read from, such as
+ * `url:<repo>/blob/<ref>/<path>/catalog-info.yaml`. Returns the possible
+ * repo-relative folders of that file, split from the ref with the same rules
+ * as {@link parseSourceLocationPath}. Returns undefined when the location is
+ * not a file inside the repository or has an unsupported shape.
  */
-export function isLocationInRepo(location: string, repoUrl: string): boolean {
-  return location
-    .toLocaleLowerCase('en-US')
-    .startsWith(`url:${repoUrl}/`.toLocaleLowerCase('en-US'));
+export function parseCatalogFileFolder(
+  location: string,
+  repoUrl: string,
+): string[][] | undefined {
+  const segments = location.split(/[?#]/)[0].split('/');
+  // A catalog file location never ends with a slash; drop the file name.
+  if (!segments[segments.length - 1]) {
+    return undefined;
+  }
+  return parseSourceLocationPath(segments.slice(0, -1).join('/'), repoUrl);
 }
 
 /**

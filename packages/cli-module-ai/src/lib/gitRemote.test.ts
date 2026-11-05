@@ -19,7 +19,7 @@ import {
   getOriginUrl,
   getRepoRoot,
   getRepoPrefix,
-  isLocationInRepo,
+  parseCatalogFileFolder,
   parseSourceLocationPath,
   repoUrlFromRemote,
 } from './gitRemote';
@@ -63,20 +63,53 @@ describe('getRepoPrefix', () => {
   });
 });
 
-describe('isLocationInRepo', () => {
-  it('only accepts url locations inside the same repository', () => {
-    const repo = 'https://github.com/acme/mono';
+describe('parseCatalogFileFolder', () => {
+  const repo = 'https://github.com/acme/mono';
+
+  it('returns the possible folders of the catalog file for each ref split', () => {
     expect(
-      isLocationInRepo(`url:${repo}/blob/main/catalog-info.yaml`, repo),
-    ).toBe(true);
+      parseCatalogFileFolder(`url:${repo}/blob/main/catalog-info.yaml`, repo),
+    ).toEqual([[]]);
     expect(
-      isLocationInRepo(`url:${repo.toUpperCase()}/blob/main/a.yaml`, repo),
-    ).toBe(true);
-    expect(isLocationInRepo(`url:${repo}-other/blob/main/a.yaml`, repo)).toBe(
-      false,
-    );
-    expect(isLocationInRepo(`file:${repo}/a.yaml`, repo)).toBe(false);
-    expect(isLocationInRepo('', repo)).toBe(false);
+      parseCatalogFileFolder(
+        `url:${repo}/blob/main/services/api/catalog-info.yaml?raw=1`,
+        repo,
+      ),
+    ).toEqual([['services', 'api'], ['api']]);
+    expect(
+      parseCatalogFileFolder(`url:${repo}/tree/feature/x/svc/c.yaml`, repo),
+    ).toEqual([['x', 'svc'], ['svc']]);
+    expect(
+      parseCatalogFileFolder(
+        `URL:${repo.toUpperCase()}/blob/main/a/c.yaml`,
+        repo,
+      ),
+    ).toEqual([['a']]);
+    expect(
+      parseCatalogFileFolder(
+        'url:https://gitlab.com/g/sub/repo/-/blob/main/svc/catalog-info.yaml',
+        'https://gitlab.com/g/sub/repo',
+      ),
+    ).toEqual([['svc']]);
+  });
+
+  it('returns undefined for other repos, folders, other shapes and file locations', () => {
+    expect(
+      parseCatalogFileFolder(`url:${repo}-other/blob/main/a/c.yaml`, repo),
+    ).toBeUndefined();
+    expect(
+      parseCatalogFileFolder(`url:${repo}/blob/main/a/`, repo),
+    ).toBeUndefined();
+    expect(
+      parseCatalogFileFolder(`url:${repo}/blob/catalog-info.yaml`, repo),
+    ).toBeUndefined();
+    expect(
+      parseCatalogFileFolder(`url:${repo}/raw/main/c.yaml`, repo),
+    ).toBeUndefined();
+    expect(
+      parseCatalogFileFolder('file:/work/repo/catalog-info.yaml', repo),
+    ).toBeUndefined();
+    expect(parseCatalogFileFolder('', repo)).toBeUndefined();
   });
 });
 

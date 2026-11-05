@@ -127,55 +127,84 @@ describe('queryAllEntities', () => {
 });
 
 describe('findComponent', () => {
-  it('picks the component whose source location is the nearest ancestor of the current folder', async () => {
-    const at = (name: string, path: string) => ({
-      ...component(name),
-      metadata: {
-        ...component(name).metadata,
-        annotations: {
-          'backstage.io/source-location': `url:https://github.acme.com/acme/mono/tree/main/${path}`,
-          'backstage.io/managed-by-origin-location':
-            'url:https://github.acme.com/acme/mono/blob/main/catalog-info.yaml',
-        },
+  const repo = 'https://github.acme.com/acme/mono';
+  // A component read from a catalog file (managed-by-location, set by the
+  // catalog) that declares a source location (self-declared).
+  const located = (
+    name: string,
+    locations: { managedBy?: string; source?: string },
+  ): Entity => ({
+    ...component(name),
+    metadata: {
+      ...component(name).metadata,
+      annotations: {
+        ...(locations.managedBy && {
+          'backstage.io/managed-by-location': `url:${locations.managedBy}`,
+        }),
+        ...(locations.source && {
+          'backstage.io/source-location': `url:${locations.source}`,
+        }),
       },
-    });
-    const root = at('root', '');
-    const api = at('api', 'services/api');
-    const web = at('web', 'services/web');
-    // Claims a folder of this repository, but was registered from another one.
-    const spoofed = at('spoofed', 'services/api/src');
-    spoofed.metadata.annotations['backstage.io/managed-by-origin-location'] =
-      'url:https://github.acme.com/evil/mono/blob/main/catalog-info.yaml';
-    mockClient.queryEntities.mockResolvedValue(
-      page([root, api, web, spoofed, component('no-location')]),
+    },
+  });
+  // Answers the managed-by-location and source-location queries separately,
+  // like the catalog would for the given prefix filters.
+  const catalog = (registered: Entity[], declared: Entity[]) =>
+    mockClient.queryEntities.mockImplementation(async request =>
+      page(
+        JSON.stringify(request).includes('managed-by-location')
+          ? registered
+          : declared,
+      ),
     );
-    const find = (repoPrefix: string) =>
-      findComponent({
-        client: mockClient,
-        token: 'tok',
-        remoteUrl: 'git@github.acme.com:acme/mono.git',
-        repoPrefix,
-      });
+  const find = (repoPrefix: string, warn = jest.fn()) =>
+    findComponent({
+      client: mockClient,
+      token: 'tok',
+      remoteUrl: 'git@github.acme.com:acme/mono.git',
+      repoPrefix,
+      warn,
+    });
 
-    expect((await find('services/api')).metadata.name).toBe('api');
-    expect((await find('services/api/src/deep')).metadata.name).toBe('api');
-    expect((await find('services/api/src')).metadata.name).toBe('api');
-    expect((await find('services/web')).metadata.name).toBe('web');
-    expect((await find('services')).metadata.name).toBe('root');
-    expect((await find('')).metadata.name).toBe('root');
+  it('picks the component whose catalog file is in the nearest ancestor folder, ignoring spoofed source locations', async () => {
+    const root = located('root', {
+      managedBy: `${repo}/blob/main/catalog-info.yaml`,
+      source: `${repo}/tree/main/`,
+    });
+    const api = located('api', {
+      managedBy: `${repo}/blob/main/services/api/catalog-info.yaml`,
+    });
+    const web = located('web', {
+      managedBy: `${repo}/blob/main/services/web/catalog-info.yaml`,
+    });
+    // Claims a folder of this repository, but was read from another one.
+    const spoofed = located('spoofed', {
+      managedBy:
+        'https://github.acme.com/evil/mono/blob/main/catalog-info.yaml',
+      source: `${repo}/tree/main/services/api/src`,
+    });
+    catalog([root, api, web, component('no-location')], [root, spoofed]);
+    const warn = jest.fn();
+
+    expect((await find('services/api', warn)).metadata.name).toBe('api');
+    expect((await find('services/api/src/deep', warn)).metadata.name).toBe(
+      'api',
+    );
+    expect((await find('services/api/src', warn)).metadata.name).toBe('api');
+    expect((await find('services/web', warn)).metadata.name).toBe('web');
+    expect((await find('services', warn)).metadata.name).toBe('root');
+    expect((await find('', warn)).metadata.name).toBe('root');
+    expect(warn).not.toHaveBeenCalled();
+    // Only the trusted annotation is queried when it matches.
+    expect(mockClient.queryEntities).toHaveBeenCalledTimes(6);
     expect(mockClient.queryEntities).toHaveBeenCalledWith(
       {
         query: {
           $all: [
             { kind: 'Component' },
             {
-              'metadata.annotations.backstage.io/source-location': {
-                $hasPrefix: 'url:https://github.acme.com/acme/mono/',
-              },
-            },
-            {
-              'metadata.annotations.backstage.io/managed-by-origin-location': {
-                $hasPrefix: 'url:https://github.acme.com/acme/mono/',
+              'metadata.annotations.backstage.io/managed-by-location': {
+                $hasPrefix: `url:${repo}/`,
               },
             },
           ],
@@ -185,41 +214,84 @@ describe('findComponent', () => {
     );
   });
 
-  it('fails on ties and when nothing matches, pointing at --entity', async () => {
-    const at = (name: string, path: string) => ({
-      ...component(name),
-      metadata: {
-        ...component(name).metadata,
-        annotations: {
-          'backstage.io/source-location': `url:https://github.com/a/b/tree/main/${path}`,
-          'backstage.io/managed-by-origin-location':
-            'url:https://github.com/a/b/blob/main/catalog-info.yaml',
+  it('fails when several catalog files in the nearest folder define a component, pointing at --entity', async () => {
+    catalog(
+      [
+        located('one', {
+          managedBy: `${repo}/blob/main/svc/catalog-info.yaml`,
+        }),
+        located('two', {
+          managedBy: `${repo}/blob/main/svc/catalog-info.yaml`,
+        }),
+        located('top', { managedBy: `${repo}/blob/main/catalog-info.yaml` }),
+      ],
+      [],
+    );
+    await expect(find('svc/src')).rejects.toThrow(
+      /registered from a catalog file in .*mono\/svc: component:default\/one, component:default\/two.*--entity/,
+    );
+    expect(mockClient.queryEntities).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to a single self-declared source location with a warning, as for a central catalog repository', async () => {
+    // Registered from a central catalog repository, not from this one.
+    const svc = located('svc', {
+      managedBy: 'https://github.acme.com/acme/catalog/blob/main/svc.yaml',
+      source: `${repo}/tree/main/services/svc`,
+    });
+    // A component of this repository whose folder is not an ancestor.
+    const other = located('other', {
+      managedBy: `${repo}/blob/main/other/catalog-info.yaml`,
+      source: `${repo}/tree/main/other`,
+    });
+    catalog([other], [svc, other]);
+    const warn = jest.fn();
+
+    expect((await find('services/svc/src', warn)).metadata.name).toBe('svc');
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toMatch(
+      /^Warning: no Component is registered from a catalog file at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src, so component:default\/svc was matched by its self-declared backstage.io\/source-location annotation.*--entity/,
+    );
+    expect(mockClient.queryEntities).toHaveBeenLastCalledWith(
+      {
+        query: {
+          $all: [
+            { kind: 'Component' },
+            {
+              'metadata.annotations.backstage.io/source-location': {
+                $hasPrefix: `url:${repo}/`,
+              },
+            },
+          ],
         },
       },
+      { token: 'tok' },
+    );
+  });
+
+  it('rejects the fallback when several components declare a source location at any depth, and fails when nothing matches', async () => {
+    const legit = located('legit', {
+      managedBy: 'https://github.acme.com/acme/catalog/blob/main/svc.yaml',
+      source: `${repo}/tree/main/services/svc`,
     });
-    const options = {
-      client: mockClient,
-      token: 'tok',
-      remoteUrl: 'git@github.com:a/b.git',
-    };
-
-    mockClient.queryEntities.mockResolvedValue(
-      page([at('one', 'svc'), at('two', 'svc')]),
+    // A spoof at a shallower folder still blocks the fallback.
+    const spoofed = located('spoofed', {
+      managedBy: 'https://github.acme.com/evil/x/blob/main/catalog-info.yaml',
+      source: `${repo}/tree/main/`,
+    });
+    catalog([], [legit, spoofed]);
+    const warn = jest.fn();
+    await expect(find('services/svc', warn)).rejects.toThrow(
+      /multiple Components declare a backstage.io\/source-location.*component:default\/legit, component:default\/spoofed.*--entity/,
     );
-    await expect(
-      findComponent({ ...options, repoPrefix: 'svc/src' }),
-    ).rejects.toThrow(
-      /b\/svc: component:default\/one, component:default\/two.*--entity/s,
+    expect(warn).not.toHaveBeenCalled();
+
+    catalog([], []);
+    await expect(find('svc')).rejects.toThrow(
+      /at or above https:\/\/github.acme.com\/acme\/mono\/svc was.*--entity/,
     );
-
-    mockClient.queryEntities.mockResolvedValue(page([at('other', 'other')]));
-    await expect(
-      findComponent({ ...options, repoPrefix: 'svc' }),
-    ).rejects.toThrow(/at or above https:\/\/github.com\/a\/b\/svc.*--entity/);
-
-    mockClient.queryEntities.mockResolvedValue(page([]));
-    await expect(findComponent({ ...options, repoPrefix: '' })).rejects.toThrow(
-      /at or above https:\/\/github.com\/a\/b was.*--entity/,
+    await expect(find('')).rejects.toThrow(
+      /at or above https:\/\/github.acme.com\/acme\/mono was.*--entity/,
     );
   });
 
@@ -376,7 +448,7 @@ describe('resolveSelection', () => {
         annotations: {
           'backstage.io/source-location':
             'url:https://github.com/acme/svc/tree/main/',
-          'backstage.io/managed-by-origin-location':
+          'backstage.io/managed-by-location':
             'url:https://github.com/acme/svc/blob/main/catalog-info.yaml',
         },
       },
