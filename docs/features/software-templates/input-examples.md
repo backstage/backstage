@@ -289,6 +289,58 @@ parameters:
                 - lastName
 ```
 
+### Conditional fields across steps
+
+Conditional fields can use values from earlier form steps. In this example, the
+first step enables optional details, the second step collects those details, and
+the third step shows an additional field when details were provided.
+
+```yaml
+parameters:
+  - title: Optional details
+    properties:
+      includeOptionalDetails:
+        title: Include optional details?
+        type: boolean
+        default: false
+
+  - title: Details
+    properties:
+      name:
+        title: Name
+        type: string
+    dependencies:
+      includeOptionalDetails:
+        allOf:
+          - if:
+              properties:
+                includeOptionalDetails:
+                  const: true
+            then:
+              properties:
+                optionalDetails:
+                  title: Optional details
+                  type: string
+
+  - title: Additional details
+    properties:
+      description:
+        title: Description
+        type: string
+    dependencies:
+      optionalDetails:
+        allOf:
+          - if:
+              properties:
+                optionalDetails:
+                  minLength: 1
+            then:
+              properties:
+                additionalDetails:
+                  title: Additional details
+                  type: string
+```
+
 ### Multiple conditional fields with custom ordering
 
 In this example, we show how to conditionally show multiple fields based on the value of a parameter. The `ui:order` property is used to control the order of the fields in the form.

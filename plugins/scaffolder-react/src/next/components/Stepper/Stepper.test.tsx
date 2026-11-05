@@ -119,6 +119,216 @@ describe('Stepper', () => {
     );
   });
 
+  it('should apply conditional fields using values from previous steps', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Choose if last name is required',
+          schema: {
+            properties: {
+              includeLast: {
+                title: 'Include last name?',
+                type: 'boolean',
+                default: true,
+              },
+            },
+          },
+        },
+        {
+          title: 'Write your name',
+          schema: {
+            required: ['name'],
+            properties: {
+              name: {
+                title: 'Name',
+                type: 'string',
+              },
+            },
+            dependencies: {
+              includeLast: {
+                allOf: [
+                  {
+                    if: {
+                      properties: {
+                        includeLast: { const: true },
+                      },
+                    },
+                    then: {
+                      properties: {
+                        lastName: {
+                          title: 'Last Name',
+                          type: 'string',
+                        },
+                      },
+                      required: ['lastName'],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ],
+      title: 'Cross-step conditional fields',
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(getByRole('textbox', { name: 'Last Name' })).toBeInTheDocument();
+  });
+
+  it('should hide cross-step conditional fields when the condition is false', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Choose if last name is required',
+          schema: {
+            properties: {
+              includeLast: {
+                title: 'Include last name?',
+                type: 'boolean',
+                default: false,
+              },
+            },
+          },
+        },
+        {
+          title: 'Write your name',
+          schema: {
+            properties: {
+              name: { title: 'Name', type: 'string' },
+            },
+            dependencies: {
+              includeLast: {
+                allOf: [
+                  {
+                    if: { properties: { includeLast: { const: true } } },
+                    then: {
+                      properties: {
+                        lastName: { title: 'Last Name', type: 'string' },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ],
+      title: 'Cross-step conditional fields',
+    };
+
+    const { getByRole, queryByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(
+      queryByRole('textbox', { name: 'Last Name' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should apply nested conditions across multiple steps', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Choose if last name is required',
+          schema: {
+            properties: {
+              includeLast: {
+                title: 'Include last name?',
+                type: 'boolean',
+                default: true,
+              },
+            },
+          },
+        },
+        {
+          title: 'Write your name',
+          schema: {
+            required: ['name'],
+            properties: {
+              name: { title: 'Name', type: 'string' },
+            },
+            dependencies: {
+              includeLast: {
+                allOf: [
+                  {
+                    if: { properties: { includeLast: { const: true } } },
+                    then: {
+                      properties: {
+                        lastName: { title: 'Last Name', type: 'string' },
+                      },
+                      required: ['lastName'],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        {
+          title: 'Add a nickname',
+          schema: {
+            properties: {
+              nickname: { title: 'Nickname', type: 'string' },
+            },
+            dependencies: {
+              lastName: {
+                allOf: [
+                  {
+                    if: { properties: { lastName: { const: 'Doe' } } },
+                    then: {
+                      properties: {
+                        middleName: { title: 'Middle Name', type: 'string' },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ],
+      title: 'Nested cross-step conditional fields',
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+    fireEvent.change(getByRole('textbox', { name: 'Name' }), {
+      target: { value: 'John' },
+    });
+    fireEvent.change(getByRole('textbox', { name: 'Last Name' }), {
+      target: { value: 'Doe' },
+    });
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(getByRole('textbox', { name: 'Middle Name' })).toBeInTheDocument();
+  });
+
   it('should remember the state of the form when cycling through the pages by directly clicking on the step labels', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
