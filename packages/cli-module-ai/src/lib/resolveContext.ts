@@ -20,10 +20,7 @@ import {
   type Entity,
 } from '@backstage/catalog-model';
 import { isSkillAiResourceEntity } from '@backstage/catalog-model/alpha';
-import type {
-  FilterPredicate,
-  FilterPredicateExpression,
-} from '@backstage/filter-predicates';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 import {
   createCatalogClient,
   getEntitiesInBatches,
