@@ -4,14 +4,16 @@ title: Jenkins connections
 description: Configure and consume Jenkins connections
 ---
 
-The `jenkins` connection type represents a Jenkins controller. It has
-[multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
-[lookup strategy](../01-concepts.md#lookup-strategies).
+Use the `jenkins` connection type to configure access to a Jenkins controller.
+You can configure multiple controllers
+([multiton cardinality](../01-concepts.md#cardinality)), each matched by its host
+using the `host` [lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure Jenkins
 
-This example uses dummy credentials. Supply real credentials through environment
-variables such as `${JENKINS_USERNAME}` and `${JENKINS_API_TOKEN}`.
+Replace the dummy credentials in this example with environment variables such as
+`${JENKINS_USERNAME}` and `${JENKINS_API_TOKEN}` to keep credentials out of the
+configuration file.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -31,12 +33,15 @@ connections:
 | `host`    | `string` | Yes      | Controller URL host, including any non-default port. Must match the parsed host of `baseUrl`. |
 | `baseUrl` | `string` | Yes      | Absolute HTTP or HTTPS controller URL, including its context path.                            |
 
-Use HTTPS for remote controllers. The base URL must not contain credentials,
-a query, or a fragment, including a bare `?` or `#` suffix. Percent-encoded
-path characters are accepted. Both trailing-slash forms are accepted and preserved.
-Do not include a job path or `/api/json` in this URL. Jenkins can run under a
-[context path](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/#context-path)
-such as `/jenkins`; consumers must preserve that prefix when building API URLs.
+Use HTTPS for remote controllers to protect credentials in transit. Set the base
+URL to the controller's root, without a job path or `/api/json`, so plugins can
+build URLs for different jobs. Include any
+[context path](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/#context-path),
+such as `/jenkins`. Dropping that prefix sends requests to the wrong path.
+
+The base URL must not contain credentials, a query or a fragment, including a
+bare `?` or `#` suffix. Percent-encoded path characters are accepted. URLs with
+and without a trailing slash are accepted and preserved.
 
 ## Authentication methods
 
@@ -47,15 +52,19 @@ such as `/jenkins`; consumers must preserve that prefix when building API URLs.
 | `none`     |            |          |          | Explicitly configured anonymous access.             |
 
 Jenkins [scripted clients](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/)
-authenticate using HTTP Basic authentication with the username and API token.
-Send `Authorization: Basic <base64(username:apiToken)>` on the first request.
-The API token is used as the Basic password, not as a bearer token or a
-job-specific build trigger token. Account password authentication is outside
-this contract. Usernames containing a colon are rejected because Basic uses
-that character to separate the username and token.
+use HTTP Basic authentication with a username and API token. Use the API token
+as the Basic password. Bearer tokens, job-specific build trigger tokens and
+account passwords are not supported by this connection type.
 
-`none` sends no credentials and requires anonymous permissions on the controller.
-It is never a fallback after failed authentication. Configure it explicitly:
+Send `Authorization: Basic <base64(username:apiToken)>` on the first request.
+For requests that require authentication, Jenkins rejects an unauthenticated
+request instead of asking the client for credentials. Usernames containing a
+colon are rejected because Basic uses that character to separate the username
+and token.
+
+Configure `none` explicitly to send requests without credentials. The controller
+must allow anonymous access to the requested resource. Failed authentication
+does not cause the service to retry anonymously.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -68,29 +77,32 @@ connections:
 
 ## Lookup and selection
 
-The service matches `query.url` by its parsed host, including non-default ports.
-It does not compare schemes or paths: even a URL outside `/jenkins` on the
-configured host selects this connection. Always construct requests from the
-returned `baseUrl`, and validate any user-supplied job URL before sending
+Build requests from the returned `baseUrl` so they use the configured controller
+URL. The service matches `query.url` by host, including non-default ports, and
+ignores the scheme and path. A URL outside `/jenkins` on the same host still
+selects this connection, so check any user-supplied job URL before sending
 credentials to it.
 
-Only one Jenkins connection per host can be configured. The configuration
-pipeline rejects duplicate hosts even if their base URLs use different context
-paths. Controllers on distinct host names or ports can have separate connections.
-Path-based controller selection is not available.
+Give each controller a distinct host name or port. Configuration rejects
+duplicate hosts even when the controllers have different context paths, because
+host lookup cannot distinguish them.
 
-The first authentication entry visible to the calling plugin is selected;
-[plugin-scoped entries](../01-concepts.md#plugin-scoping) precede unrestricted
-entries. Configuration order decides between equally scoped entries. Consumers
-must list the methods they support. An unsupported selected method causes an
-error; the service does not try another entry. The connection service returns
-credentials without making an HTTP request or retrying authentication.
+Use [plugin-scoped entries](../01-concepts.md#plugin-scoping) to give a plugin
+its own credentials. The service places those entries before unrestricted ones,
+then selects the first entry visible to the plugin. Configuration order decides
+between entries with the same scope.
+
+Plugins must list the authentication methods they support. The service checks
+this list after selecting an entry, so an unsupported method causes an error
+even if a later entry would be supported. The service returns credentials;
+the plugin makes the HTTP request and handles authentication errors.
 
 ## Consume a Jenkins connection
 
-This backend example accepts the injected `ConnectionsService`. Its return value
-is inferred as `Connection<'jenkins', 'apiToken'>`. It uses the same request URL
-for base URLs ending in `/jenkins` or `/jenkins/`.
+Pass the backend's injected `ConnectionsService` to this function. The lookup
+returns `Connection<'jenkins', 'apiToken'>`, so the plugin can read the username
+and API token with their types checked. The URL construction keeps the context
+path for base URLs ending in either `/jenkins` or `/jenkins/`.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -118,26 +130,24 @@ async function readExampleJob(connections: ConnectionsService) {
 ```
 
 Jenkins exposes its [remote API](https://www.jenkins.io/doc/book/using/remote-access-api/)
-relative to controller, job, and build URLs. Job names, folder traversal, API
-clients, permissions, and request handling remain consumer responsibilities.
+relative to controller, job and build URLs. The plugin using the connection
+still needs to choose the job and folder, construct the API request and handle
+the response. The Jenkins user needs permission for the requested operation.
 
-## Consumer adoption
+## Existing Jenkins plugin configuration
 
-The first concrete consumer is
-[`@backstage-community/plugin-jenkins-backend`](https://github.com/backstage/community-plugins/blob/main/workspaces/jenkins/plugins/jenkins-backend/README.md).
-It currently reads its own `jenkins` configuration with `baseUrl`, `username`,
-and `apiKey`, including named instances. Adoption requires injecting the
-connections service, mapping `apiToken` to the client's API key, and retaining
-plugin-specific job annotations, instance selection, project limits, and
-request-header handling in the plugin. Named instances and entity base URL
-overrides cannot be assumed to map directly to host lookup.
+Adding a connection does not reconfigure installed Jenkins plugins.
+[`@backstage-community/plugin-jenkins-backend`](https://github.com/backstage/community-plugins/blob/main/workspaces/jenkins/plugins/jenkins-backend/README.md)
+reads its own `jenkins` configuration with `baseUrl`, `username` and `apiKey`,
+including named instances. The connection's `apiToken` holds the user's API
+token that this plugin calls its API key. Job annotations, instance names,
+project limits and request headers are still plugin settings. Named instances
+and entity base URL overrides do not use this connection type's host lookup.
 
 The community
 [Jenkins scaffolder module](https://github.com/backstage/community-plugins/blob/main/workspaces/jenkins/plugins/scaffolder-backend-module-jenkins/README.md)
-also reads `baseUrl`, `username`, and `apiKey` for job actions. It needs a
-connection lookup and suitable job permissions before it can consume this type.
-Both consumer migrations are follow-up work. Adding a connection does not
-reconfigure these plugins, and no automatic conversion from their `jenkins`
-configuration is provided in this repository.
+also reads `baseUrl`, `username` and `apiKey` for job actions. Keep the
+configuration required by each installed plugin; this repository does not
+automatically convert their `jenkins` configuration into connections.
 
 Return to the [built-in connection types](../04-built-in-connection-types.md).
