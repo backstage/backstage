@@ -108,8 +108,8 @@ or ports. This contract does not distinguish Cloud organizations on one host.
 
 The service selects the first authentication entry visible to the calling
 plugin, with [plugin-scoped entries](../01-concepts.md#plugin-scoping) ordered
-before unscoped entries. The consumer's `authMethods` must accept that selected
-method. There is no automatic token-to-anonymous fallback, project-based token
+before entries without plugin scoping. The consumer's `authMethods` must accept
+that selected method. There is no automatic token-to-anonymous fallback, project-based token
 selection, or token permission check.
 
 ## Consume a SonarQube connection
