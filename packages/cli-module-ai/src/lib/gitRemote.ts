@@ -20,14 +20,6 @@ import { promisify } from 'node:util';
 import parseGitUrl from 'git-url-parse';
 import { errorMessage } from './errorMessage';
 
-/** A parsed git remote that the catalog can be queried with. */
-export interface GitRemote {
-  host: string;
-  /** `owner/repo`, or `group/subgroup/repo` for GitLab. */
-  fullName: string;
-  provider: 'github' | 'gitlab';
-}
-
 export type ExecFn = (
   file: string,
   args: string[],
@@ -36,7 +28,11 @@ export type ExecFn = (
 const execFileAsync = promisify(execFile);
 export const defaultExec: ExecFn = (file, args) => execFileAsync(file, args);
 
-export function parseGitRemote(url: string): GitRemote {
+/**
+ * Normalizes a git remote URL (ssh, https, with or without `.git`) to the
+ * canonical `https://<host>/<full name>` form.
+ */
+export function repoUrlFromRemote(url: string): string {
   const hint = 'Use --entity to select the component instead.';
   let parsed: ReturnType<typeof parseGitUrl>;
   try {
@@ -51,23 +47,69 @@ export function parseGitRemote(url: string): GitRemote {
   if (!host || !fullName || !fullName.includes('/')) {
     throw new Error(`Could not parse git remote "${url}". ${hint}`);
   }
-  let provider: GitRemote['provider'];
-  if (/gitlab/i.test(host)) {
-    provider = 'gitlab';
-  } else if (/github/i.test(host)) {
-    provider = 'github';
-  } else {
-    throw new Error(
-      `Unsupported git host "${host}"; only GitHub and GitLab remotes can be matched to a component. ${hint}`,
-    );
-  }
-  return { host, fullName, provider };
+  return `https://${host}/${fullName}`;
 }
 
-export function projectSlugAnnotation(remote: GitRemote): string {
-  return remote.provider === 'github'
-    ? 'github.com/project-slug'
-    : 'gitlab.com/project-slug';
+/**
+ * Returns the current directory relative to the repository root, without a
+ * trailing slash. This is an empty string at the repository root.
+ */
+export async function getRepoPrefix(
+  exec: ExecFn = defaultExec,
+): Promise<string> {
+  let stdout: string;
+  try {
+    ({ stdout } = await exec('git', ['rev-parse', '--show-prefix']));
+  } catch (error) {
+    throw new Error(
+      `Could not determine the current folder in the git repository (${errorMessage(
+        error,
+      )}). Run from inside a git repository, or pass --entity.`,
+    );
+  }
+  return stdout.trim().replace(/\/+$/, '');
+}
+
+/**
+ * Parses a `backstage.io/source-location` annotation value that points into
+ * the given repository, as `<repo>/tree/<ref>/<path>` (GitHub) or
+ * `<repo>/-/tree/<ref>/<path>` (GitLab), also with `blob`. Returns the
+ * possible repo-relative folders as segment lists, one for each way to split
+ * the ref from the path, since refs can contain slashes. The repo root is only
+ * returned when the location has nothing but a ref. Returns undefined when the
+ * location is not inside the repository or has an unsupported shape.
+ */
+export function parseSourceLocationPath(
+  location: string,
+  repoUrl: string,
+): string[][] | undefined {
+  const prefix = `url:${repoUrl}/`;
+  if (
+    !location
+      .toLocaleLowerCase('en-US')
+      .startsWith(prefix.toLocaleLowerCase('en-US'))
+  ) {
+    return undefined;
+  }
+  const segments = location
+    .slice(prefix.length)
+    .split(/[?#]/)[0]
+    .split('/')
+    .filter(Boolean);
+  if (segments[0] === '-') {
+    segments.shift();
+  }
+  if (segments[0] !== 'tree' && segments[0] !== 'blob') {
+    return undefined;
+  }
+  const rest = segments.slice(1);
+  if (rest.length === 0) {
+    return undefined;
+  }
+  if (rest.length === 1) {
+    return [[]];
+  }
+  return rest.slice(1).map((_, i) => rest.slice(i + 1));
 }
 
 export async function getOriginUrl(
