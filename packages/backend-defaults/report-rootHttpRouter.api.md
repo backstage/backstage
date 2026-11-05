@@ -39,7 +39,6 @@ export function createHttpServer(
 
 // @public
 export class DefaultRootHttpRouter implements RootHttpRouterService {
-  // (undocumented)
   addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void;
   closeWebSockets(): void;
   // (undocumented)

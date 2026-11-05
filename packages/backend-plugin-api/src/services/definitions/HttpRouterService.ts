@@ -49,6 +49,8 @@ export interface HttpRouterServiceWebSocketHandler {
   /**
    * Requires token authentication by default. Set to `unauthenticated` to handle
    * authentication in the handler. Cookie authentication is not supported.
+   * HTTP rate limiting and request logging do not run for unauthenticated
+   * WebSocket routes either; the handler must provide any protections it needs.
    */
   authPolicy?: 'unauthenticated';
 }
@@ -85,8 +87,10 @@ export interface HttpRouterService {
    * The handler receives the raw upgrade request, socket, and buffered data.
    * The framework waits for plugin startup and authenticates before invoking the
    * handler, rejecting upgrades during shutdown. The handler owns the handshake
-   * or forwarding, including protocol selection. HTTP middleware
-   * and path-based auth policies do not apply.
+   * or forwarding, including protocol selection. HTTP middleware, including
+   * rate limiting and request logging, and path-based auth policies do not apply,
+   * even when the route uses `authPolicy: 'unauthenticated'`. Existing upgrade
+   * handlers that rely on Express routing must migrate to registered routes.
    * The framework destroys upgraded sockets when the backend shuts down.
    */
   addWebSocketHandler(options: HttpRouterServiceWebSocketHandler): void;

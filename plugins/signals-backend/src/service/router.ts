@@ -53,6 +53,7 @@ export function createRouter(options: RouterOptions): express.Router {
   });
   server.on('error', error => logger.error(`WebSocket server error: ${error}`));
   lifecycle.addShutdownHook(() => {
+    // Reject handshakes that resume after awaiting user information during shutdown.
     server.close();
   });
 
@@ -60,6 +61,9 @@ export function createRouter(options: RouterOptions): express.Router {
     path: '/',
     async handler({ request, socket, head, credentials, authProtocol }) {
       if (!auth.isPrincipal(credentials, 'user')) {
+        logger.warn('WebSocket upgrade rejected: user credentials required', {
+          remoteAddress: request.socket?.remoteAddress,
+        });
         socket.end(
           'HTTP/1.1 401 Unauthorized\r\nConnection: close\r\nContent-Length: 0\r\n\r\n',
           () => socket.destroy(),

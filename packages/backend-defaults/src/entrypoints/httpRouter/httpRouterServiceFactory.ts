@@ -91,6 +91,7 @@ export const httpRouterServiceFactory = createServiceFactory({
         auth,
         config,
         lifecycle,
+        logger,
         pluginId: plugin.getId(),
         rootHttpRouter,
       }),

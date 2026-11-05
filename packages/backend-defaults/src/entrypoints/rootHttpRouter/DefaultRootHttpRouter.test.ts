@@ -25,10 +25,8 @@ import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 describe('DefaultRootHttpRouter', () => {
   it('validates WebSocket registrations and leaves legacy upgrade listeners untouched', () => {
     const server = createServer();
-    const router = DefaultRootHttpRouter.create({
-      server,
-      logger: mockServices.logger.mock(),
-    });
+    const logger = mockServices.logger.mock();
+    const router = DefaultRootHttpRouter.create({ server, logger });
     const handler = jest.fn();
     expect(() =>
       DefaultRootHttpRouter.create().addWebSocketHandler({
@@ -53,12 +51,11 @@ describe('DefaultRootHttpRouter', () => {
     expect(server.listenerCount('upgrade')).toBe(0);
     const legacy = jest.fn();
     server.on('upgrade', legacy);
-    expect(() =>
-      router.addWebSocketHandler({ path: '/events', handler: handler }),
-    ).toThrow('server-level upgrade listeners');
-    expect(server.listeners('upgrade')).toEqual([legacy]);
+    router.addWebSocketHandler({ path: '/events', handler });
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(server.listeners('upgrade')).toContain(legacy);
+    expect(server.listenerCount('upgrade')).toBe(2);
     server.off('upgrade', legacy);
-    router.addWebSocketHandler({ path: '/events', handler: handler });
     router.addWebSocketHandler({ path: '/other', handler: handler });
     expect(server.listenerCount('upgrade')).toBe(1);
     expect(() =>
@@ -68,6 +65,51 @@ describe('DefaultRootHttpRouter', () => {
     expect(() =>
       router.addWebSocketHandler({ path: '/new', handler: handler }),
     ).toThrow('after shutdown');
+  });
+
+  it('leaves unmatched upgrades to late listeners and only tracks its own sockets', async () => {
+    const server = createServer();
+    const logger = mockServices.logger.mock();
+    const router = DefaultRootHttpRouter.create({ server, logger });
+    const handler = jest.fn();
+    router.addWebSocketHandler({ path: '/events', handler });
+    expect(logger.warn).not.toHaveBeenCalled();
+    const legacy = jest.fn();
+    server.on('upgrade', legacy);
+    const head = Buffer.from('buffered');
+    const sockets = ['/legacy', '/events'].map(path => {
+      const socket = new PassThrough();
+      const req = new IncomingMessage(new Socket());
+      req.url = path;
+      req.headers.upgrade = 'websocket';
+      server.emit('upgrade', req, socket, head);
+      return socket;
+    });
+    await Promise.resolve();
+    expect(legacy).toHaveBeenCalledTimes(2);
+    expect(legacy.mock.calls[0][1]).toBe(sockets[0]);
+    expect(legacy.mock.calls[0][2]).toBe(head);
+    expect(sockets[0].read()).toBeNull();
+    expect(sockets[0].listenerCount('error')).toBe(0);
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({ socket: sockets[1], head }),
+    );
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    server.off('upgrade', legacy);
+    const req = new IncomingMessage(new Socket());
+    req.url = '/legacy';
+    req.headers.upgrade = 'websocket';
+    const rejected = new PassThrough();
+    const end = jest.spyOn(rejected, 'end');
+    server.emit('upgrade', req, rejected, Buffer.alloc(0));
+    expect(end).toHaveBeenCalledWith(
+      expect.stringContaining('404 Not Found'),
+      expect.any(Function),
+    );
+    router.closeWebSockets();
+    expect(sockets.map(socket => socket.destroyed)).toEqual([false, true]);
+    sockets[0].destroy();
+    rejected.destroy();
   });
 
   it('closes failed upgrades and destroys active sockets at shutdown', async () => {

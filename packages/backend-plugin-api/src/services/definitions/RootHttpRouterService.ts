@@ -52,7 +52,9 @@ export interface RootHttpRouterService {
    * follows {@link HttpRouterService.addWebSocketHandler}.
    *
    * The handler owns authentication, origin checks, and the handshake or
-   * forwarding. HTTP middleware and auth policies do not apply.
+   * forwarding. HTTP middleware, including rate limiting and request logging,
+   * and HTTP auth policies do not apply. Handlers must provide any protections
+   * they need.
    */
   addWebSocketHandler(options: RootHttpRouterServiceWebSocketHandler): void;
 }

@@ -16,6 +16,10 @@
 
 import http from 'node:http';
 import { once } from 'node:events';
+import { Socket } from 'node:net';
+import { PassThrough } from 'node:stream';
+import { BackstageUserInfo } from '@backstage/backend-plugin-api';
+import { createRouter } from './router';
 import request from 'supertest';
 import { WebSocket, WebSocketServer } from 'ws';
 import {
@@ -216,6 +220,56 @@ describe('signals framework router', () => {
     await Promise.all([closed, otherClosed]);
     expect(connection.readyState).toBe(WebSocket.CLOSED);
     expect(other.readyState).toBe(WebSocket.CLOSED);
+  });
+
+  it('rejects an in-flight handshake that resumes after plugin shutdown', async () => {
+    const lifecycle = mockServices.lifecycle.mock();
+    const httpRouter = mockServices.httpRouter.mock();
+    let finishUserInfo: (identity: BackstageUserInfo) => void;
+    const identity = new Promise<BackstageUserInfo>(resolve => {
+      finishUserInfo = resolve;
+    });
+    const userInfo = mockServices.userInfo.mock({
+      getUserInfo: () => identity,
+    });
+    createRouter({
+      logger: mockServices.logger.mock(),
+      events: mockServices.events(),
+      httpRouter,
+      config: mockServices.rootConfig(),
+      lifecycle,
+      instanceMetadata: mockServices.rootInstanceMetadata(),
+      userInfo,
+      auth: mockServices.auth(),
+    });
+    const upgradeRequest = new http.IncomingMessage(new Socket());
+    upgradeRequest.method = 'GET';
+    upgradeRequest.headers = {
+      upgrade: 'websocket',
+      'sec-websocket-version': '13',
+      'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==',
+    };
+    const socket = new PassThrough();
+    const end = jest.spyOn(socket, 'end');
+    const pending = httpRouter.addWebSocketHandler.mock.calls[0][0].handler({
+      request: upgradeRequest,
+      socket,
+      head: Buffer.alloc(0),
+      credentials: mockCredentials.user(),
+    });
+    expect(userInfo.getUserInfo).toHaveBeenCalledTimes(1);
+    for (const [hook] of lifecycle.addShutdownHook.mock.calls) {
+      await hook();
+    }
+    finishUserInfo!({
+      userEntityRef: 'user:default/test',
+      ownershipEntityRefs: [],
+    });
+    await pending;
+    expect(end).toHaveBeenCalledWith(
+      expect.stringContaining('503 Service Unavailable'),
+    );
+    socket.destroy();
   });
 
   it('returns 500 when the WebSocket library fails during the handshake', async () => {

@@ -147,11 +147,13 @@ const connection = new WebSocket(url, [token]);
 WebSocket routes require token authentication by default. Cookie authentication
 is not supported. Set `authPolicy: 'unauthenticated'` if the handler will manage
 authentication itself; the framework then supplies none credentials without
-validating tokens.
+validating tokens. HTTP rate limiting and request logging do not run for these
+routes either. The handler must provide any authentication, rate limiting, and
+request logging it needs.
 
 ### Routing and lifecycle
 
-Upgrades bypass Express middleware, including rate limiting. Cross-origin
+Upgrades bypass Express middleware, including rate limiting and request logging. Cross-origin
 WebSockets do not require CORS response headers, and `backend.cors` does not apply
 to upgrades. Any additional origin restrictions are the handler's responsibility.
 Root-level WebSocket registrations use the same `{ path, handler }` shape but
@@ -159,13 +161,12 @@ have no plugin authentication policy; their handler object contains only
 `request`, `socket`, and `head`. Root handlers must authenticate callers.
 
 Registering the first route installs one server-level upgrade listener. Duplicate
-paths are rejected, and unmatched upgrades receive a 404 response. When no routes
-are registered, existing server-level listeners are unaffected. Mixing these
-routes with direct server-level upgrade listeners is unsupported; registration
-fails if a listener already exists. Migrate those listeners to registered routes
-before using this API, and do not add direct listeners afterwards. Existing
-workarounds that handle upgrades through Express may also stop working once a
-route is registered. Migrate those handlers to this API as well.
+paths are rejected. Unmatched upgrades receive a 404 response when this is the
+only upgrade listener; otherwise, they are left for the other listeners to handle.
+Multiple upgrade listeners produce a warning, including listeners registered
+lazily after startup. Migrate existing listeners to registered routes to avoid
+handling the same socket more than once. Workarounds that only handle upgrades
+through Express still need to migrate to this API.
 
 Plugin upgrades wait for startup using `backend.lifecycle.startupRequestPauseTimeout`
 (the default is five seconds). Upgrades receive HTTP 503 if startup times out or
@@ -259,6 +260,7 @@ backend.add(
       plugin: coreServices.pluginMetadata,
       config: coreServices.rootConfig,
       lifecycle: coreServices.lifecycle,
+      logger: coreServices.logger,
       rootHttpRouter: coreServices.rootHttpRouter,
       auth: coreServices.auth,
       httpAuth: coreServices.httpAuth,
@@ -270,6 +272,7 @@ backend.add(
       plugin,
       rootHttpRouter,
       lifecycle,
+      logger,
     }) {
       const router = PromiseRouter();
 
@@ -303,6 +306,7 @@ backend.add(
           auth,
           config,
           lifecycle,
+          logger,
           pluginId: plugin.getId(),
           rootHttpRouter,
         }),

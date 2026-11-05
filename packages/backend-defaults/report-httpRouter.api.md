@@ -9,6 +9,7 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { HttpRouterServiceAuthPolicy } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -51,6 +52,7 @@ export function createWebSocketRouter(options: {
   auth: AuthService;
   config: RootConfigService;
   lifecycle: LifecycleService;
+  logger: LoggerService;
   pluginId: string;
   rootHttpRouter: RootHttpRouterService;
 }): HttpRouterService['addWebSocketHandler'];

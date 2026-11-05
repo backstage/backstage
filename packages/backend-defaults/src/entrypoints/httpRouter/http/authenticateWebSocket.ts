@@ -19,12 +19,14 @@ import type {
   HttpRouterServiceWebSocketContext,
   HttpRouterServiceWebSocketHandler,
   RootConfigService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import type { IncomingMessage } from 'node:http';
 
 export async function authenticateWebSocket(options: {
   auth: AuthService;
+  logger?: LoggerService;
   config: RootConfigService;
   request: IncomingMessage;
   authPolicy:
@@ -33,7 +35,7 @@ export async function authenticateWebSocket(options: {
 }): Promise<
   Pick<HttpRouterServiceWebSocketContext, 'credentials' | 'authProtocol'>
 > {
-  const { auth, config, request, authPolicy } = options;
+  const { auth, config, request, authPolicy, logger } = options;
   if (authPolicy === 'unauthenticated') {
     return { credentials: await auth.getNoneCredentials() };
   }
@@ -45,7 +47,8 @@ export async function authenticateWebSocket(options: {
       .map(value => value.trim())
       .filter(Boolean) ?? [];
   const candidates = bearer ? [...protocols, bearer] : protocols;
-  for (const token of candidates) {
+  let deniedError: Error | undefined;
+  for (const [index, token] of candidates.entries()) {
     try {
       const credentials = await auth.authenticate(token);
       if (
@@ -57,8 +60,24 @@ export async function authenticateWebSocket(options: {
           authProtocol: protocols.includes(token) ? token : undefined,
         };
       }
-    } catch {
-      // Offered protocols may be application protocols rather than credentials.
+      logger?.debug(
+        'WebSocket authentication candidate has no supported principal',
+        {
+          source: index < protocols.length ? 'protocol' : 'authorization',
+          candidateIndex: index,
+        },
+      );
+    } catch (error) {
+      logger?.debug('WebSocket authentication candidate failed', {
+        source: index < protocols.length ? 'protocol' : 'authorization',
+        candidateIndex: index,
+        errorType: error.name,
+      });
+      if (error.name === 'NotAllowedError') {
+        deniedError = error;
+      } else if (error.name !== 'AuthenticationError') {
+        throw error;
+      }
     }
   }
   if (
@@ -69,5 +88,8 @@ export async function authenticateWebSocket(options: {
   ) {
     return { credentials: await auth.getNoneCredentials() };
   }
-  throw new AuthenticationError('Missing or invalid WebSocket credentials');
+  throw (
+    deniedError ??
+    new AuthenticationError('Missing or invalid WebSocket credentials')
+  );
 }

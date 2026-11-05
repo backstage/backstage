@@ -19,6 +19,7 @@ import {
   HttpRouterService,
   HttpRouterServiceWebSocketHandler,
   LifecycleService,
+  LoggerService,
   RootConfigService,
   RootHttpRouterService,
 } from '@backstage/backend-plugin-api';
@@ -35,10 +36,11 @@ export function createWebSocketRouter(options: {
   auth: AuthService;
   config: RootConfigService;
   lifecycle: LifecycleService;
+  logger: LoggerService;
   pluginId: string;
   rootHttpRouter: RootHttpRouterService;
 }): HttpRouterService['addWebSocketHandler'] {
-  const { auth, config, lifecycle, pluginId, rootHttpRouter } = options;
+  const { auth, config, lifecycle, logger, pluginId, rootHttpRouter } = options;
   const lifecycleGate = createLifecycleGate({ config, lifecycle });
   return ({
     path,
@@ -60,15 +62,27 @@ export function createWebSocketRouter(options: {
           context = await authenticateWebSocket({
             auth,
             config,
+            logger,
             request,
             authPolicy: authPolicy ?? 'authenticated',
           });
           await lifecycleGate.check();
         } catch (error) {
-          let status = '401 Unauthorized';
-          if (error.name === 'ServiceUnavailableError') {
+          let status = '500 Internal Server Error';
+          if (error.name === 'AuthenticationError') {
+            status = '401 Unauthorized';
+          } else if (error.name === 'NotAllowedError') {
+            status = '403 Forbidden';
+          } else if (error.name === 'ServiceUnavailableError') {
             status = '503 Service Unavailable';
           }
+          logger.warn('WebSocket upgrade rejected', {
+            pluginId,
+            path,
+            remoteAddress: request.socket?.remoteAddress,
+            errorType: error.name,
+            status,
+          });
           socket.end(
             `HTTP/1.1 ${status}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`,
             () => socket.destroy(),

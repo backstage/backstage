@@ -119,6 +119,13 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
     }
   }
 
+  /**
+   * Registers an exact-path upgrade handler. Unmatched upgrades receive 404
+   * only when this router is the server's sole upgrade listener; otherwise,
+   * other listeners retain ownership. Multiple listeners produce a warning.
+   * Express-only upgrade handlers must migrate to registered routes because
+   * server-level upgrades bypass Express routing.
+   */
   addWebSocketHandler(input: RootHttpRouterServiceWebSocketHandler): void {
     const { path, handler } = input;
     if (
@@ -142,12 +149,32 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
       );
     }
     if (this.#webSocketHandlers.size === 0) {
-      if (this.#webSocketServer.listenerCount('upgrade') > 0) {
-        throw new Error(
-          'WebSocket routes cannot be combined with server-level upgrade listeners',
-        );
+      const server = this.#webSocketServer;
+      let warnedAboutOtherListeners = false;
+      const warnAboutOtherListeners = () => {
+        if (!warnedAboutOtherListeners) {
+          this.#webSocketLogger?.warn(
+            'Multiple HTTP upgrade listeners are registered; migrate legacy listeners to WebSocket routes to avoid handling sockets more than once',
+          );
+          warnedAboutOtherListeners = true;
+        }
+      };
+      if (server.listenerCount('upgrade') > 0) {
+        warnAboutOtherListeners();
       }
-      this.#webSocketServer.on('upgrade', (request, socket, head) => {
+      server.on('upgrade', (request, socket, head) => {
+        const hasOtherListeners = server.listenerCount('upgrade') > 1;
+        if (hasOtherListeners) {
+          warnAboutOtherListeners();
+        }
+        const pathName = request.url?.split('?')[0];
+        const matchedHandler =
+          request.headers.upgrade?.toLowerCase() === 'websocket' &&
+          pathName &&
+          this.#webSocketHandlers.get(pathName);
+        if (!matchedHandler && hasOtherListeners) {
+          return;
+        }
         // Node does not handle rejected promises from event listeners.
         const onError = (error: Error) => {
           this.#webSocketLogger?.warn('WebSocket upgrade failed', error);
@@ -163,13 +190,7 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
           socket.destroy();
           return;
         }
-        const pathName = request.url?.split('?')[0];
-        const matchedHandler =
-          pathName && this.#webSocketHandlers.get(pathName);
-        if (
-          request.headers.upgrade?.toLowerCase() !== 'websocket' ||
-          !matchedHandler
-        ) {
+        if (!matchedHandler) {
           socket.end(
             'HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 0\r\n\r\n',
             () => socket.destroy(),

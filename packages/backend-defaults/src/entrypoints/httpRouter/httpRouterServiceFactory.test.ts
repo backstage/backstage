@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { httpRouterServiceFactory } from './httpRouterServiceFactory';
 import request from 'supertest';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import {
   coreServices,
   createBackendPlugin,
@@ -306,6 +307,74 @@ describe('httpRouterFactory', () => {
     );
     expect(handler).not.toHaveBeenCalled();
     secondSocket.destroy();
+  });
+
+  it('logs safe rejection diagnostics and preserves authentication versus server errors', async () => {
+    const lifecycle = mockServices.lifecycle.mock();
+    const rootHttpRouter = mockServices.rootHttpRouter.mock();
+    const logger = mockServices.logger.mock();
+    const auth = mockServices.auth.mock();
+    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
+      dependencies: [
+        lifecycle.factory,
+        rootHttpRouter.factory,
+        logger.factory,
+        auth.factory,
+      ],
+    });
+    const router = await tester.getSubject();
+    const handler = jest.fn();
+    router.addWebSocketHandler({ path: '/events', handler });
+    const upgradeHandler =
+      rootHttpRouter.addWebSocketHandler.mock.calls[0][0].handler;
+    for (const [hook] of lifecycle.addStartupHook.mock.calls) {
+      await hook();
+    }
+    const token = 'never-log-this-token';
+    for (const [error, status] of [
+      [new AuthenticationError(token), '401 Unauthorized'],
+      [new NotAllowedError(token), '403 Forbidden'],
+      [new Error(token), '500 Internal Server Error'],
+    ] as const) {
+      auth.authenticate.mockRejectedValueOnce(error);
+      const socket = new PassThrough();
+      const end = jest.spyOn(socket, 'end');
+      await upgradeHandler({
+        request: {
+          headers: { authorization: `Bearer ${token}` },
+          socket: { remoteAddress: '192.0.2.1' },
+        } as unknown as IncomingMessage,
+        socket,
+        head: Buffer.alloc(0),
+      });
+      expect(end).toHaveBeenCalledWith(
+        expect.stringContaining(status),
+        expect.any(Function),
+      );
+      expect(logger.warn).toHaveBeenLastCalledWith(
+        'WebSocket upgrade rejected',
+        {
+          pluginId: 'test',
+          path: '/events',
+          remoteAddress: '192.0.2.1',
+          errorType: error.name,
+          status,
+        },
+      );
+      expect(logger.debug).toHaveBeenLastCalledWith(
+        'WebSocket authentication candidate failed',
+        {
+          source: 'authorization',
+          candidateIndex: 0,
+          errorType: error.name,
+        },
+      );
+      socket.destroy();
+    }
+    expect(handler).not.toHaveBeenCalled();
+    expect(
+      JSON.stringify([logger.warn.mock.calls, logger.debug.mock.calls]),
+    ).not.toContain(token);
   });
 
   describe('auth services', () => {
