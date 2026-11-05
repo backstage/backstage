@@ -20,7 +20,10 @@ import {
   type Entity,
 } from '@backstage/catalog-model';
 import { isSkillAiResourceEntity } from '@backstage/catalog-model/alpha';
-import type { FilterPredicate } from '@backstage/filter-predicates';
+import type {
+  FilterPredicate,
+  FilterPredicateExpression,
+} from '@backstage/filter-predicates';
 import {
   createCatalogClient,
   getEntitiesInBatches,
@@ -29,8 +32,8 @@ import {
 } from './catalogClient';
 import {
   getOriginUrl,
-  isLocationInRepo,
   getRepoPrefix,
+  parseCatalogFileFolder,
   parseSourceLocationPath,
   repoUrlFromRemote,
 } from './gitRemote';
@@ -59,6 +62,62 @@ export interface ResolvedContext {
 const isKind = (ref: string, kind: string) =>
   parseEntityRef(ref).kind.toLocaleLowerCase('en-US') === kind;
 
+const SOURCE_LOCATION = 'backstage.io/source-location';
+const MANAGED_BY_LOCATION = 'backstage.io/managed-by-location';
+
+interface ComponentCandidate {
+  entity: Entity;
+  /** The possible repo-relative folders of the component, as segment lists. */
+  folders: string[][];
+}
+
+async function queryComponentsByLocation(options: {
+  client: CatalogReader;
+  token: string;
+  repoUrl: string;
+  annotation: string;
+  parse: (location: string, repoUrl: string) => string[][] | undefined;
+}): Promise<ComponentCandidate[]> {
+  const { client, token, repoUrl, annotation, parse } = options;
+  // A path type that cannot start with `$`, which marks predicate operators.
+  const path: `metadata.${string}` = `metadata.annotations.${annotation}`;
+  const hasLocationPrefix: FilterPredicateExpression = {};
+  hasLocationPrefix[path] = { $hasPrefix: `url:${repoUrl}/` };
+  const query: FilterPredicate = {
+    $all: [{ kind: 'Component' }, hasLocationPrefix],
+  };
+  const entities = await queryAllEntities(client, { query }, token);
+  return entities.flatMap(entity => {
+    const folders = parse(
+      entity.metadata.annotations?.[annotation] ?? '',
+      repoUrl,
+    );
+    return folders ? [{ entity, folders }] : [];
+  });
+}
+
+const isAt = (candidate: ComponentCandidate, folder: string) =>
+  candidate.folders.some(f => f.join('/') === folder);
+
+const listRefs = (candidates: ComponentCandidate[]) =>
+  candidates.map(c => entityRefOf(c.entity)).join(', ');
+
+/**
+ * Finds the component to resolve against. With an explicit entity, that
+ * entity is fetched. Otherwise the component is matched against the current
+ * folder in the git remote repository:
+ *
+ * 1. Components whose `backstage.io/managed-by-location` is a catalog file in
+ *    this repository. The catalog always sets this annotation itself, so it
+ *    cannot be claimed by an entity from another location. The folder of the
+ *    catalog file that is the nearest ancestor of the current folder wins.
+ * 2. Only when that finds nothing, components whose self-declared
+ *    `backstage.io/source-location` is the current folder or one of its
+ *    ancestors. This covers components registered from another repository,
+ *    such as a central catalog repository. Because any entity can declare
+ *    this annotation, a match is only accepted when exactly one component
+ *    declares it, and a warning is reported.
+ */
 export async function findComponent(options: {
   client: CatalogReader;
   token: string;
@@ -66,8 +125,12 @@ export async function findComponent(options: {
   remoteUrl?: string;
   /** The current folder relative to the repository root, empty at the root. */
   repoPrefix?: string;
+  /** Reports a warning, defaults to writing a line to standard error. */
+  warn?: (message: string) => void;
 }): Promise<Entity> {
   const { client, token } = options;
+  const warn =
+    options.warn ?? ((message: string) => process.stderr.write(`${message}\n`));
   if (options.entity) {
     const refString = stringifyEntityRef(
       parseEntityRef(options.entity, {
@@ -88,61 +151,58 @@ export async function findComponent(options: {
   const folder = (options.repoPrefix ?? '').split('/').filter(Boolean);
   const location =
     folder.length > 0 ? `${repoUrl}/${folder.join('/')}` : repoUrl;
-  const query: FilterPredicate = {
-    $all: [
-      { kind: 'Component' },
-      {
-        'metadata.annotations.backstage.io/source-location': {
-          $hasPrefix: `url:${repoUrl}/`,
-        },
-      },
-      {
-        'metadata.annotations.backstage.io/managed-by-origin-location': {
-          $hasPrefix: `url:${repoUrl}/`,
-        },
-      },
-    ],
-  };
-  const candidates = (await queryAllEntities(client, { query }, token)).flatMap(
-    entity => {
-      // The source location is self-declared, but the catalog always sets the
-      // origin location itself, so only trust entities that were registered
-      // from this repository.
-      const origin =
-        entity.metadata.annotations?.[
-          'backstage.io/managed-by-origin-location'
-        ] ?? '';
-      if (!isLocationInRepo(origin, repoUrl)) {
-        return [];
-      }
-      const folders = parseSourceLocationPath(
-        entity.metadata.annotations?.['backstage.io/source-location'] ?? '',
-        repoUrl,
-      );
-      return folders ? [{ entity, folders }] : [];
-    },
+  // The current folder first, then each ancestor up to the repo root.
+  const ancestors = folder.map((_, i) =>
+    folder.slice(0, folder.length - i).join('/'),
   );
-  // Try the current folder first, then each ancestor up to the repo root.
-  for (let depth = folder.length; depth >= 0; depth--) {
-    const wanted = folder.slice(0, depth).join('/');
-    const matches = candidates.filter(c =>
-      c.folders.some(f => f.join('/') === wanted),
-    );
+  ancestors.push('');
+
+  const registered = await queryComponentsByLocation({
+    client,
+    token,
+    repoUrl,
+    annotation: MANAGED_BY_LOCATION,
+    parse: parseCatalogFileFolder,
+  });
+  for (const wanted of ancestors) {
+    const matches = registered.filter(c => isAt(c, wanted));
     if (matches.length === 1) {
       return matches[0].entity;
     }
     if (matches.length > 1) {
       throw new Error(
-        `Multiple Components have a source location at ${repoUrl}${
+        `Multiple Components are registered from a catalog file in ${repoUrl}${
           wanted ? `/${wanted}` : ''
-        }: ${matches
-          .map(m => entityRefOf(m.entity))
-          .join(', ')}. Use --entity to select one.`,
+        }: ${listRefs(matches)}. Use --entity to select one.`,
       );
     }
   }
+
+  const declared = (
+    await queryComponentsByLocation({
+      client,
+      token,
+      repoUrl,
+      annotation: SOURCE_LOCATION,
+      parse: parseSourceLocationPath,
+    })
+  ).filter(c => ancestors.some(wanted => isAt(c, wanted)));
+  if (declared.length === 1) {
+    const ref = entityRefOf(declared[0].entity);
+    warn(
+      `Warning: no Component is registered from a catalog file at or above ${location}, so ${ref} was matched by its self-declared ${SOURCE_LOCATION} annotation. Use --entity to select the component explicitly.`,
+    );
+    return declared[0].entity;
+  }
+  if (declared.length > 1) {
+    throw new Error(
+      `No Component is registered from a catalog file at or above ${location}, and multiple Components declare a ${SOURCE_LOCATION} at or above it: ${listRefs(
+        declared,
+      )}. Use --entity to select one.`,
+    );
+  }
   throw new Error(
-    `No Component with a backstage.io/source-location at or above ${location} was found in the catalog. Use --entity to select the component.`,
+    `No Component registered from a catalog file or with a ${SOURCE_LOCATION} at or above ${location} was found in the catalog. Use --entity to select the component.`,
   );
 }
 
