@@ -75,8 +75,9 @@ export function TemplateEditorTextArea(props: {
   errorText?: string;
   onSave?: () => void;
   onReload?: () => void;
+  disabled?: boolean;
 }) {
-  const { errorText } = props;
+  const { errorText, disabled } = props;
   const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -95,7 +96,7 @@ export function TemplateEditorTextArea(props: {
     e => e.key === 's' && (e.ctrlKey || e.metaKey),
     e => {
       e.preventDefault();
-      if (props.onSave) {
+      if (props.onSave && !disabled) {
         props.onSave();
       }
     },
@@ -107,6 +108,7 @@ export function TemplateEditorTextArea(props: {
         className={classes.codeMirror}
         theme="dark"
         height="100%"
+        readOnly={disabled}
         extensions={[StreamLanguage.define(yamlSupport), panelExtension]}
         value={props.content}
         onChange={props.onUpdate}
@@ -121,7 +123,11 @@ export function TemplateEditorTextArea(props: {
                 )}
               >
                 <IconButton
+                  aria-label={t(
+                    'templateEditorPage.templateEditorTextArea.saveIconTooltip',
+                  )}
                   className={classes.floatingButton}
+                  disabled={disabled}
                   onClick={() => props.onSave?.()}
                 >
                   <SaveIcon />
@@ -135,7 +141,11 @@ export function TemplateEditorTextArea(props: {
                 )}
               >
                 <IconButton
+                  aria-label={t(
+                    'templateEditorPage.templateEditorTextArea.refreshIconTooltip',
+                  )}
                   className={classes.floatingButton}
+                  disabled={disabled}
                   onClick={() => props.onReload?.()}
                 >
                   <RefreshIcon />
@@ -185,6 +195,7 @@ export function TemplateEditorDirectoryEditorTextArea(props: {
       onUpdate={content =>
         directoryEditor?.selectedFile?.updateContent(content)
       }
+      disabled={directoryEditor.loading}
       {...actions}
     />
   );

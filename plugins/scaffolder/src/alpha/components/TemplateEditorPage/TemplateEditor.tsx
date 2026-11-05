@@ -26,7 +26,10 @@ import type {
 import { editRouteRef } from '../../../routes';
 
 import { useTemplateDirectory } from './useTemplateDirectory';
-import { DirectoryEditorProvider } from './DirectoryEditorContext';
+import {
+  DirectoryEditorProvider,
+  useDirectoryEditor,
+} from './DirectoryEditorContext';
 import {
   TemplateEditorLayout,
   TemplateEditorLayoutToolbar,
@@ -53,15 +56,89 @@ export type ScaffolderTemplateEditorClassKey =
   | 'preview'
   | 'results';
 
+const TemplateEditorContent = (props: {
+  layouts?: LayoutOptions[];
+  formProps?: FormProps;
+  fieldExtensions?: FieldExtensionOptions<any, any>[];
+  openDirectory: () => void;
+  createDirectory: () => void;
+  closeDirectory: () => Promise<void>;
+}) => {
+  const {
+    layouts,
+    formProps,
+    fieldExtensions,
+    openDirectory: handleOpenDirectory,
+    createDirectory: handleCreateDirectory,
+    closeDirectory,
+  } = props;
+  const [errorText, setErrorText] = useState<string>();
+  const navigate = useNavigate();
+  const editLink = useRouteRef(editRouteRef);
+  const directoryEditor = useDirectoryEditor();
+
+  const handleCloseDirectory = useCallback(() => {
+    if (directoryEditor?.loading) {
+      return;
+    }
+    closeDirectory().then(() => navigate(editLink()));
+  }, [closeDirectory, navigate, editLink, directoryEditor?.loading]);
+
+  const handleCloseBrowser = useCallback(() => {
+    if (directoryEditor?.loading) {
+      return;
+    }
+    closeDirectory();
+  }, [closeDirectory, directoryEditor?.loading]);
+
+  return (
+    <DryRunProvider>
+      <TemplateEditorLayout>
+        <TemplateEditorLayoutToolbar>
+          <TemplateEditorToolbar fieldExtensions={fieldExtensions}>
+            <TemplateEditorToolbarFileMenu
+              onOpenDirectory={handleOpenDirectory}
+              onCreateDirectory={handleCreateDirectory}
+              onCloseDirectory={handleCloseDirectory}
+              disabled={directoryEditor?.loading}
+            />
+          </TemplateEditorToolbar>
+        </TemplateEditorLayoutToolbar>
+        <TemplateEditorLayoutBrowser>
+          <TemplateEditorBrowser onClose={handleCloseBrowser} />
+        </TemplateEditorLayoutBrowser>
+        <TemplateEditorPanels
+          autoSaveId="template-editor"
+          files={
+            <TemplateEditorLayoutFiles>
+              <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
+            </TemplateEditorLayoutFiles>
+          }
+          preview={
+            <TemplateEditorLayoutPreview>
+              <TemplateEditorForm.DirectoryEditorDryRun
+                setErrorText={setErrorText}
+                fieldExtensions={fieldExtensions}
+                layouts={layouts}
+                formProps={formProps}
+              />
+            </TemplateEditorLayoutPreview>
+          }
+        />
+        <TemplateEditorLayoutConsole>
+          <DryRunResults />
+        </TemplateEditorLayoutConsole>
+      </TemplateEditorLayout>
+    </DryRunProvider>
+  );
+};
+
 export const TemplateEditor = (props: {
   layouts?: LayoutOptions[];
   formProps?: FormProps;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
 }) => {
   const { layouts, formProps, fieldExtensions } = props;
-  const [errorText, setErrorText] = useState<string>();
-  const navigate = useNavigate();
-  const editLink = useRouteRef(editRouteRef);
   const {
     directory,
     openDirectory: handleOpenDirectory,
@@ -69,49 +146,16 @@ export const TemplateEditor = (props: {
     closeDirectory,
   } = useTemplateDirectory();
 
-  const handleCloseDirectory = useCallback(() => {
-    closeDirectory().then(() => navigate(editLink()));
-  }, [closeDirectory, navigate, editLink]);
-
   return (
     <DirectoryEditorProvider directory={directory}>
-      <DryRunProvider>
-        <TemplateEditorLayout>
-          <TemplateEditorLayoutToolbar>
-            <TemplateEditorToolbar fieldExtensions={fieldExtensions}>
-              <TemplateEditorToolbarFileMenu
-                onOpenDirectory={handleOpenDirectory}
-                onCreateDirectory={handleCreateDirectory}
-                onCloseDirectory={handleCloseDirectory}
-              />
-            </TemplateEditorToolbar>
-          </TemplateEditorLayoutToolbar>
-          <TemplateEditorLayoutBrowser>
-            <TemplateEditorBrowser onClose={closeDirectory} />
-          </TemplateEditorLayoutBrowser>
-          <TemplateEditorPanels
-            autoSaveId="template-editor"
-            files={
-              <TemplateEditorLayoutFiles>
-                <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
-              </TemplateEditorLayoutFiles>
-            }
-            preview={
-              <TemplateEditorLayoutPreview>
-                <TemplateEditorForm.DirectoryEditorDryRun
-                  setErrorText={setErrorText}
-                  fieldExtensions={fieldExtensions}
-                  layouts={layouts}
-                  formProps={formProps}
-                />
-              </TemplateEditorLayoutPreview>
-            }
-          />
-          <TemplateEditorLayoutConsole>
-            <DryRunResults />
-          </TemplateEditorLayoutConsole>
-        </TemplateEditorLayout>
-      </DryRunProvider>
+      <TemplateEditorContent
+        layouts={layouts}
+        formProps={formProps}
+        fieldExtensions={fieldExtensions}
+        openDirectory={handleOpenDirectory}
+        createDirectory={handleCreateDirectory}
+        closeDirectory={closeDirectory}
+      />
     </DirectoryEditorProvider>
   );
 };
