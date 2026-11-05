@@ -65,6 +65,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
 
   const includeArchivedRepos: boolean =
     config.getOptionalBoolean('includeArchivedRepos') ?? false;
+  const skipReposMarkedForDeletion: boolean =
+    config.getOptionalBoolean('skipReposMarkedForDeletion') ?? false;
   const excludeRepos: string[] =
     config.getOptionalStringArray('excludeRepos') ?? [];
 
@@ -101,6 +103,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     relations,
     skipForkedRepos,
     includeArchivedRepos,
+    skipReposMarkedForDeletion,
     excludeRepos,
     restrictUsersToGroup,
     includeUsersWithoutSeat,
