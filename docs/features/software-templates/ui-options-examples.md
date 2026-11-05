@@ -4,6 +4,13 @@ title: ui:options Examples
 description: The input props that can be specified under ui:options for different pickers
 ---
 
+Entity fields (`EntityPicker`, `OwnerPicker`, `MultiEntityPicker`, and
+`MyGroupsPicker`) load catalog options in pages as you browse. Typing searches
+the catalog after a short delay, matching entity names, kinds, titles, and
+profile display names. Labels supplied by a custom entity presentation API do
+not add searchable fields. Existing selections are loaded separately, so they
+remain available even when they are outside the displayed page.
+
 ## EntityPicker
 
 The input props that can be specified under `ui:options` for the `EntityPicker` field extension.
