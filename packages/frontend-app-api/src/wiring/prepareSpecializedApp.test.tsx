@@ -50,13 +50,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import {
-  ComponentType,
-  Fragment,
-  ReactNode,
-  useEffect,
-  useState,
-} from 'react';
+import { ComponentType, Fragment, ReactNode, useEffect, useState } from 'react';
 import appPluginOriginal from '@backstage/plugin-app';
 import { z } from 'zod/v4';
 
@@ -1228,7 +1222,9 @@ describe('specialized app', () => {
                 output: [coreExtensionData.reactElement],
                 factory: () => [
                   coreExtensionData.reactElement(
-                    <MountTracker name="element">Bootstrap Element</MountTracker>,
+                    <MountTracker name="element">
+                      Bootstrap Element
+                    </MountTracker>,
                   ),
                 ],
               }),
