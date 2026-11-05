@@ -512,7 +512,11 @@ The `when` field supports:
 
 Changing a condition does not move the user away from the current step while it remains visible. A step that is hidden and later shown must be visited and validated again, even when its previous values are restored. Changing a step definition or its order also requires a new visit.
 
-Before review, the wizard checks visible steps whose validation may be out of date. Previously visited steps are checked automatically against their current inputs and effective constraints. Custom validators are also checked when the form context changes, because they can read values from other pages. Successful checks continue to the next pending step or review without another visit. Failed checks open the page that needs correction. Users can reach previously visited visible steps using the mouse or keyboard to correct values on another page. A voluntary return still follows the ordinary page order.
+Before review, the wizard checks visible steps whose validation may be out of date. Previously visited steps are checked automatically against their current inputs and effective constraints. Custom validators are also checked when the form context changes, because they can read values from other pages. Successful checks continue to the next pending step or review without another visit. Failed checks clear earlier successful validation and open the page that needs correction.
+
+Before review, changes to the form context trigger a check of the complete JSON Schema for previously visited steps, including constraints on values entered on other pages. Matching projected field values do not skip this schema check.
+
+Users can reach previously visited visible steps using the mouse or keyboard to correct values on another page. A voluntary return still follows the ordinary page order.
 
 Review and creation remain blocked until all visible steps have passed the necessary validation. Changes made while review is open are checked before creation; a newly revealed page must still be visited. If the parameters are checked again from review, review remains open so the user can confirm them before selecting **Create** again.
 

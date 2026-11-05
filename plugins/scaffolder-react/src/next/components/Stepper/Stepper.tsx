@@ -411,27 +411,32 @@ export const Stepper = (stepperProps: StepperProps) => {
           validator,
           customValidatorNames,
         );
+        // A field projection can cache custom validation, but cannot capture
+        // every JSON Schema constraint on the full context. Check the schema
+        // whenever that context changes, without requiring another page visit.
+        let errorsForStep = validator.validateFormData(
+          data,
+          step.schema,
+          undefined,
+          props.formProps?.transformErrors,
+          merge({}, propUiSchema, step.uiSchema),
+        ).errorSchema as FormValidation;
         if (
-          !previous ||
-          previous.validators !== validators ||
-          !isEqual(previous.inputs, inputs)
+          !hasErrors(errorsForStep) &&
+          (!previous ||
+            previous.validators !== validators ||
+            !isEqual(previous.inputs, inputs))
         ) {
-          const schemaErrors = validator.validateFormData(
-            data,
-            step.schema,
-            undefined,
-            props.formProps?.transformErrors,
-            merge({}, propUiSchema, step.uiSchema),
-          ).errorSchema;
-          const errorsForStep = hasErrors(schemaErrors as FormValidation)
-            ? (schemaErrors as FormValidation)
-            : await createAsyncValidators(step.mergedSchema, validators, {
-                apiHolder,
-              })(data);
-          if (!isCurrent()) return undefined;
-          if (hasErrors(errorsForStep)) {
-            return { completed, index, errors: errorsForStep };
-          }
+          errorsForStep = await createAsyncValidators(
+            step.mergedSchema,
+            validators,
+            { apiHolder },
+          )(data);
+        }
+        if (!isCurrent()) return undefined;
+        if (hasErrors(errorsForStep)) {
+          completed.delete(index);
+          return { completed, index, errors: errorsForStep };
         }
         completed.set(index, {
           step: cloneDeep(step),
@@ -475,6 +480,12 @@ export const Stepper = (stepperProps: StepperProps) => {
         validationInFlight.current = undefined;
         setIsValidating(false);
         setErrors(returnedValidation);
+        setNavigation(current => {
+          if (!current.validatedSteps.has(displayedStepIndex)) return current;
+          const completed = new Map(current.validatedSteps);
+          completed.delete(displayedStepIndex);
+          return { ...current, validatedSteps: completed };
+        });
         return;
       }
       const updated = { ...stepsState, ...formData };

@@ -27,6 +27,163 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it.each(['manual', 'automatic'] as const)(
+    'does not reuse a successful completion after a failed %s retry',
+    async retry => {
+      let rejected = false;
+      const validate = jest.fn(
+        async (_value: unknown, errors: FieldValidation) => {
+          if (rejected) errors.addError('Remote check failed');
+        },
+      );
+      const onCreate = jest.fn();
+      const Name = ({ formData }: FieldExtensionComponentProps<string>) => (
+        <input aria-label="Name" value={formData ?? ''} readOnly />
+      );
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Failed retry',
+              steps: [
+                {
+                  title: 'Name',
+                  schema: {
+                    properties: {
+                      name: { type: 'string', 'ui:field': 'Name' },
+                    },
+                  },
+                },
+                {
+                  title: 'Later',
+                  schema: { properties: { note: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={{ name: 'approved', note: 'unchanged' }}
+            extensions={[
+              { name: 'Name', component: Name, validation: validate },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      await screen.findByRole('textbox', { name: 'note' });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      rejected = true;
+      if (retry === 'manual') {
+        fireEvent.click(screen.getByRole('button', { name: 'Step 1' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      } else {
+        fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+        fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
+          target: { value: 'updated' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      }
+      expect(
+        await screen.findAllByText('Remote check failed'),
+      ).not.toHaveLength(0);
+      expect(validate).toHaveBeenCalledTimes(2);
+      fireEvent.click(screen.getByRole('button', { name: 'Step 2' }));
+      // Returning to the old inputs must not restore the old API-backed success.
+      fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
+        target: { value: 'unchanged' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      expect(
+        await screen.findAllByText('Remote check failed'),
+      ).not.toHaveLength(0);
+      expect(validate).toHaveBeenCalledTimes(3);
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      expect(onCreate).not.toHaveBeenCalled();
+      rejected = false;
+      fireEvent.click(screen.getByRole('button', { name: 'Step 2' }));
+      await screen.findByRole('textbox', { name: 'note' });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      // A successful retry proceeds directly; another Name-page visit is unnecessary.
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          name: 'approved',
+          note: 'unchanged',
+        }),
+      );
+      expect(validate).toHaveBeenCalledTimes(4);
+    },
+  );
+
+  it.each(['not', 'enum'] as const)(
+    'checks full cross-page %s constraints even when projected inputs are unchanged',
+    async keyword => {
+      const allowed = { answer: 'valid', mode: 'allowed' };
+      const constraints = {
+        not: {
+          not: {
+            properties: { mode: { const: 'blocked' } },
+            required: ['mode'],
+          },
+        },
+        enum: { enum: [allowed] },
+      };
+      const onCreate = jest.fn();
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Cross-page constraints',
+              steps: [
+                {
+                  title: 'Answer',
+                  schema: {
+                    type: 'object',
+                    properties: { answer: { type: 'string' } },
+                    ...constraints[keyword],
+                  },
+                },
+                {
+                  title: 'Mode',
+                  schema: { properties: { mode: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={allowed}
+            extensions={[]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+        target: { value: 'blocked' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      expect(
+        await screen.findByRole('textbox', { name: 'answer' }),
+      ).toHaveValue('valid');
+      expect(
+        await screen.findAllByText(
+          keyword === 'not' ? /must NOT be valid/i : /allowed values/i,
+        ),
+      ).not.toHaveLength(0);
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole('button', { name: 'Step 2' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+        target: { value: 'allowed' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() => expect(onCreate).toHaveBeenCalledWith(allowed));
+    },
+  );
+
   async function renderSynchronizedField(staleFailure = false) {
     const user = userEvent.setup();
     const onCreate = jest.fn();
@@ -542,8 +699,8 @@ describe('Stepper', () => {
           project: 'approved',
         }),
       );
-      // Restoring the original, successfully checked context needs no extra call.
-      expect(validate).toHaveBeenCalledTimes(3);
+      // A later failure supersedes the old success, even after restoring its context.
+      expect(validate).toHaveBeenCalledTimes(4);
     },
   );
 
