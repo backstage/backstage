@@ -393,6 +393,33 @@ export const tableColumnWidthsWithConstraintsSnippet = `const columns: ColumnCon
 ];`;
 
 // =============================================================================
+// Resizable Columns
+// =============================================================================
+
+export const tableResizableColumnsSnippet = `const columns: ColumnConfig<Item>[] = [
+  {
+    id: 'name',
+    label: 'Name',
+    isRowHeader: true,
+    isResizable: true,
+    defaultWidth: '3fr',
+    minWidth: 200,
+    cell: item => (
+      <CellText title={item.name} description={item.description} />
+    ),
+  },
+  {
+    id: 'owner',
+    label: 'Owner',
+    isResizable: true,
+    defaultWidth: '1fr',
+    minWidth: 120,
+    maxWidth: 300,
+    cell: item => <CellText title={item.owner.name} />,
+  },
+];`;
+
+// =============================================================================
 // Custom Tables
 // =============================================================================
 

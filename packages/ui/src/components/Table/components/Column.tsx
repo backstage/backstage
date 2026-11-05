@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Column as ReactAriaColumn } from 'react-aria-components';
+import {
+  Column as ReactAriaColumn,
+  ColumnResizer,
+} from 'react-aria-components';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { ColumnDefinition } from '../definition';
 import { ColumnProps } from '../types';
@@ -27,7 +30,7 @@ import { RiArrowUpLine } from '@remixicon/react';
  */
 export const Column = (props: ColumnProps) => {
   const { ownProps, restProps } = useDefinition(ColumnDefinition, props);
-  const { classes, children } = ownProps;
+  const { classes, children, isResizable } = ownProps;
 
   return (
     <ReactAriaColumn className={classes.root} {...restProps}>
@@ -39,6 +42,7 @@ export const Column = (props: ColumnProps) => {
               <RiArrowUpLine size={16} />
             </span>
           )}
+          {isResizable && <ColumnResizer className={classes.resizer} />}
         </div>
       )}
     </ReactAriaColumn>
