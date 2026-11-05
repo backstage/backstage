@@ -50,9 +50,19 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { ComponentType, Fragment, useEffect, useState } from 'react';
+import {
+  ComponentType,
+  Fragment,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import appPluginOriginal from '@backstage/plugin-app';
 import { z } from 'zod/v4';
+
+const appRootWrapperComponentDataRef = createExtensionDataRef<
+  ComponentType<{ children?: ReactNode }>
+>().with({ id: 'app.root.wrapper' });
 
 const signInPageComponentDataRef = createExtensionDataRef<
   ComponentType<{ onSignInSuccess(identity: IdentityApi): void }>
@@ -1166,6 +1176,97 @@ describe('specialized app', () => {
       await expect(
         screen.findByText('Deferred Element'),
       ).resolves.toBeInTheDocument();
+    });
+
+    it('should not remount the app when deferred root elements are added during finalization', async () => {
+      const featureFlagsApi = {
+        isActive: jest.fn((name: string) => name === 'test-flag'),
+        registerFlag: jest.fn(),
+        getRegisteredFlags: () => [],
+        save: jest.fn(),
+      } as unknown as typeof featureFlagsApiRef.T;
+      const noSignInAppPlugin = appPluginOriginal.withOverrides({
+        extensions: [
+          appPluginOriginal
+            .getExtension('sign-in-page:app')
+            .override({ disabled: true }),
+        ],
+      });
+      const mounts: string[] = [];
+      function MountTracker(props: { name: string; children?: ReactNode }) {
+        useEffect(() => {
+          mounts.push(`mount ${props.name}`);
+          return () => {
+            mounts.push(`unmount ${props.name}`);
+          };
+        }, [props.name]);
+        return <>{props.children}</>;
+      }
+      function TrackedWrapper(props: { children?: ReactNode }) {
+        return <MountTracker name="wrapper">{props.children}</MountTracker>;
+      }
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          noSignInAppPlugin,
+          createFrontendPlugin({
+            pluginId: 'test',
+            featureFlags: [{ name: 'test-flag' }],
+            extensions: [
+              createExtension({
+                name: 'wrapper',
+                attachTo: { id: 'app/root', input: 'wrappers' },
+                output: [appRootWrapperComponentDataRef],
+                factory: () => [appRootWrapperComponentDataRef(TrackedWrapper)],
+              }),
+              createExtension({
+                name: 'deferred-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                if: { featureFlags: { $contains: 'test-flag' } },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Deferred Element</div>),
+                ],
+              }),
+              createExtension({
+                name: 'bootstrap-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(
+                    <MountTracker name="element">Bootstrap Element</MountTracker>,
+                  ),
+                ],
+              }),
+            ],
+          }),
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              ApiBlueprint.make({
+                params: defineParams =>
+                  defineParams({
+                    api: featureFlagsApiRef,
+                    deps: {},
+                    factory: () => featureFlagsApi,
+                  }),
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const { rerender } = render(preparedApp.getBootstrapApp().element);
+      expect(screen.getByText('Bootstrap Element')).toBeInTheDocument();
+      expect(mounts).toEqual(['mount wrapper', 'mount element']);
+
+      const finalizedApp = preparedApp.finalize();
+      rerender(finalizedApp.element);
+
+      await expect(
+        screen.findByText('Deferred Element'),
+      ).resolves.toBeInTheDocument();
+      expect(mounts).toEqual(['mount wrapper', 'mount element']);
     });
 
     it('should defer conditional api roots without resetting visible api instances', () => {
