@@ -24,7 +24,17 @@ Before using the AI commands you need:
 - A signed-in session on your Backstage instance, created with [`auth login`](./module-auth.md#auth-login).
 - A catalog backend that has the AI model module installed and supports `$contains` predicate queries on entity relations. See [AI in the Catalog](../../ai/ai-in-the-catalog.md).
 - Node.js 22.20 or later for `ai skills sync`, because `skills` requires it. The command fails before installing anything on an older version, and `--dry-run` works on any version.
-- A git `origin` remote, and a catalog component whose `backstage.io/source-location` annotation points at the current folder or one of its parent folders in that repository, or the `--entity` option. The component with the nearest matching folder is used. The catalog sets this annotation for entities that are registered from a URL. Only components that were registered from a location in the same repository as the `origin` remote are considered.
+- A git `origin` remote and a catalog component for the current folder, or the `--entity` option. See [How the component is found](#how-the-component-is-found).
+
+## How the component is found
+
+Without `--entity`, the commands look up the component in the catalog based on
+your current folder in the repository of the git `origin` remote:
+
+1. A component that was read from a catalog file, such as `catalog-info.yaml`, in the current folder or the nearest parent folder of that repository is used. The catalog records this in the `backstage.io/managed-by-location` annotation, which entities cannot set themselves. If several components were read from catalog files in that folder, the command fails and asks you to pass `--entity`.
+2. If no component was read from a catalog file in those folders, for example because your components are registered from a central catalog repository, the commands look for a component whose `backstage.io/source-location` annotation points at the current folder or one of its parent folders. Any entity can declare this annotation, so it is only used when exactly one component matches, and a warning is printed on standard error. If several components match, the command fails and asks you to pass `--entity`.
+
+Pass `--entity` to skip this lookup and choose the component yourself.
 
 ## ai resolve
 
