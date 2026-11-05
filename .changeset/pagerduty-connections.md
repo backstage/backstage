@@ -2,4 +2,4 @@
 '@backstage/connections': patch
 ---
 
-Added PagerDuty connections with account-host lookup, an explicit REST API endpoint, and REST API token authentication. Events API routing keys and OAuth credentials are not supported.
+Added PagerDuty as a connection type with REST API token authentication. Accounts that share a regional REST API endpoint can keep separate credentials. OAuth and Events API routing keys are not supported.

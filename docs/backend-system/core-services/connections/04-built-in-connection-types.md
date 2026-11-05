@@ -47,8 +47,8 @@ selection rules, and a typed consumption example.
 
 ## Incident management
 
-- [PagerDuty](./types/pagerduty.md) supports REST API tokens, with account-host
-  lookup and explicit regional REST endpoints.
+- [PagerDuty](./types/pagerduty.md) supports REST API tokens. Accounts that share a
+  regional REST endpoint can keep separate credentials.
 
 ## Common behavior
 
