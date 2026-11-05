@@ -152,11 +152,11 @@ The first concrete adoption target is
 [`@datadog/backstage-plugin-datadog-entity-sync-backend`](https://github.com/DataDog/datadog-backstage-plugins/tree/main/plugins/datadog-entity-sync-backend).
 Its [Software Catalog client factory](https://github.com/DataDog/datadog-backstage-plugins/blob/main/plugins/datadog-entity-sync-node/src/datadogSoftwareCatalogApi.ts)
 currently reads `datadog.integration.apiKey`, `datadog.integration.appKey`, and
-`datadog.integration.site`, and constructs the Datadog SDK's `SoftwareCatalogApi`.
+`datadog.integration.site`, and constructs the `SoftwareCatalogApi` client.
 Adopting this connection requires an external plugin change to declare
 `datadog`, resolve it through the connections service, supply `apiKey` as
 `apiKeyAuth` and `applicationKey` as `appKeyAuth`, and configure the SDK server
-for the resolved API host. Sync schedules, entity filters, and serializers
+for the resolved API host. Sync schedules, entity filters, and entity formatting
 remain plugin settings. This addition does not switch that external plugin to
 connections, and Backstage has no legacy Datadog integration conversion.
 The example apps' `app.datadogRum` settings configure browser Real User
