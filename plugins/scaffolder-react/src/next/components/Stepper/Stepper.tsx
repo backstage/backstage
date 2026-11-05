@@ -129,6 +129,16 @@ export const Stepper = (stepperProps: StepperProps) => {
   const analytics = useAnalytics();
   const { presentation, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
+  const validators = useMemo(() => {
+    return Object.fromEntries(
+      props.extensions.map(({ name, validation }) => [name, validation]),
+    );
+  }, [props.extensions]);
+
+  const customValidatorNames = useMemo(
+    () => new Set(Object.keys(validators).filter(name => validators[name])),
+    [validators],
+  );
   // Index into `steps` rather than `visibleSteps`, so that the active step
   // stays the same when other steps are shown or hidden.
   const [activeStepIndex, setActiveStepIndex] = useState(0);
@@ -159,7 +169,12 @@ export const Stepper = (stepperProps: StepperProps) => {
         isEqual(completed.step, steps[index]) &&
         isEqual(
           completed.inputs,
-          getValidationData(steps[index].mergedSchema, stepsState, validator),
+          getValidationData(
+            steps[index].mergedSchema,
+            stepsState,
+            validator,
+            customValidatorNames,
+          ),
         ),
     ),
   );
@@ -222,12 +237,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     () => ({ ...FieldOverrides, ...extensions }),
     [extensions],
   );
-
-  const validators = useMemo(() => {
-    return Object.fromEntries(
-      props.extensions.map(({ name, validation }) => [name, validation]),
-    );
-  }, [props.extensions]);
 
   const validation = useMemo(() => {
     return createAsyncValidators(
@@ -316,6 +325,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             steps[current].mergedSchema,
             { ...stepsState, ...formData },
             validator,
+            customValidatorNames,
           ),
         });
         setValidatedSteps(validated);
@@ -342,6 +352,7 @@ export const Stepper = (stepperProps: StepperProps) => {
       steps,
       stepsState,
       validatedSteps,
+      customValidatorNames,
     ],
   );
 

@@ -26,6 +26,136 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it('reruns a custom validator when a later page changes its context', async () => {
+    const onCreate = jest.fn();
+    const validate = jest.fn(
+      async (
+        _value: unknown,
+        errors: FieldValidation,
+        context: { formData: JsonObject },
+      ) => {
+        if (context.formData.project !== 'approved')
+          errors.addError('Project is not approved');
+      },
+    );
+    const Custom = ({ formData }: FieldExtensionComponentProps<string>) => (
+      <input aria-label="Name" value={formData ?? ''} readOnly />
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Context validation',
+            steps: [
+              {
+                title: 'Name',
+                schema: {
+                  properties: {
+                    name: { type: 'string', 'ui:field': 'Custom' },
+                  },
+                },
+              },
+              {
+                title: 'Project',
+                schema: { properties: { project: { type: 'string' } } },
+              },
+            ],
+          }}
+          initialState={{ name: 'existing', project: 'approved' }}
+          extensions={[
+            { name: 'Custom', component: Custom, validation: validate },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'project' }), {
+      target: { value: 'blocked' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('textbox', { name: 'Name' });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(
+      await screen.findAllByText('Project is not approved'),
+    ).not.toHaveLength(0);
+    expect(validate).toHaveBeenCalledTimes(2);
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each(['allOf', '$ref'])(
+    'revalidates constraints changed through %s by a later page',
+    async composition => {
+      const onCreate = jest.fn();
+      const condition = {
+        if: { properties: { mode: { const: 'strict' } }, required: ['mode'] },
+        then: {
+          properties: { answer: { minLength: 8 } },
+          required: ['answer'],
+        },
+      };
+      const composed =
+        composition === 'allOf'
+          ? { allOf: [condition] }
+          : {
+              definitions: { conditional: condition },
+              $ref: '#/definitions/conditional',
+            };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Conditional constraints',
+              steps: [
+                {
+                  title: 'Answer',
+                  schema: {
+                    type: 'object',
+                    properties: { answer: { type: 'string' } },
+                    ...composed,
+                  },
+                },
+                {
+                  title: 'Mode',
+                  schema: { properties: { mode: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={{ answer: 'short', mode: 'relaxed' }}
+            extensions={[]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+        target: { value: 'strict' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      const answer = await screen.findByRole('textbox', { name: /answer/ });
+      expect(answer).toHaveValue('short');
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/fewer than 8 characters/),
+      ).not.toHaveLength(0);
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.change(answer, { target: { value: 'long enough' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          answer: 'long enough',
+          mode: 'strict',
+        }),
+      );
+    },
+  );
+
   it.each(['insert', 'reorder', 'schema'])(
     'revalidates steps after a manifest %s while review is open',
     async change => {
@@ -118,7 +248,7 @@ describe('Stepper', () => {
     },
   );
 
-  it('revalidates a shared custom field edited by a later step without invalidating unrelated fields', async () => {
+  it('revalidates custom fields after shared inputs or other form context changes', async () => {
     const onCreate = jest.fn();
     const validateShared = jest.fn(
       async (value: unknown, errors: FieldValidation) => {
@@ -175,8 +305,11 @@ describe('Stepper', () => {
       { target: { value: 'other' } },
     );
     fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('textbox', { name: 'Shared' });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Review' }));
     await screen.findByRole('button', { name: 'Create' });
-    expect(validateShared).toHaveBeenCalledTimes(1);
+    expect(validateShared).toHaveBeenCalledTimes(2);
     fireEvent.click(screen.getByRole('button', { name: 'Back' }));
     fireEvent.change(await screen.findByRole('textbox', { name: 'shared' }), {
       target: { value: 'invalid' },

@@ -53,20 +53,44 @@ export function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-// Capture only the inputs described by a step, using its active schema branches.
-// Custom fields and opaque objects receive their complete value as validator input.
+// Capture inputs and effective constraints used to validate a step. Custom
+// validators can read any field through context.formData.
 export function getValidationData(
   schema: JsonObject,
   formData: JsonObject,
   validator: ValidatorType,
+  customValidatorNames: ReadonlySet<string> = new Set(),
 ): JsonObject {
+  const schemas: RJSFSchema[] = [];
+  function hasCustomValidator(value: JsonValue): boolean {
+    if (Array.isArray(value)) return value.some(hasCustomValidator);
+    if (!isObject(value)) return false;
+    return (
+      (typeof value['ui:field'] === 'string' &&
+        customValidatorNames.has(value['ui:field'])) ||
+      Object.values(value).some(
+        child => child !== undefined && hasCustomValidator(child),
+      )
+    );
+  }
   function project(
     currentSchema: RJSFSchema,
     data: JsonValue,
     root = false,
   ): JsonValue {
-    if (!isObject(data)) return cloneDeep(data);
     const resolved = retrieveSchema(validator, currentSchema, schema, data);
+    schemas.push(resolved);
+    if (Array.isArray(data)) {
+      data.forEach((item, index) => {
+        const itemSchema = Array.isArray(resolved.items)
+          ? resolved.items[index]
+          : resolved.items;
+        if (itemSchema && typeof itemSchema === 'object')
+          project(itemSchema, item);
+      });
+      return cloneDeep(data);
+    }
+    if (!isObject(data)) return cloneDeep(data);
     if (
       (!root && (resolved['ui:field'] || !resolved.properties)) ||
       resolved.additionalProperties ||
@@ -99,5 +123,9 @@ export function getValidationData(
         }),
     );
   }
-  return project(schema, formData, true) as JsonObject;
+  const values = project(schema, formData, true);
+  return {
+    values: hasCustomValidator(schema) ? cloneDeep(formData) : values,
+    schemas: cloneDeep(schemas) as JsonValue,
+  };
 }

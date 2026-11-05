@@ -95,6 +95,97 @@ describe('hasErrors', () => {
 describe('getValidationData', () => {
   const validator = customizeValidator();
 
+  it('captures the whole form only when a registered custom validator can use it', () => {
+    const schema = {
+      properties: { name: { type: 'string', 'ui:field': 'Custom' } },
+    };
+    const data = { name: 'unchanged', project: 'approved' };
+    const snapshot = getValidationData(
+      schema,
+      data,
+      validator,
+      new Set(['Custom']),
+    );
+    data.project = 'blocked';
+    expect(snapshot.values).toEqual({ name: 'unchanged', project: 'approved' });
+    expect(
+      getValidationData(schema, data, validator, new Set(['Custom'])),
+    ).not.toEqual(snapshot);
+    expect(getValidationData(schema, data, validator).values).toEqual({
+      name: 'unchanged',
+    });
+  });
+
+  it('captures resolved constraints inside nested objects and array items', () => {
+    const item = {
+      properties: { answer: { type: 'string' } },
+      allOf: [
+        {
+          if: { required: ['selector'] },
+          then: { properties: { answer: { minLength: 8 } } },
+        },
+      ],
+    };
+    const schema = {
+      properties: { nested: item, rows: { type: 'array', items: item } },
+    };
+    const before = getValidationData(
+      schema,
+      { nested: { answer: 'short' }, rows: [{ answer: 'short' }] },
+      validator,
+    );
+    const after = getValidationData(
+      schema,
+      {
+        nested: { answer: 'short', selector: true },
+        rows: [{ answer: 'short', selector: true }],
+      },
+      validator,
+    );
+    expect(after.schemas).not.toEqual(before.schemas);
+  });
+
+  it.each(['if', 'allOf', '$ref'])(
+    'captures effective constraints for %s presence conditions',
+    composition => {
+      const condition = {
+        if: { required: ['selector'] },
+        then: {
+          properties: { answer: { minLength: 8 } },
+          required: ['answer'],
+        },
+      };
+      const compositions = {
+        if: condition,
+        allOf: { allOf: [condition] },
+        $ref: {
+          definitions: { conditional: condition },
+          $ref: '#/definitions/conditional',
+        },
+      };
+      const composed = compositions[composition as keyof typeof compositions];
+      const schema = {
+        properties: { answer: { type: 'string' } },
+        ...composed,
+      };
+      const before = getValidationData(schema, { answer: 'short' }, validator);
+      const after = getValidationData(
+        schema,
+        { answer: 'short', selector: true },
+        validator,
+      );
+      expect(before.values).toEqual(after.values);
+      expect(before.schemas).not.toEqual(after.schemas);
+      expect(after).toEqual(
+        getValidationData(
+          schema,
+          { answer: 'short', selector: true, unrelated: 'ignored' },
+          validator,
+        ),
+      );
+    },
+  );
+
   it('tracks nested declared values, references and complete custom-field inputs without unrelated values', () => {
     const schema = {
       definitions: {
@@ -116,7 +207,7 @@ describe('getValidationData', () => {
       rows: ['original'],
       unrelated: 'ignore',
     };
-    const inputs = getValidationData(schema, data, validator);
+    const inputs = getValidationData(schema, data, validator).values;
     data.connection.username = 'edited';
     data.custom.value = 'edited';
     data.rows.push('edited');
@@ -125,9 +216,9 @@ describe('getValidationData', () => {
       custom: { value: 'original', context: 'needed' },
       rows: ['original'],
     });
-    expect(getValidationData({}, data, validator)).toEqual({});
+    expect(getValidationData({}, data, validator).values).toEqual({});
     expect(
-      getValidationData({ required: ['unrelated'] }, data, validator),
+      getValidationData({ required: ['unrelated'] }, data, validator).values,
     ).toEqual({ unrelated: 'ignore' });
   });
 
@@ -157,14 +248,14 @@ describe('getValidationData', () => {
         schema,
         { mode: 'create', name: 'new', project: 'retained' },
         validator,
-      ),
+      ).values,
     ).toEqual({ mode: 'create', name: 'new' });
     expect(
       getValidationData(
         schema,
         { mode: 'manage', name: 'retained', project: 'existing' },
         validator,
-      ),
+      ).values,
     ).toEqual({ mode: 'manage', project: 'existing' });
   });
 });
