@@ -47,8 +47,8 @@ selection rules, and a typed consumption example.
 
 ## Observability
 
-- [Datadog](./types/datadog.md) supports API-key/application-key pairs for
-  regional catalog API endpoints.
+- [Datadog](./types/datadog.md) supports API and application keys for regional
+  catalog API endpoints.
 
 ## Common behavior
 
