@@ -26,14 +26,14 @@ in your deployment.
 connections:
   - type: grafana
     host: example.grafana.net
-    baseUrl: https://example.grafana.net
+    baseUrl: https://example.grafana.net/
     auth:
       - method: token
         token: dummy-service-account-token
 
   - type: grafana
     host: monitoring.example.com:8443
-    baseUrl: http://grafana.internal:3000/grafana
+    baseUrl: http://grafana.internal:3000/grafana/
     auth:
       - method: basic
         username: backstage-reader
@@ -137,6 +137,9 @@ This example uses a token to search dashboards. It calls the same endpoint as
 the community Grafana plugin; choose API routes that work with the Grafana
 versions your plugin supports.
 
+This example assumes the configured base URL ends with a slash. Connections also
+accept URLs without a trailing slash.
+
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
 import { ResponseError } from '@backstage/errors';
@@ -151,9 +154,8 @@ async function searchDashboards(
     authMethods: ['token'],
   });
 
-  // Keep the configured subpath with or without a trailing slash.
-  const root = `${connection.baseUrl.replace(/\/$/, '')}/`;
-  const url = new URL('api/search?type=dash-db', root);
+  // The example base URL ends with / so new URL() preserves the context path.
+  const url = new URL('api/search?type=dash-db', connection.baseUrl);
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${connection.auth.token}` },
     redirect: 'error',
@@ -164,6 +166,9 @@ async function searchDashboards(
   return response.json();
 }
 ```
+
+With a base URL of `http://grafana.internal:3000/grafana/`, the relative path above
+resolves to `http://grafana.internal:3000/grafana/api/search?type=dash-db`.
 
 Send authenticated requests to the returned `baseUrl` so the credentials go to
 the configured Grafana server. Do not send credentials to a URL taken directly
