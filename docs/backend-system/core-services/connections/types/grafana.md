@@ -4,21 +4,21 @@ title: Grafana connections
 description: Configure and consume authenticated Grafana instance APIs
 ---
 
-The `grafana` connection type represents a Grafana instance, either a Grafana
-Cloud stack or a self-hosted Grafana OSS or Enterprise server. It has
-[multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
-[lookup strategy](../01-concepts.md#lookup-strategies).
+Use the `grafana` connection type to give backend plugins API access to a Grafana
+Cloud stack or a self-hosted Grafana OSS or Enterprise server. You can configure
+[multiple instances](../01-concepts.md#cardinality), each identified by its `host`
+when a plugin [looks up a connection](../01-concepts.md#lookup-strategies).
 
-This type supplies static credentials for authenticated instance APIs. It does
-not configure embedded dashboards, browser sessions, the Grafana Cloud management
-API, or direct Mimir, Loki, or Tempo telemetry APIs. Those Cloud APIs use
-[Cloud Access Policies](https://grafana.com/docs/grafana-cloud/learn-and-build/developer-resources/api-reference/cloud-api/),
-which are separate from instance service-account tokens.
+Use instance service-account tokens for Grafana API requests. The Grafana Cloud
+management API and direct Mimir, Loki, or Tempo telemetry APIs need
+[Cloud Access Policies](https://grafana.com/docs/grafana-cloud/learn-and-build/developer-resources/api-reference/cloud-api/)
+instead. Tokens for those APIs do not authenticate requests to a Grafana instance.
+Configure embedded dashboards and browser sessions separately.
 
 ## Configure Grafana
 
-The following configuration uses dummy credentials and is valid without
-environment variables. Replace the credentials with
+These examples use dummy credentials and can be loaded without environment variables.
+Replace the credentials with
 [environment variable references](../../../../conf/writing.md#environment-variable-substitution)
 in your deployment.
 
@@ -48,30 +48,37 @@ connections:
 | `host`    | `string` | Yes      | Lowercase host used for lookup, including a port when present in the parsed resource URL. |
 | `baseUrl` | `string` | Yes      | Absolute HTTP or HTTPS Grafana instance root, including any reverse-proxy subpath.        |
 
-`host` contains no scheme, path, credentials, query, or fragment. Use the host
-returned by `new URL(resourceUrl).host`; default ports are omitted by URL parsing.
-`baseUrl` contains no embedded credentials, query, or fragment. Both trailing-slash
-forms are accepted. Use HTTPS when sending credentials over an untrusted network.
+Set `host` to the value returned by `new URL(resourceUrl).host` so it matches the
+plugin's resource URL. This leaves out the scheme, path, credentials, query and
+fragment, as well as default ports.
 
-`host` identifies the instance in resource URLs that the plugin knows, such as an
-entity's configured dashboard URL. `baseUrl` is the backend request destination;
-it can use a different, internal host. For example, a caller with a dashboard URL
+Set `baseUrl` without embedded credentials, a query or a fragment. Plugins append
+API routes to this URL, so a query or fragment would put the route in the wrong
+part of the URL. Both trailing-slash forms are accepted. Use HTTPS over an
+untrusted network to protect the credentials sent with each request.
+
+A plugin uses `host` to find the connection for a resource URL, such as an entity's
+configured dashboard URL. Set `baseUrl` to an address the backend can reach; this
+can use a different, internal host. For example, a plugin with a dashboard URL
 under `https://monitoring.example.com:8443/grafana` looks up
 `monitoring.example.com:8443`, then sends requests to
-`http://grafana.internal:3000/grafana`. Callers must obtain that resource URL from
-their own plugin or entity configuration; this type does not discover instances.
+`http://grafana.internal:3000/grafana`. The plugin needs to get the resource URL
+from its own configuration or an entity. The connection service does not discover
+Grafana instances.
 
-Configure the instance root, not a dashboard URL or an `/api` endpoint. Consumers
-append their API routes, preserving the subpath documented in Grafana's
-[`root_url` configuration](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#root_url).
-The connection does not choose a Grafana API version or construct a client.
+Use the instance root so plugins can append their API routes. A dashboard URL or
+an `/api` endpoint already contains a route. Include any subpath from Grafana's
+[`root_url` configuration](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#root_url)
+so requests reach Grafana when it runs behind a reverse proxy. The plugin chooses
+the API version and creates its own client.
 
 ## Authentication methods
 
-Grafana's [HTTP API authentication guide](https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/authentication/)
-describes bearer service-account tokens for Cloud and self-hosted instances, and
-basic authentication for self-hosted instances only. This type requires
-authentication and does not offer `none`.
+Use bearer service-account tokens for Cloud and self-hosted instances, as
+described in Grafana's
+[HTTP API authentication guide](https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/authentication/).
+Basic authentication works only with self-hosted instances. Every connection
+needs credentials; `none` is not supported.
 
 | Method  | Field      | Type     | Required | Description                                                                    |
 | ------- | ---------- | -------- | -------- | ------------------------------------------------------------------------------ |
@@ -80,50 +87,55 @@ authentication and does not offer `none`.
 | `basic` | `password` | `string` | Yes      | Nonempty user password.                                                        |
 | `basic` | `orgId`    | `number` | No       | Positive integer organization ID for `X-Grafana-Org-Id`.                       |
 
-Consumers send `Authorization: Bearer <token>` for `token`, or HTTP Basic
-`Authorization` with base64-encoded `username:password` for `basic`. For basic
-authentication, send `X-Grafana-Org-Id: <orgId>` when configured on organization
-API requests, excluding server-admin endpoints. Without `orgId`, Grafana uses the
-user's active organization. The user must have access to the chosen organization.
+Send `Authorization: Bearer <token>` for `token`, or HTTP Basic `Authorization`
+with base64-encoded `username:password` for `basic`. With basic authentication,
+send `X-Grafana-Org-Id: <orgId>` on organization API requests when it is configured,
+so Grafana uses the intended organization. Leave that header out of requests to
+server-admin endpoints. Without `orgId`, Grafana uses the user's active
+organization. The user must have access to the organization you choose.
 
 Prefer a [service account](https://grafana.com/docs/grafana/latest/administration/service-accounts/)
-with the permissions needed by your consumer. Service accounts belong to one
-organization; a token cannot switch organizations. The `token` method has no
-`orgId` field. Older instance API keys use the same bearer header, but Grafana
-has replaced API keys with service accounts. Do not use a Cloud Access Policy
-token in this method.
+with the permissions your plugin needs. Each service account belongs to one
+organization, so its token cannot switch organizations. The `token` method has
+no `orgId` field. Older instance API keys use the same bearer header, but Grafana
+has replaced API keys with service accounts. A Cloud Access Policy token cannot
+authenticate these instance API requests.
 
-The service validates credential shapes, not token validity, expiration,
-permissions, or whether a server has basic authentication enabled. Consumers
-handle API errors. Basic authentication is not supported by Grafana Cloud even
-though the schema does not infer deployment type from a hostname.
+The service checks the required credential fields and their format. Your plugin still needs to handle API errors for expired or invalid tokens,
+missing permissions, or disabled basic authentication. Choose service-account
+tokens for Grafana Cloud: the service does not check which deployment you use
+from its hostname.
 
 ## Lookup and selection
 
-The consumer supplies `query: { url }`. The service matches the parsed URL's host
-exactly, including non-default ports. Paths and query parameters, including
-`orgId`, do not affect lookup or credential selection. The internal `baseUrl`
-host does not become an additional lookup identity.
+Pass the resource URL in `query: { url }`. The service matches its host exactly,
+including non-default ports. Paths and query parameters, including `orgId`, do
+not select a different connection or credential. A resource URL using the internal
+`baseUrl` host will not find the connection unless it also matches the configured
+host.
 
-Only one Grafana connection can use a given host. Two instances under different
-subpaths on the same host cannot be configured separately; use distinct hosts
-for those instances. Multiple organizations also cannot be selected by a URL
-query. Use [plugin scoping](../01-concepts.md#plugin-scoping) for credentials
-belonging to different plugins or organizations on the same instance.
+Configure a different host for each Grafana instance. The service rejects two
+connections with the same host, even if their subpaths differ, because lookup
+cannot tell them apart. A URL query cannot choose between organizations either.
+Use [plugin scoping](../01-concepts.md#plugin-scoping) to give different plugins
+the credentials for their organization on the same instance.
 
-After plugin scoping, the service selects the first visible authentication entry
-in configuration order. If the caller does not support that method, lookup fails
-even when a later entry uses a supported method. The order of `authMethods` in
-the lookup request does not express a preference. Scope or order credentials
-accordingly; a token-only consumer requests `authMethods: ['token']`.
+The service puts credentials matched to the calling plugin before shared
+credentials, keeping configuration order within each group. Credentials matched
+to other plugins are excluded. It picks the first entry in that order, then
+checks whether the plugin supports its method. If it does not, lookup fails;
+the service does not try a later credential. Put a supported credential first in
+the relevant group or restrict which plugins can use it. Changing the order of
+`authMethods` in the lookup request does not change the selection. A plugin that
+supports only tokens requests `authMethods: ['token']`.
 
 ## Consume a Grafana connection
 
-Backend plugins receive the typed `ConnectionsService` through a
-[declared connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection).
-This token-only example calls the dashboard search endpoint used by the
-community Grafana plugin. The plugin chooses the API route for its supported
-Grafana versions.
+Give your backend plugin access to `ConnectionsService` by
+[declaring a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection).
+This example uses a token to search dashboards. It calls the same endpoint as
+the community Grafana plugin; choose API routes that work with the Grafana
+versions your plugin supports.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -153,26 +165,26 @@ async function searchDashboards(
 }
 ```
 
-Use the returned `baseUrl` for authenticated requests. Do not send credentials to
-a URL taken directly from an entity annotation or follow redirects to another
-host. Keep credentials in the backend.
+Send authenticated requests to the returned `baseUrl` so the credentials go to
+the configured Grafana server. Do not send credentials to a URL taken directly
+from an entity annotation or follow redirects to another host: either could
+send them to another server. Keep credentials in the backend.
 
-## First consumer and adoption gaps
+## Existing plugin configuration
 
-The first concrete adoption target is
-[`@backstage-community/plugin-grafana`](https://github.com/backstage/community-plugins/tree/main/workspaces/grafana/plugins/grafana).
-Its [API client](https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/plugins/grafana/src/api.ts)
+The
+[`@backstage-community/plugin-grafana`](https://github.com/backstage/community-plugins/tree/main/workspaces/grafana/plugins/grafana)
+[API client](https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/plugins/grafana/src/api.ts)
 performs authenticated dashboard searches and alert queries through the Backstage
 proxy. Its [setup guide](https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/plugins/grafana/docs/setup.md)
 configures a proxy target and bearer header separately from the public Grafana
 domain used for links.
 
-Adoption requires a backend consumer that declares the Grafana connection,
-resolves the lookup URL for each configured instance, and performs those requests
-with the returned credentials. The plugin's instance identifiers, public link
-domains, alerting options, search limits, and dashboard embedding settings remain
-plugin concerns. Adding this connection type does not change that plugin or
-convert its proxy configuration. This repository has no legacy Grafana
-integration configuration to migrate.
+Keep the public link domain and plugin settings in the plugin's configuration.
+The connection service provides API credentials and an address for backend
+requests; it does not replace the plugin's instance identifiers, alerting options,
+search limits or dashboard embedding settings. Configuring a connection does not
+change the plugin or convert its proxy configuration. This repository has no
+legacy Grafana integration configuration to migrate.
 
 Return to the [built-in connection type index](../04-built-in-connection-types.md).
