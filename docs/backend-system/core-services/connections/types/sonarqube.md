@@ -18,20 +18,20 @@ secret environment variable such as `${SONARQUBE_TOKEN}`.
 connections:
   - type: sonarqube
     host: sonarqube.example.com:9000
-    baseUrl: http://sonarqube.example.com:9000/sonar
-    externalBaseUrl: https://quality.example.com/sonar
+    baseUrl: http://sonarqube.example.com:9000/sonar/
+    externalBaseUrl: https://quality.example.com/sonar/
     auth:
       - method: token
         token: dummy-server-user-token
   - type: sonarqube
     host: sonarcloud.io
-    baseUrl: https://sonarcloud.io
+    baseUrl: https://sonarcloud.io/
     auth:
       - method: token
         token: dummy-cloud-token
   - type: sonarqube
     host: sonarqube.us
-    baseUrl: https://sonarqube.us
+    baseUrl: https://sonarqube.us/
     auth:
       - method: token
         token: dummy-us-cloud-token
@@ -127,8 +127,9 @@ by project or check token permissions.
 ## Consume a SonarQube connection
 
 After [declaring the dependency and requesting the service](../03-consuming-connections.md),
-a backend plugin can read metrics as follows. The example preserves the Server
-context path when joining API and display URLs:
+a backend plugin can read metrics as follows. Connections accept base URLs with
+or without a trailing slash. This example needs the trailing slashes shown in
+the configuration so relative paths stay under the Server context path:
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -142,12 +143,8 @@ async function readMetrics(connections: ConnectionsService) {
     authMethods: ['token', 'none'],
   });
 
-  // Relative paths plus a trailing slash preserve /sonar with either
-  // baseUrl: .../sonar or baseUrl: .../sonar/.
-  const apiUrl = new URL(
-    'api/metrics/search',
-    `${connection.baseUrl.replace(/\/$/, '')}/`,
-  );
+  // The example base URL ends with / so new URL() preserves the context path.
+  const apiUrl = new URL('api/metrics/search', connection.baseUrl);
   const headers: Record<string, string> = {};
   if (connection.auth.method === 'token') {
     headers.Authorization =
@@ -163,7 +160,7 @@ async function readMetrics(connections: ConnectionsService) {
   // Display links use the browser URL and receive no credentials.
   const dashboardUrl = new URL(
     'dashboard',
-    `${(connection.externalBaseUrl ?? connection.baseUrl).replace(/\/$/, '')}/`,
+    connection.externalBaseUrl ?? connection.baseUrl,
   );
   dashboardUrl.searchParams.set('id', 'example');
   return { metrics: await response.json(), dashboardUrl: dashboardUrl.href };
