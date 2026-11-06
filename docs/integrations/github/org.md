@@ -110,6 +110,10 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 The catalog module for GitHub Org comes with events support enabled.
 This will make it subscribe to its relevant topics and expects these events to be published via the `EventsService`.
 
+Both scheduled ingestion and webhook event processing use the same GitHub
+GraphQL client with throttling and retries for secondary rate limits and
+transient server errors.
+
 Topics:
 
 - `github.installation`
