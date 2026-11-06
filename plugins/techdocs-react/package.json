@@ -65,7 +65,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/styles": "^4.11.0",
     "jss": "~10.10.0",
     "lodash": "^4.17.21",
