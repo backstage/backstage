@@ -168,7 +168,11 @@ ENV NODE_ENV=production
 COPY --chown=node:node package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
+# For private registries, pass the token as an .npmrc build secret, since the build
+# doesn't see your environment variables. For example:
+#   NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
+RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \
+    --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
     pnpm install --frozen-lockfile --prod
 ```
 
@@ -180,6 +184,26 @@ that its `patchedDependencies` setting names, and the pnpmfile, since
 `pnpm install --frozen-lockfile` fails without them. The rest of the
 `Dockerfile` is the same as for Yarn, and the `.dockerignore` leaves out the
 `.yarn` entries.
+
+To install from a private registry, pass the token as a build secret in the
+format of an `.npmrc` file:
+
+```bash
+NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
+```
+
+The install step mounts the secret as the `.npmrc` of the `node` user, and it is
+not stored in the image. The secret must contain the token itself, since the
+build doesn't see your environment variables, so a `${NPM_TOKEN}` placeholder
+in it becomes an empty token. Passing your `~/.npmrc` with `src=$HOME/.npmrc`
+only works if it has the token itself, and `pnpm login` and `pnpm config set`
+store tokens in the configuration directory of pnpm instead. The `registry` and
+`registries` settings in `pnpm-workspace.yaml` are part of the skeleton, but the
+skeleton has no `.npmrc` file, so settings that are only in the `.npmrc` of the
+project, such as registry and proxy settings, must be in the secret too, and a
+`cafile` must point to a file in the image. The `npm install -g pnpm` step still
+downloads pnpm from the public npm registry. A build without the secret works
+as before.
 
 ## Multi-stage Build
 
