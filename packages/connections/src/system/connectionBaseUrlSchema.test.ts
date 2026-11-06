@@ -28,6 +28,7 @@ describe('connectionBaseUrlSchema', () => {
       'https://example.com/a%2Fb/%23%3F/%E2%9C%93/%00%1F',
       'HTTPS://EXAMPLE.COM:443/Context/%2f',
       'https://example.com/context//api',
+      'https://example.com/context/@items',
     ]) {
       for (const input of [root, `${root}/`]) {
         const parsed = connectionBaseUrlSchema.parse(input);
@@ -113,25 +114,12 @@ describe('connectionBaseUrlSchema', () => {
     expect(jsonSchema).toMatchObject({
       type: 'object',
       properties: {
-        baseUrl: { type: 'string', format: 'uri', pattern: expect.any(String) },
+        baseUrl: { type: 'string', format: 'uri' },
         optionalBaseUrl: { type: 'string', format: 'uri' },
       },
       required: ['baseUrl'],
       additionalProperties: false,
     });
-    const properties = jsonSchema.properties as Record<
-      string,
-      { pattern: string }
-    >;
-    const pattern = new RegExp(properties.baseUrl.pattern);
-    expect(pattern.test('https://example.com/context')).toBe(true);
-    expect(pattern.test('https://example.com/context/')).toBe(true);
-    expect(pattern.test('https://example.com/context?')).toBe(false);
-    expect(pattern.test('HTTPS://EXAMPLE.COM:443/Context/%2f')).toBe(true);
-    expect(pattern.test('https://example.com/context\n')).toBe(false);
-    expect(pattern.test('https://example.com\u0000')).toBe(false);
-    expect(pattern.test('https://example.com/context\u0000')).toBe(false);
-    expect(pattern.test('https://example.com/context%00%1F')).toBe(true);
     const parsed = connectionType.configSchema.parse({
       baseUrl: 'https://example.com/context',
       optionalBaseUrl: 'https://example.com/a%2Fb',

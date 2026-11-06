@@ -22,12 +22,21 @@ import { z } from 'zod/v4';
  */
 export const connectionBaseUrlSchema = z
   .string()
-  .regex(
-    // Require an explicit authority, without URL parser repairs, credentials,
-    // controls, query or fragment delimiters (even when their values are empty).
-    // eslint-disable-next-line no-control-regex
-    /^[hH][tT][tT][pP][sS]?:\/\/[^/?#@\\\s\x00-\x1f]+(?:\/[^?#\\\s\x00-\x1f]*)?$(?![\s\S])/,
-    'Expected an HTTP(S) base URL without credentials, query or fragment',
+  .refine(
+    value => !/[\\\s?#]/.test(value),
+    'Base URLs must not contain backslashes, whitespace, queries or fragments',
   )
-  .check(z.url())
+  .refine(
+    value => Array.from(value).every(char => char.charCodeAt(0) >= 0x20),
+    'Base URLs must not contain control characters',
+  )
+  .refine(value => {
+    const separator = value.indexOf('://');
+    if (separator === -1) {
+      return false;
+    }
+    const authority = value.slice(separator + 3).split('/')[0];
+    return authority.length > 0 && !authority.includes('@');
+  }, 'Base URLs must have an explicit host without credentials')
+  .check(z.url({ protocol: /^https?$/ }))
   .transform(value => (value.endsWith('/') ? value : `${value}/`));
