@@ -31,6 +31,7 @@ autoscaling
 autoselect
 Avro
 backend's
+backfilled
 backoff
 backported
 backporting
@@ -98,6 +99,7 @@ cron
 cronjobs
 crontab
 css
+cutover
 cve
 CVEs
 daemonsets
@@ -114,6 +116,7 @@ declaratively
 deduplicate
 deduplicated
 deduplication
+deletedness
 deliverables
 denormalized
 dependabot
@@ -404,6 +407,7 @@ pygments
 pymdown
 pymdownx
 rankdir
+readback
 readme
 readmes
 readonly
@@ -545,6 +549,7 @@ togglable
 tokenizer
 tolerations
 Tolerations
+tombstoned
 toolchain
 toolsets
 tooltip
