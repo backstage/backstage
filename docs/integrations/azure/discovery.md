@@ -13,9 +13,11 @@ This guide explains how to install and configure the Azure DevOps Entity Provide
 
 ### Code Search Feature
 
-Azure discovery is driven by the Code Search feature in Azure DevOps, this may not be enabled by default. For Azure DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure DevOps Server you'll find this information in your Collection Settings.
+By default, Azure discovery is driven by the Code Search feature in Azure DevOps, which may not be enabled. For Azure DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure DevOps Server you'll find this information in your Collection Settings.
 
 If the Code Search extension is not listed then you can install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus).
+
+Code Search [doesn't index forked repositories](https://learn.microsoft.com/en-us/azure/devops/project/search/functional-code-search?view=azure-devops), so their catalog files are never discovered through it. To discover them, or to discover catalog files without Code Search, set `discoveryMethod` to `listing`. The provider then lists the repositories through the Azure DevOps REST API and looks for the catalog file in each of them, which takes one request per repository on every refresh.
 
 ### Azure Integration
 
@@ -54,6 +56,11 @@ catalog:
         organization: myorg
         project: myproject
         branch: development
+      listingProviderId: # lists repositories instead of using Code Search
+        organization: myorg
+        project: myproject
+        path: /catalog-info.yaml
+        discoveryMethod: listing # this will also discover files in forked repos
 ```
 
 The parameters available are:
@@ -62,8 +69,10 @@ The parameters available are:
 - **`organization:`** Your Organization slug (or Collection for on-premise users). Required.
 - **`project:`** _(required)_ Your project slug. Wildcards are supported as shown on the examples above. Using '\*' will search all projects. For a project name containing spaces, use both single and double quotes as in `project: '"My Project Name"'`.
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
-- **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
+- **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml. Wildcards are not supported with the `listing` discovery method.
 - **`branch:`** _(optional)_ The branch name to use.
+- **`discoveryMethod:`** _(optional)_ How catalog files are discovered. The default, `codeSearch`, uses Azure DevOps Code Search. `listing` lists the repositories of the project, or of the whole organization when `project` contains wildcards, and checks each of them for the file at `path`. Disabled and empty repositories are skipped.
+- **`skipForkedRepos:`** _(optional)_ Set to `true` to skip forked repositories. Defaults to `false`. Only applies to the `listing` discovery method.
 - **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
@@ -77,7 +86,7 @@ The parameters available are:
 :::note
 
 - The path parameter follows the same rules as the search on Azure DevOps web interface. For more details visit the [official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
-- To use branch parameters, it is necessary that the desired branch be added to the "Searchable branches" list within Azure DevOps Repositories. To do this, follow the instructions below:
+- To use branch parameters with the `codeSearch` discovery method, it is necessary that the desired branch be added to the "Searchable branches" list within Azure DevOps Repositories. To do this, follow the instructions below:
 
 1. Access your Azure DevOps and open the repository in which you want to add the branch.
 2. Click on "Settings" in the lower-left corner of the screen.

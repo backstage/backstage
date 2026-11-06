@@ -49,6 +49,12 @@ describe('readAzureDevOpsConfigs', () => {
       project: 'myproject',
       branch: 'mybranch',
     };
+    const provider6 = {
+      organization: 'mycompany',
+      project: '*',
+      discoveryMethod: 'listing',
+      skipForkedRepos: true,
+    };
 
     const config = {
       catalog: {
@@ -59,6 +65,7 @@ describe('readAzureDevOpsConfigs', () => {
             provider3,
             provider4,
             provider5,
+            provider6,
           },
         },
       },
@@ -66,12 +73,14 @@ describe('readAzureDevOpsConfigs', () => {
 
     const actual = readAzureDevOpsConfigs(new ConfigReader(config));
 
-    expect(actual).toHaveLength(5);
+    expect(actual).toHaveLength(6);
     expect(actual[0]).toEqual({
       ...provider1,
       path: '/catalog-info.yaml',
       repository: '*',
       id: 'provider1',
+      discoveryMethod: 'codeSearch',
+      skipForkedRepos: false,
     });
     expect(actual[1]).toEqual({
       ...provider2,
@@ -79,12 +88,16 @@ describe('readAzureDevOpsConfigs', () => {
       path: '/catalog-info.yaml',
       repository: '*',
       id: 'provider2',
+      discoveryMethod: 'codeSearch',
+      skipForkedRepos: false,
     });
     expect(actual[2]).toEqual({
       ...provider3,
       host: 'dev.azure.com',
       path: '/catalog-info.yaml',
       id: 'provider3',
+      discoveryMethod: 'codeSearch',
+      skipForkedRepos: false,
     });
     expect(actual[3]).toEqual({
       ...provider4,
@@ -92,6 +105,8 @@ describe('readAzureDevOpsConfigs', () => {
       path: '/catalog-info.yaml',
       repository: '*',
       id: 'provider4',
+      discoveryMethod: 'codeSearch',
+      skipForkedRepos: false,
       schedule: {
         ...provider4.schedule,
         frequency: { minutes: 30 },
@@ -103,7 +118,52 @@ describe('readAzureDevOpsConfigs', () => {
       path: '/catalog-info.yaml',
       repository: '*',
       id: 'provider5',
+      discoveryMethod: 'codeSearch',
+      skipForkedRepos: false,
     });
+    expect(actual[5]).toEqual({
+      ...provider6,
+      host: 'dev.azure.com',
+      path: '/catalog-info.yaml',
+      repository: '*',
+      id: 'provider6',
+    });
+  });
+
+  it('rejects an unknown discovery method and wildcard paths when listing', () => {
+    const readProvider = (provider: object) =>
+      readAzureDevOpsConfigs(
+        new ConfigReader({
+          catalog: { providers: { azureDevOps: { provider } } },
+        }),
+      );
+
+    expect(() =>
+      readProvider({
+        organization: 'mycompany',
+        project: 'myproject',
+        discoveryMethod: 'search',
+      }),
+    ).toThrow(
+      "Invalid discoveryMethod 'search' for Azure DevOps provider 'provider', must be one of codeSearch, listing",
+    );
+    expect(() =>
+      readProvider({
+        organization: 'mycompany',
+        project: 'myproject',
+        discoveryMethod: 'listing',
+        path: '/src/*/catalog-info.yaml',
+      }),
+    ).toThrow(
+      "Invalid path '/src/*/catalog-info.yaml' for Azure DevOps provider 'provider', wildcards are not supported by the 'listing' discovery method",
+    );
+    expect(
+      readProvider({
+        organization: 'mycompany',
+        project: 'myproject',
+        path: '/src/*/catalog-info.yaml',
+      })[0].path,
+    ).toBe('/src/*/catalog-info.yaml');
   });
 });
 

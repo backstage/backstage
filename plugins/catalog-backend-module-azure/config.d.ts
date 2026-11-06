@@ -49,10 +49,24 @@ export interface Config {
            */
           branch?: string;
           /**
-           * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
+           * (Optional) Where to find catalog-info.yaml files. Wildcards are supported,
+           * except with the `listing` discovery method.
            * If not set, defaults to /catalog-info.yaml.
            */
           path?: string;
+          /**
+           * (Optional) How catalog files are discovered. `codeSearch` uses Azure DevOps Code Search.
+           * `listing` lists the repositories and checks each one for the catalog file, which also
+           * finds files in forked repositories and does not need the Code Search extension.
+           * If not set, defaults to `codeSearch`.
+           */
+          discoveryMethod?: 'codeSearch' | 'listing';
+          /**
+           * (Optional) Whether to skip forked repositories. Only applies to the `listing` discovery
+           * method, as Code Search never returns forked repositories.
+           * If not set, defaults to false.
+           */
+          skipForkedRepos?: boolean;
           /**
            * (Optional) TaskScheduleDefinition for the refresh.
            */
