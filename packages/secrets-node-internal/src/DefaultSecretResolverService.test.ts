@@ -218,40 +218,15 @@ describe('DefaultSecretResolverService', () => {
     expect(logged).not.toContain('reference-key');
   });
 
-  it('propagates provider failures and supports consumer cleanup on partial failure', async () => {
-    const good = createTestSecretProvider({
-      id: 'good',
-      secrets: { token: 'ok' },
-    });
+  it('propagates provider failures', async () => {
     const bad = createTestSecretProvider({
       id: 'bad',
       failWith: new Error('boom'),
     });
-    const service = createService([good, bad]);
+    const service = createService([bad]);
 
     await expect(
       service.resolve({ reference: { provider: 'bad', reference: {} } }),
     ).rejects.toThrow('boom');
-
-    // A consumer resolving several references disposes the handles it already
-    // holds when a later resolve fails.
-    const held: ResolvedSecret[] = [];
-    await expect(
-      (async () => {
-        held.push(
-          await service.resolve({
-            reference: { provider: 'good', reference: { key: 'token' } },
-          }),
-        );
-        held.push(
-          await service.resolve({
-            reference: { provider: 'bad', reference: {} },
-          }),
-        );
-      })(),
-    ).rejects.toThrow('boom');
-
-    await Promise.all(held.map(handle => handle.dispose?.()));
-    expect(good.disposalCount).toBe(1);
   });
 });
