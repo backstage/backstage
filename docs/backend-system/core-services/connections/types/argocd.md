@@ -5,13 +5,15 @@ description: Configure and consume Argo CD connections
 ---
 
 Use the `argocd` connection type to configure an Argo CD deployment and its API
-token. You can configure multiple deployments with different hosts or ports.
-The framework calls this [multiton cardinality](../01-concepts.md#cardinality)
-with the `host` [lookup strategy](../01-concepts.md#lookup-strategies).
+token. Multiple deployments need different hosts or ports.
 
-## Configure Argo CD
+## Configuring
 
-This example uses dummy tokens. Replace them with environment substitutions
+### Configure access to a deployment
+
+Supply the deployment address and an API token with permission to read the
+applications your plugin needs. This example configures production and staging
+with separate tokens. Replace the dummy values with environment substitutions
 such as `${ARGOCD_PRODUCTION_TOKEN}` in a real deployment.
 
 ```yaml title="app-config.yaml"
@@ -32,116 +34,98 @@ connections:
         token: dummy-staging-api-token
 ```
 
-## Connection fields
+### Deployment addresses
 
 | Field     | Type     | Required | Description                                                                      |
 | --------- | -------- | -------- | -------------------------------------------------------------------------------- |
 | `host`    | `string` | Yes      | Deployment host, including a non-default port, matching the URL's parsed `host`. |
 | `baseUrl` | `string` | Yes      | Absolute HTTP(S) deployment root, including any API server path prefix.          |
 
-Set `baseUrl` to the deployment root before `/api/v1`. For example,
-`https://argocd.example.com/argo-cd` produces the applications endpoint
-`https://argocd.example.com/argo-cd/api/v1/applications`. A trailing slash is
-allowed and preserved. Keep the deployment prefix when joining paths so requests
-reach the API under that prefix, and append `/api/v1` only once.
+Set `baseUrl` to the deployment root before `/api/v1`. Include any path prefix
+so requests reach the API under that path. For example,
+`https://argocd.example.com/argo-cd/` produces the applications endpoint
+`https://argocd.example.com/argo-cd/api/v1/applications`. Both fields are required;
+the connection service does not supply a default address.
 
 Use the API server root reachable by the backend. The
 [Argo CD ingress documentation](https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#argo-cd-server-and-ui-root-path-v153)
 explains how to configure root paths. The UI's `--basehref` setting only changes
 the UI path, so it does not tell you where the API is served.
 
-The parsed host of `baseUrl` must equal `host`. Credentials, query parameters,
-and fragments in `baseUrl` are rejected, including bare `?` and `#` delimiters.
+The parsed host and port of `baseUrl` must match `host`. A public host with a
+different internal API host is rejected. Credentials, query parameters and
+fragments are also rejected, including bare `?` and `#` delimiters.
 Percent-encoded path characters such as `%3F` and `%23` are allowed.
 
-## Authentication methods
+Give each deployment a distinct host or port so lookup can select it. Duplicate
+`argocd` hosts are rejected even when their `baseUrl` paths differ. Two
+deployments under different paths on the same host and port cannot be configured
+as separate connections.
+
+### API tokens
 
 | Method  | Field   | Type     | Required | Description                                       |
 | ------- | ------- | -------- | -------- | ------------------------------------------------- |
 | `token` | `token` | `string` | Yes      | Raw API token, without a header or cookie prefix. |
 
-[Argo CD's API documentation](https://argo-cd.readthedocs.io/en/stable/developer-guide/api-docs/#authorization)
-specifies `Authorization: Bearer <token>`. Supply an API token issued to a local
-account with API access or an Argo CD project role with the required permissions.
-The schema rejects empty tokens, whitespace, and the `argocd.token=` cookie
-prefix. It does not validate JWT signatures, expiry, or server permissions.
+Supply a token issued to a local account with API access or an Argo CD project
+role with the required permissions. Only `token` authentication is supported;
+the service cannot log in with a username and password, complete SSO login, or
+access Argo CD anonymously. Empty tokens, whitespace and the `argocd.token=`
+cookie prefix are rejected.
 
-This type supports only `token` authentication. Supply an API token before using
-the connection: the service cannot log in with a username and password, complete
-SSO login, or access Argo CD anonymously. It returns the configured token
-unchanged without contacting Argo CD, so a successful lookup does not confirm
-that the token works. Consumers add the Bearer prefix and must handle expired
-or revoked tokens; the service does not refresh them.
+Use [plugin scoping](../01-concepts.md#plugin-scoping) when a plugin needs its own
+token. Follow the shared guidance for
+[keeping credentials on the backend](../03-consuming-connections.md#keep-connection-data-on-the-backend).
 
-## Lookup and selection
+## Consuming
 
-Consumers pass `query: { url }`. Lookup matches the parsed host and port,
-ignoring the scheme and path. Even a query with an unrelated path on the
-configured host resolves the same connection. Build API requests from the
-returned `baseUrl` so they use the configured scheme and deployment prefix.
+### List applications
 
-Give each deployment a distinct host or port so lookup can select it. The
-configuration rejects duplicate `argocd` hosts, even when their `baseUrl` paths
-differ. You cannot configure two independently selectable deployments under
-different paths on the same host and port.
+First [declare the `argocd` connection type and obtain the connections service](../03-consuming-connections.md#declare-and-resolve-the-connection).
+Use [host-based lookup](../03-consuming-connections.md#look-up-a-host-based-connection)
+to select a deployment. The URL's path and scheme do not affect selection, so
+build requests from the returned `baseUrl` to use the configured deployment
+prefix and scheme.
 
-The service selects the first authentication entry available to the calling
-plugin. Use [plugin-scoped entries](../01-concepts.md#plugin-scoping) when a plugin
-needs its own token: these take precedence over unrestricted entries. Otherwise,
-configuration order decides.
+[Argo CD's API](https://argo-cd.readthedocs.io/en/stable/developer-guide/api-docs/#authorization)
+expects the raw token in a Bearer header. Lookup returns the token unchanged;
+it does not verify its signature, expiry or permissions. Handle expired or
+revoked tokens in the plugin because the service does not refresh them. See the
+shared [credential limitations](../01-concepts.md#limitations) and
+[lookup error handling](../03-consuming-connections.md#handle-lookup-errors).
 
-## Consume an Argo CD connection
-
-A backend plugin or module must first [declare the `argocd` connection type](../03-consuming-connections.md#declare-and-resolve-the-connection)
-and obtain its connections service. This example needs a trailing slash on the
-configured deployment root so relative URL paths keep the deployment prefix.
-Connections accept URLs with or without a trailing slash; the slash is a
-prerequisite for this example, not a validation requirement.
+For this example, configure the deployment root with a trailing slash so the
+relative request path keeps the deployment prefix. Connections accept URLs with
+or without a trailing slash; this example assumes the slash is present.
 
 ```ts
-import type { Connection, ConnectionsService } from '@backstage/connections';
+import type { ConnectionsService } from '@backstage/connections';
+import { ResponseError } from '@backstage/errors';
 
 export async function listArgoCdApplications(
   connections: ConnectionsService,
   deploymentUrl: string,
-): Promise<Response> {
-  const connection: Connection<'argocd', 'token'> = await connections.find({
+) {
+  const connection = await connections.find({
     type: 'argocd',
     query: { url: deploymentUrl },
     authMethods: ['token'],
   });
   // The example base URL ends with / so new URL() preserves the context path.
   const url = new URL('api/v1/applications', connection.baseUrl);
-  return fetch(url, {
+  const response = await fetch(url, {
     headers: { Authorization: `Bearer ${connection.auth.token}` },
   });
+  if (!response.ok) {
+    throw await ResponseError.fromResponse(response);
+  }
+  return response.json();
 }
 ```
 
-With the configured base URL `https://argocd.example.com/argo-cd/`, the resulting
-URL is `https://argocd.example.com/argo-cd/api/v1/applications`. Handle API failures
-and permissions in the consuming plugin.
-
-## Existing plugin configuration
-
-[`@backstage-community/plugin-argocd-backend`](https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/plugins/argocd-backend/README.md)
-uses per-instance tokens and deployment URLs through its shared
-[`ArgoCDService`](https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/plugins/argocd-node/src/ArgoCDService.ts).
-Its
-[request utilities](https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/plugins/argocd-node/src/serviceUtils.ts)
-append `/api/v1` and send raw tokens as Bearer authentication. The
-[Roadie backend plugin](https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/plugins/backend/backstage-plugin-argo-cd-backend/README.md)
-also configures named instances with per-instance tokens.
-
-These plugins do not read this connection type yet, so configuring it does not
-change how they connect to Argo CD. Keep their existing settings for application
-discovery and entity-to-instance mapping, including instance names, application
-selectors, and project settings. If a plugin logs in with a username and password
-or an identity provider, it still needs to manage that login and any token
-refresh itself. This connection type supplies an API token only.
-
-There is no legacy Argo CD integration configuration in this repository to
-convert. Keep external plugins' `argocd` settings until those plugins support
-connections.
+With the configured base URL `https://argocd.example.com/argo-cd/`, the request
+reaches `https://argocd.example.com/argo-cd/api/v1/applications`. The helper
+returns the JSON response for a successful request and throws for an API error.
 
 Return to the [built-in connection type index](../04-built-in-connection-types.md).
