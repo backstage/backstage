@@ -34,7 +34,11 @@ type ConnectionAuthMethodSchema<
   configSchema: TConfigSchema;
 };
 
-type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
+type ConnectionConfigSchema =
+  | z.ZodObject
+  | z.ZodPipe<z.ZodObject, z.ZodType<Record<string, unknown>>>;
+
+type ConfigFromSchema<TConfigSchema extends z.ZodType> =
   z.infer<TConfigSchema> extends Record<string, never>
     ? Record<never, never>
     : z.infer<TConfigSchema>;
@@ -81,7 +85,7 @@ function createPortableSchema<TSchema extends z.ZodType>(
 
 export function createConnectionType<
   TType extends string,
-  TConfigSchema extends z.ZodObject,
+  TConfigSchema extends ConnectionConfigSchema,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
   TLookupStrategy extends ConnectionLookupStrategy = 'host',
   TCardinality extends 'singleton' | 'multiton' = 'multiton',
@@ -141,8 +145,13 @@ export function createConnectionType<
       `Connection type "${type}" must declare at least one auth method`,
     );
   }
+  const schema = configSchema as unknown as TConfigSchema;
+  const strictSchema =
+    schema instanceof z.ZodPipe
+      ? schema.clone({ ...schema.def, in: schema.in.strict() })
+      : schema.strict();
   const portableConfigSchema = createPortableSchema(
-    (configSchema as unknown as TConfigSchema).strict(),
+    strictSchema,
     `Invalid configuration for connection type "${type}"`,
   );
 

@@ -100,6 +100,69 @@ describe('createConnectionType', () => {
     });
   });
 
+  it('supports object transforms while keeping strict input and reserved-field checks', () => {
+    const schema = z
+      .object({ baseUrl: z.string() })
+      .transform(config => ({ ...config, host: new URL(config.baseUrl).host }));
+    const connectionType = createConnectionType({
+      type: 'transformed',
+      title: 'Transformed',
+      configSchema: schema,
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    const parsed = connectionType.configSchema.parse({
+      baseUrl: 'https://example.com/context/',
+    });
+    const host: string = parsed.host;
+    expect(host).toBe('example.com');
+    expect(connectionType.configSchema.schema().schema).toMatchObject({
+      properties: { baseUrl: { type: 'string' } },
+      required: ['baseUrl'],
+      additionalProperties: false,
+    });
+    expect(() =>
+      connectionType.configSchema.parse({
+        baseUrl: 'https://example.com/',
+        host: 'other.example.com',
+      }),
+    ).toThrow(InputError);
+
+    createConnectionType({
+      type: 'invalid-output',
+      title: 'Invalid output',
+      // @ts-expect-error - connection configuration must remain an object
+      configSchema: z.object({ host: z.string() }).transform(() => 1),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+
+    createConnectionType({
+      type: 'reserved-input',
+      title: 'Reserved input',
+      // @ts-expect-error - reserved input fields cannot be hidden by a transform
+      configSchema: z
+        .object({ type: z.string() })
+        .transform(() => ({ host: 'example.com' })),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    createConnectionType({
+      type: 'reserved-output',
+      title: 'Reserved output',
+      // @ts-expect-error - transforms must not produce framework-owned fields
+      configSchema: z
+        .object({ host: z.string() })
+        .transform(config => ({ ...config, type: 'other' })),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+  });
+
   it('wraps schema validation failures in an InputError', () => {
     const connectionType = createConnectionType({
       type: 'wrapped-error',
