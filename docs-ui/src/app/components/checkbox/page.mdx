@@ -6,8 +6,9 @@ import {
   checkboxUsageSnippet,
   defaultSnippet,
   allVariantsSnippet,
+  indeterminateSnippet,
 } from './snippets';
-import { Default, AllVariants } from './components';
+import { Default, AllVariants, Indeterminate } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CheckboxDefinition } from '../../../utils/definitions';
@@ -45,6 +46,18 @@ export const reactAriaUrls = {
   open
   preview={<AllVariants />}
   code={allVariantsSnippet}
+/>
+
+### Indeterminate
+
+Use `isIndeterminate` to show a mixed state when only some items in a group are selected, such as a "select all" checkbox. The indeterminate state is visual only and is independent of `isSelected`, so you control both from the state of the group.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Indeterminate />}
+  code={indeterminateSnippet}
 />
 
 <Theming definition={CheckboxDefinition} />
