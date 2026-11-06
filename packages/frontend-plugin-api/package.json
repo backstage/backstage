@@ -17,6 +17,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
+    "./next": "./src/next.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -25,6 +26,9 @@
     "*": {
       "alpha": [
         "src/alpha.ts"
+      ],
+      "next": [
+        "src/next.ts"
       ],
       "package.json": [
         "package.json"

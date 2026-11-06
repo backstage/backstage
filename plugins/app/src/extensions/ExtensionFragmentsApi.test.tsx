@@ -25,7 +25,8 @@ import {
 import {
   ExtensionFragment,
   FragmentBlueprint,
-} from '@backstage/frontend-plugin-api/alpha';
+} from '@backstage/frontend-plugin-api/next';
+import { appModuleExtensionFragments } from '@backstage/plugin-app/next';
 
 it('collects fragments across plugins and renders them in the host page', async () => {
   const HostContext = createContext('default');
@@ -40,6 +41,7 @@ it('collects fragments across plugins and renders them in the host page', async 
   const disabledLoader = jest.fn(async () => <div>Disabled fragment</div>);
   renderTestApp({
     features: [
+      appModuleExtensionFragments,
       createFrontendPlugin({
         pluginId: 'deployments',
         extensions: [
