@@ -27,6 +27,7 @@ import type {
 } from '@backstage/plugin-techdocs-node';
 import {
   createDockerContainerRunner,
+  createKubernetesJobRunner,
   createOrUpdateMetadata,
   patchIndexPreBuild,
   runCommand,
@@ -38,7 +39,7 @@ import {
 import type { ContainerRunnerPullOptions } from '@backstage/plugin-techdocs-node';
 
 type ZensicalGeneratorConfig = {
-  runIn: 'docker' | 'local';
+  runIn: 'docker' | 'local' | 'kubernetes';
   dockerImage?: string;
   pullImage?: boolean;
   pullOptions?: ContainerRunnerPullOptions;
@@ -81,7 +82,14 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
   }) {
     this.logger = options.logger;
     this.options = readZensicalGeneratorConfig(options.config);
-    this.containerRunner = options.containerRunner;
+    this.containerRunner =
+      options.containerRunner ??
+      (this.options.runIn === 'kubernetes'
+        ? createKubernetesJobRunner({
+            config: options.config,
+            logger: this.logger,
+          })
+        : undefined);
   }
 
   public async run(options: GeneratorRunOptions): Promise<void> {
@@ -158,6 +166,7 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using local zensical`,
           );
           break;
+        case 'kubernetes':
         case 'docker': {
           const containerRunner =
             this.containerRunner || createDockerContainerRunner();

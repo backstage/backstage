@@ -27,9 +27,12 @@ import type { GeneratorRunOptions } from '@backstage/plugin-techdocs-node';
 import { TechdocsZensicalGenerator } from './TechdocsZensicalGenerator';
 
 const mockRunCommand = jest.fn();
+const mockCreateKubernetesJobRunner = jest.fn();
 jest.mock('@backstage/plugin-techdocs-node/alpha', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-node/alpha'),
   runCommand: (...args: unknown[]) => mockRunCommand(...args),
+  createKubernetesJobRunner: (...args: unknown[]) =>
+    mockCreateKubernetesJobRunner(...args),
 }));
 
 describe('TechdocsZensicalGenerator', () => {
@@ -146,6 +149,49 @@ describe('TechdocsZensicalGenerator', () => {
     await expect(
       fs.readFile(mockDir.resolve('input', 'mkdocs.yml'), 'utf8'),
     ).resolves.toBe('site_name: Test\n');
+  });
+
+  it('runs the build through a Kubernetes Job runner in kubernetes mode', async () => {
+    mockDir.setContent({
+      input: {
+        'mkdocs.yml': 'site_name: Test\n',
+        docs: { 'index.md': '# Hello\n' },
+      },
+    });
+    mockCreateKubernetesJobRunner.mockReturnValue(containerRunner);
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'kubernetes',
+          kubernetes: {
+            volumeClaimName: 'techdocs-work',
+            workRoot: mockDir.path,
+          },
+        },
+      },
+    });
+
+    const generator = TechdocsZensicalGenerator.fromConfig(config, { logger });
+    expect(mockCreateKubernetesJobRunner).toHaveBeenCalledWith({
+      config,
+      logger,
+    });
+
+    await generator.run({
+      inputDir: mockDir.resolve('input'),
+      outputDir: mockDir.resolve('output'),
+      logger: logger as any,
+    });
+    expect(containerRunner.runContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageName: TechdocsZensicalGenerator.defaultDockerImage,
+        command: ['zensical'],
+        mountDirs: { [mockDir.resolve('input')]: '/input' },
+      }),
+    );
+    await expect(
+      fs.pathExists(mockDir.resolve('output', 'index.html')),
+    ).resolves.toBe(true);
   });
 });
 
