@@ -1,0 +1,11 @@
+---
+title: Codeowners
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Catalog
+description: Catalog module that sets entity ownership from the CODEOWNERS file of the repository the entity is defined in.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/catalog/plugins/catalog-backend-module-codeowners/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-codeowners'
+addedDate: '2026-11-06'
+status: active

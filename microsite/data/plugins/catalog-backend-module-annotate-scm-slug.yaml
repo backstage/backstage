@@ -1,0 +1,11 @@
+---
+title: Annotate SCM Slug
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Catalog
+description: Catalog module that adds the SCM slug annotation, such as github.com/project-slug, to entities based on their source location.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/catalog/plugins/catalog-backend-module-annotate-scm-slug/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-annotate-scm-slug'
+addedDate: '2026-11-06'
+status: active

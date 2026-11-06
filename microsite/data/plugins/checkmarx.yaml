@@ -1,0 +1,11 @@
+---
+title: Checkmarx
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Security
+description: Shows Checkmarx scan results on Backstage catalog entities, with an overview card, a dedicated content tab, and system-level rollups.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/checkmarx/plugins/checkmarx/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-checkmarx'
+addedDate: '2026-11-06'
+status: active
