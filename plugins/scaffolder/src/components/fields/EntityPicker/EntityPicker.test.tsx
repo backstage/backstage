@@ -60,6 +60,9 @@ describe('<EntityPicker />', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    catalogApi.streamEntities.mockImplementation(async function* () {
+      yield entities;
+    });
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -471,7 +474,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
       } as unknown as FieldProps<any>;
 
-      const { getByRole } = await renderInTestApp(
+      const { getByRole, findByRole } = await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
@@ -479,12 +482,15 @@ describe('<EntityPicker />', () => {
 
       const input = getByRole('textbox');
 
-      // Type and blur
+      // Reproduce the interaction from the issue: select an option through
+      // the combobox first, then leave the field. The blur must not
+      // overwrite the already selected canonical value.
       fireEvent.change(input, { target: { value: 'squad' } });
+      fireEvent.click(await findByRole('option', { name: /squad/i }));
       fireEvent.blur(input);
 
-      // With autoSelect=true and freeSolo, processes the typed value
-      expect(onChange).toHaveBeenCalledWith('group:default/squad');
+      // With autoSelect=true and freeSolo, the selected canonical value wins
+      expect(onChange).toHaveBeenCalledWith('group:default/squad-b');
     });
   });
 
