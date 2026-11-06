@@ -902,7 +902,6 @@ Remove both legacy catalog routes (`/catalog` and
 Install the native catalog plugin before the converted features:
 
 ```tsx title="packages/app/src/App.tsx"
-import React from 'react';
 import { Route } from 'react-router-dom';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
@@ -1065,7 +1064,6 @@ Gate both legacy catalog routes together. Keep other legacy routes in the same
 `FlatRoutes`, and retain your existing converted options and route bindings:
 
 ```tsx title="packages/app/src/App.tsx"
-import React from 'react';
 import { Route } from 'react-router-dom';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
