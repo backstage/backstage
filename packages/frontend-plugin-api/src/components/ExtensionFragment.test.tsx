@@ -19,7 +19,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
-import { mockApis } from '@backstage/frontend-test-utils/alpha';
+import { mockApis } from '@backstage/frontend-test-utils/next';
 import { withLogCollector } from '@backstage/test-utils';
 import { extensionFragmentsApiRef } from '../apis/definitions/ExtensionFragmentsApi';
 import { ExtensionFragment } from './ExtensionFragment';

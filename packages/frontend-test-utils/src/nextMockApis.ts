@@ -17,7 +17,7 @@
 import {
   extensionFragmentsApiRef,
   type ExtensionFragmentsApi,
-} from '@backstage/frontend-plugin-api/alpha';
+} from '@backstage/frontend-plugin-api/next';
 import { JSX } from 'react';
 import {
   attachMockApiFactory,
@@ -26,7 +26,7 @@ import {
 import { createApiMock } from './apis/createApiMock';
 
 /**
- * Test helpers for alpha Utility APIs.
+ * Test helpers for next-release Utility APIs.
  *
  * @alpha
  */
@@ -55,7 +55,7 @@ export namespace mockApis {
   }
 
   /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api/alpha#ExtensionFragmentsApi}.
+   * Mock helpers for {@link @backstage/frontend-plugin-api/next#ExtensionFragmentsApi}.
    *
    * @alpha
    */

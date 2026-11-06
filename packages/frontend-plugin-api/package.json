@@ -16,6 +16,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./next": "./src/next.ts",
     "./routing": "./src/routingIntegration.ts",
     "./package.json": "./package.json"
   },
@@ -23,6 +24,9 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "next": [
+        "src/next.ts"
+      ],
       "routing": [
         "src/routingIntegration.ts"
       ],

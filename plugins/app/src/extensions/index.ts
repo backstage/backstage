@@ -39,4 +39,3 @@ export {
 } from './components';
 export { PluginWrapperApi } from './PluginWrapperApi';
 export { PluginHeaderActionsApi } from './PluginHeaderActionsApi';
-export { ExtensionFragmentsApi } from './ExtensionFragmentsApi';

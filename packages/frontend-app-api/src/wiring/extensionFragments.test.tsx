@@ -25,7 +25,8 @@ import {
   ExtensionFragment,
   FragmentBlueprint,
   extensionFragmentsApiRef,
-} from '@backstage/frontend-plugin-api/alpha';
+} from '@backstage/frontend-plugin-api/next';
+import { appModuleExtensionFragments } from '@backstage/plugin-app/next';
 import appPlugin from '@backstage/plugin-app';
 import { render, screen } from '@testing-library/react';
 import { prepareSpecializedApp } from './prepareSpecializedApp';
@@ -48,6 +49,7 @@ it.each([undefined, false, true])(
     });
     const prepared = prepareSpecializedApp({
       features: [
+        appModuleExtensionFragments,
         appPlugin.withOverrides({
           extensions: [
             appPlugin

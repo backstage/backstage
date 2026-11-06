@@ -7,7 +7,7 @@ description: Embedding React content from another plugin
 
 # Extension fragments
 
-Extension fragments are an **alpha** feature. Import the APIs from `@backstage/frontend-plugin-api/alpha` and the fragment test helpers from `@backstage/frontend-test-utils/alpha`. These APIs may change before becoming stable.
+Extension fragments are an **experimental** feature available through `/next` entry points. Import the APIs from `@backstage/frontend-plugin-api/next` and the fragment test helpers from `@backstage/frontend-test-utils/next`. These APIs may change before becoming stable.
 
 Extension fragments let a plugin render a piece of React content provided by another installed plugin. They are useful for lightweight integration within an internal app, where the plugins can agree on a fragment ID without defining a custom blueprint and extension input.
 
@@ -15,13 +15,28 @@ Fragments are also useful when publishing a plugin that provides a freeform comp
 
 Initializing a fragment extension and looking it up in the registry do not load or render its content. The loader runs only when the fragment is rendered. Use a dedicated blueprint and input when you need a richer contract, typed data exchange, or a collection of contributions.
 
+## Enabling fragments
+
+Install the fragment registry by adding the app module to your app's features:
+
+```tsx
+import { createApp } from '@backstage/frontend-defaults';
+import { appModuleExtensionFragments } from '@backstage/plugin-app/next';
+
+const app = createApp({
+  features: [appModuleExtensionFragments],
+});
+```
+
+The module is opt-in. Apps that do not use fragments do not need to install it.
+
 ## Providing a fragment
 
-Create a fragment with `FragmentBlueprint` from `@backstage/frontend-plugin-api/alpha` and register it in your plugin:
+Create a fragment with `FragmentBlueprint` from `@backstage/frontend-plugin-api/next` and register it in your plugin:
 
 ```tsx
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { FragmentBlueprint } from '@backstage/frontend-plugin-api/alpha';
+import { FragmentBlueprint } from '@backstage/frontend-plugin-api/next';
 
 const summary = FragmentBlueprint.make({
   name: 'summary',
@@ -46,7 +61,7 @@ The extension ID is `fragment:deployments/summary`. Omitting `name` creates the 
 Render `ExtensionFragment` at the desired location in the consuming page:
 
 ```tsx
-import { ExtensionFragment } from '@backstage/frontend-plugin-api/alpha';
+import { ExtensionFragment } from '@backstage/frontend-plugin-api/next';
 
 <ExtensionFragment
   fragmentId="deployments/summary"
@@ -70,7 +85,7 @@ app:
     - fragment:deployments/summary: false
 ```
 
-The app plugin collects enabled fragments through its `api:app/extension-fragments` extension, exposed as `extensionFragmentsApiRef` from `@backstage/frontend-plugin-api/alpha`.
+The app module collects enabled fragments through its `api:app/extension-fragments` extension, exposed as `extensionFragmentsApiRef` from `@backstage/frontend-plugin-api/next`.
 
 The registry follows the normal Utility API lifecycle. Without extension predicates in its subtree, it can initialize during bootstrap. If the subtree contains a predicate, the entire registry is deferred until app finalization, when the session's predicate context is available. Sign-in pages and other bootstrap UI must not depend on the registry in that case.
 
@@ -94,7 +109,7 @@ Inject the fragment registry without importing the contributing plugin:
 
 ```tsx
 import { renderInTestApp } from '@backstage/frontend-test-utils';
-import { mockApis } from '@backstage/frontend-test-utils/alpha';
+import { mockApis } from '@backstage/frontend-test-utils/next';
 
 renderInTestApp(<DeploymentPage />, {
   apis: [
@@ -109,4 +124,4 @@ The fake accepts React elements keyed by fragment ID, without the `fragment:` pr
 
 For assertions on lookup calls, use `mockApis.extensionFragments.mock()` with an optional `getFragment` implementation. The underlying Utility API accepts full extension IDs; `ExtensionFragment` adds the `fragment:` prefix before looking up the element.
 
-For integration tests, use `renderTestApp` with the actual producer and consumer plugins in `features`. The test app includes the default fragment registry.
+For integration tests, use `renderTestApp` with the actual producer and consumer plugins in `features`. Include `appModuleExtensionFragments` in `features` to install the fragment registry.

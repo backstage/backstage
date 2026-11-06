@@ -4,7 +4,7 @@
 
 ```ts
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ExtensionFragmentsApi } from '@backstage/frontend-plugin-api/alpha';
+import { ExtensionFragmentsApi } from '@backstage/frontend-plugin-api/next';
 import { JSX as JSX_2 } from 'react';
 
 // @public
