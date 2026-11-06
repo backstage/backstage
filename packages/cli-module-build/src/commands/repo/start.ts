@@ -37,7 +37,7 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { plugin, config, require: requirePath, link, inspect, inspectBrk },
+    flags: { plugin, config, require: requirePaths, link, inspect, inspectBrk },
     _: namesOrPaths,
   } = cli(
     {
@@ -57,9 +57,10 @@ export default async ({ args, info }: CliCommandContext) => {
           default: [],
         },
         require: {
-          type: String,
+          type: [String],
           description:
-            'Add a --require argument to the node process. Applies to backend package only',
+            'Add --require arguments to the node process. Applies to backend package only',
+          default: [],
         },
         link: {
           type: String,
@@ -88,7 +89,7 @@ export default async ({ args, info }: CliCommandContext) => {
     config,
     inspect: inspect || (inspect === '' ? true : undefined),
     inspectBrk: inspectBrk || (inspectBrk === '' ? true : undefined),
-    require: requirePath,
+    require: requirePaths,
     link,
   });
 
@@ -215,7 +216,7 @@ type CommandOptions = {
   config: string[];
   inspect?: boolean | string;
   inspectBrk?: boolean | string;
-  require?: string;
+  require: string[];
   link?: string;
 };
 
@@ -246,11 +247,12 @@ async function resolvePackageOptions(
         },
         require: {
           type: 'string',
+          multiple: true,
         },
       },
     });
     const parsedRequire =
-      typeof parsedOpts.require === 'string' ? parsedOpts.require : undefined;
+      parsedOpts.require?.filter(r => typeof r === 'string') ?? [];
     const parsedConfig =
       parsedOpts.config?.filter(c => typeof c === 'string') ?? [];
 
@@ -266,7 +268,7 @@ async function resolvePackageOptions(
           linkedWorkspace,
           inspectEnabled: options.inspect,
           inspectBrkEnabled: options.inspectBrk,
-          require: options.require ?? parsedRequire,
+          require: options.require.length > 0 ? options.require : parsedRequire,
         },
       },
     ];

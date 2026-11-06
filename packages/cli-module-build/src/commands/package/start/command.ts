@@ -27,7 +27,7 @@ export default async ({ args, info }: CliCommandContext) => {
       config,
       role,
       check,
-      require: requirePath,
+      require: requirePaths,
       link,
       entrypoint,
       inspect,
@@ -52,8 +52,9 @@ export default async ({ args, info }: CliCommandContext) => {
           description: 'Enable type checking and linting if available',
         },
         require: {
-          type: String,
-          description: 'Add a --require argument to the node process',
+          type: [String],
+          description: 'Add --require arguments to the node process',
+          default: [],
         },
         link: {
           type: String,
@@ -89,6 +90,6 @@ export default async ({ args, info }: CliCommandContext) => {
     linkedWorkspace: await resolveLinkedWorkspace(link),
     inspectEnabled: inspect || (inspect === '' ? true : undefined),
     inspectBrkEnabled: inspectBrk || (inspectBrk === '' ? true : undefined),
-    require: requirePath,
+    require: requirePaths,
   });
 };

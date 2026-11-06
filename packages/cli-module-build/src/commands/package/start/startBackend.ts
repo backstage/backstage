@@ -27,7 +27,7 @@ interface StartBackendOptions {
   inspectEnabled?: boolean | string;
   inspectBrkEnabled?: boolean | string;
   linkedWorkspace?: string;
-  require?: string;
+  require?: string[];
 }
 
 export async function startBackend(options: StartBackendOptions) {

@@ -156,4 +156,17 @@ describe('runBackend', () => {
       expect(spawnEnv.APP_CONFIG_backend_database).toBeUndefined();
     });
   });
+
+  describe('node preload flags', () => {
+    it('should forward --require flags in order', async () => {
+      runBackend({ entry: 'src/index', require: ['./a.js', './b.js'] });
+      await jest.advanceTimersByTimeAsync(100);
+
+      const args = mockSpawn.mock.calls[0][1];
+      expect(args?.filter(a => a.startsWith('--require='))).toEqual([
+        '--require=./a.js',
+        '--require=./b.js',
+      ]);
+    });
+  });
 });

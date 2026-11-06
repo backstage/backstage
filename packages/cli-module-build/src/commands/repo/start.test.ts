@@ -15,8 +15,13 @@
  */
 
 import { PackageGraph } from '@backstage/cli-node';
-import { findTargetPackages } from './start';
+import start, { findTargetPackages } from './start';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
+import { startPackage } from '../package/start/startPackage';
+
+jest.mock('../package/start/startPackage', () => ({
+  startPackage: jest.fn(),
+}));
 
 overrideTargetPaths('/root');
 
@@ -212,6 +217,85 @@ describe('findTargetPackages', () => {
       .mockResolvedValue([mocks.pluginX, mocks.pluginY]);
     await expect(findTargetPackages([], [])).rejects.toThrow(
       "Found multiple packages with role 'frontend-plugin', please choose which packages you want to run by passing the package names explicitly as arguments, for example 'yarn backstage-cli repo start my-plugin my-plugin-backend'.",
+    );
+  });
+});
+
+describe('node preload flags', () => {
+  function backendWithStartScript(script: string) {
+    return {
+      ...mocks.backend,
+      packageJson: {
+        ...mocks.backend.packageJson,
+        scripts: {
+          start: script,
+        },
+      },
+    };
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should forward --require passed on the cli', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([
+        backendWithStartScript('backstage-cli package start'),
+      ]);
+
+    await start({
+      args: ['--require', './a.js', '--require=./b.js'],
+      info: { name: 'test', usage: 'test' },
+    });
+
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        require: ['./a.js', './b.js'],
+      }),
+    );
+  });
+
+  it('should forward --require passed from the start script', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([
+        backendWithStartScript(
+          'backstage-cli package start --require ./a.js --require=./b.js',
+        ),
+      ]);
+
+    await start({
+      args: [],
+      info: { name: 'test', usage: 'test' },
+    });
+
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        require: ['./a.js', './b.js'],
+      }),
+    );
+  });
+
+  it('should override --require from start script with cli flags when specified', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([
+        backendWithStartScript(
+          'backstage-cli package start --require ./a.js --require=./b.js',
+        ),
+      ]);
+
+    await start({
+      args: ['--require', './c.js'],
+      info: { name: 'test', usage: 'test' },
+    });
+
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        require: ['./c.js'],
+      }),
     );
   });
 });
