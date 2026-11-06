@@ -20,8 +20,9 @@ function normalizeLookupHost(host: string, protocol?: string): string {
   if (protocol) {
     return new URL(`${protocol}//${host}/`).host;
   }
-  // An explicit lookup host has no scheme. Preserve its port independently
-  // of the API endpoint, including ports defaulted away by one URL parser.
+  // An explicit lookup host has no scheme, and the API endpoint may differ.
+  // HTTP drops port 80 and HTTPS drops port 443; using both preserves either
+  // explicit port while canonicalising hostname, IPv6 and numeric spelling.
   const http = new URL(`http://${host}/`);
   const https = new URL(`https://${host}/`);
   const port = http.port || https.port;
@@ -40,12 +41,15 @@ export function withConnectionBaseUrl<
   },
 >(schema: z.ZodObject<TShape>) {
   return schema.transform((config, ctx) => {
+    // The object schema has already applied field defaults and transforms.
     const { host, baseUrl } = config as { host?: string; baseUrl?: string };
     if (host === undefined && baseUrl === undefined) {
       ctx.addIssue({ code: 'custom', message: 'Provide a host or baseUrl' });
       return z.NEVER;
     }
 
+    // Only derived values need parsing here. Reusing each field's schema keeps
+    // provider restrictions and transforms without parsing supplied values twice.
     function parseDerivedField(field: 'host' | 'baseUrl', value: string) {
       const result = schema.shape[field].safeParse(value);
       if (!result.success) {
@@ -69,6 +73,8 @@ export function withConnectionBaseUrl<
     if (candidate === undefined) {
       return z.NEVER;
     }
+    // A field transform may have changed the URL. Check the final root and add
+    // its trailing slash without rewriting context paths or encoded content.
     const root = connectionBaseUrlSchema.safeParse(candidate);
     if (!root.success) {
       for (const issue of root.error.issues) {
@@ -81,6 +87,7 @@ export function withConnectionBaseUrl<
     if (resolvedHost === undefined) {
       return z.NEVER;
     }
+    // Use a synthetic URL only to validate host syntax, not to choose its scheme.
     if (
       resolvedHost.includes('/') ||
       !connectionBaseUrlSchema.safeParse(`https://${resolvedHost}/`).success
@@ -92,6 +99,8 @@ export function withConnectionBaseUrl<
       });
       return z.NEVER;
     }
+    // The lookup scheme is known only when deriving one field from the other.
+    // With both explicit, the API URL's scheme says nothing about lookup URLs.
     let lookupProtocol: string | undefined;
     if (host === undefined) {
       lookupProtocol = new URL(root.data).protocol;

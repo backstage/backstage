@@ -146,6 +146,8 @@ export function createConnectionType<
     );
   }
   const schema = configSchema as unknown as TConfigSchema;
+  // Make the input object strict while retaining the pipe's output transform
+  // and any refinements attached to the pipe itself.
   const strictSchema =
     schema instanceof z.ZodPipe
       ? schema.clone({ ...schema.def, in: schema.in.strict() })

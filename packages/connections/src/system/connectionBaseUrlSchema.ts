@@ -22,6 +22,8 @@ import { z } from 'zod/v4';
  */
 export const connectionBaseUrlSchema = z
   .string()
+  // Check the original string before URL validation, which can strip whitespace
+  // or accept a URL that the platform parser repairs.
   .refine(
     value => !/[\\\s?#]/.test(value),
     'Base URLs must not contain backslashes, whitespace, queries or fragments',
@@ -36,6 +38,7 @@ export const connectionBaseUrlSchema = z
       return false;
     }
     const authority = value.slice(separator + 3).split('/')[0];
+    // Checking the raw authority also rejects empty credentials: https://@host.
     return authority.length > 0 && !authority.includes('@');
   }, 'Base URLs must have an explicit host without credentials')
   .check(z.url({ protocol: /^https?$/ }))
