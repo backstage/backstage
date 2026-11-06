@@ -8,11 +8,15 @@ The `jira` connection type represents a Jira Cloud site or Data Center
 installation. It has [multiton cardinality](../01-concepts.md#cardinality)
 and uses the `host` [lookup strategy](../01-concepts.md#lookup-strategies).
 
-## Configure Jira
+## Configuring
 
-This example uses dummy credentials and a dummy Cloud ID. Replace them with
-values for your installation, and load real tokens through environment
-substitution such as `${JIRA_API_TOKEN}`.
+### Connect to Cloud or Data Center
+
+Choose the entry for your deployment and replace the dummy credentials and
+Cloud ID with your own values. Load real tokens through environment substitution
+such as `${JIRA_API_TOKEN}`. The Cloud example uses a separate API root because
+scoped tokens must go through the gateway, while lookup still uses the site
+host. The Data Center example includes an installation context path.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -36,7 +40,7 @@ connections:
         token: dummy-datacenter-personal-access-token
 ```
 
-## Connection fields
+### Connection fields
 
 | Field        | Type                      | Required | Description                                                                                                                         |
 | ------------ | ------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -45,29 +49,31 @@ connections:
 | `baseUrl`    | `string`                  | Yes      | Absolute HTTP(S) site root, including any Data Center context path, such as `https://jira.example.com/jira`.                        |
 | `apiBaseUrl` | `string`                  | No       | Absolute HTTP(S) API root when different from the site root. Scoped Cloud tokens use `https://api.atlassian.com/ex/jira/<cloudId>`. |
 
-Plugins append the REST API path to the configured root, so both roots must
-exclude `/rest` and API version paths. Append `rest/api/3/...` for Cloud or
-`rest/api/2/...` for Data Center while keeping the configured prefix. The plugin
-chooses the API version; other Jira APIs can use different REST paths.
+Supply both the site host and site root: the service does not derive one from
+the other. The optional API root is returned as configured; it has no default.
+When it is absent, the request example below uses the site root.
 
-Trailing slashes and percent-encoded path characters are allowed. URLs with
-credentials or literal query (`?`) or fragment (`#`) delimiters are rejected,
-including empty suffixes. A query or fragment would change how the request path
-is appended to the root.
+Both roots must be absolute HTTP(S) URLs without REST API paths. The current
+validator rejects any path segment named `rest`, even in an installation context
+path. Trailing slashes and percent-encoded path characters are allowed. URL
+credentials are rejected; put credentials in the authentication fields instead.
+Literal query (`?`) or fragment (`#`) delimiters, including empty suffixes, are
+rejected because they would change how request paths are joined.
 
-## Authentication methods
+### Authentication setup
 
-| Method     | Fields           | Deployment  | Consumer behavior                                                        |
+| Method     | Required fields  | Deployment  | Use                                                                      |
 | ---------- | ---------------- | ----------- | ------------------------------------------------------------------------ |
-| `apiToken` | `email`, `token` | Cloud       | Send `Authorization: Basic <base64(email:token)>`.                       |
-| `pat`      | `token`          | Data Center | Send `Authorization: Bearer <token>`.                                    |
-| `none`     | None             | Either      | Send no authorization header. Only use operations permitted anonymously. |
+| `apiToken` | `email`, `token` | Cloud       | Atlassian account email and API token.                                   |
+| `pat`      | `token`          | Data Center | Personal access token from an installation that supports and enables it. |
+| `none`     | None             | Either      | Only operations that the installation and endpoint allow anonymously.    |
 
 Store raw tokens, without an authorization scheme or base64 encoding. Emails
 must be valid email addresses; tokens must be nonempty and contain no whitespace.
 Token length and prefix are not constrained. Configuration validation checks the
-format of these fields. It does not contact Jira to check whether a token is valid, has expired, or has the permissions and
-scopes needed for a request.
+format of these fields. It does not contact Jira to check token validity, expiry,
+permissions or scopes. Choose permissions and scopes for the operations your
+plugin needs.
 
 [Jira Cloud basic authentication](https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/)
 uses an Atlassian account email and API token, not an account password.
@@ -90,104 +96,78 @@ authorization flows, token refresh, or signed-in user authentication. Check that
 your plugin supports the authentication your installation needs before
 configuring a connection.
 
-## Lookup and selection
+## Consuming
 
-Supply a URL on the Jira **site** host, such as
-`https://example.atlassian.net/browse/EXAMPLE-1`. The service matches its parsed
-host exactly, including a non-default port, against `host`. Do not look up a
-Cloud connection using its `api.atlassian.com` gateway URL: many independent
-sites share that API host.
+### Read the authenticated Jira profile
 
-The service selects the first authentication entry visible to the calling
-plugin, with [plugin-scoped entries](../01-concepts.md#plugin-scoping)
-ahead of unrestricted entries. The selected method must be in the consumer's
-`authMethods` list; the service does not retry with another method. Set the
-entry order and plugin scoping so the selected method is one your plugin
-supports. Jira connections have no other authentication priority rules.
+Follow the shared [backend plugin setup](../03-consuming-connections.md#declare-and-resolve-the-connection)
+to declare `jira` and obtain the plugin-scoped service. The helper below looks
+up the connection by a site URL, requests the authenticated profile and returns
+the JSON response. It accepts `apiToken` and `pat` because this endpoint requires
+authentication.
 
-Only one Jira connection per host is supported. Two Data Center installations
-under different context paths on the same host cannot have separate connections.
-Lookup does not match paths or projects, so a matching host does not restrict
-which paths a plugin can request. Build requests from the resolved root to keep
-credentials going to the configured endpoint. Do not forward credentials to
-arbitrary URLs from a lookup query or follow redirects to another host.
+Look up the Jira site, not the shared `api.atlassian.com` gateway: the Cloud ID
+in the API path does not identify a connection for host-based lookup. See
+[host-based lookup](../03-consuming-connections.md#look-up-a-host-based-connection)
+and [authentication selection](../01-concepts.md#what-happens-during-find). Jira
+has no extra selection rules; use [plugin scoping](../01-concepts.md#plugin-scoping)
+to provide credentials your plugin supports.
 
-## Consume a Jira connection
+Only one Jira connection per host is supported, including a non-default port.
+Installations under different context paths on the same host cannot have separate
+connections. Paths and projects do not participate in lookup.
 
-This backend plugin declares the connection and uses its credentials to make a
-request. Use a relative REST path so the request keeps `/ex/jira/<cloudId>` or
-the Data Center context prefix. The endpoint requires authentication, so the
-example accepts only `apiToken` and `pat`.
-
-The URL example uses the trailing slashes in the configuration above.
-Connections accept roots with or without a trailing slash; this example needs
-one so relative requests keep the configured context path.
+The example uses the configured URLs directly. Its base URL must end with a
+slash so a relative REST path keeps the Cloud gateway's Cloud ID or the Data
+Center context path. Connections accept roots with or without a trailing slash
+and return them unchanged; this is a prerequisite for this example only. A
+leading slash in the request path would discard the configured prefix.
 
 ```ts
-import { createBackendPlugin } from '@backstage/backend-plugin-api';
-import {
-  connectionsServiceRef,
-  declareConnection,
-} from '@backstage/backend-plugin-api/alpha';
+import type { ConnectionsService } from '@backstage/connections';
+import { ResponseError } from '@backstage/errors';
 
-export const examplePlugin = createBackendPlugin({
-  pluginId: 'jira-example',
-  register(reg) {
-    declareConnection(reg, {
-      type: 'jira',
-      description: 'Reads Jira account information',
-    });
-    reg.registerInit({
-      deps: { connections: connectionsServiceRef },
-      async init({ connections }) {
-        const connection = await connections.find({
-          type: 'jira',
-          query: { url: 'https://example.atlassian.net/browse/EXAMPLE-1' },
-          authMethods: ['apiToken', 'pat'],
-        });
-        const root = connection.apiBaseUrl ?? connection.baseUrl;
-        const version = connection.deployment === 'cloud' ? '3' : '2';
-        // The example base URL ends with / so new URL() preserves the context path.
-        const url = new URL(`rest/api/${version}/myself`, root);
-        const auth = connection.auth;
-        const authorization =
-          auth.method === 'apiToken'
-            ? `Basic ${Buffer.from(`${auth.email}:${auth.token}`).toString(
-                'base64',
-              )}`
-            : `Bearer ${auth.token}`;
-        const response = await fetch(url, {
-          headers: { Authorization: authorization, Accept: 'application/json' },
-          redirect: 'error',
-        });
-        if (!response.ok) {
-          throw new Error(`Jira request failed with status ${response.status}`);
-        }
-      },
-    });
-  },
-});
+export async function readJiraProfile(
+  connections: ConnectionsService,
+  siteUrl: string,
+): Promise<unknown> {
+  const connection = await connections.find({
+    type: 'jira',
+    query: { url: siteUrl },
+    authMethods: ['apiToken', 'pat'],
+  });
+  const root = connection.apiBaseUrl ?? connection.baseUrl;
+  const version = connection.deployment === 'cloud' ? '3' : '2';
+  // The example base URL ends with / so new URL() preserves the context path.
+  const url = new URL(`rest/api/${version}/myself`, root);
+  const auth = connection.auth;
+  const authorization =
+    auth.method === 'apiToken'
+      ? `Basic ${Buffer.from(`${auth.email}:${auth.token}`).toString('base64')}`
+      : `Bearer ${auth.token}`;
+  const response = await fetch(url, {
+    headers: { Authorization: authorization, Accept: 'application/json' },
+    redirect: 'error',
+  });
+  if (!response.ok) {
+    throw await ResponseError.fromResponse(response);
+  }
+  return response.json();
+}
 ```
 
-The plugin prepares the HTTP headers and handles API errors. Resolving a
-connection does not contact Jira or check that the selected credentials work.
+Pass a site URL such as `https://example.atlassian.net/browse/EXAMPLE-1`, even
+when the resolved API root uses another host. The helper appends the platform
+REST path once: Cloud uses version 3 and Data Center uses version 2. Other Jira
+APIs may use different paths or authentication.
 
-## Existing plugin configuration
+Cloud requests use Basic authentication with the email and raw API token; Data
+Center requests use the raw PAT as a Bearer token. The helper checks HTTP status
+before reading JSON. The caller handles lookup failures and Jira response
+errors; see [lookup error handling](../03-consuming-connections.md#handle-lookup-errors).
+Resolving a connection does not contact Jira or check that credentials work.
 
-[`@axis-backstage/plugin-jira-dashboard-backend`](https://github.com/AxisCommunications/backstage-plugins/blob/main/plugins/jira-dashboard-backend/README.md)
-reads `jiraDashboard` configuration, accepts a complete authorization header
-in `token`, and supports separate site and scoped-token API URLs. Its URLs
-include the REST API version. These settings differ from `jira` connections,
-which use raw credentials and roots without REST API paths. Project annotations,
-instance names, API version, caches, and JQL remain plugin settings.
-
-[`@roadiehq/backstage-plugin-jira`](https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/plugins/frontend/backstage-plugin-jira/README.md)
-uses a backend proxy with an authorization header. Keep credentials in the
-backend; this backend service cannot supply them to a frontend plugin. Check
-authentication and gateway support separately for activity streams and other
-Jira APIs before using the platform REST example with those endpoints.
-
-Adding this connection type does not change these plugins' configuration. There
-is no legacy `integrations.jira` configuration in this repository to convert.
+Keep requests on the configured API root, reject redirects to another host and
+[keep connection data on the backend](../03-consuming-connections.md#keep-connection-data-on-the-backend).
 
 Return to the [built-in connection type index](../04-built-in-connection-types.md).
