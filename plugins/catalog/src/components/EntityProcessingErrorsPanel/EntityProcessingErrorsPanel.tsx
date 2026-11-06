@@ -45,22 +45,47 @@ interface GetOwnAndAncestorsErrorsResponse {
   }[];
 }
 
+const inFlightErrorsRequests = new WeakMap<
+  CatalogApi,
+  Map<string, Promise<GetOwnAndAncestorsErrorsResponse>>
+>();
+
 async function getOwnAndAncestorsErrors(
   entityRef: string,
   catalogApi: CatalogApi,
 ): Promise<GetOwnAndAncestorsErrorsResponse> {
-  const ancestors = await catalogApi.getEntityAncestors({ entityRef });
-  const items = ancestors.items
-    .map(item => {
-      const statuses = (item.entity as AlphaEntity).status?.items ?? [];
-      const errors = statuses
-        .filter(errorFilter)
-        .map(e => e.error)
-        .filter((e): e is SerializedError => Boolean(e));
-      return { errors: errors, entity: item.entity };
-    })
-    .filter(item => item.errors.length > 0);
-  return { items };
+  let apiCache = inFlightErrorsRequests.get(catalogApi);
+  if (!apiCache) {
+    apiCache = new Map();
+    inFlightErrorsRequests.set(catalogApi, apiCache);
+  }
+
+  const existing = apiCache.get(entityRef);
+  if (existing) {
+    return existing;
+  }
+
+  const promise = (async () => {
+    try {
+      const ancestors = await catalogApi.getEntityAncestors({ entityRef });
+      const items = ancestors.items
+        .map(item => {
+          const statuses = (item.entity as AlphaEntity).status?.items ?? [];
+          const errors = statuses
+            .filter(errorFilter)
+            .map(e => e.error)
+            .filter((e): e is SerializedError => Boolean(e));
+          return { errors: errors, entity: item.entity };
+        })
+        .filter(item => item.errors.length > 0);
+      return { items };
+    } finally {
+      apiCache.delete(entityRef);
+    }
+  })();
+
+  apiCache.set(entityRef, promise);
+  return promise;
 }
 
 /**

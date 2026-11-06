@@ -88,6 +88,10 @@ describe('scaffolder extensions', () => {
           },
         );
 
+        await waitFor(() =>
+          expect(screen.queryByTestId('progress')).not.toBeInTheDocument(),
+        );
+
         expect(await screen.findByText('template-foo')).toBeInTheDocument();
         expect(await screen.findByText('template-bar')).toBeInTheDocument();
         expect(await screen.findByText('template-baz')).toBeInTheDocument();
