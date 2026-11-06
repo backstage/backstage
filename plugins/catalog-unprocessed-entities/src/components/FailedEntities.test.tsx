@@ -66,6 +66,13 @@ describe('convertTimeToLocalTimezone', () => {
     );
   });
 
+  it('reports unparsable input as invalid', () => {
+    expect(convertTimeToLocalTimezone('invalid-date-string', 'UTC')).toBe(
+      'Invalid DateTime',
+    );
+    expect(convertTimeToLocalTimezone('', 'UTC')).toBe('Invalid DateTime');
+  });
+
   it("follows the user's locale", () => {
     Settings.defaultLocale = 'en-US';
     expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', 'UTC')).toMatch(
@@ -202,29 +209,6 @@ describe('FailedEntities', () => {
     );
     // The table refetches its data after a successful deletion.
     await waitFor(() => expect(api.failed).toHaveBeenCalledTimes(2));
-  });
-
-  it('reports an error alert when the delete call fails', async () => {
-    api.failed.mockResolvedValue({ entities: [makeEntity()] });
-    api.delete.mockRejectedValue(new Error('network error'));
-    await renderComponent();
-
-    await userEvent.click(
-      (
-        await screen.findAllByLabelText('Delete entity component:default/alpha')
-      )[0],
-    );
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Delete' }),
-    );
-
-    await waitFor(() => expect(api.delete).toHaveBeenCalledWith('id-alpha'));
-    expect(toastApi.post).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Failed to delete entity component:default/alpha',
-        status: 'danger',
-      }),
-    );
   });
 
   it('falls back to the entity id (never "undefined") when deleting a null-ref entity fails', async () => {

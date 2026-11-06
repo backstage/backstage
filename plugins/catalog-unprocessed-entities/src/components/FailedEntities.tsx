@@ -71,16 +71,9 @@ const RenderErrorContext = ({
 };
 
 /**
- * Converts an input datetime into a human-readable, zone-aware string.
+ * Formats a datetime for the user's locale, in the given timezone.
  *
- * String inputs are parsed as ISO, falling back to the `yyyy-MM-dd HH:mm:ss`
- * form that SQLite returns, which is always UTC. `Date` inputs are normalised
- * via their ISO representation. The value is rendered in the provided `zone`,
- * which defaults to the user's local timezone so that the times are easy to
- * understand.
- *
- * @param dateTime - The datetime to convert, as a string or `Date`.
- * @param zone - The IANA timezone to render in. Defaults to the local zone.
+ * SQLite returns `yyyy-MM-dd HH:mm:ss` strings, which are always UTC.
  */
 export const convertTimeToLocalTimezone = (
   dateTime: string | Date,

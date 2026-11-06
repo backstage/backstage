@@ -13,44 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { convertTimeToLocalTimezone } from './components/FailedEntities';
-import { Settings } from 'luxon';
 import { catalogUnprocessedEntitiesPlugin } from './plugin';
 
 describe('catalog-unprocessed-entities', () => {
   it('should export plugin', () => {
     expect(catalogUnprocessedEntitiesPlugin).toBeDefined();
-  });
-});
-
-describe('components/FailedEntities/convertTimeToLocalTimezone', () => {
-  beforeAll(() => {
-    Settings.defaultLocale = 'en-GB';
-  });
-
-  afterAll(() => {
-    Settings.defaultLocale = null as unknown as string;
-  });
-
-  it('should correctly convert a UTC ISO string to the given zone', () => {
-    expect(convertTimeToLocalTimezone('2026-09-03T08:15:08.088Z', 'UTC')).toBe(
-      '3 Sept 2026, 8:15:08 UTC',
-    );
-  });
-
-  it('should correctly convert a UTC Date object to the given zone', () => {
-    expect(
-      convertTimeToLocalTimezone(new Date('2026-09-03T08:15:08.088Z'), 'UTC'),
-    ).toBe('3 Sept 2026, 8:15:08 UTC');
-  });
-
-  it('should return "Invalid DateTime" for an invalid date string', () => {
-    expect(convertTimeToLocalTimezone('invalid-date-string', 'UTC')).toBe(
-      'Invalid DateTime',
-    );
-  });
-
-  it('should handle empty string input', () => {
-    expect(convertTimeToLocalTimezone('', 'UTC')).toBe('Invalid DateTime');
   });
 });

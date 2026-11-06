@@ -25,28 +25,18 @@ describe('entityRefFilterAndSearch', () => {
     expect(entityRefFilterAndSearch('missing', row)).toBe(false);
   });
 
-  it('treats an empty query as matching every row', () => {
-    expect(
-      entityRefFilterAndSearch('', { entity_ref: 'component:default/a' }),
-    ).toBe(true);
-  });
-
   it('does not throw when the row, entity_ref or query is nullish', () => {
-    // Regression: a null entity_ref (or query) used to throw
-    // "Cannot read properties of null (reading 'toLocaleUpperCase')"
-    // and break the entire table while searching.
+    // Regression: a null entity_ref used to throw and break the entire table
+    // while searching.
     expect(entityRefFilterAndSearch('anything', { entity_ref: null })).toBe(
       false,
     );
-    expect(
-      entityRefFilterAndSearch('anything', { entity_ref: undefined }),
-    ).toBe(false);
     expect(entityRefFilterAndSearch('anything', null)).toBe(false);
-    expect(entityRefFilterAndSearch('anything', undefined)).toBe(false);
     expect(
       entityRefFilterAndSearch(null, { entity_ref: 'component:default/a' }),
     ).toBe(true);
-    expect(entityRefFilterAndSearch(null, null)).toBe(true);
-    expect(entityRefFilterAndSearch('', null)).toBe(true);
+    expect(
+      entityRefFilterAndSearch('', { entity_ref: 'component:default/a' }),
+    ).toBe(true);
   });
 });

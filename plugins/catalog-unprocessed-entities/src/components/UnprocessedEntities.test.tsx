@@ -57,49 +57,25 @@ describe('UnprocessedEntities components', () => {
     jest.resetAllMocks();
   });
 
-  describe('UnprocessedEntitiesContent', () => {
-    it('renders both tab labels and selects Failed by default', async () => {
-      const { unmount } = await renderWithApis(<UnprocessedEntitiesContent />);
+  it('loads the Failed tab by default and Pending on click', async () => {
+    const user = userEvent.setup();
+    await renderWithApis(<UnprocessedEntitiesContent />);
 
-      const failedTab = await screen.findByRole('tab', { name: 'Failed' });
-      const pendingTab = screen.getByRole('tab', { name: 'Pending' });
+    expect(
+      await screen.findByRole('tab', { name: 'Failed' }),
+    ).toBeInTheDocument();
+    expect(api.failed).toHaveBeenCalledTimes(1);
+    expect(api.pending).not.toHaveBeenCalled();
 
-      expect(failedTab).toBeInTheDocument();
-      expect(pendingTab).toBeInTheDocument();
-      // The failed tab is the default — its panel's data is requested on mount.
-      expect(api.failed).toHaveBeenCalledTimes(1);
-      expect(api.pending).not.toHaveBeenCalled();
-
-      unmount();
-    });
-
-    it('activates the Pending panel when the Pending tab is clicked', async () => {
-      const user = userEvent.setup();
-      await renderWithApis(<UnprocessedEntitiesContent />);
-
-      await user.click(await screen.findByRole('tab', { name: 'Pending' }));
-
-      // The pending sub-component mounts and requests its data.
-      expect(api.pending).toHaveBeenCalledTimes(1);
-    });
+    await user.click(screen.getByRole('tab', { name: 'Pending' }));
+    expect(api.pending).toHaveBeenCalledTimes(1);
   });
 
-  describe('UnprocessedEntities (legacy page wrapper)', () => {
-    it('renders the page heading', async () => {
-      const { unmount } = await renderWithApis(<UnprocessedEntities />);
-      expect(
-        await screen.findByText('Unprocessed Entities'),
-      ).toBeInTheDocument();
-      unmount();
-    });
-  });
-
-  describe('NfsUnprocessedEntities (new frontend system page wrapper)', () => {
-    it('renders the page heading', async () => {
-      await renderWithApis(<NfsUnprocessedEntities />);
-      expect(
-        await screen.findByText('Unprocessed Entities'),
-      ).toBeInTheDocument();
-    });
+  it.each([
+    ['UnprocessedEntities', <UnprocessedEntities />],
+    ['NfsUnprocessedEntities', <NfsUnprocessedEntities />],
+  ])('%s renders the page heading', async (_name, page) => {
+    await renderWithApis(page);
+    expect(await screen.findByText('Unprocessed Entities')).toBeInTheDocument();
   });
 });
