@@ -73,11 +73,13 @@ const RenderErrorContext = ({
 /**
  * Converts an input datetime into a human-readable, zone-aware string.
  *
- * String inputs are parsed as ISO; `Date` inputs are normalised via their ISO
- * representation. The value is rendered in the provided `zone`, which defaults
- * to the user's local timezone so that the times are easy to understand.
+ * String inputs are parsed as ISO, falling back to the `yyyy-MM-dd HH:mm:ss`
+ * form that SQLite returns, which is always UTC. `Date` inputs are normalised
+ * via their ISO representation. The value is rendered in the provided `zone`,
+ * which defaults to the user's local timezone so that the times are easy to
+ * understand.
  *
- * @param dateTime - The datetime to convert, as an ISO string or `Date`.
+ * @param dateTime - The datetime to convert, as a string or `Date`.
  * @param zone - The IANA timezone to render in. Defaults to the local zone.
  */
 export const convertTimeToLocalTimezone = (
@@ -86,9 +88,15 @@ export const convertTimeToLocalTimezone = (
 ) => {
   const isoDateTime =
     typeof dateTime === 'string' ? dateTime : dateTime.toISOString();
-  return DateTime.fromISO(isoDateTime, { zone }).toFormat(
-    'yyyy-MM-dd HH:mm:ss ZZZZ',
-  );
+  const parsed = DateTime.fromISO(isoDateTime, { zone });
+  return (
+    parsed.isValid ? parsed : DateTime.fromSQL(isoDateTime, { zone: 'utc' })
+  )
+    .setZone(zone)
+    .toLocaleString({
+      ...DateTime.DATETIME_MED_WITH_SECONDS,
+      timeZoneName: 'short',
+    });
 };
 
 export const FailedEntities = () => {

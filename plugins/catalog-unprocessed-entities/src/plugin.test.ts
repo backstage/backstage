@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { convertTimeToLocalTimezone } from './components/FailedEntities';
+import { Settings } from 'luxon';
 import { catalogUnprocessedEntitiesPlugin } from './plugin';
 
 describe('catalog-unprocessed-entities', () => {
@@ -23,16 +24,24 @@ describe('catalog-unprocessed-entities', () => {
 });
 
 describe('components/FailedEntities/convertTimeToLocalTimezone', () => {
+  beforeAll(() => {
+    Settings.defaultLocale = 'en-GB';
+  });
+
+  afterAll(() => {
+    Settings.defaultLocale = null as unknown as string;
+  });
+
   it('should correctly convert a UTC ISO string to the given zone', () => {
     expect(convertTimeToLocalTimezone('2026-09-03T08:15:08.088Z', 'UTC')).toBe(
-      '2026-09-03 08:15:08 UTC',
+      '3 Sept 2026, 8:15:08 UTC',
     );
   });
 
   it('should correctly convert a UTC Date object to the given zone', () => {
     expect(
       convertTimeToLocalTimezone(new Date('2026-09-03T08:15:08.088Z'), 'UTC'),
-    ).toBe('2026-09-03 08:15:08 UTC');
+    ).toBe('3 Sept 2026, 8:15:08 UTC');
   });
 
   it('should return "Invalid DateTime" for an invalid date string', () => {

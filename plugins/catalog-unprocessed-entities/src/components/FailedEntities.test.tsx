@@ -17,8 +17,9 @@ import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 
-import { FailedEntities } from './FailedEntities';
+import { convertTimeToLocalTimezone, FailedEntities } from './FailedEntities';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import {
   CatalogUnprocessedEntitiesApi,
@@ -40,6 +41,42 @@ const makeEntity = (
   last_discovery_at: '2026-09-03T08:15:08.088Z',
   location_key: 'url:http://example.com/alpha',
   ...overrides,
+});
+
+describe('convertTimeToLocalTimezone', () => {
+  afterEach(() => {
+    Settings.defaultLocale = null as unknown as string;
+  });
+
+  it('renders every database timestamp format as the same instant', () => {
+    Settings.defaultLocale = 'en-GB';
+    const expected = '6 Nov 2026, 15:15:08 CET';
+    const zone = 'Europe/Paris';
+
+    // PostgreSQL, serialized from a Date
+    expect(convertTimeToLocalTimezone('2026-11-06T14:15:08.000Z', zone)).toBe(
+      expected,
+    );
+    expect(
+      convertTimeToLocalTimezone(new Date('2026-11-06T14:15:08.000Z'), zone),
+    ).toBe(expected);
+    // SQLite, which has no timezone designator but is always UTC
+    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', zone)).toBe(
+      expected,
+    );
+  });
+
+  it("follows the user's locale", () => {
+    Settings.defaultLocale = 'en-US';
+    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', 'UTC')).toMatch(
+      /^Nov 6, 2026, 2:15:08\sPM UTC$/,
+    );
+
+    Settings.defaultLocale = 'fr-FR';
+    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', 'UTC')).toMatch(
+      /^6 nov\. 2026, 14:15:08\sUTC$/,
+    );
+  });
 });
 
 describe('FailedEntities', () => {
