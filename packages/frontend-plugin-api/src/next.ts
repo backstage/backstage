@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export { mockApis } from './alphaMockApis';
-
-export type { ApiMock } from './apis/createApiMock';
-export type { MockWithApiFactory } from './apis/MockWithApiFactory';
+export { FragmentBlueprint } from './blueprints/FragmentBlueprint';
+export {
+  ExtensionFragment,
+  type ExtensionFragmentProps,
+} from './components/ExtensionFragment';
+export {
+  extensionFragmentsApiRef,
+  type ExtensionFragmentsApi,
+} from './apis/definitions/ExtensionFragmentsApi';

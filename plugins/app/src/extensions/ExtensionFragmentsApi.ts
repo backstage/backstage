@@ -19,7 +19,7 @@ import {
   coreExtensionData,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/alpha';
+import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/next';
 
 export const ExtensionFragmentsApi = ApiBlueprint.makeWithOverrides({
   name: 'extension-fragments',

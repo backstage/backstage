@@ -15,8 +15,8 @@
  */
 
 import { createElement } from 'react';
-import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/alpha';
-import { mockApis } from './alpha';
+import { extensionFragmentsApiRef } from '@backstage/frontend-plugin-api/next';
+import { mockApis } from './next';
 import { getMockApiFactory } from './apis/MockWithApiFactory';
 
 it('provides an empty-by-default fragment registry with named and unnamed elements', () => {
