@@ -1416,6 +1416,76 @@ describe('postgres', () => {
       await Promise.all(clients.map(client => client.destroy()));
     });
 
+    it('uses a plugin connection and role when creating a plugin schema', async () => {
+      const admin = {
+        raw: jest.fn().mockResolvedValue(undefined),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createAdminClient = jest.fn().mockResolvedValue(admin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'base-host', database: 'shared' },
+          pluginDivisionMode: 'schema',
+          ensureExists: false,
+          ensureSchemaExists: true,
+          plugin: {
+            plugin1: {
+              connection: { host: 'plugin-host', database: 'plugin_db' },
+              role: 'plugin_role',
+            },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient },
+      );
+
+      const client = await connector.getClient('plugin1', deps);
+
+      expect(createAdminClient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          connection: expect.objectContaining({
+            host: 'plugin-host',
+            database: 'plugin_db',
+          }),
+          role: 'plugin_role',
+        }),
+      );
+      expect(admin.raw).toHaveBeenCalledWith(
+        'CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??',
+        ['plugin1', 'plugin_role'],
+      );
+      await client.destroy();
+    });
+
+    it('does not create a schema when a plugin opts out of global schema mode', async () => {
+      const createAdminClient = jest.fn();
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'base-host', database: 'shared' },
+          pluginDivisionMode: 'schema',
+          ensureExists: false,
+          ensureSchemaExists: true,
+          plugin: {
+            plugin1: {
+              pluginDivisionMode: 'database',
+              connection: { database: 'external_db' },
+            },
+          },
+        }),
+        'backstage_plugin_',
+        '',
+        { createAdminClient },
+      );
+
+      const client = await connector.getClient('plugin1', deps);
+
+      expect(createAdminClient).not.toHaveBeenCalled();
+      await client.destroy();
+    });
+
     it('recreates the admin client when a database operation and cleanup fail', async () => {
       const firstAdmin = {
         from: jest.fn().mockReturnValue({
@@ -1812,6 +1882,23 @@ describe('computePgPluginConfig', () => {
 
       expect(result.ensureSchemaExists).toBe(true);
     });
+
+    it('uses plugin ensureSchemaExists when specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        ensureSchemaExists: false,
+        plugin: {
+          catalog: {
+            ensureSchemaExists: true,
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.ensureSchemaExists).toBe(true);
+    });
   });
 
   describe('pluginDivisionMode', () => {
@@ -1836,6 +1923,83 @@ describe('computePgPluginConfig', () => {
       const result = computePgPluginConfig(config, 'catalog', prefix);
 
       expect(result.pluginDivisionMode).toBe('schema');
+    });
+
+    it('uses the plugin mode in preference to the global mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        pluginDivisionMode: 'schema',
+        plugin: {
+          catalog: {
+            pluginDivisionMode: 'database',
+            connection: { database: 'external_db' },
+          },
+          search: {},
+        },
+      });
+
+      const catalog = computePgPluginConfig(config, 'catalog', prefix);
+      const search = computePgPluginConfig(config, 'search', prefix);
+
+      expect(catalog).toMatchObject({
+        pluginDivisionMode: 'database',
+        databaseName: 'external_db',
+        databaseClientOverrides: { connection: { database: 'external_db' } },
+      });
+      expect(catalog.databaseClientOverrides.searchPath).toBeUndefined();
+      expect(search).toMatchObject({
+        pluginDivisionMode: 'schema',
+        databaseName: 'shared_db',
+        databaseClientOverrides: {
+          connection: { database: 'shared_db' },
+          searchPath: ['search'],
+        },
+      });
+    });
+
+    it('allows a plugin to opt into schema mode with a prefixed schema', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'plugin_db' },
+        plugin: {
+          catalog: {
+            pluginDivisionMode: 'schema',
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(
+        config,
+        'catalog',
+        prefix,
+        'backstage_',
+      );
+
+      expect(result).toMatchObject({
+        pluginDivisionMode: 'schema',
+        databaseName: 'plugin_db',
+        databaseClientOverrides: {
+          connection: { database: 'plugin_db' },
+          searchPath: ['backstage_catalog'],
+        },
+      });
+    });
+
+    it('requires a database when a plugin opts into schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        plugin: {
+          catalog: {
+            pluginDivisionMode: 'schema',
+          },
+        },
+      });
+
+      expect(() => computePgPluginConfig(config, 'catalog', prefix)).toThrow(
+        "PostgreSQL plugin 'catalog' uses schema division mode but has no database configured",
+      );
     });
   });
 
@@ -2008,7 +2172,7 @@ describe('computePgPluginConfig', () => {
       expect(result.databaseName).toBe('shared_db');
     });
 
-    it('returns undefined when no database in schema mode', () => {
+    it('returns undefined when no database in global schema mode', () => {
       const config = new ConfigReader({
         client: 'pg',
         connection: { host: 'localhost' },
@@ -2084,20 +2248,6 @@ describe('computePgPluginConfig', () => {
           multibytePrefixThatExceeds63Bytes,
         );
       }).toThrow(/exceeds the 63-byte limit/);
-    });
-
-    it('returns empty object when no databaseName in schema mode', () => {
-      const config = new ConfigReader({
-        client: 'pg',
-        connection: { host: 'localhost' },
-        pluginDivisionMode: 'schema',
-      });
-
-      const result = computePgPluginConfig(config, 'catalog', prefix);
-
-      expect(result.databaseClientOverrides).toEqual({
-        searchPath: ['catalog'],
-      });
     });
   });
 
