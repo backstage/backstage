@@ -26,6 +26,7 @@ export const LinkDefinition = defineComponent<LinkOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Link',
+    icon: 'bui-LinkIcon',
   },
   analytics: true,
   navigation: { type: 'anchor' },
@@ -36,6 +37,7 @@ export const LinkDefinition = defineComponent<LinkOwnProps>()({
     color: { dataAttribute: true, default: 'primary' },
     truncate: { dataAttribute: true },
     standalone: { dataAttribute: true },
+    external: { dataAttribute: true },
     title: {},
     children: {},
     className: {},
