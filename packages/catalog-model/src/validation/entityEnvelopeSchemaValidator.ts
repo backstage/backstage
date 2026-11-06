@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Schema } from 'ajv';
 import { EntityEnvelope } from '../entity/EntityEnvelope';
 import entityEnvelopeSchema from '../schema/EntityEnvelope.schema.json';
-import { compileAjvSchema, throwAjvError } from './ajv';
+import { compileSchema, throwSchemaError } from './compileSchema';
+import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
+import { SchemaEngine } from './engine/types';
 
 /**
  * Creates a validation function that takes some arbitrary data, and either
@@ -48,16 +49,23 @@ import { compileAjvSchema, throwAjvError } from './ajv';
 export function entityEnvelopeSchemaValidator<
   T extends EntityEnvelope = EntityEnvelope,
 >(schema?: unknown): (data: unknown) => T {
-  const validate = compileAjvSchema(
-    schema ? (schema as Schema) : entityEnvelopeSchema,
+  return createEntityEnvelopeSchemaValidator<T>(cfworkerSchemaEngine, schema);
+}
+
+export function createEntityEnvelopeSchemaValidator<
+  T extends EntityEnvelope = EntityEnvelope,
+>(engine: SchemaEngine, schema?: unknown): (data: unknown) => T {
+  const validate = compileSchema(
+    engine,
+    schema ? (schema as object) : entityEnvelopeSchema,
   );
 
   return data => {
-    const result = validate(data);
-    if (result === true) {
+    const errors = validate(data);
+    if (!errors) {
       return data as T;
     }
 
-    throw throwAjvError(validate.errors);
+    throw throwSchemaError(errors);
   };
 }

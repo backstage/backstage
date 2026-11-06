@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  entityEnvelopeSchemaValidator,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { validateEntityEnvelope } from './util';
 import { ProviderDatabase } from '../database/types';
 import {
   EntityProvider,
@@ -34,7 +32,7 @@ export type EntityProviderEntry = {
 };
 
 class Connection implements EntityProviderConnection {
-  readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
+  readonly validateEntityEnvelope = validateEntityEnvelope;
   private readonly config: {
     id: string;
     providerDatabase: ProviderDatabase;
