@@ -66,7 +66,7 @@ export class DefaultSecretResolverService implements SecretResolverService {
     }
     return new DefaultSecretResolverService(
       providers,
-      options.consumer,
+      Object.freeze({ ...options.consumer }),
       options.logger,
     );
   }
