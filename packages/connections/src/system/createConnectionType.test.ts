@@ -102,8 +102,8 @@ describe('createConnectionType', () => {
 
   it('supports object transforms while keeping strict input and reserved-field checks', () => {
     const schema = z
-      .object({ baseUrl: z.string() })
-      .transform(config => ({ ...config, host: new URL(config.baseUrl).host }));
+      .object({ host: z.string() })
+      .transform(config => ({ ...config, baseUrl: `https://${config.host}/` }));
     const connectionType = createConnectionType({
       type: 'transformed',
       title: 'Transformed',
@@ -112,14 +112,12 @@ describe('createConnectionType', () => {
         { method: 'none', title: 'None', configSchema: z.object({}) },
       ],
     });
-    const parsed = connectionType.configSchema.parse({
-      baseUrl: 'https://example.com/context/',
-    });
-    const host: string = parsed.host;
-    expect(host).toBe('example.com');
+    const parsed = connectionType.configSchema.parse({ host: 'example.com' });
+    const baseUrl: string = parsed.baseUrl;
+    expect(baseUrl).toBe('https://example.com/');
     expect(connectionType.configSchema.schema().schema).toMatchObject({
-      properties: { baseUrl: { type: 'string' } },
-      required: ['baseUrl'],
+      properties: { host: { type: 'string' } },
+      required: ['host'],
       additionalProperties: false,
     });
     expect(() =>

@@ -117,13 +117,11 @@ keeps a context prefix such as `/context/`. Consumer paths must be relative,
 without a leading slash. Credentials, queries and fragments are rejected; keep
 any provider-specific HTTPS or host checks as additional refinements.
 
-To accept either `host` or `baseUrl`, use `withConnectionBaseUrl`. It fills a
-missing host from the URL, including non-default ports, or a missing URL with
-`https://<host>/`. Parsed output has both fields. Host names are normalized for
-lookup, independently of endpoint overrides. When both fields are explicit,
-ports are retained and must match the resource URL's parsed `host` (which omits
-default ports). Opt in only when an HTTPS root is an appropriate default for the
-type.
+To default a missing `baseUrl` to `https://<host>/`, use `withConnectionBaseUrl`.
+`host` is required; it is never derived from the URL. Explicit endpoint overrides
+are preserved. Host names are normalized for lookup, but explicit ports are
+retained and must match the resource URL's parsed `host` (which omits default
+ports). Opt in only when a same-host HTTPS root is an appropriate default.
 
 ```ts
 import { connectionBaseUrlSchema } from '../system/connectionBaseUrlSchema';
@@ -131,7 +129,7 @@ import { withConnectionBaseUrl } from '../system/withConnectionBaseUrl';
 
 const configSchema = withConnectionBaseUrl(
   z.object({
-    host: z.string().optional(),
+    host: z.string(),
     baseUrl: connectionBaseUrlSchema.optional(),
   }),
 );

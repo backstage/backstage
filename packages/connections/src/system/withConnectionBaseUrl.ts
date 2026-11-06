@@ -16,10 +16,7 @@
 import { z } from 'zod/v4';
 import { connectionBaseUrlSchema } from './connectionBaseUrlSchema';
 
-function normalizeLookupHost(host: string, protocol?: string): string {
-  if (protocol) {
-    return new URL(`${protocol}//${host}/`).host;
-  }
+function normalizeLookupHost(host: string): string {
   // An explicit lookup host has no scheme, and the API endpoint may differ.
   // HTTP drops port 80 and HTTPS drops port 443; using both preserves either
   // explicit port while canonicalising hostname, IPv6 and numeric spelling.
@@ -30,48 +27,44 @@ function normalizeLookupHost(host: string, protocol?: string): string {
 }
 
 /**
- * Fills missing host/baseUrl fields without replacing explicit endpoints.
- * A host-only configuration uses an HTTPS root. Types with provider-specific
- * endpoint defaults should supply those explicitly instead.
+ * Defaults a missing baseUrl to an HTTPS root for the required lookup host.
+ * Explicit endpoints are preserved. Opt in only when a same-host HTTPS root
+ * is an appropriate default for the connection type.
  */
 export function withConnectionBaseUrl<
   TShape extends z.ZodRawShape & {
-    host: z.ZodType<string | undefined>;
+    host: z.ZodType<string, string>;
     baseUrl: z.ZodType<string | undefined>;
   },
 >(schema: z.ZodObject<TShape>) {
   return schema.transform((config, ctx) => {
     // The object schema has already applied field defaults and transforms.
-    const { host, baseUrl } = config as { host?: string; baseUrl?: string };
-    if (host === undefined && baseUrl === undefined) {
-      ctx.addIssue({ code: 'custom', message: 'Provide a host or baseUrl' });
+    const { host, baseUrl } = config as { host: string; baseUrl?: string };
+    // Use a synthetic URL only to validate host syntax. The lookup identity has
+    // no scheme and must stay independent of the configured API endpoint.
+    if (
+      host.includes('/') ||
+      !connectionBaseUrlSchema.safeParse(`https://${host}/`).success
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['host'],
+        message: 'Expected a host with an optional port',
+      });
       return z.NEVER;
     }
-
-    // Only derived values need parsing here. Reusing each field's schema keeps
-    // provider restrictions and transforms without parsing supplied values twice.
-    function parseDerivedField(field: 'host' | 'baseUrl', value: string) {
-      const result = schema.shape[field].safeParse(value);
+    let candidate = baseUrl;
+    if (candidate === undefined) {
+      // Apply the baseUrl field's own restrictions and transforms to the default.
+      // Supplied values have already been parsed and must not be parsed twice.
+      const result = schema.shape.baseUrl.safeParse(`https://${host}/`);
       if (!result.success) {
         for (const issue of result.error.issues) {
-          ctx.addIssue({ ...issue, path: [field, ...issue.path] });
+          ctx.addIssue({ ...issue, path: ['baseUrl', ...issue.path] });
         }
-        return undefined;
+        return z.NEVER;
       }
-      if (result.data === undefined) {
-        ctx.addIssue({
-          code: 'custom',
-          path: [field],
-          message: `Expected ${field} to resolve to a string`,
-        });
-      }
-      return result.data;
-    }
-
-    const candidate =
-      baseUrl ?? parseDerivedField('baseUrl', `https://${host}/`);
-    if (candidate === undefined) {
-      return z.NEVER;
+      candidate = result.data;
     }
     // A field transform may have changed the URL. Check the final root and add
     // its trailing slash without rewriting context paths or encoded content.
@@ -82,34 +75,9 @@ export function withConnectionBaseUrl<
       }
       return z.NEVER;
     }
-    const resolvedHost =
-      host ?? parseDerivedField('host', new URL(root.data).host);
-    if (resolvedHost === undefined) {
-      return z.NEVER;
-    }
-    // Use a synthetic URL only to validate host syntax, not to choose its scheme.
-    if (
-      resolvedHost.includes('/') ||
-      !connectionBaseUrlSchema.safeParse(`https://${resolvedHost}/`).success
-    ) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['host'],
-        message: 'Expected a host with an optional port',
-      });
-      return z.NEVER;
-    }
-    // The lookup scheme is known only when deriving one field from the other.
-    // With both explicit, the API URL's scheme says nothing about lookup URLs.
-    let lookupProtocol: string | undefined;
-    if (host === undefined) {
-      lookupProtocol = new URL(root.data).protocol;
-    } else if (baseUrl === undefined) {
-      lookupProtocol = 'https:';
-    }
     return {
       ...config,
-      host: normalizeLookupHost(resolvedHost, lookupProtocol),
+      host: normalizeLookupHost(host),
       baseUrl: root.data,
     };
   });
