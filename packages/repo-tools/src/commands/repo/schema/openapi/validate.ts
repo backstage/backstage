@@ -30,10 +30,7 @@ import {
   getPathToOpenApiSpec,
   loadAndValidateOpenApiYaml,
 } from '../../../../lib/openapi/helpers';
-import {
-  GeneratedSpecSyntaxError,
-  readGeneratedOpenApiSpec,
-} from '../../../../lib/openapi/readGeneratedSpec';
+import { parseGeneratedOpenApiSpec } from '../../../../lib/openapi/parseGeneratedSpec';
 
 export async function validate(directoryPath: string) {
   let openapiPath = '';
@@ -45,21 +42,18 @@ export async function validate(directoryPath: string) {
   }
   const yaml = await loadAndValidateOpenApiYaml(openapiPath);
 
-  const hasOldSchema = await fs.pathExists(
-    join(directoryPath, OLD_SCHEMA_PATH),
-  );
+  let schemaFile = TS_SCHEMA_PATH;
   if (
-    !hasOldSchema &&
-    !(await fs.pathExists(join(directoryPath, TS_SCHEMA_PATH)))
+    !(await fs.pathExists(join(directoryPath, schemaFile))) &&
+    !(await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH)))
   ) {
     throw new Error(`No \`${TS_SCHEMA_PATH}\` file found.`);
-  }
-  if (hasOldSchema) {
+  } else if (await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH))) {
     console.warn(
       `\`${OLD_SCHEMA_PATH}\` is deprecated. Please re-run \`yarn backstage-repo-tools package schema openapi generate\` to update it.`,
     );
+    schemaFile = OLD_SCHEMA_PATH;
   }
-  const schemaFile = hasOldSchema ? OLD_SCHEMA_PATH : TS_SCHEMA_PATH;
 
   const regenerateHint = () =>
     `Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${relativePath(
@@ -67,16 +61,12 @@ export async function validate(directoryPath: string) {
       directoryPath,
     )}' to regenerate \`${TS_SCHEMA_PATH}\`.`;
 
+  const source = await fs.readFile(join(directoryPath, schemaFile), 'utf8');
   let spec: unknown;
   try {
-    spec = await readGeneratedOpenApiSpec(join(directoryPath, schemaFile));
+    spec = parseGeneratedOpenApiSpec(source);
   } catch (error) {
-    if (error instanceof GeneratedSpecSyntaxError) {
-      throw new Error(
-        `\`${schemaFile}\`: ${error.message}. ${regenerateHint()}`,
-      );
-    }
-    throw error;
+    throw new Error(`\`${schemaFile}\`: ${error.message}. ${regenerateHint()}`);
   }
 
   if (!spec) {
