@@ -15,6 +15,8 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import { once } from 'node:events';
 import express from 'express';
 import request, { SuperAgentTest } from 'supertest';
 import cookieParser from 'cookie-parser';
@@ -1204,6 +1206,95 @@ describe('createOAuthRouteHandlers', () => {
       });
       expect(getRefreshTokenCookie(agent).value).toBe('new-refresh-token');
     });
+
+    it.each([false, true])(
+      'retains rotated tokens after profile failures (chunked: %s)',
+      async chunked => {
+        let currentRefreshToken = 'refresh-token';
+        let generation = 0;
+        let profileUnavailable = true;
+        let authorized = true;
+        const tokenPrefix = chunked ? 'r'.repeat(4500) : 'rotated-refresh';
+        const app = wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            authenticator: {
+              ...mockAuthenticator,
+              async refresh({ refreshToken }) {
+                // A synthetic provider with rotation and no token reuse window.
+                if (refreshToken !== currentRefreshToken) {
+                  throw new AuthenticationError(
+                    'Refresh token already consumed',
+                  );
+                }
+                currentRefreshToken = `${tokenPrefix}-${++generation}`;
+                return {
+                  fullProfile: {},
+                  session: {
+                    ...mockSession,
+                    refreshToken: currentRefreshToken,
+                  },
+                };
+              },
+            },
+            async profileTransform() {
+              if (profileUnavailable) {
+                throw new Error('Profile service unavailable');
+              }
+              return { profile: { email: 'user@example.com' } };
+            },
+            async signInResolver() {
+              if (!authorized) {
+                throw new NotAllowedError('Sign-in denied');
+              }
+              return { token: mockBackstageToken };
+            },
+          }),
+        );
+        const server = app.listen(0, '127.0.0.1');
+        await once(server, 'listening');
+        try {
+          const agent = request.agent(server);
+          agent.jar.setCookie(
+            'my-provider-refresh-token=refresh-token',
+            '127.0.0.1',
+            '/my-provider',
+          );
+          const refresh = () =>
+            agent
+              .post('/my-provider/refresh')
+              .set('X-Requested-With', 'XMLHttpRequest');
+
+          const failed = await refresh();
+          expect(failed.status).toBe(401);
+          expect(failed.body).not.toHaveProperty('backstageIdentity');
+          expect(failed.body).not.toHaveProperty('providerInfo');
+
+          profileUnavailable = false;
+          const recovered = await refresh();
+          expect(recovered.status).toBe(200);
+          expect(recovered.body.backstageIdentity).toMatchObject({
+            token: mockBackstageToken,
+            identity: { userEntityRef: 'user:default/mock' },
+          });
+          expect(JSON.stringify(recovered.body)).not.toContain(tokenPrefix);
+          expect((await refresh()).status).toBe(200);
+
+          // Retaining a credential must never serve a previously authorized identity.
+          authorized = false;
+          const denied = await refresh();
+          expect(denied.status).toBe(401);
+          expect(denied.body).not.toHaveProperty('backstageIdentity');
+          expect(denied.body).not.toHaveProperty('providerInfo');
+          authorized = true;
+          expect((await refresh()).status).toBe(200);
+        } finally {
+          await new Promise<void>((resolve, reject) =>
+            server.close(error => (error ? reject(error) : resolve())),
+          );
+        }
+      },
+    );
 
     it('should forward errors', async () => {
       const agent = request.agent(

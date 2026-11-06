@@ -66,6 +66,16 @@ function takes an `express.Response`, a `WebMessageResponse` and the URL of the
 frontend (`appOrigin`) as parameters and return an HTML page with the script and
 the message.
 
+### Refresh failures after token rotation
+
+OAuth providers created with `createOAuthProviderFactory` retain a replacement
+refresh token in an HttpOnly cookie as soon as the authenticator returns a renewed
+session. The cookie is retained even if subsequent profile transformation or
+sign-in resolution fails, because rotation may have invalidated the previous
+token. The request still fails without returning an identity. A later refresh
+retries profile transformation and sign-in resolution, so recovery does not bypass
+validation or authorization.
+
 ### Auth Environment Separation
 
 The concept of an `env` is core to the way the auth backend works. It uses an

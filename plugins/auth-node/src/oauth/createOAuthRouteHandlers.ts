@@ -394,10 +394,8 @@ export function createOAuthRouteHandlers<TProfile>(
           authenticatorCtx,
         );
 
-        const grantedScope = await scopeRefresh.commit(result);
-
-        const { profile } = await profileTransform(result, resolverContext);
-
+        // Upstream rotation may have consumed the old token already. Preserve
+        // its replacement even if subsequent profile or sign-in processing fails.
         const newRefreshToken = result.session.refreshToken;
         if (newRefreshToken && newRefreshToken !== refreshToken) {
           cookieManager.setRefreshToken(
@@ -406,6 +404,10 @@ export function createOAuthRouteHandlers<TProfile>(
             req.get('origin'),
           );
         }
+
+        const grantedScope = await scopeRefresh.commit(result);
+
+        const { profile } = await profileTransform(result, resolverContext);
 
         const response: ClientOAuthResponse = {
           profile,
