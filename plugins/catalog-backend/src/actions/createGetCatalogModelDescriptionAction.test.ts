@@ -17,6 +17,7 @@
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { CatalogModel } from '@backstage/catalog-model/alpha';
 import { createGetCatalogModelDescriptionAction } from './createGetCatalogModelDescriptionAction';
+import { JsonObject } from '@backstage/types';
 import { ModelHolder } from '../model/ModelHolder';
 
 const model: CatalogModel = {
@@ -51,6 +52,7 @@ const model: CatalogModel = {
     labels: [
       {
         name: 'backstage.io/orphan',
+        title: 'Orphan',
         description: 'Indicates that this entity is an orphan.',
       },
     ],
@@ -381,5 +383,195 @@ describe('createGetCatalogModelDescriptionAction', () => {
     // linear growth 5x the kinds must produce strictly less than 5x the text
     expect(large.length).toBeGreaterThan(small.length);
     expect(large.length).toBeLessThan(small.length * 5);
+  });
+
+  it('should narrow the described items with a query', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createGetCatalogModelDescriptionAction({
+      modelHolder: ModelHolder.modelPassthroughForTest(model),
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    const describeWith = async (query: JsonObject) => {
+      const result = await mockActionsRegistry.invoke({
+        id: 'test:get-catalog-model-description',
+        input: { query },
+      });
+      return (result as any).output.description as string;
+    };
+
+    const kind = await describeWith({ type: 'kind', name: 'Component' });
+    expect(kind).toContain('### Entity Kind "Component"');
+    expect(kind).toContain('## Entity Metadata field');
+    expect(kind).not.toContain('## Entity Relations');
+    expect(kind).not.toContain('### Annotation');
+
+    const either = await describeWith({
+      $any: [
+        { type: 'kind', name: 'Component' },
+        { type: 'relation', fromKind: { $contains: 'Component' } },
+      ],
+    });
+    expect(either).toContain('### Entity Kind "Component"');
+    expect(either).toContain('### Relation "ownedBy"');
+
+    const relation = await describeWith({ type: 'relation', name: 'ownedBy' });
+    expect(relation).toContain('### Relation "ownedBy"');
+    expect(relation).toContain('## Entity Metadata field');
+    expect(relation).not.toContain('## Entity Kinds');
+
+    // Querying by kind returns everything about that kind
+    const byKind = await describeWith({ kind: 'Component' });
+    expect(byKind).toContain('### Entity Kind "Component"');
+    expect(byKind).toContain('Singular in text: "component"');
+    expect(byKind).toContain('* "spec.owner" (string, required)');
+    expect(byKind).toContain('* "spec.lifecycle"');
+    expect(byKind).toContain('* "spec.owner" → relation "ownedBy"');
+
+    const annotation = await describeWith({
+      type: 'annotation',
+      name: { $hasPrefix: 'backstage.io/' },
+    });
+    expect(annotation).toContain(
+      '### Annotation "backstage.io/managed-by-location"',
+    );
+    expect(annotation).not.toContain('## Entity Kinds');
+    expect(annotation).not.toContain('### Tag');
+
+    // Field lookups only render the matching fields, without the metadata list
+    const field = await describeWith({
+      type: 'field',
+      kind: 'Component',
+      path: 'spec.owner',
+    });
+    expect(field).toContain('### Entity Kind "Component"');
+    expect(field).toContain('* "spec.owner" (string, required)');
+    expect(field).toContain('* "spec.owner" → relation "ownedBy"');
+    expect(field).not.toContain('spec.lifecycle');
+    expect(field).not.toContain('Singular in text');
+    expect(field).not.toContain('## Entity Metadata field');
+
+    const relationFields = await describeWith({
+      type: 'field',
+      relation: { $exists: true },
+    });
+    expect(relationFields).toContain('→ relation "ownedBy"');
+    expect(relationFields).not.toContain('spec.lifecycle');
+
+    // The metadata list is kept when metadata items match too
+    const fieldAndTag = await describeWith({
+      $any: [
+        { type: 'field', path: 'spec.owner' },
+        { type: 'tag', name: 'java' },
+      ],
+    });
+    expect(fieldAndTag).toContain('## Entity Metadata field');
+    expect(fieldAndTag).toContain('### Tag "java"');
+
+    const none = await describeWith({ type: 'kind', name: 'Nope' });
+    expect(none).toContain('No items in the catalog model matched');
+    expect(none).toContain('## Entity Metadata field');
+    expect(none).not.toContain('## Entity Kinds');
+  });
+
+  it('should include the metadata list unless only fields match', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    createGetCatalogModelDescriptionAction({
+      modelHolder: ModelHolder.modelPassthroughForTest(
+        createModelWithKinds(
+          [
+            { kind: 'Component', versions: [{ apiVersion: 'v1' }] },
+            { kind: 'Resource', versions: [{ apiVersion: 'v1' }] },
+          ],
+          () => ['owner', 'lifecycle'],
+        ),
+      ),
+      actionsRegistry: mockActionsRegistry,
+    });
+    const describeWith = async (query: JsonObject) => {
+      const result = await mockActionsRegistry.invoke({
+        id: 'test:get-catalog-model-description',
+        input: { query },
+      });
+      return (result as any).output.description as string;
+    };
+
+    // A kind match keeps the metadata list, even when fields of other kinds
+    // match too
+    const kindAndField = await describeWith({
+      $any: [
+        { type: 'kind', name: 'Component' },
+        { type: 'field', kind: 'Resource', path: 'spec.owner' },
+      ],
+    });
+    expect(kindAndField).toContain('## Entity Metadata field');
+    expect(kindAndField).toContain('Singular in text: "component"');
+    expect(kindAndField).toContain('### Entity Kind "Resource"');
+    expect(kindAndField).not.toContain('Singular in text: "resource"');
+    expect(kindAndField.match(/"spec\.lifecycle"/g)).toHaveLength(1);
+
+    const fieldOnly = await describeWith({
+      type: 'field',
+      kind: 'Resource',
+      path: 'spec.owner',
+    });
+    expect(fieldOnly).not.toContain('## Entity Metadata field');
+    expect(fieldOnly).toContain('* "spec.owner" (string)');
+  });
+
+  it('should be able to query every documented key', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    createGetCatalogModelDescriptionAction({
+      modelHolder: ModelHolder.modelPassthroughForTest(model),
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    const { actions } = await mockActionsRegistry.list();
+    const inputSchema = actions[0].schema.input as any;
+    const queryDescription = inputSchema.properties.query.description as string;
+
+    // Parses lines like `- kind: { type: "kind", name: kind name, ... }`
+    const documented = queryDescription
+      .split('\n')
+      .map(line => line.match(/^- [^{]+: \{ (.*) \}$/))
+      .filter((match): match is RegExpMatchArray => Boolean(match))
+      .map(match => {
+        const parts = match[1].split(', ');
+        const keys = parts.map(part => part.split(':')[0]);
+        // The first part documents the type, e.g. `type: "annotation" | "label"`
+        const types = [...parts[0].matchAll(/"(\w+)"/g)].map(m => m[1]);
+        return { types, keys };
+      });
+    expect(documented.flatMap(d => d.types).sort()).toEqual([
+      'annotation',
+      'field',
+      'kind',
+      'label',
+      'relation',
+      'tag',
+    ]);
+
+    const describeWith = async (query: JsonObject) => {
+      const result = await mockActionsRegistry.invoke({
+        id: 'test:get-catalog-model-description',
+        input: { query },
+      });
+      return (result as any).output.description as string;
+    };
+    const noMatch = 'No items in the catalog model matched';
+
+    for (const { types, keys } of documented) {
+      for (const type of types) {
+        for (const key of keys) {
+          await expect(
+            describeWith({ type, [key]: { $exists: true } }),
+          ).resolves.not.toContain(noMatch);
+        }
+        await expect(
+          describeWith({ type, undocumented: { $exists: true } }),
+        ).resolves.toContain(noMatch);
+      }
+    }
   });
 });

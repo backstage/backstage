@@ -21,7 +21,7 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 - `catalog.register-entity` (Register entity in the Catalog): Registers one or more entities in the Backstage catalog by creating a Location entity that points to a remote `catalog-info.yaml` file.
 - `catalog.unregister-entity` (Unregister entity from the Catalog): Unregisters a Location entity and all entities it owns from the Backstage catalog.
 - `catalog.validate-entity` (Validate Catalog Entity): This action can be used to validate `catalog-info.yaml` file contents meant to be used with the software catalog.
-- `catalog.get-catalog-model-description` (Get a Catalog Model Description): Returns a markdown formatted description of the current catalog model, including all registered entity kinds and their fields, annotations, labels, tags, and relations. Fields that generate relations list the relation type they produce.
+- `catalog.get-catalog-model-description` (Get a Catalog Model Description): Returns a markdown formatted description of the current catalog model, including all registered entity kinds and their fields, annotations, labels, tags, and relations. Fields that generate relations list the relation type they produce. Takes an optional `query` predicate, using the same syntax as `catalog.query-catalog-entities`, that narrows the description to specific kinds, fields, relations, annotations, labels, or tags.
 
 ### Notifications
 
