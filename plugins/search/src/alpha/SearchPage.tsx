@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import {
   CatalogIcon,
   Content,
   useSidebarPinState,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { Card, CardBody, Flex, Grid } from '@backstage/ui';
 import { configApiRef } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
@@ -46,19 +44,8 @@ import {
   type SearchResultItemExtensionPredicate,
 } from '@backstage/plugin-search-react/alpha';
 import { SearchType } from '../components/SearchType';
+import styles from './SearchPage.module.css';
 import { UrlUpdater } from '../components/SearchPage/SearchPage';
-
-const useSearchPageStyles = makeStyles((theme: Theme) => ({
-  filter: {
-    '& + &': {
-      marginTop: theme.spacing(2.5),
-    },
-  },
-  filters: {
-    padding: theme.spacing(2),
-    marginTop: theme.spacing(2),
-  },
-}));
 
 export interface SearchPageProps {
   noTrack: boolean;
@@ -75,7 +62,6 @@ function SearchPageContent(props: SearchPageProps) {
     props.items.find(item => item.predicate?.(result))?.component ??
     DefaultResultListItem;
 
-  const classes = useSearchPageStyles();
   const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
@@ -83,71 +69,78 @@ function SearchPageContent(props: SearchPageProps) {
 
   return (
     <Content>
-      <Grid container direction="row">
-        <Grid item xs={12}>
+      <Grid.Root columns="12">
+        <Grid.Item colSpan="12">
           <SearchBar debounceTime={100} />
-        </Grid>
+        </Grid.Item>
         {!isMobile && (
-          <Grid item xs={3}>
-            <SearchType.Accordion
-              name="Result Type"
-              defaultValue={configApi.getOptionalString('search.defaultType')}
-              showCounts
-              types={[
-                {
-                  value: 'software-catalog',
-                  name: 'Software Catalog',
-                  icon: <CatalogIcon />,
-                },
-              ].concat(props.resultTypes)}
-            />
-            <Paper className={classes.filters}>
-              {types.includes('techdocs') && (
-                <SearchFilter.Select
-                  className={classes.filter}
-                  label="Entity"
-                  name="name"
-                  values={async () => {
-                    const { items } = await catalogApi.getEntities({
-                      fields: ['metadata.name'],
-                      filter: {
-                        'metadata.annotations.backstage.io/techdocs-ref':
-                          CATALOG_FILTER_EXISTS,
-                      },
-                    });
+          <Grid.Item colSpan="3">
+            <Flex direction="column" gap="4">
+              <SearchType.Accordion
+                name="Result Type"
+                defaultValue={configApi.getOptionalString('search.defaultType')}
+                showCounts
+                types={[
+                  {
+                    value: 'software-catalog',
+                    name: 'Software Catalog',
+                    icon: <CatalogIcon />,
+                  },
+                ].concat(props.resultTypes)}
+              />
+              <Card>
+                <CardBody>
+                  {types.includes('techdocs') && (
+                    <SearchFilter.Select
+                      className={styles.filter}
+                      label="Entity"
+                      name="name"
+                      values={async () => {
+                        const { items } = await catalogApi.getEntities({
+                          fields: ['metadata.name'],
+                          filter: {
+                            'metadata.annotations.backstage.io/techdocs-ref':
+                              CATALOG_FILTER_EXISTS,
+                          },
+                        });
 
-                    const names = items.map(entity => entity.metadata.name);
-                    names.sort();
-                    return names;
-                  }}
-                />
-              )}
-              <SearchFilter.Select
-                className={classes.filter}
-                label="Kind"
-                name="kind"
-                values={async () => {
-                  const { facets } = await catalogApi.getEntityFacets({
-                    facets: ['kind'],
-                  });
-                  return (facets.kind ?? [])
-                    .map(facet => facet.value)
-                    .sort((a, b) => a.localeCompare(b));
-                }}
-              />
-              <SearchFilter.Checkbox
-                className={classes.filter}
-                label="Lifecycle"
-                name="lifecycle"
-                values={['experimental', 'production']}
-              />
-              {props.searchFilters.map((SearchFilterComponent, index) => (
-                <SearchFilterComponent key={index} className={classes.filter} />
-              ))}
-            </Paper>
-          </Grid>
+                        const names = items.map(entity => entity.metadata.name);
+                        names.sort();
+                        return names;
+                      }}
+                    />
+                  )}
+                  <SearchFilter.Select
+                    className={styles.filter}
+                    label="Kind"
+                    name="kind"
+                    values={async () => {
+                      const { facets } = await catalogApi.getEntityFacets({
+                        facets: ['kind'],
+                      });
+                      return (facets.kind ?? [])
+                        .map(facet => facet.value)
+                        .sort((a, b) => a.localeCompare(b));
+                    }}
+                  />
+                  <SearchFilter.Checkbox
+                    className={styles.filter}
+                    label="Lifecycle"
+                    name="lifecycle"
+                    values={['experimental', 'production']}
+                  />
+                  {props.searchFilters.map((SearchFilterComponent, index) => (
+                    <SearchFilterComponent
+                      key={index}
+                      className={styles.filter}
+                    />
+                  ))}
+                </CardBody>
+              </Card>
+            </Flex>
+          </Grid.Item>
         )}
-        <Grid item xs>
+        <Grid.Item colSpan={isMobile ? '12' : '9'}>
           <SearchPagination />
           <SearchResults>
             {({ results }) => (
@@ -168,8 +161,8 @@ function SearchPageContent(props: SearchPageProps) {
             )}
           </SearchResults>
           <SearchResultPager />
-        </Grid>
-      </Grid>
+        </Grid.Item>
+      </Grid.Root>
     </Content>
   );
 }
