@@ -135,7 +135,7 @@ describe('DefaultSecretResolverService', () => {
     expect(handleB.value).toBe('b-value');
 
     // Identity is derived from the resolver instance, not the reference, so it
-    // cannot be spoofed by the caller.
+    // cannot be influenced by template input or other end-user data.
     expect(providerA.observedConsumers).toEqual([
       { pluginId: 'test-consumer' },
     ]);

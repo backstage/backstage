@@ -63,9 +63,16 @@ export interface ResolvedSecret {
  *
  * @remarks
  *
- * This is derived from the plugin-scoped resolver instance, never from a
- * caller-supplied argument or from the {@link SecretReference}, so it cannot be
- * spoofed by a template or other caller.
+ * This is derived from the plugin-scoped resolver instance (from the plugin's
+ * metadata), never from a caller-supplied argument or from the
+ * {@link SecretReference}, so it cannot be influenced by template input or other
+ * end-user data that flows through a resolve.
+ *
+ * Within a single backend, plugins are mutually trusted and share a process, so
+ * `pluginId` is trusted attribution rather than a security boundary between
+ * plugins: a plugin that depends on the provider service ref, or that constructs
+ * its own resolver, can present any `pluginId`. Provider authors must not use it
+ * as an authorization control against sibling plugins.
  *
  * @public
  */
