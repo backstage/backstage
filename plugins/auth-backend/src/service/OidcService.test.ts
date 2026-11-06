@@ -307,6 +307,122 @@ describe('OidcService', () => {
         expect(client.clientSecret).toBeDefined();
       });
 
+      it('should only store grant and response types the server supports', async () => {
+        const { service: offline } = await createOidcService({
+          databaseId,
+          offlineAccess: {} as unknown as OfflineAccessService,
+        });
+        const { service: online } = await createOidcService({ databaseId });
+        const register = (
+          svc: typeof online,
+          opts: { grantTypes?: string[]; responseTypes?: string[] },
+        ) =>
+          svc.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:8080/callback'],
+            ...opts,
+          });
+
+        await expect(
+          register(offline, {
+            grantTypes: [
+              'authorization_code',
+              'refresh_token',
+              'client_credentials',
+            ],
+          }),
+        ).resolves.toMatchObject({
+          grantTypes: ['authorization_code', 'refresh_token'],
+        });
+        await expect(
+          register(offline, { grantTypes: ['refresh_token'] }),
+        ).resolves.toMatchObject({
+          grantTypes: ['authorization_code', 'refresh_token'],
+        });
+        await expect(
+          register(online, {
+            grantTypes: ['authorization_code', 'refresh_token'],
+          }),
+        ).resolves.toMatchObject({ grantTypes: ['authorization_code'] });
+        await expect(
+          register(online, { grantTypes: ['client_credentials', 'implicit'] }),
+        ).resolves.toMatchObject({ grantTypes: ['authorization_code'] });
+        await expect(register(online, {})).resolves.toMatchObject({
+          grantTypes: ['authorization_code'],
+          responseTypes: ['code'],
+        });
+        await expect(
+          register(online, { responseTypes: ['token'] }),
+        ).resolves.toMatchObject({ responseTypes: ['code'] });
+      });
+
+      it('should only accept advertised token endpoint auth methods', async () => {
+        const { service: withCimd } = await createOidcService({
+          databaseId,
+          config: { auth: { clientIdMetadataDocuments: { enabled: true } } },
+        });
+        const { service: withoutCimd } = await createOidcService({
+          databaseId,
+        });
+        const method = async (svc: typeof withCimd, requested?: string) =>
+          (
+            await svc.registerClient({
+              clientName: 'Test Client',
+              redirectUris: ['http://localhost:8080/callback'],
+              tokenEndpointAuthMethod: requested,
+            })
+          ).metadata?.token_endpoint_auth_method;
+
+        await expect(method(withCimd, 'none')).resolves.toBe('none');
+        await expect(method(withoutCimd, 'none')).resolves.toBe(
+          'client_secret_basic',
+        );
+        await expect(method(withCimd, 'client_secret_post')).resolves.toBe(
+          'client_secret_post',
+        );
+        await expect(method(withCimd, 'private_key_jwt')).resolves.toBe(
+          'client_secret_basic',
+        );
+        await expect(method(withCimd)).resolves.toBe('client_secret_basic');
+      });
+
+      it('should require PKCE for public clients only', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: { auth: { clientIdMetadataDocuments: { enabled: true } } },
+        });
+        const redirectUri = 'http://localhost:8080/callback';
+        const publicClient = await service.registerClient({
+          clientName: 'Public Client',
+          redirectUris: [redirectUri],
+          tokenEndpointAuthMethod: 'none',
+        });
+        const confidentialClient = await service.registerClient({
+          clientName: 'Confidential Client',
+          redirectUris: [redirectUri],
+        });
+        const authorize = (clientId: string, codeChallenge?: string) =>
+          service.createAuthorizationSession({
+            clientId,
+            redirectUri,
+            responseType: 'code',
+            ...(codeChallenge && {
+              codeChallenge,
+              codeChallengeMethod: 'S256',
+            }),
+          });
+
+        await expect(authorize(publicClient.clientId)).rejects.toThrow(
+          'PKCE is required',
+        );
+        await expect(
+          authorize(publicClient.clientId, 'challenge'),
+        ).resolves.toBeDefined();
+        await expect(
+          authorize(confidentialClient.clientId),
+        ).resolves.toBeDefined();
+      });
+
       it('should throw an error for invalid redirect URI', async () => {
         const { service } = await createOidcService({
           databaseId,
@@ -1209,6 +1325,16 @@ describe('OidcService', () => {
               clientId: client.clientId,
               clientSecret: client.clientSecret,
             }),
+          ).resolves.toBe(true);
+
+          // DCR clients registered as public clients do not need a secret
+          const publicClient = await service.registerClient({
+            clientName: 'Public Client',
+            redirectUris: ['http://localhost:8080/callback'],
+            tokenEndpointAuthMethod: 'none',
+          });
+          await expect(
+            service.verifyRevocationClient({ clientId: publicClient.clientId }),
           ).resolves.toBe(true);
         });
 

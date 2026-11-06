@@ -66,6 +66,7 @@ const registerRequestBodySchema = z.object({
   response_types: z.array(z.string()).optional(),
   grant_types: z.array(z.string()).optional(),
   scope: z.string().optional(),
+  token_endpoint_auth_method: z.string().optional(),
 });
 
 const revokeRequestBodySchema = z.object({
@@ -585,6 +586,7 @@ export class OidcRouter {
           response_types: responseTypes,
           grant_types: grantTypes,
           scope,
+          token_endpoint_auth_method: tokenEndpointAuthMethod,
         } = validateRequest(registerRequestBodySchema, req.body);
 
         try {
@@ -594,12 +596,26 @@ export class OidcRouter {
             responseTypes,
             grantTypes,
             scope,
+            tokenEndpointAuthMethod,
           });
+          const authMethod =
+            client.metadata?.token_endpoint_auth_method ??
+            'client_secret_basic';
 
+          // RFC 7591 section 3.2.1: return all registered client metadata
           return res.status(201).json({
             client_id: client.clientId,
+            ...(authMethod !== 'none' && {
+              client_secret: client.clientSecret,
+              client_secret_expires_at: 0,
+            }),
+            client_id_issued_at: Math.floor(Date.now() / 1000),
+            client_name: client.clientName,
             redirect_uris: client.redirectUris,
-            client_secret: client.clientSecret,
+            grant_types: client.grantTypes,
+            response_types: client.responseTypes,
+            token_endpoint_auth_method: authMethod,
+            ...(client.scope && { scope: client.scope }),
           });
         } catch (e) {
           throw OidcError.fromError(e);

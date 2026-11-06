@@ -276,6 +276,7 @@ export class OidcService {
     clientName: string;
     redirectUris?: string[];
     scope?: string;
+    tokenEndpointAuthMethod?: string;
   }) {
     const generatedClientId = crypto.randomUUID();
     const generatedClientSecret = crypto.randomUUID();
@@ -297,10 +298,38 @@ export class OidcService {
       clientName: opts.clientName,
       clientSecret: generatedClientSecret,
       redirectUris: opts.redirectUris ?? [],
-      responseTypes: opts.responseTypes ?? ['code'],
-      grantTypes: opts.grantTypes ?? ['authorization_code'],
+      responseTypes: ['code'],
+      grantTypes: this.supportedGrantTypes(opts.grantTypes),
       scope: opts.scope,
+      metadata: {
+        token_endpoint_auth_method: this.supportedTokenEndpointAuthMethod(
+          opts.tokenEndpointAuthMethod,
+        ),
+      },
     });
+  }
+
+  // Must match token_endpoint_auth_methods_supported in the discovery document
+  private supportedTokenEndpointAuthMethod(requested?: string) {
+    const supported = [
+      'client_secret_basic',
+      'client_secret_post',
+      ...(this.isCimdEnabled() ? ['none'] : []),
+    ];
+    return requested && supported.includes(requested)
+      ? requested
+      : 'client_secret_basic';
+  }
+
+  // Only keep grant types that the token endpoint actually accepts, and always
+  // include authorization_code since it is the only way to obtain tokens
+  private supportedGrantTypes(requested?: string[]) {
+    return [
+      'authorization_code',
+      ...(this.offlineAccess && requested?.includes('refresh_token')
+        ? ['refresh_token']
+        : []),
+    ];
   }
 
   public async createAuthorizationSession(opts: {
@@ -486,7 +515,7 @@ export class OidcService {
     return {
       clientName: client.clientName,
       redirectUris: client.redirectUris,
-      requiresPkce: false,
+      requiresPkce: client.metadata?.token_endpoint_auth_method === 'none',
     };
   }
 
@@ -726,9 +755,10 @@ export class OidcService {
   }
 
   /**
-   * Verifies a client for token revocation. DCR clients are confidential
-   * clients and must present a valid client secret, while CIMD clients are
-   * public clients that are identified by their client ID alone. The CIMD
+   * Verifies a client for token revocation. Confidential DCR clients must
+   * present a valid client secret, while CIMD clients and DCR clients
+   * registered with the "none" auth method are public clients that are
+   * identified by their client ID alone. The CIMD
    * metadata document is deliberately not fetched here, so that tokens can
    * still be revoked when the document is unreachable or has been removed.
    */
@@ -755,7 +785,8 @@ export class OidcService {
     }
 
     if (!clientSecret) {
-      return false;
+      const client = await this.oidc.getClient({ clientId });
+      return client?.metadata?.token_endpoint_auth_method === 'none';
     }
 
     return this.verifyClientCredentials({ clientId, clientSecret });
