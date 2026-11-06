@@ -180,6 +180,15 @@ describe('createPackageVersionProvider', () => {
         { range: '^4.17.1', version: '4.21.2' },
       ],
       zod: [{ range: '3.25.76', version: '3.25.76' }],
+      '@material-ui/lab': [
+        { range: '4.0.0-alpha.61', version: '4.0.0-alpha.61' },
+      ],
+      '@backstage/plugin-catalog-node': [
+        {
+          range: packageVersions['@backstage/plugin-catalog-node'],
+          version: packageVersions['@backstage/plugin-catalog-node'],
+        },
+      ],
     };
     const lockfile = {
       get: (name: string) => entries[name],
@@ -197,6 +206,14 @@ describe('createPackageVersionProvider', () => {
     expect(provider('express', '4.17.1')).toBe('^4.17.1');
     expect(provider('zod', '3.25.76')).toBe('^3.25.76');
     expect(provider('zod', '3.20.0')).toBe('^3.25.76');
+    // A prerelease hint stays pinned, while the version of the CLI is widened
+    // even when it is a prerelease, like it is without a lockfile entry
+    expect(provider('@material-ui/lab', '4.0.0-alpha.61')).toBe(
+      '4.0.0-alpha.61',
+    );
+    expect(provider('@backstage/plugin-catalog-node')).toBe(
+      `^${packageVersions['@backstage/plugin-catalog-node']}`,
+    );
   });
 
   describe('with backstage protocol options', () => {
