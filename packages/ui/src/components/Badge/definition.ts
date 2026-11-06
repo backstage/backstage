@@ -27,11 +27,14 @@ export const BadgeDefinition = defineComponent<BadgeOwnProps>()({
   classNames: {
     root: 'bui-Badge',
     icon: 'bui-BadgeIcon',
+    spinner: 'bui-BadgeSpinner',
   },
   bg: 'consumer',
   propDefs: {
     icon: {},
     size: { dataAttribute: true, default: 'small' },
+    status: { dataAttribute: true },
+    isPending: { dataAttribute: true },
     children: {},
     className: {},
   },
