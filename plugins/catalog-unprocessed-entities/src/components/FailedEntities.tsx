@@ -27,7 +27,6 @@ import { Alert, Box, ButtonIcon, Text } from '@backstage/ui';
 import { RiDeleteBinLine } from '@remixicon/react';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { entityRefFilterAndSearch } from './filterEntities';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
@@ -118,7 +117,7 @@ export const FailedEntities = () => {
     entityRef,
   }: {
     entityId: string;
-    entityRef: string | undefined;
+    entityRef: string;
   }) => {
     setSelectedEntityId(entityId);
     setSelectedEntityRef(entityRef);
@@ -130,18 +129,14 @@ export const FailedEntities = () => {
       if (selectedEntityId) {
         await unprocessedApi.delete(selectedEntityId);
         toastApi.post({
-          title: `Entity ${
-            selectedEntityRef ?? selectedEntityId
-          } has been deleted`,
+          title: `Entity ${selectedEntityRef} has been deleted`,
           status: 'success',
         });
         retry();
       }
     } catch (e) {
       toastApi.post({
-        title: `Failed to delete entity ${
-          selectedEntityRef ?? selectedEntityId
-        }`,
+        title: `Failed to delete entity ${selectedEntityRef}`,
         status: 'danger',
       });
     }
@@ -153,16 +148,17 @@ export const FailedEntities = () => {
       title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
-      customFilterAndSearch: entityRefFilterAndSearch,
+      customFilterAndSearch: (query, row: any) =>
+        row.entity_ref.toUpperCase().includes(query.toUpperCase()),
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).entity_ref || '-',
+        (rowData as UnprocessedEntity).entity_ref,
     },
     {
       title: <Text>Location Path</Text>,
       sorting: true,
       field: 'location_key',
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).location_key || '-',
+        (rowData as UnprocessedEntity).location_key,
     },
     {
       title: <Text>Kind</Text>,
@@ -212,12 +208,12 @@ export const FailedEntities = () => {
         return (
           <ButtonIcon
             variant="tertiary"
-            aria-label={`Delete entity ${entity_ref ?? 'unknown'}`}
+            aria-label={`Delete entity ${entity_ref}`}
             icon={<RiDeleteBinLine />}
             onPress={() =>
               handleDelete({
                 entityId: entity_id,
-                entityRef: entity_ref ?? undefined,
+                entityRef: entity_ref,
               })
             }
           />

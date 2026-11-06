@@ -142,22 +142,4 @@ describe('PendingEntities', () => {
     );
     expect(screen.getByText('component:default/beta')).toBeInTheDocument();
   });
-
-  it('renders a placeholder for a null entity_ref', async () => {
-    api.pending.mockResolvedValue({
-      entities: [
-        makeEntity(),
-        makeEntity({
-          entity_id: 'id-null',
-          entity_ref: null as unknown as string,
-        }),
-      ],
-    });
-    await renderComponent();
-
-    expect(
-      await screen.findByText('component:default/alpha'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('-')).toBeInTheDocument();
-  });
 });

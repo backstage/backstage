@@ -21,7 +21,6 @@ import {
 } from '@backstage/core-components';
 import { Alert, Text } from '@backstage/ui';
 
-import { entityRefFilterAndSearch } from './filterEntities';
 import { EntityDialog } from './EntityDialog';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
@@ -48,9 +47,10 @@ export const PendingEntities = () => {
       title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
-      customFilterAndSearch: entityRefFilterAndSearch,
+      customFilterAndSearch: (query, row: any) =>
+        row.entity_ref.toUpperCase().includes(query.toUpperCase()),
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).entity_ref || '-',
+        (rowData as UnprocessedEntity).entity_ref,
     },
     {
       title: <Text>Kind</Text>,

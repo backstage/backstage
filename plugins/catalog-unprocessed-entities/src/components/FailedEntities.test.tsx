@@ -161,24 +161,6 @@ describe('FailedEntities', () => {
     expect(screen.getByText('unknown')).toBeInTheDocument();
   });
 
-  it('renders a placeholder for a null entity_ref', async () => {
-    api.failed.mockResolvedValue({
-      entities: [
-        makeEntity(),
-        makeEntity({
-          entity_id: 'id-null',
-          entity_ref: null as unknown as string,
-        }),
-      ],
-    });
-    await renderComponent();
-
-    expect(
-      await screen.findByText('component:default/alpha'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('-')).toBeInTheDocument();
-  });
-
   it('filters and sorts by kind', async () => {
     const user = userEvent.setup();
     api.failed.mockResolvedValue({
@@ -243,31 +225,24 @@ describe('FailedEntities', () => {
     await waitFor(() => expect(api.failed).toHaveBeenCalledTimes(2));
   });
 
-  it('falls back to the entity id (never "undefined") when deleting a null-ref entity fails', async () => {
-    api.failed.mockResolvedValue({
-      entities: [
-        makeEntity({
-          entity_id: 'id-null',
-          entity_ref: null as unknown as string,
-        }),
-      ],
-    });
+  it('reports an error alert when the delete call fails', async () => {
+    api.failed.mockResolvedValue({ entities: [makeEntity()] });
     api.delete.mockRejectedValue(new Error('network error'));
     await renderComponent();
 
     await userEvent.click(
       (
-        await screen.findAllByLabelText('Delete entity unknown')
+        await screen.findAllByLabelText('Delete entity component:default/alpha')
       )[0],
     );
     await userEvent.click(
       await screen.findByRole('button', { name: 'Delete' }),
     );
 
-    await waitFor(() => expect(api.delete).toHaveBeenCalledWith('id-null'));
+    await waitFor(() => expect(api.delete).toHaveBeenCalledWith('id-alpha'));
     expect(toastApi.post).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'Failed to delete entity id-null',
+        title: 'Failed to delete entity component:default/alpha',
         status: 'danger',
       }),
     );
