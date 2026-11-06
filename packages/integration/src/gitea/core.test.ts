@@ -111,6 +111,14 @@ describe('gitea core', () => {
   });
 
   describe('getGiteaRequestOptions', () => {
+    it('returns an object with a headers property when no password is set', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.com',
+      };
+
+      expect(getGiteaRequestOptions(config)).toEqual({ headers: {} });
+    });
+
     it('adds basic auth when username and password are specified', () => {
       const authRequest: GiteaIntegrationConfig = {
         host: 'gitea.com',
