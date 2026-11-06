@@ -132,11 +132,11 @@ export interface SecretProviderRegistry {
 }
 
 /**
- * Options for {@link SecretResolverService.resolve}.
+ * Options for {@link SecretsService.resolve}.
  *
  * @public
  */
-export interface SecretResolverResolveOptions {
+export interface SecretsResolveOptions {
   /** The administrator-configured reference to resolve. */
   reference: SecretReference;
 }
@@ -153,6 +153,6 @@ export interface SecretResolverResolveOptions {
  *
  * @public
  */
-export interface SecretResolverService {
-  resolve(options: SecretResolverResolveOptions): Promise<ResolvedSecret>;
+export interface SecretsService {
+  resolve(options: SecretsResolveOptions): Promise<ResolvedSecret>;
 }

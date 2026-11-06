@@ -18,8 +18,8 @@ providers — but no real provider.
   that only that provider interprets.
 - **`SecretProvider`** — resolves a provider-specific reference to a value.
   Registered by id against `secretProviderServiceRef` (root scoped, multiton).
-- **`SecretResolverService`** — plugin-scoped service that routes a reference to
-  the matching provider and returns a `ResolvedSecret` handle
+- **`SecretsService`** — plugin-scoped service that routes a reference to the
+  matching provider and returns a `ResolvedSecret` handle
   (`value`, optional `expiresAt`, optional async `dispose()`).
 
 The resolver never logs or persists the reference payload or the resolved value;
@@ -49,7 +49,7 @@ export const myProviderFactory = createServiceFactory({
 
 ## Resolving a secret
 
-A consumer injects `secretResolverServiceRef` as a dependency and disposes the
+A consumer injects `secretsServiceRef` as a dependency and disposes the
 handle at its own lifecycle boundary. Always obtain the resolver through
 dependency injection rather than constructing one by hand — the resolver is
 plugin scoped, so the consuming plugin's identity is derived from the injected
@@ -57,13 +57,13 @@ instance:
 
 ```ts
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
-import { secretResolverServiceRef } from '@internal/secrets-node';
+import { secretsServiceRef } from '@internal/secrets-node';
 
 export const myPlugin = createBackendPlugin({
   pluginId: 'my-plugin',
   register(env) {
     env.registerInit({
-      deps: { secrets: secretResolverServiceRef },
+      deps: { secrets: secretsServiceRef },
       async init({ secrets }) {
         const handle = await secrets.resolve({
           reference: {

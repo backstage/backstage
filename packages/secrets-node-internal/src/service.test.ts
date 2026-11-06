@@ -19,9 +19,9 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { secretProviderServiceRef, secretResolverServiceRef } from './service';
+import { secretProviderServiceRef, secretsServiceRef } from './service';
 
-describe('secretResolverServiceRef', () => {
+describe('secretsServiceRef', () => {
   it('derives the consumer identity from the plugin metadata, not the caller', async () => {
     const observedConsumers: string[] = [];
 
@@ -44,7 +44,7 @@ describe('secretResolverServiceRef', () => {
         pluginId,
         register(env) {
           env.registerInit({
-            deps: { secrets: secretResolverServiceRef },
+            deps: { secrets: secretsServiceRef },
             async init({ secrets }) {
               await secrets.resolve({
                 reference: { provider: 'test', reference: { key: 'token' } },

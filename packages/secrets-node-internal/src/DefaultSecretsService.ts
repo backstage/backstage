@@ -20,30 +20,30 @@ import type {
   ResolvedSecret,
   SecretConsumerContext,
   SecretProviderRegistry,
-  SecretResolverResolveOptions,
-  SecretResolverService,
+  SecretsResolveOptions,
+  SecretsService,
 } from './types';
 
 /**
- * Options for {@link DefaultSecretResolverService.create}.
+ * Options for {@link DefaultSecretsService.create}.
  *
  * @public
  */
-export interface DefaultSecretResolverServiceOptions {
-  /** The validated provider lookup this resolver routes through. */
+export interface DefaultSecretsServiceOptions {
+  /** The validated provider lookup this service routes through. */
   registry: SecretProviderRegistry;
-  /** The consumer this resolver instance acts on behalf of. */
+  /** The consumer this service instance acts on behalf of. */
   consumer: SecretConsumerContext;
   logger: LoggerService;
 }
 
 /**
- * Default {@link SecretResolverService} that routes a reference to a registered
- * provider by id.
+ * Default {@link SecretsService} that routes a reference to a registered provider
+ * by id.
  *
  * @remarks
  *
- * The resolver never logs or persists the opaque reference payload or the
+ * The service never logs or persists the opaque reference payload or the
  * resolved value; only non-sensitive metadata (provider id, consuming plugin
  * id) is emitted. Provider failures propagate to the consumer unchanged, so
  * keeping sensitive data out of error messages is the provider's
@@ -51,11 +51,9 @@ export interface DefaultSecretResolverServiceOptions {
  *
  * @public
  */
-export class DefaultSecretResolverService implements SecretResolverService {
-  static create(
-    options: DefaultSecretResolverServiceOptions,
-  ): DefaultSecretResolverService {
-    return new DefaultSecretResolverService(
+export class DefaultSecretsService implements SecretsService {
+  static create(options: DefaultSecretsServiceOptions): DefaultSecretsService {
+    return new DefaultSecretsService(
       options.registry,
       Object.freeze({ ...options.consumer }),
       options.logger,
@@ -68,9 +66,7 @@ export class DefaultSecretResolverService implements SecretResolverService {
     private readonly logger: LoggerService,
   ) {}
 
-  async resolve({
-    reference,
-  }: SecretResolverResolveOptions): Promise<ResolvedSecret> {
+  async resolve({ reference }: SecretsResolveOptions): Promise<ResolvedSecret> {
     const provider = this.registry.getProvider(reference.provider);
     if (!provider) {
       throw new NotFoundError(

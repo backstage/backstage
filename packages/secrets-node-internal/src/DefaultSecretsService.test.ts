@@ -16,7 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
-import { DefaultSecretResolverService } from './DefaultSecretResolverService';
+import { DefaultSecretsService } from './DefaultSecretsService';
 import { createSecretProviderRegistry } from './SecretProviderRegistry';
 import type {
   ResolvedSecret,
@@ -104,14 +104,14 @@ function createTestSecretProvider(options: {
   };
 }
 
-describe('DefaultSecretResolverService', () => {
+describe('DefaultSecretsService', () => {
   const consumer = { pluginId: 'test-consumer' };
 
   const createService = (
     providers: TestSecretProvider[],
     logger = mockServices.logger.mock(),
   ) =>
-    DefaultSecretResolverService.create({
+    DefaultSecretsService.create({
       registry: createSecretProviderRegistry(providers),
       consumer,
       logger,
