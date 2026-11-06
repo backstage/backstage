@@ -111,6 +111,20 @@ when consumers can use the system without authentication. An empty method
 schema still makes unauthenticated access explicit in configuration and in
 consumer code.
 
+For HTTP(S) base roots, opt in to `connectionBaseUrlSchema`. It accepts either
+trailing-slash form and returns a trailing slash, so `new URL('items', baseUrl)`
+keeps a context prefix such as `/context/`. Consumer paths must be relative,
+without a leading slash. Credentials, queries and fragments are rejected; keep
+any provider-specific HTTPS or host checks as additional refinements.
+
+```ts
+import { connectionBaseUrlSchema } from '../system/connectionBaseUrlSchema';
+
+const configSchema = z.object({
+  apiBaseUrl: connectionBaseUrlSchema.optional(),
+});
+```
+
 ### Avoid reserved fields
 
 The framework owns these connection-level fields:
