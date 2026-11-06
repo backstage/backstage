@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import { AuthenticationError } from '@backstage/errors';
 import { decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
 
 import { ExternalTokenHandler } from './types';
@@ -89,18 +88,6 @@ export const legacyTokenHandler: LegacyTokenHandlerOverloaded = {
         subject: context.subject,
       };
     } catch (error) {
-      // Callers trying multiple credentials need a consistent token-validation error type.
-      if (
-        [
-          'ERR_JWT_EXPIRED',
-          'ERR_JWT_CLAIM_VALIDATION_FAILED',
-          'ERR_JWT_INVALID',
-          'ERR_JWS_INVALID',
-          'ERR_JOSE_ALG_NOT_ALLOWED',
-        ].includes(error.code)
-      ) {
-        throw new AuthenticationError(error.message);
-      }
       if (error.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
         throw error;
       }

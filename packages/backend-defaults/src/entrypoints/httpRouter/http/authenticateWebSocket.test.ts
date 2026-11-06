@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { randomBytes } from 'node:crypto';
 import { SignJWT } from 'jose';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { authServiceFactory } from '../../auth/authServiceFactory';
 import { authenticateWebSocket } from './authenticateWebSocket';
@@ -101,7 +102,7 @@ describe('authenticateWebSocket', () => {
           request: request(headers),
           authPolicy: 'authenticated',
         }),
-      ).rejects.toThrow('Missing or invalid');
+      ).rejects.toMatchObject({ name: 'AuthenticationError' });
     }
   });
 
@@ -153,9 +154,6 @@ describe('authenticateWebSocket', () => {
         )}.signature`,
     );
     for (const token of [expired, notYetValid, ...malformedPluginTokens]) {
-      await expect(auth.authenticate(token)).rejects.toMatchObject({
-        name: 'AuthenticationError',
-      });
       await expect(
         authenticateWebSocket({
           auth,
@@ -183,6 +181,51 @@ describe('authenticateWebSocket', () => {
           request: request({ 'sec-websocket-protocol': token }),
         }),
       ).rejects.toMatchObject({ name: 'AuthenticationError' });
+    }
+  });
+
+  it('skips any candidate error and retains authentication failures for rejection', async () => {
+    const auth = mockServices.auth();
+    const authenticate = jest.spyOn(auth, 'authenticate');
+    const config = mockServices.rootConfig();
+    const denied = new NotAllowedError('Caller is not allowed');
+    const invalid = new AuthenticationError('Credentials have expired');
+    for (const error of [
+      new Error('Verification failed'),
+      null,
+      invalid,
+      denied,
+    ]) {
+      authenticate.mockRejectedValueOnce(error);
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          authPolicy: 'authenticated',
+          request: request({
+            'sec-websocket-protocol': `invalid, ${mockCredentials.user.token()}`,
+          }),
+        }),
+      ).resolves.toEqual({
+        credentials: mockCredentials.user(),
+        authProtocol: mockCredentials.user.token(),
+      });
+    }
+    for (const errors of [
+      [invalid, new Error('Failure')],
+      [denied, invalid],
+    ]) {
+      for (const error of errors) {
+        authenticate.mockRejectedValueOnce(error);
+      }
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          authPolicy: 'authenticated',
+          request: request({ 'sec-websocket-protocol': 'first, second' }),
+        }),
+      ).rejects.toBe(errors[0]);
     }
   });
 
@@ -221,7 +264,7 @@ describe('authenticateWebSocket', () => {
         }),
         authPolicy: 'authenticated',
       }),
-    ).rejects.toThrow('Missing or invalid');
+    ).rejects.toThrow('Limited user token is not allowed');
     for (const origin of [undefined, 'https://other.example.com']) {
       await expect(
         authenticateWebSocket({

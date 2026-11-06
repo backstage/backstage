@@ -112,12 +112,7 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
       return undefined;
     }
 
-    let pluginId: string;
-    try {
-      pluginId = String(decodeJwt(token).sub);
-    } catch {
-      throw new AuthenticationError('Invalid plugin token payload');
-    }
+    const pluginId = String(decodeJwt(token).sub);
     if (!pluginId) {
       throw new AuthenticationError('Invalid plugin token: missing subject');
     }

@@ -331,10 +331,14 @@ describe('httpRouterFactory', () => {
       await hook();
     }
     const token = 'never-log-this-token';
-    for (const [error, status] of [
-      [new AuthenticationError(token), '401 Unauthorized'],
-      [new NotAllowedError(token), '403 Forbidden'],
-      [new Error(token), '500 Internal Server Error'],
+    for (const [error, status, errorType] of [
+      [
+        new AuthenticationError(token),
+        '401 Unauthorized',
+        'AuthenticationError',
+      ],
+      [new NotAllowedError(token), '403 Forbidden', 'NotAllowedError'],
+      [new Error(token), '401 Unauthorized', 'AuthenticationError'],
     ] as const) {
       auth.authenticate.mockRejectedValueOnce(error);
       const socket = new PassThrough();
@@ -357,7 +361,7 @@ describe('httpRouterFactory', () => {
           pluginId: 'test',
           path: '/events',
           remoteAddress: '192.0.2.1',
-          errorType: error.name,
+          errorType,
           status,
         },
       );

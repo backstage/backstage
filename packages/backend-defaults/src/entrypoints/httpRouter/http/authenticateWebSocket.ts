@@ -21,7 +21,7 @@ import type {
   RootConfigService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, toError } from '@backstage/errors';
 import type { IncomingMessage } from 'node:http';
 
 export async function authenticateWebSocket(options: {
@@ -48,6 +48,7 @@ export async function authenticateWebSocket(options: {
       .filter(Boolean) ?? [];
   const candidates = bearer ? [...protocols, bearer] : protocols;
   let deniedError: Error | undefined;
+  let authenticationError: Error | undefined;
   for (const [index, token] of candidates.entries()) {
     try {
       const credentials = await auth.authenticate(token);
@@ -67,7 +68,8 @@ export async function authenticateWebSocket(options: {
           candidateIndex: index,
         },
       );
-    } catch (error) {
+    } catch (err) {
+      const error = toError(err);
       logger?.debug('WebSocket authentication candidate failed', {
         source: index < protocols.length ? 'protocol' : 'authorization',
         candidateIndex: index,
@@ -75,8 +77,8 @@ export async function authenticateWebSocket(options: {
       });
       if (error.name === 'NotAllowedError') {
         deniedError = error;
-      } else if (error.name !== 'AuthenticationError') {
-        throw error;
+      } else if (error.name === 'AuthenticationError') {
+        authenticationError ??= error;
       }
     }
   }
@@ -90,6 +92,7 @@ export async function authenticateWebSocket(options: {
   }
   throw (
     deniedError ??
+    authenticationError ??
     new AuthenticationError('Missing or invalid WebSocket credentials')
   );
 }
