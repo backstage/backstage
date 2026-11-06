@@ -45,11 +45,12 @@ export interface TranslationRef<
  * A message selected from a translation ref.
  *
  * Created by calling a translation ref with one of its declared message keys.
+ * The options type defaults to `unknown`, accepting selections with any required
+ * formatting values. Use `TranslationRefTuple<undefined>` for messages that do
+ * not require formatting values.
  * @public
  */
-export interface TranslationRefTuple<
-  TOptions extends {} | undefined = undefined,
-> {
+export interface TranslationRefTuple<TOptions = unknown> {
   /** The ref that owns the selected message; its catalog is erased from the tuple. */
   readonly ref: TranslationRef;
   /** The selected message key. */

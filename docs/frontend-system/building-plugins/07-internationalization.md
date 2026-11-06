@@ -388,8 +388,11 @@ of the referenced messages require values.
 ### Consuming title translations
 
 Extensions keep their existing static title string and can additionally provide
-`coreExtensionData.titleTranslation`, containing a `TranslationRefTuple` with
-`ref` and `key`. Consumers resolve that selection through the translation API
+`coreExtensionData.titleTranslation`, containing a
+`TranslationRefTuple<undefined>` with `ref` and `key`. The explicit type parameter
+restricts titles to messages without required formatting values. A bare
+`TranslationRefTuple` accepts selections with any required values, keeping their
+options unknown. Consumers resolve that selection through the translation API
 and subscribe to `translation$(selection.ref)` for language changes. For a group
 of titles, wait until all required refs are ready before publishing new values.
 Use the static titles initially and retain the last resolved group during later

@@ -22,7 +22,7 @@ import { TranslationRefTuple } from './TranslationRef';
 
 /** Resolves title selections without suspending or remounting their consumers. @internal */
 export function useTranslatedTitles(
-  selections: readonly (TranslationRefTuple | undefined)[],
+  selections: readonly (TranslationRefTuple<undefined> | undefined)[],
 ): readonly (string | undefined)[] {
   const api = useApi(translationApiRef);
   const source = useMemo(

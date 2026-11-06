@@ -1792,7 +1792,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
     path: string;
-    title?: string | TranslationRefTuple;
+    title?: string | TranslationRefTuple<undefined>;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
@@ -2128,7 +2128,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sub-page';
   params: {
     path: string;
-    title: string | TranslationRefTuple;
+    title: string | TranslationRefTuple<undefined>;
     icon?: IconElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
@@ -2373,9 +2373,7 @@ export interface TranslationRefOptions<
 }
 
 // @public
-export interface TranslationRefTuple<
-  TOptions extends {} | undefined = undefined,
-> {
+export interface TranslationRefTuple<TOptions = unknown> {
   readonly key: string;
   readonly ref: TranslationRef;
   readonly T: TOptions;

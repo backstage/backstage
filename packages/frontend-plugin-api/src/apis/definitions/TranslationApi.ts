@@ -331,12 +331,17 @@ type TupleMessageKeys<
 export type TranslationMessageOptions<
   TMessages extends { [key: string]: string },
   TKey extends TranslationMessageKey<TMessages>,
-> = TranslationFunctionOptions<
-  TupleMessageKeys<TKey, CollapsedMessages<TMessages>>,
-  PluralKeys<TMessages>,
-  CollapsedMessages<TMessages>,
-  string
-> extends [options: infer TOptions extends {}]
+> = string extends CollapsedMessages<TMessages>[TupleMessageKeys<
+  TKey,
+  CollapsedMessages<TMessages>
+>]
+  ? unknown
+  : TranslationFunctionOptions<
+      TupleMessageKeys<TKey, CollapsedMessages<TMessages>>,
+      PluralKeys<TMessages>,
+      CollapsedMessages<TMessages>,
+      string
+    > extends [options: infer TOptions extends {}]
   ? TOptions
   : undefined;
 

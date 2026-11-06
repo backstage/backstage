@@ -21,7 +21,7 @@ import { ReactElement } from 'react';
 export type EntityLayoutRoute = {
   path: string;
   title: string;
-  titleTranslation?: TranslationRefTuple;
+  titleTranslation?: TranslationRefTuple<undefined>;
   group?: string;
   icon?: string | ReactElement;
   children: JSX.Element;

@@ -277,7 +277,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationRefTuple;
+        title?: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;

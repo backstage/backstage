@@ -22,7 +22,7 @@ import type {
 /** Collects ready translations as a single snapshot, batching notifications within a microtask. @internal */
 export function createTranslatedMessagesSource(
   api: TranslationApi,
-  selections: readonly (TranslationRefTuple | undefined)[],
+  selections: readonly (TranslationRefTuple<undefined> | undefined)[],
 ) {
   const refs = [...new Set(selections.flatMap(s => (s ? [s.ref] : [])))];
   const read = () => {

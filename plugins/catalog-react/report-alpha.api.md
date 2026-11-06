@@ -285,7 +285,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     defaultTitle?: [Error: `Use the 'title' param instead`];
-    title: string | TranslationRefTuple;
+    title: string | TranslationRefTuple<undefined>;
     defaultGroup?: [Error: `Use the 'group' param instead`];
     group?: keyof typeof defaultEntityContentGroups | (string & {});
     icon?: string | ReactElement;

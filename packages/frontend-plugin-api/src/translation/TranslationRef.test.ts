@@ -19,6 +19,7 @@ import {
   toInternalTranslationRef,
 } from './TranslationRef';
 import { toInternalTranslationResource } from './TranslationResource';
+import { coreExtensionData } from '../wiring/coreExtensionData';
 
 describe('createTranslationRef', () => {
   it('should create a TranslationRef instance using the factory function', () => {
@@ -60,11 +61,13 @@ describe('createTranslationRef', () => {
         deeper: '$t(deep)',
         deepest: '$t(deeper)',
         nestedPlain: '$t(plain)',
+        widened: 'Hello {{name}}' as string,
+        nestedWidened: '$t(widened)',
         items_one: 'One',
         items_other: '{{count}} items',
       },
     });
-    const titles: TranslationRefTuple[] = [
+    const titles: TranslationRefTuple<undefined>[] = [
       ref('plain'),
       ref('nestedPlain'),
       // @ts-expect-error Interpolated messages require values.
@@ -77,6 +80,10 @@ describe('createTranslationRef', () => {
       ref('deepest'),
       // @ts-expect-error Plural messages require a count.
       ref('items'),
+      // @ts-expect-error Widened messages have unknown formatting requirements.
+      ref('widened'),
+      // @ts-expect-error Nested messages also inherit unknown requirements.
+      ref('nestedWidened'),
     ];
     expect(titles.map(title => title.key)).toEqual([
       'plain',
@@ -86,7 +93,36 @@ describe('createTranslationRef', () => {
       'nested',
       'deepest',
       'items',
+      'widened',
+      'nestedWidened',
     ]);
+    const selections: TranslationRefTuple[] = [
+      ref('plain'),
+      ref('interpolation'),
+      ref('formatted'),
+      ref('nested'),
+      ref('items'),
+      ref('widened'),
+      ref('nestedWidened'),
+    ];
+    expect(selections.map(item => item.key)).toEqual([
+      'plain',
+      'interpolation',
+      'formatted',
+      'nested',
+      'items',
+      'widened',
+      'nestedWidened',
+    ]);
+    const plain = ref('plain');
+    expect(coreExtensionData.titleTranslation(plain).value).toBe(plain);
+    // @ts-expect-error Unknown options cannot be assumed absent, even for a plain selected key.
+    coreExtensionData.titleTranslation(selections[0]);
+    // @ts-expect-error Title translation data cannot require formatting values.
+    coreExtensionData.titleTranslation(ref('interpolation'));
+    const reselected = ref('interpolation').ref('interpolation');
+    // @ts-expect-error An erased ref cannot prove that a message requires no values.
+    coreExtensionData.titleTranslation(reselected);
     const selection: TranslationRefTuple<
       { name: string } | { replace: { name: string } }
     > = ref('interpolation');

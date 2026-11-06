@@ -222,7 +222,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         defaultTitle?: [Error: `Use the 'title' param instead`];
-        title: string | TranslationRefTuple;
+        title: string | TranslationRefTuple<undefined>;
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
         icon?: string | ReactElement;
@@ -355,7 +355,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string | TranslationRefTuple;
+        title?: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -463,7 +463,7 @@ const _default: OverridableFrontendPlugin<
       name: 'reader';
       params: {
         path: string;
-        title?: string | TranslationRefTuple;
+        title?: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;

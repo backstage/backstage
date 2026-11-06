@@ -69,7 +69,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
       /**
        * The title displayed in the tab for this sub-page.
        */
-      title: string | TranslationRefTuple;
+      title: string | TranslationRefTuple<undefined>;
       /**
        * Optional icon for this sub-page, displayed in the tab.
        */

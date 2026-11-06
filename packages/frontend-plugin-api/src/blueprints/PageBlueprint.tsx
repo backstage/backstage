@@ -83,7 +83,7 @@ export const PageBlueprint = createExtensionBlueprint({
     params: {
       path: string;
       /** A plain title or a message reference resolved using the translation API. */
-      title?: string | TranslationRefTuple;
+      title?: string | TranslationRefTuple<undefined>;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;

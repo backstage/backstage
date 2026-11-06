@@ -86,7 +86,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
        */
       defaultTitle?: [Error: `Use the 'title' param instead`];
       /** A plain title or a message reference resolved using the translation API. */
-      title: string | TranslationRefTuple;
+      title: string | TranslationRefTuple<undefined>;
       /**
        * @deprecated Use the `path` param instead.
        */
