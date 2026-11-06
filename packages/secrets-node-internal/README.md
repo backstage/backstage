@@ -49,20 +49,37 @@ export const myProviderFactory = createServiceFactory({
 
 ## Resolving a secret
 
-A consumer depends on `secretResolverServiceRef` and disposes the handle at its
-own lifecycle boundary:
+A consumer injects `secretResolverServiceRef` as a dependency and disposes the
+handle at its own lifecycle boundary. Always obtain the resolver through
+dependency injection rather than constructing one by hand — the resolver is
+plugin scoped, so the consuming plugin's identity is derived from the injected
+instance:
 
 ```ts
+import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { secretResolverServiceRef } from '@internal/secrets-node';
 
-const handle = await secrets.resolve({
-  reference: { provider: 'my-provider', reference: { key: 'ci-token' } },
+export const myPlugin = createBackendPlugin({
+  pluginId: 'my-plugin',
+  register(env) {
+    env.registerInit({
+      deps: { secrets: secretResolverServiceRef },
+      async init({ secrets }) {
+        const handle = await secrets.resolve({
+          reference: {
+            provider: 'my-provider',
+            reference: { key: 'ci-token' },
+          },
+        });
+        try {
+          await useToken(handle.value);
+        } finally {
+          await handle.dispose?.();
+        }
+      },
+    });
+  },
 });
-try {
-  await useToken(handle.value);
-} finally {
-  await handle.dispose?.();
-}
 ```
 
 `resolve` handles a single reference. A consumer that resolves several references
