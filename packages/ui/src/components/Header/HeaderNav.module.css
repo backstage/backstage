@@ -38,6 +38,15 @@
     --hovered-tab-height: 0px;
     --hovered-tab-opacity: 0;
     --hovered-transition-duration: 0s;
+
+    /*
+     * Inside the Header, the nav keeps its natural width so the row scrolls.
+     * The wrapper class is global because it lives in Header.module.css.
+     */
+    :global(.bui-HeaderTabsWrapper) > & {
+      width: max-content;
+      min-width: 100%;
+    }
   }
 
   .bui-HeaderNavList {
@@ -67,6 +76,11 @@
     border: none;
     background: none;
     outline: none;
+
+    :global(.bui-HeaderTabsWrapper) & {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
   }
 
   .bui-HeaderNavItem[aria-current='page'],
