@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 
 export interface ExtensionParameters {
   id: string;
@@ -30,33 +30,43 @@ const knownExtensionParameters = ['attachTo', 'disabled', 'config'];
 // isn't too much of a help. Fall back to manual config reading logic
 // as the Config interface makes it quite hard for us otherwise.
 /** @internal */
-export function readAppExtensionsConfig(
-  rootConfig: Config,
-): ExtensionParameters[] {
+export function readAppExtensionsConfig(rootConfig: Config): {
+  parameters: ExtensionParameters[];
+  overrides?: JsonObject;
+} {
+  // Validate the map shape before reading its raw values, since extension IDs
+  // can contain characters that are not supported in config key paths.
+  rootConfig.getOptionalConfig('app.extension');
+  const overrides = rootConfig.getOptional<JsonObject>('app.extension');
   const arr = rootConfig.getOptional('app.extensions');
   if (!Array.isArray(arr)) {
     if (arr === undefined) {
-      return [];
+      return { parameters: [], overrides };
     }
     // This will throw, and show which part of config had the wrong type
     rootConfig.getConfigArray('app.extensions');
-    return [];
+    return { parameters: [], overrides };
   }
 
-  return arr.map((arrayEntry, arrayIndex) =>
-    expandShorthandExtensionParameters(arrayEntry, arrayIndex),
-  );
+  return {
+    parameters: arr.map((arrayEntry, arrayIndex) =>
+      expandShorthandExtensionParameters(arrayEntry, arrayIndex),
+    ),
+    overrides,
+  };
 }
 
 /** @internal */
 export function expandShorthandExtensionParameters(
   arrayEntry: JsonValue,
-  arrayIndex: number,
+  configPath: number | string,
 ): ExtensionParameters {
   function errorMsg(msg: string, key?: string, prop?: string) {
-    return `Invalid extension configuration at app.extensions[${arrayIndex}]${
-      key ? `[${key}]` : ''
-    }${prop ? `.${prop}` : ''}, ${msg}`;
+    return `Invalid extension configuration at ${
+      typeof configPath === 'number'
+        ? `app.extensions[${configPath}]`
+        : configPath
+    }${key ? `[${key}]` : ''}${prop ? `.${prop}` : ''}, ${msg}`;
   }
 
   // NOTE(freben): This check is intentionally not complete and doesn't check

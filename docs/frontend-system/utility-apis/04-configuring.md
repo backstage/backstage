@@ -11,18 +11,17 @@ Utility APIs are extensions and can therefore optionally be amended with configu
 
 To configure your Utility API extension, first you'll need to know its ID. That ID is formed from the API ref ID; check [the naming patterns docs](../architecture/50-naming-patterns.md) for details.
 
-Our example work API from [the creating section](./02-creating.md) would have the ID `api:plugin.example.work`. You configure it and all other extensions under the `app.extensions` section of your app-config.
+Our example work API from [the creating section](./02-creating.md) would have the ID `api:plugin.example.work`. You configure it and all other extensions under the `app.extension` section of your app-config.
 
 ```yaml title="in e.g. app-config.yaml or app-config.production.yaml"
 app:
-  extensions:
-    - api:plugin.example.work:
-        config:
-          goSlow: false
-    -  # ... other extensions
+  extension:
+    api:plugin.example.work:
+      config:
+        goSlow: false
 ```
 
-It's important to note that the `extensions` are a list (mind the initial `-`), and that the `api:plugin.example.work` entry is an object such that the `config` key needs to be indented below it. If you do not get those two pieces right, the application may not start up correctly.
+The `app.extension` section is an object keyed by extension ID. It configures utility APIs without changing extension order. See [Configuring Extensions](../building-apps/02-configuring-extensions.md) for configuration layering and precedence.
 
 The extension config schema will tell you what parameters it supports. Here we override the `goSlow` extension config value, which replaces the default.
 

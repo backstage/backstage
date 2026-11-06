@@ -62,12 +62,13 @@ export interface Config {
       /**
        * Config key paths to include. Omitted or empty means no keys are allowed.
        * Extension configuration is controlled exclusively by allowedExtensions,
-       * even when this list includes app or app.extensions.
+       * even when this list includes app, app.extensions, or app.extension.
        */
       allowedConfig?: string[];
 
       /**
-       * Exact extension IDs whose app.extensions entries are included.
+       * Exact extension IDs whose app.extensions and app.extension entries are
+       * included.
        * Omitted or empty means no extension configuration is included.
        */
       allowedExtensions?: string[];

@@ -69,14 +69,14 @@ app:
 ```
 
 The presence of `app.publicConfig` enables filtering. Missing or empty lists allow
-no config keys or extensions. An existing extension list is replaced with an empty
-list when no extension IDs are allowed.
+no config keys or extensions. An existing extension list or map is emptied when
+no extension IDs are allowed.
 
-Allowed key paths include their descendants, except that `app.extensions` is
-always controlled exclusively by `allowedExtensions`, including when `app` or
-`app.extensions` is listed in `allowedConfig`. Extension IDs are matched exactly
-for both string entries and object entries. These IDs select extension configuration
-to expose; they do not control which extensions the public app loads. Normal
+Allowed key paths include their descendants, except that `app.extensions` and
+`app.extension` are always controlled exclusively by `allowedExtensions`,
+including when `app`, `app.extensions`, or `app.extension` is listed in
+`allowedConfig`. Extension IDs are matched exactly for array entries and map
+keys. These IDs select extension configuration to expose; they do not control which extensions the public app loads. Normal
 [frontend visibility rules](./defining.md#visibility) still apply. Authenticated
 users continue to receive the full frontend-visible configuration.
 

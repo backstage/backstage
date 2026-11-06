@@ -68,4 +68,4 @@ If you need to use a 3rd-party plugin that does not yet support the new frontend
 
 ## Configuring installed plugins
 
-Once a plugin is installed, you can configure its extensions through the `app.extensions` section of your `app-config.yaml`. See [Configuring Extensions](./02-configuring-extensions.md) for details.
+Once a plugin is installed, you can configure its extensions through the `app.extension` section of your `app-config.yaml`. See [Configuring Extensions](./02-configuring-extensions.md) for details.
