@@ -489,3 +489,89 @@ the median of three warm runs after one warm-up, shown as master / this change.
 
 The page queries run the same SQL before and after, so their timing
 differences are run-to-run variation.
+
+## Long `$in` lists (2026-11-03)
+
+On PostgreSQL, an `$in` list of 10 or more values on a field other than
+`kind`, `spec.type` and `spec.lifecycle` is matched in paginated queries as a
+set of entity IDs, either joined (anti-joined under `$not`) or hashed, instead
+of a per-row `= ANY(array)` probe. Facets and counts already use set
+operations and keep their SQL, as do lists with fewer than 10 values and
+lists on the three broad fields.
+
+Measured on the production-scale staging replica (PostgreSQL 18.6, about 712k
+entities) with SQL captured from `DefaultEntitiesCatalog` on this change and
+on master, using the [slim profile](./slim-profile.md):
+
+- The threshold in the code is 10 values. Lists under `$not` are joined;
+  other lists are joined unless they have a narrow `$all` sibling or a broad
+  positive `$any` sibling, in which case they are hashed.
+- Cases whose SQL is byte-identical to master ran once: every `_nop` variant,
+  every 3-claim variant, all facets and counts (scenarios 2, 4, 5, 10, 15-18
+  facets and counts), and the scenario 21 streams, whose lists are on
+  `spec.type`.
+- Cases with different SQL ran once per side; cases between 0.5x and 2x or
+  near a bar were rerun 5 times interleaved and report the median.
+- Claim lists of 3, 10 and 40 claims, and a 174-entry list that includes one
+  claim matching about 117k entities. Lists longer than about 40 claims are
+  not a performance target.
+- Every changed case returned the same entities as master. The unfiltered
+  stream at 174 entries differed between two runs taken minutes apart, from
+  ingestion during the run; back-to-back runs of both forms matched.
+
+| Query                                 | Claims |        master |  this change |
+| ------------------------------------- | -----: | ------------: | -----------: |
+| 1 component page                      |     10 |          8 ms |        32 ms |
+| 1 component page                      |    174 |         67 ms |       590 ms |
+| 3 unfiltered page                     |    174 |        176 ms |       695 ms |
+| 6 entity by ref                       |    174 |        0.6 ms |        13 ms |
+| 7 full text component                 |  10/40 |      51/54 ms |   207/219 ms |
+| 7 full text component                 |    174 |         76 ms |       408 ms |
+| 12 ordered selective OR               |     10 |         4.0 s |        4.9 s |
+| 12 ordered selective OR               |     40 |         4.2 s |        4.8 s |
+| 12 ordered selective OR               |    174 |         6.3 s |        3.0 s |
+| 13 deep dataset ID                    |  10/40 |    337/536 ms |   327/330 ms |
+| 13 deep dataset ID                    |    174 |        840 ms |       1.39 s |
+| 14 deep dataset name                  |     10 |         4.8 s |        2.6 s |
+| 14 deep dataset name                  |     40 |        15.7 s |        2.7 s |
+| 14 deep dataset name                  |    174 |         >60 s |        6.5 s |
+| 15 permission list page               |    174 |         37 ms |       595 ms |
+| 18 negated disjunction page           |    174 |         33 ms |       523 ms |
+| 19 large in under or page             |    174 |         19 ms |       144 ms |
+| 19 with permission, page              |    174 |         54 ms |       824 ms |
+| 20 late component page                |  10/40 |    315/388 ms |   298/312 ms |
+| 20 late component page                |    174 |        459 ms |       1.52 s |
+| 20 late group page                    |  10/40 |    296/301 ms |   354/292 ms |
+| 20 late group page                    |    174 |        24.7 s |       872 ms |
+| Owned page                            |     10 |         1.8 s |        1.1 s |
+| Owned page                            |     40 |         2.0 s |       168 ms |
+| Owned page                            |    174 |         >60 s |       602 ms |
+| Component stream, total / worst page  |     10 |   7.4 / 1.9 s |  4.5 / 1.1 s |
+| Component stream, total / worst page  |     40 |  16.0 / 3.8 s |  4.1 / 0.9 s |
+| Component stream, total / worst page  |    174 | 55.9 / 13.7 s |  7.7 / 2.0 s |
+| Group stream, total / worst page      |     40 |   7.0 / 3.6 s |  1.7 / 0.9 s |
+| Group stream, total / worst page      |    174 | 25.3 / 13.0 s |  3.3 / 1.7 s |
+| Unfiltered stream, total / worst page |  10/40 |   38.5/38.3 s |  37.4/38.4 s |
+| Unfiltered stream, total / worst page |    174 |  50.1 / 0.9 s | 93.4 / 2.9 s |
+
+Cases not listed, with 10 to 40 claims, are within 2x of master and under
+30 ms.
+
+### Comparison
+
+- Against the 2026-09-12 baseline: the unchanged scenarios 1-11 keep their
+  plan shapes. Absolute timings are not comparable for the claim-dependent
+  rows, since that baseline had no permission variants.
+- Against master: the long lists remove the per-row `= ANY(array)` SubPlans
+  (global anti-pattern 6) from every changed query. The largest gains are
+  where master probed the list once per candidate row of a large set: the
+  owned page, scenario 14, late group pages and the permissioned streams.
+- Costs: small pages with 10-40 claims move from single-digit milliseconds to
+  tens of milliseconds, and full-text pages from about 50 ms to about 210 ms,
+  because the set is built before the page stops early. With the 174-entry
+  list, the set holds about 117k entities: small pages take 0.4-0.8 s,
+  scenarios 13 and 20 on components cross 1 s, and the unfiltered stream
+  nearly doubles. Scenario 12 at 10-40 claims is 0.6-0.9 s slower, with the
+  same plan shape as master.
+- Scenario 14 with the 174-entry list is still over 5 s, and scenario 11
+  (unchanged, 18.6 s) remains a known slow scenario.
