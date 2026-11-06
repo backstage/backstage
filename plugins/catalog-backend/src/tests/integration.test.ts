@@ -19,6 +19,7 @@ import {
   EntityPolicies,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { ConfigReader } from '@backstage/config';
 import { InputError, NotImplementedError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -531,6 +532,63 @@ describe('Catalog Backend Integration', () => {
               },
             },
           ],
+        },
+      },
+    });
+  });
+
+  it('should limit the size of errors stored in the entity status', async () => {
+    const body = '<html>'.padEnd(1_000_000, 'x');
+    let triggerError = false;
+
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+      async processEntity(entity: Entity) {
+        if (triggerError) {
+          throw Object.assign(new Error(body), {
+            name: 'HttpError',
+            response: { status: 503, data: body },
+          });
+        }
+        return entity;
+      },
+    });
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+      },
+    ]);
+    await harness.process();
+
+    triggerError = true;
+    await harness.process();
+
+    const entities = await harness.getOutputEntities();
+    const entity = entities['component:default/test'] as AlphaEntity;
+    const [item] = entity.status!.items!;
+
+    expect(JSON.stringify(entity).length).toBeLessThan(40_000);
+    expect(item.message).toMatch(
+      /^InputError: Processor test threw an error while preprocessing; caused by HttpError: <html>x+\.\.\. \(\d+ characters truncated\)$/,
+    );
+    expect(item.error).toEqual({
+      name: 'InputError',
+      message: expect.stringMatching(/characters truncated\)$/),
+      cause: {
+        name: 'HttpError',
+        message: expect.stringMatching(/characters truncated\)$/),
+        response: {
+          status: 503,
+          data: expect.stringMatching(/characters truncated\)$/),
         },
       },
     });
