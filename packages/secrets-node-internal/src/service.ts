@@ -20,7 +20,12 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultSecretResolverService } from './DefaultSecretResolverService';
-import type { SecretProvider, SecretResolverService } from './types';
+import { createSecretProviderRegistry } from './SecretProviderRegistry';
+import type {
+  SecretProvider,
+  SecretProviderRegistry,
+  SecretResolverService,
+} from './types';
 
 /**
  * Root-scoped, multiton service ref that {@link SecretProvider} implementations
@@ -41,6 +46,31 @@ export const secretProviderServiceRef = createServiceRef<SecretProvider>({
 });
 
 /**
+ * Root-scoped registry that validates the set of registered providers once and
+ * exposes a lookup by id.
+ *
+ * @remarks
+ *
+ * Building the registry at root scope means a misconfiguration such as a
+ * duplicate provider id surfaces as a single startup error, rather than lazily
+ * and repeatedly for every plugin that depends on the resolver. It is internal
+ * wiring for {@link secretResolverServiceRef} and is deliberately not exported.
+ */
+const secretProviderRegistryServiceRef =
+  createServiceRef<SecretProviderRegistry>({
+    id: 'secrets.provider-registry',
+    scope: 'root',
+    defaultFactory: async service =>
+      createServiceFactory({
+        service,
+        deps: { providers: secretProviderServiceRef },
+        async factory({ providers }) {
+          return createSecretProviderRegistry(providers);
+        },
+      }),
+  });
+
+/**
  * Plugin-scoped {@link SecretResolverService} that routes references to the
  * registered {@link secretProviderServiceRef} providers.
  *
@@ -59,13 +89,13 @@ export const secretResolverServiceRef = createServiceRef<SecretResolverService>(
       createServiceFactory({
         service,
         deps: {
-          providers: secretProviderServiceRef,
+          registry: secretProviderRegistryServiceRef,
           logger: coreServices.logger,
           pluginMetadata: coreServices.pluginMetadata,
         },
-        async factory({ providers, logger, pluginMetadata }) {
+        async factory({ registry, logger, pluginMetadata }) {
           return DefaultSecretResolverService.create({
-            providers,
+            registry,
             logger,
             consumer: { pluginId: pluginMetadata.getId() },
           });

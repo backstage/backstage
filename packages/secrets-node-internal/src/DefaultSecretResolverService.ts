@@ -15,11 +15,11 @@
  */
 
 import type { LoggerService } from '@backstage/backend-plugin-api';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import type {
   ResolvedSecret,
   SecretConsumerContext,
-  SecretProvider,
+  SecretProviderRegistry,
   SecretResolverResolveOptions,
   SecretResolverService,
 } from './types';
@@ -30,8 +30,8 @@ import type {
  * @public
  */
 export interface DefaultSecretResolverServiceOptions {
-  /** Providers registered for this resolver instance. */
-  providers: SecretProvider[];
+  /** The validated provider lookup this resolver routes through. */
+  registry: SecretProviderRegistry;
   /** The consumer this resolver instance acts on behalf of. */
   consumer: SecretConsumerContext;
   logger: LoggerService;
@@ -55,24 +55,15 @@ export class DefaultSecretResolverService implements SecretResolverService {
   static create(
     options: DefaultSecretResolverServiceOptions,
   ): DefaultSecretResolverService {
-    const providers = new Map<string, SecretProvider>();
-    for (const provider of options.providers) {
-      if (providers.has(provider.id)) {
-        throw new ConflictError(
-          `Duplicate secret provider registered with id '${provider.id}'`,
-        );
-      }
-      providers.set(provider.id, provider);
-    }
     return new DefaultSecretResolverService(
-      providers,
+      options.registry,
       Object.freeze({ ...options.consumer }),
       options.logger,
     );
   }
 
   private constructor(
-    private readonly providers: Map<string, SecretProvider>,
+    private readonly registry: SecretProviderRegistry,
     private readonly consumer: SecretConsumerContext,
     private readonly logger: LoggerService,
   ) {}
@@ -80,7 +71,7 @@ export class DefaultSecretResolverService implements SecretResolverService {
   async resolve({
     reference,
   }: SecretResolverResolveOptions): Promise<ResolvedSecret> {
-    const provider = this.providers.get(reference.provider);
+    const provider = this.registry.getProvider(reference.provider);
     if (!provider) {
       throw new NotFoundError(
         `No secret provider registered with id '${reference.provider}'`,

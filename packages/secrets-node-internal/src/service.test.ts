@@ -64,7 +64,8 @@ describe('secretResolverServiceRef', () => {
 
     // Each plugin resolves through its own plugin-scoped resolver, so the shared
     // provider sees each consumer's real plugin id even though neither plugin
-    // supplied one.
+    // supplied one. A single shared provider instance also confirms the registry
+    // is built once at root scope rather than per resolving plugin.
     expect(observedConsumers.sort()).toEqual(['plugin-one', 'plugin-two']);
   });
 });

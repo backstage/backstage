@@ -15,8 +15,9 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import { DefaultSecretResolverService } from './DefaultSecretResolverService';
+import { createSecretProviderRegistry } from './SecretProviderRegistry';
 import type {
   ResolvedSecret,
   SecretConsumerContext,
@@ -109,7 +110,12 @@ describe('DefaultSecretResolverService', () => {
   const createService = (
     providers: TestSecretProvider[],
     logger = mockServices.logger.mock(),
-  ) => DefaultSecretResolverService.create({ providers, consumer, logger });
+  ) =>
+    DefaultSecretResolverService.create({
+      registry: createSecretProviderRegistry(providers),
+      consumer,
+      logger,
+    });
 
   it('routes by provider id and propagates identity, value, expiry, and disposal', async () => {
     const expiresAt = new Date('2026-01-01T00:00:00Z');
@@ -168,18 +174,7 @@ describe('DefaultSecretResolverService', () => {
     expect(second.value).toBe('v2');
   });
 
-  it('fails safely on duplicate and unknown provider ids without leaking the reference', async () => {
-    expect(() =>
-      DefaultSecretResolverService.create({
-        providers: [
-          createTestSecretProvider({ id: 'dup' }),
-          createTestSecretProvider({ id: 'dup' }),
-        ],
-        consumer,
-        logger: mockServices.logger.mock(),
-      }),
-    ).toThrow(ConflictError);
-
+  it('fails on an unknown provider id without leaking the reference', async () => {
     const service = createService([createTestSecretProvider({ id: 'known' })]);
     const resolveUnknown = () =>
       service.resolve({

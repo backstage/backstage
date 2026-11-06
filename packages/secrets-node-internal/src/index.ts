@@ -24,6 +24,7 @@ export type {
   ResolvedSecret,
   SecretConsumerContext,
   SecretProvider,
+  SecretProviderRegistry,
   SecretProviderResolveRequest,
   SecretReference,
   SecretResolverResolveOptions,

@@ -116,6 +116,22 @@ export interface SecretProvider {
 }
 
 /**
+ * A validated, immutable lookup of the registered {@link SecretProvider}s, keyed
+ * by {@link SecretProvider.id}.
+ *
+ * @remarks
+ *
+ * The registry is built once from the set of registered providers, rejecting
+ * duplicate ids up front, so the resolver only has to route by id.
+ *
+ * @public
+ */
+export interface SecretProviderRegistry {
+  /** Returns the provider registered under the given id, if any. */
+  getProvider(id: string): SecretProvider | undefined;
+}
+
+/**
  * Options for {@link SecretResolverService.resolve}.
  *
  * @public
