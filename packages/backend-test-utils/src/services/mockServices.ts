@@ -771,6 +771,7 @@ export const mockServices: MockServices = Object.freeze({
     mock: createServiceMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
       addAuthPolicy: jest.fn(),
+      addWebSocketHandler: jest.fn(),
     })),
   }),
 
@@ -778,6 +779,7 @@ export const mockServices: MockServices = Object.freeze({
     factory: () => rootHttpRouterServiceFactory(),
     mock: createServiceMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
+      addWebSocketHandler: jest.fn(),
     })),
   }),
 
