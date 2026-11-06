@@ -1535,7 +1535,7 @@ export type IdentityApi = {
   getCredentials(): Promise<{
     token?: string;
   }>;
-  signOut(): Promise<void>;
+  signOut(options?: SignOutOptions): Promise<void>;
 };
 
 // @public @deprecated
@@ -2072,6 +2072,11 @@ export namespace SessionState {
   // (undocumented)
   export type SignedOut = typeof SessionState.SignedOut;
 }
+
+// @public
+export type SignOutOptions = {
+  preserveLocation?: boolean;
+};
 
 export { StandardSchemaV1 };
 

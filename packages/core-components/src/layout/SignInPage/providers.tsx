@@ -114,9 +114,9 @@ export const useSignInProviders = (
       onSignInSuccess(
         IdentityApiSignOutProxy.from({
           identityApi,
-          signOut: async () => {
+          signOut: async options => {
             localStorage.removeItem(PROVIDER_STORAGE_KEY);
-            await identityApi.signOut?.();
+            await identityApi.signOut?.(options);
             analytics.captureEvent('signOut', 'success');
           },
         }),
