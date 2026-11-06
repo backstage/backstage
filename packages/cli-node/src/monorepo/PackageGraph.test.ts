@@ -341,9 +341,7 @@ a@^1:
       }),
     ).resolves.toEqual(allPackages);
     expect(warn).toHaveBeenLastCalledWith(
-      expect.stringContaining(
-        'pnpm-lock.yaml does not belong to yarn, which uses yarn.lock',
-      ),
+      'pnpm-lock.yaml changed, but this project uses yarn, assuming all packages have changed',
     );
 
     // Nor can a lockfile that doesn't exist at the ref
