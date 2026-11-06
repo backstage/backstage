@@ -50,6 +50,15 @@ type PnpmDependency = {
  */
 type PnpmNode = {
   version: string;
+  /**
+   * What a package resolves to, which is its version for a registry package,
+   * and its source for a package from git, a tarball, or a directory
+   */
+  source?: string;
+  /**
+   * Identifies the contents of the package. A git package has no integrity,
+   * so its commit is used instead.
+   */
   integrity?: string;
   patchHash?: string;
   dependencies: PnpmDependency[];
@@ -215,10 +224,21 @@ export class PnpmLockfile implements PackageManagerLockfile {
 
       let node = nodes.get(packageId);
       if (!node) {
-        const resolution = pkg.resolution as { integrity?: string } | undefined;
+        const resolution = pkg.resolution as
+          | { integrity?: string; commit?: string; tarball?: string }
+          | undefined;
         node = {
-          version: parsed.version ?? parsed.nonSemverVersion ?? packageId,
-          integrity: resolution?.integrity,
+          // A package from git or a tarball is keyed by its source, and the
+          // lockfile lists its version separately. A local directory has no
+          // version there, so it is listed by its path.
+          version:
+            parsed.version ??
+            pkg.version ??
+            parsed.nonSemverVersion ??
+            packageId,
+          source: parsed.version ?? parsed.nonSemverVersion ?? packageId,
+          integrity:
+            resolution?.integrity ?? resolution?.commit ?? resolution?.tarball,
           patchHash: parsed.patchHash,
           dependencies: [],
         };
@@ -300,12 +320,14 @@ export class PnpmLockfile implements PackageManagerLockfile {
       }
     }
 
-    // Transitive packages, using the resolved version as the range
+    // Transitive packages, using what they resolve to as the range. A
+    // package from git or a tarball keeps its source there, so that its
+    // version isn't taken for a registry version.
     for (const [packageId, name] of packageNames) {
       const isDirect = entries.get(name)?.some(e => e.node === packageId);
       if (!isDirect) {
-        const { version } = nodes.get(packageId)!;
-        addEntry(name, { range: version, version, node: packageId });
+        const { version, source } = nodes.get(packageId)!;
+        addEntry(name, { range: source ?? version, version, node: packageId });
       }
     }
 
@@ -482,11 +504,13 @@ export class PnpmLockfile implements PackageManagerLockfile {
 
   /**
    * Returns what an entry resolves to, which is the integrity of the package
-   * if known, and the version otherwise, together with any patch hash.
+   * if known, and its source otherwise, together with any patch hash.
    */
   private getFingerprint(entry: PnpmEntry): string {
     const node = this.getNode(entry);
-    return `${node?.integrity ?? entry.version}${node?.patchHash ?? ''}`;
+    return `${node?.integrity ?? node?.source ?? entry.version}${
+      node?.patchHash ?? ''
+    }`;
   }
 
   private groupByRange(entries: PnpmEntry[]): Map<string, PnpmEntry[]> {
@@ -532,7 +556,9 @@ export class PnpmLockfile implements PackageManagerLockfile {
 
   private getDependencyFingerprint(dependency: PnpmDependency): string {
     const node = dependency.node ? this.nodes.get(dependency.node) : undefined;
-    return `${node?.integrity ?? dependency.version}${node?.patchHash ?? ''}`;
+    return `${node?.integrity ?? node?.source ?? dependency.version}${
+      node?.patchHash ?? ''
+    }`;
   }
 }
 

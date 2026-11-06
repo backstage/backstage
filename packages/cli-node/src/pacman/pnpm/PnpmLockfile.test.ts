@@ -589,6 +589,119 @@ snapshots:
     });
   });
 
+  it('should list packages from git, tarballs, and directories by their version', async () => {
+    const CODELOAD =
+      'https://codeload.github.com/sindresorhus/is-plain-obj/tar.gz/68e8cc77bb1bbd0bf7d629d3574b6ca70289b2cc';
+    const FORK_COMMIT = '0b1f1d7c3e5a2f4d6b8c9e0a1b2c3d4e5f6a7b8c';
+    // The git package is installed from a branch, which moves to new commits
+    const parseWithCommit = (commit: string) =>
+      PnpmLockfile.parse(
+        `
+lockfileVersion: '9.0'
+
+importers:
+
+  .:
+    dependencies:
+      git-pkg:
+        specifier: git+https://git.example.com/acme/git-pkg.git#main
+        version: git+https://git.example.com/acme/git-pkg.git#${commit}
+      is-plain-obj:
+        specifier: github:sindresorhus/is-plain-obj#v4.1.0
+        version: ${CODELOAD}
+      local-pkg:
+        specifier: file:./local-pkg
+        version: file:local-pkg
+      tgz-pkg:
+        specifier: file:../tgz-pkg.tgz
+        version: file:../tgz-pkg.tgz
+
+packages:
+
+  git-pkg@git+https://git.example.com/acme/git-pkg.git#${commit}:
+    resolution: {commit: ${commit}, repo: https://git.example.com/acme/git-pkg.git, type: git}
+    version: 2.0.0
+
+  is-plain-obj@${CODELOAD}:
+    resolution: {gitHosted: true, integrity: sha512-tBxVqhvSj4X5mAZMMOO+Z5q9JhvyQTkg3PNIYlSNuSkxd6Hd54thpkiTZWnxL4SIBjxPQrjHzRbA1MGWLEIyEQ==, tarball: ${CODELOAD}}
+    version: 4.1.0
+
+  local-pkg@file:local-pkg:
+    resolution: {directory: local-pkg, type: directory}
+
+  fork-pkg@git+https://git.example.com/acme/fork-pkg.git#${FORK_COMMIT}:
+    resolution: {commit: ${FORK_COMMIT}, repo: https://git.example.com/acme/fork-pkg.git, type: git}
+    version: 1.5.0
+
+  tgz-pkg@file:../tgz-pkg.tgz:
+    resolution: {integrity: sha512-NTkoMowDQPXiZsivEi+JAmR+2lFmlVDXzf6epSX73TJMCs/p85CG4MFFzYMvKhDIH1RB9hNE8l+RUh4+9JlXhw==, tarball: file:../tgz-pkg.tgz}
+    version: 3.0.0
+
+snapshots:
+
+  git-pkg@git+https://git.example.com/acme/git-pkg.git#${commit}: {}
+
+  is-plain-obj@${CODELOAD}: {}
+
+  local-pkg@file:local-pkg:
+    dependencies:
+      fork-pkg: git+https://git.example.com/acme/fork-pkg.git#${FORK_COMMIT}
+
+  fork-pkg@git+https://git.example.com/acme/fork-pkg.git#${FORK_COMMIT}: {}
+
+  tgz-pkg@file:../tgz-pkg.tgz: {}
+`,
+        namedByDir,
+      );
+    const lockfile = await parseWithCommit(
+      '99759b9febeadeae593cf53b72652c8f91616116',
+    );
+
+    expect(lockfile.get('git-pkg')).toEqual([
+      {
+        range: 'git+https://git.example.com/acme/git-pkg.git#main',
+        version: '2.0.0',
+      },
+    ]);
+    expect(lockfile.get('is-plain-obj')).toEqual([
+      { range: 'github:sindresorhus/is-plain-obj#v4.1.0', version: '4.1.0' },
+    ]);
+    expect(lockfile.get('tgz-pkg')).toEqual([
+      { range: 'file:../tgz-pkg.tgz', version: '3.0.0' },
+    ]);
+    // pnpm doesn't write the version of a local directory to the lockfile
+    expect(lockfile.get('local-pkg')).toEqual([
+      { range: 'file:./local-pkg', version: 'file:local-pkg' },
+    ]);
+    // A transitive package keeps its source as the range, so that its
+    // version isn't taken for a registry version
+    expect(lockfile.get('fork-pkg')).toEqual([
+      {
+        range: `git+https://git.example.com/acme/fork-pkg.git#${FORK_COMMIT}`,
+        version: '1.5.0',
+      },
+    ]);
+
+    // A new commit with the same version is still a change
+    const moved = await parseWithCommit(
+      'b43a9c0c894868cee2e5f185026033ac9b45b75b',
+    );
+    expect(moved.diff(lockfile)).toEqual({
+      added: [],
+      changed: [
+        {
+          name: 'git-pkg',
+          range: 'git+https://git.example.com/acme/git-pkg.git#main',
+        },
+        { name: 'root', range: 'workspace:.' },
+      ],
+      removed: [],
+    });
+    expect(moved.getDependencyTreeHash('root')).not.toBe(
+      lockfile.getDependencyTreeHash('root'),
+    );
+  });
+
   it('should reject lockfiles that cannot be parsed', async () => {
     await expect(
       PnpmLockfile.parse(`lockfileVersion: '6.0'\n`),
