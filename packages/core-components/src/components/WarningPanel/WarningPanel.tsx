@@ -146,6 +146,10 @@ const capitalize = (s: string) => {
  * ErrorPanel except that the warning panel only shows the warning message to
  * the user.
  *
+ * The root element carries a `data-severity` attribute set to the resolved
+ * severity, which lets themes style each severity differently through a single
+ * `BackstageWarningPanel` style override.
+ *
  * @param severity - Ability to change the severity of the alert. Default value
  *        "warning"
  * @param title - A title for the warning. If not supplied, "Warning" will be
@@ -174,6 +178,7 @@ export function WarningPanel(props: WarningProps) {
       defaultExpanded={defaultExpanded ?? false}
       className={classes.panel}
       role="alert"
+      data-severity={severity}
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIconStyled severity={severity} />}
