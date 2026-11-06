@@ -48,8 +48,7 @@ export const PendingEntities = () => {
       title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
-      customFilterAndSearch: (query, row) =>
-        entityRefFilterAndSearch(query, row),
+      customFilterAndSearch: entityRefFilterAndSearch,
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).entity_ref || '-',
     },
@@ -58,7 +57,7 @@ export const PendingEntities = () => {
       sorting: true,
       field: 'unprocessed_entity.kind',
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).unprocessed_entity.kind || '-',
+        (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
     {
       title: <Text>Owner</Text>,

@@ -48,8 +48,8 @@ const RenderErrorContext = ({
       <>
         <Text className={styles.errorText}>Tags</Text>
         <ul>
-          {rowData.unprocessed_entity.metadata.tags?.map((t, idx) => (
-            <li key={`${t}-${idx}`}>{t}</li>
+          {rowData.unprocessed_entity.metadata.tags?.map(t => (
+            <li key={t}>{t}</li>
           ))}
         </ul>
       </>
@@ -71,21 +71,18 @@ const RenderErrorContext = ({
 };
 
 /**
- * Formats a datetime for the user's locale, in the given timezone.
+ * Formats a datetime for the user's locale and timezone.
  *
  * SQLite returns `yyyy-MM-dd HH:mm:ss` strings, which are always UTC.
  */
-export const convertTimeToLocalTimezone = (
-  dateTime: string | Date,
-  zone: string = DateTime.local().zoneName,
-) => {
+export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
   const isoDateTime =
     typeof dateTime === 'string' ? dateTime : dateTime.toISOString();
-  const parsed = DateTime.fromISO(isoDateTime, { zone });
+  const parsed = DateTime.fromISO(isoDateTime);
   return (
     parsed.isValid ? parsed : DateTime.fromSQL(isoDateTime, { zone: 'utc' })
   )
-    .setZone(zone)
+    .toLocal()
     .toLocaleString({
       ...DateTime.DATETIME_MED_WITH_SECONDS,
       timeZoneName: 'short',
@@ -134,7 +131,7 @@ export const FailedEntities = () => {
         await unprocessedApi.delete(selectedEntityId);
         toastApi.post({
           title: `Entity ${
-            selectedEntityRef ?? selectedEntityId ?? 'unknown'
+            selectedEntityRef ?? selectedEntityId
           } has been deleted`,
           status: 'success',
         });
@@ -143,7 +140,7 @@ export const FailedEntities = () => {
     } catch (e) {
       toastApi.post({
         title: `Failed to delete entity ${
-          selectedEntityRef ?? selectedEntityId ?? 'unknown'
+          selectedEntityRef ?? selectedEntityId
         }`,
         status: 'danger',
       });
@@ -156,8 +153,7 @@ export const FailedEntities = () => {
       title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
-      customFilterAndSearch: (query, row) =>
-        entityRefFilterAndSearch(query, row),
+      customFilterAndSearch: entityRefFilterAndSearch,
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).entity_ref || '-',
     },
@@ -173,7 +169,7 @@ export const FailedEntities = () => {
       sorting: true,
       field: 'unprocessed_entity.kind',
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).unprocessed_entity.kind || '-',
+        (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
     {
       title: <Text>Owner</Text>,
@@ -187,19 +183,19 @@ export const FailedEntities = () => {
       title: <Text>Last Discovery At</Text>,
       sorting: true,
       field: 'last_discovery_at',
-      render: (rowData: UnprocessedEntity | {}) => {
-        const value = (rowData as UnprocessedEntity).last_discovery_at;
-        return value ? convertTimeToLocalTimezone(value) : '-';
-      },
+      render: (rowData: UnprocessedEntity | {}) =>
+        convertTimeToLocalTimezone(
+          (rowData as UnprocessedEntity).last_discovery_at,
+        ),
     },
     {
       title: <Text>Next Refresh At</Text>,
       sorting: true,
       field: 'next_update_at',
-      render: (rowData: UnprocessedEntity | {}) => {
-        const value = (rowData as UnprocessedEntity).next_update_at;
-        return value ? convertTimeToLocalTimezone(value) : '-';
-      },
+      render: (rowData: UnprocessedEntity | {}) =>
+        convertTimeToLocalTimezone(
+          (rowData as UnprocessedEntity).next_update_at,
+        ),
     },
     {
       title: <Text>Raw Entity Definition</Text>,

@@ -46,41 +46,41 @@ const makeEntity = (
 describe('convertTimeToLocalTimezone', () => {
   afterEach(() => {
     Settings.defaultLocale = null as unknown as string;
+    Settings.defaultZone = 'system';
   });
 
   it('renders every database timestamp format as the same instant', () => {
     Settings.defaultLocale = 'en-GB';
     const expected = '6 Nov 2026, 15:15:08 CET';
-    const zone = 'Europe/Paris';
+    Settings.defaultZone = 'Europe/Paris';
 
     // PostgreSQL, serialized from a Date
-    expect(convertTimeToLocalTimezone('2026-11-06T14:15:08.000Z', zone)).toBe(
+    expect(convertTimeToLocalTimezone('2026-11-06T14:15:08.000Z')).toBe(
       expected,
     );
     expect(
-      convertTimeToLocalTimezone(new Date('2026-11-06T14:15:08.000Z'), zone),
+      convertTimeToLocalTimezone(new Date('2026-11-06T14:15:08.000Z')),
     ).toBe(expected);
     // SQLite, which has no timezone designator but is always UTC
-    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', zone)).toBe(
-      expected,
-    );
+    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08')).toBe(expected);
   });
 
   it('reports unparsable input as invalid', () => {
-    expect(convertTimeToLocalTimezone('invalid-date-string', 'UTC')).toBe(
+    expect(convertTimeToLocalTimezone('invalid-date-string')).toBe(
       'Invalid DateTime',
     );
-    expect(convertTimeToLocalTimezone('', 'UTC')).toBe('Invalid DateTime');
+    expect(convertTimeToLocalTimezone('')).toBe('Invalid DateTime');
   });
 
   it("follows the user's locale", () => {
+    Settings.defaultZone = 'UTC';
     Settings.defaultLocale = 'en-US';
-    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', 'UTC')).toMatch(
+    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08')).toMatch(
       /^Nov 6, 2026, 2:15:08\sPM UTC$/,
     );
 
     Settings.defaultLocale = 'fr-FR';
-    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08', 'UTC')).toMatch(
+    expect(convertTimeToLocalTimezone('2026-11-06 14:15:08')).toMatch(
       /^6 nov\. 2026, 14:15:08\sUTC$/,
     );
   });
@@ -127,16 +127,15 @@ describe('FailedEntities', () => {
     ).toBeGreaterThan(0);
   });
 
-  it('renders an empty state when there are no failed entities', async () => {
-    api.failed.mockResolvedValue({ entities: [] });
-    await renderComponent();
+  it('renders an empty state and entity rows with an owner fallback', async () => {
+    api.failed.mockResolvedValueOnce({ entities: [] });
+    const { unmount } = await renderComponent();
     expect(
       await screen.findByText('No failed entities found'),
     ).toBeInTheDocument();
-  });
+    unmount();
 
-  it('renders entity rows, falling back to "unknown" for a missing owner', async () => {
-    api.failed.mockResolvedValue({
+    api.failed.mockResolvedValueOnce({
       entities: [
         makeEntity(),
         makeEntity({
@@ -162,10 +161,7 @@ describe('FailedEntities', () => {
     expect(screen.getByText('unknown')).toBeInTheDocument();
   });
 
-  it('renders rows even when an entity_ref is null', async () => {
-    // Regression guard: a null entity_ref used to crash the entityRef column's
-    // search predicate (see filterEntities.test.ts). The table must still
-    // render such rows. The predicate itself is unit-tested directly.
+  it('renders a placeholder for a null entity_ref', async () => {
     api.failed.mockResolvedValue({
       entities: [
         makeEntity(),
@@ -180,8 +176,44 @@ describe('FailedEntities', () => {
     expect(
       await screen.findByText('component:default/alpha'),
     ).toBeInTheDocument();
-    // Both rows render (the null-ref row keeps the default owner).
-    expect(screen.getAllByText('team-a')).toHaveLength(2);
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('filters and sorts by kind', async () => {
+    const user = userEvent.setup();
+    api.failed.mockResolvedValue({
+      entities: [
+        makeEntity(),
+        makeEntity({
+          entity_id: 'id-beta',
+          entity_ref: 'component:default/beta',
+          unprocessed_entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'API',
+            metadata: { name: 'beta' },
+            spec: { owner: 'team-a' },
+          },
+        }),
+      ],
+    });
+    await renderComponent();
+
+    await screen.findByText('component:default/alpha');
+    await user.click(screen.getByText('Kind'));
+    const rows = screen.getAllByRole('row');
+    expect(
+      rows.findIndex(row => row.textContent?.includes('default/beta')),
+    ).toBeLessThan(
+      rows.findIndex(row => row.textContent?.includes('default/alpha')),
+    );
+
+    await user.type(screen.getByPlaceholderText('Filter'), 'API');
+    await waitFor(() =>
+      expect(
+        screen.queryByText('component:default/alpha'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.getByText('component:default/beta')).toBeInTheDocument();
   });
 
   it('deletes an entity after confirmation and reports success', async () => {

@@ -18,22 +18,13 @@ import { UnprocessedEntity } from '@backstage/plugin-catalog-unprocessed-entitie
 
 /**
  * Case-insensitive search predicate for the entityRef column, shared by the
- * failed and pending entity tables.
- *
- * Every input is treated as nullable on purpose: the row or its `entity_ref`
- * may be missing (and the query is empty until the user types), and calling
- * string methods on those nullish values would otherwise throw and break the
- * whole table while searching.
+ * failed and pending entity tables. Older backends can return a null
+ * `entity_ref`, which must not throw and break the table while searching.
  */
 export const entityRefFilterAndSearch = (
-  query: string | null | undefined,
-  row:
-    | { entity_ref?: UnprocessedEntity['entity_ref'] | null }
-    | null
-    | undefined,
-): boolean => {
-  if (!query) return true;
-  return String(row?.entity_ref ?? '')
+  query: string,
+  row: { entity_ref?: UnprocessedEntity['entity_ref'] | null },
+): boolean =>
+  (row.entity_ref ?? '')
     .toLocaleUpperCase('en-US')
-    .includes(String(query).toLocaleUpperCase('en-US'));
-};
+    .includes(query.toLocaleUpperCase('en-US'));

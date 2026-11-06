@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { PendingEntities } from './PendingEntities';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
@@ -105,10 +106,44 @@ describe('PendingEntities', () => {
     expect(screen.getByText('unknown')).toBeInTheDocument();
   });
 
-  it('renders rows even when an entity_ref is null', async () => {
-    // Regression guard: a null entity_ref used to crash the entityRef column's
-    // search predicate (see filterEntities.test.ts). The table must still
-    // render such rows. The predicate itself is unit-tested directly.
+  it('filters and sorts by kind', async () => {
+    const user = userEvent.setup();
+    api.pending.mockResolvedValue({
+      entities: [
+        makeEntity(),
+        makeEntity({
+          entity_id: 'id-beta',
+          entity_ref: 'component:default/beta',
+          unprocessed_entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'API',
+            metadata: { name: 'beta' },
+            spec: { owner: 'team-a' },
+          },
+        }),
+      ],
+    });
+    await renderComponent();
+
+    await screen.findByText('component:default/alpha');
+    await user.click(screen.getByText('Kind'));
+    const rows = screen.getAllByRole('row');
+    expect(
+      rows.findIndex(row => row.textContent?.includes('default/beta')),
+    ).toBeLessThan(
+      rows.findIndex(row => row.textContent?.includes('default/alpha')),
+    );
+
+    await user.type(screen.getByPlaceholderText('Filter'), 'API');
+    await waitFor(() =>
+      expect(
+        screen.queryByText('component:default/alpha'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.getByText('component:default/beta')).toBeInTheDocument();
+  });
+
+  it('renders a placeholder for a null entity_ref', async () => {
     api.pending.mockResolvedValue({
       entities: [
         makeEntity(),
@@ -123,7 +158,6 @@ describe('PendingEntities', () => {
     expect(
       await screen.findByText('component:default/alpha'),
     ).toBeInTheDocument();
-    // Both rows render (the null-ref row keeps the default owner).
-    expect(screen.getAllByText('team-a')).toHaveLength(2);
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 });

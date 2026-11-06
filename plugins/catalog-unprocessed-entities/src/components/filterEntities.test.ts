@@ -25,18 +25,11 @@ describe('entityRefFilterAndSearch', () => {
     expect(entityRefFilterAndSearch('missing', row)).toBe(false);
   });
 
-  it('does not throw when the row, entity_ref or query is nullish', () => {
+  it('does not throw on a null entity_ref', () => {
     // Regression: a null entity_ref used to throw and break the entire table
     // while searching.
     expect(entityRefFilterAndSearch('anything', { entity_ref: null })).toBe(
       false,
     );
-    expect(entityRefFilterAndSearch('anything', null)).toBe(false);
-    expect(
-      entityRefFilterAndSearch(null, { entity_ref: 'component:default/a' }),
-    ).toBe(true);
-    expect(
-      entityRefFilterAndSearch('', { entity_ref: 'component:default/a' }),
-    ).toBe(true);
   });
 });
