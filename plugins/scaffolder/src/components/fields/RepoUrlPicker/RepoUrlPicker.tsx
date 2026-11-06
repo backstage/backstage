@@ -53,7 +53,7 @@ export const RepoUrlPicker = (
   const scaffolderTheme = useScaffolderTheme();
   const { uiSchema, onChange, rawErrors, formData, schema } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
-    parseRepoPickerUrl(formData),
+    parseRepoPickerUrl(formData ?? (schema.default as string | undefined)),
   );
   const [credentialsHost, setCredentialsHost] = useState<string | undefined>(
     undefined,
