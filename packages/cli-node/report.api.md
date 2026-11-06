@@ -5,6 +5,7 @@
 ```ts
 import { JsonValue } from '@backstage/types';
 import { Package } from '@manypkg/get-packages';
+import { ParseArgsConfig } from 'node:util';
 
 // @public
 export type BackstagePackage = {
@@ -147,6 +148,16 @@ export function createCliModule(options: {
     addCommand: (command: CliCommand) => void;
   }) => Promise<void>;
 }): CliModule;
+
+// @public
+export function createScriptOptionsParser(
+  commandPath: string[] | string,
+  options: ParseArgsConfig['options'],
+): (scriptStr?: string) =>
+  | {
+      [longOption: string]: string | boolean | undefined;
+    }
+  | undefined;
 
 // @public
 export class GitUtils {

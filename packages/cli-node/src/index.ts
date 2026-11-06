@@ -28,4 +28,5 @@ export * from './git';
 export * from './input';
 export * from './monorepo';
 export * from './roles';
+export * from './scripts';
 export * from './yarn';

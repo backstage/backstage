@@ -1,0 +1,7 @@
+{
+  "name": "@internal/backend-plugin-pkg",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "backend-test"
+  }
+}
