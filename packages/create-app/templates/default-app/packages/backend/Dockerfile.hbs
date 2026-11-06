@@ -67,7 +67,11 @@ ENV NODE_ENV=production
 COPY --chown=node:node package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
+# For private registries, pass the token as an .npmrc build secret, since the build
+# doesn't see your environment variables. For example:
+#   NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
+RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \
+    --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
     pnpm install --frozen-lockfile --prod
 {{else}}
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
