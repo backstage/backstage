@@ -28,6 +28,7 @@ interface StartBackendOptions {
   inspectBrkEnabled?: boolean | string;
   linkedWorkspace?: string;
   require?: string[];
+  import?: string[];
 }
 
 export async function startBackend(options: StartBackendOptions) {
@@ -39,6 +40,7 @@ export async function startBackend(options: StartBackendOptions) {
     inspectBrkEnabled: options.inspectBrkEnabled,
     linkedWorkspace: options.linkedWorkspace,
     require: options.require,
+    import: options.import,
   });
 
   await waitForExit();
@@ -62,6 +64,7 @@ export async function startBackendPlugin(options: StartBackendOptions) {
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,
     require: options.require,
+    import: options.import,
     linkedWorkspace: options.linkedWorkspace,
   });
 

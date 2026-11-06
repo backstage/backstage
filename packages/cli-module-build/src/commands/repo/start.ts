@@ -37,7 +37,15 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { plugin, config, require: requirePaths, link, inspect, inspectBrk },
+    flags: {
+      plugin,
+      config,
+      require: requirePaths,
+      import: importPaths,
+      link,
+      inspect,
+      inspectBrk,
+    },
     _: namesOrPaths,
   } = cli(
     {
@@ -60,6 +68,12 @@ export default async ({ args, info }: CliCommandContext) => {
           type: [String],
           description:
             'Add --require arguments to the node process. Applies to backend package only',
+          default: [],
+        },
+        import: {
+          type: [String],
+          description:
+            'Add --import arguments to the node process. Applies to backend package only',
           default: [],
         },
         link: {
@@ -90,6 +104,7 @@ export default async ({ args, info }: CliCommandContext) => {
     inspect: inspect || (inspect === '' ? true : undefined),
     inspectBrk: inspectBrk || (inspectBrk === '' ? true : undefined),
     require: requirePaths,
+    import: importPaths,
     link,
   });
 
@@ -217,6 +232,7 @@ type CommandOptions = {
   inspect?: boolean | string;
   inspectBrk?: boolean | string;
   require: string[];
+  import: string[];
   link?: string;
 };
 
@@ -249,10 +265,16 @@ async function resolvePackageOptions(
           type: 'string',
           multiple: true,
         },
+        import: {
+          type: 'string',
+          multiple: true,
+        },
       },
     });
     const parsedRequire =
       parsedOpts.require?.filter(r => typeof r === 'string') ?? [];
+    const parsedImport =
+      parsedOpts.import?.filter(r => typeof r === 'string') ?? [];
     const parsedConfig =
       parsedOpts.config?.filter(c => typeof c === 'string') ?? [];
 
@@ -269,6 +291,7 @@ async function resolvePackageOptions(
           inspectEnabled: options.inspect,
           inspectBrkEnabled: options.inspectBrk,
           require: options.require.length > 0 ? options.require : parsedRequire,
+          import: options.import.length > 0 ? options.import : parsedImport,
         },
       },
     ];

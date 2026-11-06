@@ -45,6 +45,7 @@ export async function startPackage(options: {
   inspectBrkEnabled?: boolean | string;
   linkedWorkspace?: string;
   require?: string[];
+  import?: string[];
 }): Promise<void> {
   switch (options.role) {
     case 'backend':

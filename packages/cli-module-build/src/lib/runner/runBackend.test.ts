@@ -168,5 +168,16 @@ describe('runBackend', () => {
         '--require=./b.js',
       ]);
     });
+
+    it('should forward --import flags in order', async () => {
+      runBackend({ entry: 'src/index', import: ['./a.js', './b.js'] });
+      await jest.advanceTimersByTimeAsync(100);
+
+      const args = mockSpawn.mock.calls[0][1];
+      expect(args?.filter(a => a.startsWith('--import='))).toEqual([
+        '--import=./a.js',
+        '--import=./b.js',
+      ]);
+    });
   });
 });

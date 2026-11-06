@@ -28,6 +28,7 @@ export default async ({ args, info }: CliCommandContext) => {
       role,
       check,
       require: requirePaths,
+      import: importPaths,
       link,
       entrypoint,
       inspect,
@@ -54,6 +55,11 @@ export default async ({ args, info }: CliCommandContext) => {
         require: {
           type: [String],
           description: 'Add --require arguments to the node process',
+          default: [],
+        },
+        import: {
+          type: [String],
+          description: 'Add --import arguments to the node process',
           default: [],
         },
         link: {
@@ -91,5 +97,6 @@ export default async ({ args, info }: CliCommandContext) => {
     inspectEnabled: inspect || (inspect === '' ? true : undefined),
     inspectBrkEnabled: inspectBrk || (inspectBrk === '' ? true : undefined),
     require: requirePaths,
+    import: importPaths,
   });
 };

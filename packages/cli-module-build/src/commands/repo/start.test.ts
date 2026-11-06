@@ -298,4 +298,65 @@ describe('node preload flags', () => {
       }),
     );
   });
+
+  it('should forward --import passed on the cli', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([
+        backendWithStartScript('backstage-cli package start'),
+      ]);
+
+    await start({
+      args: ['--import', './a.js', '--import=./b.js'],
+      info: { name: 'test', usage: 'test' },
+    });
+
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        import: ['./a.js', './b.js'],
+      }),
+    );
+  });
+
+  it('should forward --import passed from the start script', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([
+        backendWithStartScript(
+          'backstage-cli package start --import ./a.js --import=./b.js',
+        ),
+      ]);
+
+    await start({
+      args: [],
+      info: { name: 'test', usage: 'test' },
+    });
+
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        import: ['./a.js', './b.js'],
+      }),
+    );
+  });
+
+  it('should override --import from start script with cli flags when specified', async () => {
+    jest
+      .spyOn(PackageGraph, 'listTargetPackages')
+      .mockResolvedValue([
+        backendWithStartScript(
+          'backstage-cli package start --import ./a.js --import=./b.js',
+        ),
+      ]);
+
+    await start({
+      args: ['--import', './c.js'],
+      info: { name: 'test', usage: 'test' },
+    });
+
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        import: ['./c.js'],
+      }),
+    );
+  });
 });

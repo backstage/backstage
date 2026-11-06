@@ -33,4 +33,16 @@ describe('node preload flags', () => {
       }),
     );
   });
+
+  it('should pass --import flags along', async () => {
+    await start({
+      args: ['--role=backend', '--import', './a.js', '--import=./b.js'],
+      info: { name: 'test', usage: 'test' },
+    });
+    expect(startPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        import: ['./a.js', './b.js'],
+      }),
+    );
+  });
 });
