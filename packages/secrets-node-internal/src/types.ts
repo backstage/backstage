@@ -101,7 +101,17 @@ export interface SecretProviderResolveRequest {
 export interface SecretProvider {
   /** Unique id used to route a {@link SecretReference} to this provider. */
   readonly id: string;
-  /** Resolves the provider-specific reference to a live value. */
+  /**
+   * Resolves the provider-specific reference to a live value.
+   *
+   * @remarks
+   *
+   * Thrown errors propagate to the consumer unchanged and may surface in
+   * consumer logs, so providers must not include the reference payload or the
+   * resolved value in error messages or metadata. Only the provider knows which
+   * parts of its reference are sensitive, so sanitizing failures is the
+   * provider's responsibility.
+   */
   resolve(request: SecretProviderResolveRequest): Promise<ResolvedSecret>;
 }
 

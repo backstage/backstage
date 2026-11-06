@@ -45,7 +45,9 @@ export interface DefaultSecretResolverServiceOptions {
  *
  * The resolver never logs or persists the opaque reference payload or the
  * resolved value; only non-sensitive metadata (provider id, consuming plugin
- * id) is emitted.
+ * id) is emitted. Provider failures propagate to the consumer unchanged, so
+ * keeping sensitive data out of error messages is the provider's
+ * responsibility — see {@link SecretProvider.resolve}.
  *
  * @public
  */
