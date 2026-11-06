@@ -97,6 +97,11 @@ By default the graph plugin requires the following Application permissions (not 
 
 - `GroupMember.Read.All`
 - `User.Read.All`
+- `Organization.Read.All`
+
+:::note
+`Organization.Read.All` is required because the provider reads the tenant's Microsoft Graph Organization resource (`/organization/{tenantId}`) to transform it into the root Backstage Group entity. This is needed even when using a custom organization transformer.
+:::
 
 If your organization required Admin Consent for these permissions, that will need to be granted.
 
@@ -532,9 +537,9 @@ Try importing a smaller set of data (e.g. `filter: displayName eq 'John Smith'`)
 
 See [Troubleshooting Azure Identity Authentication Issues](https://aka.ms/azsdk/js/identity/troubleshoot)
 
-### Error while reading users from Microsoft Graph: Authorization_RequestDenied - Insufficient privileges to complete the operation
+### Error while reading users or organization from Microsoft Graph: Authorization_RequestDenied - Insufficient privileges to complete the operation
 
-- Make sure you've granted all the required permissions to your application registration or managed identity
+- Make sure you've granted all the required permissions to your application registration or managed identity (`GroupMember.Read.All`, `User.Read.All`, and `Organization.Read.All`)
 - Make sure the permissions are `Application` permissions rather than `Delegated`
 - If your organization has configured "Admin consent" to be required, make sure this has been granted for your application permissions
 - If your group queries are returning Microsoft Teams groups, you may need to grant addition permissions (e.g. `Team.ReadBasic.All`, `TeamMember.Read.All`)
