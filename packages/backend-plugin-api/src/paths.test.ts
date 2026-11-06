@@ -15,9 +15,112 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { resolveSafeChildPath } from './paths';
+import { dirname, resolve as resolvePath } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { resolvePackagePath, resolveSafeChildPath } from './paths';
+import { overridePackagePathResolution } from './testUtils';
 
 describe('paths', () => {
+  describe('resolvePackagePath', () => {
+    const mockDir = createMockDirectory();
+    const packageDir = mockDir.resolve('my package #1%');
+    let override: ReturnType<typeof overridePackagePathResolution> | undefined;
+
+    beforeEach(() => {
+      mockDir.setContent({
+        'package.json': JSON.stringify({ name: 'test-workspace' }),
+        'my package #1%': {
+          'package.json': JSON.stringify({ name: 'test-package' }),
+          'src/lib/index.ts': '',
+          'dist/index.cjs.js': '',
+          'nested/package.json': '{}',
+          'nested/index.js': '',
+        },
+      });
+    });
+
+    afterEach(() => {
+      override?.restore();
+      override = undefined;
+    });
+
+    it('resolves package names and retains path overrides', () => {
+      const root = dirname(
+        require.resolve('@backstage/backend-plugin-api/package.json'),
+      );
+      expect(resolvePackagePath('@backstage/backend-plugin-api')).toBe(root);
+      expect(resolvePackagePath(import.meta.url)).toBe(root);
+      expect(
+        resolvePackagePath(
+          '@backstage/backend-plugin-api',
+          'assets',
+          'test.txt',
+        ),
+      ).toBe(resolvePath(root, 'assets/test.txt'));
+
+      override = overridePackagePathResolution({
+        packageName: '@backstage/backend-plugin-api',
+        paths: { 'assets/test.txt': mockDir.resolve('override.txt') },
+      });
+      expect(
+        resolvePackagePath(
+          '@backstage/backend-plugin-api',
+          'assets',
+          'test.txt',
+        ),
+      ).toBe(mockDir.resolve('override.txt'));
+      expect(resolvePackagePath('@backstage/backend-plugin-api')).toBe(root);
+      expect(() =>
+        resolvePackagePath('nonexistent-package-for-path-test'),
+      ).toThrow();
+    });
+
+    it('resolves file URLs relative to the nearest package root', () => {
+      for (const modulePath of ['src/lib/index.ts', 'dist/index.cjs.js']) {
+        const moduleUrl = pathToFileURL(
+          resolvePath(packageDir, modulePath),
+        ).href;
+        expect(resolvePackagePath(moduleUrl)).toBe(packageDir);
+        expect(resolvePackagePath(moduleUrl, 'migrations', 'new.js')).toBe(
+          resolvePath(packageDir, 'migrations/new.js'),
+        );
+      }
+
+      expect(
+        resolvePackagePath(
+          pathToFileURL(resolvePath(packageDir, 'nested/index.js')).href,
+        ),
+      ).toBe(resolvePath(packageDir, 'nested'));
+      expect(() => resolvePackagePath('file:///%2F/index.js')).toThrow();
+    });
+
+    it('applies package-name overrides to file URLs and restores resolution', () => {
+      const moduleUrl = pathToFileURL(
+        resolvePath(packageDir, 'src/lib/index.ts'),
+      ).href;
+      override = overridePackagePathResolution({
+        packageName: 'test-package',
+        path: mockDir.resolve('replacement'),
+        paths: { 'migrations/new.js': mockDir.resolve('override.js') },
+      });
+
+      expect(resolvePackagePath(moduleUrl)).toBe(
+        mockDir.resolve('replacement'),
+      );
+      expect(resolvePackagePath(moduleUrl, 'migrations', 'new.js')).toBe(
+        mockDir.resolve('override.js'),
+      );
+      expect(resolvePackagePath(moduleUrl, 'assets')).toBe(
+        mockDir.resolve('replacement/assets'),
+      );
+
+      override.restore();
+      expect(resolvePackagePath(moduleUrl, 'assets')).toBe(
+        resolvePath(packageDir, 'assets'),
+      );
+    });
+  });
+
   describe('resolveSafeChildPath', () => {
     const mockDir = createMockDirectory();
     const secondDirectory = createMockDirectory();

@@ -77,10 +77,7 @@ describe('OidcRouter', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     const authDatabase = AuthDatabase.create({
@@ -153,10 +150,7 @@ describe('OidcRouter', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     const authDatabase = AuthDatabase.create({
@@ -1637,10 +1631,7 @@ describe('OidcRouter', () => {
         const knex = await databases.init(databaseId);
 
         await knex.migrate.latest({
-          directory: resolvePackagePath(
-            '@backstage/plugin-auth-backend',
-            'migrations',
-          ),
+          directory: resolvePackagePath(import.meta.url, 'migrations'),
         });
 
         const authDatabase = AuthDatabase.create({
@@ -1737,10 +1728,7 @@ describe('OidcRouter', () => {
         const knex = await databases.init(databaseId);
 
         await knex.migrate.latest({
-          directory: resolvePackagePath(
-            '@backstage/plugin-auth-backend',
-            'migrations',
-          ),
+          directory: resolvePackagePath(import.meta.url, 'migrations'),
         });
 
         const authDatabase = AuthDatabase.create({
