@@ -22,11 +22,8 @@ import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
-import {
-  logApiReportInstructions,
-  logReportDiff,
-  tryRunPrettierAsync,
-} from '../common';
+import { formatContent } from '../../../lib/formatter';
+import { logApiReportInstructions, logReportDiff } from '../common';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -160,13 +157,13 @@ async function runSingleSqlExtraction(
     targetDir,
     `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
   );
-  const report = await tryRunPrettierAsync(
+  const report = formatContent(
     generateSqlReport({
       reportName,
       failedDownMigration,
       schemaInfo,
     }),
-    { filepath: reportPath },
+    reportPath,
   );
 
   const existingReport = await fs.readFile(reportPath, 'utf8').catch(error => {

@@ -18,7 +18,7 @@ import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runOutput } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
@@ -78,15 +78,30 @@ export default async ({ args, info }: CliCommandContext) => {
   );
 
   // If prettier is present, then we run that too
-  let hasPrettier = false;
+  let prettier: typeof import('prettier') | undefined;
   try {
-    require.resolve('prettier');
-    hasPrettier = true;
+    prettier = require('prettier');
   } catch {
     /* ignore */
   }
 
-  if (hasPrettier) {
-    await runOutput(['prettier', '--write', ...configPaths]);
+  if (prettier) {
+    const { getFileInfo, resolveConfig, format } = prettier;
+    await Promise.all(
+      configPaths.map(async filepath => {
+        const { ignored } = await getFileInfo(filepath, {
+          ignorePath: targetPaths.resolveRoot('.prettierignore'),
+        });
+        if (ignored) {
+          return;
+        }
+        const source = await fs.readFile(filepath, 'utf8');
+        const config = await resolveConfig(filepath, { editorconfig: true });
+        await fs.writeFile(
+          filepath,
+          await format(source, { ...config, filepath }),
+        );
+      }),
+    );
   }
 };

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { execFile } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
-import { exec } from '../exec';
+import { formatFiles } from '../formatter';
 
 const execFileAsync = promisify(execFile);
 
@@ -70,14 +69,5 @@ export async function lintAndFormatGeneratedFiles(
     );
   }
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (await fs.pathExists(prettier)) {
-    // Run in the project root, since Prettier only reads the ignore file of
-    // its working directory.
-    await exec(`"${prettier}"`, ['--write', ...paths], {
-      cwd: targetPaths.rootDir,
-      signal: options?.signal,
-      maxBuffer: Number.MAX_VALUE,
-    });
-  }
+  await formatFiles(paths, options);
 }

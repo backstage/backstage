@@ -16,20 +16,18 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { execFile } from 'node:child_process';
-import { exec } from '../exec';
+import { formatFiles } from '../formatter';
 import { lintAndFormatGeneratedFiles } from './lintAndFormatGeneratedFiles';
 
 const mockDir = createMockDirectory();
 
 // Jest caches failed module lookups per directory, so each case uses a new root
-let mockRoot = '';
 let rootCount = 0;
 function setRoot(content: Record<string, any>) {
-  mockRoot = `root-${rootCount++}`;
-  mockDir.addContent({
-    [mockRoot]: { 'package.json': '{}', ...content },
-  });
-  jest.spyOn(process, 'cwd').mockReturnValue(mockDir.resolve(mockRoot));
+  const root = `root-${rootCount++}`;
+  mockDir.addContent({ [root]: { 'package.json': '{}', ...content } });
+  jest.spyOn(process, 'cwd').mockReturnValue(mockDir.resolve(root));
+  return mockDir.resolve(root);
 }
 
 const cliStub = {
@@ -41,17 +39,6 @@ const cliStub = {
     },
   },
 };
-const prettierStub = { '.bin': { prettier: '' } };
-
-jest.mock('@backstage/cli-common', () => ({
-  ...jest.requireActual('@backstage/cli-common'),
-  targetPaths: {
-    get rootDir() {
-      return mockDir.resolve(mockRoot);
-    },
-    resolveRoot: (...paths: string[]) => mockDir.resolve(mockRoot, ...paths),
-  },
-}));
 
 jest.mock('node:child_process', () => {
   const actual = jest.requireActual('node:child_process');
@@ -61,67 +48,58 @@ jest.mock('node:child_process', () => {
   };
 });
 
-jest.mock('../exec', () => ({
-  exec: jest.fn(async () => ({ stdout: '', stderr: '' })),
+jest.mock('../formatter', () => ({
+  formatFiles: jest.fn(async () => {}),
 }));
 
 describe('lintAndFormatGeneratedFiles', () => {
   const execFileMock = execFile as unknown as jest.Mock;
-  const execMock = exec as unknown as jest.Mock;
+  const formatFilesMock = formatFiles as unknown as jest.Mock;
   const warn = jest.spyOn(console, 'warn').mockImplementation();
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('lints with the resolved CLI, then formats from the project root', async () => {
-    setRoot({ node_modules: { ...cliStub, ...prettierStub } });
+  it('lints with the resolved CLI, then formats', async () => {
+    const root = setRoot({ node_modules: cliStub });
 
     await lintAndFormatGeneratedFiles(['a b', 'c']);
 
     const [node, args] = execFileMock.mock.calls[0];
     expect(node).toBe(process.execPath);
     expect(args).toEqual([
-      mockDir.resolve(
-        mockRoot,
-        'node_modules/@backstage/cli/bin/backstage-cli',
-      ),
+      `${root}/node_modules/@backstage/cli/bin/backstage-cli`,
       'package',
       'lint',
       '--fix',
       'a b',
       'c',
     ]);
-    expect(execMock).toHaveBeenCalledWith(
-      `"${mockDir.resolve(mockRoot, 'node_modules/.bin/prettier')}"`,
-      ['--write', 'a b', 'c'],
-      expect.objectContaining({ cwd: mockDir.resolve(mockRoot) }),
-    );
+    expect(formatFilesMock).toHaveBeenCalledWith(['a b', 'c'], undefined);
     expect(warn).not.toHaveBeenCalled();
   });
 
   it('warns and still formats when linting fails', async () => {
-    setRoot({ node_modules: { ...cliStub, ...prettierStub } });
+    setRoot({ node_modules: cliStub });
     execFileMock.mockImplementationOnce((_cmd, _args, _opts, callback) =>
       callback(new Error('lint exploded')),
     );
 
     await expect(lintAndFormatGeneratedFiles(['a'])).resolves.toBeUndefined();
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('lint exploded'));
-    expect(execMock).toHaveBeenCalledTimes(1);
+    expect(formatFilesMock).toHaveBeenCalledTimes(1);
 
     // The same goes for a project where the CLI can't be resolved
     warn.mockClear();
-    setRoot({ node_modules: prettierStub });
+    setRoot({});
     await expect(lintAndFormatGeneratedFiles(['a'])).resolves.toBeUndefined();
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(execMock).toHaveBeenCalledTimes(2);
+    expect(formatFilesMock).toHaveBeenCalledTimes(2);
   });
 
-  it('fails on aborts and formatting errors, and skips a missing Prettier', async () => {
+  it('fails on aborts and formatting errors', async () => {
     setRoot({ node_modules: cliStub });
-    await lintAndFormatGeneratedFiles(['a']);
-    expect(execMock).not.toHaveBeenCalled();
 
     const abortError = Object.assign(new Error('aborted'), {
       name: 'AbortError',
@@ -130,9 +108,9 @@ describe('lintAndFormatGeneratedFiles', () => {
       callback(abortError),
     );
     await expect(lintAndFormatGeneratedFiles(['a'])).rejects.toBe(abortError);
+    expect(formatFilesMock).not.toHaveBeenCalled();
 
-    setRoot({ node_modules: { ...cliStub, ...prettierStub } });
-    execMock.mockRejectedValueOnce(new Error('format exploded'));
+    formatFilesMock.mockRejectedValueOnce(new Error('format exploded'));
     await expect(lintAndFormatGeneratedFiles(['a'])).rejects.toThrow(
       'format exploded',
     );
