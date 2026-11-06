@@ -7,6 +7,7 @@ export type Component =
   | 'avatar'
   | 'badge'
   | 'box'
+  | 'bui-tokens'
   | 'button'
   | 'button-icon'
   | 'button-link'

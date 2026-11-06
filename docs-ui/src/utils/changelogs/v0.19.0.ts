@@ -13,7 +13,7 @@ Programmatic clicks on Checkbox and Switch labels no longer toggle their selecti
     commitSha: '4e7a710',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.19.0',
     prs: ['36165'],
     description: `The \`--bui-bg-app\` token now follows the page's \`color-scheme\` until a theme mode is set. While the app loads, the page background then matches a dark theme instead of showing as light. Browsers without \`light-dark()\` support keep the light value until the theme mode is set, as before.`,
@@ -29,7 +29,7 @@ Programmatic clicks on Checkbox and Switch labels no longer toggle their selecti
     commitSha: '6c9ed14',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.19.0',
     prs: ['36138'],
     description: `Added a \`theme\` CSS cascade layer between \`components\` and \`utilities\`. BUI leaves it empty: put your app's brand overrides in \`@layer theme\` to win over component styles without raising specificity, while utility props still take precedence. Existing styles are unaffected.
