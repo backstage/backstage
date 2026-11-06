@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { render } from '@testing-library/react';
-import validator from '@rjsf/validator-ajv8';
+import { validator } from '@internal/rjsf-validator';
 import { Form } from '../../Form';
 
 
@@ -117,7 +117,7 @@ describe('BUI FieldTemplate', () => {
 
     // The error shows up both in the top-level ErrorListTemplate and inline via FieldErrorTemplate
     const errorMessages = getAllByText(
-      /must NOT have fewer than 3 characters/i,
+      /String is too short/i,
     );
     expect(errorMessages.length).toBeGreaterThanOrEqual(1);
   });
