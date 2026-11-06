@@ -115,14 +115,26 @@ async function generate(
     export * from './generated';`,
   );
 
+  let lintError: Error | undefined;
   try {
-    await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
+    await exec(`yarn backstage-cli package lint`, ['--fix', parentDirectory], {
       signal: abortSignal?.signal,
     });
-  } finally {
-    // Format even if linting fails, so that the files are still formatted
-    // while the lint error fails the command
-    await formatFiles([parentDirectory], { signal: abortSignal?.signal });
+  } catch (error) {
+    lintError = error;
+  }
+
+  // Format even if linting fails, so that the files are still formatted while
+  // the lint error, which is the one worth reporting, fails the command
+  await formatFiles([parentDirectory], { signal: abortSignal?.signal }).catch(
+    error => {
+      if (!lintError) {
+        throw error;
+      }
+    },
+  );
+  if (lintError) {
+    throw lintError;
   }
 }
 
@@ -133,16 +145,17 @@ export async function command(
     abortSignal,
     isWatch = false,
   }: { abortSignal?: AbortController; isWatch?: boolean } = {},
-): Promise<void> {
+): Promise<boolean> {
   try {
     await generate(outputPackage, clientAdditionalProperties, abortSignal);
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
     );
+    return true;
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.debug('Server generation aborted.');
-      return;
+      console.debug('Client generation aborted.');
+      return true;
     }
     if (isWatch) {
       console.log(chalk.red(`Client generation failed:`));
@@ -152,7 +165,7 @@ export async function command(
     } else {
       console.log(chalk.red(`Client generation failed.`));
       console.log(chalk.red(err.message));
-      process.exitCode = 1;
     }
+    return false;
   }
 }

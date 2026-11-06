@@ -159,18 +159,28 @@ async function generate(
   // files are linted and formatted in a single run each.
   const indexFile = await writeSpecFiles();
 
+  let lintError: Error | undefined;
   try {
     await exec(
       `yarn backstage-cli package lint`,
       ['--fix', resolvedOutputDirectory, indexFile],
       { signal: abortSignal?.signal },
     );
-  } finally {
-    // Format even if linting fails, so that the files are still formatted
-    // while the lint error fails the command
-    await formatFiles([resolvedOutputDirectory, indexFile], {
-      signal: abortSignal?.signal,
-    });
+  } catch (error) {
+    lintError = error;
+  }
+
+  // Format even if linting fails, so that the files are still formatted while
+  // the lint error, which is the one worth reporting, fails the command
+  await formatFiles([resolvedOutputDirectory, indexFile], {
+    signal: abortSignal?.signal,
+  }).catch(error => {
+    if (!lintError) {
+      throw error;
+    }
+  });
+  if (lintError) {
+    throw lintError;
   }
 }
 
@@ -183,14 +193,15 @@ export async function command(
     isWatch?: boolean;
   },
   serverAdditionalProperties?: string,
-): Promise<void> {
+): Promise<boolean> {
   try {
     await generate(serverAdditionalProperties, abortSignal);
     console.log(chalk.green('Generated server files.'));
+    return true;
   } catch (err) {
     if (err.name === 'AbortError') {
       console.debug('Server generation aborted.');
-      return;
+      return true;
     }
     if (isWatch) {
       console.log(chalk.red(`Server generation failed:`));
@@ -200,7 +211,7 @@ export async function command(
     } else {
       console.log(chalk.red(err.message));
       console.log(chalk.red(`OpenAPI server stub generation failed.`));
-      process.exitCode = 1;
     }
+    return false;
   }
 }
