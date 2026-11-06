@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { randomBytes } from 'node:crypto';
 import { SignJWT } from 'jose';
+import { tokenTypes } from '@backstage/plugin-auth-node';
 import { authServiceFactory } from '../../auth/authServiceFactory';
 import { authenticateWebSocket } from './authenticateWebSocket';
 
@@ -104,7 +105,7 @@ describe('authenticateWebSocket', () => {
     }
   });
 
-  it('tries later credentials after expired or invalid legacy tokens', async () => {
+  it('tries later credentials after invalid tokens with the default auth service', async () => {
     const key = randomBytes(32);
     const data = {
       backend: {
@@ -142,7 +143,16 @@ describe('authenticateWebSocket', () => {
       .setProtectedHeader({ alg: 'HS256' })
       .setNotBefore('1h')
       .sign(key);
-    for (const token of [expired, notYetValid]) {
+    const pluginHeader = Buffer.from(
+      JSON.stringify({ alg: 'ES256', typ: tokenTypes.plugin.typParam }),
+    ).toString('base64url');
+    const malformedPluginTokens = ['not json', '[]'].map(
+      payload =>
+        `${pluginHeader}.${Buffer.from(payload).toString(
+          'base64url',
+        )}.signature`,
+    );
+    for (const token of [expired, notYetValid, ...malformedPluginTokens]) {
       await expect(auth.authenticate(token)).rejects.toMatchObject({
         name: 'AuthenticationError',
       });
