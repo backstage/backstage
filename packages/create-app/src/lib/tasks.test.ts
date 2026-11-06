@@ -498,6 +498,10 @@ describe('tasks', () => {
       expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
         'pnpm install --frozen-lockfile --prod',
       );
+      // Registry settings and tokens for the install come from a build secret
+      expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
+        'RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \\\n',
+      );
       expect(pnpmFiles['.github/workflows/ci.yml']).toContain(
         'uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6',
       );
