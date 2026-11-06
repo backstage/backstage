@@ -16,6 +16,7 @@
 
 import {
   isValidElement,
+  Suspense,
   useState,
   useCallback,
   useMemo,
@@ -31,7 +32,6 @@ import {
 } from '@backstage/core-plugin-api';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import Dialog from '@material-ui/core/Dialog';
 import {
   createStyles,
   makeStyles,
@@ -47,7 +47,7 @@ import {
 } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
-import { AddWidgetDialog } from './AddWidgetDialog';
+import { AddWidgetDialog, AddWidgetDialogWidget } from './AddWidgetDialog';
 import { CustomHomepageButtons } from './CustomHomepageButtons';
 import {
   CustomHomepageGridProps,
@@ -268,7 +268,10 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     return availableWidgets.filter(widget => !usedWidgetNames.has(widget.name));
   };
 
-  const handleAdd = (widget: Widget) => {
+  const handleAdd = (
+    widget: Widget,
+    initialSettings: Record<string, any> = {},
+  ) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
       .toString(36)
       .slice(2)}`;
@@ -290,13 +293,23 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           isResizable: editMode,
           isDraggable: editMode,
         },
-        settings: {},
+        settings: initialSettings,
         movable: widget.movable,
         deletable: widget.deletable,
         resizable: widget.resizable,
       },
     ]);
     setAddWidgetDialogOpen(false);
+  };
+
+  const handleAddFromDialog = (
+    { name }: AddWidgetDialogWidget,
+    settings?: Record<string, unknown>,
+  ) => {
+    const widget = getWidgetByName(name);
+    if (widget) {
+      handleAdd(widget, settings);
+    }
   };
 
   const handleRemove = (widgetId: string) => {
@@ -392,18 +405,14 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           cancel={handleCancel}
         />
       </ContentHeader>
-      <Dialog
-        open={addWidgetDialogOpen}
-        onClose={() => setAddWidgetDialogOpen(false)}
-      >
-        {/* Only mount when open so the list does not update (e.g. remove the added widget) before the modal closes */}
-        {addWidgetDialogOpen && (
-          <AddWidgetDialog
-            widgets={getAvailableWidgets()}
-            handleAdd={handleAdd}
-          />
-        )}
-      </Dialog>
+      <Suspense fallback={null}>
+        <AddWidgetDialog
+          open={addWidgetDialogOpen}
+          onClose={() => setAddWidgetDialogOpen(false)}
+          widgets={getAvailableWidgets()}
+          handleAdd={handleAddFromDialog}
+        />
+      </Suspense>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
           {t('customHomepage.noWidgets')}
