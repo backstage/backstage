@@ -48,6 +48,33 @@ describe('PnpmLockfile', () => {
     expect(lockfile.get('nonexistent')).toBeUndefined();
   });
 
+  it('should list packages from git and tarballs by their version', async () => {
+    mockDir.setContent({
+      'pnpm-lock.yaml': `
+lockfileVersion: '9.0'
+
+packages:
+
+  git-pkg@git+https://git.example.com/acme/git-pkg.git#99759b9febeadeae593cf53b72652c8f91616116:
+    resolution: {commit: 99759b9febeadeae593cf53b72652c8f91616116, repo: https://git.example.com/acme/git-pkg.git, type: git}
+    version: 2.0.0
+
+  local-pkg@file:local-pkg:
+    resolution: {directory: local-pkg, type: directory}
+
+  tgz-pkg@file:../tgz-pkg.tgz:
+    resolution: {integrity: sha512-NTkoMowDQPXiZsivEi+JAmR+2lFmlVDXzf6epSX73TJMCs/p85CG4MFFzYMvKhDIH1RB9hNE8l+RUh4+9JlXhw==, tarball: file:../tgz-pkg.tgz}
+    version: 3.0.0
+`,
+    });
+
+    const lockfile = await PnpmLockfile.load(mockDir.resolve('pnpm-lock.yaml'));
+    expect(lockfile.get('git-pkg')).toEqual([{ version: '2.0.0' }]);
+    expect(lockfile.get('tgz-pkg')).toEqual([{ version: '3.0.0' }]);
+    // pnpm doesn't write the version of a local directory to the lockfile
+    expect(lockfile.get('local-pkg')).toEqual([{ version: 'file:local-pkg' }]);
+  });
+
   it('should reject lockfiles that cannot be read', async () => {
     mockDir.setContent({
       'old.yaml': `lockfileVersion: '6.0'\n`,

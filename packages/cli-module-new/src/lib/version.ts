@@ -133,8 +133,13 @@ export function createPackageVersionProvider(
     widenExactRanges?: boolean;
   },
 ) {
-  const toRange = (range: string) =>
-    options?.widenExactRanges && semver.valid(range) ? `^${range}` : range;
+  // A prerelease version hint stays pinned, like it does without a lockfile
+  const toRange = (range: string, versionHint?: string) =>
+    options?.widenExactRanges &&
+    semver.valid(range) &&
+    !(versionHint && semver.prerelease(versionHint))
+      ? `^${range}`
+      : range;
 
   return (name: string, versionHint?: string): string | undefined => {
     const packageVersion = packageVersions[name];
@@ -193,6 +198,7 @@ export function createPackageVersionProvider(
         );
         return toRange(
           (preferred.length ? preferred : highestEntries).slice(-1)[0].range,
+          versionHint,
         );
       }
     }
@@ -203,7 +209,7 @@ export function createPackageVersionProvider(
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
-      return toRange(highestRange.range);
+      return toRange(highestRange.range, versionHint);
     }
     if (packageVersion) {
       return `^${packageVersion}`;

@@ -22,7 +22,7 @@ const PACKAGE_KEY_PATTERN = /^(@[^/@]+\/[^/@]+|[^/@]+)@(.+)$/;
 
 type PnpmLockfileData = {
   lockfileVersion?: string | number;
-  packages?: Record<string, unknown>;
+  packages?: Record<string, { version?: unknown } | null>;
 };
 
 type LockfileQueryEntry = {
@@ -65,8 +65,8 @@ export class PnpmLockfile {
 
     const packages = new Map<string, LockfileQueryEntry[]>();
 
-    for (const key of Object.keys(data.packages ?? {})) {
-      const [, name, version] = PACKAGE_KEY_PATTERN.exec(key) ?? [];
+    for (const [key, entry] of Object.entries(data.packages ?? {})) {
+      const [, name, keyVersion] = PACKAGE_KEY_PATTERN.exec(key) ?? [];
       if (!name) {
         throw new Error(`Failed to parse pnpm-lock.yaml entry '${key}'`);
       }
@@ -76,7 +76,12 @@ export class PnpmLockfile {
         queries = [];
         packages.set(name, queries);
       }
-      queries.push({ version });
+      // A package from git or a tarball is keyed by its source, and the
+      // lockfile lists its version separately
+      const version = entry?.version;
+      queries.push({
+        version: typeof version === 'string' ? version : keyVersion,
+      });
     }
 
     return new PnpmLockfile(packages);
