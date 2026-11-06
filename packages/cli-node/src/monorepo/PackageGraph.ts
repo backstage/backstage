@@ -396,9 +396,11 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         const lockfileName = packageManager.lockfileName();
         const otherName = changedLockfiles.find(name => name !== lockfileName);
         if (otherName) {
-          throw new Error(
-            `${otherName} does not belong to ${packageManager.name()}, which uses ${lockfileName}`,
+          // Expected when switching package managers, so not a failure
+          console.warn(
+            `${otherName} changed, but this project uses ${packageManager.name()}, assuming all packages have changed`,
           );
+          return Array.from(this.values());
         }
         thisLockfile = await packageManager.loadLockfile();
         otherLockfile = await packageManager.parseLockfile(
