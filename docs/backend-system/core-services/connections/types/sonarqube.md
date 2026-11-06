@@ -5,14 +5,16 @@ description: Configure and consume SonarQube Server and SonarQube Cloud connecti
 ---
 
 Use the `sonarqube` connection type for SonarQube Server and SonarQube Cloud.
-You can configure multiple instances
-([multiton cardinality](../01-concepts.md#cardinality)), each selected by its
-`host` [lookup strategy](../01-concepts.md#lookup-strategies).
+You can configure [several instances](../01-concepts.md#cardinality), each
+selected by its backend host.
 
-## Configure SonarQube
+## Configuring
 
-The example uses dummy tokens. For a real instance, supply the token through a
-secret environment variable such as `${SONARQUBE_TOKEN}`.
+### Configure SonarQube
+
+Add the instances your plugins need to the backend configuration. The example
+uses dummy tokens; supply real tokens through secret environment variables such
+as `${SONARQUBE_TOKEN}`.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -38,14 +40,11 @@ connections:
 ```
 
 SonarQube Cloud uses `https://sonarcloud.io` in the EU region and
-`https://sonarqube.us` in the US region. Its
-[Web API documentation](https://docs.sonarsource.com/sonarqube-cloud/appendices/web-api)
-lists the regional API endpoints. Set `baseUrl` to the instance root, including
-any Server context path, without an `/api` suffix. The plugin adds the API path
-to this URL. It also needs to choose the API version and endpoint; the connection
-type does not choose Cloud V2 endpoints.
+`https://sonarqube.us` in the US region. Choose the region that contains your
+projects; see the [Cloud Web API documentation](https://docs.sonarsource.com/sonarqube-cloud/appendices/web-api)
+for its API endpoints.
 
-## Connection fields
+### Connection fields
 
 | Field             | Type     | Required | Description                                                                            |
 | ----------------- | -------- | -------- | -------------------------------------------------------------------------------------- |
@@ -53,17 +52,28 @@ type does not choose Cloud V2 endpoints.
 | `baseUrl`         | `string` | Yes      | Backend HTTP or HTTPS instance URL, including the context path.                        |
 | `externalBaseUrl` | `string` | No       | Browser URL used only for display links. Use `baseUrl` when this is omitted.           |
 
+Both `host` and `baseUrl` are required. Set `host` to the parsed backend URL
+host, including a non-default port, and `baseUrl` to the instance root, including
+any Server context path, without an `/api` suffix. The service returns this URL
+as configured; it does not derive it from the host or add a trailing slash.
+
+Give each instance a separate host name or port. Configuration rejects two
+SonarQube connections with the same host, even if their context paths differ,
+because lookup cannot tell them apart. It also cannot select between Cloud
+organisations on the same host.
+
+Set `externalBaseUrl` when users open SonarQube at a different address from the
+backend. Plugins use it for display links, while API requests use `baseUrl`.
+It does not provide another host for connection lookup or receive credentials.
+
 Base URLs must not contain embedded credentials, whitespace, query parameters
 or fragments. Even empty `?` and `#` delimiters change how relative API paths
 are resolved, so they are rejected. Percent-encoded path characters, context
-paths and trailing slashes are preserved as configured.
+paths and trailing slashes are preserved as configured. URLs with or without a
+trailing slash are accepted; the examples below need the trailing slashes shown
+above to preserve the Server context path when joining relative paths.
 
-Set `externalBaseUrl` when users open SonarQube at a different address from the
-backend. It supplies display links only: it does not select a connection or
-receive credentials. Send authenticated requests only to the configured backend
-`baseUrl`.
-
-## Authentication methods
+### Choose authentication
 
 | Method  | Field      | Type                  | Required | Description                                                                                                               |
 | ------- | ---------- | --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -71,65 +81,48 @@ receive credentials. Send authenticated requests only to the configured backend
 | `token` | `authType` | `'bearer' \| 'basic'` | No       | How to send the token. Defaults to `bearer`.                                                                              |
 | `none`  |            |                       |          | Explicit anonymous access; omit the Authorization header.                                                                 |
 
-Both the [Server Web API](https://docs.sonarsource.com/sonarqube-server/extension-guide/web-api)
-and Cloud Web API recommend `Authorization: Bearer <token>`. Server
+For general Web API operations, create a Server user token or a Cloud token with
+the permissions the plugin needs. Server
 [analysis tokens](https://docs.sonarsource.com/sonarqube-server/user-guide/managing-tokens)
-are intended for running analyses. Use a user token for general Web API
-operations so requests have the permissions of that user. The connection service
-returns the configured credentials without contacting SonarQube or checking
-permissions. Your plugin builds the request headers and handles token rotation
-and HTTP errors.
+are intended for running analyses. Both the
+[Server Web API](https://docs.sonarsource.com/sonarqube-server/extension-guide/web-api)
+and Cloud Web API recommend Bearer authentication, which is the default here.
+Set `authType: basic` explicitly if the plugin or Server version needs Basic
+token authentication. Use [plugin scoping](../01-concepts.md#plugin-scoping) to
+provide different credentials to different plugins.
 
-Set `authType: basic` if the plugin or Server version needs Basic authentication.
-Send the token as the username with an empty password:
-`Authorization: Basic <base64(token + ':')>`. Server token documentation supports
-this use of Basic authentication. The community dashboard supports both Bearer
-and Basic, while the Scaffolder action uses Basic. Both default to Basic, so
-check that the plugin honours this connection type's Bearer default. Use the
-configured method and handle authentication errors without silently retrying
-with another method.
-
-`none` supports operations such as Server `api/metrics/search` and
-`api/components/search` when
-[forced authentication is disabled](https://docs.sonarsource.com/sonarqube-server/instance-administration/security/user-accounts).
+Choose `none` only for reads the instance permits without authentication. Server
+operations such as `api/metrics/search` and `api/components/search` allow this
+when [forced authentication is disabled](https://docs.sonarsource.com/sonarqube-server/instance-administration/security/user-accounts).
 Cloud allows anonymous users to view analysis results for
 [public projects](https://docs.sonarsource.com/sonarqube-cloud/administering-sonarcloud/about-sonarqube-cloud-solution/resources-structure/projects),
 with restrictions on source downloads. Private projects and administrative
-operations need suitable credentials, so use anonymous access only for reads
-that the instance permits. A plugin that creates projects should request only
-`token`.
+operations need suitable credentials.
 
 For authenticated requests, use a token. Username/password login and the
 monitoring-only `X-Sonar-Passcode` are not supported. Configure interactive user
 sign-in and scanners separately.
 
-## Lookup and selection
+## Consuming
 
-Pass `query: { url }` with a URL whose parsed host equals `host`. Lookup uses
-only the host and any non-default port, so the scheme, context path, project key
-and Cloud organisation do not affect selection. For example,
-`http://sonarqube.example.com:9000/other/dashboard` selects the `/sonar`
-connection above.
-
-Give each instance a separate host name or port. Configuration rejects two
-SonarQube connections with the same host, even if their context paths differ,
-because lookup cannot tell them apart. It also cannot select between Cloud
-organisations on the same host.
-
-To give a plugin its own credentials, use
-[plugin-scoped entries](../01-concepts.md#plugin-scoping). The service places
-these before entries without plugin scoping, then selects the first entry
-visible to the plugin. Your plugin's `authMethods` must accept that selected
-method; the service does not search later entries for a method the plugin
-supports. It does not fall back from a token to anonymous access, choose tokens
-by project or check token permissions.
-
-## Consume a SonarQube connection
+### Read metrics
 
 After [declaring the dependency and requesting the service](../03-consuming-connections.md),
-a backend plugin can read metrics as follows. Connections accept base URLs with
-or without a trailing slash. This example needs the trailing slashes shown in
-the configuration so relative paths stay under the Server context path:
+use the backend URL to find the connection and request metrics. Lookup uses the
+[URL host and non-default port](../01-concepts.md#lookup-strategies).
+For the Server configuration above, use a URL such as
+`http://sonarqube.example.com:9000/sonar/`, whose host matches the backend,
+instead of a URL on the browser host `quality.example.com`. The path does not
+select an instance:
+`http://sonarqube.example.com:9000/other/dashboard` still selects the configured
+`/sonar/` instance. Project keys and Cloud organisations do not select
+credentials either.
+
+The example accepts tokens and anonymous reads. A plugin that creates projects
+should request only `token`. Follow the shared
+[authentication selection rules](../03-consuming-connections.md#handle-more-than-one-authentication-method):
+listing a supported method does not make the service skip an earlier entry it
+has already selected.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -157,35 +150,45 @@ async function readMetrics(connections: ConnectionsService) {
     throw new Error(`SonarQube metrics request failed: ${response.status}`);
   }
 
-  // Display links use the browser URL and receive no credentials.
-  const dashboardUrl = new URL(
-    'dashboard',
-    connection.externalBaseUrl ?? connection.baseUrl,
-  );
-  dashboardUrl.searchParams.set('id', 'example');
-  return { metrics: await response.json(), dashboardUrl: dashboardUrl.href };
+  return response.json();
 }
 ```
 
-The connection contains credentials, so keep it on the backend. Return only the
-display link and the result data the frontend needs.
+With the example configuration, the request goes to
+`http://sonarqube.example.com:9000/sonar/api/metrics/search`. Basic authentication
+sends the token as the username with an empty password; Bearer sends the token
+directly. Honour the configured method rather than retrying another method
+after a failure.
 
-## Existing plugin configuration
+Lookup does not contact SonarQube or check token permissions. Handle HTTP errors
+from the API, including authentication and permission failures. Your plugin also
+handles token rotation and chooses the API version and endpoint; the connection
+type does not choose Cloud V2 endpoints. Follow the shared
+[credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend)
+when returning results to a frontend.
 
-The community
-[SonarQube dashboard backend](https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/plugins/sonarqube-backend/src/service/sonarqubeInfoProvider.ts)
-reads named instances, backend and browser URLs, and tokens from its own
-`sonarqube` configuration. Its catalog annotation selects an instance by name
-and supplies the project key. That instance name is separate from the host
-lookup described above.
+### Build a dashboard link
 
-The community
-[SonarQube Scaffolder action](https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-sonarqube/plugins/scaffolder-backend-module-sonarqube/src/actions/createSonarQubeProject.ts)
-takes a base URL and token or username/password as inputs and sends Basic
-authentication when creating a project. Project parameters are also action inputs.
+For a display link, request the connection without credentials and use its
+browser URL, falling back to the backend URL when it is omitted:
 
-Adding this connection type does not change either plugin's configuration or
-action inputs. The core repository has no legacy `integrations.sonarqube`
-configuration to convert.
+```ts
+const connection = await connections.find({
+  type: 'sonarqube',
+  query: { url: 'http://sonarqube.example.com:9000/sonar/' },
+});
+
+// The example base URL ends with / so new URL() preserves the context path.
+const dashboardUrl = new URL(
+  'dashboard',
+  connection.externalBaseUrl ?? connection.baseUrl,
+);
+dashboardUrl.searchParams.set('id', 'example');
+```
+
+This produces `https://quality.example.com/sonar/dashboard?id=example`. Without
+an external URL, it produces
+`http://sonarqube.example.com:9000/sonar/dashboard?id=example`. The browser URL
+supplies the link destination only; lookup still needs the backend host.
 
 Return to the [built-in connection type index](../04-built-in-connection-types.md).
