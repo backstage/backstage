@@ -7540,9 +7540,9 @@ __metadata:
   linkType: hard
 
 "@cfworker/json-schema@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "@cfworker/json-schema@npm:4.1.1"
-  checksum: 10/62fd08bb2e6b4f0fe7c2b8f8c19f17f94b6a34feba7f455f228898ab435eda8aae082fcf6b0fe8a235a72e0ec0041922fdcd4c526acc32d45084272f000c1af9
+  version: 4.1.6
+  resolution: "@cfworker/json-schema@npm:4.1.6"
+  checksum: 10/754a4da0d280b2a2279371d652aca63dc14343dd9f4ab063b48e0e017be3303d7b236fe463827061a206f013063a2ca06d5718ad21474e695b9b268e1ea7a77b
   languageName: node
   linkType: hard
 
