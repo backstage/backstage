@@ -58,6 +58,7 @@
     "@rspack/dev-server": "^1.1.4",
     "@rspack/plugin-react-refresh": "^1.4.3",
     "@swc/core": "^1.15.6",
+    "async-exit-hook": "^2.0.1",
     "bfj": "^9.0.2",
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
@@ -65,7 +66,6 @@
     "cleye": "^2.6.0",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
-    "ctrlc-windows": "^2.1.0",
     "esbuild-loader": "^4.0.0",
     "eslint-rspack-plugin": "^4.2.1",
     "eslint-webpack-plugin": "^4.2.0",
@@ -110,7 +110,8 @@
     "@types/lodash": "^4.14.151",
     "@types/npm-packlist": "^3.0.0",
     "@types/shell-quote": "^1.7.5",
-    "embedded-postgres": "18.3.0-beta.17"
+    "embedded-postgres": "18.3.0-beta.17",
+    "pg": "^8.11.3"
   },
   "peerDependencies": {
     "embedded-postgres": "^18.3.0-beta.16"

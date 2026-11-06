@@ -16,7 +16,6 @@
 
 import { FSWatcher, watch } from 'chokidar';
 import type { ChildProcess } from 'node:child_process';
-import { ctrlc } from 'ctrlc-windows';
 import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
 import { fileURLToPath } from 'node:url';
@@ -50,6 +49,18 @@ export type RunBackendOptions = {
   configPaths?: string[];
 };
 
+function requestShutdown(child: ChildProcess) {
+  if (child.connected) {
+    child.send({ type: '@backstage/cli/channel/shutdown' }, error => {
+      if (error && child.exitCode === null && child.signalCode === null) {
+        child.kill();
+      }
+    });
+  } else {
+    child.kill();
+  }
+}
+
 export async function runBackend(options: RunBackendOptions) {
   const envEnv = process.env as { NODE_ENV: string };
   if (!envEnv.NODE_ENV) {
@@ -62,25 +73,82 @@ export async function runBackend(options: RunBackendOptions) {
 
   const extraEnv: Record<string, string> = {};
 
-  const embeddedDb = await startEmbeddedDb({
-    configPaths: options.configPaths,
-    targetDir: options.targetDir,
+  let exiting = false;
+  let firstStart = true;
+  let child: ChildProcess | undefined;
+  let watcher: FSWatcher | undefined = undefined;
+  let shutdownPromise: Promise<void> | undefined;
+  let embeddedDb: Awaited<ReturnType<typeof startEmbeddedDb>>;
+  let restart: ReturnType<typeof debounce> | undefined = undefined;
+  const startup = new AbortController();
+  let resolveExitPromise: () => void;
+  let rejectExitPromise: (error: unknown) => void;
+  const exitPromise = new Promise<void>((resolve, reject) => {
+    resolveExitPromise = resolve;
+    rejectExitPromise = reject;
   });
+
+  async function handleSignal(signal: NodeJS.Signals) {
+    if (exiting && signal !== 'SIGINT') {
+      return;
+    }
+    exiting = true;
+    if (signal === 'SIGINT' || !embeddedDb) {
+      startup.abort();
+    }
+    restart?.cancel();
+    void watcher?.close();
+
+    if (signal === 'SIGINT') {
+      // Do not wait for plugin hooks, including a drain already in progress.
+      child?.kill('SIGKILL');
+    } else {
+      if (child && child.exitCode === null && child.signalCode === null) {
+        await new Promise<void>(resolve => {
+          child!.once('close', resolve);
+          requestShutdown(child!);
+        });
+      }
+      await embeddedDb?.close();
+    }
+    resolveExitPromise();
+  }
+
+  const signalHandler = (signal: NodeJS.Signals) => {
+    handleSignal(signal).catch(rejectExitPromise);
+  };
+  process.once('SIGINT', signalHandler);
+  process.once('SIGTERM', signalHandler);
+
+  try {
+    embeddedDb = await Promise.race([
+      startEmbeddedDb({
+        configPaths: options.configPaths,
+        targetDir: options.targetDir,
+        signal: startup.signal,
+      }),
+      exitPromise.then(() => undefined),
+    ]);
+  } catch (error) {
+    if (!exiting) {
+      throw error;
+    }
+  }
+  if (exiting) {
+    return () => exitPromise;
+  }
   if (embeddedDb) {
     extraEnv.APP_CONFIG_backend_database = JSON.stringify(
       embeddedDb.configOverride,
     );
   }
 
-  let exiting = false;
-  let firstStart = true;
-  let child: ChildProcess | undefined;
-  let watcher: FSWatcher | undefined = undefined;
-  let shutdownPromise: Promise<void> | undefined = undefined;
-
   const watchedPaths = new Set<string>();
 
-  const restart = debounce(async () => {
+  restart = debounce(async () => {
+    if (exiting) {
+      return;
+    }
     if (firstStart) {
       firstStart = false;
     } else {
@@ -96,11 +164,7 @@ export async function runBackend(options: RunBackendOptions) {
     if (child && !child.killed && child.exitCode === null) {
       // We always wait for the existing process to exit, to make sure we don't get IPC conflicts
       shutdownPromise = new Promise(resolve => child!.once('exit', resolve));
-      if (process.platform === 'win32' && child.pid) {
-        ctrlc(child.pid);
-      } else {
-        child.kill();
-      }
+      requestShutdown(child);
       await shutdownPromise;
       shutdownPromise = undefined;
     }
@@ -146,6 +210,7 @@ export async function runBackend(options: RunBackendOptions) {
           ...extraEnv,
           BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
+          BACKSTAGE_CLI_BACKEND_LIFECYCLE: '1',
           ESBK_TSCONFIG_PATH: targetPaths.resolveRoot('tsconfig.json'),
         },
         serialization: 'advanced',
@@ -183,26 +248,6 @@ export async function runBackend(options: RunBackendOptions) {
 
   // Trigger restart on hitting enter in the terminal
   process.stdin.on('data', restart);
-
-  const exitPromise = new Promise<void>(resolveExitPromise => {
-    async function handleSignal(signal: NodeJS.Signals) {
-      exiting = true;
-
-      // Forward signals to child and wait for it to exit if still running
-      if (child && child.exitCode === null) {
-        await new Promise(resolve => {
-          child!.on('close', resolve);
-          child!.kill(signal);
-        });
-      }
-
-      await embeddedDb?.close();
-      resolveExitPromise();
-    }
-
-    process.once('SIGINT', handleSignal);
-    process.once('SIGTERM', handleSignal);
-  });
 
   return () => exitPromise;
 }
