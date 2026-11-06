@@ -71,7 +71,7 @@
     "eslint-webpack-plugin": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^9.0.0",
     "fs-extra": "^11.2.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "html-webpack-plugin": "^5.6.3",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.4.2",
