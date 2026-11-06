@@ -233,6 +233,28 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
+#### Pre-registered clients
+
+Some MCP clients and integration platforms support neither CIMD nor Dynamic Client Registration, and instead only offer a manual OAuth setup with a fixed client ID, client secret, and the authorization and token URLs. You can register these clients statically in config:
+
+```yaml title="app-config.yaml"
+auth:
+  clients:
+    - clientId: my-integration
+      clientName: My Integration
+      # Optional. Without a secret the client is public and must use PKCE.
+      clientSecret: ${MY_INTEGRATION_CLIENT_SECRET}
+      # Redirect URIs must match exactly, wildcards are not supported.
+      redirectUris:
+        - https://integration.example.com/oauth/callback
+      # Optional. Defaults to all scopes supported by the auth backend.
+      scopes:
+        - openid
+        - offline_access
+```
+
+The client ID must be unique and must not be a URL. When configuring the client, use `<backend-url>/api/auth/v1/authorize` as the authorization URL and `<backend-url>/api/auth/v1/token` as the token URL. Prefer CIMD for clients that support it, and use pre-registered clients for those that don't.
+
 #### Dynamic Client Registration (deprecated)
 
 :::caution
