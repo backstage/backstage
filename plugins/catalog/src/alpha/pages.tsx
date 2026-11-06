@@ -80,6 +80,12 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         }),
       ])
       .default(true),
+    textFilterFields: z
+      .union([
+        z.array(z.string()).min(1),
+        z.record(z.string(), z.array(z.string()).min(1)),
+      ])
+      .default(['metadata.name', 'metadata.title', 'spec.profile.displayName']),
     exportSettings: z
       .object({
         /** When true, displays the export button in the catalog interface. */
@@ -139,6 +145,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
             exportSettings={
               mergedExportSettings.enabled ? mergedExportSettings : undefined
             }
+            textFilterFields={config.textFilterFields}
           />
         );
       },

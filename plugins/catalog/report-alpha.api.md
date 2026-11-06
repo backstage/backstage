@@ -42,6 +42,7 @@ import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-re
 import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
+import { TextFilterFieldsConfig } from '@backstage/plugin-catalog-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -129,6 +130,8 @@ export interface CatalogIndexPageProps {
   pagination?: EntityListPagination;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  // (undocumented)
+  textFilterFields?: TextFilterFieldsConfig;
 }
 
 // @public
@@ -1123,6 +1126,7 @@ const _default: OverridableFrontendPlugin<
               limit?: number | undefined;
               offset?: number | undefined;
             };
+        textFilterFields: string[] | Record<string, string[]>;
         exportSettings:
           | {
               enabled?: boolean | undefined;
@@ -1141,6 +1145,7 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
             }
           | undefined;
+        textFilterFields?: string[] | Record<string, string[]> | undefined;
         exportSettings?:
           | {
               enabled?: boolean | undefined;
