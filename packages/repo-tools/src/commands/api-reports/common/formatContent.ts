@@ -17,9 +17,25 @@
 import { extname } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 import type { Config } from 'prettier';
-import { detectFormatter, tryRunOxfmt } from '../../../lib/formatter';
+import {
+  detectFormatter,
+  Formatter,
+  tryRunOxfmt,
+} from '../../../lib/formatter';
 
 const PLACEHOLDER = 'backstage-code-block-';
+
+// Reports are formatted one at a time, so the formatter is only detected once
+// for each repository root
+const formatters = new Map<string, Formatter | undefined>();
+
+function getFormatter(): Formatter | undefined {
+  const root = targetPaths.rootDir;
+  if (!formatters.has(root)) {
+    formatters.set(root, detectFormatter());
+  }
+  return formatters.get(root);
+}
 
 /**
  * Formats the content with oxfmt.
@@ -179,7 +195,7 @@ export function formatContent(
   content: string,
   extraConfig: Config = { parser: 'markdown' },
 ): string {
-  const formatter = detectFormatter();
+  const formatter = getFormatter();
   if (formatter?.name === 'oxfmt') {
     return formatWithOxfmt(formatter.bin, content, extraConfig);
   }
@@ -199,7 +215,7 @@ export async function formatContentAsync(
   content: string,
   extraConfig: Config = { parser: 'markdown' },
 ): Promise<string> {
-  const formatter = detectFormatter();
+  const formatter = getFormatter();
   if (formatter?.name === 'oxfmt') {
     return formatWithOxfmt(formatter.bin, content, extraConfig);
   }

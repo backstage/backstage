@@ -157,14 +157,24 @@ export function tryRunOxfmt(
       return file;
     });
     try {
-      execFileSync(process.execPath, [bin, '--write', ...files], {
-        cwd: targetPaths.rootDir,
-        stdio: 'ignore',
-      });
+      // A single thread is enough for these few files, and starts faster
+      execFileSync(
+        process.execPath,
+        [bin, '--write', '--threads=1', ...files],
+        {
+          cwd: targetPaths.rootDir,
+          stdio: ['ignore', 'ignore', 'pipe'],
+        },
+      );
     } catch (error) {
       // oxfmt still writes the files it could format, so only the failed ones
       // are left as is
-      console.warn(`Failed to format some content with oxfmt, ${error}`);
+      const stderr = error.stderr?.toString().trim();
+      console.warn(
+        `Failed to format some content with oxfmt, ${error.message}${
+          stderr ? `\n${stderr}` : ''
+        }`,
+      );
     }
     return files.map(file => fs.readFileSync(file, 'utf8'));
   } catch (error) {

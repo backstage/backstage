@@ -65,7 +65,7 @@ const oxfmtStub = {
   bin: {
     oxfmt: `
       const fs = require('node:fs');
-      for (const file of process.argv.slice(3)) {
+      for (const file of process.argv.slice(2).filter(arg => !arg.startsWith('--'))) {
         const content = fs.readFileSync(file, 'utf8');
         if (content.includes('fail')) {
           process.exitCode = 2;

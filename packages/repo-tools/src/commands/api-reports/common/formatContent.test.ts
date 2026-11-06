@@ -56,7 +56,7 @@ const oxfmtStub = {
   bin: {
     oxfmt: `
       const fs = require('node:fs');
-      for (const file of process.argv.slice(3)) {
+      for (const file of process.argv.slice(2).filter(arg => !arg.startsWith('--'))) {
         const content = fs.readFileSync(file, 'utf8');
         const mark = file.endsWith('.d.ts') ? 'D' : 'M';
         fs.writeFileSync(file, content.replaceAll('x', mark));
@@ -130,7 +130,7 @@ describe('formatContent', () => {
           bin: {
             oxfmt: `
               const fs = require('node:fs');
-              for (const file of process.argv.slice(3)) {
+              for (const file of process.argv.slice(2).filter(arg => !arg.startsWith('--'))) {
                 const content = fs.readFileSync(file, 'utf8');
                 fs.writeFileSync(file, content.replaceAll('\`\`\`', '~~~'));
               }
