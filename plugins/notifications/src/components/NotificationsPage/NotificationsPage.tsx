@@ -21,7 +21,7 @@ import {
   PageWithHeader,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { Grid } from '@backstage/ui';
+import { Container, Grid } from '@backstage/ui';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useSearchParams } from 'react-router-dom';
@@ -254,48 +254,46 @@ function NotificationsPageContent(
   }
 
   const pageContent = (
-    <Content>
-      <Grid.Root columns="12" gap="6">
-        <Grid.Item colSpan="2">
-          <NotificationsFilters
-            unreadOnly={unreadOnly}
-            onUnreadOnlyChanged={setUnreadOnly}
-            createdAfter={createdAfter}
-            onCreatedAfterChanged={setCreatedAfter}
-            onSortingChanged={setSorting}
-            sorting={sorting}
-            saved={saved}
-            onSavedChanged={setSaved}
-            severity={severity}
-            onSeverityChanged={setSeverity}
-            topic={topic}
-            onTopicChanged={setTopic}
-            allTopics={allTopics}
-          />
-        </Grid.Item>
-        <Grid.Item colSpan="10">
-          <NotificationsTable
-            title={tableTitle}
-            isLoading={loading}
-            isUnread={isUnread}
-            markAsReadOnLinkOpen={markAsReadOnLinkOpen}
-            notifications={displayedNotifications}
-            highlightedNotificationId={highlightedNotificationId}
-            onUpdate={onUpdate}
-            setContainsText={setContainsText}
-            onPageChange={setPageNumber}
-            onRowsPerPageChange={setPageSize}
-            page={pageNumber}
-            pageSize={displayedPageSize}
-            totalCount={totalCount}
-          />
-        </Grid.Item>
-      </Grid.Root>
-    </Content>
+    <Grid.Root columns="12" gap="6">
+      <Grid.Item colSpan="2">
+        <NotificationsFilters
+          unreadOnly={unreadOnly}
+          onUnreadOnlyChanged={setUnreadOnly}
+          createdAfter={createdAfter}
+          onCreatedAfterChanged={setCreatedAfter}
+          onSortingChanged={setSorting}
+          sorting={sorting}
+          saved={saved}
+          onSavedChanged={setSaved}
+          severity={severity}
+          onSeverityChanged={setSeverity}
+          topic={topic}
+          onTopicChanged={setTopic}
+          allTopics={allTopics}
+        />
+      </Grid.Item>
+      <Grid.Item colSpan="10">
+        <NotificationsTable
+          title={tableTitle}
+          isLoading={loading}
+          isUnread={isUnread}
+          markAsReadOnLinkOpen={markAsReadOnLinkOpen}
+          notifications={displayedNotifications}
+          highlightedNotificationId={highlightedNotificationId}
+          onUpdate={onUpdate}
+          setContainsText={setContainsText}
+          onPageChange={setPageNumber}
+          onRowsPerPageChange={setPageSize}
+          page={pageNumber}
+          pageSize={displayedPageSize}
+          totalCount={totalCount}
+        />
+      </Grid.Item>
+    </Grid.Root>
   );
 
   if (headerVariant === 'bui') {
-    return pageContent;
+    return <Container>{pageContent}</Container>;
   }
 
   return (
@@ -307,7 +305,7 @@ function NotificationsPageContent(
       type={type}
       typeLink={typeLink}
     >
-      {pageContent}
+      <Content>{pageContent}</Content>
     </PageWithHeader>
   );
 }

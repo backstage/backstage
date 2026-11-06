@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  CatalogIcon,
-  Content,
-  useSidebarPinState,
-} from '@backstage/core-components';
+import { CatalogIcon, useSidebarPinState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Card, CardBody, Flex, Grid } from '@backstage/ui';
 import { configApiRef } from '@backstage/frontend-plugin-api';
 import {
-  catalogApiRef,
   CATALOG_FILTER_EXISTS,
+  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import {
@@ -33,8 +28,8 @@ import {
   SearchContextProvider,
   SearchFilter,
   SearchPagination,
-  SearchResult as SearchResults,
   SearchResultPager,
+  SearchResult as SearchResults,
   useSearch,
 } from '@backstage/plugin-search-react';
 import {
@@ -43,9 +38,10 @@ import {
   type SearchResultItemExtensionComponent,
   type SearchResultItemExtensionPredicate,
 } from '@backstage/plugin-search-react/alpha';
+import { Card, CardBody, Container, Flex, Grid } from '@backstage/ui';
+import { UrlUpdater } from '../components/SearchPage/SearchPage';
 import { SearchType } from '../components/SearchType';
 import styles from './SearchPage.module.css';
-import { UrlUpdater } from '../components/SearchPage/SearchPage';
 
 export interface SearchPageProps {
   noTrack: boolean;
@@ -68,7 +64,7 @@ function SearchPageContent(props: SearchPageProps) {
   const configApi = useApi(configApiRef);
 
   return (
-    <Content>
+    <Container>
       <Grid.Root columns="12">
         <Grid.Item colSpan="12">
           <SearchBar debounceTime={100} />
@@ -163,7 +159,7 @@ function SearchPageContent(props: SearchPageProps) {
           <SearchResultPager />
         </Grid.Item>
       </Grid.Root>
-    </Content>
+    </Container>
   );
 }
 
