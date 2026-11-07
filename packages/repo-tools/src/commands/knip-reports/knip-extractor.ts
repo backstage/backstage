@@ -20,6 +20,7 @@ import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
 import type { KnipConfig } from 'knip';
 import { createBinRunner } from '../util';
+import { resolveNodeModulesPath } from '../../lib/paths';
 import { logReportDiff } from '../api-reports/common';
 
 interface KnipExtractionOptions {
@@ -101,9 +102,9 @@ async function handlePackage({
 }: KnipPackageOptions) {
   console.log(`## Processing ${packageDir}`);
 
-  const fullDir = targetPaths.resolveRoot(packageDir);
+  const fullDir = targetPaths.resolveInstallationRoot(packageDir);
   const reportPath = resolvePath(fullDir, 'knip-report.md');
-  const run = createBinRunner(targetPaths.rootDir, '');
+  const run = createBinRunner(targetPaths.installationRootDir, '');
 
   let report = await run(
     `${knipDir}/knip.js`,
@@ -147,7 +148,7 @@ async function handlePackage({
       logKnipReportInstructions();
 
       logReportDiff(
-        relativePath(targetPaths.rootDir, reportPath),
+        relativePath(targetPaths.installationRootDir, reportPath),
         existingReport,
         report,
       );
@@ -162,8 +163,8 @@ export async function runKnipReports({
   packageDirs,
   isLocalBuild,
 }: KnipExtractionOptions) {
-  const knipDir = targetPaths.resolveRoot('./node_modules/knip/bin/');
-  const knipConfigPath = targetPaths.resolveRoot('./knip.json');
+  const knipDir = resolveNodeModulesPath('knip/bin');
+  const knipConfigPath = targetPaths.resolveInstallationRoot('./knip.json');
   const limiter = pLimit(os.cpus().length);
 
   await generateKnipConfig({ knipConfigPath });
