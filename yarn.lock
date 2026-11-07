@@ -8803,16 +8803,16 @@ __metadata:
   linkType: hard
 
 "@google-cloud/cloud-sql-connector@npm:^1.4.0":
-  version: 1.12.0
-  resolution: "@google-cloud/cloud-sql-connector@npm:1.12.0"
+  version: 1.12.1
+  resolution: "@google-cloud/cloud-sql-connector@npm:1.12.1"
   dependencies:
     "@google-cloud/sql": "npm:^0.25.0"
-    "@googleapis/sqladmin": "npm:^38.0.0"
-    "@grpc/grpc-js": "npm:^1.14.4"
-    gaxios: "npm:^8.0.0"
-    google-auth-library: "npm:^11.0.2"
-    p-throttle: "npm:^8.1.0"
-  checksum: 10/27dd29b1dbce2a6f8495638b8db323fa3bc2ab060d35a589f586eb6874b5df583a9825504d676e7f0970b254bf2f2e9e8f0c752a8e3de26c32183b15ea8643cb
+    "@googleapis/sqladmin": "npm:^38.1.1"
+    "@grpc/grpc-js": "npm:^1.14.5"
+    gaxios: "npm:^8.1.0"
+    google-auth-library: "npm:^11.1.0"
+    p-throttle: "npm:^8.1.1"
+  checksum: 10/8a1621e2197cc28dd97e9ce6321fddd33012e0d77bd55a4a6fbc49f10a1e603c58f4ed73453ff66f1ee06c8cdeac5c3ef0d6e417d1b13cadba5b5e1affa23a6c
   languageName: node
   linkType: hard
 
@@ -8958,7 +8958,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googleapis/sqladmin@npm:^38.0.0":
+"@googleapis/sqladmin@npm:^38.1.1":
   version: 38.1.1
   resolution: "@googleapis/sqladmin@npm:38.1.1"
   dependencies:
@@ -9333,7 +9333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:^1.10.9, @grpc/grpc-js@npm:^1.11.1, @grpc/grpc-js@npm:^1.12.6, @grpc/grpc-js@npm:^1.14.4, @grpc/grpc-js@npm:^1.14.5":
+"@grpc/grpc-js@npm:^1.10.9, @grpc/grpc-js@npm:^1.11.1, @grpc/grpc-js@npm:^1.12.6, @grpc/grpc-js@npm:^1.14.5":
   version: 1.14.7
   resolution: "@grpc/grpc-js@npm:1.14.7"
   dependencies:
@@ -28928,7 +28928,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^8.0.0, gaxios@npm:^8.3.1":
+"gaxios@npm:^8.1.0, gaxios@npm:^8.3.1":
   version: 8.3.2
   resolution: "gaxios@npm:8.3.2"
   dependencies:
@@ -29451,9 +29451,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^11.0.0, google-auth-library@npm:^11.0.2, google-auth-library@npm:^11.3.1":
-  version: 11.3.2
-  resolution: "google-auth-library@npm:11.3.2"
+"google-auth-library@npm:^11.0.0, google-auth-library@npm:^11.1.0, google-auth-library@npm:^11.3.1":
+  version: 11.3.3
+  resolution: "google-auth-library@npm:11.3.3"
   dependencies:
     base64-js: "npm:^1.3.0"
     ecdsa-sig-formatter: "npm:^1.0.11"
@@ -29461,7 +29461,7 @@ __metadata:
     gcp-metadata: "npm:^9.2.1"
     google-logging-utils: "npm:^2.1.0"
     jws: "npm:^4.0.0"
-  checksum: 10/12edecd5793ff04e36e956529f57f50ac58ed3ecb0d3f3c4d4dd5bfe632c8ade820b2208966ab95adc61745942fbfb0ceacc90a1a7021eba0c3006017fe8d0e8
+  checksum: 10/122a87f7599518f820254c27cdddce7e7707363275a352619c833c3a6fbacc90a3d62dad3ced2e6e35eb03382f3d39f2b03d64cafe0dcebbd4049f22abfd3ce6
   languageName: node
   linkType: hard
 
@@ -37068,10 +37068,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-throttle@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "p-throttle@npm:8.1.0"
-  checksum: 10/a22e5580fc9f816af831b6a7aaa0323cb83c266146e833cd3af2abfe1390b0576701366e53ad598cb7f05d6e182f243b3fa3c64e6f68e6d6a900d4629d8e239a
+"p-throttle@npm:^8.1.1":
+  version: 8.1.1
+  resolution: "p-throttle@npm:8.1.1"
+  checksum: 10/238ee71876636223b7a95a28e81f79ebb9b360c0de9146fd608b9da02a3e65749a8b8c15a2272a07e98cdbe3aeb937a99f8194d2280ab1cc7f43d0caf6b2ebb4
   languageName: node
   linkType: hard
 
