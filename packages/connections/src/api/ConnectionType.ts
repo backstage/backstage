@@ -38,10 +38,10 @@ type ReservedFieldError<K extends string> = {
   readonly __error: `configSchema must not declare reserved field '${K}'`;
 };
 
-// Constrain a ZodObject so its inferred shape can't collide with framework
+// Constrain a schema so its input and output can't collide with framework
 // keys. Resolves to a self-describing error type if a reserved key is present.
-export type WithoutReservedFields<TSchema extends z.ZodObject> = Extract<
-  keyof z.infer<TSchema>,
+export type WithoutReservedFields<TSchema extends z.ZodType> = Extract<
+  keyof z.input<TSchema> | keyof z.output<TSchema>,
   ReservedConnectionFields
 > extends infer K
   ? [K] extends [never]
