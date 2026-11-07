@@ -1,0 +1,11 @@
+---
+title: Fairwinds Insights
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Kubernetes
+description: View Fairwinds Insights vulnerabilities, costs, action items, and resource history for your services in Backstage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/fairwinds-insights/plugins/fairwinds-insights/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-fairwinds-insights'
+addedDate: '2026-11-06'
+status: active

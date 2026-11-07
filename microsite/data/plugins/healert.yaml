@@ -1,0 +1,11 @@
+---
+title: Healert
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Kubernetes
+description: Surfaces Kubernetes audit log bypass events per catalog entity as friction scores and heatmaps, so you can see when developers leave the golden path.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/healert/plugins/healert/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-healert'
+addedDate: '2026-11-06'
+status: active
