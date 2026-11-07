@@ -64,6 +64,7 @@ export const createAsyncValidators = (
       value: JsonValue | undefined,
       schema: JsonObject,
       uiSchema: FieldExtensionUiSchema<unknown, unknown>,
+      target: FormValidation = formValidation,
     ) => {
       const validator = validators[validatorName];
       if (validator) {
@@ -78,7 +79,7 @@ export const createAsyncValidators = (
         } catch (ex) {
           fieldValidation.addError(ex.message);
         }
-        formValidation[key] = fieldValidation;
+        target[key] = fieldValidation;
       }
     };
 
@@ -154,11 +155,38 @@ export const createAsyncValidators = (
       } else if (hasItems && 'ui:field' in definitionInSchema.items) {
         await doValidate(definitionInSchema.items);
       } else if (hasItems && definitionInSchema.items.type === 'object') {
-        const properties = (definitionInSchema.items?.properties ??
-          []) as JsonObject[];
-        for (const [, propValue] of Object.entries(properties)) {
-          await doValidate(propValue);
+        const { schema: itemsSchema, uiSchema: itemsUiSchema } =
+          extractSchemaFromStep(definitionInSchema.items);
+
+        const properties = (definitionInSchema.items.properties ??
+          {}) as Record<string, JsonObject>;
+        const items = Array.isArray(value) ? value : [];
+        const itemsValidation: FormValidation = {};
+
+        for (const [index, item] of items.entries()) {
+          if (!isObject(item)) {
+            continue;
+          }
+
+          const itemValidation: FormValidation = {};
+          for (const propName of Object.keys(item)) {
+            const propValue = properties[propName];
+            if (propValue === undefined || !('ui:field' in propValue)) {
+              continue;
+            }
+            await validateForm(
+              propValue['ui:field'] as string,
+              propName,
+              item[propName],
+              (itemsSchema.properties as Record<string, JsonObject>)[propName],
+              (itemsUiSchema as Record<string, JsonObject>)[propName],
+              itemValidation,
+            );
+          }
+          itemsValidation[index] = itemValidation;
         }
+
+        formValidation[key] = itemsValidation;
 
         const dependencies = (definitionInSchema.items?.dependencies ??
           []) as JsonObject[];
