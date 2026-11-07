@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.37-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.19.1-next.0
+  - @backstage/core-components@0.18.16-next.1
+
 ## 0.2.37-next.1
 
 ### Patch Changes

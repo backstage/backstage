@@ -1,5 +1,32 @@
 # example-app-legacy
 
+## 0.2.127-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.36.8-next.2
+  - @backstage/ui@0.19.1-next.0
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-catalog-import@0.13.20-next.2
+  - @backstage/plugin-scaffolder@1.41.0-next.2
+  - @backstage/plugin-techdocs@1.19.1-next.2
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.42-next.2
+  - @backstage/core-app-api@1.20.7-next.2
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/plugin-api-docs@0.14.7-next.2
+  - @backstage/plugin-catalog@2.0.11-next.2
+  - @backstage/plugin-catalog-graph@0.6.10-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.37-next.2
+  - @backstage/plugin-devtools@0.1.45-next.2
+  - @backstage/plugin-mui-to-bui@0.2.13-next.2
+  - @backstage/plugin-notifications@0.6.2-next.2
+  - @backstage/plugin-org@0.8.1-next.2
+  - @backstage/plugin-scaffolder-react@3.0.0-next.2
+  - @backstage/plugin-search@1.7.10-next.2
+  - @backstage/plugin-user-settings@0.9.9-next.2
+
 ## 0.2.127-next.1
 
 ### Patch Changes

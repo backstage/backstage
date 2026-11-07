@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.30.3-next.2
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+
 ## 0.30.3-next.1
 
 ### Patch Changes

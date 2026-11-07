@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend
 
+## 0.6.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-events-node@0.5.0-next.2
+
 ## 0.6.8-next.1
 
 ### Patch Changes

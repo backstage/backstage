@@ -1,5 +1,17 @@
 # @backstage/backend-plugin-api
 
+## 1.12.0-next.1
+
+### Minor Changes
+
+- a5337d0: The `coreServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `CoreServices` interface. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+
 ## 1.11.1-next.0
 
 ### Patch Changes

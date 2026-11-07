@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.19.1-next.0
+
+### Patch Changes
+
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+
 ## 0.19.0
 
 ### Minor Changes
