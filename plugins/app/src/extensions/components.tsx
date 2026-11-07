@@ -108,8 +108,14 @@ export const PageLayout = SwappableComponentBlueprint.make({
           return <>{children}</>;
         }
 
-        const content = (
-          <>
+        return (
+          <BreadcrumbEntry
+            entry={
+              title
+                ? { label: title, href: titleLink ?? (parentPath || '/') }
+                : undefined
+            }
+          >
             <PluginHeader
               title={title}
               icon={icon}
@@ -119,19 +125,6 @@ export const PageLayout = SwappableComponentBlueprint.make({
               customActions={headerActions}
             />
             {children}
-          </>
-        );
-
-        // in practice title is always provided by PageBlueprint (falls back to pluginId).
-        if (!title) {
-          return content;
-        }
-
-        return (
-          <BreadcrumbEntry
-            entry={{ label: title, href: titleLink ?? (parentPath || '/') }}
-          >
-            {content}
           </BreadcrumbEntry>
         );
       },

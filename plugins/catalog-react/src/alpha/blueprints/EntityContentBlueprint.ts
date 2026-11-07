@@ -19,6 +19,8 @@ import {
   createExtensionBlueprint,
   ExtensionBoundary,
   RouteRef,
+  TranslationRefTuple,
+  translationApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
   entityContentTitleDataRef,
@@ -48,6 +50,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routePath,
     entityContentTitleDataRef,
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.routeRef.optional(),
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
@@ -56,6 +59,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
   ],
   dataRefs: {
     title: entityContentTitleDataRef,
+    titleTranslation: coreExtensionData.titleTranslation,
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
     group: entityContentGroupDataRef,
@@ -81,7 +85,8 @@ export const EntityContentBlueprint = createExtensionBlueprint({
        * @deprecated Use the `path` param instead.
        */
       defaultTitle?: [Error: `Use the 'title' param instead`];
-      title: string;
+      /** A plain title or a message reference resolved using the translation API. */
+      title: string | TranslationRefTuple<undefined>;
       /**
        * @deprecated Use the `path` param instead.
        */
@@ -92,13 +97,22 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       routeRef?: RouteRef;
       filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     },
-    { node, config },
+    { node, config, apis },
   ) {
     // TODO(blam): Remove support for all the `default*` props in the future, this breaks backwards compatibility without it
     // As this is marked as BREAKING ALPHA, it doesn't affect the public API so it falls in range and gets picked
     // up by packages that depend on `catalog-react`.
     const path = config.path ?? params.path ?? params.defaultPath;
-    const title = config.title ?? params.title ?? params.defaultTitle;
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? apis
+            .get(translationApiRef)!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
+        : params.title ?? params.defaultTitle);
     const icon = config.icon ?? params.icon;
     const group = config.group ?? params.group ?? params.defaultGroup;
 
@@ -109,6 +123,9 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     yield coreExtensionData.routePath(path);
 
     yield entityContentTitleDataRef(title);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
+    }
 
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);

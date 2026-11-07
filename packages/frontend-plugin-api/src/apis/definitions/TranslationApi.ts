@@ -305,6 +305,46 @@ type TranslationFunctionOptions<
   >
 >;
 
+/** @ignore */
+export type TranslationMessageKey<TMessages extends { [key: string]: string }> =
+  keyof CollapsedMessages<TMessages> & string;
+
+/**
+ * Tracks visited keys so nested messages can be inspected without recursing through cycles.
+ * @ignore
+ */
+type TupleMessageKeys<
+  TKey extends keyof TMessages,
+  TMessages extends { [key: string]: string },
+  TSeen = never,
+> = TKey extends TSeen
+  ? never
+  :
+      | TKey
+      | TupleMessageKeys<
+          Extract<NestingKeysFromMessage<TMessages[TKey]>, keyof TMessages>,
+          TMessages,
+          TSeen | TKey
+        >;
+
+/** @ignore */
+export type TranslationMessageOptions<
+  TMessages extends { [key: string]: string },
+  TKey extends TranslationMessageKey<TMessages>,
+> = string extends CollapsedMessages<TMessages>[TupleMessageKeys<
+  TKey,
+  CollapsedMessages<TMessages>
+>]
+  ? unknown
+  : TranslationFunctionOptions<
+      TupleMessageKeys<TKey, CollapsedMessages<TMessages>>,
+      PluralKeys<TMessages>,
+      CollapsedMessages<TMessages>,
+      string
+    > extends [options: infer TOptions extends {}]
+  ? TOptions
+  : undefined;
+
 /** @public */
 export type TranslationFunction<TMessages extends { [key in string]: string }> =
   CollapsedMessages<TMessages> extends infer IMessages extends {
@@ -340,9 +380,17 @@ export type TranslationFunction<TMessages extends { [key in string]: string }> =
       }
     : never;
 
-/** @public */
+/**
+ * A synchronous translation snapshot, with fallback messages available while resources load.
+ * @public
+ */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
-  { ready: false } | { ready: true; t: TranslationFunction<TMessages> };
+  {
+    /** Whether resources for the selected language have finished loading. */
+    ready: boolean;
+    /** Translates using the currently available messages and language fallbacks. */
+    t: TranslationFunction<TMessages>;
+  };
 
 /** @public */
 export type TranslationApi = {

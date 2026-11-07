@@ -17,12 +17,14 @@ import { EntityContentBlueprint } from './EntityContentBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
+  mockApis,
 } from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
   createRouteRef,
+  createTranslationRef,
 } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { waitFor, screen } from '@testing-library/react';
@@ -61,6 +63,15 @@ describe('EntityContentBlueprint', () => {
           [Function],
           [Function],
           [Function],
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "core.titleTranslation",
+            "optional": [Function],
+            "toString": [Function],
+          },
           {
             "$$type": "@backstage/ExtensionDataRef",
             "config": {
@@ -133,6 +144,57 @@ describe('EntityContentBlueprint', () => {
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
     expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Test');
+  });
+
+  it('resolves available translations and configured fallbacks while preserving static title data', () => {
+    const ref = createTranslationRef({
+      id: 'entity-titles',
+      messages: { title: 'Default', interpolated: 'Hello {{name}}' },
+    });
+    const extension = EntityContentBlueprint.make({
+      name: 'translated',
+      params: {
+        path: '/translated',
+        title: ref('title'),
+        loader: async () => <div>Translated content</div>,
+      },
+    });
+    const tester = createExtensionTester(extension, {
+      apis: [mockApis.translation()],
+    });
+    expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Default');
+    expect(
+      tester.get(EntityContentBlueprint.dataRefs.titleTranslation),
+    ).toEqual(ref('title'));
+    const api = mockApis.translation.mock();
+    api.getTranslation.mockReturnValue({
+      ready: false,
+      t: jest.fn().mockReturnValue('Available title'),
+    });
+    const loading = createExtensionTester(extension, { apis: [api] });
+    expect(loading.get(EntityContentBlueprint.dataRefs.title)).toBe(
+      'Available title',
+    );
+    const configured = createExtensionTester(extension, {
+      apis: [api],
+      config: { title: 'Configured' },
+    });
+    expect(configured.get(EntityContentBlueprint.dataRefs.title)).toBe(
+      'Configured',
+    );
+    expect(
+      configured.get(EntityContentBlueprint.dataRefs.titleTranslation),
+    ).toEqual(ref('title'));
+    expect(api.getTranslation).toHaveBeenCalledTimes(1);
+    EntityContentBlueprint.make({
+      name: 'interpolated',
+      params: {
+        path: '/invalid',
+        // @ts-expect-error Entity content titles cannot require interpolation values.
+        title: ref('interpolated'),
+        loader: async () => <div />,
+      },
+    });
   });
 
   it('should emit the correct filter output', () => {

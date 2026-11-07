@@ -4889,6 +4889,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/pluralize": "npm:^0.0.33"
     "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.0.0"
     classnames: "npm:^2.3.1"
     csv-stringify: "npm:^5.6.5"
     dataloader: "npm:^2.0.0"
@@ -4900,6 +4901,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     swr: "npm:^2.2.5"
+    use-sync-external-store: "npm:^1.4.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^4.0.0"
   peerDependencies:

@@ -36,6 +36,7 @@ import {
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
+import { useTranslatedTitles } from './useTranslatedTitles';
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -153,6 +154,20 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
+  const selections = useMemo(() => {
+    const pages =
+      appTreeApi
+        .getTree()
+        .tree.nodes.get('app/routes')
+        ?.edges.attachments.get('routes') ?? [];
+    return pages.map(page =>
+      page.spec.disabled
+        ? undefined
+        : page.instance?.getData(coreExtensionData.titleTranslation),
+    );
+  }, [appTreeApi]);
+  const translatedTitles = useTranslatedTitles(selections);
+
   // New navItems: discover pages from the extension tree, merged with nav items.
   const navItems = useMemo(() => {
     const { tree } = appTreeApi.getTree();
@@ -166,7 +181,7 @@ function NavContentRenderer(props: {
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
-    const items = pageNodes.flatMap((node): NavContentNavItem[] => {
+    const items = pageNodes.flatMap((node, index): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
         return [];
       }
@@ -188,9 +203,11 @@ function NavContentRenderer(props: {
         resolvedTitle !== undefined &&
         resolvedTitle !== pluginTitle &&
         resolvedTitle !== pluginId;
-      const title = hasExplicitPageTitle
+      const staticTitle = hasExplicitPageTitle
         ? resolvedTitle
         : matchingNavItem?.title ?? pluginTitle ?? pluginId;
+
+      const title = translatedTitles[index] ?? staticTitle;
 
       // PageBlueprint resolves icon as: params.icon ?? plugin.icon
       // We want the priority: page (params) -> nav item -> plugin -> (excluded)
@@ -222,7 +239,7 @@ function NavContentRenderer(props: {
     });
 
     return new NavItemBag(items);
-  }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+  }, [appTreeApi, routeResolutionApi, props.legacyNavItems, translatedTitles]);
 
   return <props.Content navItems={navItems} />;
 }

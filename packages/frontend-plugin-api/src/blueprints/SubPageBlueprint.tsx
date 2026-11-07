@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TranslationRefTuple } from '../translation/TranslationRef';
+import { translationApiRef } from '../apis';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
@@ -48,6 +50,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
   ],
@@ -66,7 +69,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
       /**
        * The title displayed in the tab for this sub-page.
        */
-      title: string;
+      title: string | TranslationRefTuple<undefined>;
       /**
        * Optional icon for this sub-page, displayed in the tab.
        */
@@ -81,10 +84,23 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       routeRef?: RouteRef;
     },
-    { config, node },
+    { config, node, apis },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
-    yield coreExtensionData.title(config.title ?? params.title);
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? apis
+            .get(translationApiRef)!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
+        : params.title);
+    yield coreExtensionData.title(title);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
+    }
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );

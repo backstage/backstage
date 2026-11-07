@@ -44,7 +44,18 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { useAppNode } from '@backstage/frontend-plugin-api';
+import {
+  useAppNode,
+  createTranslationRef,
+  createTranslationResource,
+  translationApiRef,
+  appLanguageApiRef,
+} from '@backstage/frontend-plugin-api';
+import { Helmet } from 'react-helmet';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/implementations/AppLanguageApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { I18nextTranslationApi } from '../../../../packages/core-app-api/src/apis/implementations/TranslationApi';
 
 jest.setTimeout(30_000);
 
@@ -202,6 +213,153 @@ describe('Entity page', () => {
       loader: async () => <div>Mock ApiDocs content</div>,
     },
   });
+
+  it.each(['bui', 'legacy'])(
+    'translates content titles in the %s layout without remounting content',
+    async layout => {
+      const groupRole = layout === 'legacy' ? 'tab' : 'button';
+      const itemRole = layout === 'legacy' ? 'button' : 'menuitemradio';
+      const menuItems = () =>
+        screen
+          .getAllByRole(itemRole)
+          .filter(
+            item =>
+              layout !== 'legacy' ||
+              /\/(overview|other)$/.test(item.getAttribute('href') ?? ''),
+          );
+      const ref = createTranslationRef({
+        id: 'entity-content-titles',
+        messages: { main: 'Zulu', other: 'Alpha' },
+      });
+      const languageApi = AppLanguageSelector.create({
+        availableLanguages: ['en', 'sv', 'de'],
+      });
+      const translationApi = I18nextTranslationApi.create({
+        languageApi,
+        resources: [
+          createTranslationResource({
+            ref,
+            translations: {
+              sv: async () => ({ default: { main: 'AAA', other: 'Övrigt' } }),
+              de: async () => ({ default: { main: '', other: 'Other' } }),
+            },
+          }),
+        ],
+      });
+      const mount = jest.fn();
+      const unmount = jest.fn();
+      function Content() {
+        useEffect(() => {
+          mount();
+          return unmount;
+        }, []);
+        return <input aria-label="Entity page state" defaultValue="initial" />;
+      }
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          apis: [
+            [translationApiRef, translationApi],
+            [appLanguageApiRef, languageApi],
+          ],
+        },
+      )
+        .add(
+          EntityContentBlueprint.make({
+            name: 'translated',
+            params: {
+              path: '/overview',
+              title: ref('main'),
+              group: 'documentation',
+              loader: async () => <Content />,
+            },
+          }),
+          { config: { title: 'Configured fallback' } },
+        )
+        .add(
+          EntityContentBlueprint.make({
+            name: 'other-translated',
+            params: {
+              path: '/other',
+              title: ref('other'),
+              group: 'documentation',
+              loader: async () => <div>Other content</div>,
+            },
+          }),
+        );
+      if (layout === 'legacy') {
+        tester.add(
+          EntityHeaderBlueprint.make({
+            name: 'legacy',
+            params: { loader: async () => <header>Legacy header</header> },
+          }),
+        );
+      }
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          mockCatalogApi,
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+          [translationApiRef, translationApi],
+          [appLanguageApiRef, languageApi],
+        ],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [`${entityPath}/overview`],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+      const input = await screen.findByLabelText('Entity page state');
+      await userEvent.type(input, ' preserved');
+      await userEvent.click(
+        await screen.findByRole(groupRole, { name: /Documentation/ }),
+      );
+      expect(menuItems().map(item => item.textContent)).toEqual([
+        'Alpha',
+        'Zulu',
+      ]);
+      await userEvent.keyboard('{Escape}');
+      act(() => languageApi.setLanguage('sv'));
+      await userEvent.click(
+        await screen.findByRole(groupRole, { name: /Documentation/ }),
+      );
+      expect(
+        await screen.findByRole(itemRole, { name: 'AAA' }),
+      ).toBeInTheDocument();
+      expect(menuItems().map(item => item.textContent)).toEqual([
+        'AAA',
+        'Övrigt',
+      ]);
+      expect(Helmet.peek().title).toContain('AAA');
+      await userEvent.keyboard('{Escape}');
+      act(() => languageApi.setLanguage('de'));
+      await userEvent.click(
+        await screen.findByRole(groupRole, { name: /Documentation/ }),
+      );
+      expect(
+        await screen.findByRole(itemRole, { name: 'Other' }),
+      ).toBeInTheDocument();
+      expect(menuItems()[0]).toHaveTextContent(/^$/);
+      await userEvent.keyboard('{Escape}');
+      act(() => languageApi.setLanguage('en'));
+      await userEvent.click(
+        await screen.findByRole(groupRole, { name: /Documentation/ }),
+      );
+      expect(
+        await screen.findByRole(itemRole, { name: 'Zulu' }),
+      ).toBeInTheDocument();
+      expect(Helmet.peek().title).toContain('Zulu');
+      expect(screen.getByLabelText('Entity page state')).toBe(input);
+      expect(input).toHaveValue('initial preserved');
+      expect(mount).toHaveBeenCalledTimes(1);
+      expect(unmount).not.toHaveBeenCalled();
+    },
+  );
 
   describe('Entity Page Groups', () => {
     it('Should render a group as dropdown', async () => {

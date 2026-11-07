@@ -25,6 +25,74 @@ import { AppLanguageSelector } from '../AppLanguageApi';
 import { I18nextTranslationApi } from './I18nextTranslationApi';
 import { render } from '@testing-library/react';
 
+it('provides a translator while loading, using available overrides and the existing language fallback', async () => {
+  const ref = createTranslationRef({
+    id: 'fallbacks',
+    messages: {
+      title: 'Declared',
+      empty: '',
+      greeting: 'Hello {{name}}',
+      nested: '$t(greeting)',
+      nestedPlain: '$t(title)',
+      number: '{{amount, number}}',
+      items_one: 'One item',
+      items_other: '{{count}} items',
+    },
+  });
+  const translations = {
+    title: 'Localized',
+    empty: null,
+    greeting: null,
+    nested: null,
+    nestedPlain: null,
+    number: null,
+    items_one: null,
+    items_other: null,
+  };
+  let resolve!: (value: { default: typeof translations }) => void;
+  const pending = new Promise<{ default: typeof translations }>(r => {
+    resolve = r;
+  });
+  const load = jest.fn(() => pending);
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv'],
+    defaultLanguage: 'sv',
+  });
+  const api = I18nextTranslationApi.create({
+    languageApi,
+    resources: [
+      createTranslationMessages({ ref, messages: { title: 'App override' } }),
+      createTranslationResource({ ref, translations: { sv: load } }),
+    ],
+  });
+  const loading = api.getTranslation(ref);
+  expect(loading.ready).toBe(false);
+  expect(loading.t('title')).toBe('App override');
+  expect(loading.t('empty')).toBe('');
+  expect(loading.t('greeting', { name: 'Ada' })).toBe('Hello Ada');
+  expect(loading.t('nested', { name: 'Ada' })).toBe('Hello Ada');
+  expect(loading.t('nestedPlain')).toBe('App override');
+  expect(loading.t('items', { count: 1 })).toBe('One item');
+  expect(loading.t('items', { count: 2 })).toBe('2 items');
+  expect(load).not.toHaveBeenCalled();
+
+  const next = waitForNext(api.translation$(ref));
+  expect(load).toHaveBeenCalledTimes(1);
+  expect(api.getTranslation(ref).ready).toBe(false);
+  resolve({ default: translations });
+  const loaded = await next;
+  expect(loaded.ready).toBe(true);
+  expect(loaded.t('title')).toBe('Localized');
+  expect(loaded.t('greeting', { name: 'Ada' })).toBe('Hello Ada');
+  expect(api.getTranslation(ref).t('title')).toBe('Localized');
+
+  languageApi.setLanguage('en');
+  const english = api.getTranslation(ref);
+  expect(english.ready).toBe(true);
+  expect(english.t('title')).toBe('App override');
+  expect(english.t('number', { amount: 1234.5 })).toBe('1,234.5');
+});
+
 const plainRef = createTranslationRef({
   id: 'plain',
   messages: { foo: 'Foo' },

@@ -15,6 +15,9 @@
  */
 
 import { JSX } from 'react';
+import { translationApiRef } from '../apis';
+import { useTranslatedTitles } from '../translation/useTranslatedTitles';
+import { TranslationRefTuple } from '../translation/TranslationRef';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
@@ -60,6 +63,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
+      coreExtensionData.titleTranslation.optional(),
       coreExtensionData.icon.optional(),
     ]),
   },
@@ -68,6 +72,7 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
@@ -77,7 +82,8 @@ export const PageBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       path: string;
-      title?: string;
+      /** A plain title or a message reference resolved using the translation API. */
+      title?: string | TranslationRefTuple<undefined>;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
@@ -86,9 +92,18 @@ export const PageBlueprint = createExtensionBlueprint({
        */
       noHeader?: boolean;
     },
-    { config, node, inputs },
+    { config, node, inputs, apis },
   ) {
-    const title = config.title ?? params.title;
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? apis
+            .get(translationApiRef)!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
+        : params.title);
     const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;
@@ -98,10 +113,24 @@ export const PageBlueprint = createExtensionBlueprint({
     const titleRouteRef =
       (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
 
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
+    }
+    const selections = [
+      translation,
+      ...(params.loader
+        ? []
+        : inputs.pages.map(page =>
+            page.get(coreExtensionData.titleTranslation),
+          )),
+    ];
+
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
-      const loader = params.loader;
+      const content = ExtensionBoundary.lazy(node, params.loader);
       const PageContent = () => {
+        const translatedTitles = useTranslatedTitles(selections);
+        const currentTitle = translatedTitles[0] ?? resolvedTitle;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
@@ -109,32 +138,38 @@ export const PageBlueprint = createExtensionBlueprint({
 
         return (
           <PageLayout
-            title={resolvedTitle}
+            title={currentTitle}
             icon={resolvedIcon}
             noHeader={noHeader}
             titleLink={titleLink}
             headerActions={headerActions}
           >
-            {ExtensionBoundary.lazy(node, loader)}
+            {content}
           </PageLayout>
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);
     } else if (inputs.pages.length > 0) {
-      // Parent page with sub-pages - render header with tabs
-      const tabs: PageLayoutTab[] = inputs.pages.map(page => {
-        const path = page.get(coreExtensionData.routePath);
-        const tabTitle = page.get(coreExtensionData.title);
-        const tabIcon = page.get(coreExtensionData.icon);
-        return {
-          id: path,
-          label: tabTitle || path,
-          icon: tabIcon,
-          href: path,
-        };
-      });
-
       const PageContent = () => {
+        const translatedTitles = useTranslatedTitles(selections);
+        const currentTitle = translatedTitles[0] ?? resolvedTitle;
+
+        const pages = inputs.pages.map((page, index) => {
+          const path = page.get(coreExtensionData.routePath);
+          const tabTitle =
+            translatedTitles[index + 1] ??
+            page.get(coreExtensionData.title) ??
+            path;
+          return { page, path, title: tabTitle };
+        });
+        const tabs: PageLayoutTab[] = pages.map(
+          ({ page, path, title: tabTitle }) => ({
+            id: path,
+            label: tabTitle || path,
+            icon: page.get(coreExtensionData.icon),
+            href: path,
+          }),
+        );
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
@@ -143,7 +178,7 @@ export const PageBlueprint = createExtensionBlueprint({
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
           <PageLayout
-            title={resolvedTitle}
+            title={currentTitle}
             icon={resolvedIcon}
             tabs={tabs}
             titleLink={titleLink}
@@ -156,9 +191,7 @@ export const PageBlueprint = createExtensionBlueprint({
                   element={<Navigate to={firstPagePath} replace />}
                 />
               )}
-              {inputs.pages.map((page, index) => {
-                const path = page.get(coreExtensionData.routePath);
-                const tabTitle = page.get(coreExtensionData.title);
+              {pages.map(({ page, path, title: tabTitle }, index) => {
                 const element = page.get(coreExtensionData.reactElement);
                 return (
                   <Route
@@ -182,13 +215,15 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
+        const translatedTitles = useTranslatedTitles(selections);
+        const currentTitle = translatedTitles[0] ?? resolvedTitle;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
           <PageLayout
-            title={resolvedTitle}
+            title={currentTitle}
             icon={resolvedIcon}
             titleLink={titleLink}
             headerActions={headerActions}

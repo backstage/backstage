@@ -332,6 +332,86 @@ The `availableLanguages` array controls which languages appear as options in the
 
 Go to the Settings page — you should see a language select dropdown. Switch languages to verify your translations are loaded correctly.
 
+### Translating page titles
+
+Page and sub-page blueprints accept either a plain title string or a message
+reference. To enable a translated title, select a message from your plugin's
+existing translation ref:
+
+```tsx
+PageBlueprint.make({
+  params: {
+    path: '/my-plugin',
+    title: myPluginTranslationRef('indexPage.title'),
+    loader: () => import('./MyPage').then(m => <m.MyPage />),
+  },
+});
+```
+
+`SubPageBlueprint` accepts the same title form for its tab and breadcrumb label.
+`EntityContentBlueprint` from `@backstage/plugin-catalog-react/alpha` also accepts
+message references for entity content titles:
+
+```tsx
+EntityContentBlueprint.make({
+  name: 'overview',
+  params: {
+    path: '/overview',
+    title: myPluginTranslationRef('entityPage.overview'),
+    loader: () => import('./EntityOverview').then(m => <m.EntityOverview />),
+  },
+});
+```
+
+Both catalog entity page layouts update tab labels, grouped tab ordering, and the
+active content's document title when the language changes, preserving mounted
+content and form state.
+
+Install translations using the existing `TranslationBlueprint` and translation
+resources described above. No additional title bundles or APIs are required.
+Existing string title parameters keep their behavior.
+
+Before translations finish loading, the title uses messages already available
+through the translation API, including installed overrides and default-language
+fallbacks. A configured `title` supplies that fallback instead. Once the required
+translations are ready, their resolved values take precedence over configured and
+plain titles, including when the API resolves to a default-language message.
+Missing locale messages use the translation API's existing fallback.
+During language changes, each group of titles updates together after all of its
+translation resources are ready. Until then, the previous titles remain visible
+without remounting page content. Failed resource loads surface as errors.
+
+TypeScript checks the selected key and rejects title messages that require
+replacement values or a plural count. Nested messages are supported when none
+of the referenced messages require values.
+
+### Consuming title translations
+
+Extensions keep their existing static title string and can additionally provide
+`coreExtensionData.titleTranslation`, containing a
+`TranslationRefTuple<undefined>` with `ref` and `key`. The explicit type parameter
+restricts titles to messages without required formatting values. A bare
+`TranslationRefTuple` accepts selections with any required values, keeping their
+options unknown. Consumers resolve that selection through the translation API
+and subscribe to `translation$(selection.ref)` for language changes. For a group
+of titles, wait until all required refs are ready before publishing new values.
+Use the static titles initially and retain the last resolved group during later
+language changes. This keeps extension data independent of subscriptions and
+React rendering.
+
+Translation snapshots always include a `t` function, even while resources are
+loading. For synchronous fallback text, call
+`translationApi.getTranslation(ref).t(key)`. It uses the messages already
+available for the selected language and the API's normal language fallbacks,
+including installed overrides. Formatting values use the existing translation
+function's argument types.
+
+The snapshot's `ready` flag indicates whether resources for the selected
+language have finished loading. Reading a snapshot does not load resources;
+subscribe to `translation$(ref)` to start loading and receive resolved updates.
+`useTranslationRef` continues to wait for ready translations.
+Custom translation API implementations must provide `t` on loading snapshots too.
+
 ### Using the CLI for full translation workflows
 
 When translating your app to other languages at scale — especially when working with external translation systems — the Backstage CLI provides `translations export` and `translations import` commands that automate the extraction and wiring of translation messages across all your plugin dependencies.
