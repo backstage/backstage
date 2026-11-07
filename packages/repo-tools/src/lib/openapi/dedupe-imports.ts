@@ -49,11 +49,15 @@ export function deduplicateImports(filePath: string): void {
         }
       }
 
-      // Normalize for comparison (remove comments, extra spaces)
+      // Normalize for comparison, since the generated code isn't formatted
+      // yet (remove comments, whitespace, semicolons, trailing commas, and
+      // quote style differences)
       const normalized = fullStatement
         .replace(/\/\/.*$/gm, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+        .replace(/"/g, "'")
+        .replace(/\s+/g, '')
+        .replace(/,}/g, '}')
+        .replace(/;$/, '');
 
       if (!seen.has(normalized)) {
         seen.add(normalized);
