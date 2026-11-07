@@ -1303,8 +1303,10 @@ plugins:
         sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
       ).rejects.toThrow();
 
+      // Needs a key to remove: a config that is already clean is not
+      // rewritten, so the write would never be attempted.
       mockDir.setContent({
-        'mkdocs.yml': 'site_name: Test\n',
+        'mkdocs.yml': 'site_name: Test\nhooks:\n  - hooks/main.py\n',
       });
       const writeFile = jest
         .spyOn(fs, 'writeFile')
@@ -1361,6 +1363,73 @@ extra_templates:
       };
       expect(parsedYml.hooks).toBeUndefined();
       expect(parsedYml.site_name).toBe('Test site name');
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should keep comments and key order when nothing is removed', async () => {
+      const original = `# Site configuration
+site_name: Test site name
+
+# Navigation
+nav:
+  - Home: index.md
+`;
+      mockDir.setContent({ 'mkdocs_clean.yml': original });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs_clean.yml'), mockLogger);
+
+      const after = await fs.readFile(
+        mockDir.resolve('mkdocs_clean.yml'),
+        'utf8',
+      );
+      expect(after).toBe(original);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should rewrite and warn when a disallowed key is present', async () => {
+      const original = `# Site configuration
+site_name: Test site name
+hooks:
+  - hooks/main.py
+`;
+      mockDir.setContent({ 'mkdocs_dirty.yml': original });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs_dirty.yml'), mockLogger);
+
+      const after = await fs.readFile(
+        mockDir.resolve('mkdocs_dirty.yml'),
+        'utf8',
+      );
+      expect(after).not.toBe(original);
+      expect(yaml.load(after)).toEqual({ site_name: 'Test site name' });
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('hooks'));
+    });
+
+    it('should rewrite a config that uses anchors even when nothing is removed', async () => {
+      // js-yaml sanitizes here, PyYAML is what MkDocs loads with. Rewriting a
+      // file that uses anchors, aliases, merge keys or tags makes MkDocs read
+      // exactly the configuration that was validated, instead of resolving the
+      // source itself with a different parser.
+      const original = `site_name: &name Test
+site_description: *name
+`;
+      mockDir.setContent({ 'mkdocs_anchors.yml': original });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_anchors.yml'),
+        mockLogger,
+      );
+
+      const after = await fs.readFile(
+        mockDir.resolve('mkdocs_anchors.yml'),
+        'utf8',
+      );
+      expect(after).not.toBe(original);
+      expect(after).not.toContain('&name');
+      expect(yaml.load(after)).toEqual({
+        site_name: 'Test',
+        site_description: 'Test',
+      });
       expect(warn).not.toHaveBeenCalled();
     });
 

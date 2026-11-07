@@ -189,7 +189,7 @@ type MkDocsObject = {
 const patchMkdocsFile = async (
   mkdocsYmlPath: string,
   logger: LoggerService,
-  updateAction: (mkdocsYml: MkDocsObject) => boolean,
+  updateAction: (mkdocsYml: MkDocsObject, source: string) => boolean,
   options?: { failOnError?: boolean },
 ) => {
   // We only want to override the mkdocs.yml if it has actually changed. This is relevant if
@@ -232,7 +232,7 @@ const patchMkdocsFile = async (
     return;
   }
 
-  didEdit = updateAction(mkdocsYml);
+  didEdit = updateAction(mkdocsYml, mkdocsYmlFileString);
 
   try {
     if (didEdit) {
@@ -258,7 +258,7 @@ const patchMkdocsFile = async (
 const patchMkdocsFileOrThrow = async (
   mkdocsYmlPath: string,
   logger: LoggerService,
-  updateAction: (mkdocsYml: MkDocsObject) => boolean,
+  updateAction: (mkdocsYml: MkDocsObject, source: string) => boolean,
 ) =>
   patchMkdocsFile(mkdocsYmlPath, logger, updateAction, {
     failOnError: true,
@@ -398,6 +398,18 @@ export const patchMkdocsYmlWithFontDisabled = async (
   });
 };
 
+// js-yaml, which sanitizes here, and PyYAML, which MkDocs loads with, do not
+// agree on every YAML construct: with duplicate merge keys js-yaml takes the
+// first mapping and PyYAML the last, so a file can sanitize clean here and
+// still load different content in MkDocs. Rewriting such a file makes MkDocs
+// read exactly what was validated. The match is deliberately eager: a false
+// positive costs one rewrite, which is what always used to happen, while a
+// false negative lets unvalidated config through.
+const usesYamlFeatures = (source: string): boolean =>
+  /(^|[\s[{,])[&*]\S/.test(source) ||
+  /<<\s*:/.test(source) ||
+  /(^|\s)!/.test(source);
+
 /**
  * Sanitize mkdocs.yml by keeping only allowed configuration keys.
  *
@@ -406,8 +418,9 @@ export const patchMkdocsYmlWithFontDisabled = async (
  * discarding everything else. This approach ensures that any unknown
  * or potentially dangerous configuration options are not passed to MkDocs.
  *
- * The file is always rewritten to ensure YAML features like merge keys
- * and anchors are resolved into plain configuration.
+ * The file is rewritten when something was removed, and also when the source
+ * uses YAML anchors, aliases, merge keys or tags. A config that is already
+ * clean and uses none of those keeps its comments and key order.
  *
  * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
  * @param logger - A logger instance
@@ -421,7 +434,7 @@ export const sanitizeMkdocsYml = async (
   additionalAllowedKeys?: string[],
   additionalAllowedPlugins?: string[],
 ) => {
-  await patchMkdocsFileOrThrow(mkdocsYmlPath, logger, mkdocsYml => {
+  await patchMkdocsFileOrThrow(mkdocsYmlPath, logger, (mkdocsYml, source) => {
     // Combine default allowed keys with additional keys
     const allowedKeys = new Set(ALLOWED_MKDOCS_KEYS);
     if (additionalAllowedKeys && additionalAllowedKeys.length > 0) {
@@ -433,12 +446,18 @@ export const sanitizeMkdocsYml = async (
       additionalAllowedKeys.forEach(key => allowedKeys.add(key));
     }
 
+    // Tracks whether anything was actually removed. An already-clean
+    // mkdocs.yml is then left untouched rather than round-tripped
+    // through yaml.dump, which would strip comments and reorder keys.
+    let didSanitize = false;
+
     // Identify keys that will be removed for logging
     const removedKeys = Object.keys(mkdocsYml).filter(
       key => !allowedKeys.has(key),
     );
 
     if (removedKeys.length > 0) {
+      didSanitize = true;
       logger.warn(
         `Removed the following unsupported configuration keys from mkdocs.yml: ${removedKeys.join(
           ', ',
@@ -574,6 +593,7 @@ export const sanitizeMkdocsYml = async (
     }
 
     if (removedEntries.length > 0) {
+      didSanitize = true;
       logger.warn(
         `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
           ', ',
@@ -582,6 +602,7 @@ export const sanitizeMkdocsYml = async (
     }
 
     if (removedCustomIcons) {
+      didSanitize = true;
       logger.warn(
         `Removed the custom_icons option from markdown_extensions in mkdocs.yml because it must be an array of string paths inside the documentation input directory.`,
       );
@@ -599,6 +620,7 @@ export const sanitizeMkdocsYml = async (
       );
 
       if (removedPlugins.size > 0) {
+        didSanitize = true;
         logger.warn(
           `Removed unsupported MkDocs plugins from mkdocs.yml: ${Array.from(
             removedPlugins,
@@ -622,6 +644,7 @@ export const sanitizeMkdocsYml = async (
         key => !ALLOWED_THEME_KEYS.has(key),
       );
       if (removedThemeKeys.length > 0) {
+        didSanitize = true;
         for (const key of removedThemeKeys) {
           delete (theme as Record<string, unknown>)[key];
         }
@@ -633,7 +656,6 @@ export const sanitizeMkdocsYml = async (
       }
     }
 
-    // Always rewrite to ensure clean YAML output (resolves merge keys, anchors, etc.)
-    return true;
+    return didSanitize || usesYamlFeatures(source);
   });
 };
