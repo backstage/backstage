@@ -25274,10 +25274,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-path@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "d3-path@npm:3.1.0"
-  checksum: 10/8e97a9ab4930a05b18adda64cf4929219bac913a5506cf8585631020253b39309549632a5cbeac778c0077994442ddaaee8316ee3f380e7baf7566321b84e76a
+"d3-path@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "d3-path@npm:3.1.1"
+  checksum: 10/edd6bc46e3f0da2b56cd772be8bef589d9cc01bd8311269f1702f88c0db688b01b55f1a504dfad4cd5c162beb25d275e1d67797aebddcaca4777fa9a913e7cb8
   languageName: node
   linkType: hard
 
@@ -25289,11 +25289,11 @@ __metadata:
   linkType: hard
 
 "d3-shape@npm:^3.0.0":
-  version: 3.2.0
-  resolution: "d3-shape@npm:3.2.0"
+  version: 3.2.1
+  resolution: "d3-shape@npm:3.2.1"
   dependencies:
-    d3-path: "npm:^3.1.0"
-  checksum: 10/2e861f4d4781ee8abd85d2b435f848d667479dcf01a4e0db3a06600a5bdeddedb240f88229ec7b3bf7fa300c2b3526faeaf7e75f9a24dbf4396d3cc5358ff39d
+    d3-path: "npm:^3.1.1"
+  checksum: 10/f60e2d23357342811952ddf001e4d5e26afd97ad3c50cf5fbfea2e72f340bdaf0205790c7e40c6012d03a87259db88b974befc92cb66e6a37b6054b0e8ac0f1d
   languageName: node
   linkType: hard
 
