@@ -26,4 +26,5 @@ export { GithubConnectionType } from '../schema/github';
 export { GitlabConnectionType } from '../schema/gitlab';
 export { GoogleGcsConnectionType } from '../schema/googleGcs';
 export { HarnessConnectionType } from '../schema/harness';
+export { SnykConnectionType } from '../schema/snyk';
 export * from './types';
