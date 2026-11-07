@@ -474,6 +474,22 @@ export const connectionTypes: {
       apiKey?: string | undefined;
     }[];
   }>;
+  readonly pagerduty: ConnectionTypeDefinition<{
+    type: 'pagerduty';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+      apiBaseUrl: string;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
 };
 
 // @public (undocumented)
