@@ -262,7 +262,11 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
         { logger },
       );
 
-      const router = DefaultRootHttpRouter.create({ server, logger });
+      const router = DefaultRootHttpRouter.create({
+        server,
+        lifecycle,
+        logger,
+      });
 
       const middleware = MiddlewareFactory.create({ config, logger });
       const healthRouter = createHealthRouter({ config, health });
@@ -272,13 +276,7 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       app.use(middleware.notFound());
       app.use(middleware.error());
 
-      lifecycle.addShutdownHook(
-        () => {
-          router.closeWebSockets();
-          return server.stop();
-        },
-        { logger },
-      );
+      lifecycle.addShutdownHook(() => server.stop(), { logger });
 
       await server.start();
 

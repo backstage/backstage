@@ -98,6 +98,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const router = DefaultRootHttpRouter.create({
         indexPath,
         server,
+        lifecycle,
         logger,
       });
       const middleware = MiddlewareFactory.create({ config, logger });
@@ -214,10 +215,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
         });
       }
 
-      lifecycle.addShutdownHook(() => {
-        router.closeWebSockets();
-        return server.stop();
-      });
+      lifecycle.addShutdownHook(() => server.stop());
 
       await server.start();
 

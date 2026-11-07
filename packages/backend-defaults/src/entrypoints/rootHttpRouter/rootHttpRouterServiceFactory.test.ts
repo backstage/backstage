@@ -84,6 +84,8 @@ describe('rootHttpRouterServiceFactory', () => {
     const handler = jest.fn();
     router.addWebSocketHandler({ path: '/events', handler: handler });
     const socket = new PassThrough();
+    const destroy = jest.spyOn(socket, 'destroy');
+    const close = jest.spyOn(server!, 'close');
     const req = new IncomingMessage(new Socket());
     req.url = '/events';
     req.headers.upgrade = 'websocket';
@@ -99,6 +101,9 @@ describe('rootHttpRouterServiceFactory', () => {
     await lifecycle.beforeShutdown();
     await lifecycle.shutdown();
     expect(socket.destroyed).toBe(true);
+    expect(destroy.mock.invocationCallOrder[0]).toBeLessThan(
+      close.mock.invocationCallOrder[0],
+    );
   });
 
   it('should make the health endpoints available', async () => {

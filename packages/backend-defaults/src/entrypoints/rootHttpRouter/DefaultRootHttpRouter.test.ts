@@ -21,12 +21,14 @@ import { PassThrough } from 'node:stream';
 import { mockServices } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
+import { BackendLifecycleImpl } from '../rootLifecycle/rootLifecycleServiceFactory';
 
 describe('DefaultRootHttpRouter', () => {
-  it('validates WebSocket registrations and leaves legacy upgrade listeners untouched', () => {
+  it('validates WebSocket registrations and leaves legacy upgrade listeners untouched', async () => {
     const server = createServer();
     const logger = mockServices.logger.mock();
-    const router = DefaultRootHttpRouter.create({ server, logger });
+    const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
+    const router = DefaultRootHttpRouter.create({ server, lifecycle, logger });
     const handler = jest.fn();
     expect(() =>
       DefaultRootHttpRouter.create().addWebSocketHandler({
@@ -34,6 +36,9 @@ describe('DefaultRootHttpRouter', () => {
         handler,
       }),
     ).toThrow('requires an HTTP server');
+    expect(() => DefaultRootHttpRouter.create({ server })).toThrow(
+      'requires a root lifecycle',
+    );
     expect(server.listenerCount('upgrade')).toBe(0);
     for (const path of [
       '',
@@ -61,7 +66,7 @@ describe('DefaultRootHttpRouter', () => {
     expect(() =>
       router.addWebSocketHandler({ path: '/events', handler: handler }),
     ).toThrow('already registered');
-    router.closeWebSockets();
+    await lifecycle.shutdown();
     expect(() =>
       router.addWebSocketHandler({ path: '/new', handler: handler }),
     ).toThrow('after shutdown');
@@ -70,7 +75,8 @@ describe('DefaultRootHttpRouter', () => {
   it('leaves unmatched upgrades to late listeners and only tracks its own sockets', async () => {
     const server = createServer();
     const logger = mockServices.logger.mock();
-    const router = DefaultRootHttpRouter.create({ server, logger });
+    const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
+    const router = DefaultRootHttpRouter.create({ server, lifecycle, logger });
     const handler = jest.fn();
     router.addWebSocketHandler({ path: '/events', handler });
     expect(logger.warn).not.toHaveBeenCalled();
@@ -106,7 +112,7 @@ describe('DefaultRootHttpRouter', () => {
       expect.stringContaining('404 Not Found'),
       expect.any(Function),
     );
-    router.closeWebSockets();
+    await lifecycle.shutdown();
     expect(sockets.map(socket => socket.destroyed)).toEqual([false, true]);
     sockets[0].destroy();
     rejected.destroy();
@@ -115,7 +121,8 @@ describe('DefaultRootHttpRouter', () => {
   it('closes failed upgrades and destroys active sockets at shutdown', async () => {
     const server = createServer();
     const logger = mockServices.logger.mock();
-    const router = DefaultRootHttpRouter.create({ server, logger });
+    const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
+    const router = DefaultRootHttpRouter.create({ server, lifecycle, logger });
     router.addWebSocketHandler({
       path: '/throws',
       handler: () => {
@@ -144,7 +151,7 @@ describe('DefaultRootHttpRouter', () => {
       false,
     ]);
     expect(logger.warn).toHaveBeenCalledTimes(2);
-    router.closeWebSockets();
+    await lifecycle.shutdown();
     expect(sockets.every(socket => socket.destroyed)).toBe(true);
   });
 

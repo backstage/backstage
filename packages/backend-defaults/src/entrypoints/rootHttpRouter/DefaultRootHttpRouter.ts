@@ -18,6 +18,7 @@ import {
   RootHttpRouterServiceWebSocketHandler,
   LoggerService,
   RootHttpRouterService,
+  RootLifecycleService,
 } from '@backstage/backend-plugin-api';
 import type { Server } from 'node:http';
 import type { Duplex } from 'node:stream';
@@ -41,6 +42,8 @@ export interface DefaultRootHttpRouterOptions {
   indexPath?: string | false;
   /** The HTTP server whose upgrades this router handles. Required for WebSocket registrations. */
   server?: Server;
+  /** Root lifecycle for WebSocket cleanup. Required when supplying a server. */
+  lifecycle?: RootLifecycleService;
   /** Logger for failed WebSocket upgrades. */
   logger?: LoggerService;
 }
@@ -84,8 +87,21 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
   private constructor({
     indexPath,
     server,
+    lifecycle,
     logger,
   }: DefaultRootHttpRouterOptions) {
+    if (server && !lifecycle) {
+      throw new Error(
+        'WebSocket routing requires a root lifecycle in the router options',
+      );
+    }
+    lifecycle?.addShutdownHook(() => {
+      this.#webSocketsStopped = true;
+      for (const socket of this.#webSockets) {
+        socket.destroy();
+      }
+      this.#webSockets.clear();
+    });
     this.#indexPath = indexPath || undefined;
     this.#webSocketServer = server;
     this.#webSocketLogger = logger;
@@ -203,18 +219,6 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
       });
     }
     this.#webSocketHandlers.set(path, handler);
-  }
-
-  /**
-   * Stops accepting upgrades and destroys tracked sockets before the HTTP
-   * server is closed.
-   */
-  closeWebSockets(): void {
-    this.#webSocketsStopped = true;
-    for (const socket of this.#webSockets) {
-      socket.destroy();
-    }
-    this.#webSockets.clear();
   }
 
   handler(): Handler {
