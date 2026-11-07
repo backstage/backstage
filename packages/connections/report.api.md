@@ -474,6 +474,28 @@ export const connectionTypes: {
       apiKey?: string | undefined;
     }[];
   }>;
+  readonly jenkins: ConnectionTypeDefinition<{
+    type: 'jenkins';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+      baseUrl: string;
+    };
+    auth: readonly (
+      | {
+          method: 'apiToken';
+          username: string;
+          apiToken: string;
+        }
+      | {
+          method: 'none';
+        }
+    )[];
+  }>;
 };
 
 // @public (undocumented)

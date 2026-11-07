@@ -26,6 +26,7 @@ import { GithubConnectionType } from '../schema/github';
 import { GitlabConnectionType } from '../schema/gitlab';
 import { GoogleGcsConnectionType } from '../schema/googleGcs';
 import { HarnessConnectionType } from '../schema/harness';
+import { JenkinsConnectionType } from '../schema/jenkins';
 import type { ConnectionTypeDefinition } from '../api/ConnectionType';
 
 function createConnectionTypes<
@@ -51,6 +52,7 @@ export const connectionTypes = createConnectionTypes({
   gitlab: GitlabConnectionType,
   'google-gcs': GoogleGcsConnectionType,
   harness: HarnessConnectionType,
+  jenkins: JenkinsConnectionType,
 });
 
 /** @public */
