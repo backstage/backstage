@@ -1,5 +1,15 @@
 # @backstage/plugin-app
 
+## 0.6.0-next.2
+
+### Patch Changes
+
+- 9bac36e: Fixed the app remounting during finalization when root elements are added, for example ones deferred with an `if` predicate. Root elements are now keyed by their extension ID and rendered in a single fixed position, so adding one no longer moves the rest of the app in the React tree.
+- Updated dependencies
+  - @backstage/ui@0.19.1-next.0
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/core-components@0.18.16-next.1
+
 ## 0.6.0-next.1
 
 ### Minor Changes

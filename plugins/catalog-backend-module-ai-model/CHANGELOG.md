@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-ai-model
 
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+
 ## 0.1.6-next.1
 
 ### Patch Changes

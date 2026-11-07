@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3-next.2
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+
 ## 4.0.3-next.1
 
 ### Patch Changes
