@@ -15,7 +15,7 @@
  */
 
 import semver from 'semver';
-import { Lockfile } from '@backstage/cli-node';
+import type { Lockfile } from '@backstage/cli-node/alpha';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
 /*
@@ -124,8 +124,23 @@ export function createPackageVersionProvider(
   lockfile?: Lockfile,
   options?: {
     preferBackstageProtocol?: boolean;
+    /**
+     * Widens a lockfile range that is an exact version to a caret range of it.
+     * pnpm lists packages that are only depended on transitively under their
+     * exact version, and a new package should get a range that keeps the
+     * version that is installed rather than pin it.
+     */
+    widenExactRanges?: boolean;
   },
 ) {
+  // A prerelease version hint stays pinned, like it does without a lockfile
+  const toRange = (range: string, versionHint?: string) =>
+    options?.widenExactRanges &&
+    semver.valid(range) &&
+    !(versionHint && semver.prerelease(versionHint))
+      ? `^${range}`
+      : range;
+
   return (name: string, versionHint?: string): string | undefined => {
     const packageVersion = packageVersions[name];
 
@@ -181,8 +196,10 @@ export function createPackageVersionProvider(
         const preferred = highestEntries.filter(entry =>
           semver.satisfies(versionHint, entry.range),
         );
-        return (preferred.length ? preferred : highestEntries).slice(-1)[0]
-          .range;
+        return toRange(
+          (preferred.length ? preferred : highestEntries).slice(-1)[0].range,
+          versionHint,
+        );
       }
     }
 
@@ -192,7 +209,7 @@ export function createPackageVersionProvider(
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
-      return highestRange?.range;
+      return toRange(highestRange.range, versionHint);
     }
     if (packageVersion) {
       return `^${packageVersion}`;
