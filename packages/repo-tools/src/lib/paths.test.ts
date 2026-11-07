@@ -15,7 +15,9 @@
  */
 
 import { resolve as resolvePath, sep } from 'node:path';
-import { resolvePackagePaths } from './paths';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
+import { resolveNodeModulesPath, resolvePackagePaths } from './paths';
 
 describe('resolvePackages', () => {
   it('should return all packages', async () => {
@@ -85,5 +87,43 @@ describe('resolvePackages', () => {
         exclude: ['packages/back*'],
       }),
     ).resolves.toEqual([`packages${sep}app`]);
+  });
+});
+
+describe('resolveNodeModulesPath', () => {
+  const mockDir = createMockDirectory();
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('finds tools in the node_modules of the installation or above it, up to the workspace root', () => {
+    mockDir.setContent({
+      'node_modules/.bin/prettier': '',
+      'apps/backstage/node_modules/.bin/typedoc': '',
+      'apps/node_modules/.bin/knip': '',
+    });
+    const paths = overrideTargetPaths({
+      dir: mockDir.resolve('apps/backstage'),
+      workspaceRootDir: mockDir.path,
+      installationRootDir: mockDir.resolve('apps/backstage'),
+    });
+    try {
+      expect(resolveNodeModulesPath('.bin/typedoc')).toBe(
+        mockDir.resolve('apps/backstage/node_modules/.bin/typedoc'),
+      );
+      expect(resolveNodeModulesPath('.bin/knip')).toBe(
+        mockDir.resolve('apps/node_modules/.bin/knip'),
+      );
+      expect(resolveNodeModulesPath('.bin/prettier')).toBe(
+        mockDir.resolve('node_modules/.bin/prettier'),
+      );
+      // Paths that are not found point into the installation root
+      expect(resolveNodeModulesPath('.bin/missing')).toBe(
+        mockDir.resolve('apps/backstage/node_modules/.bin/missing'),
+      );
+    } finally {
+      paths.restore();
+    }
   });
 });
