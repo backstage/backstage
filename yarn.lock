@@ -25320,15 +25320,15 @@ __metadata:
   linkType: hard
 
 "d3-zoom@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "d3-zoom@npm:3.0.0"
+  version: 3.0.1
+  resolution: "d3-zoom@npm:3.0.1"
   dependencies:
     d3-dispatch: "npm:1 - 3"
     d3-drag: "npm:2 - 3"
     d3-interpolate: "npm:1 - 3"
     d3-selection: "npm:2 - 3"
     d3-transition: "npm:2 - 3"
-  checksum: 10/0e6e5c14e33c4ecdff311a900dd037dea407734f2dd2818988ed6eae342c1799e8605824523678bd404f81e37824cc588f62dbde46912444c89acc7888036c6b
+  checksum: 10/e3770d8367a888afa7664ea6141211053e275d89a8c38179072667dbd730d31a17f8235434ee7f6472c4610fd2d931580f2b369fa67023d164983a46731ffff6
   languageName: node
   linkType: hard
 
