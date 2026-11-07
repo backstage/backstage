@@ -16,10 +16,12 @@
 
 import {
   catalogApiRef,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
@@ -63,9 +65,24 @@ export const Content = ({
 }: StarredEntitiesProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApiHolder().get(entityPresentationApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [activeTab, setActiveTab] = useState(0);
   const { t } = useTranslationRef(homeTranslationRef);
+
+  // Sort by the same title that each list item displays
+  const sortByDisplayedTitle = (items: Entity[]) =>
+    items
+      .map(entity => ({
+        entity,
+        title: entityPresentationSnapshot(
+          entity,
+          undefined,
+          entityPresentationApi,
+        ).primaryTitle,
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map(({ entity }) => entity);
 
   // Grab starred entities from catalog to ensure they still exist and also retrieve display titles
   const entities = useAsync(async () => {
@@ -117,20 +134,14 @@ export const Content = ({
     <div>
       {!groupByKind && (
         <List className={classes.list}>
-          {entities.value
-            ?.sort((a, b) =>
-              (a.metadata.title ?? a.metadata.name).localeCompare(
-                b.metadata.title ?? b.metadata.name,
-              ),
-            )
-            .map(entity => (
-              <StarredEntityListItem
-                key={stringifyEntityRef(entity)}
-                entity={entity}
-                onToggleStarredEntity={toggleStarredEntity}
-                showKind
-              />
-            ))}
+          {sortByDisplayedTitle(entities.value ?? []).map(entity => (
+            <StarredEntityListItem
+              key={stringifyEntityRef(entity)}
+              entity={entity}
+              onToggleStarredEntity={toggleStarredEntity}
+              showKind
+            />
+          ))}
         </List>
       )}
 
@@ -153,20 +164,14 @@ export const Content = ({
         groupByKindEntries.map(([kind, entitiesByKind], index) => (
           <div key={kind} hidden={groupByKind && activeTab !== index}>
             <List className={classes.list}>
-              {entitiesByKind
-                ?.sort((a, b) =>
-                  (a.metadata.title ?? a.metadata.name).localeCompare(
-                    b.metadata.title ?? b.metadata.name,
-                  ),
-                )
-                .map(entity => (
-                  <StarredEntityListItem
-                    key={stringifyEntityRef(entity)}
-                    entity={entity}
-                    onToggleStarredEntity={toggleStarredEntity}
-                    showKind={false}
-                  />
-                ))}
+              {sortByDisplayedTitle(entitiesByKind).map(entity => (
+                <StarredEntityListItem
+                  key={stringifyEntityRef(entity)}
+                  entity={entity}
+                  onToggleStarredEntity={toggleStarredEntity}
+                  showKind={false}
+                />
+              ))}
             </List>
           </div>
         ))}
