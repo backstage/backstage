@@ -28,12 +28,13 @@ export const MobileBottomNav = () => {
             onSelectionChange={setSelectedTheme}
             disallowEmptySelection
             className={styles.buttonGroup}
+            aria-label="Color scheme"
           >
-            <ToggleButton id="light" aria-label="Light mode">
-              <RiSunLine size={20} />
+            <ToggleButton id="light" aria-label="Light theme">
+              <RiSunLine aria-hidden="true" size={20} />
             </ToggleButton>
-            <ToggleButton id="dark" aria-label="Dark mode">
-              <RiMoonLine size={20} />
+            <ToggleButton id="dark" aria-label="Dark theme">
+              <RiMoonLine aria-hidden="true" size={20} />
             </ToggleButton>
           </ToggleButtonGroup>
         </div>
