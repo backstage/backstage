@@ -41,8 +41,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
-import HomeIcon from '@material-ui/icons/Home';
-import LinkIcon from '@material-ui/icons/Link';
+import { RiHome4Line, RiLinkM } from '@remixicon/react';
 import {
   homePageWidgetDataRef,
   homePageLayoutComponentDataRef,
@@ -88,7 +87,7 @@ const homePage = PageBlueprint.makeWithOverrides({
       noHeader: true,
       routeRef: rootRouteRef,
       title: 'Home',
-      icon: <HomeIcon fontSize="inherit" />,
+      icon: <RiHome4Line size="1em" />,
       loader: async () => {
         const LazyDefaultLayout = reactLazy(() =>
           import('./alpha/DefaultHomePageLayout').then(m => ({
@@ -173,7 +172,7 @@ const homePageToolkitWidget = HomePageWidgetBlueprint.makeWithOverrides({
             const tools = config.tools.map(tool => ({
               url: tool.url,
               label: tool.label,
-              icon: (tool.icon && iconsApi.icon(tool.icon)) ?? <LinkIcon />,
+              icon: (tool.icon && iconsApi.icon(tool.icon)) ?? <RiLinkM />,
             }));
             return <m.Content {...props} tools={tools} />;
           },
@@ -314,7 +313,7 @@ const homePageWorldClockWidget = HomePageWidgetBlueprint.makeWithOverrides({
 export default createFrontendPlugin({
   pluginId: 'home',
   title: 'Home',
-  icon: <HomeIcon />,
+  icon: <RiHome4Line />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     homePage,
