@@ -510,6 +510,20 @@ The `when` field supports:
 - **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
 - **Boolean values:** `when: true` or `when: false`
 
+Changing a condition does not move the user away from the current step while it remains visible. A step that is hidden and later shown must be visited and validated again, even when its previous values are restored. Changing a step definition or its order also requires a new visit.
+
+Before review, the wizard checks visible steps whose validation may be out of date. Previously visited steps are checked automatically against their current inputs and effective constraints. Custom validators are also checked when the form context changes, because they can read values from other pages. Successful checks continue to the next pending step or review without another visit. Failed checks clear earlier successful validation and open the page that needs correction.
+
+Before review, changes to the form context trigger a check of the complete JSON Schema for previously visited steps, including constraints on values entered on other pages. Matching projected field values do not skip this schema check.
+
+Users can reach previously visited visible steps using the mouse or keyboard to correct values on another page. A voluntary return still follows the ordinary page order.
+
+Review and creation remain blocked until all visible steps have passed the necessary validation. Changes made while review is open are checked before creation; a newly revealed page must still be visited. If the parameters are checked again from review, review remains open so the user can confirm them before selecting **Create** again.
+
+If values, definitions, or visibility change during asynchronous validation, its result is discarded. The latest input is preserved and the wizard asks the user to check the changes and continue again. Field synchronization that does not change any values does not interrupt validation.
+
+Step labels are accessible buttons. Their accessible names include the visible title followed by the step number, for example, `Environments, Step 2`. Integration tests should select wizard buttons by accessible name rather than position.
+
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Filtering follows nested fields and array items, so a hidden field can be removed without removing visible fields in the same object. Fields shared with a visible step are retained, including values explicitly allowed by `additionalProperties`. Local `$ref` references are resolved within each parameter step schema. If a reference can't be resolved, the values are kept rather than filtered. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.

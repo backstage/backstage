@@ -231,6 +231,43 @@ describe('filterHiddenStepValues', () => {
 });
 
 describe('resolveParameterSteps', () => {
+  it('preserves nested shared context while filtering hidden-only fields', () => {
+    const values = {
+      request: {
+        enabled: false,
+        context: { revision: 'existing-revision', category: 'example' },
+        configuration: { name: 'previously-entered-value' },
+      },
+      hiddenOnly: 'not-submitted',
+    };
+    const steps = [
+      { schema: { properties: { request: { type: 'object' } } } },
+      {
+        when: '${{ parameters.request.enabled }}',
+        schema: {
+          properties: {
+            request: { properties: { configuration: { type: 'object' } } },
+            hiddenOnly: { type: 'string' },
+          },
+        },
+      },
+    ];
+    const hidden = resolveParameterSteps(values, steps);
+    expect(hidden.visible).toEqual([true, false]);
+    expect(hidden.values).toEqual({ request: values.request });
+    const revealed = resolveParameterSteps(
+      { ...values, request: { ...values.request, enabled: true } },
+      steps,
+    );
+    expect(revealed.visible).toEqual([true, true]);
+    expect(revealed.values).toEqual({
+      ...values,
+      request: { ...values.request, enabled: true },
+    });
+    expect(values.request.context.revision).toBe('existing-revision');
+    expect(values.hiddenOnly).toBe('not-submitted');
+  });
+
   it('evaluates conditions in order against values from visible steps', () => {
     const steps = [
       { schema: { properties: { provider: { type: 'string' } } } },
