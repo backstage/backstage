@@ -36,7 +36,7 @@ export const changelog_0_15_0: ChangelogProps[] = [
     commitSha: 'e8a1a35',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.15.0',
     prs: ['34124'],
     description: `Added a public \`--bui-bg-inherit\` CSS variable that resolves to the background

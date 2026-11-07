@@ -72,7 +72,7 @@ Replace \`searchable\` and \`searchPlaceholder\` with nested \`search\` configur
     commitSha: 'fc4e624',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.16.0',
     prs: ['34567'],
     description: `Updated the dark theme neutral background tokens to provide clearer contrast between neutral surfaces.`,
@@ -154,7 +154,7 @@ Replace \`searchable\` and \`searchPlaceholder\` with nested \`search\` configur
     commitSha: '1f709a3',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.16.0',
     prs: ['34400'],
     description: `Introduces a new set of semantic color token families — Accent, Announcement, Warning, Negative, and Positive — each providing a consistent set of background, foreground, and border tokens for both light and dark themes. A gray scale (\`--bui-gray-1\` through \`--bui-gray-11\`) and updated foreground tokens are also included.
