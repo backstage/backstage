@@ -37,6 +37,8 @@ import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
 import { OfflineAccessService } from './OfflineAccessService';
 import { CimdClientInfo, validateCimdUrl } from './CimdClient';
+import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 jest.mock('./CimdClient', () => {
@@ -149,6 +151,7 @@ describe('OidcRouter', () => {
     databaseId: TestDatabaseId,
     refreshTokenConfig?: Record<string, unknown>,
     extraAuthConfig?: Record<string, unknown>,
+    ownershipResolver?: AuthOwnershipResolver,
   ) {
     const knex = await databases.init(databaseId);
 
@@ -210,6 +213,8 @@ describe('OidcRouter', () => {
       lifecycle: mockLifecycle,
       catalog: mockCatalog,
       auth: mockAuth,
+      userInfo: userInfoDatabase,
+      ownershipResolver,
     });
 
     const oidcService = OidcService.create({
@@ -1028,10 +1033,13 @@ describe('OidcRouter', () => {
     async function doAuthFlowWithOfflineAccess(
       databaseId_: TestDatabaseId,
       refreshTokenConfig?: Record<string, unknown>,
+      ownershipResolver?: AuthOwnershipResolver,
     ) {
       const result = await createRouterWithOfflineAccess(
         databaseId_,
         refreshTokenConfig,
+        undefined,
+        ownershipResolver,
       );
       const {
         mocks: { auth, service, tokenIssuer, httpAuth },
@@ -1359,6 +1367,199 @@ describe('OidcRouter', () => {
             'mock-refreshed-token',
           );
           expect(mocks.catalog.getEntityByRef).not.toHaveBeenCalled();
+        });
+
+        it('should re-resolve ownership entity refs from the catalog and update user info on refresh while preserving custom claims', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId);
+
+          // Simulate initial interactive sign-in where user belonged to team-alpha and had a custom claim
+          await mocks.userInfo.addUserInfo({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/team-alpha'],
+              customClaim: 'preserved-value',
+            },
+          });
+
+          // User is removed from team-alpha and added to team-beta in the catalog
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+            relations: [
+              {
+                type: RELATION_MEMBER_OF,
+                targetRef: 'group:default/team-beta',
+              },
+            ],
+          });
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token-1',
+          });
+
+          const firstRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/team-beta'],
+            },
+          });
+          await expect(
+            mocks.userInfo.getUserInfo(MOCK_USER_ENTITY_REF),
+          ).resolves.toEqual({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/team-beta'],
+              customClaim: 'preserved-value',
+            },
+          });
+
+          // User is subsequently removed from all groups in the catalog
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+            relations: [],
+          });
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token-2',
+          });
+
+          const secondRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: firstRefresh.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF],
+            },
+          });
+          await expect(
+            mocks.userInfo.getUserInfo(MOCK_USER_ENTITY_REF),
+          ).resolves.toEqual({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF],
+              customClaim: 'preserved-value',
+            },
+          });
+
+          // Simulate transient user_info write error before token rotation; refresh should be rejected without rotating token
+          jest
+            .spyOn(mocks.userInfo, 'addUserInfo')
+            .mockRejectedValueOnce(new Error('Database write failed'));
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token-3',
+          });
+
+          const failedThirdRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: secondRefresh.body.refresh_token,
+            })
+            .expect(400);
+
+          expect(failedThirdRefresh.body.error).toBe('invalid_grant');
+
+          // Retrying with the same refresh token succeeds once DB write recovers
+          const thirdRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: secondRefresh.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(thirdRefresh.body.access_token).toBe('mock-refreshed-token-3');
+          expect(thirdRefresh.body.refresh_token).toBeDefined();
+        });
+
+        it('should use custom ownershipResolver when refreshing tokens and preserve token on resolver failure', async () => {
+          const resolveOwnershipEntityRefs = jest
+            .fn()
+            .mockRejectedValueOnce(new Error('Transient resolver failure'))
+            .mockResolvedValue({
+              ownershipEntityRefs: [
+                MOCK_USER_ENTITY_REF,
+                'Group:Default/Custom-Parent-Group',
+                'group:default/custom-parent-group',
+              ],
+            });
+          const customOwnershipResolver: AuthOwnershipResolver = {
+            resolveOwnershipEntityRefs,
+          };
+
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(
+              databaseId,
+              undefined,
+              customOwnershipResolver,
+            );
+
+          const userEntity = {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+          };
+          mocks.catalog.getEntityByRef.mockResolvedValue(userEntity);
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token',
+          });
+
+          // First attempt fails before rotation because customOwnershipResolver throws
+          const failedRefresh = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+
+          expect(failedRefresh.body.error).toBe('invalid_grant');
+
+          // Retrying with the exact same refresh token succeeds once the resolver recovers
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(
+            customOwnershipResolver.resolveOwnershipEntityRefs,
+          ).toHaveBeenCalledWith(userEntity);
+          expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/custom-parent-group'],
+            },
+          });
+          await expect(
+            mocks.userInfo.getUserInfo(MOCK_USER_ENTITY_REF),
+          ).resolves.toEqual({
+            claims: {
+              sub: MOCK_USER_ENTITY_REF,
+              ent: [MOCK_USER_ENTITY_REF, 'group:default/custom-parent-group'],
+            },
+          });
         });
       });
     });

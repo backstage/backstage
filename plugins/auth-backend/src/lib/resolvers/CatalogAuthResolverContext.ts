@@ -34,7 +34,7 @@ import {
 import { CatalogIdentityClient } from '../catalog/CatalogIdentityClient';
 import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
-function getDefaultOwnershipEntityRefs(entity: Entity) {
+export function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
     entity.relations
       ?.filter(
@@ -48,7 +48,7 @@ function getDefaultOwnershipEntityRefs(entity: Entity) {
 // Entity refs in claims are stored and matched exactly throughout the auth
 // backend, so make sure that they are always in their canonical form. Invalid
 // refs are passed through as-is, and rejected by the token issuer.
-function canonicalizeEntityRef(ref: string): string {
+export function canonicalizeEntityRef(ref: string): string {
   try {
     return stringifyEntityRef(parseEntityRef(ref));
   } catch {
