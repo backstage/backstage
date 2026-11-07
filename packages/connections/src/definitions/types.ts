@@ -25,6 +25,7 @@ import { GiteaConnectionType } from '../schema/gitea';
 import { GithubConnectionType } from '../schema/github';
 import { GitlabConnectionType } from '../schema/gitlab';
 import { GoogleGcsConnectionType } from '../schema/googleGcs';
+import { GrafanaConnectionType } from '../schema/grafana';
 import { HarnessConnectionType } from '../schema/harness';
 import type { ConnectionTypeDefinition } from '../api/ConnectionType';
 
@@ -50,6 +51,7 @@ export const connectionTypes = createConnectionTypes({
   github: GithubConnectionType,
   gitlab: GitlabConnectionType,
   'google-gcs': GoogleGcsConnectionType,
+  grafana: GrafanaConnectionType,
   harness: HarnessConnectionType,
 });
 

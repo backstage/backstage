@@ -42,6 +42,9 @@ selection rules, and a typed consumption example.
 
 ## Developer platforms
 
+- [Grafana](./types/grafana.md) supports service-account tokens for Grafana Cloud
+  and self-hosted instances, and basic authentication for self-hosted instances.
+
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
 
