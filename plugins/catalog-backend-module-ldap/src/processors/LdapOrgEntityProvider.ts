@@ -24,7 +24,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { merge } from 'lodash';
 import { randomUUID } from 'node:crypto';
 import {
   GroupTransformer,
@@ -280,39 +279,44 @@ export class LdapOrgEntityProvider implements EntityProvider {
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
 
-    // Be lazy and create the client each time; even though it's pretty
-    // inefficient, we usually only do this once per entire refresh loop and
-    // don't have to worry about timeouts and reconnects etc.
-    const client = await LdapClient.create(
+    // Create clients lazily for each refresh. By default, separate clients let
+    // user and group searches run in parallel (ldapts is not safe to share).
+    const [userClient, groupClient] = await createClients(
       this.options.logger,
-      this.options.provider.target,
-      this.options.provider.bind,
-      this.options.provider.tls,
+      this.options.provider,
+      !this.options.provider.disableParallelReads,
     );
 
-    const { users, groups } = await readLdapOrg(
-      client,
-      this.options.provider.users,
-      this.options.provider.groups,
-      this.options.provider.vendor,
-      {
-        groupTransformer: this.options.groupTransformer,
-        userTransformer: this.options.userTransformer,
-        logger,
-      },
-    );
+    try {
+      const { users, groups } = await readLdapOrg(
+        userClient,
+        this.options.provider.users,
+        this.options.provider.groups,
+        this.options.provider.vendor,
+        {
+          groupClient,
+          groupTransformer: this.options.groupTransformer,
+          userTransformer: this.options.userTransformer,
+          logger,
+        },
+      );
 
-    const { markCommitComplete } = markReadComplete({ users, groups });
+      const { markCommitComplete } = markReadComplete({ users, groups });
 
-    await this.connection.applyMutation({
-      type: 'full',
-      entities: [...users, ...groups].map(entity => ({
-        locationKey: `ldap-org-provider:${this.options.id}`,
-        entity: withLocations(this.options.id, entity),
-      })),
-    });
+      await this.connection.applyMutation({
+        type: 'full',
+        entities: [...users, ...groups].map(entity => ({
+          locationKey: `ldap-org-provider:${this.options.id}`,
+          entity: withLocations(this.options.id, entity),
+        })),
+      });
 
-    markCommitComplete();
+      markCommitComplete();
+    } finally {
+      const clients =
+        userClient === groupClient ? [userClient] : [userClient, groupClient];
+      await Promise.allSettled(clients.map(client => client.unbind()));
+    }
   }
 
   private schedule(taskRunner: SchedulerServiceTaskRunner) {
@@ -339,6 +343,49 @@ export class LdapOrgEntityProvider implements EntityProvider {
       });
     };
   }
+}
+
+async function createClients(
+  logger: LoggerService,
+  provider: LdapProviderConfig,
+  parallelReads: boolean,
+): Promise<[LdapClient, LdapClient]> {
+  if (!parallelReads) {
+    const client = await LdapClient.create(
+      logger,
+      provider.target,
+      provider.bind,
+      provider.tls,
+    );
+    return [client, client];
+  }
+
+  const results = await Promise.allSettled([
+    LdapClient.create(logger, provider.target, provider.bind, provider.tls),
+    LdapClient.create(logger, provider.target, provider.bind, provider.tls),
+  ]);
+  const [userClient, groupClient] = results;
+
+  if (userClient.status === 'rejected' || groupClient.status === 'rejected') {
+    await Promise.allSettled(
+      results
+        .filter(
+          (result): result is PromiseFulfilledResult<LdapClient> =>
+            result.status === 'fulfilled',
+        )
+        .map(result => result.value.unbind()),
+    );
+
+    if (userClient.status === 'rejected') {
+      throw userClient.reason;
+    }
+    if (groupClient.status === 'rejected') {
+      throw groupClient.reason;
+    }
+    throw new Error('Failed to create LDAP client pair');
+  }
+
+  return [userClient.value, groupClient.value];
 }
 
 // Helps wrap the timing and logging behaviors
@@ -369,15 +416,15 @@ function withLocations(providerId: string, entity: Entity): Entity {
   const dn =
     entity.metadata.annotations?.[LDAP_DN_ANNOTATION] || entity.metadata.name;
   const location = `ldap://${providerId}/${encodeURIComponent(dn)}`;
-  return merge(
-    {
-      metadata: {
-        annotations: {
-          [ANNOTATION_LOCATION]: location,
-          [ANNOTATION_ORIGIN_LOCATION]: location,
-        },
+  return {
+    ...entity,
+    metadata: {
+      ...entity.metadata,
+      annotations: {
+        [ANNOTATION_LOCATION]: location,
+        [ANNOTATION_ORIGIN_LOCATION]: location,
+        ...entity.metadata.annotations,
       },
     },
-    entity,
-  ) as Entity;
+  };
 }
