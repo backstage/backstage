@@ -127,6 +127,22 @@ export type ConnectionTypeDefinition<
 
 // @public (undocumented)
 export const connectionTypes: {
+  readonly argocd: ConnectionTypeDefinition<{
+    type: 'argocd';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+      baseUrl: string;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
   readonly aws: ConnectionTypeDefinition<{
     type: 'aws';
     cardinality: 'singleton';
