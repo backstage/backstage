@@ -20,6 +20,7 @@ import { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
 import { AzureConnectionType } from '../schema/azure';
 import { BitbucketCloudConnectionType } from '../schema/bitbucketCloud';
 import { BitbucketServerConnectionType } from '../schema/bitbucketServer';
+import { DatadogConnectionType } from '../schema/datadog';
 import { GerritConnectionType } from '../schema/gerrit';
 import { GiteaConnectionType } from '../schema/gitea';
 import { GithubConnectionType } from '../schema/github';
@@ -45,6 +46,7 @@ export const connectionTypes = createConnectionTypes({
   azure: AzureConnectionType,
   'bitbucket-cloud': BitbucketCloudConnectionType,
   'bitbucket-server': BitbucketServerConnectionType,
+  datadog: DatadogConnectionType,
   gerrit: GerritConnectionType,
   gitea: GiteaConnectionType,
   github: GithubConnectionType,
