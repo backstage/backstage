@@ -48,8 +48,8 @@ export class MockTranslationApi implements TranslationApi {
       defaultNS: false,
       fallbackNS: false,
 
-      // Disable resource loading on init, meaning i18n will be ready to use immediately
-      initImmediate: false,
+      // Run initialization synchronously so i18n is ready to use immediately
+      initAsync: false,
     });
 
     i18n.init();
