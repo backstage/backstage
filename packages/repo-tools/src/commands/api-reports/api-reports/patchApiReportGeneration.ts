@@ -17,7 +17,7 @@
 import { ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { Program } from 'typescript';
-import { tryRunPrettier } from '../common';
+import { formatContent } from '../common';
 import { targetPaths } from '@backstage/cli-common';
 
 let applied = false;
@@ -149,7 +149,7 @@ export function patchApiReportGeneration() {
       );
 
       /**
-       * This monkey patching is for applying prettier to the API reports. This has to be patched into
+       * This monkey patching is for formatting the API reports. This has to be patched into
        * the middle of the process as API Extractor does a comparison of the contents of the old
        * and new files during generation. This inserts the formatting just before that comparison.
        */
@@ -158,7 +158,7 @@ export function patchApiReportGeneration() {
         collector,
         ...moreArgs,
       );
-      return tryRunPrettier(content, {
+      return formatContent(content, {
         parser: 'markdown',
         // We need a real-looking filepath for proper config resolution, not just a directory
         // Ideally, the real filepath would be better, but it would require too much patching, for very little gain.

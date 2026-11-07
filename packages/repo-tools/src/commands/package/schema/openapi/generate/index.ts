@@ -53,7 +53,8 @@ export async function command(opts: OptionValues) {
     if (opts.server) {
       promises.push(generateServer(options, opts.serverAdditionalProperties));
     }
-    await Promise.all(promises);
+    const results = await Promise.all(promises);
+    return results.every(Boolean);
   };
 
   if (opts.watch) {
@@ -93,7 +94,10 @@ export async function command(opts: OptionValues) {
     }
   } else {
     try {
-      await sharedCommand();
+      // Client and server generation log their own errors
+      if (!(await sharedCommand())) {
+        process.exit(1);
+      }
     } catch (err) {
       console.error(chalk.red('Error: ', err));
       process.exit(1);
