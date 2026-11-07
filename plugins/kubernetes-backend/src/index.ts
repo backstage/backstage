@@ -24,3 +24,7 @@ export { kubernetesPlugin as default } from './plugin';
 export * from './auth';
 export * from './service';
 export * from './types';
+export {
+  kubernetesConditions,
+  createKubernetesProxyConditionalDecision,
+} from './permissions';
