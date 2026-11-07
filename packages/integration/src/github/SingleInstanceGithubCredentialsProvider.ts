@@ -261,7 +261,10 @@ class GithubAppManager {
     if (!this.pendingInstallations) {
       const pending = this.appClient
         .paginate(this.appClient.apps.listInstallations)
-        .then(data => {
+        .then(response => {
+          // GitHub has been observed to return null entries in this list,
+          // which would make every lookup against the cached list throw
+          const data = response.filter(Boolean);
           const now = DateTime.local();
           this.installationsCache = {
             data,
