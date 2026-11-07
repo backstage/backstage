@@ -24,6 +24,7 @@ import {
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { lintAndFormatGeneratedFiles } from '../../../../../lib/openapi/lintAndFormatGeneratedFiles';
 import { targetPaths } from '@backstage/cli-common';
 import {
   getOpenApiGeneratorKey,
@@ -85,26 +86,8 @@ async function generate(
     },
   );
 
-  const parentDirectory = resolve(resolvedOutputDirectory, '..');
-
-  await fs.writeFile(
-    resolve(parentDirectory, 'index.ts'),
-    `//
-    export * from './generated';`,
-  );
-
-  await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
-    signal: abortSignal?.signal,
-  });
-
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (await fs.pathExists(prettier)) {
-    await exec(`${prettier} --write ${parentDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
-
-  // Deduplicate imports in generated files
+  // Deduplicate imports in generated files, before
+  // they're linted and formatted
   const generatedFiles = await fs.readdir(resolvedOutputDirectory);
   for (const file of generatedFiles) {
     if (file.endsWith('.ts')) {
@@ -123,6 +106,18 @@ async function generate(
     recursive: true,
     force: true,
   });
+
+  const parentDirectory = resolve(resolvedOutputDirectory, '..');
+
+  await fs.writeFile(
+    resolve(parentDirectory, 'index.ts'),
+    `//
+    export * from './generated';`,
+  );
+
+  await lintAndFormatGeneratedFiles([parentDirectory], {
+    signal: abortSignal?.signal,
+  });
 }
 
 export async function command(
@@ -132,16 +127,17 @@ export async function command(
     abortSignal,
     isWatch = false,
   }: { abortSignal?: AbortController; isWatch?: boolean } = {},
-): Promise<void> {
+): Promise<boolean> {
   try {
     await generate(outputPackage, clientAdditionalProperties, abortSignal);
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
     );
+    return true;
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.debug('Server generation aborted.');
-      return;
+      console.debug('Client generation aborted.');
+      return true;
     }
     if (isWatch) {
       console.log(chalk.red(`Client generation failed:`));
@@ -152,5 +148,6 @@ export async function command(
       console.log(chalk.red(`Client generation failed.`));
       console.log(chalk.red(err.message));
     }
+    return false;
   }
 }
