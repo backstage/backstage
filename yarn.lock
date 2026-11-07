@@ -25282,9 +25282,9 @@ __metadata:
   linkType: hard
 
 "d3-selection@npm:2 - 3, d3-selection@npm:3, d3-selection@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "d3-selection@npm:3.0.0"
-  checksum: 10/0e5acfd305b31628b7be5009ba7303d84bb34817a88ed4dde9c8bd9c23528573fc5272f89fc04e5be03d2cbf5441a248d7274aaf55a8ef3dad46e16333d72298
+  version: 3.0.1
+  resolution: "d3-selection@npm:3.0.1"
+  checksum: 10/cb113b0307dc0c1cbe117b53174dbad2793ec0c98adc8b9f224f617dd3ff11553897c66ecff67834a8eb5a5ac88192ec6bb4ab2bc321897cfa3bcdc95c8d59a7
   languageName: node
   linkType: hard
 
