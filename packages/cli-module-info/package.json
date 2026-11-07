@@ -37,7 +37,7 @@
     "@backstage/cli-node": "workspace:^",
     "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
-    "minimatch": "^10.2.1"
+    "minimatch": "^11.0.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

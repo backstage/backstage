@@ -225,6 +225,8 @@ export interface ParsedTemplateSchema {
   title: string;
   // (undocumented)
   uiSchema: UiSchema;
+  // (undocumented)
+  when?: string | boolean;
 }
 
 // @alpha
@@ -234,6 +236,7 @@ export const ReviewState: (props: ReviewStateProps) => JSX_2.Element;
 export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
+  schemaFormState?: JsonObject;
 };
 
 // @alpha

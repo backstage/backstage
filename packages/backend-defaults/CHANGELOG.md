@@ -1,5 +1,16 @@
 # @backstage/backend-defaults
 
+## 0.18.2-next.1
+
+### Patch Changes
+
+- f81ca4e: The AWS S3 URL reader no longer assumes the configured `roleArn` a second time when the matching account under `aws.accounts` already provides credentials for that exact role, for example through a web identity token file. Previously the role had to trust itself for this setup to work. The role is still assumed explicitly when the integration sets an `externalId`.
+- 9fc68ae: Fixed the `valkey` cache store sharing keys between plugins. Two plugins that cached a value under the same key could read and overwrite each other's entries. Keys are now stored under the plugin namespace, the same way the `redis` store does it. Cache entries now use new key names, so existing entries are no longer read and are rebuilt as plugins write new values. Old entries stay in Valkey until their TTL expires. Entries without a TTL, and the per-plugin key index sets that the old layout created, stay until you remove them manually.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.1
+
 ## 0.18.2-next.0
 
 ### Patch Changes

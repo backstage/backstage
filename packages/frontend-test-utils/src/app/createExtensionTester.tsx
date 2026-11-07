@@ -23,6 +23,7 @@ import {
   ExtensionDefinitionParameters,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
+import type { AppError } from '@backstage/frontend-app-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -39,6 +40,7 @@ import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/read
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { resolveTestApiEntries, TestApiPairs } from '../apis/TestApiProvider';
+import { throwOnAppErrors } from './throwOnAppErrors';
 
 /**
  * Represents a snapshot of an extension in the app tree.
@@ -102,15 +104,17 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     options?: {
       config?: T['configInput'];
       apis?: readonly [...TestApiPairs<TApiPairs>];
+      isExpectedError?: (error: AppError) => boolean;
     },
   ): ExtensionTester<NonNullable<T['output']>> {
-    const tester = new ExtensionTester(options?.apis);
+    const tester = new ExtensionTester(options?.apis, options?.isExpectedError);
     tester.add(subject, options as T['configInput'] & {});
     return tester;
   }
 
   #tree?: AppTree;
   #apis?: readonly any[];
+  #isExpectedError?: (error: AppError) => boolean;
 
   readonly #extensions = new Array<{
     id: string;
@@ -119,8 +123,12 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     config?: JsonValue;
   }>();
 
-  private constructor(apis?: readonly any[]) {
+  private constructor(
+    apis?: readonly any[],
+    isExpectedError?: (error: AppError) => boolean,
+  ) {
     this.#apis = apis;
+    this.#isExpectedError = isExpectedError;
   }
 
   add<T extends ExtensionDefinitionParameters>(
@@ -285,14 +293,10 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
 
     instantiateAppNodeTree(tree.root, apiHolder, collector);
 
-    const errors = collector.collectErrors();
-    if (errors) {
-      throw new Error(
-        `Failed to resolve the extension tree: ${errors
-          .map(e => e.message)
-          .join(', ')}`,
-      );
-    }
+    throwOnAppErrors(collector.collectErrors(), {
+      description: 'Failed to resolve the extension tree',
+      isExpectedError: this.#isExpectedError,
+    });
 
     this.#tree = tree;
 
@@ -345,6 +349,11 @@ export function createExtensionTester<
   options?: {
     config?: T['configInput'];
     apis?: readonly [...TestApiPairs<TApiPairs>];
+    /**
+     * Decides whether an error reported while resolving the extension tree is
+     * expected. By default every error fails the test.
+     */
+    isExpectedError?: (error: AppError) => boolean;
   },
 ): ExtensionTester<NonNullable<T['output']>> {
   return ExtensionTester.forSubject(subject, options);

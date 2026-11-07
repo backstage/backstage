@@ -14,7 +14,7 @@ A Backstage App is a monorepo setup that includes everything you need to run Bac
 To create a new Backstage app we recommend using the `@backstage/create-app` command line, and the easiest way to run this package is with `npx`:
 
 :::note
-The create-app CLI requires Node.js Active LTS Release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
+The create-app CLI requires a supported Node.js release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
 :::
 
 ```sh
@@ -143,3 +143,31 @@ const app = createApp({
 
 export default app.createRoot();
 ```
+
+### Extension factory middleware
+
+The `advanced.extensionFactoryMiddleware` option lets you inspect or modify
+extension data as extensions are instantiated. It accepts a middleware function
+or an array of middleware functions.
+
+For example, you can log each extension's output while troubleshooting app startup:
+
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+
+const app = createApp({
+  advanced: {
+    extensionFactoryMiddleware(originalFactory, { node }) {
+      const output = originalFactory();
+      console.debug(`Extension '${node.spec.id}' output:`, [...output]);
+      return output;
+    },
+  },
+});
+
+export default app.createRoot();
+```
+
+The middleware calls `originalFactory()` to instantiate the extension and returns
+its output. The example logs the data without changing what the extension provides
+to the app.

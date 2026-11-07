@@ -1,5 +1,15 @@
 # @backstage/plugin-notifications
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 555d6ff: Updated custom notification icons to use the element-based icons API. Missing icons still fall back to the notification severity icon.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-home-react@0.1.44-next.1
+
 ## 0.6.2-next.0
 
 ### Patch Changes

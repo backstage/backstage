@@ -18,16 +18,16 @@ This command reads the published index from `https://backstage.io/.well-known/sk
 
 ### Where skills are installed
 
-`skills.sh` copies skill files into your repository under a directory it manages (typically `.github/skills/` or a similar location depending on your configuration). Refer to the [`skills.sh` documentation](https://skills.sh/) for details on target paths and how to customize them.
+`skills.sh` installs skills into your project for the coding agents you choose, in the folder each agent reads skills from. For example, Claude Code reads `.claude/skills/`, and Codex, Cursor, and GitHub Copilot read `.agents/skills/`. Add `-g` to install them for all your projects instead. See the [list of supported agents](https://github.com/vercel-labs/skills/blob/main/docs/agents.md) for every agent's path.
 
-After installation, you can modify the installed files to adapt them to your project's conventions. Subsequent updates from `npx skills add` will offer to merge upstream changes.
+Run `npx skills check` to see whether installed skills have updates, and `npx skills update` to install them. If you changed an installed skill to fit your project's conventions, review those changes after updating.
 
 ### Using Skills with Your AI Assistant
 
-Once a skill is installed in your repository, attach or reference the relevant `SKILL.md` file when starting a task with your AI coding assistant. Most AI assistants in editors such as VS Code will automatically pick up instruction files that are committed to your repository.
+Agents that support skills read the description of each installed skill and load the skill when a task matches it, so you don't need to point the agent at a `SKILL.md` file. To make sure a specific skill is used, name it in your request.
 
-For example, when migrating a plugin from Material-UI to Backstage UI, include the
-`mui-to-bui-migration` skill. Choose between running the official codemod recipe
+For example, when migrating a plugin from Material-UI to Backstage UI with the
+`mui-to-bui-migration` skill, choose between running the official codemod recipe
 and finishing its leftovers, or migrating directly with standalone guidance. The
 skill recommends the codemod for mechanical changes, but supports either path.
 State your preference in the request; otherwise, the assistant asks before
@@ -36,13 +36,13 @@ guidance without running a codemod."
 
 ## Contributing New Skills
 
-Skills are authored in the Backstage monorepo at `docs/.well-known/skills/`. Each skill lives in its own subdirectory and must include a `SKILL.md` file as the primary entry point.
+Skills are authored in the Backstage monorepo at `.agents/skills/`. Each skill lives in its own subdirectory and must include a `SKILL.md` file as the primary entry point. AI assistants working in the Backstage repository load every skill in this folder. `.claude/skills/` links to the same folder for Claude Code. On Windows, Claude Code only sees these skills if Git checks out symbolic links, which requires Developer Mode and `git config core.symlinks true`.
 
 ### Skill directory layout
 
 ```text
-docs/.well-known/skills/
-  index.json                        # Published index of all skills
+.agents/skills/
+  index.json                        # Skills published to backstage.io
   <skill-name>/
     SKILL.md                        # Primary skill entry point (required)
     <optional-supporting-files>
@@ -69,23 +69,27 @@ The `name` must match the directory name. The `description` is shown to users wh
 
 Keep skills focused on a single, well-defined task. A skill that tries to cover too many scenarios is harder to use effectively. Prefer concrete, step-by-step guidance, working code examples, and explicit notes about common pitfalls.
 
-### Registering the skill in the index
+### Publishing the skill
 
-Add an entry to `docs/.well-known/skills/index.json`:
+Only the skills listed in `.agents/skills/index.json` are published to `backstage.io` and can be installed with `npx skills add`. Leave a skill out of the index if it is only useful for working on the Backstage repository itself, such as release tooling.
+
+To publish a skill, add an entry with its name to the index:
 
 ```json
 {
-  "skills": [
-    {
-      "name": "<skill-name>",
-      "description": "<same description as in SKILL.md front matter>",
-      "files": ["SKILL.md"]
-    }
-  ]
+  "skills": [{ "name": "<skill-name>" }]
 }
 ```
 
-If your skill includes additional supporting files, list each one in the `files` array.
+Then fill in its description and files from the skill folder:
+
+```bash
+node scripts/verify-skills.js --fix
+```
+
+Run the same command after renaming or removing a published skill, or changing its description or files. CI runs the script without `--fix` and fails if the index is out of date.
+
+Also list the skill on the [well-known skills](./well-known-skills.md) page, under the section that fits it, and keep its entry there in line with what the skill covers. The script fails if the page lists a skill that isn't published, or leaves out one that is, but it can't tell when an entry's wording is out of date.
 
 ### Review process
 

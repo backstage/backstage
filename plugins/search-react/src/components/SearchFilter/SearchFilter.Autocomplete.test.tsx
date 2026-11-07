@@ -318,6 +318,32 @@ describe('SearchFilter.Autocomplete', () => {
       });
     });
 
+    it('keeps typed text after a value is selected', async () => {
+      render(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider
+            initialState={{
+              ...emptySearchContext,
+              ...{ filters: { [name]: [values[0]] } },
+            }}
+          >
+            <SearchFilter.Autocomplete multiple name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
+      );
+
+      const autocomplete = screen.getByRole('combobox');
+      const input = within(autocomplete).getByRole('textbox');
+      await userEvent.type(input, 'value');
+
+      expect(input).toHaveValue('value');
+    });
+
     it('respects tag limit configuration', async () => {
       render(
         <TestApiProvider

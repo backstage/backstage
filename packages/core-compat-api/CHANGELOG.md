@@ -1,5 +1,17 @@
 # @backstage/core-compat-api
 
+## 0.5.17-next.1
+
+### Patch Changes
+
+- e55a4a8: Updated compatibility with the `FrontendPlugin` interface after removal of its deprecated `id` property, retaining support for older plugin instances.
+- e3d50c4: Added support for the new icons API when rendering plugins in old-system apps, while continuing to provide the original icons API for older plugins. Legacy app context icon lookups continue to return components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-app-react@0.3.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
 ## 0.5.17-next.0
 
 ### Patch Changes

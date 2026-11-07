@@ -1,5 +1,54 @@
 # @backstage/frontend-test-utils
 
+## 0.7.0-next.1
+
+### Minor Changes
+
+- 76b1c3d: Removed the deprecated standalone mock API type exports. Use the corresponding `mockApis` helpers to create instances and derive types as follows:
+
+  | Removed type                 | Replacement type                                                     |
+  | ---------------------------- | -------------------------------------------------------------------- |
+  | `MockAlertApi`               | `ReturnType<typeof mockApis.alert>`                                  |
+  | `MockAnalyticsApi`           | `ReturnType<typeof mockApis.analytics>`                              |
+  | `MockConfigApi`              | `ReturnType<typeof mockApis.config>`                                 |
+  | `MockErrorApi`               | `ReturnType<typeof mockApis.error>`                                  |
+  | `MockFeatureFlagsApi`        | `ReturnType<typeof mockApis.featureFlags>`                           |
+  | `MockFetchApi`               | `ReturnType<typeof mockApis.fetch>`                                  |
+  | `MockPermissionApi`          | `ReturnType<typeof mockApis.permission>`                             |
+  | `MockStorageApi`             | `ReturnType<typeof mockApis.storage>`                                |
+  | `MockTranslationApi`         | `ReturnType<typeof mockApis.translation>`                            |
+  | `MockErrorApiOptions`        | `NonNullable<Parameters<typeof mockApis.error>[0]>`                  |
+  | `MockFeatureFlagsApiOptions` | `NonNullable<Parameters<typeof mockApis.featureFlags>[0]>`           |
+  | `ErrorWithContext`           | `ReturnType<ReturnType<typeof mockApis.error>['getErrors']>[number]` |
+
+  Import `mockApis` from `@backstage/frontend-test-utils`. For example, use `mockApis.analytics()` to create an analytics mock and `ReturnType<typeof mockApis.analytics>` when you need an explicit instance type. Existing calls to the helpers require no changes. Inspection methods such as `getEvents`, `getErrors`, and `getAlerts`, along with legacy alert support, remain available. `MockFetchApiOptions` remains exported for configuring `mockApis.fetch`.
+
+- 53ab1aa: **BREAKING**: `renderInTestApp`, `renderTestApp` and `createExtensionTester` now throw for every error reported while creating the test app or extension tree, including the ones a real app only logs as warnings, such as `EXTENSION_IGNORED`. Previously `renderInTestApp` and `renderTestApp` ignored these errors, so a test could pass for an app that is broken. All three helpers accept a new `isExpectedError` option to allow specific errors.
+
+  **Migration:** fix the reported error in the test setup. The error message names the code to allow if the error is expected:
+
+  ```ts
+  renderInTestApp(<MyComponent />, {
+    isExpectedError: error =>
+      error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
+      error.context.node.spec.id === 'page:my-plugin',
+  });
+  ```
+
+  A common one is `API_FACTORY_CONFLICT` from providing an API that another plugin owns, such as a `core.*` API passed in `extensions`. That override was always rejected, so remove it, or use the `apis` option to replace an API in a test.
+
+- e3d50c4: Removed the deprecated `show` and `showModal` methods from dialog test helpers, and `getIcon` from icons test helpers. Update tests to use `open` for dialogs and `icon` for icon elements.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/plugin-app@0.6.0-next.1
+  - @backstage/core-app-api@1.20.7-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-app-react@0.3.0-next.1
+
 ## 0.7.0-next.0
 
 ### Minor Changes

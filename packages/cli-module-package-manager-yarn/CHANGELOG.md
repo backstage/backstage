@@ -1,5 +1,13 @@
 # @backstage/cli-module-package-manager-yarn
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+  - @backstage/release-manifests@0.0.16-next.0
+
 ## 0.1.5-next.0
 
 ### Patch Changes

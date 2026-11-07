@@ -23,9 +23,6 @@ import {
 
 /**
  * Options for configuring {@link MockFeatureFlagsApi}.
- *
- * @public
- * @deprecated Use `mockApis.featureFlags()` instead.
  */
 export interface MockFeatureFlagsApiOptions {
   /**
@@ -37,8 +34,6 @@ export interface MockFeatureFlagsApiOptions {
 /**
  * Mock implementation of {@link @backstage/frontend-plugin-api#FeatureFlagsApi} for testing feature flag behavior.
  *
- * @public
- * @deprecated Use `mockApis.featureFlags()` instead.
  * @example
  * ```ts
  * const api = mockApis.featureFlags({
