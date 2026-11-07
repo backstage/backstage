@@ -30400,21 +30400,21 @@ __metadata:
   linkType: hard
 
 "http-proxy-middleware@npm:*":
-  version: 4.2.0
-  resolution: "http-proxy-middleware@npm:4.2.0"
+  version: 4.2.1
+  resolution: "http-proxy-middleware@npm:4.2.1"
   dependencies:
     debug: "npm:^4.4.3"
     httpxy: "npm:^0.5.4"
     is-glob: "npm:^4.0.3"
     is-plain-obj: "npm:^4.1.0"
     micromatch: "npm:^4.0.8"
-  checksum: 10/ea3f08f527e120f0616418896ec2fefdaed67b437a0a301dbccdf0db9b5327a75349245566dafbc489eb6703a204bb7503fc67478b73738732819681ea69022b
+  checksum: 10/c924486ffebcf47fab25a52a75359379b6283b4b7fd5eb5db3f6499ab3848715f3dfd2c17639db39c6c7b46330b2b83c163526beb5b0d78809abbb451c49e12d
   languageName: node
   linkType: hard
 
 "http-proxy-middleware@npm:^2.0.0, http-proxy-middleware@npm:^2.0.6, http-proxy-middleware@npm:^2.0.9":
-  version: 2.0.10
-  resolution: "http-proxy-middleware@npm:2.0.10"
+  version: 2.0.11
+  resolution: "http-proxy-middleware@npm:2.0.11"
   dependencies:
     "@types/http-proxy": "npm:^1.17.8"
     http-proxy: "npm:^1.18.1"
@@ -30426,13 +30426,13 @@ __metadata:
   peerDependenciesMeta:
     "@types/express":
       optional: true
-  checksum: 10/efa8b5d4dec112fba5f6741df33a926818f87156f44dee425e653284c20844f3a9f2af88042a7d4ef297161479e1549302dea693bce23123fa2da07420fa2214
+  checksum: 10/ee7a82cf477e96d45c7c7bd49ac477d8dabd12f7abccb2d770b1cd9553f54621355fb391278d3e4ebdc3889cd9192555f8c80872bdf0f92f1a864c123f0c76a8
   languageName: node
   linkType: hard
 
 "http-proxy-middleware@npm:^3.0.7":
-  version: 3.0.7
-  resolution: "http-proxy-middleware@npm:3.0.7"
+  version: 3.0.10
+  resolution: "http-proxy-middleware@npm:3.0.10"
   dependencies:
     "@types/http-proxy": "npm:^1.17.15"
     debug: "npm:^4.3.6"
@@ -30440,7 +30440,7 @@ __metadata:
     is-glob: "npm:^4.0.3"
     is-plain-object: "npm:^5.0.0"
     micromatch: "npm:^4.0.8"
-  checksum: 10/a44135de721e55517b0fca596855e1e4da92b5fdad247425b4253a345fface37b2a800fcfe37dc28863e9021d8c56cf9cb33ebd20d63c9eca6918a46b39082d4
+  checksum: 10/c49d0ed803a32cdad62abd20fef6b1335740104eb73bcc33df9b3847461fd08fcc674f6608050465a7d781f1679b11cfcb781fbdcedcf5f4a7c6635c28df9a7c
   languageName: node
   linkType: hard
 
