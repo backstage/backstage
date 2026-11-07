@@ -33,3 +33,23 @@ jobs:
           egress-policy: audit
 
       - run: echo NOOP
+
+  noop-pnpm:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        pnpm-version: [11.28.0, 12.7.0]
+        node-linker: [hoisted, isolated]
+        include:
+          - pnpm-version: template
+            node-linker: hoisted
+
+    name: E2E Linux pnpm ${{ matrix.pnpm-version }} ${{ matrix.node-linker }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      - run: echo NOOP
