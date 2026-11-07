@@ -391,7 +391,13 @@ describe('OidcRouter', () => {
 
     describe('auth flow', () => {
       it('should register a client', async () => {
-        const { router } = await createRouter(databaseId);
+        const { router } = await createRouter(databaseId, {
+          experimentalDynamicClientRegistration: {
+            enabled: true,
+            allowedRedirectUriPatterns: ['*'],
+          },
+          clientIdMetadataDocuments: { enabled: true },
+        });
 
         const { server } = await startTestBackend({
           features: [
@@ -427,7 +433,50 @@ describe('OidcRouter', () => {
         expect(response.body).toEqual({
           client_id: expect.any(String),
           client_secret: expect.any(String),
+          client_id_issued_at: expect.any(Number),
+          client_secret_expires_at: 0,
+          client_name: 'Test Client',
           redirect_uris: ['https://example.com/callback'],
+          grant_types: ['authorization_code'],
+          response_types: ['code'],
+          token_endpoint_auth_method: 'client_secret_basic',
+          scope: 'openid',
+        });
+
+        const minimal = await request(server)
+          .post('/api/auth/v1/register')
+          .send({ redirect_uris: ['https://example.com/callback'] })
+          .expect(201);
+        expect(minimal.body).not.toHaveProperty('scope');
+        expect(minimal.body.client_name).toBe('Backstage CLI');
+
+        const register = (method: string) =>
+          request(server)
+            .post('/api/auth/v1/register')
+            .send({
+              redirect_uris: ['https://example.com/callback'],
+              token_endpoint_auth_method: method,
+            })
+            .expect(201);
+
+        const publicClient = await register('none');
+        expect(publicClient.body.token_endpoint_auth_method).toBe('none');
+        expect(publicClient.body).not.toHaveProperty('client_secret');
+        expect(publicClient.body).not.toHaveProperty(
+          'client_secret_expires_at',
+        );
+
+        const postClient = await register('client_secret_post');
+        expect(postClient.body).toMatchObject({
+          token_endpoint_auth_method: 'client_secret_post',
+          client_secret: expect.any(String),
+          client_secret_expires_at: 0,
+        });
+
+        const unsupported = await register('private_key_jwt');
+        expect(unsupported.body).toMatchObject({
+          token_endpoint_auth_method: 'client_secret_basic',
+          client_secret: expect.any(String),
         });
       });
 

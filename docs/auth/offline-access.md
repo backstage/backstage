@@ -47,7 +47,7 @@ client replaces its previous session.
 A client can revoke its own refresh token through the standard revocation
 endpoint, `/api/auth/v1/revoke`. The request must identify the client with its
 `client_id`. Clients that were registered through dynamic client registration
-must also authenticate with their client secret.
+as confidential clients must also authenticate with their client secret.
 
 ### Revoking all sessions of a user
 
