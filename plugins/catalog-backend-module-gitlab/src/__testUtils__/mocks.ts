@@ -379,6 +379,33 @@ export const config_single_integration_include_archived: MockObject = {
   },
 };
 
+export const config_single_integration_skip_marked_for_deletion: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          skipReposMarkedForDeletion: true,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
 export const config_single_integration_exclude_repos: MockObject = {
   integrations: {
     gitlab: [
@@ -1072,6 +1099,19 @@ export const all_projects_response: GitLabProject[] = [
     last_activity_at: new Date().toString(),
     web_url: 'https://example.com/group1/subgroup1/test-repo9',
     path_with_namespace: 'group1/subgroup1/test-repo9',
+  },
+  // project marked for deletion
+  {
+    id: 10,
+    description: 'Project Ten Description',
+    name: 'test-repo-pending-delete',
+    default_branch: 'main',
+    path: 'test-repo-pending-delete',
+    archived: false,
+    last_activity_at: new Date().toString(),
+    web_url: 'https://example.com/group1/test-repo-pending-delete',
+    path_with_namespace: 'group1/test-repo-pending-delete',
+    marked_for_deletion_on: '2025-01-01',
   },
 ];
 

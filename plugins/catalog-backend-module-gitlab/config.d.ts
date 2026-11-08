@@ -102,6 +102,13 @@ export interface Config {
            */
           includeArchivedRepos?: boolean;
           /**
+           * (Optional) Skip repositories that GitLab has marked for deletion
+           * (i.e. that report a non-empty `marked_for_deletion_on` value).
+           * Defaults to `false`. When enabled, the GitLab API call cannot use
+           * the `simple=true` payload optimization.
+           */
+          skipReposMarkedForDeletion?: boolean;
+          /**
            * (Optional) A list of strings containing the paths of the repositories to skip
            * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
            */
