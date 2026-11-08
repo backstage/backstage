@@ -104,7 +104,6 @@ export type StepperWizard = {
  * the form values, the cursor, which steps were visited and validated, and
  * the asynchronous validation bookkeeping. The `Stepper` component mostly
  * renders from the returned state and calls the returned transitions.
- * @alpha
  */
 export const useStepperWizard = (
   options: StepperWizardOptions,

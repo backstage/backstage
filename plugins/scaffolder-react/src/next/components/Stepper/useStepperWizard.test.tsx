@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { customizeValidator } from '@rjsf/validator-ajv8';
 import ajvErrors from 'ajv-errors';
 import type { AnalyticsTracker } from '@backstage/core-plugin-api';
+import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
+import { JsonObject } from '@backstage/types';
 
 import type { ParsedTemplateSchema } from '../../hooks';
 import {
@@ -30,13 +32,20 @@ ajvErrors(validator.ajv);
 const makeStep = (
   title: string,
   when?: string | boolean,
+  schema: JsonObject = { type: 'object', properties: {} },
 ): ParsedTemplateSchema => ({
   title,
-  schema: { type: 'object', properties: {} },
-  mergedSchema: { type: 'object', properties: {} },
+  schema,
+  mergedSchema: schema,
   uiSchema: {},
   ...(when === undefined ? {} : { when }),
 });
+
+const nameStep = (title: string) =>
+  makeStep(title, undefined, {
+    required: ['name'],
+    properties: { name: { type: 'string', 'ui:field': 'Name' } },
+  });
 
 const analytics = { captureEvent: jest.fn() } as unknown as AnalyticsTracker;
 
@@ -133,5 +142,106 @@ describe('useStepperWizard', () => {
     const after = result.current.stepsState;
     act(() => result.current.handleChange({ formData: { name: 'a' } } as any));
     expect(result.current.stepsState).toBe(after);
+  });
+
+  it('discards a stale async result when the form changes while checking', async () => {
+    let finish: () => void = () => {};
+    const pending = new Promise<void>(resolve => {
+      finish = resolve;
+    });
+    const validate = jest.fn(async () => {
+      await pending;
+    });
+    const { result } = renderHook(
+      (props: StepperWizardOptions) => useStepperWizard(props),
+      {
+        initialProps: makeOptions([nameStep('One')], {
+          validators: { Name: validate },
+        }),
+      },
+    );
+
+    act(() => {
+      void result.current.handleNext({ formData: { name: 'a' } });
+    });
+    await waitFor(() => expect(result.current.isValidating).toBe(true));
+    expect(validate).toHaveBeenCalledTimes(1);
+
+    // A real edit interrupts the check and keeps the latest value.
+    act(() => {
+      result.current.handleChange({ formData: { name: 'b' } } as any);
+    });
+    expect(result.current.isValidating).toBe(false);
+    expect(result.current.validationInterrupted).toBe(true);
+
+    // The slow result must not move the cursor or clear the flag.
+    await act(async () => {
+      finish();
+      await pending;
+    });
+    expect(result.current.activeStep).toBe(0);
+    expect(result.current.validationInterrupted).toBe(true);
+    expect(result.current.stepsState).toEqual({ name: 'b' });
+  });
+
+  it('completes a step once the async check succeeds and lets create proceed', async () => {
+    const onCreate = jest.fn().mockResolvedValue(undefined);
+    const validate = jest.fn(async () => {});
+    const { result } = renderHook(
+      (props: StepperWizardOptions) => useStepperWizard(props),
+      {
+        initialProps: makeOptions([nameStep('One')], {
+          validators: { Name: validate },
+          onCreate,
+        }),
+      },
+    );
+
+    act(() => {
+      void result.current.handleNext({ formData: { name: 'a' } });
+    });
+    await waitFor(() => expect(result.current.isValidating).toBe(false));
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(result.current.activeStep).toBe(1);
+
+    // The successful completion is cached: create submits without rechecking.
+    await act(async () => {
+      result.current.handleCreate();
+    });
+    expect(onCreate).toHaveBeenCalledWith({ name: 'a' });
+    expect(validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the step pending and blocks create after a failed async check', async () => {
+    const onCreate = jest.fn().mockResolvedValue(undefined);
+    const validate: CustomFieldValidator<unknown, unknown> = async (
+      _value,
+      errors,
+    ) => {
+      errors.addError('Name is already taken');
+    };
+    const { result } = renderHook(
+      (props: StepperWizardOptions) => useStepperWizard(props),
+      {
+        initialProps: makeOptions([nameStep('One')], {
+          validators: { Name: validate },
+          onCreate,
+        }),
+      },
+    );
+
+    act(() => {
+      void result.current.handleNext({ formData: { name: 'taken' } });
+    });
+    await waitFor(() => expect(result.current.isValidating).toBe(false));
+    expect(result.current.activeStep).toBe(0);
+    expect(result.current.errors?.name).toBeDefined();
+
+    // Creation must rerun the check instead of submitting.
+    await act(async () => {
+      result.current.handleCreate();
+    });
+    expect(onCreate).not.toHaveBeenCalled();
+    expect(result.current.activeStep).toBe(0);
   });
 });
