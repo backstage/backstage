@@ -244,4 +244,40 @@ describe('useStepperWizard', () => {
     expect(onCreate).not.toHaveBeenCalled();
     expect(result.current.activeStep).toBe(0);
   });
+
+  it('releases progress controls when a field changes in the same event that starts a check', async () => {
+    const validate = jest.fn(async () => {});
+    const { result } = renderHook(
+      (props: StepperWizardOptions) => useStepperWizard(props),
+      {
+        initialProps: makeOptions([nameStep('One')], {
+          validators: { Name: validate },
+        }),
+      },
+    );
+
+    // Submit and a field edit dispatched from the same event batch, so the
+    // change handler still runs with the pre-submit rendered state.
+    act(() => {
+      void result.current.handleNext({ formData: { name: 'a' } });
+      result.current.handleChange({ formData: { name: 'b' } } as any);
+    });
+    expect(result.current.isValidating).toBe(false);
+    expect(result.current.validationInterrupted).toBe(true);
+
+    // The stale result changes nothing further.
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(result.current.activeStep).toBe(0);
+    expect(result.current.isValidating).toBe(false);
+
+    // Continuing with the latest input reaches review.
+    act(() => {
+      void result.current.handleNext({ formData: { name: 'b' } });
+    });
+    await waitFor(() => expect(result.current.isValidating).toBe(false));
+    expect(result.current.activeStep).toBe(1);
+  });
 });

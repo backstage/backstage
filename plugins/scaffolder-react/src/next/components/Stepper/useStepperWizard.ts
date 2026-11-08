@@ -307,23 +307,25 @@ export const useStepperWizard = (
     setActiveStep(activeStep - 1);
   }, [activeStep, setActiveStep]);
 
-  const handleChange = useCallback(
-    (e: IChangeEvent) => {
-      const updated = { ...latestFormData.current, ...e.formData };
-      // RJSF and field effects can emit onChange without changing any value.
-      if (isEqual(updated, latestFormData.current)) return;
-      latestFormData.current = updated;
-      latestValidationState.current = undefined;
-      validationAttempt.current += 1;
-      validationInFlight.current = undefined;
-      if (isValidating) {
-        setIsValidating(false);
-        setValidationInterrupted(true);
-      }
-      setStepsState(updated);
-    },
-    [isValidating],
-  );
+  const handleChange = useCallback((e: IChangeEvent) => {
+    const updated = { ...latestFormData.current, ...e.formData };
+    // RJSF and field effects can emit onChange without changing any value.
+    if (isEqual(updated, latestFormData.current)) return;
+    latestFormData.current = updated;
+    latestValidationState.current = undefined;
+    // The rendered flag can be stale when this runs in the same event that
+    // started a validation. The in-flight ref is updated synchronously by
+    // the transitions, so it reliably tells whether progress controls need
+    // releasing, in both directions.
+    const wasValidating = validationInFlight.current !== undefined;
+    validationAttempt.current += 1;
+    validationInFlight.current = undefined;
+    if (wasValidating) {
+      setIsValidating(false);
+      setValidationInterrupted(true);
+    }
+    setStepsState(updated);
+  }, []);
 
   const continueToReview = useCallback(
     async (
