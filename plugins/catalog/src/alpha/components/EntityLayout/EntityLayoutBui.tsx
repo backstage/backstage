@@ -23,8 +23,7 @@ import {
   useApi,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Link, Progress } from '@backstage/core-components';
+import { Progress } from '@backstage/core-components';
 import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import {
   entityRouteRef,
@@ -36,7 +35,6 @@ import {
   type EntityContentGroupDefinitions,
   type EntityHeaderLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
-import { catalogTranslationRef } from '../../translation';
 import { EntityHeaderBui } from '../EntityHeader/EntityHeaderBui';
 import { useEntityTabs } from '../EntityTabs/useEntityTabs';
 import {
@@ -103,9 +101,7 @@ function EntityLayoutContent(props: {
   content?: React.JSX.Element;
   NotFoundComponent?: ReactNode;
 }) {
-  const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
-  const { t } = useTranslationRef(catalogTranslationRef);
 
   let content: ReactNode;
   if (error) {
@@ -118,22 +114,7 @@ function EntityLayoutContent(props: {
     content = <Container>{props.content ?? <NotFoundErrorPage />}</Container>;
   } else if (!loading) {
     content = (
-      <Container>
-        {props.NotFoundComponent ?? (
-          <Alert
-            status="warning"
-            title={t('entityLabels.warningPanelTitle')}
-            description={t('entityPage.notFoundMessage', {
-              kind,
-              link: (
-                <Link to="https://backstage.io/docs/features/software-catalog/references">
-                  {t('entityPage.notFoundLinkText')}
-                </Link>
-              ),
-            })}
-          />
-        )}
-      </Container>
+      <Container>{props.NotFoundComponent ?? <NotFoundErrorPage />}</Container>
     );
   }
 

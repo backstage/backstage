@@ -25,16 +25,15 @@ import {
   Content,
   Header,
   HeaderLabel,
-  Link,
   Page,
   Progress,
   RoutedTabs,
-  WarningPanel,
 } from '@backstage/core-components';
 import {
   attachComponentData,
   IconComponent,
   useApi,
+  useApp,
   useElementFilter,
   useRouteRef,
   useRouteRefParams,
@@ -295,7 +294,8 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
   const catalogRoute = useRouteRef(rootRouteRef);
   const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
@@ -383,24 +383,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         </Content>
       )}
 
-      {!loading && !error && !entity && (
-        <Content>
-          {NotFoundComponent ? (
-            NotFoundComponent
-          ) : (
-            <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-              {t('entityPage.notFoundMessage', {
-                kind,
-                link: (
-                  <Link to="https://backstage.io/docs/features/software-catalog/references">
-                    {t('entityPage.notFoundLinkText')}
-                  </Link>
-                ),
-              })}
-            </WarningPanel>
-          )}
-        </Content>
-      )}
+      {!loading &&
+        !error &&
+        !entity &&
+        (NotFoundComponent ? (
+          <Content>{NotFoundComponent}</Content>
+        ) : (
+          <NotFoundErrorPage />
+        ))}
 
       {showInspectTab && (
         <InspectEntityDialog
