@@ -54,7 +54,6 @@ app:
             - sub-page:scaffolder/templates
     # set availableLanguages example
     api:app/app-language:
-      disabled: false
       config:
         availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
         defaultLanguage: 'en'
