@@ -782,7 +782,7 @@ describe('ActionsPage', () => {
       expect(screen.getByLabelText('Current fragment')).toHaveTextContent(
         '#publish:github',
       );
-      expect(history.location.hash).toBe(
+      expect(history.getSnapshot().location.hash).toBe(
         withAppHistory ? '#publish:github' : '',
       );
 

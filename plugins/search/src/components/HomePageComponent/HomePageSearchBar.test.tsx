@@ -39,7 +39,7 @@ describe('<HomePageSearchBar/>', () => {
 
     await userEvent.type(await screen.findByLabelText('Search'), 'term{enter}');
 
-    expect(appHistory.location).toMatchObject({
+    expect(appHistory.getSnapshot().location).toMatchObject({
       pathname: '/search',
       search: '?query=term',
     });

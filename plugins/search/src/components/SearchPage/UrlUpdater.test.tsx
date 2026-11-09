@@ -67,7 +67,7 @@ it('keeps search state and app history synchronized across edits and traversal',
   fireEvent.change(screen.getByRole('textbox'), {
     target: { value: 'edited' },
   });
-  expect(history.location.search).toContain('query=edited');
+  expect(history.getSnapshot().location.search).toContain('query=edited');
   expect(screen.getByLabelText('Location')).toHaveTextContent('query=edited');
   act(() => history.navigate('/search?query=second'));
   expect(await screen.findByDisplayValue('second')).toBeInTheDocument();

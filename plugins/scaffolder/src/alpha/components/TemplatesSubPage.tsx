@@ -35,6 +35,7 @@ import {
   EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
+  FormField,
   TemplateCategoryPicker,
   TemplateGroups,
   type ScaffolderTemplateFilterHook,

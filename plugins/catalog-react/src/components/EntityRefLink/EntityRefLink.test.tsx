@@ -32,7 +32,6 @@ import {
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { PageMountProvider } from '@internal/frontend';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 
@@ -216,7 +215,6 @@ describe('<EntityRefLink />', () => {
   it('navigates via the app history without a React Router provider', () => {
     const navigate = jest.fn();
     const appHistory = createMockAppHistory({ navigate });
-    const pageMount = { basePath: '/create', routePattern: '/create' };
 
     const entity = {
       apiVersion: 'v1',
@@ -239,9 +237,7 @@ describe('<EntityRefLink />', () => {
           [appHistoryApiRef, appHistory],
         ]}
       >
-        <PageMountProvider mount={pageMount}>
-          <EntityRefLink entityRef={entity} />
-        </PageMountProvider>
+        <EntityRefLink entityRef={entity} />
       </TestApiProvider>,
     );
 
@@ -473,7 +469,7 @@ describe('<EntityRefLink />', () => {
       '/catalog/default/component/software',
       { replace: true, state },
     );
-    expect(appHistory.location.state).toEqual(state);
+    expect(appHistory.getSnapshot().location.state).toEqual(state);
     expect(link).not.toHaveAttribute('replace');
     expect(link).not.toHaveAttribute('state');
   });

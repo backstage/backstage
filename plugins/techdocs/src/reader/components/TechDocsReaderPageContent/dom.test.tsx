@@ -47,12 +47,12 @@ describe('useInitialRedirect', () => {
         },
       );
       await screen.findByText('Test');
-      expect(appHistory.location.pathname).toBe(
+      expect(appHistory.getSnapshot().location.pathname).toBe(
         redirects ? initialPath + defaultPath : initialPath,
       );
       // A default document replaces the initial URL instead of adding a history entry.
       act(() => appHistory.navigate(-1));
-      expect(appHistory.location.pathname).toBe('/start');
+      expect(appHistory.getSnapshot().location.pathname).toBe('/start');
     },
   );
 });

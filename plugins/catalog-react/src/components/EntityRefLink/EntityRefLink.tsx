@@ -24,7 +24,7 @@ import {
 import {
   appHistoryApiRef,
   routeResolutionApiRef,
-  useHref,
+  useAppHref,
   type RouteRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line no-restricted-imports
@@ -129,7 +129,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       return routeFunc?.(routeParams);
     }, [routeResolutionApi, routeParams]);
     const to = resolvedFrameworkPath ?? entityLink(props.entityRef);
-    const href = useHref(to);
+    const href = useAppHref(to);
 
     const content = children ?? title ?? (
       <EntityDisplayName

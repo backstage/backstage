@@ -65,7 +65,7 @@ describe('useNavigateUrl', () => {
     expect(appHistory.navigateCalls).toEqual([
       { to: '/test', options: undefined },
     ]);
-    expect(appHistory.location.pathname).toBe('/test');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/test');
   });
   it('handles app.baseUrl subpaths', async () => {
     const baseUrl = 'http://localhost:3000/instance';
@@ -82,7 +82,7 @@ describe('useNavigateUrl', () => {
     expect(appHistory.navigateCalls).toEqual([
       { to: '/test', options: undefined },
     ]);
-    expect(appHistory.location.pathname).toBe('/test');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/test');
   });
   it('handles relative urls', async () => {
     const baseUrl = 'http://localhost:3000';
@@ -99,6 +99,6 @@ describe('useNavigateUrl', () => {
     expect(appHistory.navigateCalls).toEqual([
       { to: '/test', options: undefined },
     ]);
-    expect(appHistory.location.pathname).toBe('/test');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/test');
   });
 });

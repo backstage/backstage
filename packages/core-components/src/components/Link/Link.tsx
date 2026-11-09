@@ -17,6 +17,7 @@ import {
   configApiRef,
   useAnalytics,
   useApi,
+  useApiHolder,
   useApp,
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line no-restricted-imports
@@ -44,9 +45,12 @@ import {
   createPath,
   isExternalTarget,
   sanitizeHref,
-  useAppRouting,
+  useAppHistoryLocation,
 } from '@internal/frontend';
-import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
+import {
+  appHistoryApiRef,
+  useNavigation,
+} from '@backstage/frontend-plugin-api';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 
 export function isReactRouterBeta(): boolean {
@@ -92,7 +96,7 @@ export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
   // eslint-disable-next-line no-control-regex
-  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
 
 // We install this globally in order to prevent javascript: URL XSS attacks via window.open
 const originalWindowOpen = window.open as typeof window.open & {
@@ -195,7 +199,10 @@ export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
-    const appRouting = useAppRouting(useOptionalAppHistory());
+    const navigation = useNavigation();
+    const appHistory = useApiHolder().get(appHistoryApiRef);
+    const currentLocation = useAppHistoryLocation(appHistory);
+    const hasAppHistory = Boolean(appHistory && currentLocation);
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -203,7 +210,7 @@ export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const to = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
     const linkText = getNodeText(props.children) || to;
-    const external = appRouting ? isExternalTarget(to) : isExternalUri(to);
+    const external = hasAppHistory ? isExternalTarget(to) : isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
 
     if (scriptProtocolPattern.test(to)) {
@@ -219,7 +226,7 @@ export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
       }
     };
 
-    if (appRouting && !external) {
+    if (hasAppHistory && !external) {
       const {
         to: _to,
         replace,
@@ -231,7 +238,7 @@ export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
         ...anchorProps
       } = props;
       const safeTo = sanitizeHref(to);
-      const href = appRouting.createHref(safeTo);
+      const href = navigation.createHref(safeTo);
       return (
         <a
           {...anchorProps}
@@ -255,10 +262,10 @@ export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
               return;
             }
             event.preventDefault();
-            appRouting.navigate(to, {
+            navigation.navigate(to, {
               replace:
                 replace ??
-                href === appRouting.createHref(createPath(appRouting.location)),
+                href === navigation.createHref(createPath(currentLocation!)),
               state,
             });
           }}

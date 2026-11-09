@@ -198,10 +198,7 @@ describe('SearchModal', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 
-    expect(navigate).toHaveBeenCalledWith(
-      '/search?query=new%20term',
-      undefined,
-    );
+    expect(navigate).toHaveBeenCalledWith('/search?query=new%20term');
   });
 
   it('encodes the search term so protocol-like queries stay navigable', async () => {
@@ -223,7 +220,6 @@ describe('SearchModal', () => {
     // be percent-encoded rather than interpolated raw.
     expect(navigate).toHaveBeenCalledWith(
       '/search?query=https%3A%2F%2Fgithub.com%2Fbackstage',
-      undefined,
     );
   });
 
@@ -258,7 +254,7 @@ describe('SearchModal', () => {
     });
     await userEvent.click(fullResultsBtn);
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=term', undefined);
+    expect(navigate).toHaveBeenCalledWith('/search?query=term');
   });
 
   it('should completely unmount the Dialog from DOM when open prop is false', async () => {

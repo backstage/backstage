@@ -443,11 +443,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       { addQueryPrefix: true, arrayFormat: 'repeat' },
     );
     if (appHistory) {
-      if (appHistory.location.search !== newParams) {
+      const currentLocation = appHistory.getSnapshot().location;
+      if (currentLocation.search !== newParams) {
         lastWrittenSearch.current = newParams;
-        appHistory.navigate(appHistory.location.pathname + newParams, {
+        appHistory.navigate(currentLocation.pathname + newParams, {
           replace: true,
-          state: appHistory.location.state,
+          state: currentLocation.state,
         });
       }
     } else {

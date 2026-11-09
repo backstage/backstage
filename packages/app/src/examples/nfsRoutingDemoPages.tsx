@@ -56,10 +56,12 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  RouteLink,
+  RouterLink as FrameworkRouterLink,
   appHistoryApiRef,
   useApi,
-  useHref,
+  useNavigation,
+  useRouteRef,
+  useRouteResolution,
 } from '@backstage/frontend-plugin-api';
 import { Link } from '@backstage/core-components';
 import {
@@ -103,15 +105,13 @@ import {
 function useAppPathname(): string {
   const appHistory = useApi(appHistoryApiRef);
   const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      const subscription = appHistory.location$.subscribe(() =>
-        onStoreChange(),
-      );
-      return () => subscription.unsubscribe();
-    },
+    (onStoreChange: () => void) => appHistory.subscribe(onStoreChange),
     [appHistory],
   );
-  const getSnapshot = useCallback(() => appHistory.location, [appHistory]);
+  const getSnapshot = useCallback(
+    () => appHistory.getSnapshot().location,
+    [appHistory],
+  );
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).pathname;
 }
 
@@ -202,12 +202,32 @@ function HrefReadout(props: {
 }
 
 /**
- * An anchor whose href comes from the framework's own resolver rather than from
- * a routing library. `useHref` reads the page mount, so it is the one relative
- * link that resolves the same way under every adapter — and under none.
+ * An anchor whose href comes from contextual navigation rather than from any
+ * one routing library: the nearest adapter (or the implicit React Router v6
+ * compatibility) resolves the relative target against its own mount, so the
+ * same authored target resolves per consuming scope.
  */
 function RelativeFrameworkLink(props: { to: string; children: ReactNode }) {
-  return <a href={useHref(props.to)}>{props.children}</a>;
+  const { createHref } = useNavigation();
+  return <a href={createHref(props.to)}>{props.children}</a>;
+}
+
+/**
+ * A link whose target is a route ref: the framework resolves it from the route
+ * tree and navigates through the app history, with no routing library
+ * involved. This is the shape `RouteLink` used to provide before it was
+ * removed in favor of `useRouteRef` plus a link primitive.
+ */
+function RouteRefLink(props: {
+  routeRef: Parameters<typeof useRouteRef>[0];
+  children: ReactNode;
+}) {
+  const routeFunc = useRouteRef(props.routeRef);
+  return routeFunc ? (
+    <FrameworkRouterLink href={routeFunc()}>
+      {props.children}
+    </FrameworkRouterLink>
+  ) : null;
 }
 
 /** Shared frame so every tab states what it proves before proving it. */
@@ -306,9 +326,19 @@ export function NestedV6PanelPage() {
 }
 
 function TanStackGuestPanel() {
-  const scopedPathname = useRouterState({
+  const pathname = useRouterState({
     select: state => state.location.pathname,
   });
+  // The adapter mounts this sub-page's route at the app root rather than
+  // setting a basepath, so TanStack reports app-absolute paths; what lies
+  // beyond the sub-page's own mount is this router's scoped remainder.
+  const mount = useRouteResolution().matches.at(-1)?.basePath ?? '/';
+  let scopedPathname = pathname;
+  if (pathname === mount) {
+    scopedPathname = '/';
+  } else if (pathname.startsWith(`${mount}/`)) {
+    scopedPathname = pathname.slice(mount.length);
+  }
 
   return (
     <Panel
@@ -324,18 +354,18 @@ function TanStackGuestPanel() {
       </Typography>
       <Typography paragraph>
         TanStack's <code style={codeStyle}>useRouterState()</code> reports{' '}
-        <code style={codeStyle}>{scopedPathname}</code> — scoped to this
-        sub-page's mount, while the app URL above is the real one. Two
-        libraries, one browser history, no disagreement.
+        <code style={codeStyle}>{scopedPathname}</code> beyond this sub-page's
+        mount, while the app URL above is the real one. Two libraries, one
+        browser history, no disagreement.
       </Typography>
       <ul>
         <HrefReadout
           expected={NESTED_V6_BASE}
           note="RouteLink, resolved from the route ref with no routing library involved"
         >
-          <RouteLink routeRef={nestedV6RouteRef}>
+          <RouteRefLink routeRef={nestedV6RouteRef}>
             the v6 tab next door
-          </RouteLink>
+          </RouteRefLink>
         </HrefReadout>
         <HrefReadout
           expected={TANSTACK_PAGE_PATH}
@@ -390,7 +420,7 @@ export function UnscopedPanel() {
         </HrefReadout>
         <HrefReadout
           expected={`${UNSCOPED_BASE}/widget/blue`}
-          note="framework useHref with the same relative target — resolved against this tab's mount"
+          note="framework useAppHref with the same relative target — resolved against this tab's mount"
         >
           <RelativeFrameworkLink to="widget/blue">
             widget/blue
@@ -400,9 +430,9 @@ export function UnscopedPanel() {
           expected={NESTED_V6_BASE}
           note="RouteLink to the sibling tab, resolved from the route ref"
         >
-          <RouteLink routeRef={nestedV6RouteRef}>
+          <RouteRefLink routeRef={nestedV6RouteRef}>
             the v6 tab next door
-          </RouteLink>
+          </RouteRefLink>
         </HrefReadout>
       </ul>
     </Panel>
@@ -453,15 +483,17 @@ function DeepLinkLeaf() {
           expected={DEEP_LINK_BASE}
           note="RouteLink to this tab's own route ref, resolved by the framework from the route tree"
         >
-          <RouteLink routeRef={deepLinkRouteRef}>this tab's root</RouteLink>
+          <RouteRefLink routeRef={deepLinkRouteRef}>
+            this tab's root
+          </RouteRefLink>
         </HrefReadout>
         <HrefReadout
           expected={TANSTACK_PAGE_PATH}
           note="RouteLink to another page's route ref, from three segments down"
         >
-          <RouteLink routeRef={nfsRoutingDemoTanstackRouteRef}>
+          <RouteRefLink routeRef={nfsRoutingDemoTanstackRouteRef}>
             the TanStack page by route ref
-          </RouteLink>
+          </RouteRefLink>
         </HrefReadout>
         <HrefReadout
           expected={`${DEEP_LINK_BASE}/area/south/item/7`}
@@ -543,9 +575,9 @@ function TanStackTabsPanel() {
           expected={TANSTACK_V6_GUEST_BASE}
           note="RouteLink to the sibling tab — the framework resolves it without using React Router"
         >
-          <RouteLink routeRef={tanstackV6GuestRouteRef}>
+          <RouteRefLink routeRef={tanstackV6GuestRouteRef}>
             the v6 tab next door
-          </RouteLink>
+          </RouteRefLink>
         </HrefReadout>
       </ul>
     </Panel>
@@ -726,9 +758,9 @@ export function V7OnlyPanelPage() {
             expected={V7_V6_GUEST_BASE}
             note="RouteLink to the sibling tab, resolved by Backstage independently of the root React Router v6 context"
           >
-            <RouteLink routeRef={v7V6GuestRouteRef}>
+            <RouteRefLink routeRef={v7V6GuestRouteRef}>
               the v6 tab next door
-            </RouteLink>
+            </RouteRefLink>
           </HrefReadout>
           <HrefReadout
             expected={V7_V6_GUEST_BASE}

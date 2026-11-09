@@ -101,13 +101,14 @@ export const UrlUpdater = () => {
     );
     const search = newParams ? `?${newParams}` : '';
     if (appHistory) {
-      if (appHistory.location.search !== search) {
+      const currentLocation = appHistory.getSnapshot().location;
+      if (currentLocation.search !== search) {
         // Mark this write before notifying subscribers, so it is not treated
         // as an external navigation on the next render.
         observedSearch.current = search;
-        appHistory.navigate(appHistory.location.pathname + search, {
+        appHistory.navigate(currentLocation.pathname + search, {
           replace: true,
-          state: appHistory.location.state,
+          state: currentLocation.state,
         });
       }
     } else {

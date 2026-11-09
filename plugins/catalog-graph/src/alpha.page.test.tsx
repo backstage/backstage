@@ -18,7 +18,7 @@ import { screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import catalogGraphPlugin from './alpha';
 
-jest.mock('./components/CatalogGraphPage', () => {
+jest.mock('./components/CatalogGraphPage/CatalogGraphPage', () => {
   const { useCatalogGraphPage } = jest.requireActual<
     typeof import('./components/CatalogGraphPage/useCatalogGraphPage')
   >('./components/CatalogGraphPage/useCatalogGraphPage');
@@ -27,7 +27,7 @@ jest.mock('./components/CatalogGraphPage', () => {
   >('@backstage/frontend-plugin-api');
 
   return {
-    CatalogGraphPage: (
+    NfsCatalogGraphPage: (
       props: Parameters<typeof useCatalogGraphPage>[0] &
         Record<string, unknown>,
     ) => {

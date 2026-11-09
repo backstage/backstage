@@ -33,11 +33,11 @@ jest.mock('@backstage/plugin-techdocs-react', () => {
   };
 });
 
-jest.mock('@backstage/frontend-plugin-api', () => {
-  const actualModule = jest.requireActual('@backstage/frontend-plugin-api');
+jest.mock('react-router-dom', () => {
+  const actualModule = jest.requireActual('react-router-dom');
   return {
     ...actualModule,
-    useAppLocation: () =>
+    useLocation: () =>
       ({
         pathname: '/the/pathname',
         search: '?the=search',

@@ -427,7 +427,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     });
 
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith('/testRoute', undefined);
+      expect(navigate).toHaveBeenCalledWith('/testRoute');
     });
   });
 
@@ -476,7 +476,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     });
 
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith('/catalog', undefined);
+      expect(navigate).toHaveBeenCalledWith('/catalog');
     });
   });
 });

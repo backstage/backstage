@@ -46,13 +46,13 @@ describe('production page router declarations', () => {
     expect(
       await screen.findByRole('heading', { name: 'This is page 2' }),
     ).toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/page1/page2');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/page1/page2');
 
     await act(async () => appHistory.navigate(-1));
     expect(
       await screen.findByRole('heading', { name: 'This is also page 1' }),
     ).toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/page1');
+    expect(appHistory.getSnapshot().location.pathname).toBe('/page1');
   });
 
   it('keeps the published settings page navigable in the old frontend', async () => {

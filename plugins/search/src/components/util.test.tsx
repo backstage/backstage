@@ -17,21 +17,20 @@
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { useEffect } from 'react';
 import { useNavigateToQuery } from './util';
 import { rootRouteRef } from '../plugin';
 
-const navigate = jest.fn();
-
 describe('util', () => {
-  beforeEach(() => {
-    navigate.mockClear();
-  });
-
   describe('useNavigateToQuery', () => {
     it('navigates to query', async () => {
+      const navigate = jest.fn();
+
       const MyComponent = () => {
         const navigateToQuery = useNavigateToQuery();
-        navigateToQuery({ query: 'test' });
+        useEffect(() => {
+          navigateToQuery({ query: 'test' });
+        }, [navigateToQuery]);
         return <div>test</div>;
       };
 
@@ -49,7 +48,7 @@ describe('util', () => {
       );
 
       expect(navigate).toHaveBeenCalled();
-      expect(navigate).toHaveBeenCalledWith('/search?query=test', undefined);
+      expect(navigate).toHaveBeenCalledWith('/search?query=test');
     });
   });
 });

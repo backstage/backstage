@@ -13,20 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
-import { PageMountProvider } from '@internal/frontend';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import {
+  appHistoryApiRef,
+  NavigationProvider,
+  type Navigation,
+} from '@backstage/frontend-plugin-api';
+import { createPath, resolveAppPath } from '@internal/frontend';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { Link } from './Link';
+
+// Stands in for a page adapter: navigation binds to the consuming scope and
+// resolves authored targets, including relative ones, against the page mount
+// before they reach the app history.
+function useMountNavigation(): Navigation {
+  const { appHistory } = useNavigationTestContext();
+  const basePaths = ['/parent', '/parent/item'];
+  const location = appHistory.getSnapshot().location;
+  const resolve = (to: string) =>
+    to.startsWith('.')
+      ? createPath(resolveAppPath(to, basePaths, location.pathname))
+      : to;
+  return {
+    createHref: to => appHistory.createHref(resolve(to)),
+    navigate: (to, options) => appHistory.navigate(resolve(to), options),
+    pathname: location.pathname,
+  };
+}
+
+// Exposes the mock history to the hook above without re-rendering consumers.
+let navigationTestContext: {
+  appHistory: ReturnType<typeof createMockAppHistory>;
+};
+function useNavigationTestContext() {
+  return navigationTestContext;
+}
 
 it('resolves relative links without a router and preserves browser click behavior', () => {
   const history = createMockAppHistory({
     initialLocation: '/base/parent/item',
     basename: '/base',
   });
+  navigationTestContext = { appHistory: history };
   const analytics = mockApis.analytics();
   render(
     <TestApiProvider
@@ -35,30 +65,24 @@ it('resolves relative links without a router and preserves browser click behavio
         [analyticsApiRef, analytics],
       ]}
     >
-      <PageMountProvider
-        mount={{ basePath: '/parent', routePattern: '/parent' }}
-      >
-        <PageMountProvider
-          mount={{ basePath: '/parent/item', routePattern: '/parent/item' }}
-        >
-          <Link to="../sibling?q=one#section" replace state={{ from: 'item' }}>
-            Sibling
-          </Link>
-          <Link to="/parent/sibling?q=one#section">Current destination</Link>
-          <Link to="/download" download>
-            Download
-          </Link>
-          <Link to="/reload" reloadDocument>
-            Reload
-          </Link>
-          <Link to="/new" target="_blank">
-            New window
-          </Link>
-          <Link to="/cancel" onClick={event => event.preventDefault()}>
-            Cancelled
-          </Link>
-        </PageMountProvider>
-      </PageMountProvider>
+      <NavigationProvider useNavigation={useMountNavigation}>
+        <Link to="../sibling?q=one#section" replace state={{ from: 'item' }}>
+          Sibling
+        </Link>
+        <Link to="/parent/sibling?q=one#section">Current destination</Link>
+        <Link to="/download" download>
+          Download
+        </Link>
+        <Link to="/reload" reloadDocument>
+          Reload
+        </Link>
+        <Link to="/new" target="_blank">
+          New window
+        </Link>
+        <Link to="/cancel" onClick={event => event.preventDefault()}>
+          Cancelled
+        </Link>
+      </NavigationProvider>
     </TestApiProvider>,
   );
   const link = screen.getByRole('link', { name: 'Sibling' });
@@ -80,7 +104,7 @@ it('resolves relative links without a router and preserves browser click behavio
   act(() => {
     fireEvent.click(link);
   });
-  expect(history.location).toMatchObject({
+  expect(history.getSnapshot().location).toMatchObject({
     pathname: '/parent/sibling',
     search: '?q=one',
     hash: '#section',
