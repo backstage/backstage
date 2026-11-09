@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isError, toError } from './assertion';
+import { toError } from './assertion';
 
 /**
  * A base class that custom Error classes can inherit from.
@@ -25,10 +25,6 @@ import { isError, toError } from './assertion';
  * ```ts
  * class MyCustomError extends CustomErrorBase {
  *  name = 'MyCustomError' as const;
- *
- *  static is(value: unknown): value is MyCustomError {
- *    return MyCustomError.isErrorWithName(value, 'MyCustomError');
- *  }
  * }
  *
  * const e = new MyCustomError('Some message', cause);
@@ -39,22 +35,6 @@ import { isError, toError } from './assertion';
  * ```
  */
 export class CustomErrorBase extends Error {
-  /**
-   * Checks an explicit error name and basic shape, including an optional
-   * error-shaped cause. Subclasses can use this to implement their own type
-   * guards, adding checks for any additional fields as needed.
-   */
-  protected static isErrorWithName(
-    value: unknown,
-    name: string,
-  ): value is CustomErrorBase {
-    return (
-      isError(value) &&
-      value.name === name &&
-      (value.cause === undefined || isError(value.cause))
-    );
-  }
-
   /**
    * An inner error that caused this error to be thrown, if any.
    */

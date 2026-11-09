@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isError } from './assertion';
+import { isError, isErrorWithName } from './assertion';
 import { CustomErrorBase } from './CustomErrorBase';
 
 /*
@@ -39,7 +39,7 @@ export class InputError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is InputError {
-    return InputError.isErrorWithName(value, 'InputError');
+    return isErrorWithName(value, 'InputError');
   }
 
   name = 'InputError' as const;
@@ -54,9 +54,17 @@ export class AuthenticationError extends CustomErrorBase {
   /**
    * Checks the error name and basic shape, including an optional error cause.
    * Works across package copies without requiring a shared constructor.
+   * A matching name is assumed to identify this error type.
+   *
+   * @example
+   * ```ts
+   * if (AuthenticationError.is(error)) {
+   *   console.log(error.message);
+   * }
+   * ```
    */
   static is(value: unknown): value is AuthenticationError {
-    return AuthenticationError.isErrorWithName(value, 'AuthenticationError');
+    return isErrorWithName(value, 'AuthenticationError');
   }
 
   name = 'AuthenticationError' as const;
@@ -73,7 +81,7 @@ export class NotAllowedError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is NotAllowedError {
-    return NotAllowedError.isErrorWithName(value, 'NotAllowedError');
+    return isErrorWithName(value, 'NotAllowedError');
   }
 
   name = 'NotAllowedError' as const;
@@ -93,7 +101,7 @@ export class NotFoundError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is NotFoundError {
-    return NotFoundError.isErrorWithName(value, 'NotFoundError');
+    return isErrorWithName(value, 'NotFoundError');
   }
 
   name = 'NotFoundError' as const;
@@ -111,7 +119,7 @@ export class ConflictError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is ConflictError {
-    return ConflictError.isErrorWithName(value, 'ConflictError');
+    return isErrorWithName(value, 'ConflictError');
   }
 
   name = 'ConflictError' as const;
@@ -128,7 +136,7 @@ export class NotModifiedError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is NotModifiedError {
-    return NotModifiedError.isErrorWithName(value, 'NotModifiedError');
+    return isErrorWithName(value, 'NotModifiedError');
   }
 
   name = 'NotModifiedError' as const;
@@ -145,7 +153,7 @@ export class NotImplementedError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is NotImplementedError {
-    return NotImplementedError.isErrorWithName(value, 'NotImplementedError');
+    return isErrorWithName(value, 'NotImplementedError');
   }
 
   name = 'NotImplementedError' as const;
@@ -162,10 +170,7 @@ export class ServiceUnavailableError extends CustomErrorBase {
    * Works across package copies without requiring a shared constructor.
    */
   static is(value: unknown): value is ServiceUnavailableError {
-    return ServiceUnavailableError.isErrorWithName(
-      value,
-      'ServiceUnavailableError',
-    );
+    return isErrorWithName(value, 'ServiceUnavailableError');
   }
 
   name = 'ServiceUnavailableError' as const;
@@ -175,7 +180,9 @@ export class ServiceUnavailableError extends CustomErrorBase {
  * An error that forwards an underlying cause with additional context in the message.
  *
  * The `name` property of the error will be inherited from the `cause` if
- * possible, and will otherwise be set to `'Error'`.
+ * possible, and will otherwise be set to `'Error'`. A forwarded
+ * {@link AuthenticationError} therefore still matches `AuthenticationError.is`.
+ * This class has no `is` guard because it has no fixed error name.
  *
  * @public
  */

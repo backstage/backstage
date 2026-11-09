@@ -48,10 +48,6 @@ export type ConsumedResponse = {
 export class CustomErrorBase extends Error {
   constructor(message?: string, cause?: Error | unknown);
   readonly cause?: Error | undefined;
-  protected static isErrorWithName(
-    value: unknown,
-    name: string,
-  ): value is CustomErrorBase;
 }
 
 // @public
@@ -93,6 +89,15 @@ export class InputError extends CustomErrorBase {
 
 // @public
 export function isError(value: unknown): value is ErrorLike;
+
+// @public
+export function isErrorWithName<TName extends string>(
+  value: unknown,
+  name: TName,
+): value is ErrorLike & {
+  name: TName;
+  cause?: ErrorLike;
+};
 
 // @public
 export class NotAllowedError extends CustomErrorBase {

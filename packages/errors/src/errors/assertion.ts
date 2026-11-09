@@ -49,6 +49,41 @@ export function isError(value: unknown): value is ErrorLike {
 }
 
 /**
+ * Checks whether a value is error-shaped and has the given explicit name.
+ * Any defined `cause` must also be error-shaped.
+ *
+ * This uses lightweight shape checks rather than constructor identity, so it
+ * works across package copies and after error serialization. A matching name
+ * is assumed to identify the intended error type; additional fields are not
+ * validated. Custom type guards should check any additional fields they need.
+ *
+ * @public
+ * @param value - an unknown value
+ * @param name - the expected error name
+ * @returns true if the value has the expected error name and basic shape
+ * @example
+ * ```ts
+ * class MyError extends CustomErrorBase {
+ *   name = 'MyError' as const;
+ *
+ *   static is(value: unknown): value is MyError {
+ *     return isErrorWithName(value, 'MyError');
+ *   }
+ * }
+ * ```
+ */
+export function isErrorWithName<TName extends string>(
+  value: unknown,
+  name: TName,
+): value is ErrorLike & { name: TName; cause?: ErrorLike } {
+  return (
+    isError(value) &&
+    value.name === name &&
+    (value.cause === undefined || isError(value.cause))
+  );
+}
+
+/**
  * Asserts that an unknown value is an {@link ErrorLike} object, which guarantees that it's
  * an object that has at least two string properties: a non-empty `name` and `message`.
  *

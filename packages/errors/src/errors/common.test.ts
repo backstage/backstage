@@ -16,6 +16,7 @@
 
 import * as errors from './common';
 import { CustomErrorBase } from './CustomErrorBase';
+import { isErrorWithName } from './assertion';
 
 describe('common', () => {
   it('recognizes fixed-name errors without shared constructor identity', () => {
@@ -65,7 +66,7 @@ describe('common', () => {
 
       static is(value: unknown): value is DetailedError {
         return (
-          DetailedError.isErrorWithName(value, 'DetailedError') &&
+          isErrorWithName(value, 'DetailedError') &&
           'detail' in value &&
           typeof value.detail === 'string'
         );
