@@ -96,6 +96,7 @@ describe('createRouter', () => {
                       count: { type: 'integer' },
                     },
                     required: ['name'],
+                    additionalProperties: false,
                   },
                 },
               },
@@ -144,6 +145,26 @@ describe('createRouter', () => {
         message: 'must be integer',
         code: 'type.openapi.validation',
       },
+    ]);
+
+    const extraProperty = await request(app)
+      .post('/things')
+      .send({ name: 'thing', 'a/b': 1 });
+    expect(extraProperty.status).toBe(400);
+    expect(extraProperty.body.error.issues).toEqual([
+      {
+        path: '/body/a~1b',
+        message: 'must NOT have additional properties',
+        code: 'additionalProperties.openapi.validation',
+      },
+    ]);
+
+    const unknownQuery = await request(app)
+      .post('/things?a%2Fb=1')
+      .send({ name: 'thing' });
+    expect(unknownQuery.status).toBe(400);
+    expect(unknownQuery.body.error.issues).toEqual([
+      { path: '/query/a~1b', message: "Unknown query parameter 'a/b'" },
     ]);
 
     const malformed = await request(app)

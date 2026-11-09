@@ -96,6 +96,15 @@ describe('query parameters', () => {
           "["GET /api/search"] Query parameter validation failed.
            - Value should be of type number"
         `);
+        await expect(parser.parse(request)).rejects.toMatchObject({
+          issues: [
+            {
+              path: '/query/param',
+              message: 'must be number',
+              code: 'type.openapi.validation',
+            },
+          ],
+        });
       });
     });
   });

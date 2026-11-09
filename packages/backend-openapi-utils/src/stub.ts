@@ -26,37 +26,23 @@ import {
   json,
   Router,
 } from 'express';
-import { InputError, ValidationIssue } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { isErrorResult, merge } from 'openapi-merge';
-
-/**
- * Reads the individual failures from an express-openapi-validator error. Their
- * paths are already JSON Pointers into the request, such as `/body/location`.
- */
-function getValidationIssues(error: Error): ValidationIssue[] | undefined {
-  const items: unknown = (error as { errors?: unknown }).errors;
-  if (!Array.isArray(items)) {
-    return undefined;
-  }
-  return items.map(item => {
-    const result: ValidationIssue = {
-      path: String(item.path ?? ''),
-      message: String(item.message ?? ''),
-    };
-    if (typeof item.errorCode === 'string') {
-      result.code = item.errorCode;
-    }
-    return result;
-  });
-}
+import { validationIssuesFromValidatorError } from './validationIssues';
 
 function validatorErrorTransformer(): ErrorRequestHandler {
-  return (error: Error, _: Request, _2: Response, next: NextFunction) => {
+  return (error: Error, req: Request, _2: Response, next: NextFunction) => {
     next(
       new InputError(error.message, undefined, {
-        issues: getValidationIssues(error),
+        issues: validationIssuesFromValidatorError(error, {
+          body: req.body,
+          query: req.query,
+          headers: req.headers,
+          params: req.params,
+          cookies: req.cookies,
+        }),
       }),
     );
   };

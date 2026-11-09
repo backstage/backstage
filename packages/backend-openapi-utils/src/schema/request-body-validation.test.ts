@@ -71,6 +71,15 @@ describe('request body', () => {
       "["POST /api/search"] Request body validation failed.
        - "/query" should be of type string"
     `);
+    await expect(parser.parse(toRequest(requestBody))).rejects.toMatchObject({
+      issues: [
+        {
+          path: '/body/query',
+          message: 'must be string',
+          code: 'type.openapi.validation',
+        },
+      ],
+    });
   });
 
   it('should throw error if request body is required but missing', async () => {

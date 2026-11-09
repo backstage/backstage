@@ -65,6 +65,15 @@ describe('response body', () => {
       "["GET /api/search" (200)]: Response body validation failed.
        - The "result" property is not allowed"
     `);
+    await expect(parser.parse(toResponse(responseBody))).rejects.toMatchObject({
+      issues: [
+        {
+          path: '/body/result',
+          message: 'must NOT have additional properties',
+          code: 'additionalProperties.openapi.validation',
+        },
+      ],
+    });
   });
 
   it('should throw error if response body is required but missing', async () => {
