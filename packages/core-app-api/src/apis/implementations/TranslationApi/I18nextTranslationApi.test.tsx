@@ -338,6 +338,117 @@ describe('I18nextTranslationApi', () => {
     expect(snapshot.t('foo')).toBe('Føø');
   });
 
+  it.each([false, true])(
+    'should ignore stale failures after returning to English (loaded resource: %s)',
+    async loadEnglish => {
+      let rejectSwedish!: (error: Error) => void;
+      const swedish = new Promise<never>((_, reject) => {
+        rejectSwedish = reject;
+      });
+      const swedishLoader = jest.fn(() => swedish);
+      const languageApi = AppLanguageSelector.create({
+        availableLanguages: ['en', 'sv', 'no'],
+      });
+      const translationApi = I18nextTranslationApi.create({
+        languageApi,
+        resources: [
+          createTranslationResource({
+            ref: plainRef,
+            translations: {
+              ...(loadEnglish && {
+                en: () => Promise.resolve({ default: { foo: 'English' } }),
+              }),
+              sv: swedishLoader,
+              no: () => Promise.resolve({ default: { foo: 'Føø' } }),
+            },
+          }),
+        ],
+      });
+      const next = jest.fn();
+      const error = jest.fn();
+      const subscription = translationApi.translation$(plainRef).subscribe({
+        next,
+        error,
+      });
+
+      try {
+        // Flush subscription setup and each asynchronous language notification.
+        await new Promise(resolve => setTimeout(resolve, 0));
+        next.mockClear();
+        languageApi.setLanguage('sv');
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(swedishLoader).toHaveBeenCalledTimes(1);
+        expect(next).not.toHaveBeenCalled();
+
+        languageApi.setLanguage('en');
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(assertReady(next.mock.calls[0][0]).t('foo')).toBe(
+          loadEnglish ? 'English' : 'Foo',
+        );
+
+        rejectSwedish(new Error('Abandoned Swedish load'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(error).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledTimes(1);
+
+        languageApi.setLanguage('no');
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(next).toHaveBeenCalledTimes(2);
+        expect(assertReady(next.mock.calls[1][0]).t('foo')).toBe('Føø');
+      } finally {
+        subscription.unsubscribe();
+      }
+    },
+  );
+
+  it('should forward active load failures only to subscribed observers', async () => {
+    let rejectSwedish!: (error: Error) => void;
+    const swedish = new Promise<never>((_, reject) => {
+      rejectSwedish = reject;
+    });
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
+    });
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref: plainRef,
+          translations: { sv: () => swedish },
+        }),
+      ],
+    });
+    const next = jest.fn();
+    const error = jest.fn();
+    const activeError = jest.fn();
+    const observable = translationApi.translation$(plainRef);
+    const subscription = observable.subscribe({ next, error });
+    const activeSubscription = observable.subscribe({ error: activeError });
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      languageApi.setLanguage('sv');
+      await new Promise(resolve => setTimeout(resolve, 0));
+      subscription.unsubscribe();
+
+      const failure = new Error('Active Swedish load');
+      rejectSwedish(failure);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(next).not.toHaveBeenCalled();
+      expect(error).not.toHaveBeenCalled();
+      expect(activeError).toHaveBeenCalledTimes(1);
+      expect(activeError).toHaveBeenCalledWith(failure);
+
+      languageApi.setLanguage('en');
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(next).not.toHaveBeenCalled();
+    } finally {
+      subscription.unsubscribe();
+      activeSubscription.unsubscribe();
+    }
+  });
+
   it('should only emit changes', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'dk', 'sv', 'no'],
