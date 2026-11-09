@@ -634,6 +634,244 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
   });
 
+  it('should derive added locations from the fetched project rather than the event payload', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
+
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const basePayload = mock.push_add_event.eventPayload as Record<
+      string,
+      unknown
+    >;
+    const forgedProjectEvent = {
+      topic: 'gitlab.push',
+      metadata: { 'x-gitlab-event': 'Push Hook' },
+      eventPayload: {
+        ...basePayload,
+        project: {
+          ...(basePayload.project as Record<string, unknown>),
+          web_url: 'https://attacker.example.com/attacker-repo',
+        },
+      },
+    };
+
+    await events.publish(forgedProjectEvent);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    const mutation = (entityProviderConnection.applyMutation as jest.Mock).mock
+      .calls[0][0];
+    expect(mutation.type).toBe('delta');
+    expect(mutation.added).toEqual(mock.expected_added_location_entities);
+    expect(JSON.stringify(mutation)).not.toContain('attacker');
+  });
+
+  it('should remove only locations derived from the fetched project', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
+
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const basePayload = mock.push_remove_event.eventPayload as Record<
+      string,
+      unknown
+    >;
+    const forgedProjectEvent = {
+      topic: 'gitlab.push',
+      metadata: { 'x-gitlab-event': 'Push Hook' },
+      eventPayload: {
+        ...basePayload,
+        project: {
+          ...(basePayload.project as Record<string, unknown>),
+          web_url: 'https://attacker.example.com/attacker-repo',
+        },
+      },
+    };
+
+    await events.publish(forgedProjectEvent);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    const mutation = (entityProviderConnection.applyMutation as jest.Mock).mock
+      .calls[0][0];
+    expect(mutation.type).toBe('delta');
+    expect(mutation.removed).toEqual(mock.expected_removed_location_entities);
+    expect(JSON.stringify(mutation)).not.toContain('attacker');
+  });
+
+  it('should derive refresh keys from the fetched project rather than the event payload', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
+
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const basePayload = mock.push_modif_event.eventPayload as Record<
+      string,
+      unknown
+    >;
+    const forgedProjectEvent = {
+      topic: 'gitlab.push',
+      metadata: { 'x-gitlab-event': 'Push Hook' },
+      eventPayload: {
+        ...basePayload,
+        project: {
+          ...(basePayload.project as Record<string, unknown>),
+          web_url: 'https://attacker.example.com/attacker-repo',
+        },
+      },
+    };
+
+    await events.publish(forgedProjectEvent);
+
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+    const refresh = (entityProviderConnection.refresh as jest.Mock).mock
+      .calls[0][0];
+    expect(refresh).toEqual({
+      keys: [
+        'url:https://example.com/group1/test-repo1/-/tree/main/catalog-info.yaml',
+        'url:https://example.com/group1/test-repo1/-/blob/main/catalog-info.yaml',
+      ],
+    });
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
+  it('should filter push events by the default branch of the fetched project', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
+
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const basePayload = mock.push_add_event.eventPayload as Record<
+      string,
+      unknown
+    >;
+    const forgedBranchEvent = {
+      topic: 'gitlab.push',
+      metadata: { 'x-gitlab-event': 'Push Hook' },
+      eventPayload: {
+        ...basePayload,
+        ref: 'refs/heads/attacker-branch',
+        project: {
+          ...(basePayload.project as Record<string, unknown>),
+          default_branch: 'attacker-branch',
+          web_url: 'https://attacker.example.com/attacker-repo',
+        },
+      },
+    };
+
+    await events.publish(forgedBranchEvent);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
+  });
+
+  it('should ignore committed paths that do not resolve within the project', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
+
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const basePayload = mock.push_add_event.eventPayload as Record<
+      string,
+      unknown
+    >;
+    const traversalEvent = {
+      topic: 'gitlab.push',
+      metadata: { 'x-gitlab-event': 'Push Hook' },
+      eventPayload: {
+        ...basePayload,
+        commits: [
+          {
+            id: 'ce53673ebe13a961a6b937411019e7c1db79741f',
+            message: 'test',
+            title: 'test',
+            timestamp: '2024-01-24T14:16:55+00:00',
+            url: 'https://example.com/group1/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
+            author: {
+              name: 'Tom Sawyer',
+              email: 'tom.sawyer@email.com',
+            },
+            added: [
+              '../escape/catalog-info.yaml',
+              '%2e%2e%2fescape/catalog-info.yaml',
+              '/rooted/catalog-info.yaml',
+              'folder/./catalog-info.yaml',
+              'folder/../catalog-info.yaml',
+              'nested/catalog-info.yaml',
+            ],
+            modified: [],
+            removed: [],
+          },
+        ],
+      },
+    };
+
+    await events.publish(traversalEvent);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    const mutation = (entityProviderConnection.applyMutation as jest.Mock).mock
+      .calls[0][0];
+    expect(
+      mutation.added.map((entity: any) => entity.entity.spec.target),
+    ).toEqual([
+      'https://example.com/group1/test-repo1/-/blob/main/nested/catalog-info.yaml',
+    ]);
+  });
+
   it('should ignore projects when none of the groups regex patterns match', async () => {
     const config = new ConfigReader(mock.config_groupPatterns_only_noMatch);
 
