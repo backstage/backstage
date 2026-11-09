@@ -39,6 +39,13 @@
 /packages/eslint-plugin                           @backstage/tooling-maintainers
 /packages/release-manifests                       @backstage/operations-maintainers
 /packages/repo-tools                              @backstage/tooling-maintainers
+/packages/cli-module-package-docs                 @backstage/tooling-maintainers
+/packages/cli-module-package-manager-patch        @backstage/tooling-maintainers
+/packages/cli-module-repo-checks                  @backstage/tooling-maintainers
+/packages/cli-module-report-api                   @backstage/tooling-maintainers
+/packages/cli-module-report-knip                  @backstage/tooling-maintainers
+/packages/cli-module-schema-openapi               @backstage/tooling-maintainers
+/packages/repo-tools-defaults                     @backstage/tooling-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
 /packages/ui                                      @backstage/design-system-maintainers
