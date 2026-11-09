@@ -501,10 +501,11 @@ async function writeEntity(options: {
             hash,
             last_updated_at: tx.fn.now(),
             deleted_at: null,
+            last_final_entity: null,
           }
         : tx.raw(
-            '(entity_id, entity_ref, final_entity, hash, last_updated_at, deleted_at) ' +
-              'select ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL ' +
+            '(entity_id, entity_ref, final_entity, hash, last_updated_at, deleted_at, last_final_entity) ' +
+              'select ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL, NULL ' +
               'where exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
             [
               options.slotId,
@@ -517,7 +518,13 @@ async function writeEntity(options: {
           ),
     )
     .onConflict('entity_ref')
-    .merge(['final_entity', 'hash', 'last_updated_at', 'deleted_at']);
+    .merge([
+      'final_entity',
+      'hash',
+      'last_updated_at',
+      'deleted_at',
+      'last_final_entity',
+    ]);
 
   if (!isMySQL) {
     upsert = upsert.where(
@@ -558,8 +565,8 @@ async function writeEntity(options: {
 }
 
 /**
- * Turns a live slot whose candidate is gone into a tombstone: clears the
- * body, removes its search rows and assigns a generation, all in one
+ * Turns a live slot whose candidate is gone into a tombstone: moves the body
+ * aside, removes its search rows and assigns a generation, all in one
  * publication. An already tombstoned slot is left alone.
  */
 async function writeTombstone(options: {
@@ -590,6 +597,9 @@ async function writeTombstone(options: {
         .where('stitch_ticket', stitchTicket),
     )
     .update({
+      // MySQL evaluates assignments left to right, so the old body must be
+      // copied before the body is cleared.
+      last_final_entity: tx.ref('final_entity'),
       final_entity: null,
       hash: '',
       deleted_at: tx.fn.now(),

@@ -42,6 +42,7 @@ export class DefaultStitcher {
   private readonly logger: LoggerService;
   private readonly strategy: StitchingStrategy;
   private readonly tracker: StitchProgressTracker;
+  private readonly onPublished?: () => void;
   private stopFunc?: () => void;
 
   static fromConfig(
@@ -50,6 +51,7 @@ export class DefaultStitcher {
       knex: Knex;
       logger: LoggerService;
       metrics: MetricsService;
+      onPublished?: () => void;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
@@ -57,6 +59,7 @@ export class DefaultStitcher {
       logger: options.logger,
       metrics: options.metrics,
       strategy: stitchingStrategyFromConfig(config),
+      onPublished: options.onPublished,
     });
   }
 
@@ -65,10 +68,13 @@ export class DefaultStitcher {
     logger: LoggerService;
     metrics: MetricsService;
     strategy: StitchingStrategy;
+    /** Called after a stitch has published a change. */
+    onPublished?: () => void;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;
     this.strategy = options.strategy;
+    this.onPublished = options.onPublished;
     this.tracker = progressTracker(
       options.knex,
       options.logger,
@@ -145,6 +151,9 @@ export class DefaultStitcher {
         stitchLeaseExpiresAt: options.stitchLeaseExpiresAt,
       });
       track.markComplete(result);
+      if (result === 'changed') {
+        this.onPublished?.();
+      }
     } catch (error) {
       track.markFailed(error);
     }

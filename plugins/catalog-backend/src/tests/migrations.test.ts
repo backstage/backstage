@@ -61,6 +61,16 @@ it('runs the tombstone migration without a transaction wrapper', () => {
   expect(migration.config).toEqual({ transaction: false });
 });
 
+it('runs the entity change subscriptions migration without a transaction wrapper', () => {
+  // SQLite can only drop the new final_entities column safely outside a
+  // transaction.
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20261031000000_entity_change_subscriptions');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
 it('runs the refresh state maintenance migration without a transaction wrapper', () => {
   const migration = jest.requireActual<{
     config?: { transaction?: boolean };
@@ -2005,6 +2015,156 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     expect(await knex('stitch_queue').pluck('entity_ref')).toContain(
       'k:ns/retried',
     );
+  });
+
+  it('20261031000000_entity_change_subscriptions.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(
+      knex,
+      '20261031000000_entity_change_subscriptions.js',
+    );
+
+    // A small but complete catalog, including a tombstone. On SQLite, going
+    // down rebuilds final_entities, which must not disturb anything that
+    // references it.
+    await knex('refresh_state').insert({
+      entity_id: 'a',
+      entity_ref: 'k:ns/a',
+      unprocessed_entity: '{}',
+      processed_entity: '{"processed":true}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+    await knex('final_entities').insert([
+      {
+        entity_id: 'a',
+        entity_ref: 'k:ns/a',
+        hash: 'ha',
+        final_entity: '{"a":1}',
+        generation: 7,
+      },
+      {
+        entity_id: 'gone',
+        entity_ref: 'k:ns/gone',
+        hash: '',
+        final_entity: null,
+        generation: 8,
+        deleted_at: knex.fn.now(),
+      },
+    ]);
+    await knex('search').insert([
+      { entity_id: 'a', key: 'kind', value: 'k', original_value: 'K' },
+    ]);
+    await knex('relations').insert({
+      originating_entity_id: 'a',
+      source_entity_ref: 'k:ns/a',
+      target_entity_ref: 'k:ns/gone',
+      type: 'dependsOn',
+    });
+    await knex('refresh_keys').insert({ entity_id: 'a', key: 'url:a' });
+
+    const tables = [
+      'refresh_state',
+      'final_entities',
+      'search',
+      'relations',
+      'refresh_keys',
+      'stitch_queue',
+      'catalog_generation_counter',
+    ];
+    const snapshot = async () => {
+      const result: Record<string, unknown[]> = {};
+      for (const table of tables) {
+        const rows = await knex(table);
+        result[table] = rows
+          .map(row => ({ ...row }))
+          .sort((x, y) => JSON.stringify(x).localeCompare(JSON.stringify(y)));
+      }
+      return result;
+    };
+    const finalEntitiesIndexes = async () => {
+      if (databaseId.startsWith('POSTGRES')) {
+        const { rows } = await knex.raw(
+          `SELECT indexdef FROM pg_indexes
+           WHERE schemaname = current_schema() AND tablename = 'final_entities'`,
+        );
+        return rows.map((row: { indexdef: string }) => row.indexdef).sort();
+      }
+      if (databaseId.startsWith('MYSQL')) {
+        const [rows] = await knex.raw(
+          `SELECT INDEX_NAME AS name, COLUMN_NAME AS col, NON_UNIQUE AS nu
+           FROM information_schema.STATISTICS
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'final_entities'
+           ORDER BY INDEX_NAME, SEQ_IN_INDEX`,
+        );
+        return rows.map(
+          (row: { name: string; col: string; nu: number }) =>
+            `${row.name}:${row.col}:${row.nu}`,
+        );
+      }
+      const rows = await knex.raw("PRAGMA index_list('final_entities')");
+      const result = [];
+      for (const row of rows) {
+        const columns = await knex.raw(`PRAGMA index_info('${row.name}')`);
+        result.push(
+          `${row.unique}:${row.partial}:${columns
+            .map((c: { name: string }) => c.name)
+            .join(',')}`,
+        );
+      }
+      return result.sort();
+    };
+
+    const original = await snapshot();
+    const originalIndexes = await finalEntitiesIndexes();
+
+    // Up: everything intact, the new column empty, the new table present
+    await migrateUpOnce(knex);
+    expect(await snapshot()).toEqual({
+      ...original,
+      final_entities: original.final_entities.map(row => ({
+        ...(row as object),
+        last_final_entity: null,
+      })),
+    });
+    expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
+    await knex('entity_change_subscriptions').insert({
+      subscription_id: 's',
+      owner: 'user:default/me',
+      state: 'idle',
+      last_sent_generation: '9007199254740993',
+      last_acknowledged_generation: '9007199254740993',
+      scope: '[{"kind":"user"}]',
+    });
+    const [subscription] = await knex('entity_change_subscriptions').select({
+      position: knex.raw(
+        `CAST(last_acknowledged_generation AS ${
+          databaseId.startsWith('MYSQL') ? 'CHAR' : 'TEXT'
+        })`,
+      ),
+    });
+    expect(subscription.position).toBe('9007199254740993');
+    await knex('final_entities')
+      .where('entity_id', 'gone')
+      .update({ last_final_entity: '{"gone":1}' });
+
+    // Down: back to exactly where we started
+    await migrateDownOnce(knex);
+    expect(await snapshot()).toEqual(original);
+    expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
+    expect(await knex.schema.hasTable('entity_change_subscriptions')).toBe(
+      false,
+    );
+
+    // Search still cascades from final_entities after any table rebuild
+    await knex('final_entities').where('entity_id', 'a').delete();
+    expect(await knex('search')).toEqual([]);
+
+    await migrateUpOnce(knex);
+    expect(
+      await knex.schema.hasColumn('final_entities', 'last_final_entity'),
+    ).toBe(true);
   });
 
   it('20261007000000_stitch_failure_count.js', async () => {

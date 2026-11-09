@@ -67,6 +67,8 @@ import {
   parseLocationQuery,
 } from './request/parseLocationQuery';
 import { parseEntityQuery } from './request/parseEntityQuery';
+import { bindEntityChangesRoutes } from './changes/bindEntityChangesRoutes';
+import { EntityChangesService } from './changes/EntityChangesService';
 
 /**
  * Options used by {@link createRouter}.
@@ -83,6 +85,7 @@ export interface RouterOptions {
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
   auditor: AuditorService;
+  entityChanges?: EntityChangesService;
 }
 
 /**
@@ -110,6 +113,7 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
+    entityChanges,
   } = options;
 
   const readonlyEnabled =
@@ -585,6 +589,10 @@ export async function createRouter(
         throw err;
       }
     });
+
+  if (entityChanges) {
+    bindEntityChangesRoutes(router, { entityChanges, httpAuth });
+  }
 
   router
     .post('/locations', async (req, res) => {
