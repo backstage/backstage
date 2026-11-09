@@ -473,7 +473,7 @@ describe('runCli', () => {
     expect(logSpy.mock.calls.flat().join('\n')).toContain(
       'Invalid command: repo missing',
     );
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(69);
     logSpy.mockRestore();
   });
 
