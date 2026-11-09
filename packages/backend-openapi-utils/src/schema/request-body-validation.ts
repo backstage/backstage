@@ -16,9 +16,9 @@
 
 import { JsonObject } from '@backstage/types';
 import { Operation, ParserOptions, RequestParser } from './types';
-import { ValidateFunction } from 'ajv';
+import { z } from 'zod';
 import { OperationError, OperationParsingError } from './errors';
-import { RequestBodyObject, SchemaObject } from 'openapi3-ts';
+import { ReferenceObject, RequestBodyObject, SchemaObject } from 'openapi3-ts';
 
 class DisabledRequestBodyParser
   implements RequestParser<JsonObject | undefined>
@@ -43,8 +43,8 @@ export class RequestBodyParser
 {
   operation: Operation;
   disabled: boolean = false;
-  validate!: ValidateFunction;
-  schema!: SchemaObject;
+  validator!: z.ZodType;
+  schema!: SchemaObject | ReferenceObject;
   requestBodySchema!: RequestBodyObject;
 
   static fromOperation(operation: Operation, options: ParserOptions) {
@@ -94,13 +94,7 @@ export class RequestBodyParser
         'No JSON schema found in request body',
       );
     }
-    if ('$ref' in schema) {
-      throw new OperationError(
-        this.operation,
-        'Reference objects are not supported',
-      );
-    }
-    this.validate = options.ajv.compile(schema);
+    this.validator = options.compiler.compile(schema);
     this.schema = schema;
     this.requestBodySchema = requestBody;
   }
@@ -122,12 +116,12 @@ export class RequestBodyParser
       );
     }
     const body = (await request.json()) as JsonObject;
-    const valid = this.validate(body);
-    if (!valid) {
+    const result = this.validator.safeParse(body, { reportInput: true });
+    if (!result.success) {
       throw new OperationParsingError(
         this.operation,
         `Request body`,
-        this.validate.errors!,
+        result.error.issues,
       );
     }
     return body;

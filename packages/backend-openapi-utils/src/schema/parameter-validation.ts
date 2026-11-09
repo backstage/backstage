@@ -22,7 +22,7 @@ import {
   Validator,
   ValidatorParams,
 } from './types';
-import Ajv from 'ajv';
+import { SchemaCompiler } from './schema-compiler';
 import { OperationError, OperationParsingError } from './errors';
 import { mockttpToFetchRequest } from './utils';
 
@@ -33,7 +33,7 @@ type ReferencelessParameterObject = Omit<ParameterObject, 'schema'> & {
 };
 
 class BaseParameterParser {
-  ajv: Ajv;
+  compiler: SchemaCompiler;
   operation: Operation;
   parameters: Record<string, ReferencelessParameterObject> = {};
   constructor(
@@ -41,7 +41,7 @@ class BaseParameterParser {
     operation: Operation,
     options: ParserOptions,
   ) {
-    this.ajv = options.ajv;
+    this.compiler = options.compiler;
     this.operation = operation;
     const { schema, path, method } = operation;
     const parameters = schema.parameters || [];
@@ -72,7 +72,7 @@ class BaseParameterParser {
   }
 
   /**
-   * Attempt to transform a string value to its expected type, this allows Ajv to perform validation. As these are parameters,
+   * Attempt to transform a string value to its expected type, this allows the schema to perform validation. As these are parameters,
    *  support for edge cases like nested type casting is not currently supported.
    * @param value
    * @param schema
@@ -178,13 +178,14 @@ export class QueryParameterParser
         // We do this here because all query parameters are strings but the schema will expect the real value.
         param = this.optimisticallyParseValue(param, parameter.schema);
       }
-      const validate = this.ajv.compile(parameter.schema);
-      const valid = validate(param);
-      if (!valid) {
+      const result = this.compiler
+        .compile(parameter.schema)
+        .safeParse(param, { reportInput: true });
+      if (!result.success) {
         throw new OperationParsingError(
           this.operation,
           'Query parameter',
-          validate.errors!,
+          result.error.issues,
         );
       }
       queryParameters[name] = param;
@@ -373,14 +374,15 @@ export class HeaderParameterParser
           'Reference objects are not supported for parameters',
         );
       }
-      const validate = this.ajv.compile(parameter.schema);
-      const valid = validate(header);
+      const result = this.compiler
+        .compile(parameter.schema)
+        .safeParse(header, { reportInput: true });
 
-      if (!valid) {
+      if (!result.success) {
         throw new OperationParsingError(
           this.operation,
           'Header parameter',
-          validate.errors!,
+          result.error.issues,
         );
       }
       headerParameters[name] = header;
@@ -419,14 +421,15 @@ export class PathParameterParser
         param = this.optimisticallyParseValue(param, parameter.schema);
       }
 
-      const validate = this.ajv.compile(parameter.schema);
-      const valid = validate(param);
+      const result = this.compiler
+        .compile(parameter.schema)
+        .safeParse(param, { reportInput: true });
 
-      if (!valid) {
+      if (!result.success) {
         throw new OperationParsingError(
           this.operation,
           'Path parameter',
-          validate.errors!,
+          result.error.issues,
         );
       }
       pathParameters[name] = param;
@@ -465,9 +468,10 @@ export class PathParameterParser
 
 export class ParameterValidator implements Validator {
   schema: OpenAPIObject;
-  cache: Record<string, any> = {};
-  constructor(schema: OpenAPIObject) {
+  compiler: SchemaCompiler;
+  constructor(schema: OpenAPIObject, compiler: SchemaCompiler) {
     this.schema = schema;
+    this.compiler = compiler;
   }
 
   async validate({ pair: { request, response }, operation }: ValidatorParams) {
@@ -476,10 +480,10 @@ export class ParameterValidator implements Validator {
       return;
     }
 
-    const ajv = new Ajv();
-    const queryParser = new QueryParameterParser(operation, { ajv });
-    const headerParser = new HeaderParameterParser(operation, { ajv });
-    const pathParser = new PathParameterParser(operation, { ajv });
+    const options = { compiler: this.compiler };
+    const queryParser = new QueryParameterParser(operation, options);
+    const headerParser = new HeaderParameterParser(operation, options);
+    const pathParser = new PathParameterParser(operation, options);
 
     const fetchRequest = mockttpToFetchRequest(request);
 

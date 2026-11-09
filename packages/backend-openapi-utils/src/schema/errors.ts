@@ -15,8 +15,8 @@
  */
 
 import { Operation } from './types';
-import { ErrorObject } from 'ajv';
-import { humanifyAjvError } from './utils';
+import { z } from 'zod';
+import { humanifyZodIssues } from './utils';
 
 export class OperationError extends Error {
   constructor(operation: Operation, message: string) {
@@ -35,12 +35,12 @@ export class OperationResponseError extends Error {
 }
 
 export class OperationParsingError extends OperationError {
-  constructor(operation: Operation, type: string, errors: ErrorObject[]) {
+  constructor(operation: Operation, type: string, issues: z.core.$ZodIssue[]) {
     super(
       operation,
-      `${type} validation failed.\n - ${errors
-        .map(humanifyAjvError)
-        .join('\n - ')}`,
+      `${type} validation failed.\n - ${humanifyZodIssues(issues).join(
+        '\n - ',
+      )}`,
     );
   }
 }
@@ -50,14 +50,14 @@ export class OperationParsingResponseError extends OperationResponseError {
     operation: Operation,
     response: Response,
     type: string,
-    errors: ErrorObject[],
+    issues: z.core.$ZodIssue[],
   ) {
     super(
       operation,
       response,
-      `${type} validation failed.\n - ${errors
-        .map(humanifyAjvError)
-        .join('\n - ')}`,
+      `${type} validation failed.\n - ${humanifyZodIssues(issues).join(
+        '\n - ',
+      )}`,
     );
   }
 }

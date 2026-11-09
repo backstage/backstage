@@ -16,7 +16,7 @@
 
 import { CompletedRequest, CompletedResponse } from 'mockttp';
 import { OperationObject } from 'openapi3-ts';
-import Ajv from 'ajv';
+import { SchemaCompiler } from './schema-compiler';
 
 export interface RequestParser<T> {
   parse(request: Request): Promise<T>;
@@ -26,7 +26,7 @@ export interface ResponseParser<T> {
 }
 
 export interface ParserOptions {
-  ajv: Ajv;
+  compiler: SchemaCompiler;
 }
 
 export interface Operation {

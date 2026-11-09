@@ -22,10 +22,10 @@ import {
   QueryParameterParser,
 } from './parameter-validation';
 import { OperationObject, ParameterObject } from 'openapi3-ts';
-import Ajv from 'ajv';
+import { SchemaCompiler } from './schema-compiler';
 import { Operation } from './types';
 
-const ajv = new Ajv();
+const compiler = new SchemaCompiler();
 
 describe('query parameters', () => {
   let operation: Operation;
@@ -39,7 +39,7 @@ describe('query parameters', () => {
       path: '/api/search',
       method: 'get',
     };
-    parser = new QueryParameterParser(operation, { ajv });
+    parser = new QueryParameterParser(operation, { compiler });
   });
   describe('primitives', () => {
     describe('string', () => {
@@ -322,7 +322,7 @@ describe('query parameters', () => {
             required: false,
           } as ParameterObject;
           schema.parameters!.push(parameter as any);
-          parser = new QueryParameterParser(operation, { ajv });
+          parser = new QueryParameterParser(operation, { compiler });
           const request = {
             url: 'http://localhost:8080/api/search?key=value&otherkey=value2&extra=hello,world',
           } as Request;
@@ -345,7 +345,7 @@ describe('query parameters', () => {
             required: false,
           } as ParameterObject;
           schema.parameters!.push(parameter as any);
-          parser = new QueryParameterParser(operation, { ajv });
+          parser = new QueryParameterParser(operation, { compiler });
           const request = {
             url: 'http://localhost:8080/api/search?key=value&otherkey=value2&extra[hello]=world',
           } as Request;
@@ -368,7 +368,7 @@ describe('query parameters', () => {
             required: false,
           } as ParameterObject;
           schema.parameters!.push(parameter as any);
-          parser = new QueryParameterParser(operation, { ajv });
+          parser = new QueryParameterParser(operation, { compiler });
           const request = {
             url: 'http://localhost:8080/api/search?key=value&otherkey=value2&extra[hello]=world',
           } as Request;
@@ -495,7 +495,7 @@ describe('query parameters', () => {
             },
           },
         };
-        parser = new QueryParameterParser(operation, { ajv });
+        parser = new QueryParameterParser(operation, { compiler });
         const request = {
           url: 'http://localhost:8080/api/search?param[key][subkey]=value',
         } as Request;
@@ -518,7 +518,7 @@ describe('path parameters', () => {
       path: '/api/item/{id}',
       method: 'get',
     };
-    parser = new PathParameterParser(operation, { ajv });
+    parser = new PathParameterParser(operation, { compiler });
   });
   describe('primitives', () => {
     describe('string', () => {

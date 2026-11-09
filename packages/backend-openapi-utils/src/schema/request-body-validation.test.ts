@@ -16,7 +16,7 @@
 
 import withJsonRequestBody from './__fixtures__/schemas/withJsonRequestBody.json';
 import { RequestBodyParser } from './request-body-validation';
-import Ajv from 'ajv';
+import { SchemaCompiler } from './schema-compiler';
 import { Operation, RequestParser } from './types';
 import _ from 'lodash';
 import {
@@ -27,7 +27,7 @@ import {
 } from 'openapi3-ts';
 import { JsonObject } from '@backstage/types';
 
-const ajv = new Ajv();
+const compiler = new SchemaCompiler();
 
 function toRequest(body?: object, headers?: Record<string, string>): Request {
   return {
@@ -51,7 +51,7 @@ describe('request body', () => {
       path: '/api/search',
     };
     parser = new RequestBodyParser(operation, {
-      ajv,
+      compiler,
     });
   });
   it('should validate request body', async () => {
@@ -76,7 +76,7 @@ describe('request body', () => {
   it('should throw error if request body is required but missing', async () => {
     (schema.requestBody as RequestBodyObject).required = true;
     parser = RequestBodyParser.fromOperation(operation, {
-      ajv,
+      compiler,
     });
     await expect(
       parser.parse(toRequest()),
@@ -100,7 +100,7 @@ describe('request body', () => {
     ] = schema.requestBody.content['application/json'] as MediaTypeObject;
     delete (schema.requestBody.content as ContentObject)['application/json'];
     parser = new RequestBodyParser(operation, {
-      ajv,
+      compiler,
     });
     const request = toRequest({});
     expect(await parser.parse(request)).toEqual({});

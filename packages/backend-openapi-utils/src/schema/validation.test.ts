@@ -707,6 +707,83 @@ describe('OpenApiProxyValidator', () => {
         `"["GET /api/search" (200)]: Response body is required but missing"`,
       );
     });
+
+    it('validates recursive component schemas, required properties and formats', async () => {
+      await mockSchema({
+        openapi: '3.0.3',
+        info: { title: 'Test', version: '1.0.0' },
+        paths: {
+          '/api/tree': {
+            get: {
+              responses: {
+                '200': {
+                  description: 'OK',
+                  content: {
+                    'application/json': {
+                      schema: { $ref: '#/components/schemas/Node' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        components: {
+          schemas: {
+            Node: {
+              type: 'object',
+              required: ['id'],
+              properties: {
+                id: { type: 'string' },
+                createdAt: { type: 'string', format: 'date-time' },
+                link: { type: 'string', format: 'uri-reference' },
+                parent: {
+                  allOf: [{ $ref: '#/components/schemas/Node' }],
+                  nullable: true,
+                },
+                children: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Node' },
+                },
+              },
+            },
+          },
+        },
+      });
+      const request = createMockttpRequest({ method: 'GET', url: '/api/tree' });
+      const respond = (body: object) =>
+        validator.validate(
+          request,
+          createMockttpResponse({
+            statusCode: 200,
+            headers: { 'content-type': 'application/json' },
+            body,
+          }),
+        );
+
+      await expect(
+        respond({
+          id: 'root',
+          createdAt: '2026-01-01T00:00:00+01:00',
+          link: '/relative/path',
+          parent: null,
+          children: [{ id: 'a', children: [{ id: 'b' }] }],
+        }),
+      ).resolves.toBeUndefined();
+
+      await expect(
+        respond({
+          id: 'root',
+          createdAt: 'yesterday',
+          children: [{ children: [{ id: 1 }] }],
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`
+        "["GET /api/tree" (200)]: Response body validation failed.
+         - "/createdAt" Invalid ISO datetime
+         - The "id" property is required
+         - "/children/0/children/0/id" should be of type string"
+      `);
+    });
   });
 });
 

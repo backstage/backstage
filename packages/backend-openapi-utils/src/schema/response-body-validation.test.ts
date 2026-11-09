@@ -18,11 +18,11 @@ import { JsonObject } from '@backstage/types';
 import withJsonResponseBody from './__fixtures__/schemas/withJsonResponseBody.json';
 import { Operation, ResponseParser } from './types';
 import { ResponseBodyParser } from './response-body-validation';
-import Ajv from 'ajv';
+import { SchemaCompiler } from './schema-compiler';
 import { OperationObject, ResponsesObject } from 'openapi3-ts';
 import _ from 'lodash';
 
-const ajv = new Ajv();
+const compiler = new SchemaCompiler();
 
 function toResponse(body?: object): Response {
   return {
@@ -44,7 +44,7 @@ describe('response body', () => {
       schema: schema as OperationObject,
     };
     parser = ResponseBodyParser.fromOperation(operation, {
-      ajv,
+      compiler,
     });
   });
 
@@ -70,7 +70,7 @@ describe('response body', () => {
   it('should throw error if response body is required but missing', async () => {
     (schema.responses as ResponsesObject)['200'].required = true;
     parser = ResponseBodyParser.fromOperation(operation, {
-      ajv,
+      compiler,
     });
     await expect(
       parser.parse(toResponse()),
