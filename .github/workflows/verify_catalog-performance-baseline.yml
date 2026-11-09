@@ -4,14 +4,6 @@
 # permissions beyond contents: read.
 name: Catalog Performance Baseline
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/verify_catalog-performance-baseline.yml'
-      - 'plugins/catalog-backend/**'
-      - 'plugins/catalog-node/**'
-      - 'plugins/catalog-common/**'
-      - 'packages/catalog-model/**'
-      - 'packages/backend-test-utils/**'
   push:
     branches:
       - master
