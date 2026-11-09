@@ -279,6 +279,17 @@ export interface Config {
             experimental_checkForSuspendedUsersWithRest?: boolean;
 
             /**
+             * (Optional) Always request the public email field from the GitHub
+             * GraphQL API, even when using a GitHub App for authentication.
+             * By default, the public email field is only requested when using a
+             * personal access token because GitHub App installation tokens
+             * historically could not access it. Some GitHub instances now allow
+             * it, so enable this flag if your GitHub App can read user emails.
+             * Default: `false`.
+             */
+            fetchEmailForGithubApps?: boolean;
+
+            /**
              * (Optional) Configuration for the default user transformer.
              * These options only apply when using the built-in transformer;
              * they have no effect if a custom transformer is set via the
@@ -360,6 +371,17 @@ export interface Config {
              * Default: `false`.
              */
             experimental_checkForSuspendedUsersWithRest?: boolean;
+
+            /**
+             * (Optional) Always request the public email field from the GitHub
+             * GraphQL API, even when using a GitHub App for authentication.
+             * By default, the public email field is only requested when using a
+             * personal access token because GitHub App installation tokens
+             * historically could not access it. Some GitHub instances now allow
+             * it, so enable this flag if your GitHub App can read user emails.
+             * Default: `false`.
+             */
+            fetchEmailForGithubApps?: boolean;
 
             /**
              * (Optional) Configuration for the default user transformer.

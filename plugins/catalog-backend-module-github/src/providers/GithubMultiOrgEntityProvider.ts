@@ -203,6 +203,14 @@ export interface GithubMultiOrgEntityProviderOptions {
    * @defaultValue false
    */
   experimental_checkForSuspendedUsersWithRest?: boolean;
+
+  /**
+   * Always request the public email field from the GitHub GraphQL API, even
+   * when using a GitHub App for authentication. By default, the public email
+   * field is only requested when using a personal access token.
+   * @defaultValue false
+   */
+  fetchEmailForGithubApps?: boolean;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -251,6 +259,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
       pageSizes: options.pageSizes,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
+      fetchEmailForGithubApps: options.fetchEmailForGithubApps,
       cache: options.cache,
       experimental_checkForSuspendedUsersWithRest:
         options.experimental_checkForSuspendedUsersWithRest,
@@ -275,6 +284,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       alwaysUseDefaultNamespace?: boolean;
       pageSizes?: Partial<GithubPageSizes>;
       excludeSuspendedUsers?: boolean;
+      fetchEmailForGithubApps?: boolean;
       cache?: CacheService;
       experimental_checkForSuspendedUsersWithRest?: boolean;
     },
@@ -411,6 +421,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         pageSizes,
         this.options.excludeSuspendedUsers,
         this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+        this.options.fetchEmailForGithubApps,
       );
 
       const { teams } = await getOrganizationTeams(
@@ -582,6 +593,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       pageSizes,
       this.options.excludeSuspendedUsers,
       this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+      this.options.fetchEmailForGithubApps,
     );
 
     const { teams } = await getOrganizationTeams(
@@ -833,6 +845,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       pageSizes,
       this.options.excludeSuspendedUsers,
       this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+      this.options.fetchEmailForGithubApps,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)
