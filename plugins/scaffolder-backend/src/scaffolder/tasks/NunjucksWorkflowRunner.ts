@@ -84,7 +84,10 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
 import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
-import { scaffolderActionRules } from '../../service/rules';
+import {
+  INTEGRATION_ACTION_SEGMENT_PATTERN,
+  scaffolderActionRules,
+} from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import {
   collectTemplateCapabilities,
@@ -249,7 +252,7 @@ function getIdentifierKey(action: string): 'path' | 'projectId' | undefined {
     return 'path';
   }
   return segments.some(segment =>
-    /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
+    INTEGRATION_ACTION_SEGMENT_PATTERN.test(segment),
   )
     ? 'projectId'
     : undefined;
