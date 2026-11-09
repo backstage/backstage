@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-Support for multiple `orderFields` query parameters in the `entities/by-query` endpoint.
+The `entities/by-query` endpoint now supports sorting by multiple `orderField` query parameters. Later fields break ties between earlier ones, and cursor pagination works across all of them.
