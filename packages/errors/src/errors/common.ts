@@ -16,6 +16,7 @@
 
 import { isError } from './assertion';
 import { CustomErrorBase } from './CustomErrorBase';
+import { ValidationErrorItem } from './validation';
 
 /*
  * A set of common business logic errors.
@@ -31,10 +32,37 @@ import { CustomErrorBase } from './CustomErrorBase';
 /**
  * The given inputs are malformed and cannot be processed.
  *
+ * @remarks
+ *
+ * When the error comes from validating a request, the individual failures can
+ * be passed as `errors`. They are included when the error is serialized, so
+ * clients can tell which values were invalid without parsing the message.
+ *
  * @public
  */
 export class InputError extends CustomErrorBase {
   name = 'InputError' as const;
+
+  // Declared rather than initialized, so that errors without validation
+  // failures don't get an `errors: undefined` property when serialized.
+  /**
+   * The individual validation failures that caused this error, if known.
+   */
+  declare readonly errors?: ValidationErrorItem[];
+
+  constructor(
+    message?: string,
+    cause?: Error | unknown,
+    options?: {
+      /** The individual validation failures that caused this error. */
+      errors?: ValidationErrorItem[];
+    },
+  ) {
+    super(message, cause);
+    if (options?.errors) {
+      this.errors = options.errors;
+    }
+  }
 }
 
 /**

@@ -26,14 +26,41 @@ import {
   json,
   Router,
 } from 'express';
-import { InputError } from '@backstage/errors';
+import { InputError, ValidationErrorItem } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { isErrorResult, merge } from 'openapi-merge';
 
+/**
+ * Reads the individual failures from an express-openapi-validator error. Their
+ * paths are already JSON Pointers into the request, such as `/body/location`.
+ */
+function getValidationErrorItems(
+  error: Error,
+): ValidationErrorItem[] | undefined {
+  const items: unknown = (error as { errors?: unknown }).errors;
+  if (!Array.isArray(items)) {
+    return undefined;
+  }
+  return items.map(item => {
+    const result: ValidationErrorItem = {
+      pointer: String(item.path ?? ''),
+      detail: String(item.message ?? ''),
+    };
+    if (typeof item.errorCode === 'string') {
+      result.code = item.errorCode;
+    }
+    return result;
+  });
+}
+
 function validatorErrorTransformer(): ErrorRequestHandler {
   return (error: Error, _: Request, _2: Response, next: NextFunction) => {
-    next(new InputError(error.message));
+    next(
+      new InputError(error.message, undefined, {
+        errors: getValidationErrorItems(error),
+      }),
+    );
   };
 }
 

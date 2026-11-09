@@ -22,6 +22,7 @@ import { Response } from './utility';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { wrapServer } from './testUtils';
 import { Proxy } from './proxy/setup';
+import { serializeError } from '@backstage/errors';
 
 describe('createRouter', () => {
   const pet: Response<typeof singlePathSpec, '/pet/:petId', 'get'> = {
@@ -75,6 +76,83 @@ describe('createRouter', () => {
     } finally {
       proxyUrl.mockRestore();
     }
+  });
+
+  it('includes the individual validation errors in request validation failures', async () => {
+    const router = createValidatedOpenApiRouter({
+      openapi: '3.0.3',
+      info: { title: 'Validation test', version: '1.0.0' },
+      paths: {
+        '/things': {
+          post: {
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string' },
+                      count: { type: 'integer' },
+                    },
+                    required: ['name'],
+                  },
+                },
+              },
+            },
+            responses: { '204': { description: 'Created' } },
+          },
+        },
+      },
+    } as const);
+    router.post('/things', (_, res) => {
+      res.status(204).end();
+    });
+
+    const app = express()
+      .use(router)
+      .use(
+        (
+          err: Error,
+          _req: express.Request,
+          res: express.Response,
+          _next: express.NextFunction,
+        ) => {
+          res.status(400).json({ error: serializeError(err) });
+        },
+      );
+
+    const response = await request(app).post('/things').send({ count: 'many' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.name).toBe('InputError');
+    expect(response.body.error.errors).toEqual([
+      {
+        pointer: '/body/name',
+        detail: "must have required property 'name'",
+        code: 'required.openapi.validation',
+      },
+    ]);
+
+    const wrongType = await request(app)
+      .post('/things')
+      .send({ name: 'thing', count: 'many' });
+    expect(wrongType.status).toBe(400);
+    expect(wrongType.body.error.errors).toEqual([
+      {
+        pointer: '/body/count',
+        detail: 'must be integer',
+        code: 'type.openapi.validation',
+      },
+    ]);
+
+    const malformed = await request(app)
+      .post('/things')
+      .set('Content-Type', 'application/json')
+      .send('{not json');
+    expect(malformed.status).toBe(400);
+    expect(malformed.body.error.name).toBe('InputError');
+    expect(malformed.body.error).not.toHaveProperty('errors');
   });
 
   const routers = specs.flatMap(spec => {
