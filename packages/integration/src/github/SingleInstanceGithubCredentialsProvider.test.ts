@@ -17,7 +17,14 @@
 import { GithubCredentialsProvider } from './types';
 
 const octokit = {
-  paginate: async (fn: any) => (await fn()).data,
+  paginate: async <TItems extends object[]>(
+    fn: () =>
+      | { data: TItems | { repositories: TItems } }
+      | Promise<{ data: TItems | { repositories: TItems } }>,
+  ): Promise<TItems> => {
+    const { data } = await fn();
+    return Array.isArray(data) ? data : data.repositories;
+  },
   apps: {
     listInstallations: jest.fn(),
     listReposAccessibleToInstallation: jest.fn(),
@@ -302,8 +309,10 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: [{ name: 'some-repo' }],
-    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+      data: {
+        repositories: [{ name: 'some-repo' }],
+      },
+    } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
 
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/Backstage',
@@ -338,8 +347,10 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: [{ name: 'some-repo' }],
-    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+      data: {
+        repositories: [{ name: 'some-repo' }],
+      },
+    } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
 
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/backstage',
@@ -496,8 +507,10 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: [{ name: repoName }],
-    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+      data: {
+        repositories: [{ name: repoName }],
+      },
+    } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
 
     await expect(
       github.getCredentials({
@@ -506,7 +519,7 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should not throw when paginate response is an object with a property containing an array of repositories', async () => {
+  it('should not throw when paginate response is an array of repositories for selected installation', async () => {
     const repoName = 'foobar';
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
