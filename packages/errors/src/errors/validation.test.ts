@@ -37,26 +37,26 @@ describe('validationIssuesFromZod', () => {
 
     expect(validationIssuesFromZod(zodLikeError)).toEqual([
       {
-        pointer: '/entity/spec/0/name',
-        detail: 'Expected string, received number',
+        path: '/entity/spec/0/name',
+        message: 'Expected string, received number',
         code: 'invalid_type',
       },
-      { pointer: '/a~1b/c~0d', detail: 'Invalid value' },
-      { pointer: '', detail: 'Invalid input', code: 'custom' },
+      { path: '/a~1b/c~0d', message: 'Invalid value' },
+      { path: '', message: 'Invalid input', code: 'custom' },
     ]);
 
     const [prefixed, , root] = validationIssuesFromZod(zodLikeError, {
-      pointerPrefix: '/body',
+      pathPrefix: '/body',
     });
-    expect(prefixed.pointer).toBe('/body/entity/spec/0/name');
-    expect(root.pointer).toBe('/body');
+    expect(prefixed.path).toBe('/body/entity/spec/0/name');
+    expect(root.path).toBe('/body');
   });
 });
 
 describe('InputError validation issues', () => {
   it('keeps validation issues through serialization', () => {
     const issues = [
-      { pointer: '/body/location', detail: 'must be string', code: 'type' },
+      { path: '/body/location', message: 'must be string', code: 'type' },
     ];
     const error = new InputError('Invalid request', undefined, { issues });
 

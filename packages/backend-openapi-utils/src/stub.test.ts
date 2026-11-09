@@ -128,8 +128,8 @@ describe('createRouter', () => {
     expect(response.body.error.name).toBe('InputError');
     expect(response.body.error.issues).toEqual([
       {
-        pointer: '/body/name',
-        detail: "must have required property 'name'",
+        path: '/body/name',
+        message: "must have required property 'name'",
         code: 'required.openapi.validation',
       },
     ]);
@@ -140,8 +140,8 @@ describe('createRouter', () => {
     expect(wrongType.status).toBe(400);
     expect(wrongType.body.error.issues).toEqual([
       {
-        pointer: '/body/count',
-        detail: 'must be integer',
+        path: '/body/count',
+        message: 'must be integer',
         code: 'type.openapi.validation',
       },
     ]);

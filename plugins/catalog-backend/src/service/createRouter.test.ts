@@ -1262,8 +1262,8 @@ describe('createRouter readonly disabled', () => {
         expect(response.body.errors[0].message).toContain('Malformed request:');
         expect(response.body.errors[0].issues).toEqual([
           {
-            pointer: '/body/location',
-            detail: 'Expected string, received null',
+            path: '/body/location',
+            message: 'Expected string, received null',
             code: 'invalid_type',
           },
         ]);

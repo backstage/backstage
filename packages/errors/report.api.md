@@ -172,8 +172,8 @@ export function toError(value: unknown): ErrorLike;
 
 // @public
 export type ValidationIssue = {
-  pointer: string;
-  detail: string;
+  path: string;
+  message: string;
   code?: string;
 };
 
@@ -187,7 +187,7 @@ export function validationIssuesFromZod(
     }>;
   },
   options?: {
-    pointerPrefix?: string;
+    pathPrefix?: string;
   },
 ): ValidationIssue[];
 ```

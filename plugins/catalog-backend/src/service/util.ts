@@ -73,7 +73,7 @@ export async function validateRequestBody<T>(
     throw new InputError(`Malformed request: ${e}`, undefined, {
       issues:
         e instanceof z.ZodError
-          ? validationIssuesFromZod(e, { pointerPrefix: '/body' })
+          ? validationIssuesFromZod(e, { pathPrefix: '/body' })
           : undefined,
     });
   }

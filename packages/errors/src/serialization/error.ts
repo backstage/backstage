@@ -90,6 +90,15 @@ export function deserializeError<T extends Error = Error>(
   if (!data.stack) {
     result.stack = undefined;
   }
+  // serialize-error turns the `message` of every nested object into a
+  // non-enumerable property, which would hide it when validation issues are
+  // spread or serialized again. Validation issues are plain JSON, so they are
+  // copied over as they are.
+  if (Array.isArray(data.issues)) {
+    (result as { issues?: unknown }).issues = data.issues.map(issue =>
+      issue && typeof issue === 'object' ? { ...issue } : issue,
+    );
+  }
   return result;
 }
 

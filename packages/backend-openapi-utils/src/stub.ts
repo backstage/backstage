@@ -42,8 +42,8 @@ function getValidationIssues(error: Error): ValidationIssue[] | undefined {
   }
   return items.map(item => {
     const result: ValidationIssue = {
-      pointer: String(item.path ?? ''),
-      detail: String(item.message ?? ''),
+      path: String(item.path ?? ''),
+      message: String(item.message ?? ''),
     };
     if (typeof item.errorCode === 'string') {
       result.code = item.errorCode;

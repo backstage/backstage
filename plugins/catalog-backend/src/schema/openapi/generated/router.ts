@@ -230,12 +230,12 @@ export const spec = {
         type: 'object',
         description: 'A single validation failure for one value in a request.',
         properties: {
-          pointer: {
+          path: {
             type: 'string',
             description:
               'A JSON Pointer to the value that failed validation, for example `/body/location`.',
           },
-          detail: {
+          message: {
             type: 'string',
             description:
               'A human readable explanation of why the value is invalid.',
@@ -245,7 +245,7 @@ export const spec = {
             description: 'A machine readable code for the failure.',
           },
         },
-        required: ['pointer', 'detail'],
+        required: ['path', 'message'],
       },
       Error: {
         type: 'object',

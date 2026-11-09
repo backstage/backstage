@@ -26,11 +26,11 @@ export interface ValidationIssue {
   /**
    * A JSON Pointer to the value that failed validation, for example `/body/location`.
    */
-  pointer: string;
+  path: string;
   /**
    * A human readable explanation of why the value is invalid.
    */
-  detail: string;
+  message: string;
   /**
    * A machine readable code for the failure.
    */

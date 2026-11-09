@@ -17,20 +17,20 @@
 /**
  * A single validation failure for one value in a request.
  *
- * The member names follow the validation example in RFC 9457 (Problem Details
- * for HTTP APIs) and the error objects in JSON:API.
+ * The member names follow zod issues, except that `path` is always a JSON
+ * Pointer string rather than an array of path segments.
  *
  * @public
  */
 export type ValidationIssue = {
   /**
-   * A JSON Pointer (RFC 6901) to the value that failed validation, for example
-   * `/body/entity/metadata/name` or `/query/limit`. An empty string refers to
-   * the whole input.
+   * The location of the value that failed validation, as a JSON Pointer
+   * (RFC 6901) string such as `/body/entity/metadata/name` or `/query/limit`.
+   * An empty string refers to the whole input.
    */
-  pointer: string;
+  path: string;
   /** A human readable explanation of why the value is invalid. */
-  detail: string;
+  message: string;
   /** A machine readable code for the failure, such as `invalid_type`. */
   code?: string;
 };
@@ -76,13 +76,13 @@ export function validationIssuesFromZod(
   },
   options?: {
     /** A JSON Pointer to prepend to every issue, for example `/body`. */
-    pointerPrefix?: string;
+    pathPrefix?: string;
   },
 ): ValidationIssue[] {
   return error.issues.map(issue => {
     const item: ValidationIssue = {
-      pointer: toJsonPointer(issue.path, options?.pointerPrefix),
-      detail: issue.message,
+      path: toJsonPointer(issue.path, options?.pathPrefix),
+      message: issue.message,
     };
     if (issue.code !== undefined) {
       item.code = issue.code;
