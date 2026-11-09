@@ -29,6 +29,9 @@
  * 4. if the template changed, or has no statistics, runs ANALYZE with a high
  *    statistics target. A template restored from a Postgres 18 dump keeps the
  *    statistics from the dump, so that plans are the same between runs;
+ *    then runs VACUUM FREEZE, since a restored dump has no visibility map, and
+ *    the statistics would otherwise promise index only scans that have to
+ *    visit the table for every row;
  * 5. recreates the read copy if it is stale, and prewarms its tables and
  *    indexes with pg_prewarm.
  *
@@ -208,6 +211,8 @@ async function preload(databaseId: TestDatabaseId, size: number) {
       } else {
         log(databaseId, `Keeping the statistics of ${TEMPLATE_DATABASE}`);
       }
+      log(databaseId, `Vacuuming ${TEMPLATE_DATABASE}`);
+      await template.raw('VACUUM (FREEZE)');
     });
 
     // Postgres only copies a template that nothing is connected to. Refusing
