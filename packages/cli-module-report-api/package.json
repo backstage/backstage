@@ -1,0 +1,62 @@
+{
+  "name": "@backstage/cli-module-report-api",
+  "version": "0.0.0",
+  "description": "CLI module for generating Backstage API, CLI and SQL reports",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-report-api"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-report-api",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@electric-sql/pglite": "^0.5.8",
+    "@microsoft/api-documenter": "^7.28.1",
+    "@microsoft/api-extractor": "^7.57.3",
+    "@microsoft/api-extractor-model": "7.32.2",
+    "@microsoft/tsdoc": "~0.16.0",
+    "@microsoft/tsdoc-config": "~0.18.0",
+    "cleye": "^2.6.0",
+    "diff": "^9.0.0",
+    "fs-extra": "^11.2.0",
+    "just-diff": "^6.0.2",
+    "knex": "^3.0.0",
+    "knex-pglite": "^0.14.0",
+    "lodash": "^4.17.21",
+    "minimatch": "^11.0.1",
+    "p-limit": "^3.0.2",
+    "semver": "^7.5.3"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@types/node": "^24.0.0",
+    "@types/semver": "^7"
+  }
+}

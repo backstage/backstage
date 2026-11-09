@@ -1,0 +1,43 @@
+{
+  "name": "@backstage/repo-tools-defaults",
+  "version": "0.0.0",
+  "description": "Default set of CLI modules for the Backstage repo tools CLI",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/repo-tools-defaults"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/cli-module-package-docs": "workspace:^",
+    "@backstage/cli-module-package-manager-patch": "workspace:^",
+    "@backstage/cli-module-repo-checks": "workspace:^",
+    "@backstage/cli-module-report-api": "workspace:^",
+    "@backstage/cli-module-report-knip": "workspace:^",
+    "@backstage/cli-module-schema-openapi": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

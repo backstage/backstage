@@ -1,0 +1,68 @@
+{
+  "name": "@backstage/cli-module-schema-openapi",
+  "version": "0.0.0",
+  "description": "CLI module for working with OpenAPI schemas in Backstage packages",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-schema-openapi"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-schema-openapi",
+  "files": [
+    "dist",
+    "bin",
+    "templates",
+    "openapitools.json"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "@apisyouwonthate/style-guide": "^1.4.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@openapitools/openapi-generator-cli": "^2.41.0",
+    "@stoplight/spectral-core": "^1.18.0",
+    "@stoplight/spectral-formatters": "^1.1.0",
+    "@stoplight/spectral-functions": "^1.7.2",
+    "@stoplight/spectral-parsers": "^1.0.2",
+    "@stoplight/spectral-rulesets": "^1.18.0",
+    "@stoplight/spectral-runtime": "^1.1.2",
+    "@stoplight/types": "^14.0.0",
+    "chalk": "^4.0.0",
+    "chokidar": "^3.5.3",
+    "cleye": "^2.6.0",
+    "command-exists": "^1.2.9",
+    "fs-extra": "^11.2.0",
+    "js-yaml": "^5.0.0",
+    "lodash": "^4.17.21",
+    "minimatch": "^11.0.1",
+    "p-limit": "^3.0.2"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/node": "^24.0.0"
+  }
+}

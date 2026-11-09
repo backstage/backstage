@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-package-manager-patch
+  title: '@backstage/cli-module-package-manager-patch'
+  description: CLI module for generating package patches for other repositories
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers
