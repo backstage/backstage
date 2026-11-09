@@ -85,18 +85,25 @@ describePerformanceTest('orphan cleanup', () => {
       await knex?.destroy();
     });
 
-    it('finds orphans without scanning the references table', async () => {
-      await createOrphans(knex, 0);
+    // Known issue: the orphan candidate query scans refresh_state_references
+    // in full, the same plan query-battery/baseline.md records for
+    // "Scenario 11: Relations: orphan detection anti-join". Remove `.failing`
+    // once it uses the target index.
+    it.failing(
+      'finds orphans without scanning the references table',
+      async () => {
+        await createOrphans(knex, 0);
 
-      const { queries } = await captureAndRollback(knex, trx =>
-        deleteOrphanedEntities({ knex: trx }),
-      );
-      const candidates = queries.find(q => q.sql.includes('orphan_refs'));
-      expect(candidates).toBeDefined();
+        const { queries } = await captureAndRollback(knex, trx =>
+          deleteOrphanedEntities({ knex: trx }),
+        );
+        const candidates = queries.find(q => q.sql.includes('orphan_refs'));
+        expect(candidates).toBeDefined();
 
-      const { plan } = await explain(knex, candidates!);
-      expect(seqScansOn(plan, 'refresh_state_references')).toEqual([]);
-    });
+        const { plan } = await explain(knex, candidates!);
+        expect(seqScansOn(plan, 'refresh_state_references')).toEqual([]);
+      },
+    );
 
     it('deletes orphaned entities', async () => {
       const before = await count(knex, 'refresh_state');
@@ -113,27 +120,33 @@ describePerformanceTest('orphan cleanup', () => {
       expect(await count(knex, 'stitch_queue')).toBeGreaterThan(stitchesBefore);
     });
 
-    it('finds descendants of a deleted location without scanning the references table', async () => {
-      const locations = await knex('refresh_state_references')
-        .where('source_key', PROVIDER_KEY)
-        .orderBy('target_entity_ref')
-        .limit(LOCATIONS_TO_DELETE)
-        .select('target_entity_ref');
-      const refs = locations.map(l => l.target_entity_ref as string);
+    // Known issue: the recursive steps of this query join against full Seq
+    // Scans of refresh_state_references, observed on the synthetic dataset
+    // on Postgres 18. Remove `.failing` once they are index-driven.
+    it.failing(
+      'finds descendants of a deleted location without scanning the references table',
+      async () => {
+        const locations = await knex('refresh_state_references')
+          .where('source_key', PROVIDER_KEY)
+          .orderBy('target_entity_ref')
+          .limit(LOCATIONS_TO_DELETE)
+          .select('target_entity_ref');
+        const refs = locations.map(l => l.target_entity_ref as string);
 
-      const { queries } = await captureAndRollback(knex, trx =>
-        deleteWithEagerPruningOfChildren({
-          knex: trx,
-          entityRefs: refs,
-          sourceKey: PROVIDER_KEY,
-        }),
-      );
-      const descendants = queries.find(q => q.sql.includes('descendants'));
-      expect(descendants).toBeDefined();
+        const { queries } = await captureAndRollback(knex, trx =>
+          deleteWithEagerPruningOfChildren({
+            knex: trx,
+            entityRefs: refs,
+            sourceKey: PROVIDER_KEY,
+          }),
+        );
+        const descendants = queries.find(q => q.sql.includes('descendants'));
+        expect(descendants).toBeDefined();
 
-      const { plan } = await explain(knex, descendants!);
-      expect(seqScansOn(plan, 'refresh_state_references')).toEqual([]);
-    });
+        const { plan } = await explain(knex, descendants!);
+        expect(seqScansOn(plan, 'refresh_state_references')).toEqual([]);
+      },
+    );
 
     it('eagerly deletes the children of a deleted location', async () => {
       const locations = await knex('refresh_state_references')

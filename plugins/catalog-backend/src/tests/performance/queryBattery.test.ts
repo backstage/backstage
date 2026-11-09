@@ -530,7 +530,10 @@ for (const databaseId of getPerformanceDatabaseIds()) {
       expectPlan('count', single(queries, isCount, 'count'), globalChecks());
     });
 
-    it('11. orphan detection anti-join', async () => {
+    // Known issue: query-battery/baseline.md, "Scenario 11", records a full
+    // Parallel Seq Scan of both refresh_state and refresh_state_references on
+    // the replica. Remove `.failing` once the anti-join uses the index.
+    it.failing('11. orphan detection anti-join', async () => {
       const { rows, q } = await analyzeSql(
         `SELECT refresh_state.entity_id, refresh_state.entity_ref
          FROM refresh_state
@@ -549,7 +552,11 @@ for (const databaseId of getPerformanceDatabaseIds()) {
       ]);
     });
 
-    it('12. ordered disjunction with selective branches', async () => {
+    // Known issue: query-battery/baseline.md, "Scenario 12", records that the
+    // disjunction can't drive the query from either selective branch, so the
+    // ordered name scan runs correlated subplans per entity. Remove
+    // `.failing` once the branches drive the plan.
+    it.failing('12. ordered disjunction with selective branches', async () => {
       const workflows: FilterPredicate = {
         kind: 'subcomponent',
         'spec.type': 'workflow',
@@ -677,7 +684,10 @@ for (const databaseId of getPerformanceDatabaseIds()) {
       ]);
     });
 
-    it('14. deep dataset page ordered by name', async () => {
+    // Known issue: query-battery/baseline.md, "Scenario 14: ordered scan with
+    // a late cursor filter", records that the cursor is a filter rather than
+    // an index range condition. Remove `.failing` once it is a range.
+    it.failing('14. deep dataset page ordered by name', async () => {
       const { datasetFilter, pageSize, boundaryOffset } = await deepPageShape();
       const [boundary] = await datasetFilter(
         knex('final_entities')

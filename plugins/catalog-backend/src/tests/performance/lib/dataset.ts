@@ -16,23 +16,36 @@
 
 // Only used by performance tests, which run with dev dependencies available
 // eslint-disable-next-line @backstage/no-undeclared-imports
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import type { TestDatabaseId } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
+import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
-import { applyDatabaseMigrations } from '../../../database/migrations';
 import { buildEntitySearch } from '../../../database/operations/stitcher/buildEntitySearch';
-import { performanceTestEnabled } from './env';
 
 /**
  * Bump when the generated data changes in a way the size marker can't see.
  * CI additionally keys its snapshot on a hash of this file.
  */
-const DATASET_VERSION = 'v1';
+export const DATASET_VERSION = 'v2';
 const DEFAULT_DATASET_SIZE = 500_000;
 const CHUNK_SIZE = 2_000;
 const SEED = 20240607;
 const PROVIDER_KEY = 'perf-provider';
+
+/**
+ * The seeded database that clones are made from. Nothing connects to it
+ * while tests run, since Postgres can only copy an idle template.
+ */
+export const TEMPLATE_DATABASE = 'catalog_perf_template';
+/** The read-only copy of the template that read-only suites query. */
+export const DATASET_DATABASE = 'catalog_perf_dataset';
+/** Prefix of the per-suite copies made by {@link cloneDataset}. */
+export const CLONE_DATABASE_PREFIX = 'catalog_perf_clone_';
+
+const PRELOAD_HINT =
+  'Preload it before running the tests with `node --require @backstage/cli/config/nodeTransform.cjs plugins/catalog-backend/src/tests/performance/lib/preloadDataset.ts`, using the same PERFORMANCE_DATASET_SIZE and PERFORMANCE_DATABASE_IDS';
 
 /** Names and values that scenarios in the query battery rely on. */
 export const DATASET_FIXTURES = {
@@ -64,7 +77,7 @@ export function getPerformanceDatabaseIds(): TestDatabaseId[] {
     .split(',')
     .map(s => s.trim())
     .filter(Boolean);
-  const invalid = ids.filter(id => !id.startsWith('POSTGRES_'));
+  const invalid = ids.filter(id => !/^POSTGRES_\d+$/.test(id));
   if (invalid.length) {
     throw new Error(
       `PERFORMANCE_DATABASE_IDS may only contain Postgres ids, got ${invalid.join(
@@ -75,7 +88,7 @@ export function getPerformanceDatabaseIds(): TestDatabaseId[] {
   return ids as TestDatabaseId[];
 }
 
-function getDatasetSize(): number {
+export function getDatasetSize(): number {
   const raw = process.env.PERFORMANCE_DATASET_SIZE;
   if (!raw) {
     return DEFAULT_DATASET_SIZE;
@@ -89,80 +102,132 @@ function getDatasetSize(): number {
   return size;
 }
 
-// TestDatabases registers an afterAll hook, so it must be created while the
-// test file is loading rather than lazily inside a test.
-const datasetConnectionString =
-  process.env.BACKSTAGE_TEST_PERFORMANCE_DATASET_CONNECTION_STRING;
-const databases =
-  performanceTestEnabled && !datasetConnectionString
-    ? TestDatabases.create({ ids: getPerformanceDatabaseIds() })
-    : undefined;
+/**
+ * The connection to the Postgres server for `databaseId`, from the same
+ * `BACKSTAGE_TEST_DATABASE_<ID>_CONNECTION_STRING` variable that
+ * `TestDatabases` reads, pointed at `database`.
+ */
+export function serverConnection(
+  databaseId: TestDatabaseId,
+  database: string,
+): Knex.PgConnectionConfig {
+  const name = `BACKSTAGE_TEST_DATABASE_${databaseId.replace(
+    '_',
+    '',
+  )}_CONNECTION_STRING`;
+  const connectionString = process.env[name];
+  if (!connectionString) {
+    throw new Error(
+      `The ${databaseId} performance dataset needs ${name}, the connection string of the Postgres server that holds it`,
+    );
+  }
+  return { ...parseConnectionString(connectionString), database };
+}
 
 const datasets = new Map<string, Promise<{ knex: Knex; size: number }>>();
 
 /**
- * Returns a connection to the shared, seeded dataset database, seeding it
- * first if needed. Do not mutate it; use {@link cloneDataset} for that.
+ * Returns a connection to the preloaded, read-only dataset database for
+ * `databaseId`. Do not mutate it; use {@link cloneDataset} for that.
  *
- * Uses `BACKSTAGE_TEST_PERFORMANCE_DATASET_CONNECTION_STRING` if set (and then
- * `databaseId` is ignored), otherwise creates a database through
- * `TestDatabases`.
+ * Fails if the dataset hasn't been preloaded with the current generator and
+ * `PERFORMANCE_DATASET_SIZE`; see `preloadDataset.ts`.
  */
 export function getPerformanceDataset(
   databaseId: TestDatabaseId = getPerformanceDatabaseIds()[0],
 ): Promise<{ knex: Knex; size: number }> {
-  const key = datasetConnectionString ? 'env' : databaseId;
-  let dataset = datasets.get(key);
+  let dataset = datasets.get(databaseId);
   if (!dataset) {
     dataset = openDataset(databaseId);
-    datasets.set(key, dataset);
+    datasets.set(databaseId, dataset);
   }
   return dataset;
 }
 
 async function openDataset(databaseId: TestDatabaseId) {
-  let knex: Knex;
-  if (datasetConnectionString) {
-    knex = knexFactory({ client: 'pg', connection: datasetConnectionString });
-  } else if (databases) {
-    knex = await databases.init(databaseId);
-  } else {
-    throw new Error(
-      'Performance dataset is unavailable, set PERFORMANCE_TEST=1 or BACKSTAGE_TEST_PERFORMANCE_DATASET_CONNECTION_STRING',
-    );
-  }
-
-  await applyDatabaseMigrations(knex);
   const size = getDatasetSize();
-  await ensureSeeded(knex, size);
+  const knex = knexFactory({
+    client: 'pg',
+    connection: serverConnection(databaseId, DATASET_DATABASE),
+  });
+  try {
+    await assertDatasetMarker(knex, size, `${databaseId} ${DATASET_DATABASE}`);
+  } catch (error) {
+    await knex.destroy();
+    throw error;
+  }
   return { knex, size };
 }
 
-let cloneCounter = 0;
+/**
+ * Reads the dataset marker, or returns undefined if the database has none.
+ * Throws if the database can't be reached.
+ */
+export async function readDatasetMarker(
+  knex: Knex,
+): Promise<{ version: string; entity_count: number } | undefined> {
+  if (!(await knex.schema.hasTable('perf_dataset_meta'))) {
+    return undefined;
+  }
+  return knex('perf_dataset_meta').first();
+}
+
+/** Whether `marker` describes a dataset of `size` from this generator. */
+export function markerMatches(
+  marker: { version: string; entity_count: number } | undefined,
+  size: number,
+): boolean {
+  return marker?.version === DATASET_VERSION && marker.entity_count === size;
+}
+
+async function assertDatasetMarker(knex: Knex, size: number, label: string) {
+  let marker;
+  try {
+    marker = await readDatasetMarker(knex);
+  } catch (error) {
+    throw new ForwardedError(
+      `Could not read the ${label} performance dataset. ${PRELOAD_HINT}`,
+      error,
+    );
+  }
+  if (!markerMatches(marker, size)) {
+    throw new Error(
+      `The ${label} performance dataset is ${
+        marker
+          ? `${marker.version} with ${marker.entity_count} entities`
+          : 'not seeded'
+      }, expected ${DATASET_VERSION} with ${size} entities. ${PRELOAD_HINT}`,
+    );
+  }
+}
 
 /**
- * Makes a private copy of the dataset database, using it as a template. The
- * returned connection drops the copy when destroyed.
+ * Makes a private copy of the template database on the server that `knex`
+ * (a connection from {@link getPerformanceDataset}) points at. The returned
+ * connection drops the copy when destroyed.
  *
- * Other sessions on the dataset database are terminated, since Postgres
- * requires the template to be idle. Knex discards such connections and
- * reconnects on next use.
+ * Safe to call from parallel workers: the template is never connected to
+ * while tests run, and Postgres allows concurrent copies of one template. No
+ * sessions are terminated; if the template is in use, this fails instead.
  */
 export async function cloneDataset(knex: Knex): Promise<Knex> {
   const config = connectionConfig(knex);
-  const source = config.database as string;
-  const target = `${source}_c${process.pid}_${cloneCounter++}`.slice(0, 63);
+  // The random part avoids clashes with copies left behind by crashed runs
+  const target = `${CLONE_DATABASE_PREFIX}${process.pid}_${randomBytes(
+    4,
+  ).toString('hex')}`;
 
   const admin = knexFactory({
     client: 'pg',
     connection: { ...config, database: 'postgres' },
   });
   try {
-    await admin.raw(
-      'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = ? AND pid <> pg_backend_pid()',
-      [source],
+    await createDatabaseFromTemplate(admin, target, TEMPLATE_DATABASE);
+  } catch (error) {
+    throw new ForwardedError(
+      `Could not copy ${TEMPLATE_DATABASE} to ${target}; it must exist and have no open connections. ${PRELOAD_HINT}`,
+      error,
     );
-    await admin.raw('CREATE DATABASE ?? TEMPLATE ??', [target, source]);
   } finally {
     await admin.destroy();
   }
@@ -191,17 +256,45 @@ export async function cloneDataset(knex: Knex): Promise<Knex> {
   });
 }
 
+/**
+ * Runs `CREATE DATABASE target TEMPLATE source`. On Postgres 15 and later
+ * this uses the file copy strategy, which is much faster for a large
+ * template than the default of copying through the WAL.
+ */
+export async function createDatabaseFromTemplate(
+  admin: Knex,
+  target: string,
+  source: string,
+) {
+  const {
+    rows: [{ server_version_num: version }],
+  } = await admin.raw<{ rows: { server_version_num: string }[] }>(
+    'SHOW server_version_num',
+  );
+  const strategy = Number(version) >= 150000 ? ' STRATEGY FILE_COPY' : '';
+  await admin.raw(`CREATE DATABASE ?? TEMPLATE ??${strategy}`, [
+    target,
+    source,
+  ]);
+}
+
+function parseConnectionString(
+  connectionString: string,
+): Knex.PgConnectionConfig {
+  const url = new URL(connectionString);
+  return {
+    host: url.hostname,
+    port: url.port ? Number(url.port) : 5432,
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    database: decodeURIComponent(url.pathname.slice(1)),
+  };
+}
+
 function connectionConfig(knex: Knex): Knex.PgConnectionConfig {
   const connection = knex.client.config.connection;
   if (typeof connection === 'string') {
-    const url = new URL(connection);
-    return {
-      host: url.hostname,
-      port: url.port ? Number(url.port) : 5432,
-      user: decodeURIComponent(url.username),
-      password: decodeURIComponent(url.password),
-      database: decodeURIComponent(url.pathname.slice(1)),
-    };
+    return parseConnectionString(connection);
   }
   // Knex hides the password from enumeration, so pick fields explicitly
   const c = connection as Knex.PgConnectionConfig;
@@ -215,19 +308,14 @@ function connectionConfig(knex: Knex): Knex.PgConnectionConfig {
   };
 }
 
-async function ensureSeeded(knex: Knex, size: number) {
+/**
+ * Replaces the catalog data in `knex` with a generated dataset of `size`
+ * entities, and records the dataset marker. Expects migrations to have run.
+ */
+export async function seedDataset(knex: Knex, size: number) {
   await knex.raw(
     'CREATE TABLE IF NOT EXISTS perf_dataset_meta (version text NOT NULL, entity_count int NOT NULL)',
   );
-  const marker = await knex('perf_dataset_meta').first();
-  if (
-    marker &&
-    marker.version === DATASET_VERSION &&
-    marker.entity_count === size
-  ) {
-    return;
-  }
-
   await knex.transaction(async trx => {
     await trx.raw('SET LOCAL synchronous_commit = off');
     await trx('perf_dataset_meta').delete();
@@ -242,7 +330,6 @@ async function ensureSeeded(knex: Knex, size: number) {
       entity_count: size,
     });
   });
-  await knex.raw('ANALYZE');
 }
 
 // #region Generator
@@ -297,12 +384,18 @@ function layout(size: number) {
   const locations = Math.max(2, Math.floor(size / 2000));
   const fixed = groups + users + systems + locations + 1; // +1 hub
   const rest = size - fixed;
-  const templates = Math.max(2, Math.floor(rest * 0.02));
+  // The replica has 14 templates among about 739K entities. Keeping that
+  // ratio keeps kind=template selective, so its facets plan (scenario 4)
+  // matches the replica's. At least one template of each type.
+  const templates = Math.max(
+    TEMPLATE_TYPES.length,
+    Math.round((rest * 14) / 739_000),
+  );
   const apis = Math.floor(rest * 0.15);
   const resources = Math.floor(rest * 0.1);
   const subcomponents = Math.floor(rest * 0.1);
   const components =
-    rest - templates - apis - resources - subcomponents; /* ~63% */
+    rest - templates - apis - resources - subcomponents; /* ~65% */
   return {
     groups,
     users,
@@ -482,7 +575,7 @@ function* generateChunks(size: number): Generator<GeneratedEntity[]> {
         }
         default: {
           const spec: JsonObject = {
-            type: random.pick(TEMPLATE_TYPES),
+            type: TEMPLATE_TYPES[i % TEMPLATE_TYPES.length],
             owner: owner(),
           };
           if (random.chance(0.3)) spec.custom = 'x';
