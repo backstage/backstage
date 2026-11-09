@@ -1,0 +1,20 @@
+{
+  "name": "@internal/foo",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "foo"
+  },
+  "files": [
+    "dist",
+    "type-utils"
+  ],
+  "dependencies": {
+    "@internal/bar": "1.0.0"
+  },
+  "devDependencies": {
+    "lodash": "*"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

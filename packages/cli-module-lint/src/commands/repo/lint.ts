@@ -25,11 +25,10 @@ import {
   Lockfile,
   runWorkerQueueThreads,
   SuccessCache,
+  createScriptOptionsParser,
 } from '@backstage/cli-node';
-import { targetPaths } from '@backstage/cli-common';
-
-import { createScriptOptionsParser } from '../../lib/optionsParser';
 import type { CliCommandContext } from '@backstage/cli-node';
+import { targetPaths } from '@backstage/cli-common';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;

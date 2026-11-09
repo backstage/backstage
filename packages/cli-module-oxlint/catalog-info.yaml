@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-oxlint
+  title: '@backstage/cli-module-oxlint'
+  description: CLI module for oxlint integration in Backstage CLI
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers
