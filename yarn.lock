@@ -5555,15 +5555,17 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@cfworker/json-schema": "npm:^4.1.1"
-    "@modelcontextprotocol/sdk": "npm:^1.25.2"
+    "@modelcontextprotocol/client": "npm:^2.4.0"
+    "@modelcontextprotocol/core": "npm:^2.4.0"
+    "@modelcontextprotocol/node": "npm:^2.1.2"
+    "@modelcontextprotocol/sdk": "npm:1.30.0"
+    "@modelcontextprotocol/server": "npm:^2.4.0"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     minimatch: "npm:^10.2.1"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7470,13 +7472,6 @@ __metadata:
   version: 7.1.2
   resolution: "@braintree/sanitize-url@npm:7.1.2"
   checksum: 10/d9626ff8f8eb5e192cd055e6e743449c21102c76bb59e405b7028fe56230fa080bfcc80dfb1e21850a6876e75adda9f7b3c888cf0685942bb74da4d2866d6ec3
-  languageName: node
-  linkType: hard
-
-"@cfworker/json-schema@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "@cfworker/json-schema@npm:4.1.1"
-  checksum: 10/62fd08bb2e6b4f0fe7c2b8f8c19f17f94b6a34feba7f455f228898ab435eda8aae082fcf6b0fe8a235a72e0ec0041922fdcd4c526acc32d45084272f000c1af9
   languageName: node
   linkType: hard
 
@@ -9423,6 +9418,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/node-server@npm:^1.19.9 || ^2.1.3":
+  version: 2.1.6
+  resolution: "@hono/node-server@npm:2.1.6"
+  peerDependencies:
+    hono: ^4 || ^5.0.0-0
+  checksum: 10/43e5fa3972b20e22a6471874f4858011a80633011df60e312c37f472051f983ae47ea8f76004157c38a6317cea4a152745601a031d2428b7c44bdf7778a9a0b6
+  languageName: node
+  linkType: hard
+
 "@httptoolkit/httpolyglot@npm:^2.2.1":
   version: 2.2.1
   resolution: "@httptoolkit/httpolyglot@npm:2.2.1"
@@ -11342,7 +11346,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.25.2":
+"@modelcontextprotocol/client@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@modelcontextprotocol/client@npm:2.4.0"
+  dependencies:
+    "@modelcontextprotocol/core": "npm:2.4.0"
+    cross-spawn: "npm:^7.0.5"
+    eventsource: "npm:^3.0.2"
+    eventsource-parser: "npm:^3.0.8"
+    jose: "npm:^6.1.3"
+    pkce-challenge: "npm:^5.0.0"
+    zod: "npm:^4.2.0"
+  checksum: 10/04a5189679d6def5d4b1b996b861cee817e77a1cf71a496d3707d8598d0d949599fd0ae62e5af1ccf7d763be3fe2d2b7c001ddb2a79e8da09b555601e9fd6528
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/core@npm:2.4.0, @modelcontextprotocol/core@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@modelcontextprotocol/core@npm:2.4.0"
+  dependencies:
+    zod: "npm:^4.2.0"
+  checksum: 10/686f8653992aaf4feb4ff24c96befb2057348419e8044938c87c0ebcaf914a8e5c0fd6925d682d638a82907ff04af90dbaf14f39bfb7d0ebf350b7ca811b68cf
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/node@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@modelcontextprotocol/node@npm:2.1.2"
+  dependencies:
+    "@hono/node-server": "npm:^1.19.9 || ^2.1.3"
+    hono: "npm:^4.11.4"
+  peerDependencies:
+    "@modelcontextprotocol/server": ^2.4.0
+  checksum: 10/8baac2af77b6c1367f6cfe42eda3328f4476a65bc7146be9e3c30ed10bb376fefc77cc029e627273d95f11d13d4f19afa1b96ec31ac65aeea02abe596b74c99d
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/sdk@npm:1.30.0":
   version: 1.30.0
   resolution: "@modelcontextprotocol/sdk@npm:1.30.0"
   dependencies:
@@ -11372,6 +11412,16 @@ __metadata:
     zod:
       optional: false
   checksum: 10/369723a62ce230e55d4fc98549fb080a51916a2004f3907bfca899f5602de8791d9b252038abc6cf120a9d1c75845d2459a471b678c9b9cfc7bae5febf112b63
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/server@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@modelcontextprotocol/server@npm:2.4.0"
+  dependencies:
+    "@modelcontextprotocol/core": "npm:2.4.0"
+    zod: "npm:^4.2.0"
+  checksum: 10/342054436e346353b7bd95469b2d55113dc9f6a9a91f58191438f3c1885950f9f59a1358510009362037d1e6d489f588bf7b6d6e507614f52f9ef5488321f424
   languageName: node
   linkType: hard
 
@@ -27658,6 +27708,13 @@ __metadata:
   version: 3.0.6
   resolution: "eventsource-parser@npm:3.0.6"
   checksum: 10/febf7058b9c2168ecbb33e92711a1646e06bd1568f60b6eb6a01a8bf9f8fcd29cc8320d57247059cacf657a296280159f21306d2e3ff33309a9552b2ef889387
+  languageName: node
+  linkType: hard
+
+"eventsource-parser@npm:^3.0.8":
+  version: 3.1.1
+  resolution: "eventsource-parser@npm:3.1.1"
+  checksum: 10/4ed3fbd0ea5b7041c3d14e6ab686077bc1b93ce230839d50ca735a39754ee17be2402c02be9e6608b325aa7a1e151bfd341ce4c985cb0d0ac2898a0712ab4826
   languageName: node
   linkType: hard
 
@@ -46768,6 +46825,13 @@ __metadata:
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: 10/f0c963ec40cd96858451d1690404d603d36507c1fc9682f2dae59ab38b578687d542708a7fdbf645f77926f78c9ed558f57c3d3aa226c285f798df0c4da16995
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.2.0":
+  version: 4.6.7
+  resolution: "zod@npm:4.6.7"
+  checksum: 10/3ca8b8d6bb401538e59504c543db629ea7beaa775e504c3f22269b406fdffbf1431c856d59a597bf66d8487e4d2be12b03a55d76fc2c63d9f046eae1ca173bca
   languageName: node
   linkType: hard
 

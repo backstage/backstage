@@ -254,7 +254,7 @@ auth:
 
 ## Configuring MCP Clients
 
-The MCP server uses the **Streamable HTTP** protocol.
+The MCP server uses the **Streamable HTTP** protocol. It uses MCP SDK v2 and retains support for existing clients through the handshake-based protocol revisions up to `2025-11-25`.
 
 ### Endpoints
 

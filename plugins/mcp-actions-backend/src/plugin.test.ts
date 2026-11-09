@@ -22,6 +22,10 @@ import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import {
+  Client as V2Client,
+  StreamableHTTPClientTransport as V2Transport,
+} from '@modelcontextprotocol/client';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import request from 'supertest';
@@ -126,10 +130,47 @@ describe('Mcp Backend', () => {
       },
     ]);
 
+    const callResult = await client.callTool({
+      name: 'local.make-greeting',
+      arguments: { name: 'Ada' },
+    });
+    expect(callResult).toEqual({
+      content: [{ type: 'text', text: '{"greeting":"Hello Ada!"}' }],
+      structuredContent: { greeting: 'Hello Ada!' },
+    });
+    await client.close();
+
     const legacyResponse = await request(serverAddress).get(
       '/api/mcp-actions/v1/sse',
     );
     expect(legacyResponse.status).toBe(404);
+  });
+
+  it('should serve a v2 client using the existing handshake', async () => {
+    const { serverAddress } = await getContext('Use greeting tools.');
+    const client = new V2Client({ name: 'v2 test client', version: '1.0' });
+    try {
+      await client.connect(
+        new V2Transport(new URL(`${serverAddress}/api/mcp-actions/v1`)),
+      );
+      expect(client.getInstructions()).toBe('Use greeting tools.');
+      const { tools } = await client.listTools();
+      expect(tools.map(tool => tool.name)).toEqual(['local.make-greeting']);
+      expect(
+        await client.callTool({
+          name: 'local.make-greeting',
+          arguments: { name: 'Ada' },
+        }),
+      ).toEqual({
+        content: [{ type: 'text', text: '{"greeting":"Hello Ada!"}' }],
+        structuredContent: { greeting: 'Hello Ada!' },
+      });
+      expect(
+        await client.callTool({ name: 'missing', arguments: {} }),
+      ).toMatchObject({ isError: true });
+    } finally {
+      await client.close();
+    }
   });
 
   it('should return configured instructions for the default server', async () => {

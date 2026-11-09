@@ -17,8 +17,8 @@ import PromiseRouter from 'express-promise-router';
 import { Router } from 'express';
 import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
+import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
+import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/server';
 import { toError } from '@backstage/errors';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import {
@@ -81,7 +81,7 @@ export const createStreamableRouter = ({
         req,
       });
 
-      const transport = new StreamableHTTPServerTransport({
+      const transport = new NodeStreamableHTTPServerTransport({
         // stateless implementation for now, so that we can support multiple
         // instances of the server backend, and avoid sticky sessions.
         sessionIdGenerator: undefined,
