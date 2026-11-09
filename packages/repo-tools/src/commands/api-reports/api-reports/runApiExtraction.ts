@@ -32,35 +32,99 @@ import {
 } from 'node:path';
 import { getPackageExportDetails } from '../../../lib/getPackageExportDetails';
 import { targetPaths } from '@backstage/cli-common';
-import { logApiReportInstructions, logReportDiff } from '../common';
+import {
+  FormattedReport,
+  formatReports,
+  logApiReportInstructions,
+  logReportDiff,
+  restoreReport,
+} from '../common';
 import { patchApiReportGeneration } from './patchApiReportGeneration';
 
-export async function countApiReportWarnings(reportPath: string) {
+async function readReport(reportPath: string): Promise<string | undefined> {
   try {
-    const content = await fs.readFile(reportPath, 'utf8');
-    const lines = content.split('\n');
-
-    const lineWarnings = lines.filter(line =>
-      line.includes('// Warning:'),
-    ).length;
-
-    const trailerStart = lines.findIndex(
-      line => line === '// Warnings were encountered during analysis:',
-    );
-    const trailerWarnings =
-      trailerStart === -1
-        ? 0
-        : lines.length -
-          trailerStart -
-          4; /* 4 lines at the trailer and after are not warnings */
-
-    return lineWarnings + trailerWarnings;
+    return await fs.readFile(reportPath, 'utf8');
   } catch (error) {
     if (error.code === 'ENOENT') {
-      return 0;
+      return undefined;
     }
     throw error;
   }
+}
+
+function countReportWarnings(content: string | undefined) {
+  if (content === undefined) {
+    return 0;
+  }
+  const lines = content.split('\n');
+
+  const lineWarnings = lines.filter(line =>
+    line.includes('// Warning:'),
+  ).length;
+
+  const trailerStart = lines.findIndex(
+    line => line === '// Warnings were encountered during analysis:',
+  );
+  const trailerWarnings =
+    trailerStart === -1
+      ? 0
+      : lines.length -
+        trailerStart -
+        4; /* 4 lines at the trailer and after are not warnings */
+
+  return lineWarnings + trailerWarnings;
+}
+
+export async function countApiReportWarnings(reportPath: string) {
+  return countReportWarnings(await readReport(reportPath));
+}
+
+/**
+ * Compares reports the same way as API Extractor, where differences in
+ * whitespace alone don't count as a change.
+ */
+function areEquivalentReports(a: string, b: string) {
+  return a.replace(/\s+/g, ' ') === b.replace(/\s+/g, ' ');
+}
+
+function validateReportReleaseTags(
+  report: string,
+  reportPath: string,
+  entryPointName: string,
+) {
+  // The root index entry point is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
+  if (!['index', 'alpha', 'beta'].includes(entryPointName)) {
+    return;
+  }
+  const lines = report.split(/\r?\n/);
+  const expectedTag = entryPointName === 'index' ? 'public' : entryPointName;
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const match = line.match(/^\/\/ @(alpha|beta|public)/);
+    if (match && match[1] !== expectedTag) {
+      // Because of limitations in the type script rollup logic we need to allow public exports from the other release stages
+      // TODO(Rugvip): Try to work around the need for this exception
+      if (expectedTag !== 'public' && match[1] === 'public') {
+        continue;
+      }
+      throw new Error(
+        `Unexpected release tag ${match[1]} in ${reportPath} at line ${i + 1}`,
+      );
+    }
+  }
+}
+
+/**
+ * A report written by API Extractor to the temporary report folder, before it
+ * has been formatted and compared with the committed report.
+ */
+interface ExtractedReport {
+  packageDir: string;
+  entryPointName: string;
+  tempPath: string;
+  reportPath: string;
+  warningCountBefore: number;
+  noBail: boolean;
 }
 
 export async function getTsDocConfig() {
@@ -154,7 +218,7 @@ export async function runApiExtraction({
     };
   }
 
-  const warnings = new Array<string>();
+  const extractedReports = new Array<ExtractedReport>();
 
   for (const [packageDir, packageEntryPoints] of Object.entries(
     groupBy(allEntryPoints, ep => ep.packageDir),
@@ -183,10 +247,6 @@ export async function runApiExtraction({
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
       const reportFileName = `report${suffix}`;
-      const reportPath = resolvePath(projectFolder, `${reportFileName}.api.md`);
-
-      const warningCountBefore = await countApiReportWarnings(reportPath);
-
       const extractorConfig = ExtractorConfig.prepare({
         configObject: {
           mainEntryPointFilePath: resolvePath(
@@ -203,10 +263,9 @@ export async function runApiExtraction({
             enabled: true,
             reportFileName,
             reportFolder: projectFolder,
-            reportTempFolder: resolvePath(
-              outputDir,
-              `<unscopedPackageName>${suffix}`,
-            ),
+            // Reports are read back after all packages are extracted, so
+            // each package needs its own folder
+            reportTempFolder: resolvePath(outputDir, 'reports', packageDir),
           },
 
           docModel: {
@@ -284,121 +343,38 @@ export async function runApiExtraction({
       // Message verbosity can't be configured, so just skip the check instead
       (Extractor as any)._checkCompilerCompatibility = () => {};
 
-      let shouldLogInstructions = false;
-      let conflictingFile: undefined | string = undefined;
-
-      // Invoke API Extractor
+      // Invoke API Extractor, which only writes the reports to the temporary
+      // report folder, see patchApiReportGeneration
       const extractorResult = Extractor.invoke(extractorConfig, {
         localBuild: isLocalBuild,
         showVerboseMessages: false,
         showDiagnostics: false,
-        messageCallback(message) {
-          // Detect messages like the following being output by the generator:
-          // Warning: You have changed the API signature for this project. Please copy the file "/home/runner/work/backstage/backstage/node_modules/.cache/api-extractor/backend-test-utils/report.api.md" to "report.api.md", or perform a local build (which does this automatically). See the Git repo documentation for more info.
-          // The same instruction follows "The API report file is missing." for new reports.
-          if (
-            message.text.includes('The API report file is missing') ||
-            message.text.includes(
-              'You have changed the API signature for this project.',
-            )
-          ) {
-            shouldLogInstructions = true;
-            const match = message.text.match(
-              /Please copy the file "(.*)" to "[^"]*\.api\.md"/,
-            );
-            if (match) {
-              conflictingFile = match[1];
-            }
-          }
-        },
         compilerState,
       });
 
-      // This release tag validation makes sure that the release tag of known entry points match expectations.
-      // The root index entry point is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
-      if (
-        validateReleaseTags &&
-        fs.pathExistsSync(extractorConfig.reportFilePath)
-      ) {
-        if (['index', 'alpha', 'beta'].includes(packageEntryPoint.name)) {
-          const report = await fs.readFile(
-            extractorConfig.reportFilePath,
-            'utf8',
-          );
-          const lines = report.split(/\r?\n/);
-          const expectedTag =
-            packageEntryPoint.name === 'index'
-              ? 'public'
-              : packageEntryPoint.name;
-          for (let i = 0; i < lines.length; i += 1) {
-            const line = lines[i];
-            const match = line.match(/^\/\/ @(alpha|beta|public)/);
-            if (match && match[1] !== expectedTag) {
-              // Because of limitations in the type script rollup logic we need to allow public exports from the other release stages
-              // TODO(Rugvip): Try to work around the need for this exception
-              if (expectedTag !== 'public' && match[1] === 'public') {
-                continue;
-              }
-              throw new Error(
-                `Unexpected release tag ${match[1]} in ${
-                  extractorConfig.reportFilePath
-                } at line ${i + 1}`,
-              );
-            }
-          }
-        }
-      }
-
       if (!extractorResult.succeeded) {
-        if (shouldLogInstructions) {
-          logApiReportInstructions();
-
-          if (conflictingFile) {
-            const existing = await fs
-              .readFile(extractorConfig.reportFilePath, 'utf8')
-              .catch(error => {
-                if (error.code === 'ENOENT') {
-                  return undefined;
-                }
-                throw error;
-              });
-            const expected = await fs.readFile(conflictingFile, 'utf8');
-            logReportDiff(
-              relativePath(targetPaths.rootDir, extractorConfig.reportFilePath),
-              existing,
-              expected,
-            );
-
-            logApiReportInstructions();
-          }
-        }
-
         throw new Error(
           `API Extractor completed with ${extractorResult.errorCount} errors` +
             ` and ${extractorResult.warningCount} warnings`,
         );
       }
 
-      const warningCountAfter = await countApiReportWarnings(reportPath);
-
-      if (noBail) {
-        console.log(`Skipping warnings check for ${packageDir}`);
-      }
-      if (warningCountAfter > 0 && !noBail) {
-        throw new Error(
-          `The API Report for ${packageDir} is not allowed to have warnings`,
+      for (const reportConfig of extractorConfig.reportConfigs) {
+        const reportPath = resolvePath(
+          extractorConfig.reportFolder,
+          reportConfig.fileName,
         );
-      }
-      if (warningCountAfter === 0 && allowWarningPkg.includes(packageDir)) {
-        console.log(
-          `No need to allow warnings for ${packageDir}, it does not have any`,
-        );
-      }
-      if (warningCountAfter > warningCountBefore) {
-        warnings.push(
-          `The API Report for ${packageDir} introduces new warnings. ` +
-            'Please fix these warnings in order to keep the API Reports tidy.',
-        );
+        extractedReports.push({
+          packageDir,
+          entryPointName: packageEntryPoint.name,
+          tempPath: resolvePath(
+            extractorConfig.reportTempFolder,
+            reportConfig.fileName,
+          ),
+          reportPath,
+          warningCountBefore: await countApiReportWarnings(reportPath),
+          noBail,
+        });
       }
     }
 
@@ -416,6 +392,125 @@ export async function runApiExtraction({
           `The API Report(s) ${staleList} are no longer relevant and should be deleted`,
         );
       }
+    }
+  }
+
+  await updateApiReports(extractedReports, {
+    isLocalBuild,
+    allowWarningPkg,
+    validateReleaseTags,
+  });
+}
+
+/**
+ * Formats all extracted reports in one batch, and then either updates the
+ * committed reports, or fails if any of them are out of date.
+ */
+async function updateApiReports(
+  extractedReports: ExtractedReport[],
+  options: {
+    isLocalBuild: boolean;
+    allowWarningPkg: string[];
+    validateReleaseTags: boolean;
+  },
+) {
+  const { isLocalBuild, allowWarningPkg, validateReleaseTags } = options;
+
+  const formattedReports = await formatReports(
+    await Promise.all(
+      extractedReports.map(async report => ({
+        path: report.reportPath,
+        content: await fs.readFile(report.tempPath, 'utf8'),
+      })),
+    ),
+  );
+
+  if (!isLocalBuild) {
+    // CI builds never change the committed reports
+    await Promise.all(formattedReports.map(report => restoreReport(report)));
+  }
+
+  const outdatedReports = new Array<FormattedReport>();
+
+  for (const [index, extracted] of extractedReports.entries()) {
+    const report = formattedReports[index];
+    const { path: reportPath, existing, formatted } = report;
+
+    // This release tag validation makes sure that the release tag of known entry points match expectations.
+    if (validateReleaseTags) {
+      validateReportReleaseTags(
+        formatted,
+        reportPath,
+        extracted.entryPointName,
+      );
+    }
+
+    if (existing !== undefined && areEquivalentReports(existing, formatted)) {
+      if (isLocalBuild) {
+        // Differences in whitespace alone don't replace the committed report
+        await restoreReport(report);
+      }
+      continue;
+    }
+
+    const shortPath = relativePath(targetPaths.rootDir, reportPath);
+    if (!isLocalBuild) {
+      outdatedReports.push(report);
+    } else if (existing === undefined) {
+      console.warn(
+        `Warning: The API report file was missing, so a new file was created. Please add this file to Git: ${shortPath}`,
+      );
+    } else {
+      console.warn(
+        `Warning: You have changed the API signature for this project. Updating ${shortPath}`,
+      );
+    }
+  }
+
+  if (outdatedReports.length > 0) {
+    logApiReportInstructions();
+    for (const { path: reportPath, existing, formatted } of outdatedReports) {
+      logReportDiff(
+        relativePath(targetPaths.rootDir, reportPath),
+        existing,
+        formatted,
+      );
+    }
+    logApiReportInstructions();
+
+    throw new Error(
+      `The API Report(s) ${outdatedReports
+        .map(({ path }) => relativePath(targetPaths.rootDir, path))
+        .join(', ')} are out of date`,
+    );
+  }
+
+  const warnings = new Array<string>();
+
+  for (const [index, extracted] of extractedReports.entries()) {
+    const { packageDir, noBail, warningCountBefore } = extracted;
+    const warningCountAfter = countReportWarnings(
+      formattedReports[index].formatted,
+    );
+
+    if (noBail) {
+      console.log(`Skipping warnings check for ${packageDir}`);
+    }
+    if (warningCountAfter > 0 && !noBail) {
+      throw new Error(
+        `The API Report for ${packageDir} is not allowed to have warnings`,
+      );
+    }
+    if (warningCountAfter === 0 && allowWarningPkg.includes(packageDir)) {
+      console.log(
+        `No need to allow warnings for ${packageDir}, it does not have any`,
+      );
+    }
+    if (warningCountAfter > warningCountBefore) {
+      warnings.push(
+        `The API Report for ${packageDir} introduces new warnings. ` +
+          'Please fix these warnings in order to keep the API Reports tidy.',
+      );
     }
   }
 

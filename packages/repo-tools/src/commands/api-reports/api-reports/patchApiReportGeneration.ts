@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ExtractorMessage } from '@microsoft/api-extractor';
+import { Extractor, ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
+import fs from 'fs-extra';
+import { resolve as resolvePath } from 'node:path';
 import type { Program } from 'typescript';
-import { tryRunPrettier } from '../common';
-import { targetPaths } from '@backstage/cli-common';
 
 let applied = false;
 
@@ -148,21 +148,41 @@ export function patchApiReportGeneration() {
         },
       );
 
-      /**
-       * This monkey patching is for applying prettier to the API reports. This has to be patched into
-       * the middle of the process as API Extractor does a comparison of the contents of the old
-       * and new files during generation. This inserts the formatting just before that comparison.
-       */
-      const content = originalGenerateReviewFileContent.call(
+      return originalGenerateReviewFileContent.call(
         this,
         collector,
         ...moreArgs,
       );
-      return tryRunPrettier(content, {
-        parser: 'markdown',
-        // We need a real-looking filepath for proper config resolution, not just a directory
-        // Ideally, the real filepath would be better, but it would require too much patching, for very little gain.
-        filepath: `${targetPaths.rootDir}/report.api.md`,
-      });
     };
+
+  /**
+   * API Extractor normally compares each report with the committed one and
+   * copies it into place. Reports are instead formatted all at once after
+   * extraction, and then compared by repo-tools, so this override only writes
+   * the report to the temporary report folder.
+   */
+  if (typeof (Extractor as any)._writeApiReport !== 'function') {
+    throw new Error(
+      'Unable to patch API Extractor, Extractor._writeApiReport was not found. The installed version of @microsoft/api-extractor is not supported.',
+    );
+  }
+  (Extractor as any)._writeApiReport = function writeApiReportToTempFolder(
+    collector: unknown,
+    _extractorConfig: unknown,
+    _messageRouter: unknown,
+    reportTempDirectoryPath: string,
+    _reportDirectoryPath: string,
+    reportConfig: { fileName: string; variant: string },
+  ): boolean {
+    const content: string = ApiReportGenerator.generateReviewFileContent(
+      collector,
+      reportConfig.variant,
+    );
+    fs.outputFileSync(
+      resolvePath(reportTempDirectoryPath, reportConfig.fileName),
+      content.replace(/\r\n?/g, '\n'),
+    );
+    // Whether the report changed is determined by repo-tools instead
+    return false;
+  };
 }

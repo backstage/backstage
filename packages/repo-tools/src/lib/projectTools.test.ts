@@ -22,6 +22,7 @@ import { findProjectTool, requireProjectTool } from './projectTools';
 
 describe('projectTools', () => {
   const mockDir = createMockDirectory();
+  const emptyMockDir = createMockDirectory();
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -41,11 +42,11 @@ describe('projectTools', () => {
           }),
           'index.js': 'module.exports = { fromProject: true };',
         },
-        prettier: {
+        typedoc: {
           'package.json': JSON.stringify({
-            name: 'prettier',
-            version: '3.0.0',
-            bin: './bin/prettier.cjs',
+            name: 'typedoc',
+            version: '0.27.0',
+            bin: './bin/typedoc',
           }),
         },
       },
@@ -68,22 +69,28 @@ describe('projectTools', () => {
     );
     expect(warn).not.toHaveBeenCalled();
 
-    const prettier = findProjectTool('prettier');
-    expect(prettier?.binPath('prettier')).toBe(
-      resolveReal('node_modules/prettier/bin/prettier.cjs'),
+    const typedoc = findProjectTool('typedoc');
+    expect(typedoc?.binPath('typedoc')).toBe(
+      resolveReal('node_modules/typedoc/bin/typedoc'),
     );
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        'the project uses prettier@3.0.0, but @backstage/repo-tools supports prettier ^2.8.1 || ^3.8.1',
+        'the project uses typedoc@0.27.0, but @backstage/repo-tools supports typedoc ^0.28.0',
       ),
     );
-    findProjectTool('prettier');
+    findProjectTool('typedoc');
     expect(warn).toHaveBeenCalledTimes(1);
 
-    expect(findProjectTool('typedoc')).toBeUndefined();
-    expect(() => requireProjectTool('typedoc')).toThrow(
-      `Could not find the 'typedoc' package in the project at ${mockDir.path}. ` +
+    // A separate directory, since tools would otherwise resolve from the
+    // node_modules of a parent directory
+    emptyMockDir.setContent({
+      'package.json': JSON.stringify({ name: 'empty' }),
+    });
+    const emptyDir = emptyMockDir.path;
+    expect(findProjectTool('typedoc', emptyDir)).toBeUndefined();
+    expect(() => requireProjectTool('typedoc', emptyDir)).toThrow(
+      `Could not find the 'typedoc' package in the project at ${emptyDir}. ` +
         `@backstage/repo-tools uses the project's own typedoc installation, ` +
         `add 'typedoc' (^0.28.0) to the devDependencies of the root package.json and run 'yarn install'.`,
     );

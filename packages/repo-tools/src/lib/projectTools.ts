@@ -24,14 +24,13 @@ import semver from 'semver';
  * Tools that are loaded from the target project instead of being bundled
  * with repo-tools, so that the project's own version is always used.
  */
-export type ProjectToolName = 'typescript' | 'prettier' | 'typedoc';
+export type ProjectToolName = 'typescript' | 'typedoc';
 
 /**
  * The versions of each project tool that repo-tools is known to work with.
  */
 export const supportedProjectToolVersions: Record<ProjectToolName, string> = {
   typescript: '> 3.0.0',
-  prettier: '^2.8.1 || ^3.8.1',
   typedoc: '^0.28.0',
 };
 
@@ -43,9 +42,9 @@ export interface ProjectTool {
   version: string;
   /** The directory that the package is installed in. */
   packageDir: string;
-  /** Resolves a module request, such as `prettier`, from the project root. */
+  /** Resolves a module request, such as `typescript`, from the project root. */
   resolve(request: string): string;
-  /** Loads a module, such as `prettier`, from the project root. */
+  /** Loads a module, such as `typescript`, from the project root. */
   require<T>(request: string): T;
   /** Returns the absolute path to one of the bin scripts of the package. */
   binPath(binName: string): string;

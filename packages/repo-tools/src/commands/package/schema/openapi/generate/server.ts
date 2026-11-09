@@ -28,6 +28,7 @@ import {
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
 import { runOutputWithStderr } from '../../../../../lib/runOutputWithStderr';
+import { formatFiles } from '../../../../../lib/formatFiles';
 import {
   getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
@@ -86,16 +87,7 @@ export const createOpenApiRouter = async (
     tsPath,
     indexFile,
   ]);
-  if (
-    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
-  ) {
-    await runOutputWithStderr(
-      ['yarn', 'prettier', '--write', tsPath, indexFile],
-      {
-        cwd: targetPaths.rootDir,
-      },
-    );
-  }
+  await formatFiles([tsPath, indexFile]);
 }
 
 async function generate(
@@ -165,12 +157,9 @@ async function generate(
     { signal: abortSignal?.signal },
   );
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (prettier) {
-    await runOutputWithStderr([prettier, '--write', resolvedOutputDirectory], {
-      signal: abortSignal?.signal,
-    });
-  }
+  await formatFiles([resolvedOutputDirectory], {
+    signal: abortSignal?.signal,
+  });
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
