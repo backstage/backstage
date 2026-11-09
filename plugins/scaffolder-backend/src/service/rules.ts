@@ -96,6 +96,9 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   valueSchema: Schema;
   validateProperty?: boolean;
 }) {
+  const matchesNumberValues = valueSchema instanceof z.ZodNumber;
+  const matchesStringValues = valueSchema instanceof z.ZodString;
+
   return createActionPermissionRule({
     name,
     description: `Allow actions with the specified property`,
@@ -109,7 +112,33 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
         .describe(`Value of the given property to match on`),
     }) as unknown as z.ZodType<{ key: string; value?: z.infer<Schema> }>,
     apply: (resource, { key, value }) => {
-      const foundValue = get(resource.input, key);
+      let foundValue = get(resource.input, key);
+      const property = toPath(key).join('.');
+      const actionSegments = resource.action.split(':');
+      const integration = actionSegments.find(segment =>
+        /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
+      );
+      const isIntegrationProperty =
+        integration !== undefined &&
+        (['owner', 'repoName', 'projectId', 'repoUrl'].includes(property) ||
+          (actionSegments.includes('group') && property === 'path'));
+
+      // Some integration identifiers, such as GitLab project and group IDs,
+      // are accepted as either numbers or the equivalent numeric strings, and
+      // the integration treats the two forms as the same entity. Normalize
+      // the input value to the rule's type for those properties so that
+      // policies match regardless of which form the input uses.
+      if (isIntegrationProperty) {
+        if (
+          matchesNumberValues &&
+          typeof foundValue === 'string' &&
+          /^\d+$/u.test(foundValue)
+        ) {
+          foundValue = Number(foundValue);
+        } else if (matchesStringValues && typeof foundValue === 'number') {
+          foundValue = String(foundValue);
+        }
+      }
 
       if (validateProperty && !valueSchema.safeParse(foundValue).success) {
         return false;
@@ -117,19 +146,7 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
       if (value !== undefined) {
         if (valueSchema.safeParse(value).success) {
           if (typeof value === 'string' && typeof foundValue === 'string') {
-            const property = toPath(key).join('.');
-            const actionSegments = resource.action.split(':');
-            const integration = actionSegments.find(segment =>
-              /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
-            );
-
-            if (
-              integration &&
-              (['owner', 'repoName', 'projectId', 'repoUrl'].includes(
-                property,
-              ) ||
-                (actionSegments.includes('group') && property === 'path'))
-            ) {
+            if (isIntegrationProperty) {
               return value.toLowerCase() === foundValue.toLowerCase();
             }
           }

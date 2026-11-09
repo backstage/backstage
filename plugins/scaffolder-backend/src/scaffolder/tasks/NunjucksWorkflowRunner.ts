@@ -228,29 +228,69 @@ const isActionAuthorized = createConditionAuthorizer(
   Object.values(scaffolderActionRules),
 );
 
-const stringPathConditionSchema = z.object({
+const stringPropertyConditionSchema = z.object({
   rule: z.literal('HAS_STRING_PROPERTY'),
   params: z.object({
-    key: z.string().refine(key => toPath(key).join('.') === 'path'),
+    key: z.string(),
     value: z.string(),
   }),
 });
 
-const numericGroupPathSchema = z.number().or(z.string().regex(/^\d+$/u));
+const numberPropertyConditionSchema = z.object({
+  rule: z.literal('HAS_NUMBER_PROPERTY'),
+  params: z.object({
+    key: z.string(),
+    value: z.number(),
+  }),
+});
 
-function getStringPathConditions(
+const numericIdentifierSchema = z.number().or(z.string().regex(/^\d+$/u));
+
+// Returns the input property that identifies the target entity for actions
+// that accept integration identifiers either as numbers or as strings.
+function getIdentifierKey(action: string): 'path' | 'projectId' | undefined {
+  const segments = action.split(':');
+  if (segments.includes('group')) {
+    return 'path';
+  }
+  return segments.some(segment =>
+    /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
+  )
+    ? 'projectId'
+    : undefined;
+}
+
+function getIdentifierConditionValues(
   criteria: PermissionCriteria<PermissionCondition>,
-): Array<string> {
+  key: string,
+): Array<string | number> {
   switch (true) {
     case isAndCriteria(criteria):
-      return criteria.allOf.flatMap(getStringPathConditions);
+      return criteria.allOf.flatMap(child =>
+        getIdentifierConditionValues(child, key),
+      );
     case isOrCriteria(criteria):
-      return criteria.anyOf.flatMap(getStringPathConditions);
+      return criteria.anyOf.flatMap(child =>
+        getIdentifierConditionValues(child, key),
+      );
     case isNotCriteria(criteria):
-      return getStringPathConditions(criteria.not);
+      return getIdentifierConditionValues(criteria.not, key);
     default: {
-      const condition = stringPathConditionSchema.safeParse(criteria);
-      return condition.success ? [condition.data.params.value] : [];
+      const stringCondition = stringPropertyConditionSchema.safeParse(criteria);
+      if (
+        stringCondition.success &&
+        toPath(stringCondition.data.params.key).join('.') === key
+      ) {
+        return [stringCondition.data.params.value];
+      }
+      const numberCondition = numberPropertyConditionSchema.safeParse(criteria);
+      if (
+        numberCondition.success &&
+        toPath(numberCondition.data.params.key).join('.') === key
+      ) {
+        return [numberCondition.data.params.value];
+      }
+      return [];
     }
   }
 }
@@ -264,18 +304,39 @@ function isActionInputAuthorized(
     return false;
   }
 
+  if (decision.result !== AuthorizeResult.CONDITIONAL) {
+    return true;
+  }
+
+  const identifierKey = getIdentifierKey(action);
+  const identifier = identifierKey ? input[identifierKey] : undefined;
   if (
-    decision.result !== AuthorizeResult.CONDITIONAL ||
-    !action.split(':').includes('group') ||
-    !numericGroupPathSchema.safeParse(input.path).success
+    !identifierKey ||
+    (typeof identifier !== 'string' && typeof identifier !== 'number')
   ) {
     return true;
   }
 
-  return getStringPathConditions(decision.conditions).every(candidatePath =>
+  // The identifier in the input may resolve to the same entity as an
+  // identifier that the policy refers to in the other form, e.g. a numeric
+  // project ID may identify the same project as a project path that the
+  // policy mentions. The input is therefore only authorized if the policy
+  // also allows the action for each of those identifiers.
+  const isNumericIdentifier =
+    numericIdentifierSchema.safeParse(identifier).success;
+  const identifiers = getIdentifierConditionValues(
+    decision.conditions,
+    identifierKey,
+  ).filter(
+    candidate =>
+      (isNumericIdentifier && typeof candidate === 'string') ||
+      (typeof identifier === 'string' && typeof candidate === 'number'),
+  );
+
+  return identifiers.every(candidate =>
     isActionAuthorized(decision, {
       action,
-      input: { ...input, path: candidatePath },
+      input: { ...input, [identifierKey]: candidate },
     }),
   );
 }
