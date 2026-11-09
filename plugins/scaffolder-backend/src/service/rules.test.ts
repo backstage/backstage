@@ -288,6 +288,41 @@ describe('hasNumberProperty', () => {
         ).toEqual(true);
       },
     );
+
+    it.each([
+      ['gitlab:projectAccessToken:create', 'projectId'],
+      ['gitlab:projectDeployToken:create', 'projectId'],
+      ['gitlab:projectVariable:create', 'projectId'],
+      ['gitlab:issues:create', 'projectId'],
+      ['gitlab:group:access', 'path'],
+      ['bitbucketServer:group:access', 'path'],
+    ])(
+      'matches numeric string input values for integration identifiers, action=%s key=%s',
+      (action, key) => {
+        expect(
+          hasNumberProperty.apply(
+            { action, input: { [key]: '42' } },
+            { key, value: 42 },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it.each([
+      ['custom:action', 'projectId', '42'],
+      ['gitlab:issues:create', 'title', '42'],
+      ['gitlab:group:access', 'path', 'example/team'],
+    ])(
+      'does not match unmatched input values, action=%s key=%s value=%s',
+      (action, key, value) => {
+        expect(
+          hasNumberProperty.apply(
+            { action, input: { [key]: value } },
+            { key, value: 42 },
+          ),
+        ).toEqual(false);
+      },
+    );
   });
 });
 
@@ -412,6 +447,41 @@ describe('hasStringProperty', () => {
         ),
       ).toEqual(false);
     });
+
+    it.each([
+      ['gitlab:projectAccessToken:create', 'projectId'],
+      ['gitlab:projectDeployToken:create', 'projectId'],
+      ['gitlab:projectVariable:create', 'projectId'],
+      ['gitlab:issues:create', 'projectId'],
+      ['gitlab:group:access', 'path'],
+      ['bitbucketCloud:group:access', 'path'],
+    ])(
+      'matches numeric input values for integration identifiers, action=%s key=%s',
+      (action, key) => {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: 42 } },
+            { key, value: '42' },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it.each([
+      ['custom:action', 'projectId', 42, '42'],
+      ['gitlab:issues:create', 'title', 42, '42'],
+      ['gitlab:projectAccessToken:create', 'projectId', 42, 'example/project'],
+    ])(
+      'does not match unmatched input values, action=%s key=%s',
+      (action, key, value, match) => {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: value } },
+            { key, value: match },
+          ),
+        ).toEqual(false);
+      },
+    );
   });
 });
 
