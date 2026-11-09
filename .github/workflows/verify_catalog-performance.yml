@@ -174,7 +174,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ runner.temp }}/perf/dataset.dump
-          key: catalog-perf-dataset-v2-pg${{ matrix.pg }}-${{ hashFiles('plugins/catalog-backend/migrations/**', 'plugins/catalog-backend/src/tests/performance/lib/dataset.ts', 'plugins/catalog-backend/src/tests/performance/lib/preloadDataset.ts') }}
+          key: catalog-perf-dataset-v3-pg${{ matrix.pg }}-${{ hashFiles('plugins/catalog-backend/migrations/**', 'plugins/catalog-backend/src/tests/performance/lib/dataset.ts', 'plugins/catalog-backend/src/tests/performance/lib/preloadDataset.ts') }}
 
       # Restore with the tools inside the service container, so they match the server version
       - name: restore dataset into the template database
@@ -194,7 +194,10 @@ jobs:
         if: steps.dataset.outputs.cache-hit != 'true'
         run: |
           docker exec "$PG_CONTAINER" psql -U postgres -c 'ALTER DATABASE catalog_perf_template WITH ALLOW_CONNECTIONS true'
-          docker exec "$PG_CONTAINER" pg_dump -U postgres -Fc -f /tmp/dataset.dump catalog_perf_template
+          # Postgres 18 dumps statistics only when asked to, and older versions cannot
+          STATISTICS=""
+          if [ "${{ matrix.pg }}" -ge 18 ]; then STATISTICS="--statistics"; fi
+          docker exec "$PG_CONTAINER" pg_dump -U postgres -Fc $STATISTICS -f /tmp/dataset.dump catalog_perf_template
           docker exec "$PG_CONTAINER" psql -U postgres -c 'ALTER DATABASE catalog_perf_template WITH ALLOW_CONNECTIONS false'
           docker cp "$PG_CONTAINER:/tmp/dataset.dump" "$DATASET_DUMP"
           docker exec "$PG_CONTAINER" rm /tmp/dataset.dump
