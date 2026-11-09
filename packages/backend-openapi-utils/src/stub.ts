@@ -26,7 +26,7 @@ import {
   json,
   Router,
 } from 'express';
-import { InputError, ValidationErrorItem } from '@backstage/errors';
+import { InputError, ValidationIssue } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { isErrorResult, merge } from 'openapi-merge';
@@ -35,15 +35,13 @@ import { isErrorResult, merge } from 'openapi-merge';
  * Reads the individual failures from an express-openapi-validator error. Their
  * paths are already JSON Pointers into the request, such as `/body/location`.
  */
-function getValidationErrorItems(
-  error: Error,
-): ValidationErrorItem[] | undefined {
+function getValidationIssues(error: Error): ValidationIssue[] | undefined {
   const items: unknown = (error as { errors?: unknown }).errors;
   if (!Array.isArray(items)) {
     return undefined;
   }
   return items.map(item => {
-    const result: ValidationErrorItem = {
+    const result: ValidationIssue = {
       pointer: String(item.path ?? ''),
       detail: String(item.message ?? ''),
     };
@@ -58,7 +56,7 @@ function validatorErrorTransformer(): ErrorRequestHandler {
   return (error: Error, _: Request, _2: Response, next: NextFunction) => {
     next(
       new InputError(error.message, undefined, {
-        errors: getValidationErrorItems(error),
+        issues: getValidationIssues(error),
       }),
     );
   };

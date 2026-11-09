@@ -78,7 +78,7 @@ describe('createRouter', () => {
     }
   });
 
-  it('includes the individual validation errors in request validation failures', async () => {
+  it('includes the individual validation issues in request validation failures', async () => {
     const router = createValidatedOpenApiRouter({
       openapi: '3.0.3',
       info: { title: 'Validation test', version: '1.0.0' },
@@ -126,7 +126,7 @@ describe('createRouter', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.error.name).toBe('InputError');
-    expect(response.body.error.errors).toEqual([
+    expect(response.body.error.issues).toEqual([
       {
         pointer: '/body/name',
         detail: "must have required property 'name'",
@@ -138,7 +138,7 @@ describe('createRouter', () => {
       .post('/things')
       .send({ name: 'thing', count: 'many' });
     expect(wrongType.status).toBe(400);
-    expect(wrongType.body.error.errors).toEqual([
+    expect(wrongType.body.error.issues).toEqual([
       {
         pointer: '/body/count',
         detail: 'must be integer',
@@ -152,7 +152,7 @@ describe('createRouter', () => {
       .send('{not json');
     expect(malformed.status).toBe(400);
     expect(malformed.body.error.name).toBe('InputError');
-    expect(malformed.body.error).not.toHaveProperty('errors');
+    expect(malformed.body.error).not.toHaveProperty('issues');
   });
 
   const routers = specs.flatMap(spec => {

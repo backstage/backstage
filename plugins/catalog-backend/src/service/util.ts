@@ -17,7 +17,7 @@
 import {
   InputError,
   NotAllowedError,
-  validationErrorItemsFromZod,
+  validationIssuesFromZod,
 } from '@backstage/errors';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 import { Request } from 'express';
@@ -71,9 +71,9 @@ export async function validateRequestBody<T>(
     return await schema.parse(body);
   } catch (e) {
     throw new InputError(`Malformed request: ${e}`, undefined, {
-      errors:
+      issues:
         e instanceof z.ZodError
-          ? validationErrorItemsFromZod(e, { pointerPrefix: '/body' })
+          ? validationIssuesFromZod(e, { pointerPrefix: '/body' })
           : undefined,
     });
   }

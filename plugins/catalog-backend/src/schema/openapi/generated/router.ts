@@ -226,7 +226,7 @@ export const spec = {
       },
     },
     schemas: {
-      ValidationErrorItem: {
+      ValidationIssue: {
         type: 'object',
         description: 'A single validation failure for one value in a request.',
         properties: {
@@ -265,11 +265,11 @@ export const spec = {
               code: {
                 type: 'string',
               },
-              errors: {
+              issues: {
                 type: 'array',
                 description: 'The individual validation failures, if known.',
                 items: {
-                  $ref: '#/components/schemas/ValidationErrorItem',
+                  $ref: '#/components/schemas/ValidationIssue',
                 },
               },
             },
@@ -1921,12 +1921,12 @@ export const spec = {
                           message: {
                             type: 'string',
                           },
-                          errors: {
+                          issues: {
                             type: 'array',
                             description:
                               'The individual validation failures, if known.',
                             items: {
-                              $ref: '#/components/schemas/ValidationErrorItem',
+                              $ref: '#/components/schemas/ValidationIssue',
                             },
                           },
                         },

@@ -29,6 +29,6 @@ export {
 } from './common';
 export { CustomErrorBase } from './CustomErrorBase';
 export { ResponseError } from './ResponseError';
-export { validationErrorItemsFromZod } from './validation';
-export type { ValidationErrorItem } from './validation';
+export { validationIssuesFromZod } from './validation';
+export type { ValidationIssue } from './validation';
 export type { ConsumedResponse } from './types';

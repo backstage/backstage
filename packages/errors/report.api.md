@@ -84,10 +84,10 @@ export class InputError extends CustomErrorBase {
     message?: string,
     cause?: Error | unknown,
     options?: {
-      errors?: ValidationErrorItem[];
+      issues?: ValidationIssue[];
     },
   );
-  readonly errors?: ValidationErrorItem[];
+  readonly issues?: ValidationIssue[];
   // (undocumented)
   name: 'InputError';
 }
@@ -171,14 +171,14 @@ export function stringifyError(error: unknown): string;
 export function toError(value: unknown): ErrorLike;
 
 // @public
-export type ValidationErrorItem = {
+export type ValidationIssue = {
   pointer: string;
   detail: string;
   code?: string;
 };
 
 // @public
-export function validationErrorItemsFromZod(
+export function validationIssuesFromZod(
   error: {
     issues: ReadonlyArray<{
       path: ReadonlyArray<PropertyKey>;
@@ -189,5 +189,5 @@ export function validationErrorItemsFromZod(
   options?: {
     pointerPrefix?: string;
   },
-): ValidationErrorItem[];
+): ValidationIssue[];
 ```

@@ -16,10 +16,10 @@
 
 import { deserializeError, serializeError } from '../serialization';
 import { InputError } from './common';
-import { validationErrorItemsFromZod } from './validation';
+import { validationIssuesFromZod } from './validation';
 
-describe('validationErrorItemsFromZod', () => {
-  it('converts zod issues into validation error items', () => {
+describe('validationIssuesFromZod', () => {
+  it('converts zod issues into validation issues', () => {
     const zodLikeError = {
       issues: [
         {
@@ -35,7 +35,7 @@ describe('validationErrorItemsFromZod', () => {
       ],
     };
 
-    expect(validationErrorItemsFromZod(zodLikeError)).toEqual([
+    expect(validationIssuesFromZod(zodLikeError)).toEqual([
       {
         pointer: '/entity/spec/0/name',
         detail: 'Expected string, received number',
@@ -45,7 +45,7 @@ describe('validationErrorItemsFromZod', () => {
       { pointer: '', detail: 'Invalid input', code: 'custom' },
     ]);
 
-    const [prefixed, , root] = validationErrorItemsFromZod(zodLikeError, {
+    const [prefixed, , root] = validationIssuesFromZod(zodLikeError, {
       pointerPrefix: '/body',
     });
     expect(prefixed.pointer).toBe('/body/entity/spec/0/name');
@@ -53,27 +53,27 @@ describe('validationErrorItemsFromZod', () => {
   });
 });
 
-describe('InputError validation errors', () => {
-  it('keeps validation errors through serialization', () => {
-    const errors = [
+describe('InputError validation issues', () => {
+  it('keeps validation issues through serialization', () => {
+    const issues = [
       { pointer: '/body/location', detail: 'must be string', code: 'type' },
     ];
-    const error = new InputError('Invalid request', undefined, { errors });
+    const error = new InputError('Invalid request', undefined, { issues });
 
-    expect(error.errors).toBe(errors);
+    expect(error.issues).toBe(issues);
     expect(error.message).toBe('Invalid request');
 
     const serialized = serializeError(error);
     expect(serialized).toEqual({
       name: 'InputError',
       message: 'Invalid request',
-      errors,
+      issues,
     });
-    expect(JSON.parse(JSON.stringify(serialized)).errors).toEqual(errors);
-    expect((deserializeError(serialized) as InputError).errors).toEqual(errors);
+    expect(JSON.parse(JSON.stringify(serialized)).issues).toEqual(issues);
+    expect((deserializeError(serialized) as InputError).issues).toEqual(issues);
 
     const plain = new InputError('Invalid request');
-    expect(plain.errors).toBeUndefined();
-    expect(serializeError(plain)).not.toHaveProperty('errors');
+    expect(plain.issues).toBeUndefined();
+    expect(serializeError(plain)).not.toHaveProperty('issues');
   });
 });

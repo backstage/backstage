@@ -22,7 +22,7 @@
  * A single validation failure for one value in a request.
  * @public
  */
-export interface ValidationErrorItem {
+export interface ValidationIssue {
   /**
    * A JSON Pointer to the value that failed validation, for example `/body/location`.
    */

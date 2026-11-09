@@ -22,7 +22,7 @@
  *
  * @public
  */
-export type ValidationErrorItem = {
+export type ValidationIssue = {
   /**
    * A JSON Pointer (RFC 6901) to the value that failed validation, for example
    * `/body/entity/metadata/name` or `/query/limit`. An empty string refers to
@@ -55,7 +55,7 @@ function toJsonPointer(
 }
 
 /**
- * Converts the issues of a zod error into validation error items.
+ * Converts the issues of a zod error into validation issues.
  *
  * @remarks
  *
@@ -66,7 +66,7 @@ function toJsonPointer(
  * @param error - A zod error, or any object with a matching `issues` array.
  * @param options - Optional conversion options.
  */
-export function validationErrorItemsFromZod(
+export function validationIssuesFromZod(
   error: {
     issues: ReadonlyArray<{
       path: ReadonlyArray<PropertyKey>;
@@ -75,12 +75,12 @@ export function validationErrorItemsFromZod(
     }>;
   },
   options?: {
-    /** A JSON Pointer to prepend to every item, for example `/body`. */
+    /** A JSON Pointer to prepend to every issue, for example `/body`. */
     pointerPrefix?: string;
   },
-): ValidationErrorItem[] {
+): ValidationIssue[] {
   return error.issues.map(issue => {
-    const item: ValidationErrorItem = {
+    const item: ValidationIssue = {
       pointer: toJsonPointer(issue.path, options?.pointerPrefix),
       detail: issue.message,
     };
