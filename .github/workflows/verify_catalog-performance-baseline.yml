@@ -162,6 +162,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/perf"
           echo "PERFORMANCE_RESULTS_FILE=$RUNNER_TEMP/perf/current.jsonl" >> "$GITHUB_ENV"
+          echo "PERFORMANCE_PLAN_FINDINGS_FILE=$RUNNER_TEMP/perf/plan-findings.jsonl" >> "$GITHUB_ENV"
           echo "DATASET_DUMP=$RUNNER_TEMP/perf/dataset.dump" >> "$GITHUB_ENV"
           echo "PG_CONTAINER=${{ job.services.postgres.id }}" >> "$GITHUB_ENV"
           echo "BACKSTAGE_TEST_DATABASE_POSTGRES${{ matrix.pg }}_CONNECTION_STRING=postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}" >> "$GITHUB_ENV"
@@ -213,10 +214,16 @@ jobs:
             plugins/catalog-backend/src/tests/performance/stitchQueue
 
       - name: stage baseline
-        run: cp "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
+        run: |
+          cp "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
+          # Always save a findings file, so that "none" is distinguishable from "no baseline"
+          touch "$RUNNER_TEMP/perf/plan-findings.jsonl"
+          cp "$RUNNER_TEMP/perf/plan-findings.jsonl" "$RUNNER_TEMP/perf/baseline-plan-findings.jsonl"
 
       - name: save baseline
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/perf/baseline.jsonl
+          path: |
+            ${{ runner.temp }}/perf/baseline.jsonl
+            ${{ runner.temp }}/perf/baseline-plan-findings.jsonl
           key: catalog-perf-battery-baseline-pg${{ matrix.pg }}-${{ github.sha }}

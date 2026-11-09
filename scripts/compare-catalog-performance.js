@@ -19,11 +19,17 @@
 // master. Both inputs are JSON lines of `{ name, durationMs }`, as written by
 // the tests when PERFORMANCE_RESULTS_FILE is set.
 //
-// Usage: compare-catalog-performance.js <current.jsonl> <baseline.jsonl> [plan-findings.jsonl]
+// Usage: compare-catalog-performance.js <current.jsonl> <baseline.jsonl> [plan-findings.jsonl [baseline-plan-findings.jsonl]]
 //
 // The optional third file holds query plan findings as JSON lines of
 // `{ test, rule, planSummary, known, nowPassing? }`, as written by the tests
-// when PERFORMANCE_PLAN_FINDINGS_FILE is set. They never affect the exit code.
+// when PERFORMANCE_PLAN_FINDINGS_FILE is set. The fourth holds the findings
+// recorded with the baseline; findings in it, matched on test and rule, are not
+// reported as new. Findings never affect the exit code.
+//
+// Only actionable changes are shown by default: timing regressions, findings
+// that are not in the baseline, and known issues that now pass. Everything else
+// is collapsed.
 //
 // Environment:
 //   REGRESSION_RATIO       slowdown factor that counts as a regression (default 1.5)
@@ -68,28 +74,35 @@ function loadFindings(file) {
     .map(line => JSON.parse(line));
 }
 
-// Findings are reported as: new, then known, then known checks that now pass.
-// Only new findings are annotated as warnings.
-function planFindingsReport(findings) {
-  const fresh = findings.filter(f => !f.known);
+const findingKey = f => `${f.test}\n${f.rule}`;
+
+const collapsed = (summary, body) =>
+  [
+    `<details><summary>${summary}</summary>`,
+    '',
+    ...body,
+    '',
+    '</details>',
+    '',
+  ].join('\n');
+
+const findingDetails = f =>
+  collapsed(`${f.test}: ${f.rule}`, ['```', f.planSummary, '```']);
+
+// Only actionable findings are shown by default: new findings that are not in
+// the baseline, and known issues that now pass. Known issues and findings that
+// are already in the baseline are collapsed. Returns the markdown, and the
+// number of actionable findings.
+function planFindingsReport(findings, baselineFindings) {
+  const inBaseline = new Set((baselineFindings ?? []).map(findingKey));
+  const fresh = findings.filter(
+    f => !f.known && !inBaseline.has(findingKey(f)),
+  );
+  const existing = findings.filter(
+    f => !f.known && inBaseline.has(findingKey(f)),
+  );
   const known = findings.filter(f => f.known && !f.nowPassing);
   const passing = findings.filter(f => f.known && f.nowPassing);
-
-  const details = f =>
-    [
-      `<details><summary>${f.test}: ${f.rule}</summary>`,
-      '',
-      '```',
-      f.planSummary,
-      '```',
-      '',
-      '</details>',
-      '',
-    ].join('\n');
-  const section = (title, items, note) =>
-    items.length === 0
-      ? []
-      : [`### ${title} (${items.length})`, '', note, '', ...items.map(details)];
 
   for (const f of fresh) {
     console.log(
@@ -103,36 +116,53 @@ function planFindingsReport(findings) {
     console.log(`::notice title=Known plan issue fixed::${f.test}: ${f.rule}`);
   }
 
-  return [
+  const section = (title, items, note) =>
+    items.length === 0
+      ? []
+      : [
+          `### ${title} (${items.length})`,
+          '',
+          note,
+          '',
+          ...items.map(findingDetails),
+        ];
+  const hidden = (title, items) =>
+    items.length === 0
+      ? []
+      : [collapsed(`${title} (${items.length})`, items.map(findingDetails))];
+
+  const lines = [
     '## Query plan findings',
     '',
-    findings.length === 0
-      ? '_No query plan findings._'
+    baselineFindings === undefined
+      ? '_No baseline findings found; every finding that is not a known issue counts as new._'
       : 'Plan check violations do not fail the job.',
     '',
     ...section(
       'New findings',
       fresh,
-      'Not on the known issues list. Fix the query, or add a documented known issue.',
-    ),
-    ...section(
-      'Known issues',
-      known,
-      'Documented in the tests, and still reproducing.',
+      'Not a known issue, and not in the baseline. Fix the query, or add a documented known issue.',
     ),
     ...section(
       'Known issues that now pass',
       passing,
       'These no longer reproduce. Remove them from the known issues in the tests.',
     ),
-  ].join('\n');
+    ...hidden('Findings already in the baseline', existing),
+    ...hidden('Known issues', known),
+  ];
+  return {
+    report: lines.join('\n'),
+    actionable: fresh.length + passing.length,
+  };
 }
 
 function main() {
-  const [currentFile, baselineFile, findingsFile] = process.argv.slice(2);
+  const [currentFile, baselineFile, findingsFile, baselineFindingsFile] =
+    process.argv.slice(2);
   if (!currentFile || !baselineFile) {
     throw new Error(
-      'Usage: compare-catalog-performance.js <current> <baseline>',
+      'Usage: compare-catalog-performance.js <current> <baseline> [findings] [baseline-findings]',
     );
   }
   const current = load(currentFile);
@@ -141,30 +171,44 @@ function main() {
     throw new Error(`No timings found in ${currentFile}`);
   }
 
-  const rows = [];
-  let regressions = 0;
+  const regressedRows = [];
+  const otherRows = [];
   for (const [name, now] of [...current].sort()) {
     const before = baseline.get(name);
     if (before === undefined) {
-      rows.push(`| ${name} | - | ${now} | new |`);
+      otherRows.push(`| ${name} | - | ${now} | new |`);
       continue;
     }
     const ratio = now / before;
     const regressed = ratio > ratioLimit && now - before > minMs;
+    const row = `| ${name} | ${before} | ${now} | ${ratio.toFixed(2)}x${
+      regressed ? ' :warning: slower' : ''
+    } |`;
     if (regressed) {
-      regressions += 1;
       console.log(
         `::warning title=Catalog performance regression::${name} took ${now}ms, baseline ${before}ms (${ratio.toFixed(
           2,
         )}x)`,
       );
+      regressedRows.push(row);
+    } else {
+      otherRows.push(row);
     }
-    rows.push(
-      `| ${name} | ${before} | ${now} | ${ratio.toFixed(2)}x${
-        regressed ? ' :warning: slower' : ''
-      } |`,
-    );
   }
+  const regressions = regressedRows.length;
+  const tableHeader = [
+    '| Test | Baseline (ms) | Current (ms) | Change |',
+    '| --- | ---: | ---: | --- |',
+  ];
+
+  const findings = findingsFile ? loadFindings(findingsFile) : undefined;
+  const baselineFindings =
+    baselineFindingsFile && fs.existsSync(baselineFindingsFile)
+      ? loadFindings(baselineFindingsFile)
+      : undefined;
+  const planReport = findings
+    ? planFindingsReport(findings, baselineFindings)
+    : undefined;
 
   const report = [
     '## Catalog performance vs master',
@@ -173,13 +217,21 @@ function main() {
       ? '_No baseline found; showing current timings only._'
       : `Flagged when slower by more than ${ratioLimit}x and ${minMs}ms. Timings are noisy on shared runners.`,
     '',
-    '| Test | Baseline (ms) | Current (ms) | Change |',
-    '| --- | ---: | ---: | --- |',
-    ...rows,
-    '',
-    ...(findingsFile
-      ? [planFindingsReport(loadFindings(findingsFile)), '']
+    ...(regressions + (planReport?.actionable ?? 0) === 0
+      ? ['**No actionable changes.**', '']
       : []),
+    ...(regressions
+      ? ['### Timing regressions', '', ...tableHeader, ...regressedRows, '']
+      : []),
+    ...(otherRows.length
+      ? [
+          collapsed(`Timings without a regression (${otherRows.length})`, [
+            ...tableHeader,
+            ...otherRows,
+          ]),
+        ]
+      : []),
+    ...(planReport ? [planReport.report, ''] : []),
   ].join('\n');
 
   console.log(report);

@@ -219,7 +219,9 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/perf/baseline.jsonl
+          path: |
+            ${{ runner.temp }}/perf/baseline.jsonl
+            ${{ runner.temp }}/perf/baseline-plan-findings.jsonl
           key: catalog-perf-battery-baseline-pg${{ matrix.pg }}-none
           restore-keys: catalog-perf-battery-baseline-pg${{ matrix.pg }}-
 
@@ -231,4 +233,4 @@ jobs:
             echo "No timings were recorded, skipping the comparison"
             exit 0
           fi
-          node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl" "$RUNNER_TEMP/perf/plan-findings.jsonl"
+          node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl" "$RUNNER_TEMP/perf/plan-findings.jsonl" "$RUNNER_TEMP/perf/baseline-plan-findings.jsonl"
