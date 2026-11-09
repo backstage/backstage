@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-format-oxfmt
+  title: '@backstage/cli-module-format-oxfmt'
+  description: CLI module for Backstage CLI that formats code with oxfmt
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

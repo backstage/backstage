@@ -114,6 +114,12 @@ help [command]                                 display help for command
 | ------------------- | -------------------------------------------- |
 | `create-github-app` | Create a new GitHub App in your organization |
 
+### [Format Modules](./02-build-system.md#formatting)
+
+| Command          | Description                                   |
+| ---------------- | --------------------------------------------- |
+| `package format` | Format a package with the project's formatter |
+
 ### [Info Module](./module-info.md)
 
 | Command | Description                                               |

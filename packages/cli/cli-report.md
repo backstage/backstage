@@ -516,6 +516,7 @@ Options:
 Commands:
   build
   clean
+  format
   help
   lint
   postpack
@@ -545,6 +546,17 @@ Options:
 Usage: backstage-cli package clean [flags...]
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli package format`
+
+```
+Usage: backstage-cli package format [flags...] [paths...]
+
+Options:
+  --check
+  --include-ignored
   -h, --help
 ```
 

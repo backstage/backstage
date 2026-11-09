@@ -18,6 +18,7 @@ import auth from '@backstage/cli-module-auth';
 import build from '@backstage/cli-module-build';
 import catalog from '@backstage/cli-module-catalog';
 import config from '@backstage/cli-module-config';
+import formatPrettier from '@backstage/cli-module-format-prettier';
 import github from '@backstage/cli-module-github';
 import info from '@backstage/cli-module-info';
 import lint from '@backstage/cli-module-lint';
@@ -41,6 +42,7 @@ export default [
   build,
   catalog,
   config,
+  formatPrettier,
   github,
   info,
   lint,

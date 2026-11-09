@@ -385,4 +385,32 @@ describe('CliInitializer', () => {
       'Command "shared" from "@backstage/array-b" conflicts with an existing command from "@backstage/array-a"',
     );
   });
+
+  it('should let an installed format module replace the Prettier module from the defaults', async () => {
+    expect.assertions(2);
+    process.argv = ['node', 'cli', 'package', 'format', '--check'];
+    const initializer = new CliInitializer();
+
+    // Added the same way as the CLI entry point adds the defaults and the
+    // modules that it discovers in the project root package.json
+    initializer.add(import('@backstage/cli-defaults'));
+    initializer.add(
+      Promise.resolve({
+        default: createCliModule({
+          packageJson: { name: '@backstage/cli-module-format-oxfmt' },
+          init: async reg =>
+            reg.addCommand({
+              path: ['package', 'format'],
+              description: 'Format a package with oxfmt',
+              execute: async ({ args }) => {
+                expect(args).toEqual(['--check']);
+              },
+            }),
+        }),
+      }),
+    );
+
+    await initializer.run();
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
 });

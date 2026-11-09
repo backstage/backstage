@@ -81,7 +81,9 @@ Synchronize package subpath export definitions
 
 Migrate all packages to use the ESLint configuration factory provided by the
 CLI. This replaces custom ESLint configurations with
-`@backstage/cli/config/eslint-factory`.
+`@backstage/cli/config/eslint-factory`. The rewritten configuration files are
+formatted with the [`package format`](./02-build-system.md#formatting)
+command.
 
 ```text
 Usage: backstage-cli migrate package-lint-configs
