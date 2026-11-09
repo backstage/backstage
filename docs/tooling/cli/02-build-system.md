@@ -132,13 +132,17 @@ project. Tools that write files, such as
 `backstage-cli migrate package-lint-configs`, use this command to format their
 output. With `--check`, the command lists the files that need formatting and
 exits with a non-zero code if there are any, without changing them. Files that
-the formatter ignores or can't format are skipped.
+the formatter ignores or can't format are skipped. With `--include-ignored`,
+the paths you pass are formatted even if the ignore files of the project list
+them. Tools use this for generated files, such as API reports, that the
+project ignores so that formatting the whole repository leaves them alone.
 
 ```text
 Usage: backstage-cli package format [flags...] [paths...]
 
 Options:
-  --check  List the files that need formatting and fail if there are any, without writing them
+  --check            List the files that need formatting and fail if there are any, without writing them
+  --include-ignored  Format the given paths even if the ignore files of the project list them
 ```
 
 The command comes from a CLI module, which runs the formatter that the root

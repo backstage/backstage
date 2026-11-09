@@ -20,7 +20,7 @@ import { runFormatter } from '../../lib/runFormatter';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { check },
+    flags: { check, includeIgnored },
     _: paths,
   } = cli(
     {
@@ -33,6 +33,11 @@ export default async ({ args, info }: CliCommandContext) => {
           description:
             'List the files that need formatting and fail if there are any, without writing them',
         },
+        includeIgnored: {
+          type: Boolean,
+          description:
+            'Format the given paths even if the ignore files of the project list them',
+        },
       },
     },
     undefined,
@@ -43,6 +48,7 @@ export default async ({ args, info }: CliCommandContext) => {
     name: 'oxfmt',
     paths,
     modeArgs: [check ? '--check' : '--write'],
+    includeIgnored,
     // Paths that are ignored or match no files are skipped instead of failing,
     // which matches how Prettier treats them
     extraArgs: ['--no-error-on-unmatched-pattern'],

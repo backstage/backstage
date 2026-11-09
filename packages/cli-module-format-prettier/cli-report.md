@@ -37,5 +37,6 @@ Usage: @backstage/cli-module-format-prettier package format [flags...] [paths...
 
 Options:
   --check
+  --include-ignored
   -h, --help
 ```

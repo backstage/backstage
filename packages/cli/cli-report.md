@@ -556,6 +556,7 @@ Usage: backstage-cli package format [flags...] [paths...]
 
 Options:
   --check
+  --include-ignored
   -h, --help
 ```
 

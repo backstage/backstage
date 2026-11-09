@@ -30,7 +30,10 @@ overrideTargetPaths({
 // formatting
 const fakeBin = `
 const fs = require('node:fs');
-fs.writeFileSync('call.json', JSON.stringify({ args: process.argv.slice(2), cwd: process.cwd() }));
+const args = process.argv.slice(2);
+const ignorePath = args.includes('--ignore-path') ? args[args.indexOf('--ignore-path') + 1] : undefined;
+const ignoreContent = ignorePath === undefined ? undefined : fs.readFileSync(ignorePath, 'utf8');
+fs.writeFileSync('call.json', JSON.stringify({ args, cwd: process.cwd(), ignoreContent }));
 process.exit(process.argv.includes('--check') ? 1 : 0);
 `;
 
@@ -78,6 +81,22 @@ describe('package format', () => {
       resolvePath('src/a.ts'),
       '/abs/dir',
     ]);
+  });
+
+  it('formats ignored paths with an empty ignore file when asked to', async () => {
+    await format({ args: ['--include-ignored', 'report.api.md'], info });
+    const call = readCall();
+    const ignorePath = call.args[call.args.indexOf('--ignore-path') + 1];
+    expect(call.args).toEqual([
+      '--write',
+      '--ignore-unknown',
+      '--ignore-path',
+      ignorePath,
+      resolvePath('report.api.md'),
+    ]);
+    expect(call.ignoreContent).toBe('');
+    // The empty ignore file is removed afterwards
+    expect(fs.existsSync(ignorePath)).toBe(false);
   });
 
   it('fails with the exit code of Prettier when checking finds unformatted files', async () => {
