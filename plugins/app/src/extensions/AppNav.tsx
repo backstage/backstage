@@ -154,25 +154,11 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
-  const selections = useMemo(() => {
-    const pages =
-      appTreeApi
-        .getTree()
-        .tree.nodes.get('app/routes')
-        ?.edges.attachments.get('routes') ?? [];
-    return pages.map(page =>
-      page.spec.disabled
-        ? undefined
-        : page.instance?.getData(coreExtensionData.titleTranslation),
-    );
-  }, [appTreeApi]);
-  const translatedTitles = useTranslatedTitles(selections);
-
-  // New navItems: discover pages from the extension tree, merged with nav items.
-  const navItems = useMemo(() => {
+  // Discover pages eligible for navigation before loading their title translations.
+  const items = useMemo(() => {
     const { tree } = appTreeApi.getTree();
     const routesNode = tree.nodes.get('app/routes');
-    if (!routesNode) return new NavItemBag([]);
+    if (!routesNode) return [];
 
     // Index nav items by routeRef for matching against pages
     const navItemsByRouteRef = new Map<
@@ -181,7 +167,7 @@ function NavContentRenderer(props: {
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
-    const items = pageNodes.flatMap((node, index): NavContentNavItem[] => {
+    return pageNodes.flatMap((node): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
         return [];
       }
@@ -207,8 +193,6 @@ function NavContentRenderer(props: {
         ? resolvedTitle
         : matchingNavItem?.title ?? pluginTitle ?? pluginId;
 
-      const title = translatedTitles[index] ?? staticTitle;
-
       // PageBlueprint resolves icon as: params.icon ?? plugin.icon
       // We want the priority: page (params) -> nav item -> plugin -> (excluded)
       const resolvedIcon = node.instance.getData(coreExtensionData.icon);
@@ -226,7 +210,7 @@ function NavContentRenderer(props: {
         icon = pluginIcon;
       }
 
-      if (!title || !icon) {
+      if (!icon) {
         return [];
       }
 
@@ -235,11 +219,27 @@ function NavContentRenderer(props: {
         return [];
       }
 
-      return [{ node, href: to, title, icon, routeRef }];
+      return [{ node, href: to, title: staticTitle, icon, routeRef }];
     });
-
-    return new NavItemBag(items);
-  }, [appTreeApi, routeResolutionApi, props.legacyNavItems, translatedTitles]);
+  }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+  const selections = useMemo(
+    () =>
+      items.map(item =>
+        item.node.instance?.getData(coreExtensionData.titleTranslation),
+      ),
+    [items],
+  );
+  const translatedTitles = useTranslatedTitles(selections);
+  const navItems = useMemo(
+    () =>
+      new NavItemBag(
+        items.flatMap((item, index) => {
+          const title = translatedTitles[index] ?? item.title;
+          return title ? [{ ...item, title }] : [];
+        }),
+      ),
+    [items, translatedTitles],
+  );
 
   return <props.Content navItems={navItems} />;
 }

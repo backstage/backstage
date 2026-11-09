@@ -29,7 +29,10 @@ import { useTranslatedTitles } from './useTranslatedTitles';
 import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';
 import { EntityLayout } from './EntityLayout';
 import { EntityLayoutBui } from './EntityLayout/EntityLayoutBui';
-import type { EntityLayoutRoute } from './EntityLayout/entityLayoutRoutes';
+import {
+  type EntityLayoutRoute,
+  filterEntityLayoutRoutes,
+} from './EntityLayout/entityLayoutRoutes';
 import type { EntityContextMenuItemDataWithNode } from './EntityContextMenu';
 
 export interface CatalogEntityPageProps {
@@ -51,19 +54,6 @@ export interface CatalogEntityPageProps {
 }
 
 export function CatalogEntityPage(props: CatalogEntityPageProps) {
-  const selections = useMemo(
-    () => props.routes.map(route => route.titleTranslation),
-    [props.routes],
-  );
-  const titles = useTranslatedTitles(selections);
-  const routes = useMemo(
-    () =>
-      props.routes.map((route, index) => ({
-        ...route,
-        title: titles[index] ?? route.title,
-      })),
-    [props.routes, titles],
-  );
   const routeParams = useRouteRefParams(entityRouteRef);
   const entityFromUrl = useEntityFromUrl();
   const matchesRoute =
@@ -71,6 +61,23 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     stringifyEntityRef(entityFromUrl.entity) ===
       stringifyEntityRef(routeParams);
   const entity = matchesRoute ? entityFromUrl.entity : undefined;
+  const visibleRoutes = useMemo(
+    () => filterEntityLayoutRoutes(props.routes, entity),
+    [props.routes, entity],
+  );
+  const selections = useMemo(
+    () => visibleRoutes.map(route => route.titleTranslation),
+    [visibleRoutes],
+  );
+  const titles = useTranslatedTitles(selections);
+  const routes = useMemo(
+    () =>
+      visibleRoutes.map((route, index) => ({
+        ...route,
+        title: titles[index] ?? route.title,
+      })),
+    [visibleRoutes, titles],
+  );
   const entityProviderProps = {
     ...entityFromUrl,
     entity,

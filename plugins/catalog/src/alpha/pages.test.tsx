@@ -231,12 +231,26 @@ describe('Entity page', () => {
         id: 'entity-content-titles',
         messages: { main: 'Zulu', other: 'Alpha' },
       });
+      const hiddenRef = createTranslationRef({
+        id: 'hidden-entity-titles',
+        messages: { title: 'Hidden tab' },
+      });
+      const hiddenLoad = jest.fn(
+        () =>
+          new Promise<{
+            default: { title: string };
+          }>(() => {}),
+      );
       const languageApi = AppLanguageSelector.create({
         availableLanguages: ['en', 'sv', 'de'],
       });
       const translationApi = I18nextTranslationApi.create({
         languageApi,
         resources: [
+          createTranslationResource({
+            ref: hiddenRef,
+            translations: { sv: hiddenLoad },
+          }),
           createTranslationResource({
             ref,
             translations: {
@@ -246,6 +260,7 @@ describe('Entity page', () => {
           }),
         ],
       });
+      const observe = jest.spyOn(translationApi, 'translation$');
       const mount = jest.fn();
       const unmount = jest.fn();
       function Content() {
@@ -287,6 +302,17 @@ describe('Entity page', () => {
             },
           }),
         );
+      tester.add(
+        EntityContentBlueprint.make({
+          name: 'hidden-translated',
+          params: {
+            path: '/hidden',
+            title: hiddenRef('title'),
+            filter: { kind: 'api' },
+            loader: async () => <div>Hidden content</div>,
+          },
+        }),
+      );
       if (layout === 'legacy') {
         tester.add(
           EntityHeaderBlueprint.make({
@@ -358,6 +384,9 @@ describe('Entity page', () => {
       expect(input).toHaveValue('initial preserved');
       expect(mount).toHaveBeenCalledTimes(1);
       expect(unmount).not.toHaveBeenCalled();
+      expect(hiddenLoad).not.toHaveBeenCalled();
+      expect(observe).not.toHaveBeenCalledWith(hiddenRef);
+      expect(screen.queryByText('Hidden tab')).not.toBeInTheDocument();
     },
   );
 

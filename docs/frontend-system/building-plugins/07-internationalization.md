@@ -379,7 +379,9 @@ plain titles, including when the API resolves to a default-language message.
 Missing locale messages use the translation API's existing fallback.
 During language changes, each group of titles updates together after all of its
 translation resources are ready. Until then, the previous titles remain visible
-without remounting page content. Failed resource loads surface as errors.
+without remounting page content. Hidden entity tabs and pages excluded from
+navigation do not delay the corresponding visible titles. Failed resource loads
+surface as errors.
 
 TypeScript checks the selected key and rejects title messages that require
 replacement values or a plural count. Nested messages are supported when none

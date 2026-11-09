@@ -48,6 +48,16 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
       disabled: 'Disabled',
     },
   });
+  const excludedRef = createTranslationRef({
+    id: 'excluded-page-titles',
+    messages: { title: 'Excluded page' },
+  });
+  const excludedLoad = jest.fn(
+    () =>
+      new Promise<{
+        default: { title: string };
+      }>(() => {}),
+  );
   const mount = jest.fn();
   const unmount = jest.fn();
   function Content() {
@@ -147,6 +157,22 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         },
       }),
       PageBlueprint.make({
+        name: 'without-icon',
+        params: {
+          path: '/without-icon',
+          title: excludedRef('title'),
+          routeRef: createRouteRef(),
+        },
+      }),
+      PageBlueprint.make({
+        name: 'without-route-ref',
+        params: {
+          path: '/without-route-ref',
+          title: excludedRef('title'),
+          icon: <span />,
+        },
+      }),
+      PageBlueprint.make({
         name: 'disabled',
         disabled: true,
         params: {
@@ -168,6 +194,15 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
           AppRootElementBlueprint.make({
             name: 'controls',
             params: { element: <Controls /> },
+          }),
+          TranslationBlueprint.make({
+            name: 'excluded',
+            params: {
+              resource: createTranslationResource({
+                ref: excludedRef,
+                translations: { sv: excludedLoad },
+              }),
+            },
           }),
           TranslationBlueprint.make({
             name: 'sv',
@@ -282,6 +317,9 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
   expect(screen.queryByText('Translated disabled')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Empty title' }));
   expect(await screen.findByRole('tab', { name: '' })).toBeInTheDocument();
+  expect(
+    within(nav).queryByRole('link', { name: 'API-dokumentation' }),
+  ).not.toBeInTheDocument();
   expect(screen.getByLabelText('Breadcrumb labels')).toBeEmptyDOMElement();
   expect(screen.getByRole('tab', { name: 'untitled' })).toBeInTheDocument();
   expect(screen.getByLabelText('Page state')).toHaveValue(
@@ -292,6 +330,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
   fireEvent.click(screen.getByRole('button', { name: 'English' }));
   expect(await screen.findByText('APIs / Overview')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'APIs' })).toBeInTheDocument();
+  expect(within(nav).getByRole('link', { name: 'APIs' })).toBeInTheDocument();
   expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
   expect(
     screen.getByRole('tab', { name: 'Default tab title' }),
@@ -302,6 +341,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
   expect(mount).toHaveBeenCalledTimes(1);
   expect(unmount).not.toHaveBeenCalled();
   expect(disabledLoader).not.toHaveBeenCalled();
+  expect(excludedLoad).not.toHaveBeenCalled();
   fireEvent.click(within(nav).getByRole('link', { name: 'Zoo' }));
   expect(await screen.findByText('Other page content')).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText('Page state'), {
