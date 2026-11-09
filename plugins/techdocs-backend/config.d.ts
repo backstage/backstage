@@ -114,6 +114,22 @@ export interface Config {
         dangerouslyAllowAdditionalPlugins?: string[];
 
         /**
+         * List of additional MkDocs markdown extensions to allow beyond the
+         * default set. Extensions not in this list or the default set will
+         * be removed from mkdocs.yml before documentation generation.
+         *
+         * WARNING: Some markdown extensions execute code or load files from
+         * the documentation input directory during documentation generation.
+         * Only allow extensions that have been audited for use in your
+         * environment, including the configuration options that documentation
+         * authors can supply.
+         *
+         * Also applies to the Zensical engine, which reads the same mkdocs.yml,
+         * so this configuration will affect both.
+         */
+        dangerouslyAllowAdditionalExtensions?: string[];
+
+        /**
          * Disable external fonts for all TechDocs sites.
          * If not set, the default value is false.
          * If set to true, the external font will be disabled for all TechDocs sites.

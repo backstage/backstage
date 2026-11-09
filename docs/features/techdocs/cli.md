@@ -195,26 +195,27 @@ Generate a TechDocs documentation site with the selected engine (MkDocs by
 default).
 
 Options:
-  --source-dir <PATH>                                   Source directory containing mkdocs.yml and docs/ directory. (default: ".")
-  --output-dir <PATH>                                   Output directory containing generated TechDocs site. (default: "./site/")
-  --docker-image <DOCKER_IMAGE>                         Docker image to use. Defaults to the selected engine's image.
-  --no-pull                                             Do not pull the latest docker image
-  --no-docker                                           Do not use Docker, run the engine and its plugins in the current user environment.
-  --techdocs-ref <HOST_TYPE:URL>                        The repository hosting documentation source files e.g. url:https://ghe.mycompany.net.com/org/repo.
+  --source-dir <PATH>                                               Source directory containing mkdocs.yml and docs/ directory. (default: ".")
+  --output-dir <PATH>                                               Output directory containing generated TechDocs site. (default: "./site/")
+  --docker-image <DOCKER_IMAGE>                                     Docker image to use. Defaults to the selected engine's image.
+  --no-pull                                                         Do not pull the latest docker image
+  --no-docker                                                       Do not use Docker, run the engine and its plugins in the current user environment.
+  --techdocs-ref <HOST_TYPE:URL>                                    The repository hosting documentation source files e.g. url:https://ghe.mycompany.net.com/org/repo.
   This value is same as the backstage.io/techdocs-ref annotation of the corresponding Backstage entity.
   It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml if not found.
 
-  --etag <ETAG>                                         A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json. If omitted, a sha256 content hash of the generated site output is computed automatically.
-  --site-name                                           Name for site when using the default config
-  -v, --verbose                                         Enable verbose output. (default: false)
-  --omitTechdocsCoreMkdocsPlugin                        Don't patch MkDocs file automatically with techdocs-core plugin. (default: false)
-  --legacyCopyReadmeMdToIndexMd                         Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided. (default: false)
-  --disableExternalFonts                                Disable external font downloads by default by setting theme.font: false in mkdocs.yml when not already configured. Useful for air-gapped environments where Google fonts cannot be accessed. (default: false)
-  --defaultPlugin [defaultPlugins...]                   Plugins which should be added automatically to the mkdocs.yaml file (default: [])
-  --dangerouslyAllowAdditionalKeys [additionalKeys...]  Top-level mkdocs.yml keys to allow beyond the built-in supported set, without failing or stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys backend config option, which techdocs-cli generate does not currently read from a config file. (default: [])
-  --runAsDefaultUser                                    Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
-  --engine <ENGINE>                                     Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.
-  -h, --help                                            display help for command
+  --etag <ETAG>                                                     A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json. If omitted, a sha256 content hash of the generated site output is computed automatically.
+  --site-name                                                       Name for site when using the default config
+  -v, --verbose                                                     Enable verbose output. (default: false)
+  --omitTechdocsCoreMkdocsPlugin                                    Don't patch MkDocs file automatically with techdocs-core plugin. (default: false)
+  --legacyCopyReadmeMdToIndexMd                                     Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided. (default: false)
+  --disableExternalFonts                                            Disable external font downloads by default by setting theme.font: false in mkdocs.yml when not already configured. Useful for air-gapped environments where Google fonts cannot be accessed. (default: false)
+  --defaultPlugin [defaultPlugins...]                               Plugins which should be added automatically to the mkdocs.yaml file (default: [])
+  --dangerouslyAllowAdditionalKeys [additionalKeys...]              Top-level mkdocs.yml keys to allow beyond the built-in supported set, without failing or stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys backend config option, which techdocs-cli generate does not currently read from a config file. (default: [])
+  --dangerouslyAllowAdditionalExtensions [additionalExtensions...]  Markdown extensions to allow in mkdocs.yml beyond the built-in permitted set, without stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions backend config option, which techdocs-cli generate does not currently read from a config file. (default: [])
+  --runAsDefaultUser                                                Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
+  --engine <ENGINE>                                                 Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.
+  -h, --help                                                        display help for command
 ```
 
 ### Deprecated options

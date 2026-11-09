@@ -65,6 +65,7 @@ export type GeneratorConfig = {
   defaultPlugins?: string[];
   dangerouslyAllowAdditionalKeys?: string[];
   dangerouslyAllowAdditionalPlugins?: string[];
+  dangerouslyAllowAdditionalExtensions?: string[];
   disableExternalFonts?: boolean;
 };
 

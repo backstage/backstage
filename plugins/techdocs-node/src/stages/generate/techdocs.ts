@@ -142,6 +142,7 @@ export class TechdocsGenerator implements GeneratorBase {
         ...(this.options.dangerouslyAllowAdditionalPlugins ?? []),
         ...defaultPlugins,
       ],
+      this.options.dangerouslyAllowAdditionalExtensions,
     );
 
     if (parsedLocationAnnotation) {
@@ -307,6 +308,9 @@ export function readGeneratorConfig(
     ),
     dangerouslyAllowAdditionalPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins',
+    ),
+    dangerouslyAllowAdditionalExtensions: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions',
     ),
     disableExternalFonts: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.disableExternalFonts',

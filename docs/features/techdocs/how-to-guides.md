@@ -571,6 +571,13 @@ To use `markdown-inline-mermaid` to generate your Mermaid diagrams in TechDocs y
      - markdown_inline_mermaid
    ```
 
+   `markdown_inline_mermaid` is not part of the default set of permitted
+   markdown extensions, so it also needs to be allowed using
+   `dangerouslyAllowAdditionalExtensions`, or
+   `--dangerouslyAllowAdditionalExtensions` when running
+   `techdocs-cli generate`. See
+   [the configuration reference](./configuration.md) for details.
+
 3. With this in place you can now add Mermaid diagrams in your Markdown files like this:
 
    ````md
