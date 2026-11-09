@@ -158,14 +158,13 @@ export const PageBlueprint = createExtensionBlueprint({
           const path = page.get(coreExtensionData.routePath);
           const tabTitle =
             translatedTitles[index + 1] ??
-            page.get(coreExtensionData.title) ??
-            path;
+            (page.get(coreExtensionData.title) || path);
           return { page, path, title: tabTitle };
         });
         const tabs: PageLayoutTab[] = pages.map(
           ({ page, path, title: tabTitle }) => ({
             id: path,
-            label: tabTitle || path,
+            label: tabTitle,
             icon: page.get(coreExtensionData.icon),
             href: path,
           }),
@@ -198,9 +197,7 @@ export const PageBlueprint = createExtensionBlueprint({
                     key={index}
                     path={`${path}/*`}
                     element={
-                      <BreadcrumbEntry
-                        entry={{ label: tabTitle || path, href: path }}
-                      >
+                      <BreadcrumbEntry entry={{ label: tabTitle, href: path }}>
                         {element}
                       </BreadcrumbEntry>
                     }

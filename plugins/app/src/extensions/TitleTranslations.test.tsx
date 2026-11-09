@@ -105,6 +105,14 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
           loader: async () => <div>Configured content</div>,
         },
       }),
+      SubPageBlueprint.make({
+        name: 'untitled',
+        params: {
+          path: 'untitled',
+          title: '',
+          loader: async () => <div>Untitled content</div>,
+        },
+      }),
       PageBlueprint.make({
         name: 'other',
         params: {
@@ -170,7 +178,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
                   de: async () => ({
                     default: {
                       page: '',
-                      overview: null,
+                      overview: '',
                       other: null,
                       configuredPage: null,
                       configuredTab: null,
@@ -244,6 +252,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
       .getAllByRole('link')
       .map(link => link.textContent),
   ).toEqual(['APIs', 'Configured plain page', 'Default page title', 'Zoo']);
+  expect(screen.getByRole('tab', { name: 'untitled' })).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText('Page state'), {
     target: { value: 'kept across languages' },
   });
@@ -272,9 +281,9 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
   ).toBeInTheDocument();
   expect(screen.queryByText('Translated disabled')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Empty title' }));
-  expect(
-    await screen.findByText('Overview', { selector: 'output' }),
-  ).toBeInTheDocument();
+  expect(await screen.findByRole('tab', { name: '' })).toBeInTheDocument();
+  expect(screen.getByLabelText('Breadcrumb labels')).toBeEmptyDOMElement();
+  expect(screen.getByRole('tab', { name: 'untitled' })).toBeInTheDocument();
   expect(screen.getByLabelText('Page state')).toHaveValue(
     'kept across languages',
   );
