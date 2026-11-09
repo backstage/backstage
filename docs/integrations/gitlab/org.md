@@ -198,70 +198,112 @@ catalog:
 
 ### Custom Transformers
 
-You can inject your own transformation logic to help map GitLab API responses
-into Backstage entities. You can do this on the user and group requests to
-enable you to do further processing or updates to these entities.
+You can inject your own transformation logic to map the GitLab API responses
+into Backstage entities. Register a backend module that uses the
+`gitlabOrgEntityProviderTransformsExtensionPoint` to set any of these
+transformers:
 
-To enable this you pass a function into the `GitlabOrgDiscoveryEntityProvider`. You can
-pass a `UserTransformer`, a `GroupEntitiesTransformer` or a `GroupNameTransformer` (or all of them)). The function is invoked
-for each item (user or group) that is returned from the API.
+- a `UserTransformer`, invoked for each user that is returned from the API. It
+  returns the `User` entity.
+- a `GroupTransformer`, invoked once with all the groups that are returned from
+  the API. It returns the `Group` entities.
+- a `GroupNameTransformer`, which returns the name of a group. It is used for the
+  `metadata.name` and `spec.parent` of the `Group` entities and for the
+  `spec.memberOf` of the `User` entities, so you can change the group names
+  without replacing the other two transformers.
 
-The example below uses the groupNameTransformer option to change the metadata.name property of the Backstage Group Entity. Instead of populating it with the usual `group.full_path` data that comes from GitLab, it uses the `group.id`:
+Each transformer can only be set once.
 
-```ts
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+Here's an example of how to use the transformers:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { gitlabOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-gitlab-org';
+import { myGroupNameTransformer, myUserTransformer } from './transformers';
+
+const gitlabOrgModule = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'gitlab-org-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        gitlabOrg: gitlabOrgEntityProviderTransformsExtensionPoint,
+      },
+      async init({ gitlabOrg }) {
+        gitlabOrg.setGroupNameTransformer(myGroupNameTransformer);
+        gitlabOrg.setUserTransformer(myUserTransformer);
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+// Other items
+
+backend.add(import('@backstage/plugin-catalog-backend'));
+
+backend.add(import('@backstage/plugin-catalog-backend-module-gitlab-org'));
+backend.add(gitlabOrgModule);
+
+backend.start();
+```
+
+The `myGroupNameTransformer` and `myUserTransformer` transformer functions are
+from the examples in the section below.
+
+#### Transformer Examples
+
+The following provides an example of a group name transformer and a user
+transformer. We recommend creating a `transformers.ts` file in your
+`packages/backend/src` folder for these.
+
+```ts title="packages/backend/src/transformers.ts"
 import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
-import {
-  GitlabOrgDiscoveryEntityProvider,
-  /* highlight-add-next-line */
-  GroupNameTransformerOptions,
+  GroupNameTransformer,
+  UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-gitlab';
 
-/* highlight-add-start */
-function customGroupNameTransformer(
-  options: GroupNameTransformerOptions,
-): string {
-  return `${options.group.id}`;
-}
-/* highlight-add-end */
+// This group name transformer names the groups after their path relative to the
+// configured group, e.g. `group:payments` for `my-org/teams/payments` when the
+// provider is configured with `group: my-org/teams`.
+export const myGroupNameTransformer: GroupNameTransformer = ({
+  group,
+  providerConfig,
+}) => {
+  const root = `${providerConfig.group}/`;
+  const path = group.full_path.startsWith(root)
+    ? group.full_path.slice(root.length)
+    : group.full_path;
+  return path.replaceAll('/', '-');
+};
 
-/**
- * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
- *
- * @alpha
- */
-export const catalogModuleGitlabOrgDiscoveryEntityProvider =
-  createBackendModule({
-    pluginId: 'catalog',
-    moduleId: 'gitlabOrgDiscoveryEntityProvider',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.rootConfig,
-          catalog: catalogProcessingExtensionPoint,
-          logger: coreServices.logger,
-          scheduler: coreServices.scheduler,
-          events: eventsServiceRef,
-        },
-        async init({ config, catalog, logger, scheduler, events }) {
-          const gitlabOrgDiscoveryEntityProvider =
-            GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-              /* highlight-add-next-line */
-              groupNameTransformer: customGroupNameTransformer,
-              logger: loggerToWinstonLogger(logger),
-              events,
-              scheduler,
-            });
-          catalog.addEntityProvider(gitlabOrgDiscoveryEntityProvider);
-        },
-      });
+// This user transformer completely replaces the built in logic with custom logic.
+// It uses the `groupNameTransformer` it receives, so that `memberOf` matches the
+// names of the Group entities.
+export const myUserTransformer: UserTransformer = ({
+  user,
+  providerConfig,
+  groupNameTransformer,
+}) => ({
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'User',
+  metadata: {
+    name: user.username,
+    description: 'Loaded from GitLab Org Data',
+  },
+  spec: {
+    profile: {
+      displayName: user.name,
+      email: user.email,
+      picture: user.avatar_url,
     },
-  });
+    memberOf: (user.groups ?? []).map(group =>
+      groupNameTransformer({ group, providerConfig }),
+    ),
+  },
+});
 ```
 
 ## Troubleshooting
