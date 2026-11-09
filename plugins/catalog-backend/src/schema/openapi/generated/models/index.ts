@@ -56,3 +56,4 @@ export * from '../models/RefreshEntityRequest.model';
 export * from '../models/ValidateEntity400Response.model';
 export * from '../models/ValidateEntity400ResponseErrorsInner.model';
 export * from '../models/ValidateEntityRequest.model';
+export * from '../models/ValidationErrorItem.model';
