@@ -15,7 +15,6 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { NotFoundError } from '@backstage/errors';
 import { DefaultSecretsService } from './DefaultSecretsService';
 import { createSecretProviderRegistry } from './SecretProviderRegistry';
 import type {
@@ -156,21 +155,18 @@ describe('DefaultSecretsService', () => {
 
   it('fails on an unknown provider id without leaking the reference', async () => {
     const service = createService([createTestSecretProvider({ id: 'known' })]);
-    const resolveUnknown = () =>
-      service.resolve({
-        reference: { provider: 'unknown', reference: { key: 'secret-key' } },
-      });
 
-    await expect(resolveUnknown()).rejects.toThrow(NotFoundError);
-    // The error names the (non-sensitive) provider id but never the reference.
-    let error: Error | undefined;
-    try {
-      await resolveUnknown();
-    } catch (e) {
-      error = e as Error;
-    }
-    expect(error?.message).toContain('unknown');
-    expect(error?.message).not.toContain('secret-key');
+    const resolution = service.resolve({
+      reference: { provider: 'unknown', reference: { key: 'secret-key' } },
+    });
+
+    await expect(resolution).rejects.toMatchObject({
+      name: 'NotFoundError',
+      message: expect.stringContaining('unknown'),
+    });
+    await expect(resolution).rejects.toMatchObject({
+      message: expect.not.stringContaining('secret-key'),
+    });
   });
 
   it('logs only non-sensitive metadata, never the reference payload or value', async () => {
