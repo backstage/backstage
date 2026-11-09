@@ -41,26 +41,11 @@ function unescapeJsonPointerSegment(segment: string): string {
 }
 
 /**
- * Looks up the value that a JSON Pointer refers to, or `undefined` if there is
- * none.
+ * How many candidate parent objects to check when locating a property name
+ * that contains slashes. Each check costs time proportional to the length of
+ * the path, so this bounds the total work for long paths.
  */
-function resolveJsonPointer(root: unknown, pointer: string): unknown {
-  if (pointer === '') {
-    return root;
-  }
-  let node = root;
-  for (const segment of pointer.slice(1).split('/')) {
-    if (!node || typeof node !== 'object') {
-      return undefined;
-    }
-    const key = unescapeJsonPointerSegment(segment);
-    if (!Object.prototype.hasOwnProperty.call(node, key)) {
-      return undefined;
-    }
-    node = (node as Record<string, unknown>)[key];
-  }
-  return node;
-}
+const MAX_PARENT_CANDIDATES = 8;
 
 /**
  * Converts ajv errors into validation issues.
@@ -123,20 +108,46 @@ function fixPropertyPath(
   }
 
   // The property exists in the request, so look for the parent object that
-  // has it, starting with the deepest candidate.
-  for (
-    let index = path.lastIndexOf('/');
-    index >= 0;
-    index = index === 0 ? -1 : path.lastIndexOf('/', index - 1)
-  ) {
-    const parent = resolveJsonPointer(data, path.slice(0, index));
-    const property = path.slice(index + 1);
+  // has it. The path and the request both come from the client, so this walks
+  // the path once and only checks a bounded number of candidate parents,
+  // keeping the work linear in the length of the path.
+  const segments = path.split('/');
+  if (segments[0] !== '' || segments.length < 2) {
+    return path;
+  }
+
+  // parents[depth] is the value at the pointer made of the first `depth`
+  // segments, and offsets[depth] is the length of that pointer in `path`.
+  const parents: unknown[] = [data];
+  const offsets: number[] = [0];
+  let node: unknown = data;
+  for (let depth = 1; depth < segments.length - 1; depth++) {
+    if (!node || typeof node !== 'object') {
+      break;
+    }
+    const key = unescapeJsonPointerSegment(segments[depth]);
+    if (!Object.prototype.hasOwnProperty.call(node, key)) {
+      break;
+    }
+    node = (node as Record<string, unknown>)[key];
+    parents.push(node);
+    offsets.push(offsets[depth - 1] + 1 + segments[depth].length);
+  }
+
+  // Start with the deepest parent, since the property name is usually a
+  // single segment.
+  const lowestDepth = Math.max(0, parents.length - MAX_PARENT_CANDIDATES);
+  for (let depth = parents.length - 1; depth >= lowestDepth; depth--) {
+    const parent = parents[depth];
+    const property = path.slice(offsets[depth] + 1);
     if (
       parent &&
       typeof parent === 'object' &&
       Object.prototype.hasOwnProperty.call(parent, property)
     ) {
-      return `${path.slice(0, index)}/${escapeJsonPointerSegment(property)}`;
+      return `${path.slice(0, offsets[depth])}/${escapeJsonPointerSegment(
+        property,
+      )}`;
     }
   }
   return path;

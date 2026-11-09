@@ -108,6 +108,45 @@ describe('validationIssuesFromValidatorError', () => {
     ]);
   });
 
+  it('handles very long and deeply nested paths without excessive work', () => {
+    const depth = 50_000;
+    const deepest: Record<string, unknown> = { 'x/y': 1 };
+    let body: Record<string, unknown> = deepest;
+    for (let i = 0; i < depth; i++) {
+      body = { a: body };
+    }
+    const parentPath = `/body${'/a'.repeat(depth)}`;
+    const additional = (path: string) =>
+      validatorError([
+        {
+          path,
+          message: 'must NOT have additional properties',
+          errorCode: 'additionalProperties.openapi.validation',
+        },
+      ]);
+
+    expect(
+      validationIssuesFromValidatorError(additional(`${parentPath}/x/y`), {
+        body,
+      })?.[0].path,
+    ).toBe(`${parentPath}/x~1y`);
+
+    // A property that can't be found keeps the path as reported.
+    const missingPath = `${parentPath}/not/there`;
+    expect(
+      validationIssuesFromValidatorError(additional(missingPath), { body })?.[0]
+        .path,
+    ).toBe(missingPath);
+
+    // A long path that doesn't match the request at all.
+    const longPath = `/body${'/q'.repeat(200_000)}`;
+    expect(
+      validationIssuesFromValidatorError(additional(longPath), {
+        body: {},
+      })?.[0].path,
+    ).toBe(longPath);
+  });
+
   it('normalizes paths that are not schema validation errors', () => {
     const issues = validationIssuesFromValidatorError(
       validatorError([
