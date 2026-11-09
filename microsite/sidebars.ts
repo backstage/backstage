@@ -618,7 +618,6 @@ export default {
                 'frontend-system/building-plugins/internationalization',
                 'frontend-system/building-plugins/analytics',
                 'frontend-system/building-plugins/feature-flags',
-                'frontend-system/building-plugins/extension-fragments',
               ],
             ),
             sidebarElementWithIndex(
