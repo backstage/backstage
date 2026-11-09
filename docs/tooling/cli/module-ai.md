@@ -31,7 +31,7 @@ Before using the AI commands you need:
 Without `--entity`, the commands look up the component in the catalog based on
 your current folder in the repository of the git `origin` remote:
 
-The command uses the component that was read from a catalog file, such as `catalog-info.yaml`, in the current folder or the nearest parent folder of that repository. The catalog records this in the `backstage.io/managed-by-location` annotation, which entities cannot set themselves. If several components were read from catalog files in that folder, or none were read from catalog files in those folders, the command fails and asks you to pass `--entity`.
+The command uses the component that was read from a catalog file, such as `catalog-info.yaml`, in the current folder or the nearest parent folder of that repository. The catalog records this in the `backstage.io/managed-by-location` annotation, which entities cannot set themselves. Catalog files registered as `file:` locations, for example in local development, count too when they are inside the current git checkout, or inside the main checkout when your checkout was created with `git worktree add`. Paths are compared by their real paths. If several components were read from catalog files in that folder, or none were read from catalog files in those folders, the command fails and asks you to pass `--entity`.
 
 Pass `--entity` to skip this lookup and choose the component yourself.
 

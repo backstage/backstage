@@ -28,9 +28,12 @@ import {
   type CatalogReader,
 } from './catalogClient';
 import {
+  getMainCheckoutRoot,
   getOriginUrl,
   getRepoPrefix,
+  getRepoRoot,
   parseCatalogFileFolder,
+  parseFileLocationFolder,
   repoUrlFromRemote,
 } from './gitRemote';
 import { fetchIdentity } from './identity';
@@ -70,24 +73,28 @@ async function queryRegisteredComponents(options: {
   client: CatalogReader;
   token: string;
   repoUrl: string;
+  fileRoots: string[];
 }): Promise<ComponentCandidate[]> {
-  const { client, token, repoUrl } = options;
+  const { client, token, repoUrl, fileRoots } = options;
+  const annotation = `metadata.annotations.${MANAGED_BY_LOCATION}`;
+  const urlMatch: FilterPredicate = {
+    [annotation]: { $hasPrefix: `url:${repoUrl}/` },
+  };
   const query: FilterPredicate = {
     $all: [
       { kind: 'Component' },
-      {
-        [`metadata.annotations.${MANAGED_BY_LOCATION}`]: {
-          $hasPrefix: `url:${repoUrl}/`,
-        },
-      },
+      fileRoots.length > 0
+        ? { $any: [urlMatch, { [annotation]: { $hasPrefix: 'file:' } }] }
+        : urlMatch,
     ],
   };
   const entities = await queryAllEntities(client, { query }, token);
   return entities.flatMap(entity => {
-    const folders = parseCatalogFileFolder(
-      entity.metadata.annotations?.[MANAGED_BY_LOCATION] ?? '',
-      repoUrl,
-    );
+    const location = entity.metadata.annotations?.[MANAGED_BY_LOCATION] ?? '';
+    const fileFolder = parseFileLocationFolder(location, fileRoots);
+    const folders = fileFolder
+      ? [fileFolder]
+      : parseCatalogFileFolder(location, repoUrl);
     return folders ? [{ entity, folders }] : [];
   });
 }
@@ -104,8 +111,10 @@ const listRefs = (candidates: ComponentCandidate[]) =>
  * folder in the git remote repository: components whose
  * `backstage.io/managed-by-location` is a catalog file in this repository are
  * considered. The catalog always sets this annotation itself, so it cannot be
- * claimed by an entity from another location. The folder of the catalog file
- * that is the nearest ancestor of the current folder wins.
+ * claimed by an entity from another location. Catalog files registered as
+ * `file:` locations inside one of the given checkout roots are considered too.
+ * The folder of the catalog file that is the nearest ancestor of the current
+ * folder wins.
  */
 export async function findComponent(options: {
   client: CatalogReader;
@@ -114,6 +123,11 @@ export async function findComponent(options: {
   remoteUrl?: string;
   /** The current folder relative to the repository root, empty at the root. */
   repoPrefix?: string;
+  /**
+   * Checkout roots, such as the repository root and the main checkout root of
+   * a linked worktree, inside which `file:` catalog locations are matched.
+   */
+  fileRoots?: string[];
 }): Promise<Entity> {
   const { client, token } = options;
   if (options.entity) {
@@ -144,6 +158,7 @@ export async function findComponent(options: {
     client,
     token,
     repoUrl,
+    fileRoots: options.fileRoots ?? [],
   });
   for (const wanted of ancestors) {
     const matches = registered.filter(c => isAt(c, wanted));
@@ -296,12 +311,18 @@ export async function resolveSelection(
 
   const remoteUrl = options.entity ? undefined : await getOriginUrl();
   const repoPrefix = options.entity ? undefined : await getRepoPrefix();
+  const fileRoots = options.entity
+    ? undefined
+    : [await getRepoRoot(), await getMainCheckoutRoot()].filter(
+        (root): root is string => Boolean(root),
+      );
   const component = await findComponent({
     client,
     token: accessToken,
     entity: options.entity,
     remoteUrl,
     repoPrefix,
+    fileRoots,
   });
   const { owner, system } = readOwnerAndSystem(component);
 

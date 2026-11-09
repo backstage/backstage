@@ -18,6 +18,8 @@ const mockResolveAuth = jest.fn();
 const mockFetchIdentity = jest.fn();
 const mockGetOriginUrl = jest.fn();
 const mockGetRepoPrefix = jest.fn();
+const mockGetRepoRoot = jest.fn();
+const mockGetMainRoot = jest.fn();
 const mockClient: jest.Mocked<CatalogReader> = {
   queryEntities: jest.fn(),
   getEntitiesByRefs: jest.fn(),
@@ -37,8 +39,13 @@ jest.mock('./gitRemote', () => ({
   ...jest.requireActual('./gitRemote'),
   getOriginUrl: (...args: unknown[]) => mockGetOriginUrl(...args),
   getRepoPrefix: (...args: unknown[]) => mockGetRepoPrefix(...args),
+  getRepoRoot: (...args: unknown[]) => mockGetRepoRoot(...args),
+  getMainCheckoutRoot: (...args: unknown[]) => mockGetMainRoot(...args),
 }));
 
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import type { Entity } from '@backstage/catalog-model';
 import {
   buildSkillQuery,
@@ -221,6 +228,75 @@ describe('findComponent', () => {
     );
   });
 
+  it('matches catalog files registered as file: locations inside the checkout roots, by real path', async () => {
+    const base = fs.realpathSync(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'cli-module-ai-')),
+    );
+    try {
+      const main = path.join(base, 'main');
+      const worktree = path.join(base, 'worktree');
+      const link = path.join(base, 'link');
+      fs.mkdirSync(path.join(main, 'svc'), { recursive: true });
+      fs.mkdirSync(path.join(worktree, 'other'), { recursive: true });
+      fs.symlinkSync(main, link);
+      const file = (name: string, p: string): Entity => ({
+        ...component(name),
+        metadata: {
+          ...component(name).metadata,
+          annotations: { 'backstage.io/managed-by-location': `file:${p}` },
+        },
+      });
+      catalog([
+        file('root', path.join(main, 'catalog-info.yaml')),
+        // Registered through a symlink to the main checkout.
+        file('svc', path.join(link, 'svc', 'catalog-info.yaml')),
+        file('other', path.join(worktree, 'other', 'catalog-info.yaml')),
+        // Outside of the checkouts, so it never matches.
+        file('outside', path.join(base, 'outside', 'catalog-info.yaml')),
+        located('remote', `${repo}/blob/main/remote/catalog-info.yaml`),
+      ]);
+      const findFile = (repoPrefix: string) =>
+        findComponent({
+          client: mockClient,
+          token: 'tok',
+          remoteUrl: 'git@github.acme.com:acme/mono.git',
+          repoPrefix,
+          fileRoots: [worktree, main],
+        });
+
+      expect((await findFile('svc/src')).metadata.name).toBe('svc');
+      expect((await findFile('other')).metadata.name).toBe('other');
+      expect((await findFile('remote/src')).metadata.name).toBe('remote');
+      expect((await findFile('')).metadata.name).toBe('root');
+      expect(mockClient.queryEntities).toHaveBeenCalledWith(
+        {
+          query: {
+            $all: [
+              { kind: 'Component' },
+              {
+                $any: [
+                  {
+                    'metadata.annotations.backstage.io/managed-by-location': {
+                      $hasPrefix: `url:${repo}/`,
+                    },
+                  },
+                  {
+                    'metadata.annotations.backstage.io/managed-by-location': {
+                      $hasPrefix: 'file:',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        { token: 'tok' },
+      );
+    } finally {
+      fs.rmSync(base, { recursive: true, force: true });
+    }
+  });
+
   it('fetches an explicit --entity, defaulting kind and namespace', async () => {
     mockClient.getEntityByRef.mockResolvedValue(component('svc'));
     await findComponent({ client: mockClient, token: 'tok', entity: 'svc' });
@@ -363,6 +439,8 @@ describe('resolveSelection', () => {
     });
     mockGetOriginUrl.mockResolvedValue('git@github.com:acme/svc.git');
     mockGetRepoPrefix.mockResolvedValue('');
+    mockGetRepoRoot.mockResolvedValue(undefined);
+    mockGetMainRoot.mockResolvedValue(undefined);
     const comp = {
       ...component('svc', [
         rel('ownedBy', 'group:default/team-a'),

@@ -20,6 +20,7 @@ import {
   getRepoRoot,
   getRepoPrefix,
   parseCatalogFileFolder,
+  parseFileLocationFolder,
   repoUrlFromRemote,
 } from './gitRemote';
 
@@ -156,5 +157,23 @@ describe('getMainCheckoutRoot', () => {
     await expect(
       getMainCheckoutRoot(jest.fn().mockRejectedValue(new Error('no git'))),
     ).resolves.toBe(undefined);
+  });
+});
+
+describe('parseFileLocationFolder', () => {
+  it('returns the folder relative to the first root containing the file', () => {
+    const roots = ['/work/wt', '/work/main'];
+    expect(
+      parseFileLocationFolder('file:/work/main/svc/api/c.yaml', roots),
+    ).toEqual(['svc', 'api']);
+    expect(parseFileLocationFolder('file:/work/wt/c.yaml', roots)).toEqual([]);
+    expect(parseFileLocationFolder('file:/work/mainx/c.yaml', roots)).toBe(
+      undefined,
+    );
+    expect(parseFileLocationFolder('file:/elsewhere/c.yaml', roots)).toBe(
+      undefined,
+    );
+    expect(parseFileLocationFolder('file:c.yaml', roots)).toBe(undefined);
+    expect(parseFileLocationFolder('url:https://x/y', roots)).toBe(undefined);
   });
 });
