@@ -216,11 +216,19 @@ jobs:
             plugins/catalog-backend/src/tests/performance/stitchQueue
 
       - name: restore baseline
+        if: ${{ !cancelled() }}
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ runner.temp }}/perf/baseline.jsonl
           key: catalog-perf-battery-baseline-pg${{ matrix.pg }}-none
           restore-keys: catalog-perf-battery-baseline-pg${{ matrix.pg }}-
 
+      # Runs even if a test failed, but there is nothing to compare if none ran
       - name: compare against master
-        run: node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl" "$RUNNER_TEMP/perf/plan-findings.jsonl"
+        if: ${{ !cancelled() }}
+        run: |
+          if [ ! -f "$RUNNER_TEMP/perf/current.jsonl" ]; then
+            echo "No timings were recorded, skipping the comparison"
+            exit 0
+          fi
+          node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl" "$RUNNER_TEMP/perf/plan-findings.jsonl"
