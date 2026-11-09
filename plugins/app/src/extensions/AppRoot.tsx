@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, ReactNode, useState, JSX } from 'react';
+import { ComponentType, Fragment, ReactNode, useState, JSX } from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
@@ -122,9 +122,11 @@ export const AppRoot = createExtension({
             SignInPageComponent={inputs.signInPage?.get(
               SignInPageBlueprint.dataRefs.component,
             )}
-            extraElements={inputs.elements?.map(el =>
-              el.get(coreExtensionData.reactElement),
-            )}
+            extraElements={inputs.elements?.map(el => (
+              <Fragment key={el.node.spec.id}>
+                {el.get(coreExtensionData.reactElement)}
+              </Fragment>
+            ))}
           >
             {content}
           </AppRouter>
@@ -193,6 +195,29 @@ export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
   extraElements?: Array<JSX.Element>;
+}
+
+/**
+ * Renders the app root elements in a single, fixed position, so that the
+ * number of elements never changes where the rest of the app sits in the
+ * React tree. Elements without a key are keyed by their position.
+ *
+ * Root elements can be added during app finalization, for example ones that
+ * are deferred with an `if` predicate. Rendering them inline would shift the
+ * app content to a new position and cause it to remount.
+ */
+function AppRootElements(props: { elements: Array<JSX.Element> }) {
+  return (
+    <>
+      {props.elements.map((element, index) =>
+        element.key === null ? (
+          <Fragment key={`element-${index}`}>{element}</Fragment>
+        ) : (
+          element
+        ),
+      )}
+    </>
+  );
 }
 
 /**
@@ -276,7 +301,7 @@ export function AppRouter(props: AppRouterProps) {
       <LegacyBUIProvider>
         <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
           <BreadcrumbsRegistryProvider>
-            {...extraElements}
+            <AppRootElements elements={extraElements} />
             <RouteTracker routeObjects={routeObjects} />
             {SignInPageComponent ? (
               <SignInPageWrapper
