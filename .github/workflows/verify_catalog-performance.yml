@@ -9,6 +9,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_catalog-performance.yml'
+      - 'scripts/compare-catalog-performance.js'
       - 'plugins/catalog-backend/**'
       - 'plugins/catalog-node/**'
       - 'plugins/catalog-common/**'
