@@ -1,0 +1,54 @@
+{
+  "name": "@backstage/cli-module-package-docs",
+  "version": "0.0.0",
+  "description": "CLI module for generating package documentation",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-package-docs"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-package-docs",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "cleye": "^2.6.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^14.0.0",
+    "globby": "^11.0.0",
+    "minimatch": "^11.0.1",
+    "p-limit": "^3.0.2",
+    "semver": "^7.5.3",
+    "zod": "^3.25.76 || ^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/node": "^24.0.0",
+    "@types/semver": "^7",
+    "typedoc": "^0.28.0"
+  }
+}

@@ -2436,6 +2436,48 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-module-package-docs@workspace:^, @backstage/cli-module-package-docs@workspace:packages/cli-module-package-docs":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-package-docs@workspace:packages/cli-module-package-docs"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/node": "npm:^24.0.0"
+    "@types/semver": "npm:^7"
+    cleye: "npm:^2.6.0"
+    fs-extra: "npm:^11.2.0"
+    glob: "npm:^14.0.0"
+    globby: "npm:^11.0.0"
+    minimatch: "npm:^11.0.1"
+    p-limit: "npm:^3.0.2"
+    semver: "npm:^7.5.3"
+    typedoc: "npm:^0.28.0"
+    zod: "npm:^3.25.76 || ^4.0.0"
+  bin:
+    cli-module-package-docs: bin/backstage-cli-module-package-docs
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-package-manager-patch@workspace:^, @backstage/cli-module-package-manager-patch@workspace:packages/cli-module-package-manager-patch":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-package-manager-patch@workspace:packages/cli-module-package-manager-patch"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    "@types/node": "npm:^24.0.0"
+    cleye: "npm:^2.6.0"
+    fs-extra: "npm:^11.2.0"
+    tar: "npm:^7.5.21"
+  bin:
+    cli-module-package-manager-patch: bin/backstage-cli-module-package-manager-patch
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-module-package-manager-yarn@workspace:^, @backstage/cli-module-package-manager-yarn@workspace:packages/cli-module-package-manager-yarn":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-package-manager-yarn@workspace:packages/cli-module-package-manager-yarn"
@@ -2467,6 +2509,82 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-module-repo-checks@workspace:^, @backstage/cli-module-repo-checks@workspace:packages/cli-module-repo-checks":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-repo-checks@workspace:packages/cli-module-repo-checks"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    "@types/node": "npm:^24.0.0"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.6.0"
+    codeowners-utils: "npm:^1.0.2"
+    fs-extra: "npm:^11.2.0"
+    js-yaml: "npm:^5.0.0"
+    p-limit: "npm:^3.0.2"
+    ts-morph: "npm:^24.0.0"
+    yaml-diff-patch: "npm:^2.0.0"
+  bin:
+    cli-module-repo-checks: bin/backstage-cli-module-repo-checks
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-report-api@workspace:^, @backstage/cli-module-report-api@workspace:packages/cli-module-report-api":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-report-api@workspace:packages/cli-module-report-api"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@electric-sql/pglite": "npm:^0.5.8"
+    "@microsoft/api-documenter": "npm:^7.28.1"
+    "@microsoft/api-extractor": "npm:^7.57.3"
+    "@microsoft/api-extractor-model": "npm:7.32.2"
+    "@microsoft/tsdoc": "npm:~0.16.0"
+    "@microsoft/tsdoc-config": "npm:~0.18.0"
+    "@types/node": "npm:^24.0.0"
+    "@types/semver": "npm:^7"
+    cleye: "npm:^2.6.0"
+    diff: "npm:^9.0.0"
+    fs-extra: "npm:^11.2.0"
+    just-diff: "npm:^6.0.2"
+    knex: "npm:^3.0.0"
+    knex-pglite: "npm:^0.14.0"
+    lodash: "npm:^4.17.21"
+    minimatch: "npm:^11.0.1"
+    p-limit: "npm:^3.0.2"
+    semver: "npm:^7.5.3"
+  bin:
+    cli-module-report-api: bin/backstage-cli-module-report-api
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-report-knip@workspace:^, @backstage/cli-module-report-knip@workspace:packages/cli-module-report-knip":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-report-knip@workspace:packages/cli-module-report-knip"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/node": "npm:^24.0.0"
+    cleye: "npm:^2.6.0"
+    diff: "npm:^9.0.0"
+    fs-extra: "npm:^11.2.0"
+    knip: "npm:^5.42.0"
+    minimatch: "npm:^11.0.1"
+    p-limit: "npm:^3.0.2"
+  bin:
+    cli-module-report-knip: bin/backstage-cli-module-report-knip
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-module-scaffolder@workspace:^, @backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder"
@@ -2480,6 +2598,42 @@ __metadata:
     yaml: "npm:^2.0.0"
   bin:
     cli-module-scaffolder: bin/backstage-cli-module-scaffolder
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-schema-openapi@workspace:^, @backstage/cli-module-schema-openapi@workspace:packages/cli-module-schema-openapi":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-schema-openapi@workspace:packages/cli-module-schema-openapi"
+  dependencies:
+    "@apidevtools/swagger-parser": "npm:^10.1.0"
+    "@apisyouwonthate/style-guide": "npm:^1.4.0"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@openapitools/openapi-generator-cli": "npm:^2.41.0"
+    "@stoplight/spectral-core": "npm:^1.18.0"
+    "@stoplight/spectral-formatters": "npm:^1.1.0"
+    "@stoplight/spectral-functions": "npm:^1.7.2"
+    "@stoplight/spectral-parsers": "npm:^1.0.2"
+    "@stoplight/spectral-rulesets": "npm:^1.18.0"
+    "@stoplight/spectral-runtime": "npm:^1.1.2"
+    "@stoplight/types": "npm:^14.0.0"
+    "@types/node": "npm:^24.0.0"
+    chalk: "npm:^4.0.0"
+    chokidar: "npm:^3.5.3"
+    cleye: "npm:^2.6.0"
+    command-exists: "npm:^1.2.9"
+    fs-extra: "npm:^11.2.0"
+    js-yaml: "npm:^5.0.0"
+    lodash: "npm:^4.17.21"
+    minimatch: "npm:^11.0.1"
+    p-limit: "npm:^3.0.2"
+  bin:
+    cli-module-schema-openapi: bin/backstage-cli-module-schema-openapi
   languageName: unknown
   linkType: soft
 
@@ -7330,64 +7484,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/repo-tools-defaults@workspace:^, @backstage/repo-tools-defaults@workspace:packages/repo-tools-defaults":
+  version: 0.0.0-use.local
+  resolution: "@backstage/repo-tools-defaults@workspace:packages/repo-tools-defaults"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-module-package-docs": "workspace:^"
+    "@backstage/cli-module-package-manager-patch": "workspace:^"
+    "@backstage/cli-module-repo-checks": "workspace:^"
+    "@backstage/cli-module-report-api": "workspace:^"
+    "@backstage/cli-module-report-knip": "workspace:^"
+    "@backstage/cli-module-schema-openapi": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/repo-tools@workspace:*, @backstage/repo-tools@workspace:^, @backstage/repo-tools@workspace:packages/repo-tools":
   version: 0.0.0-use.local
   resolution: "@backstage/repo-tools@workspace:packages/repo-tools"
   dependencies:
-    "@apidevtools/swagger-parser": "npm:^10.1.0"
-    "@apisyouwonthate/style-guide": "npm:^1.4.0"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
-    "@backstage/config-loader": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/types": "workspace:^"
-    "@electric-sql/pglite": "npm:^0.5.8"
-    "@manypkg/get-packages": "npm:^1.1.3"
-    "@microsoft/api-documenter": "npm:^7.28.1"
-    "@microsoft/api-extractor": "npm:^7.57.3"
-    "@microsoft/api-extractor-model": "npm:7.32.2"
-    "@microsoft/tsdoc": "npm:~0.16.0"
-    "@microsoft/tsdoc-config": "npm:~0.18.0"
-    "@openapitools/openapi-generator-cli": "npm:^2.41.0"
-    "@stoplight/spectral-core": "npm:^1.18.0"
-    "@stoplight/spectral-formatters": "npm:^1.1.0"
-    "@stoplight/spectral-functions": "npm:^1.7.2"
-    "@stoplight/spectral-parsers": "npm:^1.0.2"
-    "@stoplight/spectral-rulesets": "npm:^1.18.0"
-    "@stoplight/spectral-runtime": "npm:^1.1.2"
-    "@stoplight/types": "npm:^14.0.0"
-    "@types/is-glob": "npm:^4.0.2"
+    "@backstage/repo-tools-defaults": "workspace:^"
     "@types/node": "npm:^24.0.0"
-    "@types/semver": "npm:^7"
-    chalk: "npm:^4.0.0"
-    chokidar: "npm:^3.5.3"
-    codeowners-utils: "npm:^1.0.2"
-    command-exists: "npm:^1.2.9"
-    commander: "npm:^14.0.3"
-    diff: "npm:^9.0.0"
-    fs-extra: "npm:^11.2.0"
-    glob: "npm:^14.0.0"
-    globby: "npm:^11.0.0"
-    is-glob: "npm:^4.0.3"
-    js-yaml: "npm:^5.0.0"
-    just-diff: "npm:^6.0.2"
-    knex: "npm:^3.0.0"
-    knex-pglite: "npm:^0.14.0"
-    knip: "npm:^5.42.0"
-    lodash: "npm:^4.17.21"
-    minimatch: "npm:^11.0.1"
-    openapi-types: "npm:^12.0.0"
-    p-limit: "npm:^3.0.2"
-    semver: "npm:^7.5.3"
-    tar: "npm:^7.5.21"
-    ts-morph: "npm:^24.0.0"
-    typedoc: "npm:^0.28.0"
-    yaml-diff-patch: "npm:^2.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
   bin:
     backstage-repo-tools: bin/backstage-repo-tools
   languageName: unknown

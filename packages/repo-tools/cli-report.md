@@ -5,48 +5,48 @@
 ### `backstage-repo-tools`
 
 ```
-Usage: backstage-repo-tools [options] [command]
+Usage: backstage-repo-tools [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  api-reports [options] [paths...]
-  generate-catalog-info [options]
-  generate-patch [options] <package>
-  help [command]
-  knip-reports [options] [paths...]
-  lint [command]
-  package [command]
-  peer-deps [options]
-  repo [command]
+  api-reports
+  generate-catalog-info
+  generate-patch
+  help
+  knip-reports
+  lint
+  package
+  peer-deps
+  repo
   type-deps
 ```
 
 ### `backstage-repo-tools api-reports`
 
 ```
-Usage: backstage-repo-tools api-reports [options] [paths...]
+Usage: backstage-repo-tools api-reports [flags...] [paths...]
 
 Options:
   --allow-all-warnings
   --ci
   --docs
-  --exclude <pattern>
-  --include <pattern>
+  --exclude <string>
+  --include <string>
   --sql-reports
   --tsc
   --validate-release-tags
-  -a, --allow-warnings <allowWarningsPaths>
+  -a, --allow-warnings <string>
   -h, --help
-  -o, --omit-messages <messageCodes>
+  -o, --omit-messages <string>
 ```
 
 ### `backstage-repo-tools generate-catalog-info`
 
 ```
-Usage: backstage-repo-tools generate-catalog-info [options]
+Usage: backstage-repo-tools generate-catalog-info [flags...]
 
 Options:
   --ci
@@ -57,21 +57,21 @@ Options:
 ### `backstage-repo-tools generate-patch`
 
 ```
-Usage: backstage-repo-tools generate-patch [options] <package>
+Usage: backstage-repo-tools generate-patch [flags...] <package>
 
 Options:
-  --base-version <version>
-  --query <query>
-  --registry-url <registry-url>
+  --base-version <string>
+  --query <string>
+  --registry-url <string>
   --skip-install
-  --target <target-repo>
+  --target <string>
   -h, --help
 ```
 
 ### `backstage-repo-tools knip-reports`
 
 ```
-Usage: backstage-repo-tools knip-reports [options] [paths...]
+Usage: backstage-repo-tools knip-reports [flags...] [paths...]
 
 Options:
   --ci
@@ -81,20 +81,21 @@ Options:
 ### `backstage-repo-tools lint`
 
 ```
-Usage: backstage-repo-tools lint [options] [command] [command]
+Usage: backstage-repo-tools lint [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  legacy-backend-exports [paths...]
+  help
+  legacy-backend-exports
 ```
 
 ### `backstage-repo-tools lint legacy-backend-exports`
 
 ```
-Usage: backstage-repo-tools lint legacy-backend-exports [options] [paths...]
+Usage: backstage-repo-tools lint legacy-backend-exports [flags...] [paths...]
 
 Options:
   -h, --help
@@ -103,67 +104,83 @@ Options:
 ### `backstage-repo-tools package`
 
 ```
-Usage: backstage-repo-tools package [options] [command] [command]
+Usage: backstage-repo-tools package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  schema [command]
+  help
+  schema
 ```
 
 ### `backstage-repo-tools package schema`
 
 ```
-Usage: backstage-repo-tools package schema [options] [command] [command]
+Usage: backstage-repo-tools package schema [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  openapi [command]
+  help
+  openapi
 ```
 
 ### `backstage-repo-tools package schema openapi`
 
 ```
-Usage: backstage-repo-tools package schema openapi [options] [command] [command]
+Usage: backstage-repo-tools package schema openapi [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  fuzz [options]
-  generate [options]
-  help [command]
+  diff
+  fuzz
+  generate
+  help
   validate
+```
+
+### `backstage-repo-tools package schema openapi diff`
+
+```
+Usage: backstage-repo-tools package schema openapi diff [flags...]
+
+Options:
+  --ignore
+  --json
+  --since <string>
+  -h, --help
 ```
 
 ### `backstage-repo-tools package schema openapi fuzz`
 
 ```
-Usage: backstage-repo-tools package schema openapi fuzz [options]
+Usage: backstage-repo-tools package schema openapi fuzz [flags...]
 
 Options:
   --debug
-  --exclude-checks <excludeChecks>
-  --limit <limit>
-  --workers <workers>
+  --exclude-checks <string>
+  --limit <string>
+  --workers <string>
   -h, --help
 ```
 
 ### `backstage-repo-tools package schema openapi generate`
 
 ```
-Usage: backstage-repo-tools package schema openapi generate [options]
+Usage: backstage-repo-tools package schema openapi generate [flags...]
 
 Options:
-  --client-additional-properties [properties]
-  --client-package [package]
+  --client-additional-properties <string>
+  --client-package <string>
   --server
-  --server-additional-properties [properties]
+  --server-additional-properties <string>
   --watch
   -h, --help
 ```
@@ -171,7 +188,7 @@ Options:
 ### `backstage-repo-tools package schema openapi validate`
 
 ```
-Usage: backstage-repo-tools package schema openapi validate [options]
+Usage: backstage-repo-tools package schema openapi validate [flags...]
 
 Options:
   -h, --help
@@ -180,7 +197,7 @@ Options:
 ### `backstage-repo-tools peer-deps`
 
 ```
-Usage: backstage-repo-tools peer-deps [options]
+Usage: backstage-repo-tools peer-deps [flags...]
 
 Options:
   --fix
@@ -190,69 +207,72 @@ Options:
 ### `backstage-repo-tools repo`
 
 ```
-Usage: backstage-repo-tools repo [options] [command] [command]
+Usage: backstage-repo-tools repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  schema [command]
+  help
+  schema
 ```
 
 ### `backstage-repo-tools repo schema`
 
 ```
-Usage: backstage-repo-tools repo schema [options] [command] [command]
+Usage: backstage-repo-tools repo schema [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  openapi [command]
+  help
+  openapi
 ```
 
 ### `backstage-repo-tools repo schema openapi`
 
 ```
-Usage: backstage-repo-tools repo schema openapi [options] [command] [command]
+Usage: backstage-repo-tools repo schema openapi [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  diff [options]
-  fuzz [options]
-  help [command]
-  lint [options] [paths...]
-  validate [paths...]
+  diff
+  fuzz
+  help
+  lint
+  validate
 ```
 
 ### `backstage-repo-tools repo schema openapi diff`
 
 ```
-Usage: backstage-repo-tools repo schema openapi diff [options]
+Usage: backstage-repo-tools repo schema openapi diff [flags...]
 
 Options:
-  --since <ref>
+  --since <string>
   -h, --help
 ```
 
 ### `backstage-repo-tools repo schema openapi fuzz`
 
 ```
-Usage: backstage-repo-tools repo schema openapi fuzz [options]
+Usage: backstage-repo-tools repo schema openapi fuzz [flags...]
 
 Options:
-  --since <ref>
+  --since <string>
   -h, --help
 ```
 
 ### `backstage-repo-tools repo schema openapi lint`
 
 ```
-Usage: backstage-repo-tools repo schema openapi lint [options] [paths...]
+Usage: backstage-repo-tools repo schema openapi lint [flags...] [paths...]
 
 Options:
   --strict
@@ -262,7 +282,7 @@ Options:
 ### `backstage-repo-tools repo schema openapi validate`
 
 ```
-Usage: backstage-repo-tools repo schema openapi validate [options] [paths...]
+Usage: backstage-repo-tools repo schema openapi validate [flags...] [paths...]
 
 Options:
   -h, --help
@@ -271,7 +291,7 @@ Options:
 ### `backstage-repo-tools type-deps`
 
 ```
-Usage: backstage-repo-tools type-deps [options]
+Usage: backstage-repo-tools type-deps [flags...]
 
 Options:
   -h, --help

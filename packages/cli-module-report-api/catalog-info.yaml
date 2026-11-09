@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-report-api
+  title: '@backstage/cli-module-report-api'
+  description: CLI module for generating Backstage API, CLI and SQL reports
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers
