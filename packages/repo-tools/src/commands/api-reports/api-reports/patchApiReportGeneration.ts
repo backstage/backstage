@@ -16,7 +16,7 @@
 
 import { ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
-import { Program } from 'typescript';
+import type { Program } from 'typescript';
 import { tryRunPrettier } from '../common';
 import { targetPaths } from '@backstage/cli-common';
 
