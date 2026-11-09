@@ -29,5 +29,13 @@ describe('runOutputWithStderr', () => {
         'console.error("boom details"); process.exit(3)',
       ]),
     ).rejects.toThrow(/boom details/);
+
+    await expect(
+      runOutputWithStderr([
+        'node',
+        '-e',
+        'process.kill(process.pid, "SIGKILL")',
+      ]),
+    ).rejects.toThrow(/terminated by signal SIGKILL/);
   });
 });

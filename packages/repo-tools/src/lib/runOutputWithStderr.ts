@@ -14,23 +14,44 @@
  * limitations under the License.
  */
 
-import { runOutput } from '@backstage/cli-common';
+import { run, RunOptions } from '@backstage/cli-common';
+import { waitForExitOrSignal } from './waitForExitOrSignal';
 
 /**
- * Like runOutput, but a failure includes the stderr of the child process in
- * the error message, so that it is visible to whoever sees the error.
+ * Like runOutput from cli-common, but a failure includes the stderr of the
+ * child process in the error message, and termination by a signal is treated
+ * as a failure.
  */
 export async function runOutputWithStderr(
   args: string[],
-  options?: Parameters<typeof runOutput>[1],
+  options?: RunOptions,
 ): Promise<string> {
+  const stdoutChunks: Buffer[] = [];
+  const stderrChunks: Buffer[] = [];
+
   try {
-    return await runOutput(args, options);
+    await waitForExitOrSignal(
+      run(args, {
+        ...options,
+        onStdout: data => {
+          stdoutChunks.push(data);
+          options?.onStdout?.(data);
+        },
+        onStderr: data => {
+          stderrChunks.push(data);
+          options?.onStderr?.(data);
+        },
+      }),
+    );
+    return Buffer.concat(stdoutChunks).toString().trim();
   } catch (error) {
-    const stderr = (error as { stderr?: string }).stderr?.trim();
-    if (stderr && error instanceof Error) {
-      error.message = `${error.message}\n${stderr}`;
+    const err = error as Error & { stdout?: string; stderr?: string };
+    err.stdout = Buffer.concat(stdoutChunks).toString();
+    err.stderr = Buffer.concat(stderrChunks).toString();
+    const stderr = err.stderr.trim();
+    if (stderr) {
+      err.message = `${err.message}\n${stderr}`;
     }
-    throw error;
+    throw err;
   }
 }

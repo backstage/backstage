@@ -22,6 +22,7 @@ import { loadYaml } from '../../../../lib/yaml';
 import { join } from 'node:path';
 import { OptionValues } from 'commander';
 import { sync as existsSync } from 'command-exists';
+import { waitForExitOrSignal } from '../../../../lib/waitForExitOrSignal';
 
 async function fuzz(opts: OptionValues) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
@@ -68,19 +69,21 @@ async function fuzz(opts: OptionValues) {
     args.push('--exclude-checks', opts.excludeChecks);
   }
 
-  await run(
-    [
-      'st',
-      'run',
-      '--checks',
-      'all',
-      ...args,
-      `${config.getString('backend.baseUrl')}/api/${pluginId}/openapi.json`,
-    ],
-    {
-      stdio: ['ignore', 'inherit', 'ignore'],
-    },
-  ).waitForExit();
+  await waitForExitOrSignal(
+    run(
+      [
+        'st',
+        'run',
+        '--checks',
+        'all',
+        ...args,
+        `${config.getString('backend.baseUrl')}/api/${pluginId}/openapi.json`,
+      ],
+      {
+        stdio: ['ignore', 'inherit', 'ignore'],
+      },
+    ),
+  );
 }
 
 export async function command(opts: OptionValues) {

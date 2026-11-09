@@ -19,7 +19,9 @@ import { DEFAULT_BASE_REF } from '../../../../lib/openapi/constants';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { ensureOasdiffInstalled } from '../../../util';
 import { OptionValues } from 'commander';
-import { runOutput, targetPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
+import { runOutputWithStderr } from '../../../../lib/runOutputWithStderr';
+import { SignalTerminatedError } from '../../../../lib/waitForExitOrSignal';
 
 async function check(opts: OptionValues) {
   await ensureOasdiffInstalled();
@@ -34,7 +36,7 @@ async function check(opts: OptionValues) {
 
   let baseRef = opts.since;
   if (!baseRef) {
-    baseRef = await runOutput(
+    baseRef = await runOutputWithStderr(
       ['git', 'merge-base', '--fork-point', DEFAULT_BASE_REF],
       { env: { FORCE_COLOR: undefined } },
     );
@@ -48,7 +50,7 @@ async function check(opts: OptionValues) {
   let output = '';
   let failed = false;
   try {
-    output = await runOutput(
+    output = await runOutputWithStderr(
       [
         'oasdiff',
         subcommand,
@@ -60,6 +62,9 @@ async function check(opts: OptionValues) {
       { cwd: targetPaths.rootDir, env: { FORCE_COLOR: undefined } },
     );
   } catch (err) {
+    if (err instanceof SignalTerminatedError) {
+      throw err;
+    }
     output = (err as { stdout?: string }).stdout ?? '';
     failed = true;
   }

@@ -24,6 +24,7 @@ import {
   posix,
 } from 'node:path';
 import { run } from '@backstage/cli-common';
+import { waitForExitOrSignal } from '../../lib/waitForExitOrSignal';
 import { runOutputWithStderr } from '../../lib/runOutputWithStderr';
 import { ForwardedError } from '@backstage/errors';
 import { Readable } from 'node:stream';
@@ -390,25 +391,27 @@ async function generatePatchForArchives(
   });
   // The diff must keep its trailing newline, so don't use runOutput which trims
   const chunks = new Array<Buffer>();
-  await run(
-    [
-      'git',
-      '-c',
-      'core.safecrlf=false',
-      'diff',
-      '--cached',
-      '--src-prefix=a/',
-      '--dst-prefix=b/',
-      '--ignore-cr-at-eol',
-      '--full-index',
-      '--no-renames',
-      '--text',
-    ],
-    {
-      cwd: patchDir,
-      env: GIT_ENV,
-      onStdout: data => chunks.push(data),
-    },
-  ).waitForExit();
+  await waitForExitOrSignal(
+    run(
+      [
+        'git',
+        '-c',
+        'core.safecrlf=false',
+        'diff',
+        '--cached',
+        '--src-prefix=a/',
+        '--dst-prefix=b/',
+        '--ignore-cr-at-eol',
+        '--full-index',
+        '--no-renames',
+        '--text',
+      ],
+      {
+        cwd: patchDir,
+        env: GIT_ENV,
+        onStdout: data => chunks.push(data),
+      },
+    ),
+  );
   return Buffer.concat(chunks).toString('utf8');
 }
