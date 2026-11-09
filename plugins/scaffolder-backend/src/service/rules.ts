@@ -44,7 +44,7 @@ import { get, toPath } from 'lodash';
  * that are not accounted for are caught by the classification test in
  * `rules.test.ts`.
  */
-const INTEGRATION_ACTION_SEGMENT_PATTERN =
+export const INTEGRATION_ACTION_SEGMENT_PATTERN =
   /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u;
 const INTEGRATION_IDENTIFIER_PROPERTIES: readonly string[] = [
   'owner',
