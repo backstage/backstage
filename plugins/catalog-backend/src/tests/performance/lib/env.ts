@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { appendFileSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import yn from 'yn';
 
 export const performanceTraceEnabled = yn(process.env.PERFORMANCE_TRACE, {
@@ -24,6 +26,45 @@ export const performanceTestEnabled = yn(process.env.PERFORMANCE_TEST, {
   default: false,
 });
 
+/**
+ * If set, the wall-clock duration of every test inside a
+ * describePerformanceTest block is appended to this file as one JSON object
+ * per line, in the form `{"name": "...", "durationMs": 123}`. Durations include
+ * per-test setup such as database initialization and migrations.
+ */
+const performanceResultsFile = process.env.PERFORMANCE_RESULTS_FILE;
+
+function recordDuration(name: string, durationMs: number) {
+  if (!performanceResultsFile) {
+    return;
+  }
+  mkdirSync(dirname(performanceResultsFile), { recursive: true });
+  appendFileSync(
+    performanceResultsFile,
+    `${JSON.stringify({ name, durationMs })}\n`,
+  );
+}
+
+const describeWithTimings = ((name: string, fn: () => void) =>
+  // eslint-disable-next-line jest/valid-title
+  describe(name, () => {
+    let startedAt: number | undefined;
+    beforeEach(() => {
+      startedAt = Date.now();
+    });
+    afterEach(() => {
+      // beforeEach may not have run if a beforeAll hook failed
+      if (startedAt !== undefined) {
+        recordDuration(
+          expect.getState().currentTestName ?? name,
+          Date.now() - startedAt,
+        );
+        startedAt = undefined;
+      }
+    });
+    fn();
+  })) as jest.Describe;
+
 export const describePerformanceTest: jest.Describe = performanceTestEnabled
-  ? describe
+  ? describeWithTimings
   : describe.skip;

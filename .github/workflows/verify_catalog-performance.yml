@@ -1,0 +1,118 @@
+name: Catalog Performance
+on:
+  # Runs on master record the timing baseline that pull requests compare against
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/verify_catalog-performance.yml'
+      - 'plugins/catalog-backend/**'
+      - 'plugins/catalog-node/**'
+      - 'plugins/catalog-common/**'
+      - 'packages/catalog-model/**'
+      - 'packages/backend-test-utils/**'
+  pull_request:
+    paths:
+      - '.github/workflows/verify_catalog-performance.yml'
+      - 'plugins/catalog-backend/**'
+      - 'plugins/catalog-node/**'
+      - 'plugins/catalog-common/**'
+      - 'packages/catalog-model/**'
+      - 'packages/backend-test-utils/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
+
+jobs:
+  performance:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres18:
+        image: postgres:18@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      postgres14:
+        image: postgres:14@sha256:14bfab572eec6abf65892e1db7c3ba8d41b2a2855c1b143664907d6e146eb6e1
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
+
+    name: Catalog Performance
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: use node.js 24.x
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.1
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        with:
+          cache-prefix: ${{ runner.os }}-v24.x
+
+      - name: catalog performance tests
+        run: yarn test plugins/catalog-backend/src/tests/performance
+        env:
+          PERFORMANCE_TEST: 1
+          PERFORMANCE_RESULTS_FILE: ${{ runner.temp }}/perf/current.jsonl
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1
+          BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
+
+      # Master saves its timings to the Actions cache. Caches created on the
+      # default branch are readable from pull requests, and this needs no
+      # permissions beyond contents: read.
+      - name: stage baseline
+        if: github.event_name == 'push'
+        run: cp "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
+
+      - name: save baseline
+        if: github.event_name == 'push'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/perf/baseline.jsonl
+          key: catalog-perf-baseline-${{ github.sha }}
+
+      - name: restore baseline
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/perf/baseline.jsonl
+          key: catalog-perf-baseline-none
+          restore-keys: catalog-perf-baseline-
+
+      - name: compare against master
+        if: github.event_name == 'pull_request'
+        run: node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
