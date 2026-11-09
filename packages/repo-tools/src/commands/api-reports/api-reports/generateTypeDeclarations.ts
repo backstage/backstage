@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import { run, ExitCodeError } from '@backstage/cli-common';
 import { targetPaths } from '@backstage/cli-common';
 import { waitForExitOrSignal } from '../../../lib/waitForExitOrSignal';
+import { requireProjectTool } from '../../../lib/projectTools';
 
 /**
  * Generates the TypeScript declaration files for the specified project, using the provided `tsconfig.json` file.
@@ -30,6 +31,10 @@ import { waitForExitOrSignal } from '../../../lib/waitForExitOrSignal';
  * @returns {Promise<void>} A promise that resolves when the declaration files have been generated.
  */
 export async function generateTypeDeclarations(tsconfigFilePath: string) {
+  // Fail before deleting anything if the project has no TypeScript installed.
+  // The compiler itself runs through `yarn tsc` so that a root `tsc` script,
+  // for example one that raises the memory limit, is still respected.
+  requireProjectTool('typescript');
   await fs.remove(targetPaths.resolveRoot('dist-types'));
   try {
     await waitForExitOrSignal(

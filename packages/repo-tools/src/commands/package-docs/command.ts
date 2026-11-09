@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { targetPaths } from '@backstage/cli-common';
 import { resolvePackagePaths } from '../../lib/paths';
@@ -25,10 +25,11 @@ import { PackageDocsCache } from './Cache';
 import { Lockfile } from '@backstage/cli-node';
 import { glob } from 'glob';
 import { existsSync } from 'node:fs';
+import { requireProjectTool } from '../../lib/projectTools';
 
 const limit = pLimit(8);
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const EXCLUDE = [
   'packages/app',
@@ -71,7 +72,7 @@ function getExports(packageJson: any) {
   return [packageJson.main];
 }
 
-async function generateDocJson(pkg: string) {
+async function generateDocJson(pkg: string, typedocBin: string) {
   const temporaryTsConfigPath: string = await createTemporaryTsConfig(pkg);
 
   const packageJson = JSON.parse(
@@ -88,9 +89,10 @@ async function generateDocJson(pkg: string) {
 
   await mkdirp(targetPaths.resolveRoot(`dist-types`, pkg));
 
-  const { stdout, stderr } = await execAsync(
+  const { stdout, stderr } = await execFileAsync(
+    process.execPath,
     [
-      targetPaths.resolveRoot('node_modules/.bin/typedoc'),
+      typedocBin,
       '--json',
       targetPaths.resolveRoot(`dist-types`, pkg, 'docs.json'),
       '--tsconfig',
@@ -102,7 +104,7 @@ async function generateDocJson(pkg: string) {
         '--entryPoints',
         e,
       ]) as string[]),
-    ].join(' '),
+    ],
     {
       cwd: pkg,
       env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=12288' },
@@ -116,6 +118,8 @@ async function generateDocJson(pkg: string) {
 
 export default async function packageDocs(paths: string[] = [], opts: any) {
   console.warn('!!! This is an experimental command !!!');
+
+  const typedocBin = requireProjectTool('typedoc').binPath('typedoc');
 
   const existingDocsJsonPaths = glob.sync(
     targetPaths.resolveRoot('dist-types/**/docs.json'),
@@ -168,7 +172,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
         }
         try {
           console.log(`### Processing ${pkg}`);
-          const success = await generateDocJson(pkg);
+          const success = await generateDocJson(pkg, typedocBin);
           if (success) {
             await cache.write(pkg, targetPaths.resolveRoot(`dist-types`, pkg));
           }
@@ -205,9 +209,10 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
     }
   }
 
-  const { stdout, stderr } = await execAsync(
+  const { stdout, stderr } = await execFileAsync(
+    process.execPath,
     [
-      targetPaths.resolveRoot('node_modules/.bin/typedoc'),
+      typedocBin,
       '--entryPointStrategy',
       'merge',
       ...generatedPackageDirs.flatMap(pkg => [
@@ -220,7 +225,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
       ...(existsSync(targetPaths.resolveRoot('typedoc.json'))
         ? ['--options', targetPaths.resolveRoot('typedoc.json')]
         : []),
-    ].join(' '),
+    ],
     {
       cwd: targetPaths.rootDir,
     },

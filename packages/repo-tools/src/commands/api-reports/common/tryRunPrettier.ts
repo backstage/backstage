@@ -16,6 +16,22 @@
 
 import { targetPaths } from '@backstage/cli-common';
 import type { Config } from 'prettier';
+import { pathToFileURL } from 'node:url';
+import { findProjectTool } from '../../../lib/projectTools';
+
+type PrettierSync =
+  | typeof import('prettier')
+  | typeof import('@prettier/sync').default;
+
+/**
+ * Loads prettier from the project root, or returns `undefined` if the project
+ * does not have prettier installed.
+ */
+function loadProjectPrettier(): typeof import('prettier') | undefined {
+  return findProjectTool('prettier')?.require<typeof import('prettier')>(
+    'prettier',
+  );
+}
 
 /**
  * Tries to run prettier asynchronously, with Prettier v2 or v3.
@@ -28,8 +44,11 @@ export async function tryRunPrettierAsync(
   content: string,
   extraConfig: Config = { parser: 'markdown' },
 ): Promise<string> {
+  const prettier = loadProjectPrettier();
+  if (!prettier) {
+    return content;
+  }
   try {
-    const prettier = require('prettier') as typeof import('prettier');
     // Filepath for proper config resolution
     const filepath =
       extraConfig.filepath ??
@@ -58,9 +77,7 @@ export async function tryRunPrettierAsync(
  * @returns A function that formats content using the prettier instance and config
  */
 export function createPrettierSyncFormatter(
-  prettierSync:
-    | typeof import('prettier')
-    | typeof import('@prettier/sync').default,
+  prettierSync: PrettierSync,
   extraConfig: Config = {},
 ): (content: string) => string {
   return function tryRunPrettierInner(content: string): string {
@@ -86,19 +103,41 @@ export function createPrettierSyncFormatter(
   };
 }
 
+const prettierSyncCache = new Map<string, PrettierSync | undefined>();
+
 /**
- * Loads the prettier instance, either v2 or v3 via @prettier/sync.
+ * Loads the prettier instance from the project root, either v2 or v3 via
+ * `@prettier/sync`, or returns `undefined` if prettier is not installed.
  * XXX: Remove once only v3 is supported
  * @returns The prettier instance, either v2 or v3 via @prettier/sync.
  */
-function loadPrettierSync():
-  | typeof import('prettier')
-  | typeof import('@prettier/sync').default {
-  const prettier = require('prettier') as typeof import('prettier');
-  if (prettier.version.startsWith('2')) {
-    return prettier;
+function loadPrettierSync(): PrettierSync | undefined {
+  const rootDir = targetPaths.rootDir;
+  if (prettierSyncCache.has(rootDir)) {
+    return prettierSyncCache.get(rootDir);
   }
-  return require('@prettier/sync').default;
+
+  let prettierSync: PrettierSync | undefined;
+  const tool = findProjectTool('prettier', rootDir);
+  if (tool) {
+    const prettier = tool.require<typeof import('prettier')>('prettier');
+    if (prettier.version.startsWith('2')) {
+      prettierSync = prettier;
+    } else {
+      // Each synchronized instance runs in its own worker, which is why the
+      // result is cached. The entry is the CommonJS build of prettier, whose
+      // API is only exposed through the default export of the module.
+      const { createSynchronizedPrettier } =
+        require('@prettier/sync') as typeof import('@prettier/sync');
+      prettierSync = (
+        createSynchronizedPrettier({
+          prettierEntry: pathToFileURL(tool.resolve('prettier')),
+        }) as unknown as { default: typeof import('@prettier/sync').default }
+      ).default;
+    }
+  }
+  prettierSyncCache.set(rootDir, prettierSync);
+  return prettierSync;
 }
 
 /**
@@ -112,9 +151,10 @@ export function tryRunPrettier(
   content: string,
   extraConfig: Config = { parser: 'markdown' },
 ): string {
-  const formatter = createPrettierSyncFormatter(
-    loadPrettierSync(),
-    extraConfig,
-  );
+  const prettierSync = loadPrettierSync();
+  if (!prettierSync) {
+    return content;
+  }
+  const formatter = createPrettierSyncFormatter(prettierSync, extraConfig);
   return formatter(content);
 }
