@@ -214,7 +214,10 @@ function createModelWithSpecSchema(
   };
 }
 
-async function describeModel(testModel: CatalogModel): Promise<string> {
+async function describeModel(
+  testModel: CatalogModel,
+  query?: JsonObject,
+): Promise<string> {
   const mockActionsRegistry = actionsRegistryServiceMock();
   createGetCatalogModelDescriptionAction({
     modelHolder: ModelHolder.modelPassthroughForTest(testModel),
@@ -222,7 +225,7 @@ async function describeModel(testModel: CatalogModel): Promise<string> {
   });
   const result = await mockActionsRegistry.invoke({
     id: 'test:get-catalog-model-description',
-    input: {},
+    input: query ? { query } : {},
   });
   return (result as any).output.description as string;
 }
@@ -597,6 +600,39 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(none).toContain('No items in the catalog model matched');
     expect(none).toContain('## Entity Metadata field');
     expect(none).not.toContain('## Entity Kinds');
+  });
+
+  it('should match a field by any of the relations it generates', async () => {
+    const description = (query: JsonObject) =>
+      describeModel(
+        {
+          ...model,
+          getKind: input => {
+            const kind = model.getKind(input);
+            return (
+              kind && {
+                ...kind,
+                relationFields: [
+                  ...kind.relationFields,
+                  { path: 'spec.owner', relation: 'managedBy' },
+                ],
+              }
+            );
+          },
+        },
+        query,
+      );
+
+    for (const relation of ['ownedBy', 'managedBy']) {
+      const result = await description({ type: 'field', relation });
+      expect(result).toContain('* "spec.owner" (string, required)');
+      expect(result).toContain('* "spec.owner" → relation "ownedBy"');
+      expect(result).toContain('* "spec.owner" → relation "managedBy"');
+      expect(result).not.toContain('spec.lifecycle');
+    }
+    await expect(
+      description({ type: 'field', relation: 'partOf' }),
+    ).resolves.toContain('No items in the catalog model matched');
   });
 
   it('should include the metadata list unless only fields match', async () => {
