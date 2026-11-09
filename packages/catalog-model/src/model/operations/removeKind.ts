@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /**
  * Remove a kind entirely from the model.

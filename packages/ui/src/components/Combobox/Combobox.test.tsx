@@ -438,10 +438,10 @@ describe('Combobox', () => {
       </Combobox>,
     );
 
+    openCombobox();
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: 'grace' },
     });
-    openCombobox();
 
     expect(
       screen.queryByRole('option', { name: 'Ada Lovelace' }),
@@ -525,16 +525,241 @@ describe('Combobox', () => {
       </Combobox>,
     );
 
+    openCombobox();
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: 'navy' },
     });
-    openCombobox();
 
     expect(
       screen.queryByRole('option', { name: 'Ada Lovelace' }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Grace Hopper' })).toBeVisible();
     expect(filter).toHaveBeenCalledWith(owners[1], 'navy');
+  });
+
+  it.each([
+    {
+      name: 'plain options',
+      query: 'grace',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={owners.map(({ id, name }) => ({ id, label: name }))}
+          search
+          onChange={onChange}
+        />
+      ),
+    },
+    {
+      name: 'a custom filter',
+      query: 'navy',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{ filter: (owner, query) => owner.email.includes(query) }}
+          allowsCustomValue
+          onChange={onChange}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>
+      ),
+    },
+    {
+      name: 'sections',
+      query: 'grace',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={[
+            {
+              title: 'Owners',
+              options: owners.map(({ id, name }) => ({ id, label: name })),
+            },
+          ]}
+          search
+          onChange={onChange}
+        />
+      ),
+    },
+    {
+      name: 'a custom filter on sections',
+      query: 'navy',
+      renderSubject: (onChange: jest.Mock) => (
+        <Combobox
+          aria-label="Owner"
+          options={[
+            {
+              title: 'Owners',
+              options: owners.map(({ id, name, email }) => ({
+                id,
+                label: name,
+                description: email,
+              })),
+            },
+          ]}
+          search={{
+            filter: (option, query) =>
+              option.description?.includes(query) ?? false,
+          }}
+          onChange={onChange}
+        />
+      ),
+    },
+  ])(
+    'selects a client search match with the keyboard for $name',
+    ({ query, renderSubject }) => {
+      const onChange = jest.fn();
+      renderCombobox(renderSubject(onChange));
+
+      const input = screen.getByRole('combobox');
+      openCombobox();
+      fireEvent.change(input, { target: { value: query } });
+
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(input).toHaveAttribute(
+        'aria-activedescendant',
+        screen.getByRole('option', { name: 'Grace Hopper' }).id,
+      );
+
+      fireEvent.keyDown(input, { key: 'Enter' });
+      expect(onChange).toHaveBeenCalledWith('grace');
+      expect(input).toHaveValue('Grace Hopper');
+
+      act(() => input.blur());
+      expect(onChange).toHaveBeenLastCalledWith('grace');
+      expect(input).toHaveValue('Grace Hopper');
+
+      openCombobox();
+      expect(screen.getAllByRole('option')).toHaveLength(2);
+    },
+  );
+
+  it.each([
+    {
+      name: 'Escape with allowsCustomValue',
+      search: {},
+      allowsCustomValue: true,
+      leave: (input: HTMLElement) =>
+        fireEvent.keyDown(input, { key: 'Escape' }),
+    },
+    {
+      name: 'blur with a controlled input',
+      search: { controlled: true },
+      allowsCustomValue: false,
+      leave: () => act(() => screen.getByText('Other').focus()),
+    },
+  ])(
+    'restores a selected option that a custom filter excludes, on $name',
+    ({ search, allowsCustomValue, leave }) => {
+      const onChange = jest.fn();
+      const filter = (owner: Owner, query: string) =>
+        owner.email.includes(query);
+
+      function OwnerCombobox() {
+        const [inputValue, setInputValue] = useState('');
+        return (
+          <>
+            <Combobox
+              aria-label="Owner"
+              items={owners}
+              search={
+                search.controlled
+                  ? { filter, inputValue, onInputChange: setInputValue }
+                  : { filter }
+              }
+              allowsCustomValue={allowsCustomValue}
+              onChange={onChange}
+            >
+              {owner => <ComboboxItemProfile name={owner.name} />}
+            </Combobox>
+            <button>Other</button>
+          </>
+        );
+      }
+
+      renderCombobox(<OwnerCombobox />);
+
+      const input = screen.getByRole('combobox');
+      openCombobox();
+      fireEvent.click(screen.getByRole('option', { name: 'Ada Lovelace' }));
+      act(() => input.focus());
+      openCombobox();
+      fireEvent.change(input, { target: { value: 'navy' } });
+
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(input).toHaveAttribute(
+        'aria-activedescendant',
+        screen.getByRole('option', { name: 'Grace Hopper' }).id,
+      );
+
+      leave(input);
+      expect(input).toHaveValue('Ada Lovelace');
+      expect(onChange).toHaveBeenLastCalledWith('ada');
+    },
+  );
+
+  it.each([
+    { name: 'defaultSelectedKey', selection: { defaultSelectedKey: 'ada' } },
+    { name: 'selectedKey', selection: { selectedKey: 'ada' } },
+  ])(
+    'restores the deprecated $name when a custom filter excludes it',
+    ({ selection }) => {
+      renderCombobox(
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{ filter: (owner, query) => owner.email.includes(query) }}
+          {...selection}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>,
+      );
+
+      const input = screen.getByRole('combobox');
+      expect(input).toHaveValue('Ada Lovelace');
+      openCombobox();
+      fireEvent.change(input, { target: { value: 'navy' } });
+      expect(screen.getAllByRole('option')).toHaveLength(1);
+
+      fireEvent.keyDown(input, { key: 'Escape' });
+      expect(input).toHaveValue('Ada Lovelace');
+    },
+  );
+
+  it('applies a custom filter to a controlled input value changed by the caller', () => {
+    function ControlledOwnerCombobox({ inputValue }: { inputValue: string }) {
+      return (
+        <Combobox
+          aria-label="Owner"
+          items={owners}
+          search={{
+            inputValue,
+            onInputChange: () => {},
+            filter: (owner, query) => owner.email.includes(query),
+          }}
+        >
+          {owner => <ComboboxItemProfile name={owner.name} />}
+        </Combobox>
+      );
+    }
+
+    const { rerender } = renderCombobox(
+      <ControlledOwnerCombobox inputValue="" />,
+    );
+    openCombobox();
+    expect(screen.getAllByRole('option')).toHaveLength(2);
+
+    rerender(
+      <BUIProvider>
+        <ControlledOwnerCombobox inputValue="navy" />
+      </BUIProvider>,
+    );
+
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    expect(screen.getByRole('option', { name: 'Grace Hopper' })).toBeVisible();
   });
 
   it('supports controlled nested client search state', () => {

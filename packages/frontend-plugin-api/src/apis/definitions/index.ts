@@ -34,6 +34,7 @@ export * from './auth';
 
 export * from './AlertApi';
 export * from './AppLanguageApi';
+export * from './AppLifecycleApi';
 export * from './AppThemeApi';
 export * from './SwappableComponentsApi';
 export * from './ConfigApi';
@@ -52,3 +53,5 @@ export * from './ToastApi';
 export * from './TranslationApi';
 export * from './PluginHeaderActionsApi';
 export * from './PluginWrapperApi';
+
+export { coreApis } from './coreApis';

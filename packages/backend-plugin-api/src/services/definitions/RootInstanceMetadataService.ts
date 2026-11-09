@@ -24,6 +24,16 @@ export interface RootInstanceMetadataServicePluginInfo {
 
 /** @public */
 export interface RootInstanceMetadataService {
+  /**
+   * The globally unique identifier of this specific Backstage backend
+   * instance.
+   *
+   * Every backend instance has its own identifier. The identifier is stable
+   * for the lifetime of the instance, must never be reused for another backend
+   * instance, and should be treated as an opaque string.
+   */
+  getId(): string;
+
   getInstalledPlugins: () => Promise<
     ReadonlyArray<RootInstanceMetadataServicePluginInfo>
   >;

@@ -1,5 +1,44 @@
 # @backstage/core-app-api
 
+## 1.20.7-next.1
+
+### Patch Changes
+
+- 9c97ff4: Fixed the OAuth "Login Required" popup (`OAuthRequestDialog`) appearing after a transient network failure during a background token refresh — for example right after the machine wakes from sleep, when the session has not actually expired.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+
+## 1.20.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.0
+
+## 1.20.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.19.0
+  - @backstage/config@1.3.10
+  - @backstage/core-plugin-api@1.12.11
+
+## 1.20.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.19.0-next.0
+
+## 1.20.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+
 ## 1.20.5
 
 ### Patch Changes

@@ -20,6 +20,8 @@ import request from 'supertest';
 import singlePathSpec from './___fixtures__/single-path';
 import { Response } from './utility';
 import { OPENAPI_SPEC_ROUTE } from './constants';
+import { wrapServer } from './testUtils';
+import { Proxy } from './proxy/setup';
 
 describe('createRouter', () => {
   const pet: Response<typeof singlePathSpec, '/pet/:petId', 'get'> = {
@@ -32,6 +34,48 @@ describe('createRouter', () => {
   const specs = [singlePathSpec];
   const ONCE_NESTED_ROUTER_PREFIX = '/pet-store';
   const TWICE_NESTED_ROUTER_PREFIX = `/api`;
+
+  it('forwards Supertest requests through the OpenAPI validation proxy', async () => {
+    const router = createValidatedOpenApiRouter({
+      openapi: '3.0.3',
+      info: { title: 'Proxy test', version: '1.0.0' },
+      paths: {
+        '/ping': {
+          get: {
+            responses: {
+              '200': {
+                description: 'Success',
+                content: {
+                  'application/json': { schema: { type: 'string' } },
+                },
+              },
+            },
+          },
+        },
+      },
+    } as const);
+    router.get('/ping', (_, res) => res.json('pong'));
+    const server = await wrapServer(express().use(router));
+
+    expect(server.address()).toMatchObject({
+      address: 'localhost',
+      port: expect.any(Number),
+    });
+    const response = await request(server).get('/ping').expect(200);
+    expect(response.body).toBe('pong');
+
+    const proxyUrl = jest.spyOn(Proxy.prototype, 'url', 'get');
+    try {
+      proxyUrl.mockReturnValue('http://[::1]:12345');
+      expect(server.address()).toEqual({
+        address: '::1',
+        family: 'IPv6',
+        port: 12345,
+      });
+    } finally {
+      proxyUrl.mockRestore();
+    }
+  });
 
   const routers = specs.flatMap(spec => {
     const router = createValidatedOpenApiRouter(spec);

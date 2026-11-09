@@ -24,7 +24,7 @@ import type {
   EvaluatePermissionRequest,
   EvaluatePermissionResponse,
 } from '@backstage/plugin-permission-common';
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, isError } from '@backstage/errors';
 
 export type ExtensionPredicateContext = {
   featureFlags: string[];
@@ -42,6 +42,49 @@ type MinimalPermissionApi = {
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
 };
+
+// The permission check runs while the app starts, which is also when the
+// backend is most likely to be unavailable for a moment: it may still be
+// starting up, as in local development where the frontend is often ready
+// first, or a request may be dropped. Failing then breaks the whole app, so
+// wait and retry instead, for up to about 15 seconds in total.
+const AUTHORIZE_RETRY_DELAYS_MS = [500, 1000, 2000, 4000, 8000];
+
+// Only failures that may clear up on their own are retried: transport
+// failures, which fetch reports as a TypeError, and 5xx responses. Client
+// errors such as a 401 or 403 response, and errors parsing or validating a
+// response, fail right away.
+function isRetryableAuthorizeError(error: unknown): boolean {
+  if (
+    isError(error) &&
+    error.name === 'ResponseError' &&
+    'response' in error &&
+    typeof error.response === 'object' &&
+    error.response !== null &&
+    'status' in error.response &&
+    typeof error.response.status === 'number'
+  ) {
+    return error.response.status >= 500;
+  }
+  return isError(error) && error.name === 'TypeError';
+}
+
+async function authorizeWithRetry(
+  permissionApi: MinimalPermissionApi,
+  request: EvaluatePermissionRequest,
+): Promise<EvaluatePermissionResponse> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await permissionApi.authorize(request);
+    } catch (error) {
+      const delay = AUTHORIZE_RETRY_DELAYS_MS[attempt];
+      if (delay === undefined || !isRetryableAuthorizeError(error)) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
 
 function parsePermissionName(permissionName: string) {
   const parts = permissionName.split('#');
@@ -121,7 +164,7 @@ export function createPredicateContextLoader(options: {
         });
         const responses = await Promise.all(
           hydratedPermissions.map(permission =>
-            permissionApi.authorize({
+            authorizeWithRetry(permissionApi, {
               permission,
             }),
           ),

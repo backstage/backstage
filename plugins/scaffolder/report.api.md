@@ -810,13 +810,19 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorToolbarFileMenu.options.createDirectory': 'Create template directory';
     readonly 'templateEditorToolbarFileMenu.options.closeEditor': 'Close template editor';
     readonly 'templateEditorToolbarTemplatesMenu.button': 'Templates';
+    readonly 'featuredTemplatesWidget.errorMessage': 'Could not load templates.';
+    readonly 'featuredTemplatesWidget.emptyMessage': 'There are currently no templates to show.';
+    readonly 'featuredTemplatesWidget.scrollPreviousButtonTitle': 'Previous templates';
+    readonly 'featuredTemplatesWidget.scrollNextButtonTitle': 'Next templates';
+    readonly 'featuredTemplatesWidget.errorRetryButtonTitle': 'Retry';
+    readonly 'featuredTemplatesWidget.emptyBrowseAllButtonTitle': 'Browse all templates';
   }
 >;
 
 // @public @deprecated (undocumented)
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
-// @public (undocumented)
+// @public
 export const TaskPage: (props: {
   TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput_2;

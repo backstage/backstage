@@ -41,7 +41,7 @@ catalog:
       yourProviderId: # identifies your dataset / provider independent of config changes
         organization: 'your-company' # string
         host: gitea-your-company.com
-        branch: 'main' # Optional, defaults to 'main'
+        branch: 'main' # Optional; if omitted, each repository's own default branch is used
         catalogPath: 'catalog-info.yaml' # Optional, defaults to catalog-info.yaml
         schedule:
           # supports cron, ISO duration, "human duration" as used in code
@@ -54,5 +54,5 @@ The provider configuration consists of the following parts:
 
 - **`organization`**: Name of your organization account/workspace. If you want to add multiple organizations, you need to add one provider config each.
 - **`host`**: the host of the Gitea integration to use.
-- **`branch`** _(optional)_: the branch where we will look for catalog entities (defaults to 'main').
+- **`branch`** _(optional)_: the branch where we will look for catalog entities. If omitted, each repository's own default branch is used instead of assuming 'main'.
 - **`catalogPath`**: path relative to the root of the repository where the Backstage manifests are stored.

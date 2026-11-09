@@ -9,6 +9,20 @@ import { z } from 'zod/v4';
 import * as zodV3 from 'zod/v3';
 
 // @public
+export type AnyFilterPredicate =
+  | FilterPredicate
+  | FilterPredicatePrimitive
+  | {
+      $all: AnyFilterPredicate[];
+    }
+  | {
+      $any: AnyFilterPredicate[];
+    }
+  | {
+      $not: AnyFilterPredicate;
+    };
+
+// @public
 export function createZodV3FilterPredicateSchema(
   z: typeof zodV3.z,
 ): zodV3.ZodType<FilterPredicate>;
@@ -21,14 +35,13 @@ export function createZodV4FilterPredicateSchema(): z.ZodType<
 
 // @public
 export function evaluateFilterPredicate(
-  predicate: FilterPredicate,
+  predicate: AnyFilterPredicate,
   value: unknown,
 ): boolean;
 
 // @public
 export type FilterPredicate =
   | FilterPredicateExpression
-  | FilterPredicatePrimitive
   | {
       $all: FilterPredicate[];
     }
@@ -65,7 +78,7 @@ export type FilterPredicateValue =
       $in: FilterPredicatePrimitive[];
     }
   | {
-      $contains: FilterPredicate;
+      $contains: AnyFilterPredicate;
     }
   | {
       $hasPrefix: string;

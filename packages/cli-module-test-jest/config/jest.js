@@ -23,6 +23,7 @@ const paths = require('@backstage/cli-common').findPaths(process.cwd());
 const {
   getJestEnvironment,
   getJestMajorVersion,
+  getJestNodeEnvironment,
 } = require('./getJestEnvironment');
 
 const SRC_EXTS = ['ts', 'js', 'tsx', 'jsx', 'mts', 'cts', 'mjs', 'cjs'];
@@ -226,7 +227,7 @@ function getRoleConfig(role, pkgJson) {
     };
   }
   return {
-    testEnvironment: require.resolve('jest-environment-node'),
+    testEnvironment: getJestNodeEnvironment(),
     moduleFileExtensions: [...SRC_EXTS, 'json', 'node'],
     // Jest doesn't let us dynamically detect type=module per transformed file,
     // so we have to assume that if the entry point is ESM, all TS files are
@@ -271,7 +272,8 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
     ...getRoleConfig(pkgJson.backstage?.role, pkgJson),
   };
 
-  options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];
+  // Copy the array, since it may be shared with other projects through the root config
+  options.setupFilesAfterEnv = [...(options.setupFilesAfterEnv ?? [])];
 
   if (
     extraOptions.rejectFrontendNetworkRequests &&

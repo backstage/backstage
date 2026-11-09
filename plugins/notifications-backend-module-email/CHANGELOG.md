@@ -1,5 +1,62 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.3.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-notifications-node@0.2.32-next.0
+
+## 0.3.26
+
+### Patch Changes
+
+- 663abaf: Updated `nodemailer` to version 10 to address security vulnerabilities in older releases.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/catalog-model@1.10.2
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-notifications-common@0.2.5
+  - @backstage/plugin-notifications-node@0.2.31
+
+## 0.3.26-next.1
+
+### Patch Changes
+
+- 663abaf: Updated `nodemailer` to version 10 to address security vulnerabilities in older releases.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-notifications-node@0.2.31-next.1
+
+## 0.3.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/integration-aws-node@0.2.3-next.0
+  - @backstage/plugin-notifications-common@0.2.5-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-notifications-node@0.2.31-next.0
+
 ## 0.3.25
 
 ### Patch Changes

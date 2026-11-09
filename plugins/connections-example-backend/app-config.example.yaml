@@ -1,0 +1,15 @@
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    host: 127.0.0.1
+    port: 7007
+  database:
+    client: better-sqlite3
+    connection: ':memory:'
+
+connections:
+  - type: gitlab
+    host: gitlab.example.com
+    auth:
+      - method: token
+        token: example-token-not-a-real-credential

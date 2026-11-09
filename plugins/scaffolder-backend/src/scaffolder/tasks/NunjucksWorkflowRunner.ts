@@ -187,21 +187,16 @@ function collectSecretRedactions(
     );
   }
   if (withSecrets && typeof withSecrets === 'object') {
-    const otherEntries =
+    const other =
       withoutSecrets && typeof withoutSecrets === 'object'
-        ? Object.entries(withoutSecrets as Record<string, unknown>)
-        : [];
+        ? (withoutSecrets as Record<string, unknown>)
+        : {};
     return Object.entries(withSecrets as Record<string, unknown>).flatMap(
-      ([key, value], index) => {
-        const otherEntry = otherEntries[index];
-        if (!otherEntry) {
+      ([key, value]) => {
+        if (!Object.prototype.hasOwnProperty.call(other, key)) {
           return [key, ...extractStringValues(value)];
         }
-        const [otherKey, otherValue] = otherEntry;
-        return [
-          ...(key !== otherKey ? [key] : []),
-          ...collectSecretRedactions(value, otherValue),
-        ];
+        return collectSecretRedactions(value, other[key]);
       },
     );
   }
@@ -330,7 +325,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     return JSON.parse(JSON.stringify(input), (_key, value) => {
       try {
         if (typeof value === 'string') {
-          return templateRenderer.renderValue(value, context);
+          return templateRenderer.renderValue(value, context, {
+            coercion: 'json',
+          });
         }
       } catch {
         return value;

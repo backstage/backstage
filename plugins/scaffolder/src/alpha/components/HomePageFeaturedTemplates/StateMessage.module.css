@@ -1,0 +1,9 @@
+.state {
+  height: 100%;
+}
+
+.stateIcon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--bui-fg-secondary);
+}

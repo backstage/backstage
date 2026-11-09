@@ -82,7 +82,7 @@ describe('authModuleOidcProvider', () => {
       http.post(
         'https://oidc.test/oauth2/token',
         async ({ request: httpRequest }) => {
-          const keyPair = await generateKeyPair('RS256');
+          const keyPair = await generateKeyPair('RS256', { extractable: true });
           const privateKey = await exportJWK(keyPair.privateKey);
           publicKey = await exportJWK(keyPair.publicKey);
           publicKey.alg = privateKey.alg = 'RS256';

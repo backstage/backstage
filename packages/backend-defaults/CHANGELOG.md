@@ -1,5 +1,108 @@
 # @backstage/backend-defaults
 
+## 0.18.2-next.1
+
+### Patch Changes
+
+- f81ca4e: The AWS S3 URL reader no longer assumes the configured `roleArn` a second time when the matching account under `aws.accounts` already provides credentials for that exact role, for example through a web identity token file. Previously the role had to trust itself for this setup to work. The role is still assumed explicitly when the integration sets an `externalId`.
+- 9fc68ae: Fixed the `valkey` cache store sharing keys between plugins. Two plugins that cached a value under the same key could read and overwrite each other's entries. Keys are now stored under the plugin namespace, the same way the `redis` store does it. Cache entries now use new key names, so existing entries are no longer read and are rebuilt as plugins write new values. Old entries stay in Valkey until their TTL expires. Entries without a TTL, and the per-plugin key index sets that the old layout created, stay until you remove them manually.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.1
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- 80cc892: Removed the runtime dependency on `@backstage/cli-node`, which was only used for types. Backends no longer install the CLI tooling packages through `@backstage/backend-defaults`.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-app-api@1.9.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.18.1
+
+### Patch Changes
+
+- c478470: Added a service-authenticated action registry status endpoint that reports whether a plugin provides actions without exposing action metadata.
+- f6054ac: Backends created with `createBackend` now provide the experimental connections service by default. Custom backends can install `connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
+- e956084: Added an `instanceId` option to `createBackend`, allowing deployments to use an externally provided backend instance identifier. Each backend instance uses a random UUID by default.
+- 1939ded: Added bounded retries for transient failures while initializing Cloud SQL database connections.
+- a6bc5e4: Stopped issuing periodic per-plugin database keepalive queries by default and changed the default minimum PostgreSQL and MySQL connection pool size to zero. Idle connections can now be retired after the configured timeout, while explicitly configured pool minimums are preserved. Set `backend.database.keepalive: true` to continue issuing the periodic queries.
+- bd1ff39: Fixed AWS RDS IAM authentication tokens being reused after their signing credentials expire, which could cause database connection failures when using temporary AWS credentials.
+- 6887ecc: Updated dependency `infinispan` to `^0.16.0`.
+- 495ef24: Added support for `backend.logger.redactAllowlist` configuration option, which allows specific secret values to pass through log redaction when they are known to be safe to log.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-app-api@1.8.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+
+## 0.18.1-next.3
+
+### Patch Changes
+
+- f6054ac: Backends created with `createBackend` now provide the experimental connections service by default. Custom backends can install `connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
+- bd1ff39: Fixed AWS RDS IAM authentication tokens being reused after their signing credentials expire, which could cause database connection failures when using temporary AWS credentials.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+  - @backstage/backend-app-api@1.8.0-next.2
+
+## 0.18.1-next.2
+
+### Patch Changes
+
+- a6bc5e4: Stopped issuing periodic per-plugin database keepalive queries by default and changed the default minimum PostgreSQL and MySQL connection pool size to zero. Idle connections can now be retired after the configured timeout, while explicitly configured pool minimums are preserved. Set `backend.database.keepalive: true` to continue issuing the periodic queries.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.1
+  - @backstage/integration@2.1.3-next.1
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- c478470: Added a service-authenticated action registry status endpoint that reports whether a plugin provides actions without exposing action metadata.
+- e956084: Added an `instanceId` option to `createBackend`, allowing deployments to use an externally provided backend instance identifier. Each backend instance uses a random UUID by default.
+- 1939ded: Added bounded retries for transient failures while initializing Cloud SQL database connections.
+- 6887ecc: Updated dependency `infinispan` to `^0.16.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-app-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-app-api@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/integration-aws-node@0.2.3-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+
 ## 0.18.0
 
 ### Minor Changes

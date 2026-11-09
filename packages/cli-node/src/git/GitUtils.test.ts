@@ -14,7 +14,42 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { runGit, GitUtils } from './GitUtils';
+
+const mockDir = createMockDirectory();
+overrideTargetPaths(mockDir.path);
+
+// Avoid depending on the developer's git identity and signing configuration.
+function commit(message: string) {
+  return runGit(
+    '-c',
+    'user.name=Test',
+    '-c',
+    'user.email=test@example.com',
+    '-c',
+    'commit.gpgsign=false',
+    'commit',
+    '--quiet',
+    '--all',
+    '--message',
+    message,
+  );
+}
+
+beforeAll(async () => {
+  mockDir.setContent({ 'a.txt': 'a', 'b.txt': 'b' });
+  await runGit('init', '--quiet', '--initial-branch', 'main');
+  await runGit('add', '.');
+  await commit('initial');
+
+  await runGit('checkout', '--quiet', '-b', 'feature');
+  mockDir.addContent({ 'a.txt': 'changed' });
+  await commit('change a');
+
+  mockDir.addContent({ 'b.txt': 'uncommitted', 'c.txt': 'untracked' });
+});
 
 describe('runGit', () => {
   it('runs a git command', async () => {
@@ -48,9 +83,11 @@ describe('listChangedFiles', () => {
     );
   });
 
-  it('should return something', async () => {
-    await expect(GitUtils.listChangedFiles('HEAD')).resolves.toEqual(
-      expect.any(Array),
-    );
+  it('lists committed, uncommitted, and untracked changes since the merge base', async () => {
+    await expect(GitUtils.listChangedFiles('main')).resolves.toEqual([
+      'a.txt',
+      'b.txt',
+      'c.txt',
+    ]);
   });
 });

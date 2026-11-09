@@ -254,6 +254,7 @@ export class TechdocsGenerator implements GeneratorBase {
     await createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
+      'mkdocs',
     );
 
     // Add etag of the prepared tree to techdocs_metadata.json

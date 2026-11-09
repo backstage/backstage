@@ -30,9 +30,11 @@ export class SignalClient implements SignalApi {
   static readonly DEFAULT_CONNECT_TIMEOUT_MS: number = 1000;
   static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number = 5000;
   private ws: WebSocket | null = null;
+  private connecting?: Promise<boolean>;
+  private connectionGeneration = 0;
   private subscriptions: Map<string, Subscription> = new Map();
-  private messageQueue: string[] = [];
-  private reconnectTo: any;
+  private subscribedChannels = new Set<string>();
+  private reconnectTo: ReturnType<typeof setTimeout> | undefined;
 
   static create(options: {
     identity: IdentityApi;
@@ -76,19 +78,15 @@ export class SignalClient implements SignalApi {
     onMessage: (message: TMessage) => void,
   ): SignalSubscriber {
     const subscriptionId = globalThis.crypto.randomUUID();
-    const exists = [...this.subscriptions.values()].find(
-      sub => sub.channel === channel,
-    );
     this.subscriptions.set(subscriptionId, {
       channel,
       callback: onMessage,
     });
 
     this.connect()
-      .then(() => {
-        // Do not subscribe twice to same channel even there is multiple callbacks
-        if (!exists) {
-          this.send({ action: 'subscribe', channel });
+      .then(connected => {
+        if (connected) {
+          this.syncSubscriptions();
         }
       })
       .catch(() => {
@@ -101,91 +99,146 @@ export class SignalClient implements SignalApi {
         return;
       }
       this.subscriptions.delete(subscriptionId);
-      const multipleExists = [...this.subscriptions.values()].find(
-        s => s.channel === channel,
-      );
-      // If there are subscriptions still listening to this channel, do not
-      // unsubscribe from the server
-      if (!multipleExists) {
-        this.send({ action: 'unsubscribe', channel: sub.channel });
-      }
+      this.syncSubscriptions();
 
       // If there are no subscriptions, close the connection
       if (this.subscriptions.size === 0) {
-        this.ws?.close(WS_CLOSE_NORMAL);
+        if (this.reconnectTo) {
+          clearTimeout(this.reconnectTo);
+          this.reconnectTo = undefined;
+        }
+        this.connectionGeneration += 1;
+        this.connecting = undefined;
+        const ws = this.ws;
         this.ws = null;
+        ws?.close(WS_CLOSE_NORMAL);
+        this.subscribedChannels.clear();
       }
     };
 
     return { unsubscribe };
   }
 
-  private send(data?: JsonObject): void {
-    const jsonMessage = JSON.stringify(data);
-    if (jsonMessage.length === 0) {
+  private syncSubscriptions(): void {
+    if (this.connecting || this.ws?.readyState !== WebSocket.OPEN) {
       return;
     }
 
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      if (data) {
-        this.messageQueue.unshift(jsonMessage);
+    const desiredChannels = new Set(
+      [...this.subscriptions.values()].map(sub => sub.channel),
+    );
+    for (const channel of this.subscribedChannels) {
+      if (!desiredChannels.has(channel)) {
+        this.ws.send(JSON.stringify({ action: 'unsubscribe', channel }));
+        this.subscribedChannels.delete(channel);
       }
-      return;
     }
-
-    // First send queue
-    for (const msg of this.messageQueue) {
-      this.ws!.send(msg);
-    }
-    this.messageQueue = [];
-    if (data) {
-      this.ws!.send(jsonMessage);
+    for (const channel of desiredChannels) {
+      if (!this.subscribedChannels.has(channel)) {
+        this.ws.send(JSON.stringify({ action: 'subscribe', channel }));
+        this.subscribedChannels.add(channel);
+      }
     }
   }
 
-  private async connect() {
-    if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
-      return;
+  private connect(): Promise<boolean> {
+    if (this.connecting) {
+      return this.connecting;
+    }
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      return Promise.resolve(true);
+    }
+
+    if (this.reconnectTo) {
+      clearTimeout(this.reconnectTo);
+      this.reconnectTo = undefined;
+    }
+    const generation = ++this.connectionGeneration;
+    this.connecting = this.openConnection(generation)
+      .catch(error => {
+        if (generation !== this.connectionGeneration) {
+          return false;
+        }
+        throw error;
+      })
+      .finally(() => {
+        if (generation === this.connectionGeneration) {
+          this.connecting = undefined;
+        }
+      });
+    return this.connecting;
+  }
+
+  private async openConnection(generation: number): Promise<boolean> {
+    const { token } = await this.identity.getCredentials();
+    if (!token || generation !== this.connectionGeneration) {
+      return false;
     }
 
     const apiUrl = await this.discoveryApi.getBaseUrl('signals');
-    const { token } = await this.identity.getCredentials();
+    if (generation !== this.connectionGeneration) {
+      return false;
+    }
 
     const url = new URL(apiUrl);
     url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
-    this.ws = new WebSocket(url.toString(), token);
+    const ws = new WebSocket(url.toString(), token);
+    this.ws = ws;
+    this.subscribedChannels.clear();
+    ws.onopen = () => {
+      if (this.ws !== ws || this.subscriptions.size === 0) {
+        ws.close(WS_CLOSE_NORMAL);
+      }
+    };
 
     // Wait until connection is open
     let connectSleep = 0;
     while (
-      this.ws &&
-      this.ws.readyState !== WebSocket.OPEN &&
+      this.ws === ws &&
+      ws.readyState === WebSocket.CONNECTING &&
       connectSleep < this.connectTimeout
     ) {
       await new Promise(r => setTimeout(r, 100));
       connectSleep += 100;
     }
 
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+    if (this.ws !== ws || ws.readyState !== WebSocket.OPEN) {
+      ws.close(WS_CLOSE_NORMAL);
+      if (this.ws === ws) {
+        this.ws = null;
+      }
+      if (generation !== this.connectionGeneration) {
+        return false;
+      }
       throw new Error('Connect timeout');
     }
 
-    this.ws.onmessage = (data: MessageEvent) => {
+    ws.onmessage = (data: MessageEvent) => {
       this.handleMessage(data);
     };
 
-    this.ws.onerror = () => {
-      if (this.ws) {
-        this.ws.close();
+    ws.onerror = () => {
+      if (this.ws !== ws) {
+        return;
       }
+      ws.close();
       this.ws = null;
+      this.subscribedChannels.clear();
+      this.reconnect();
     };
 
-    this.ws.onclose = (ev: CloseEvent) => {
+    ws.onclose = (ev: CloseEvent) => {
+      if (this.ws !== ws) {
+        return;
+      }
+      this.ws = null;
+      this.subscribedChannels.clear();
       if (ev.code !== WS_CLOSE_NORMAL && ev.code !== WS_CLOSE_GOING_AWAY) {
         this.reconnect();
       }
     };
+
+    return true;
   }
 
   private handleMessage(data: MessageEvent) {
@@ -206,21 +259,19 @@ export class SignalClient implements SignalApi {
   }
 
   private reconnect() {
-    if (this.reconnectTo) {
-      clearTimeout(this.reconnectTo);
+    if (this.reconnectTo || this.subscriptions.size === 0) {
+      return;
     }
 
     this.reconnectTo = setTimeout(() => {
-      this.reconnectTo = null;
-      if (this.ws) {
-        this.ws.close();
+      this.reconnectTo = undefined;
+      if (this.subscriptions.size === 0) {
+        return;
       }
-      this.ws = null;
       this.connect()
-        .then(() => {
-          // Resubscribe to existing channels in case we lost connection
-          for (const sub of this.subscriptions.values()) {
-            this.send({ action: 'subscribe', channel: sub.channel });
+        .then(connected => {
+          if (connected) {
+            this.syncSubscriptions();
           }
         })
         .catch(() => {

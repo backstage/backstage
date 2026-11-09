@@ -1,5 +1,47 @@
 # @backstage/cli-module-new
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- e769ccb: Fix an issue where creating a new package with the `cli-module` role would crash during the installation phase due to an unhandled role mapping.
+- 33894d6: Fixed an issue where scaffolding templates on Windows could generate corrupted file names for files in subdirectories.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- e4597ce: Updated the `plugin-web-library` template to use `@backstage/ui` instead of the deprecated `@material-ui/core`.
+- b717df2: Switched to version 4 of `zod` for internal validation. Validation errors for invalid templates now use the updated, more descriptive `zod` wording.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/errors@1.3.2
+  - @backstage/cli-common@0.3.2
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- e4597ce: Updated the `plugin-web-library` template to use `@backstage/ui` instead of the deprecated `@material-ui/core`.
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.1.7
 
 ### Patch Changes

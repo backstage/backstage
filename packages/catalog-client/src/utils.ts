@@ -46,41 +46,51 @@ export function cursorContainsQuery(cursor: string): boolean {
 }
 
 /**
- * Converts an {@link EntityFilterQuery} into a predicate query object.
+ * Converts an {@link EntityFilterQuery} into an equivalent filter predicate.
+ *
+ * @remarks
+ *
+ * The semantics match those of the legacy filter query parameter: records in
+ * an array are combined using `$any`, and keys within a record using `$all`.
+ * Keys whose values are empty are ignored, and so are records that end up
+ * without keys. If a key has both string values and `CATALOG_FILTER_EXISTS`,
+ * the string values take precedence.
+ *
  * @internal
+ * @returns The predicate, or `undefined` if the filter does not constrain
+ *          the result in any way.
  */
-export function convertFilterToPredicate(filter: EntityFilterQuery):
-  | FilterPredicateExpression
-  | {
-      $all: FilterPredicate[];
-    }
-  | {
-      $any: FilterPredicate[];
-    } {
-  const records = [filter].flat();
+export function convertFilterToPredicate(
+  filter: EntityFilterQuery,
+): FilterPredicate | undefined {
+  const clauses: FilterPredicate[] = [];
 
-  const clauses = records.map(record => {
+  for (const record of [filter].flat()) {
     const parts: FilterPredicateExpression[] = [];
 
     for (const [key, value] of Object.entries(record)) {
       const values = [value].flat();
       const strings = values.filter((v): v is string => typeof v === 'string');
-      const hasExists = values.some(v => v === CATALOG_FILTER_EXISTS);
 
-      if (hasExists) {
-        // Ignore whether there ALSO were some strings - that would boil down to
-        // just existence anyway since there's effectively an OR between them
-        parts.push({ [key]: { $exists: true } } as FilterPredicateExpression);
-      } else if (strings.length === 1) {
+      if (strings.length === 1) {
         parts.push({ [key]: strings[0] } as FilterPredicateExpression);
       } else if (strings.length > 1) {
         parts.push({ [key]: { $in: strings } } as FilterPredicateExpression);
+      } else if (values.some(v => v === CATALOG_FILTER_EXISTS)) {
+        parts.push({ [key]: { $exists: true } } as FilterPredicateExpression);
       }
     }
 
-    return parts.length === 1 ? parts[0] : { $all: parts };
-  });
+    if (parts.length === 1) {
+      clauses.push(parts[0]);
+    } else if (parts.length > 1) {
+      clauses.push({ $all: parts });
+    }
+  }
 
+  if (clauses.length === 0) {
+    return undefined;
+  }
   return clauses.length === 1 ? clauses[0] : { $any: clauses };
 }
 

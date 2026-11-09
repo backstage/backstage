@@ -18,35 +18,35 @@ import serveHandler from 'serve-handler';
 import http from 'node:http';
 import httpProxy from 'http-proxy';
 import { createLogger } from './utility';
-import {
-  proxyHtmlWithLivereloadInjection,
-  proxyMkdocsLivereload,
-} from './livereload';
+import { proxyHtmlWithLivereloadInjection } from './livereload';
+import { EngineConfig } from './engines';
 
 export default class HTTPServer {
   private readonly proxyEndpoint: string;
   private readonly backstageBundleDir: string;
   private readonly backstagePort: number;
-  private readonly mkdocsTargetAddress: string;
+  private readonly docsTargetAddress: string;
   private readonly verbose: boolean;
+  private readonly engineConfig: EngineConfig;
 
   constructor(
     backstageBundleDir: string,
     backstagePort: number,
-    mkdocsTargetAddress: string,
+    docsTargetAddress: string,
     verbose: boolean,
+    engineConfig: EngineConfig,
   ) {
     this.proxyEndpoint = '/api/techdocs/';
     this.backstageBundleDir = backstageBundleDir;
     this.backstagePort = backstagePort;
-    this.mkdocsTargetAddress = mkdocsTargetAddress;
+    this.docsTargetAddress = docsTargetAddress;
     this.verbose = verbose;
+    this.engineConfig = engineConfig;
   }
 
-  // Create a Proxy for mkdocs server
   private createProxy() {
     const proxy = httpProxy.createProxyServer({
-      target: this.mkdocsTargetAddress,
+      target: this.docsTargetAddress,
     });
 
     return (request: http.IncomingMessage): [httpProxy, string] => {
@@ -59,6 +59,7 @@ export default class HTTPServer {
   }
 
   public async serve(): Promise<http.Server> {
+    const logger = createLogger({ verbose: false });
     return new Promise<http.Server>((resolve, reject) => {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
@@ -76,19 +77,18 @@ export default class HTTPServer {
           }
 
           if (request.url?.startsWith(this.proxyEndpoint)) {
-            // Handle HTML files with livereload parameter injection
             if (request.url?.endsWith('.html')) {
               proxyHtmlWithLivereloadInjection({
                 request,
                 response,
-                mkdocsTargetAddress: this.mkdocsTargetAddress,
+                targetAddress: this.docsTargetAddress,
                 proxyEndpoint: this.proxyEndpoint,
+                transformHtml: html => this.engineConfig.transformHtml(html),
                 onError: (error: Error) => reject(error),
               });
               return;
             }
 
-            // Handle non-HTML files with regular proxy
             const [proxy, forwardPath] = proxyHandler(request);
 
             proxy.on('error', (error: Error) => {
@@ -103,21 +103,22 @@ export default class HTTPServer {
             return;
           }
 
-          // This endpoint is used by the frontend to detect where the backend is running.
           if (request.url === '/.detect') {
             response.setHeader('Content-Type', 'text/plain');
             response.end('techdocs-cli-server');
             return;
           }
 
-          // This endpoint is used by the frontend to pass livereload requests to the mkdocs server.
           if (request.url?.startsWith('/.livereload')) {
-            proxyMkdocsLivereload({
+            this.engineConfig.handleReloadRequest(
               request,
               response,
-              mkdocsTargetAddress: this.mkdocsTargetAddress,
-              onError: (error: Error) => reject(error),
-            });
+              this.docsTargetAddress,
+              // The server is already listening, so rejecting would be a
+              // no-op; log instead so engine connection problems are visible.
+              (error: Error) =>
+                logger.warn(`Live reload unavailable: ${error.message}`),
+            );
             return;
           }
 
@@ -129,7 +130,6 @@ export default class HTTPServer {
         },
       );
 
-      const logger = createLogger({ verbose: false });
       server.listen(this.backstagePort, () => {
         if (this.verbose) {
           logger.info(

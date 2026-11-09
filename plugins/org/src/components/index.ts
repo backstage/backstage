@@ -16,3 +16,4 @@
 
 export * from './Cards';
 export { MyGroupsSidebarItem } from './MyGroupsSidebarItem';
+export * from './UserAvatar';

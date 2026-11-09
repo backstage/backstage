@@ -12,7 +12,7 @@
     "incremental": true,
     "isolatedModules": true,
     "jsx": "react",
-    "lib": ["DOM", "DOM.Iterable", "DOM.AsyncIterable", "ScriptHost", "ES2023"],
+    "lib": ["DOM", "DOM.Iterable", "DOM.AsyncIterable", "ScriptHost", "ES2024"],
     "module": "ES2020",
     "moduleResolution": "bundler",
     "noEmit": false,
@@ -33,7 +33,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2022",
+    "target": "ES2024",
     "types": ["node", "jest", "webpack-env"],
     "useDefineForClassFields": true
   }

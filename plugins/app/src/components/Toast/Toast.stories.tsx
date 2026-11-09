@@ -170,6 +170,34 @@ export const PreviewToast = meta.story({
   render: () => <ToastContainer queue={previewQueue} />,
 });
 
+const longFileName =
+  'quarterly_business_report_with_detailed_regional_sales_and_customer_retention_analysis.pdf';
+
+const longTitleQueue = new ToastQueue<ToastApiMessageContent>({
+  maxVisibleToasts: 4,
+});
+longTitleQueue.add({
+  title: `Successfully uploaded ${longFileName}.`,
+  status: 'success',
+});
+
+export const LongTitle = meta.story({
+  render: () => <ToastContainer queue={longTitleQueue} />,
+});
+
+const longDescriptionQueue = new ToastQueue<ToastApiMessageContent>({
+  maxVisibleToasts: 4,
+});
+longDescriptionQueue.add({
+  title: 'File uploaded',
+  description: longFileName,
+  status: 'success',
+});
+
+export const LongDescription = meta.story({
+  render: () => <ToastContainer queue={longDescriptionQueue} />,
+});
+
 const timerQueue = new ToastQueue<ToastApiMessageContent>({
   maxVisibleToasts: 4,
 });

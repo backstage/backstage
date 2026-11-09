@@ -20,9 +20,16 @@ import {
   parseKeyValuePairs,
   type CliCommandContext,
 } from '@backstage/cli-node';
+import type {
+  QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
+} from '@backstage/catalog-client';
+import type { FilterPredicateExpression } from '@backstage/filter-predicates';
 import { createCatalogClient } from '../lib/catalogClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import {
+  outputFlag,
+  printPage,
   parseOutputFlag,
   writeJson,
   extractEntities,
@@ -33,33 +40,38 @@ export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
     {
       name: info.usage,
+      strictFlags: true,
       flags: {
         kind: {
           type: String,
-          description: 'Entity kind (Component, API, System, etc.)',
+          description:
+            'Only list entities of this kind (shortcut for --filter kind=<kind>)',
         },
         type: {
           type: String,
-          description: 'Entity type (service, website, library, etc.)',
+          description:
+            'Only list entities of this type (shortcut for --filter spec.type=<type>)',
         },
         filter: {
           type: [String] as const,
-          description: 'Query predicate as repeatable key=value input',
+          description: 'Filter entities by a field, as key=value (repeatable)',
           default: [] as string[],
         },
-        limit: { type: Number, description: 'Maximum results to return' },
         fields: {
           type: String,
-          description: 'Comma-separated fields',
+          description: 'Comma-separated list of entity fields to include',
         },
-        output: {
+        limit: {
+          type: Number,
+          description: 'Maximum number of entities to return per page',
+        },
+        cursor: {
           type: String,
-          description: 'Output format: human (default), json',
+          description:
+            'Continue from the cursor returned by a previous page (cannot be combined with --kind, --type or --filter)',
         },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
+        ...outputFlag,
+        ...instanceFlag,
       },
     },
     undefined,
@@ -67,35 +79,79 @@ export default async ({ args, info }: CliCommandContext) => {
   );
 
   const mode = parseOutputFlag(flags as Record<string, unknown>);
+
+  if (flags.cursor) {
+    const conflicting = [
+      flags.kind && '--kind',
+      flags.type && '--type',
+      flags.filter?.length && '--filter',
+    ].filter(Boolean);
+    if (conflicting.length > 0) {
+      throw new Error(
+        `--cursor cannot be combined with ${conflicting.join(
+          ', ',
+        )}, the cursor already contains the original query`,
+      );
+    }
+  }
+
+  const filter = parseKeyValuePairs(flags.filter) ?? {};
+  const shortcuts: Record<string, string> = {};
+  if (flags.kind) shortcuts.kind = flags.kind;
+  if (flags.type) shortcuts['spec.type'] = flags.type;
+  for (const [key, value] of Object.entries(shortcuts)) {
+    if (key in filter) {
+      const option = key === 'kind' ? '--kind' : '--type';
+      throw new Error(
+        `${option} ${value} conflicts with --filter ${key}=..., use only one of them`,
+      );
+    }
+  }
+  const query = { ...shortcuts, ...filter };
+  const fields = parseCommaSeparatedList(flags.fields);
+
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
-  const query: Record<string, unknown> = {};
-  if (flags.kind) query.kind = flags.kind;
-  if (flags.type) query['spec.type'] = flags.type;
+  const fetchPage = async (cursor?: string) => {
+    const initial: QueryEntitiesInitialRequest = {};
+    if (Object.keys(query).length > 0) {
+      initial.query = query as FilterPredicateExpression;
+    }
+    if (fields) initial.fields = fields;
+    const request: QueryEntitiesRequest = cursor
+      ? { cursor, ...(fields && { fields }) }
+      : initial;
+    if (flags.limit) request.limit = flags.limit;
 
-  const filter = parseKeyValuePairs(flags.filter);
-  const mergedQuery = { ...query, ...filter };
-  const fields = parseCommaSeparatedList(flags.fields);
-
-  const request: Record<string, unknown> = {};
-  if (Object.keys(mergedQuery).length > 0) {
-    request.query = mergedQuery;
-  }
-  if (flags.limit) request.limit = flags.limit;
-  if (fields) request.fields = fields;
-
-  const response = await client.queryEntities(request, { token: accessToken });
-  const result = {
-    items: response.items,
-    totalItems: response.totalItems,
-    hasMoreEntities: Boolean(response.pageInfo?.nextCursor),
-    nextPageCursor: response.pageInfo?.nextCursor,
+    const response = await client.queryEntities(request, {
+      token: accessToken,
+    });
+    return {
+      items: response.items,
+      totalItems: response.totalItems,
+      hasMoreEntities: Boolean(response.pageInfo?.nextCursor),
+      nextPageCursor: response.pageInfo?.nextCursor,
+    };
   };
 
   if (mode === 'json') {
-    writeJson(result);
-  } else {
-    process.stdout.write(formatEntityTable(extractEntities(result), fields));
+    writeJson(await fetchPage(flags.cursor));
+    return;
   }
+
+  await printPage(
+    async cursor => {
+      const page = await fetchPage(cursor);
+      return {
+        ...page,
+        count: page.items.length,
+        total: page.totalItems,
+        nextCursor: page.nextPageCursor,
+      };
+    },
+    page =>
+      process.stdout.write(formatEntityTable(extractEntities(page), fields)),
+    flags.cursor,
+  );
 };

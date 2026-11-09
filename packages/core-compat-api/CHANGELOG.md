@@ -1,5 +1,60 @@
 # @backstage/core-compat-api
 
+## 0.5.17-next.1
+
+### Patch Changes
+
+- e55a4a8: Updated compatibility with the `FrontendPlugin` interface after removal of its deprecated `id` property, retaining support for older plugin instances.
+- e3d50c4: Added support for the new icons API when rendering plugins in old-system apps, while continuing to provide the original icons API for older plugins. Legacy app context icon lookups continue to return components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-app-react@0.3.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 0.5.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-app-react@0.2.9-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+
+## 0.5.16
+
+### Patch Changes
+
+- 8747376: Declared the dependencies of internally bundled code so that the package works with strict `node_modules` layouts.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-app-react@0.2.8
+
+## 0.5.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+
+## 0.5.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-app-react@0.2.8-next.0
+
 ## 0.5.15
 
 ### Patch Changes

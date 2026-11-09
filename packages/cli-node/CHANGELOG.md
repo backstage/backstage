@@ -1,5 +1,76 @@
 # @backstage/cli-node
 
+## 0.3.6-next.1
+
+### Patch Changes
+
+- a96b99c: The Node.js module transform now uses the synchronous `module.registerHooks()` API when it is available, which avoids the `module.register()` deprecation warning printed by Node.js 26. On older Node.js versions it continues to use `module.register()`.
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- 4294614: Commands run through `runCli` now exit with the exit code they set, instead of always exiting with `0` on completion. For example, `catalog validate` and `template dry-run` now exit with a non-zero code when the input is invalid.
+
+## 0.3.5
+
+### Patch Changes
+
+- 3d6721d: Add intent-based CLI modules for catalog, scaffolder, and search.
+
+  New modules provide domain-oriented subcommands that talk directly to the corresponding plugins' REST APIs:
+
+  - `@backstage/cli-module-catalog`: `catalog list`, `catalog get`, `catalog validate`, `catalog register`, `catalog unregister`
+  - `@backstage/cli-module-scaffolder`: `template list`, `template execute`, `template dry-run`
+  - `@backstage/cli-module-search`: `search`, `docs search`
+
+  The commands take their main input as a positional argument: an entity or template reference, a file path (or `-` for standard input) for `catalog validate` and `template dry-run`, a URL for `catalog register`, and the search terms for `search` and `docs search`. Repeatable `key=value` flags are used for filters, template values, and secrets, and comma-separated lists for `--fields`. Unknown flags are rejected.
+
+  The commands that list results, `catalog list`, `template list`, `search`, and `docs search`, support `--output human` (the default) or `--output json`, along with `--limit` and `--cursor` for paging. Each command prints a single page. Human output shows how many results were shown and, when more are available, prints the `--cursor` value to continue from. All other commands always print JSON. `catalog validate` checks every entity in a multi-document YAML file and prints a JSON array with one result per entity. `catalog validate` and `template dry-run` exit with a non-zero code when the input is invalid, while connection and authentication problems are reported as errors.
+
+  `@backstage/cli-node` now provides shared parsers for repeatable `key=value` inputs and comma-separated lists.
+
+- 7c6ab3d: Commands run through `runCli` now wait for `stdout` and `stderr` to be flushed before exiting, so large command output is no longer truncated on platforms where writes to `stdout` and `stderr` are asynchronous.
+- 6dc6bc6: Fixed CLIs created with `runCli` silently exiting when the root or a command group is invoked without a subcommand. They now display help for that level and complete successfully.
+
+  Help output now lists groups and commands in separate, alphabetically sorted sections. Group previews adapt to the terminal width, using 80 columns when unavailable. Nested groups expand breadth-first when space permits; unexpanded groups retain a trailing slash and truncated previews end in an ellipsis.
+
+- Updated dependencies
+  - @backstage/errors@1.3.2
+  - @backstage/cli-common@0.3.2
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7c6ab3d: Commands run through `runCli` now wait for `stdout` and `stderr` to be flushed before exiting, so large command output is no longer truncated on platforms where writes to `stdout` and `stderr` are asynchronous.
+- 6dc6bc6: Fixed CLIs created with `runCli` silently exiting when the root or a command group is invoked without a subcommand. They now display help for that level and complete successfully.
+
+  Help output now lists groups and commands in separate, alphabetically sorted sections. Group previews adapt to the terminal width, using 80 columns when unavailable. Nested groups expand breadth-first when space permits; unexpanded groups retain a trailing slash and truncated previews end in an ellipsis.
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- 3d6721d: Add intent-based CLI modules for catalog, scaffolder, and search.
+
+  New modules provide domain-oriented subcommands that talk directly to the corresponding plugins' REST APIs:
+
+  - `@backstage/cli-module-catalog`: `catalog list`, `catalog get`, `catalog validate`, `catalog register`, `catalog unregister`
+  - `@backstage/cli-module-scaffolder`: `template list`, `template execute`, `template dry-run`
+  - `@backstage/cli-module-search`: `search`, `docs search`
+
+  The commands support human-readable and JSON output, positional entity and template references, repeatable `key=value` filters and inputs, comma-separated fields and search types, and file-based catalog entity and template input.
+
+  `@backstage/cli-node` now provides shared parsers for repeatable `key=value` inputs and comma-separated lists.
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.3.4
 
 ### Patch Changes

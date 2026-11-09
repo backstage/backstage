@@ -15,8 +15,8 @@
  */
 
 import { useEffect } from 'react';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import {
-  CATALOG_FILTER_EXISTS,
   DefaultEntityFilters,
   EntityFilter,
   useEntityList,
@@ -24,9 +24,9 @@ import {
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 class TechDocsFilter implements EntityFilter {
-  getCatalogFilters(): Record<string, string | symbol | (string | symbol)[]> {
+  getCatalogQuery(): FilterPredicate {
     return {
-      [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: CATALOG_FILTER_EXISTS,
+      [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: { $exists: true },
     };
   }
 }

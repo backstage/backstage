@@ -18,6 +18,8 @@ import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbStitchQueueRow } from '../../tables';
 import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
+import { timestampToDateTime } from '../../conversion';
+import { markForStitching } from './markForStitching';
 
 jest.setTimeout(60_000);
 
@@ -26,6 +28,233 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(
   'getDeferredStitchableEntities, %p',
   databaseId => {
+    it('backs off each failed request independently and preserves its budget across claims', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const random = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+      try {
+        for (const [ref, failures] of [
+          ['healthy', 0],
+          ['once', 1],
+          ['twice', 2],
+          ['capped', 10000],
+        ] as const) {
+          await knex('stitch_queue').insert({
+            entity_ref: ref,
+            failure_count: failures,
+            stitch_ticket: ref,
+            next_stitch_at: '1971-01-01 00:00:00',
+          });
+        }
+        const before = Date.now();
+        const claims = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 10,
+          stitchTimeout: { minutes: 1 },
+        });
+        const after = Date.now();
+        for (const [ref, seconds] of [
+          ['healthy', 60],
+          ['once', 252],
+          ['twice', 567],
+          ['capped', 3780],
+        ] as const) {
+          const claim = claims.find(c => c.entityRef === ref)!;
+          const lease = timestampToDateTime(
+            claim.stitchLeaseExpiresAt,
+          ).toMillis();
+          expect(lease).toBeGreaterThanOrEqual(before + seconds * 1000 - 1000);
+          expect(lease).toBeLessThanOrEqual(after + seconds * 1000 + 1000);
+        }
+        expect(
+          (await knex('stitch_queue').where('entity_ref', 'twice').first())
+            .failure_count,
+        ).toBe(2);
+        await knex('stitch_queue')
+          .where('entity_ref', 'twice')
+          .update({ next_stitch_at: '1971-01-01 00:00:00' });
+        const [reclaimed] = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 1,
+          stitchTimeout: { minutes: 1 },
+        });
+        expect(reclaimed.stitchTicket).not.toBe(
+          claims.find(c => c.entityRef === 'twice')!.stitchTicket,
+        );
+        expect(
+          (await knex('stitch_queue').where('entity_ref', 'twice').first())
+            .failure_count,
+        ).toBe(2);
+        const activeLease = (
+          await knex('stitch_queue').where('entity_ref', 'twice').first()
+        ).next_stitch_at;
+        await markForStitching({ knex, entityRefs: ['twice'] });
+        const reset = await knex('stitch_queue')
+          .where('entity_ref', 'twice')
+          .first();
+        expect(reset.failure_count).toBe(0);
+        expect(reset.next_stitch_at).toEqual(activeLease);
+        await knex('stitch_queue').update({
+          next_stitch_at: '1971-01-01 00:00:00',
+        });
+        const longClaims = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 10,
+          stitchTimeout: { hours: 2 },
+        });
+        expect(
+          timestampToDateTime(
+            longClaims.find(c => c.entityRef === 'once')!.stitchLeaseExpiresAt,
+          ).toMillis(),
+        ).toBeGreaterThanOrEqual(Date.now() + 7200 * 1000 - 1000);
+      } finally {
+        random.mockRestore();
+      }
+    });
+
+    it('claims a batch with per-ref leases and leaves future work untouched', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbStitchQueueRow>('stitch_queue').insert([
+        {
+          entity_ref: 'k:ns/a',
+          stitch_ticket: 'a',
+          next_stitch_at: '1971-01-01T00:00:00.000',
+        },
+        {
+          entity_ref: 'k:ns/b',
+          stitch_ticket: 'b',
+          next_stitch_at: '1972-01-01T00:00:00.000',
+        },
+        {
+          entity_ref: 'k:ns/future',
+          stitch_ticket: 'future',
+          next_stitch_at: '2099-01-01T00:00:00.000',
+        },
+      ]);
+      const futureBefore = await knex('stitch_queue')
+        .where('entity_ref', 'k:ns/future')
+        .first();
+      const items = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 10,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(items.map(i => i.entityRef)).toEqual(['k:ns/a', 'k:ns/b']);
+      expect(items.map(i => i.stitchRequestedAt.year)).toEqual([1971, 1972]);
+      for (const item of items) {
+        const row = await knex('stitch_queue')
+          .where('entity_ref', item.entityRef)
+          .first();
+        expect(item.stitchTicket).toBe(row.stitch_ticket);
+        expect(['a', 'b']).not.toContain(item.stitchTicket);
+        // Compare the exact database representation, not JavaScript Dates:
+        // PostgreSQL's driver and Date parsing can round microseconds differently.
+        let leaseExpression = 'next_stitch_at as lease';
+        if (databaseId.startsWith('POSTGRES')) {
+          leaseExpression = 'next_stitch_at::text as lease';
+        } else if (databaseId.startsWith('MYSQL')) {
+          leaseExpression = 'CAST(next_stitch_at AS CHAR) as lease';
+        }
+        const exact = await knex('stitch_queue')
+          .select(knex.raw(leaseExpression))
+          .where('entity_ref', item.entityRef)
+          .first();
+        expect(item.stitchLeaseExpiresAt).toEqual(exact.lease);
+        expect(typeof item.stitchLeaseExpiresAt).toBe('string');
+      }
+      await expect(
+        knex('stitch_queue').where('entity_ref', 'k:ns/future').first(),
+      ).resolves.toEqual(futureBefore);
+      const beforeEmpty = await knex('stitch_queue').orderBy('entity_ref');
+      await expect(
+        getDeferredStitchableEntities({
+          knex,
+          batchSize: 10,
+          stitchTimeout: { minutes: 1 },
+        }),
+      ).resolves.toEqual([]);
+      await expect(knex('stitch_queue').orderBy('entity_ref')).resolves.toEqual(
+        beforeEmpty,
+      );
+    });
+
+    it('does not persist a claim when its caller transaction rolls back', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex('stitch_queue').insert({
+        entity_ref: 'k:ns/n',
+        stitch_ticket: 'original',
+        next_stitch_at: '1971-01-01T00:00:00.000',
+      });
+      const before = await knex('stitch_queue');
+      await expect(
+        knex.transaction(async tx => {
+          const [claim] = await getDeferredStitchableEntities({
+            knex: tx,
+            batchSize: 1,
+            stitchTimeout: { minutes: 1 },
+          });
+          expect(claim.stitchTicket).not.toBe('original');
+          expect((await tx('stitch_queue').first()).stitch_ticket).toBe(
+            claim.stitchTicket,
+          );
+          throw new Error('abort caller transaction');
+        }),
+      ).rejects.toThrow('abort caller transaction');
+      await expect(knex('stitch_queue')).resolves.toEqual(before);
+      const [retried] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(retried.entityRef).toBe('k:ns/n');
+    });
+
+    if (databaseId.startsWith('POSTGRES')) {
+      it("skips another worker's locked row and claims it after release", async () => {
+        const knex = await databases.init(databaseId);
+        await applyDatabaseMigrations(knex);
+        await knex('stitch_queue').insert([
+          {
+            entity_ref: 'k:ns/a',
+            stitch_ticket: 'a',
+            next_stitch_at: '1971-01-01T00:00:00.000',
+          },
+          {
+            entity_ref: 'k:ns/b',
+            stitch_ticket: 'b',
+            next_stitch_at: '1972-01-01T00:00:00.000',
+          },
+        ]);
+        const owner = await knex.transaction();
+        try {
+          await owner('stitch_queue').where('entity_ref', 'k:ns/a').forUpdate();
+          const items = await knex.transaction(async tx => {
+            await tx.raw("set local statement_timeout = '2s'");
+            return getDeferredStitchableEntities({
+              knex: tx,
+              batchSize: 2,
+              stitchTimeout: { minutes: 1 },
+            });
+          });
+          expect(items.map(i => i.entityRef)).toEqual(['k:ns/b']);
+          expect(
+            (await owner('stitch_queue').where('entity_ref', 'k:ns/a').first())
+              .stitch_ticket,
+          ).toBe('a');
+        } finally {
+          await owner.rollback();
+        }
+        const items = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 2,
+          stitchTimeout: { minutes: 1 },
+        });
+        expect(items.map(i => i.entityRef)).toEqual(['k:ns/a']);
+      });
+    }
+
     it('selects the right rows', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
@@ -63,8 +292,9 @@ describe.each(databases.eachSupportedId())(
       expect(items).toEqual([
         {
           entityRef: 'k:ns/past_stitch_time',
-          stitchTicket: 't3',
+          stitchTicket: expect.any(String),
           stitchRequestedAt: expect.anything(),
+          stitchLeaseExpiresAt: expect.anything(),
         },
       ]);
 
@@ -83,6 +313,14 @@ describe.each(databases.eachSupportedId())(
 
       expect(+new Date(hitRowAfter!)).toBeGreaterThan(+new Date(hitRowBefore!));
       expect(+new Date(missRowAfter!)).toEqual(+new Date(missRowBefore!));
+      expect(items[0].stitchTicket).not.toBe('t3');
+      expect(
+        rowsAfter.find(r => r.entity_ref === items[0].entityRef)?.stitch_ticket,
+      ).toBe(items[0].stitchTicket);
+      expect(
+        rowsAfter.find(r => r.entity_ref === 'k:ns/past_stitch_time_again')
+          ?.stitch_ticket,
+      ).toBe('t4');
     });
   },
 );

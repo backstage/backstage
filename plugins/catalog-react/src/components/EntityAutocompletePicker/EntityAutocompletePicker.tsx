@@ -110,7 +110,7 @@ export function EntityAutocompletePicker<
     const facet = path;
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
-      filter: reduceBackendCatalogFilters(
+      ...reduceBackendCatalogFilters(
         availableValuesFilters.filter(Boolean) as EntityFilter[],
       ),
     });

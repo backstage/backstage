@@ -1,5 +1,78 @@
 # @backstage/plugin-scaffolder-react
 
+## 3.0.0-next.1
+
+### Minor Changes
+
+- ff0ef74: The scaffolder wizard now shows or hides parameter steps based on their `when` condition, and values from hidden steps are left out of the submitted parameters.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-scaffolder-common@2.4.0-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 3.0.0-next.0
+
+### Minor Changes
+
+- 3fe82f6: Added a `ScaffolderTemplateFilterBlueprint` that lets apps filter the new frontend system's template list using identity, catalog, or other viewer-specific state.
+
+### Patch Changes
+
+- 1c461ca: Fixed BUI array item headings to use the item schema title and honor an explicit item `ui:title` without adding a numeric suffix. Untitled items retain the numbered fallback.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/frontend-test-utils@0.7.0-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-permission-react@0.5.6
+  - @backstage/plugin-scaffolder-common@2.3.1
+
+## 2.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
+## 2.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.1-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/frontend-test-utils@0.6.5-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+
 ## 2.1.0
 
 ### Minor Changes

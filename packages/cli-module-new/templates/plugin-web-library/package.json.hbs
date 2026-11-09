@@ -25,7 +25,7 @@
   "dependencies": {
     "@backstage/core-plugin-api": "{{versionQuery '@backstage/core-plugin-api'}}",
     "@backstage/frontend-plugin-api": "{{versionQuery '@backstage/frontend-plugin-api'}}",
-    "@material-ui/core": "{{versionQuery '@material-ui/core' '4.12.2'}}"
+    "@backstage/ui": "{{versionQuery '@backstage/ui'}}"
   },
   "peerDependencies": {
     "react": "{{versionQuery 'react' '^16.13.1 || ^17.0.0 || ^18.0.0'}}"
@@ -33,8 +33,9 @@
   "devDependencies": {
     "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
     "@backstage/test-utils": "{{versionQuery '@backstage/test-utils'}}",
+    "@testing-library/dom": "{{versionQuery '@testing-library/dom' '10.0.0'}}",
     "@testing-library/jest-dom": "{{versionQuery '@testing-library/jest-dom' '6.0.0'}}",
-    "@testing-library/react": "{{versionQuery '@testing-library/react' '14.0.0'}}",
+    "@testing-library/react": "{{versionQuery '@testing-library/react' '16.0.0'}}",
     "react": "{{versionQuery 'react' '^16.13.1 || ^17.0.0 || ^18.0.0'}}"
   },
   "files": [

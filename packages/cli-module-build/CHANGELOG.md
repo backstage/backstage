@@ -1,5 +1,63 @@
 # @backstage/cli-module-build
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- cc4ef47: Restored the default exclusion of `node_modules` from test coverage for this package.
+- 2ece167: Updated dependency `webpack` to `~5.111.0`.
+- f163298: Improved code splitting for frontend module federation remotes to reduce unnecessary downloads of unrelated lazy components from the same dependency scope. Shared dependencies and workspace code are extracted across lazy boundaries when the resulting shared chunk meets the size threshold. Regular application builds are unchanged.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/cli-common@0.3.2
+  - @backstage/module-federation-common@0.1.6
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- cc4ef47: Restored the default exclusion of `node_modules` from test coverage for this package.
+- f163298: Improved code splitting for frontend module federation remotes to reduce unnecessary downloads of unrelated lazy components from the same dependency scope. Shared dependencies and workspace code are extracted across lazy boundaries when the resulting shared chunk meets the size threshold. Regular application builds are unchanged.
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 2ece167: Updated dependency `webpack` to `~5.111.0`.
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/module-federation-common@0.1.6-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.1.8
 
 ### Patch Changes

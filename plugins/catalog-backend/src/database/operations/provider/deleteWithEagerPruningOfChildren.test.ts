@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from '../../migrations';
@@ -24,6 +24,9 @@ import {
   DbRelationsRow,
 } from '../../tables';
 import { deleteWithEagerPruningOfChildren } from './deleteWithEagerPruningOfChildren';
+import { markForStitching } from '../stitcher/markForStitching';
+import { performStitching } from '../stitcher/performStitching';
+import { getDeferredStitchableEntities } from '../stitcher/getDeferredStitchableEntities';
 
 jest.setTimeout(60_000);
 
@@ -90,6 +93,96 @@ describe.each(databases.eachSupportedId())(
         .select('entity_ref');
       return rows.map(r => r.entity_ref);
     }
+
+    it('leaves queued deleted entities for the stitcher to settle', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1', 'E2');
+      await insertReference(
+        knex,
+        { source_key: 'P1', target_entity_ref: 'E1' },
+        { source_entity_ref: 'E1', target_entity_ref: 'E2' },
+      );
+      await markForStitching({ knex, entityRefs: ['E1', 'E2'] });
+      const queued = await knex('stitch_queue').orderBy('entity_ref');
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E1'],
+      });
+      await expect(remainingEntities(knex)).resolves.toEqual([]);
+      await expect(knex('stitch_queue').orderBy('entity_ref')).resolves.toEqual(
+        queued,
+      );
+      const claims = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 10,
+        stitchTimeout: { minutes: 1 },
+      });
+      for (const item of claims) {
+        await expect(
+          performStitching({
+            knex,
+            logger: mockServices.logger.mock(),
+            ...item,
+          }),
+        ).resolves.toBe('abandoned');
+      }
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+    });
+
+    it('can stitch a reintroduced ref from work retained through deletion', async () => {
+      const knex = await createDatabase();
+      const entityRef = 'k:ns/n';
+      await insertEntity(knex, entityRef);
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: entityRef,
+      });
+      await markForStitching({ knex, entityRefs: [entityRef] });
+      expect(
+        await deleteWithEagerPruningOfChildren({
+          knex,
+          sourceKey: 'P1',
+          entityRefs: [entityRef],
+        }),
+      ).toBe(1);
+      await insertEntity(knex, entityRef);
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: entityRef,
+      });
+      await knex('refresh_state')
+        .where('entity_ref', entityRef)
+        .update({
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { reintroduced: true },
+          }),
+        });
+      const replacement = await knex('refresh_state')
+        .where('entity_ref', entityRef)
+        .first();
+      const [claim] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          ...claim,
+        }),
+      ).resolves.toBe('changed');
+      const final = await knex('final_entities').first();
+      expect(JSON.parse(final.final_entity)).toMatchObject({
+        metadata: { uid: replacement.entity_id },
+        spec: { reintroduced: true },
+      });
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+    });
 
     it('works for the simple path', async () => {
       /*
@@ -267,7 +360,7 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E3'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual([]);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual([]);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E4']);
     });
 
     it('silently ignores attempts to delete things that are not your own and/or are not roots', async () => {

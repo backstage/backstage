@@ -60,24 +60,6 @@ describe('React Aria collection contracts', () => {
     expect(receivedProps?.value).toBe(owner);
   });
 
-  it('rejects dynamic items without an id at the collection boundary', () => {
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
-
-    expect(() =>
-      render(
-        <ListBox aria-label="Owners">
-          <Collection items={[{ name: 'Ada Lovelace' }]}>
-            {item => <ListBoxItem>{item.name}</ListBoxItem>}
-          </Collection>
-        </ListBox>,
-      ),
-    ).toThrow('Could not determine key for item');
-
-    consoleError.mockRestore();
-  });
-
   it('allows static items without an explicit id', () => {
     render(
       <ListBox aria-label="Owners">

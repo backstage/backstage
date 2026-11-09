@@ -20,6 +20,9 @@ import express from 'express';
 import request from 'supertest';
 import path from 'node:path';
 import fs from 'fs-extra';
+import http from 'node:http';
+import { AddressInfo } from 'node:net';
+import { once } from 'node:events';
 import { Readable } from 'node:stream';
 import { GoogleGCSPublish } from './googleStorage';
 import {
@@ -601,6 +604,43 @@ describe('GoogleGCSPublish', () => {
       expect(Buffer.from(response.text).toString('utf8')).toEqual(
         'File Not Found',
       );
+    });
+
+    it('should release the GCS stream if the client disconnects early', async () => {
+      // Simulates a file that is still being downloaded from GCS
+      const body = new Readable({ read() {} });
+      body.push('partial content');
+      const { Storage } = jest.requireMock('@google-cloud/storage');
+      const bucketSpy = jest
+        .spyOn(Storage.prototype, 'bucket')
+        .mockReturnValue({
+          file: () => ({ createReadStream: () => body }),
+        });
+
+      const server = express()
+        .use(createPublisherFromConfig().docsRouter())
+        .listen(0);
+      try {
+        const { port } = server.address() as AddressInfo;
+        await new Promise<void>(resolve => {
+          const req = http.get(
+            `http://localhost:${port}/${entityTripletPath}/index.html`,
+            res => {
+              res.once('data', () => {
+                req.destroy();
+                resolve();
+              });
+            },
+          );
+          req.on('error', () => {});
+        });
+
+        await once(body, 'close');
+        expect(body.destroyed).toBe(true);
+      } finally {
+        bucketSpy.mockRestore();
+        await once(server.close(), 'close');
+      }
     });
   });
 });

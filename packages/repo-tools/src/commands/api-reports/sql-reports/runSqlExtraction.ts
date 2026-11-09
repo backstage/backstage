@@ -22,7 +22,11 @@ import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
-import { logApiReportInstructions, tryRunPrettierAsync } from '../common';
+import {
+  logApiReportInstructions,
+  logReportDiff,
+  tryRunPrettierAsync,
+} from '../common';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -178,20 +182,13 @@ async function runSingleSqlExtraction(
     } else {
       logApiReportInstructions();
 
-      if (existingReport) {
-        console.log('');
-        console.log(
-          `The conflicting file is ${relativePath(
-            targetPaths.rootDir,
-            reportPath,
-          )}, expecting the following content:`,
-        );
-        console.log('');
+      logReportDiff(
+        relativePath(targetPaths.rootDir, reportPath),
+        existingReport,
+        report,
+      );
 
-        console.log(report);
-
-        logApiReportInstructions();
-      }
+      logApiReportInstructions();
       throw new Error(`Report ${reportPath} is out of date`);
     }
   }

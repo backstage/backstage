@@ -1,5 +1,89 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- 7baaad7: Fixed incremental ingestion getting stuck when a provider emits the same entity more than once in a single page or event. Since the previous release, this made every attempt to ingest that page fail on PostgreSQL with `ON CONFLICT DO UPDATE command cannot affect row a second time`, so the provider never got past it. Now only the last copy of each entity is kept. A warning names the provider and some of the repeated entity refs, at most once every 10 minutes per provider.
+
+  Providers should still emit each entity at most once per page. If the copies differ and arrive in a different order on each run, the stored entity can change on every run.
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.1
+  - @backstage/plugin-catalog-backend@4.0.3-next.1
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/plugin-catalog-backend@4.0.3-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.9.0
+
+### Minor Changes
+
+- e003123: Added a `source_key` column and a `UNIQUE(source_key, entity_ref)` constraint to the `ingestion_mark_entities` table, enabling a single native upsert instead of a select-then-update-or-insert sequence per ingestion mark.
+  This significantly reduces the number of database round trips during ingestion.
+
+  As part of this change, the table's `ref` column is renamed to `entity_ref` to standardize its naming with the rest of the table's columns.
+  This rename means the migration cannot be applied as part of a rolling, zero-downtime upgrade, which is fine since incremental ingestion providers are designed to run sequentially on a single Backstage backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@4.0.1
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+
+## 0.9.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-defaults@0.18.1-next.1
+  - @backstage/plugin-catalog-backend@4.0.1-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
+## 0.9.0-next.0
+
+### Minor Changes
+
+- e003123: Added a `source_key` column and a `UNIQUE(source_key, entity_ref)` constraint to the `ingestion_mark_entities` table, enabling a single native upsert instead of a select-then-update-or-insert sequence per ingestion mark.
+  This significantly reduces the number of database round trips during ingestion.
+
+  As part of this change, the table's `ref` column is renamed to `entity_ref` to standardize its naming with the rest of the table's columns.
+  This rename means the migration cannot be applied as part of a rolling, zero-downtime upgrade, which is fine since incremental ingestion providers are designed to run sequentially on a single Backstage backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@4.0.1-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-defaults@0.18.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 0.8.0
 
 ### Minor Changes

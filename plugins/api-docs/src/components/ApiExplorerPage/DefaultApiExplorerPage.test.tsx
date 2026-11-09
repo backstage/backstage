@@ -21,6 +21,7 @@ import {
   DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog';
 import {
+  CatalogApi,
   catalogApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
@@ -39,42 +40,6 @@ import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('DefaultApiExplorerPage', () => {
-  const catalogApi = catalogApiMock.mock({
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity1',
-              annotations: {
-                'backstage.io/view-url': 'viewurl',
-                'backstage.io/edit-url': 'editurl',
-              },
-            },
-            spec: { type: 'openapi' },
-          },
-        ],
-      }),
-    getLocationByRef: () =>
-      Promise.resolve({
-        id: 'id',
-        type: 'url',
-        target: 'url',
-        entityRef: 'location:default/generated-id',
-      }),
-    getEntitiesByRefs: () => Promise.resolve({ items: [] }),
-    getEntityFacets: async () => ({
-      facets: { 'relations.ownedBy': [] },
-    }),
-    queryEntities: async () => ({
-      items: [],
-      pageInfo: {},
-      totalItems: 0,
-    }),
-  });
-
   const configApi = mockApis.config({
     data: { organization: { name: 'My Company' } },
   });
@@ -85,7 +50,7 @@ describe('DefaultApiExplorerPage', () => {
 
   const storageApi = mockApis.storage();
 
-  const renderWrapped = (children: ReactNode) =>
+  const renderWrapped = (children: ReactNode, catalogApi: CatalogApi) =>
     renderInTestApp(
       <TestApiProvider
         apis={[
@@ -113,14 +78,16 @@ describe('DefaultApiExplorerPage', () => {
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    await renderWrapped(<DefaultApiExplorerPage />);
+    const catalogApi = catalogApiMock();
+    await renderWrapped(<DefaultApiExplorerPage />, catalogApi);
     expect(
       await screen.findByText(/My Company API Explorer/),
     ).toBeInTheDocument();
   });
 
   it('should render the default column of the grid', async () => {
-    await renderWrapped(<DefaultApiExplorerPage />);
+    const catalogApi = catalogApiMock();
+    await renderWrapped(<DefaultApiExplorerPage />, catalogApi);
 
     const columnHeader = screen
       .getAllByRole('button')
@@ -147,7 +114,11 @@ describe('DefaultApiExplorerPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    await renderWrapped(<DefaultApiExplorerPage columns={columns} />);
+    const catalogApi = catalogApiMock();
+    await renderWrapped(
+      <DefaultApiExplorerPage columns={columns} />,
+      catalogApi,
+    );
 
     const columnHeader = screen
       .getAllByRole('button')
@@ -160,9 +131,25 @@ describe('DefaultApiExplorerPage', () => {
   });
 
   it('should render the default actions of an item in the grid', async () => {
-    await renderWrapped(<DefaultApiExplorerPage />);
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'API',
+          metadata: {
+            name: 'Entity1',
+            annotations: {
+              'backstage.io/view-url': 'viewurl',
+              'backstage.io/edit-url': 'editurl',
+            },
+          },
+          spec: { type: 'openapi' },
+        },
+      ],
+    });
+    await renderWrapped(<DefaultApiExplorerPage />, catalogApi);
     await waitFor(() => {
-      expect(screen.getByText(/All apis \(1\)/)).toBeInTheDocument();
+      expect(screen.getByText(/All apis \(1\)/i)).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -188,9 +175,28 @@ describe('DefaultApiExplorerPage', () => {
       },
     ];
 
-    await renderWrapped(<DefaultApiExplorerPage actions={actions} />);
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'API',
+          metadata: {
+            name: 'Entity1',
+            annotations: {
+              'backstage.io/view-url': 'viewurl',
+              'backstage.io/edit-url': 'editurl',
+            },
+          },
+          spec: { type: 'openapi' },
+        },
+      ],
+    });
+    await renderWrapped(
+      <DefaultApiExplorerPage actions={actions} />,
+      catalogApi,
+    );
     await waitFor(() => {
-      expect(screen.getByText(/All apis \(1\)/)).toBeInTheDocument();
+      expect(screen.getByText(/All apis \(1\)/i)).toBeInTheDocument();
     });
     expect(screen.getByTitle(/Foo Action/)).toBeInTheDocument();
     expect(screen.getByTitle(/Bar Action/)).toBeInTheDocument();

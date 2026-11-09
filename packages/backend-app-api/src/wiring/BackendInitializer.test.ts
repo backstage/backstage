@@ -1536,9 +1536,9 @@ describe('BackendInitializer', () => {
     await init.start();
   });
 
-  it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(1);
-    const backend = new BackendInitializer(baseFactories);
+  it('should add plugins and modules and default an empty instance ID', async () => {
+    expect.assertions(2);
+    const backend = new BackendInitializer(baseFactories, undefined, '');
     const plugin = createBackendPlugin({
       pluginId: 'test',
       register(reg) {
@@ -1556,6 +1556,9 @@ describe('BackendInitializer', () => {
             instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
+            expect(instanceMetadata.getId()).toMatch(
+              /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+            );
             await expect(
               instanceMetadata.getInstalledPlugins(),
             ).resolves.toEqual([
@@ -1887,6 +1890,135 @@ describe('BackendInitializer', () => {
         ],
       });
       expect(err?.result.plugins[0].failure).toBeUndefined();
+    });
+
+    it('should include init begin timestamps for plugins and modules', async () => {
+      const init = new BackendInitializer(baseFactories);
+      let pluginInitCalledAt: Date | undefined;
+      let moduleInitCalledAt: Date | undefined;
+
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                pluginInitCalledAt = new Date();
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                moduleInitCalledAt = new Date();
+              },
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      const plugin = result.plugins.find(p => p.pluginId === 'plugin1');
+      if (!plugin || !pluginInitCalledAt || !moduleInitCalledAt) {
+        throw new Error('Expected plugin and init calls to be present');
+      }
+
+      const pluginBeginAt = plugin.beginAt;
+      expect(pluginBeginAt).toBeInstanceOf(Date);
+      if (!pluginBeginAt) {
+        throw new Error('Expected plugin beginAt to be defined');
+      }
+      expect(pluginBeginAt.getTime()).toBeLessThanOrEqual(
+        pluginInitCalledAt.getTime(),
+      );
+      expect(plugin.resultAt.getTime()).toBeGreaterThanOrEqual(
+        pluginInitCalledAt.getTime(),
+      );
+
+      const module = plugin.modules.find(m => m.moduleId === 'module1');
+      if (!module) {
+        throw new Error('Expected module to be present');
+      }
+      const moduleBeginAt = module.beginAt;
+      expect(moduleBeginAt).toBeInstanceOf(Date);
+      if (!moduleBeginAt) {
+        throw new Error('Expected module beginAt to be defined');
+      }
+      expect(moduleBeginAt.getTime()).toBeLessThanOrEqual(
+        moduleInitCalledAt.getTime(),
+      );
+      expect(module.resultAt.getTime()).toBeGreaterThanOrEqual(
+        moduleInitCalledAt.getTime(),
+      );
+    });
+
+    it('should include init begin timestamps when the init function fails', async () => {
+      const init = new BackendInitializer(baseFactories);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw new Error('Plugin failed');
+              },
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      const plugin = err.result.plugins[0];
+      const beginAt = plugin.beginAt;
+      expect(beginAt).toBeInstanceOf(Date);
+      if (!beginAt) {
+        throw new Error('Expected beginAt to be defined');
+      }
+      expect(plugin.resultAt.getTime()).toBeGreaterThanOrEqual(
+        beginAt.getTime(),
+      );
+    });
+
+    it('should omit init begin timestamps for plugins that fail before initialization', async () => {
+      const init = new BackendInitializer(baseFactories);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: { broken: undefined as any },
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      expect(err).toBeInstanceOf(BackendStartupError);
+      expect(err.result.plugins[0].failure).toBeDefined();
+      expect(err.result.plugins[0].beginAt).toBeUndefined();
     });
 
     it('should throw BackendStartupError with results when multiple plugins fail', async () => {

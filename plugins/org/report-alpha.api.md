@@ -24,11 +24,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'group-profile';
       config: {
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -65,13 +65,13 @@ const _default: OverridableFrontendPlugin<
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle?: boolean | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -111,14 +111,14 @@ const _default: OverridableFrontendPlugin<
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
         ownedKinds: string[] | undefined;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle?: boolean | undefined;
         ownedKinds?: string[] | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -157,13 +157,13 @@ const _default: OverridableFrontendPlugin<
       config: {
         maxRelations: number | undefined;
         hideIcons: boolean;
-        filter: FilterPredicate | undefined;
+        filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
         maxRelations?: number | undefined;
         hideIcons?: boolean | undefined;
-        filter?: FilterPredicate | undefined;
+        filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:

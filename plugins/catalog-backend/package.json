@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "4.0.0",
+  "version": "4.0.3-next.1",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin",
@@ -85,11 +85,11 @@
     "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.1",
     "p-limit": "^3.0.2",
     "prom-client": "^15.0.0",
     "yaml": "^2.0.0",

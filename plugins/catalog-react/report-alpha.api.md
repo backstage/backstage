@@ -222,11 +222,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       >;
   inputs: {};
   config: {
-    filter: FilterPredicate | undefined;
+    filter: string | FilterPredicate | undefined;
     type: 'content' | 'info' | undefined;
   };
   configInput: {
-    filter?: FilterPredicate | undefined;
+    filter?: string | FilterPredicate | undefined;
     type?: 'content' | 'info' | undefined;
   };
   dataRefs: {
@@ -335,14 +335,14 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   config: {
     path: string | undefined;
     title: string | undefined;
-    filter: FilterPredicate | undefined;
+    filter: string | FilterPredicate | undefined;
     group: string | false | undefined;
     icon: string | undefined;
   };
   configInput: {
     path?: string | undefined;
     title?: string | undefined;
-    filter?: FilterPredicate | undefined;
+    filter?: string | FilterPredicate | undefined;
     group?: string | false | undefined;
     icon?: string | undefined;
   };
@@ -416,11 +416,11 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     type: string | undefined;
-    filter: FilterPredicate | undefined;
+    filter: string | FilterPredicate | undefined;
   };
   configInput: {
     type?: string | undefined;
-    filter?: FilterPredicate | undefined;
+    filter?: string | FilterPredicate | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<

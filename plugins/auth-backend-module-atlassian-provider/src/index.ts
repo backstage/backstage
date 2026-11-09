@@ -20,4 +20,3 @@
  */
 export { atlassianAuthenticator } from './authenticator';
 export { authModuleAtlassianProvider as default } from './module';
-export { atlassianSignInResolvers } from './resolvers';

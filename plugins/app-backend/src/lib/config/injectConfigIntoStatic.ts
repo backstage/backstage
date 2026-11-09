@@ -24,12 +24,14 @@ import { InjectOptions } from './types';
 export async function injectConfigIntoStatic(
   options: InjectOptions,
 ): Promise<string | undefined> {
-  const { staticDir, logger, appConfigs } = options;
+  const { staticDir, logger, appConfigs, configFilter } = options;
 
   const files = await fs.readdir(staticDir);
   const jsFiles = files.filter(file => file.endsWith('.js'));
 
-  const escapedData = JSON.stringify(appConfigs).replace(/("|'|\\)/g, '\\$1');
+  const escapedData = JSON.stringify(
+    configFilter?.(appConfigs) ?? appConfigs,
+  ).replace(/("|'|\\)/g, '\\$1');
   const injected = `/*__APP_INJECTED_CONFIG_MARKER__*/"${escapedData}"/*__INJECTED_END__*/`;
 
   for (const jsFile of jsFiles) {

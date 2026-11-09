@@ -1,5 +1,77 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.13-next.1
+
+### Patch Changes
+
+- 68abde4: Allow AWS Kubernetes clusters to select credentials from a configured AWS account without assuming another role. Set `kubernetes.io/aws-account-id` in the cluster's auth metadata to use that account's credentials directly, including credentials obtained through web identity federation.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/plugin-kubernetes-common@0.9.15-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.21.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.15-next.0
+  - @backstage/plugin-kubernetes-node@0.4.10-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.21.12
+
+### Patch Changes
+
+- 66f8cf8: Replace deprecated `createPermissionIntegrationRouter` API call with `permissionsRegistry`
+- b3292fc: Declare the existing per-cluster `assumeRole` and `externalId` options in the configuration schema so schema-generated configuration forms can expose AWS IAM role authentication settings. External IDs are marked as secrets.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-kubernetes-common@0.9.14
+  - @backstage/plugin-kubernetes-node@0.4.9
+  - @backstage/plugin-permission-common@0.9.12
+
+## 0.21.12-next.2
+
+### Patch Changes
+
+- b3292fc: Declare the existing per-cluster `assumeRole` and `externalId` options in the configuration schema so schema-generated configuration forms can expose AWS IAM role authentication settings. External IDs are marked as secrets.
+
+## 0.21.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-kubernetes-node@0.4.9-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+
+## 0.21.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/integration-aws-node@0.2.3-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-kubernetes-common@0.9.14-next.0
+  - @backstage/plugin-kubernetes-node@0.4.9-next.0
+
 ## 0.21.11
 
 ### Patch Changes

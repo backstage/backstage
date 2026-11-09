@@ -203,7 +203,7 @@ describe('command entrypoint', () => {
   it('should exit when Node version is an odd number', async () => {
     const originalVersion = process.versions.node;
     Object.defineProperty(process.versions, 'node', {
-      value: '23.1.0',
+      value: '25.1.0',
       configurable: true,
     });
     try {
@@ -224,7 +224,7 @@ describe('command entrypoint', () => {
   it('should exit when Node version is too old', async () => {
     const originalVersion = process.versions.node;
     Object.defineProperty(process.versions, 'node', {
-      value: '18.0.0',
+      value: '22.0.0',
       configurable: true,
     });
     try {
@@ -242,10 +242,52 @@ describe('command entrypoint', () => {
     }
   });
 
+  it('should exit when Node version is below the minimum of a supported major', async () => {
+    const originalVersion = process.versions.node;
+    Object.defineProperty(process.versions, 'node', {
+      value: '24.14.1',
+      configurable: true,
+    });
+    try {
+      jest.spyOn(tasks.Task, 'exit').mockImplementation(() => {
+        throw new Error('exit');
+      });
+      const cmd = {} as unknown as Command;
+      await expect(createApp(cmd)).rejects.toThrow('exit');
+      expect(templatingMock).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.versions, 'node', {
+        value: originalVersion,
+        configurable: true,
+      });
+    }
+  });
+
+  it.each(['24.15.0', '26.13.0'])(
+    'should accept the minimum Node version %s',
+    async version => {
+      const originalVersion = process.versions.node;
+      Object.defineProperty(process.versions, 'node', {
+        value: version,
+        configurable: true,
+      });
+      try {
+        const cmd = {} as unknown as Command;
+        await createApp(cmd);
+        expect(templatingMock).toHaveBeenCalled();
+      } finally {
+        Object.defineProperty(process.versions, 'node', {
+          value: originalVersion,
+          configurable: true,
+        });
+      }
+    },
+  );
+
   it('should exit when Node version is too new', async () => {
     const originalVersion = process.versions.node;
     Object.defineProperty(process.versions, 'node', {
-      value: '26.0.0',
+      value: '28.0.0',
       configurable: true,
     });
     try {

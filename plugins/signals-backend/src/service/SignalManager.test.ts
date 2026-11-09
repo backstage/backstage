@@ -59,12 +59,24 @@ class MockWebSocket {
   }
 }
 
+const aliceIdentity = {
+  userEntityRef: 'user:default/alice',
+  ownershipEntityRefs: ['user:default/alice'],
+};
+
+const johnIdentity = {
+  userEntityRef: 'user:default/john.doe',
+  ownershipEntityRefs: ['user:default/john.doe'],
+};
+
 describe('SignalManager', () => {
   let onEvent: Function;
+  let subscription: EventsServiceSubscribeOptions;
 
   const mockEvents = {
     publish: async () => {},
     subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
+      subscription = subscriber;
       onEvent = subscriber.onEvent;
     },
   };
@@ -79,18 +91,42 @@ describe('SignalManager', () => {
     logger: mockServices.logger.mock(),
     config: mockServices.rootConfig(),
     lifecycle: mockLifecycle,
+    instanceMetadata: mockServices.rootInstanceMetadata.mock({
+      getId: () => 'test-instance',
+    }),
+  });
+
+  it('should use the backend instance ID for the event subscription', () => {
+    expect(subscription.id).toBe('test-instance');
+  });
+
+  afterAll(() => {
+    shutdownHooks.forEach(hook => hook());
   });
 
   it('should close all connections when server is closed', () => {
+    const localHooks: Function[] = [];
+    const localManager = SignalManager.create({
+      events: {
+        publish: async () => {},
+        subscribe: async () => {},
+      },
+      logger: mockServices.logger.mock(),
+      config: mockServices.rootConfig(),
+      instanceMetadata: mockServices.rootInstanceMetadata.mock(),
+      lifecycle: mockServices.lifecycle.mock({
+        addShutdownHook: (hook: Function) => localHooks.push(hook),
+      }),
+    });
     const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket);
-    shutdownHooks.forEach(hook => hook());
+    localManager.addConnection(ws as unknown as WebSocket, aliceIdentity);
+    localHooks.forEach(hook => hook());
     expect(ws.closed).toBeTruthy();
   });
 
   it('should close connection on error', () => {
     const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket);
+    manager.addConnection(ws as unknown as WebSocket, aliceIdentity);
 
     ws.trigger('error', new Error('error'));
     expect(ws.closed).toBeTruthy();
@@ -98,7 +134,7 @@ describe('SignalManager', () => {
 
   it('should allow subscribing and unsubscribing to events', async () => {
     const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket);
+    manager.addConnection(ws as unknown as WebSocket, aliceIdentity);
 
     ws.trigger(
       'message',
@@ -139,23 +175,14 @@ describe('SignalManager', () => {
   });
 
   it('should only send to users from identity', async () => {
-    // Connection without identity
     const ws1 = new MockWebSocket();
-    manager.addConnection(ws1 as unknown as WebSocket);
+    manager.addConnection(ws1 as unknown as WebSocket, aliceIdentity);
 
-    // Connection with identity and subscription
     const ws2 = new MockWebSocket();
-    manager.addConnection(ws2 as unknown as WebSocket, {
-      ownershipEntityRefs: ['user:default/john.doe'],
-      userEntityRef: 'user:default/john.doe',
-    });
+    manager.addConnection(ws2 as unknown as WebSocket, johnIdentity);
 
-    // Connection without subscription
     const ws3 = new MockWebSocket();
-    manager.addConnection(ws3 as unknown as WebSocket, {
-      ownershipEntityRefs: ['user:default/john.doe'],
-      userEntityRef: 'user:default/john.doe',
-    });
+    manager.addConnection(ws3 as unknown as WebSocket, johnIdentity);
 
     ws1.trigger(
       'message',

@@ -39,6 +39,9 @@ async function main() {
 
   console.log(`Assembling packages for backstage release ${version}`);
   const { packages } = await getPackages(path.resolve('.'));
+  const { engines: requirements } = await fs.readJSON(
+    path.resolve('package.json'),
+  );
 
   const versions = packages
     .filter(
@@ -53,7 +56,7 @@ async function main() {
   await fs.ensureDir(manifestDir);
   await fs.writeJSON(
     path.resolve(manifestDir, 'manifest.json'),
-    { releaseVersion: version, packages: versions },
+    { releaseVersion: version, requirements, packages: versions },
     { spaces: 2 },
   );
   const tag = version.includes('next') ? 'next' : 'main';

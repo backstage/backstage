@@ -65,7 +65,7 @@ export interface DynamicPluginsSchemasOptions {
    * Function that returns the path to the Json schema file for a given scanned plugin package.
    * The path is either absolute, or relative to the plugin package root directory.
    *
-   * Default behavior is to look for the `dist/configSchema.json` relative path.
+   * Default behavior is to look for the `dist/.config-schema.json` relative path.
    *
    * @param pluginPackage - The scanned plugin package.
    * @returns the absolute or plugin-relative path to the Json schema file.

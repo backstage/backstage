@@ -58,6 +58,16 @@ export interface Config {
             serviceAccountToken?: string;
             /** @visibility frontend */
             authProvider?: string;
+            /**
+             * IAM role ARN to assume when using AWS authentication.
+             */
+            assumeRole?: string;
+            /**
+             * External ID to supply when assuming the IAM role, if required by
+             * its trust policy.
+             * @visibility secret
+             */
+            externalId?: string;
             /** @visibility secret  */
             authMetadata?: object;
             /** @visibility frontend */

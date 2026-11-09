@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /**
  * Update the properties of a certain relation type between a given pair of

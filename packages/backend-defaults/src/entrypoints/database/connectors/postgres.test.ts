@@ -30,6 +30,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 jest.mock('@google-cloud/cloud-sql-connector');
 jest.mock('@azure/identity');
 jest.mock('@aws-sdk/rds-signer');
+jest.mock('@aws-sdk/credential-providers');
 
 describe('postgres', () => {
   const deps = {
@@ -251,8 +252,37 @@ describe('postgres', () => {
     new ConfigReader({ client: 'pg', connection });
 
   describe('buildPgDatabaseConfig', () => {
+    const rdsCredentials = {
+      accessKeyId: 'test-access-key',
+      secretAccessKey: 'test-secret-key',
+    };
+    const rdsCredentialsProvider = jest.fn();
+    const rdsConfig = () =>
+      new ConfigReader({
+        client: 'pg',
+        connection: {
+          type: 'rds',
+          host: 'rds.example.com',
+          port: 5432,
+          user: 'portal',
+          region: 'eu-west-1',
+        },
+      });
+
+    beforeEach(() => {
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+      Signer.mockClear();
+      const { fromNodeProviderChain } = jest.requireMock(
+        '@aws-sdk/credential-providers',
+      ) as jest.Mocked<typeof import('@aws-sdk/credential-providers')>;
+      rdsCredentialsProvider.mockReset().mockResolvedValue(rdsCredentials);
+      fromNodeProviderChain.mockReturnValue(rdsCredentialsProvider);
+    });
     afterEach(() => {
       jest.useRealTimers();
+      jest.restoreAllMocks();
     });
 
     it('builds a postgres config', async () => {
@@ -262,6 +292,7 @@ describe('postgres', () => {
         {
           client: 'pg',
           connection: mockConnection,
+          pool: { min: 0 },
           useNullAsDefault: true,
         },
       );
@@ -275,6 +306,7 @@ describe('postgres', () => {
       ).toEqual({
         client: 'pg',
         connection: mockConnectionString,
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -292,6 +324,7 @@ describe('postgres', () => {
           ...mockConnection,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -309,6 +342,7 @@ describe('postgres', () => {
       ).toEqual({
         client: 'pg',
         connection: mockConnection,
+        pool: { min: 0 },
         searchPath: ['schemaName'],
         useNullAsDefault: true,
       });
@@ -320,7 +354,7 @@ describe('postgres', () => {
       expect(
         await buildPgDatabaseConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
-          pool: { min: 0, max: 7 },
+          pool: { min: 2, max: 7 },
           debug: true,
         }),
       ).toEqual({
@@ -330,7 +364,7 @@ describe('postgres', () => {
           database: 'other_db',
         },
         useNullAsDefault: true,
-        pool: { min: 0, max: 7 },
+        pool: { min: 2, max: 7 },
         debug: true,
       });
     });
@@ -350,6 +384,7 @@ describe('postgres', () => {
           port: '5432',
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -640,6 +675,7 @@ describe('postgres', () => {
           port: 5423,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -698,8 +734,130 @@ describe('postgres', () => {
           stream: mockStream,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
+    });
+
+    it('retries transient cloud-sql-connector initialization failures', async () => {
+      jest.useFakeTimers();
+      const random = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      Connector.mockClear();
+      Connector.prototype.getOptions.mockReset();
+      Connector.prototype.close.mockClear();
+
+      const firstError = Object.assign(new Error('request failed'), {
+        cause: Object.assign(
+          new Error(
+            'Client network socket disconnected before secure TLS connection was established',
+          ),
+          { code: 'ECONNRESET' },
+        ),
+      });
+      const secondError = Object.assign(new Error('connection timed out'), {
+        code: 'ETIMEDOUT',
+      });
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions
+        .mockRejectedValueOnce(firstError)
+        .mockRejectedValueOnce(secondError)
+        .mockResolvedValueOnce({ stream: mockStream });
+
+      const result = buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'project:region:instance',
+          },
+        }),
+      );
+
+      await jest.advanceTimersByTimeAsync(99);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(1);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(2);
+      await jest.advanceTimersByTimeAsync(199);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(2);
+      await jest.advanceTimersByTimeAsync(1);
+
+      await expect(result).resolves.toMatchObject({
+        connection: { stream: mockStream },
+      });
+      expect(Connector).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
+      expect(random).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not retry persistent cloud-sql-connector failures', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      Connector.mockClear();
+      Connector.prototype.getOptions.mockReset();
+      Connector.prototype.close.mockClear();
+
+      const error = Object.assign(new Error('permission denied'), {
+        response: { status: 403 },
+      });
+      Connector.prototype.getOptions.mockRejectedValue(error);
+
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'project:region:instance',
+            },
+          }),
+        ),
+      ).rejects.toBe(error);
+      expect(Connector).toHaveBeenCalledTimes(1);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(1);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
+    });
+
+    it('stops retrying cloud-sql-connector initialization after three attempts', async () => {
+      jest.useFakeTimers();
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      Connector.mockClear();
+      Connector.prototype.getOptions.mockReset();
+      Connector.prototype.close.mockClear();
+
+      const errors = ['first', 'second', 'third'].map(message =>
+        Object.assign(new Error(message), { code: 'ECONNRESET' }),
+      );
+      Connector.prototype.getOptions
+        .mockRejectedValueOnce(errors[0])
+        .mockRejectedValueOnce(errors[1])
+        .mockRejectedValueOnce(errors[2]);
+
+      const result = buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'project:region:instance',
+          },
+        }),
+      );
+      const settledResult = result.then(
+        value => ({ value }),
+        error => ({ error }),
+      );
+
+      await jest.advanceTimersByTimeAsync(600);
+      await expect(settledResult).resolves.toEqual({ error: errors[2] });
+      expect(Connector).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
+      expect(jest.getTimerCount()).toBe(0);
     });
 
     it('passes default settings to cloud-sql-connector', async () => {
@@ -820,12 +978,6 @@ describe('postgres', () => {
         }),
       );
 
-      expect(Signer).toHaveBeenCalledWith({
-        hostname: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
-        port: 5432,
-        username: 'postgres',
-        region: 'eu-west-1',
-      });
       expect(configResult).toMatchObject({
         client: 'pg',
         connection: expect.any(Function),
@@ -835,6 +987,14 @@ describe('postgres', () => {
       const connectionResult = await (
         configResult.connection as () => Promise<any>
       )();
+
+      expect(Signer).toHaveBeenCalledWith({
+        hostname: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
+        port: 5432,
+        username: 'postgres',
+        region: 'eu-west-1',
+        credentials: rdsCredentials,
+      });
 
       expect(connectionResult).toMatchObject({
         host: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
@@ -875,31 +1035,105 @@ describe('postgres', () => {
       expect(conn2.password).toBe('token-2');
     });
 
-    it('returns an expirationChecker that reflects the token TTL', async () => {
+    it.each([
+      { credentialTtl: undefined, renewalAfter: 14 * 60_000 },
+      { credentialTtl: 60 * 60_000, renewalAfter: 14 * 60_000 },
+      { credentialTtl: 6 * 60_000, renewalAfter: 5 * 60_000 },
+    ])(
+      'renews after $renewalAfter ms for credential TTL $credentialTtl',
+      async ({ credentialTtl, renewalAfter }) => {
+        jest.useFakeTimers();
+        const { Signer } = jest.requireMock(
+          '@aws-sdk/rds-signer',
+        ) as jest.Mocked<typeof import('@aws-sdk/rds-signer')>;
+        Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
+        const credentials = {
+          ...rdsCredentials,
+          expiration:
+            credentialTtl === undefined
+              ? undefined
+              : new Date(Date.now() + credentialTtl),
+        };
+        rdsCredentialsProvider.mockResolvedValue(credentials);
+        const config = await buildPgDatabaseConfig(rdsConfig());
+        const connection = await (config.connection as () => Promise<any>)();
+
+        expect(connection.expirationChecker()).toBe(false);
+        jest.advanceTimersByTime(renewalAfter - 1);
+        expect(connection.expirationChecker()).toBe(false);
+        jest.advanceTimersByTime(1);
+        expect(connection.expirationChecker()).toBe(true);
+        expect(Signer).toHaveBeenCalledWith(
+          expect.objectContaining({ credentials }),
+        );
+        expect(rdsCredentialsProvider).toHaveBeenCalledTimes(1);
+      },
+    );
+
+    it('waits for credentials inside the renewal margin to refresh before signing', async () => {
+      jest.useFakeTimers();
       const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
         typeof import('@aws-sdk/rds-signer')
       >;
-
-      Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
-
-      const configResult = await buildPgDatabaseConfig(
-        new ConfigReader({
-          client: 'pg',
-          connection: {
-            type: 'rds',
-            host: 'mydb.cluster.eu-west-1.rds.amazonaws.com',
-            port: 5432,
-            user: 'postgres',
-            region: 'eu-west-1',
-          },
-        }),
+      Signer.prototype.getAuthToken.mockResolvedValue('fresh-token');
+      const cachedCredentials = {
+        ...rdsCredentials,
+        expiration: new Date(Date.now() + 60_000),
+      };
+      const freshCredentials = {
+        ...rdsCredentials,
+        accessKeyId: 'fresh-access-key',
+        expiration: new Date(Date.now() + 60 * 60_000),
+      };
+      rdsCredentialsProvider
+        .mockResolvedValueOnce(cachedCredentials)
+        .mockResolvedValueOnce(freshCredentials);
+      const config = await buildPgDatabaseConfig(rdsConfig());
+      const connection = await (config.connection as () => Promise<any>)();
+      expect(rdsCredentialsProvider).toHaveBeenNthCalledWith(2, {
+        forceRefresh: true,
+      });
+      expect(Signer).toHaveBeenCalledWith(
+        expect.objectContaining({ credentials: freshCredentials }),
       );
+      expect(connection.password).toBe('fresh-token');
+      jest.advanceTimersByTime(14 * 60_000);
+      expect(connection.expirationChecker()).toBe(true);
+    });
 
-      const conn = await (configResult.connection as () => Promise<any>)();
+    it('propagates a credential refresh failure without signing a token', async () => {
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+      rdsCredentialsProvider
+        .mockResolvedValueOnce({
+          ...rdsCredentials,
+          expiration: new Date(Date.now() + 30_000),
+        })
+        .mockRejectedValueOnce(new Error('credential refresh failed'));
+      const config = await buildPgDatabaseConfig(rdsConfig());
+      await expect((config.connection as () => Promise<any>)()).rejects.toThrow(
+        'AWS RDS IAM auth token acquisition failed',
+      );
+      expect(Signer).not.toHaveBeenCalled();
+    });
 
-      expect(conn.expirationChecker).toBeInstanceOf(Function);
-      // Token was just issued, so it should not yet be considered expired.
-      expect(conn.expirationChecker()).toBe(false);
+    it('does not extend token lifetime by the time spent signing', async () => {
+      jest.useFakeTimers();
+      const { Signer } = jest.requireMock('@aws-sdk/rds-signer') as jest.Mocked<
+        typeof import('@aws-sdk/rds-signer')
+      >;
+      Signer.prototype.getAuthToken.mockImplementation(async () => {
+        jest.advanceTimersByTime(30_000);
+        return 'mock-iam-token';
+      });
+      const config = await buildPgDatabaseConfig(rdsConfig());
+      const connection = await (config.connection as () => Promise<any>)();
+      jest.advanceTimersByTime(14 * 60_000 - 30_000 - 1);
+      expect(connection.expirationChecker()).toBe(false);
+      jest.advanceTimersByTime(1);
+      expect(connection.expirationChecker()).toBe(true);
+      Signer.prototype.getAuthToken.mockResolvedValue('mock-iam-token');
     });
 
     it('throws when port is missing for rds connection', async () => {
@@ -929,7 +1163,7 @@ describe('postgres', () => {
       process.env.AWS_REGION = 'us-east-1';
 
       try {
-        await buildPgDatabaseConfig(
+        const configResult = await buildPgDatabaseConfig(
           new ConfigReader({
             client: 'pg',
             connection: {
@@ -941,6 +1175,7 @@ describe('postgres', () => {
           }),
         );
 
+        await (configResult.connection as () => Promise<any>)();
         expect(Signer).toHaveBeenCalledWith(
           expect.objectContaining({ region: 'us-east-1' }),
         );
@@ -1046,6 +1281,7 @@ describe('postgres', () => {
           port: '5432',
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });

@@ -54,10 +54,8 @@ export async function deleteWithEagerPruningOfChildren(options: {
         .delete()
         .from('refresh_state')
         .whereIn('entity_ref', refsToDelete);
-      await knex
-        .delete()
-        .from('stitch_queue')
-        .whereIn('entity_ref', refsToDelete);
+      // Leave pending stitches intact. The stitcher safely settles missing
+      // entities, while a concurrent reintroduction may still need this work.
     }
 
     // Delete the references that originate only from this entity provider. Note

@@ -15,8 +15,9 @@ using [`auth login`](./module-auth.md#auth-login) and register the `catalog`
 and `scaffolder` plugin sources using
 [`actions sources add`](./module-actions.md#actions-sources-add).
 
-All commands support `--output json` for machine-readable output and
-`--instance <name>` to target a specific authenticated instance.
+All commands support `--instance <name>` to target a specific authenticated
+instance. `template list` supports `--output human|json`; all other commands
+always print JSON. Unknown flags are rejected.
 
 ## template list
 
@@ -27,12 +28,16 @@ Usage: backstage-cli template list [options]
 
 Options:
   --filter <key=value> Query predicate (repeatable)
-  --limit <number>     Maximum results to return
+  --limit <number>     Maximum results to return per page
+  --cursor <cursor>    Continue from the cursor of a previous page
   --output <format>    Output format: human (default), json
   --instance <name>    Instance name
 ```
 
-Wraps `catalog:query-catalog-entities` with `kind=Template`.
+Only entities of kind `Template` are listed, so a `kind` filter is an error. `--cursor` cannot be combined with
+`--filter`, because the cursor already encodes it. Human output shows how
+many templates were shown and, when more are available, prints the `--cursor`
+value to continue from.
 
 ### Examples
 
@@ -46,19 +51,17 @@ yarn backstage-cli template list --filter metadata.tags=nodejs
 Execute a software template.
 
 ```text
-Usage: backstage-cli template execute [ref] [options]
+Usage: backstage-cli template execute <ref> [options]
 
 Options:
-  --template-ref <ref>   Template entity reference alias
-  --namespace <ns>       Template namespace for a short reference
+  --namespace <ns>       Namespace to use when the reference has none
   --value <key=value>    Template input value (repeatable)
   --secret <key=value>   Template secret (repeatable)
-  --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
 
-Wraps `scaffolder:execute-template`. Returns a `taskId` for tracking progress.
-Input values and secrets are optional. Repeat `--value` or `--secret` to provide
+Returns a `taskId` for tracking progress. Using `--namespace` with a reference
+that already has a namespace is an error. Input values and secrets are optional. Repeat `--value` or `--secret` to provide
 multiple inputs.
 
 ### Examples
@@ -72,30 +75,22 @@ yarn backstage-cli template execute \
 
 ## template dry-run
 
-Validate a software template without making changes.
+Validate a software template file, or standard input, without making changes.
 
 ```text
-Usage: backstage-cli template dry-run [options]
+Usage: backstage-cli template dry-run <file> [options]
 
 Options:
-  --template-file <path> Path to a template YAML file
-  --template-ref <yaml>  Inline template YAML content alias
   --value <key=value>    Template input value (repeatable)
-  --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
 
-Wraps `scaffolder:dry-run-template`.
+Use `-` as the file to read from standard input. The result is printed as JSON, and the
+command exits with code 1 if the template is not valid YAML.
 
 ### Examples
 
 ```bash
-yarn backstage-cli template dry-run \
-  --template-file ./template.yaml \
-  --value name=my-app
-
-# Existing inline YAML input remains supported
-yarn backstage-cli template dry-run \
-  --template-ref "$(cat template.yaml)" \
-  --value name=my-app
+yarn backstage-cli template dry-run ./template.yaml --value name=my-app
+cat template.yaml | yarn backstage-cli template dry-run - --value name=my-app
 ```

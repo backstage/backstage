@@ -26,10 +26,83 @@ import {
 } from '../../tables';
 import { markForStitching } from './markForStitching';
 import { performStitching } from './performStitching';
+import { syncSearchRows } from './syncSearchRows';
+import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
+
+jest.mock('./syncSearchRows', () => {
+  const actual = jest.requireActual('./syncSearchRows');
+  return { ...actual, syncSearchRows: jest.fn(actual.syncSearchRows) };
+});
+
+const syncSearchRowsMock = syncSearchRows as jest.MockedFunction<
+  typeof syncSearchRows
+>;
 
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
+
+it.each(databases.eachSupportedId())(
+  'rejects an expired claim without disturbing its successor for %p',
+  async databaseId => {
+    const knex = await databases.init(databaseId);
+    await applyDatabaseMigrations(knex);
+    await knex<DbRefreshStateRow>('refresh_state').insert({
+      entity_id: 'my-id',
+      entity_ref: 'k:ns/n',
+      unprocessed_entity: '{}',
+      processed_entity: JSON.stringify({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n', namespace: 'ns' },
+      }),
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+    await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+    const logger = mockServices.logger.mock();
+    await performStitching({
+      knex,
+      logger,
+      ...(await getStitchClaim(knex, 'k:ns/n')),
+    });
+    const original = await knex('final_entities');
+    const originalSearch = await knex('search');
+    await knex('refresh_state').update({
+      processed_entity: JSON.stringify({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n', namespace: 'ns', description: 'Updated' },
+      }),
+    });
+    await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+    const [expired] = await getDeferredStitchableEntities({
+      knex,
+      batchSize: 1,
+      stitchTimeout: { seconds: 0 },
+    });
+    const [successor] = await getDeferredStitchableEntities({
+      knex,
+      batchSize: 1,
+      stitchTimeout: { minutes: 1 },
+    });
+    const queued = await knex('stitch_queue');
+    await expect(performStitching({ knex, logger, ...expired })).resolves.toBe(
+      'abandoned',
+    );
+    await expect(knex('final_entities')).resolves.toEqual(original);
+    await expect(knex('search')).resolves.toEqual(originalSearch);
+    await expect(knex('stitch_queue')).resolves.toEqual(queued);
+    await expect(
+      performStitching({ knex, logger, ...successor }),
+    ).resolves.toBe('changed');
+    expect(await knex('final_entities')).toHaveLength(1);
+    expect(await knex('final_entities')).not.toEqual(original);
+    expect(await knex('search')).not.toHaveLength(0);
+    await expect(knex('stitch_queue')).resolves.toEqual([]);
+  },
+);
 
 it.each(databases.eachSupportedId())(
   'runs the happy path for %p',
@@ -89,8 +162,7 @@ it.each(databases.eachSupportedId())(
     await performStitching({
       knex,
       logger,
-      entityRef: 'k:ns/n',
-      stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+      ...(await getStitchClaim(knex, 'k:ns/n')),
     });
 
     entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -179,8 +251,7 @@ it.each(databases.eachSupportedId())(
     await performStitching({
       knex,
       logger,
-      entityRef: 'k:ns/n',
-      stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+      ...(await getStitchClaim(knex, 'k:ns/n')),
     });
 
     entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -207,8 +278,7 @@ it.each(databases.eachSupportedId())(
     await performStitching({
       knex,
       logger,
-      entityRef: 'k:ns/n',
-      stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+      ...(await getStitchClaim(knex, 'k:ns/n')),
     });
 
     entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -300,6 +370,463 @@ it.each(databases.eachSupportedId())(
 describe.each(databases.eachSupportedId())(
   'performStitching edge cases, %p',
   databaseId => {
+    if (databaseId.startsWith('POSTGRES') || databaseId === 'MYSQL_8') {
+      it.each(['retry', 'superseded', 'exhausted'] as const)(
+        'handles a publication deadlock when %s',
+        async outcome => {
+          const knex = await databases.init(databaseId);
+          await applyDatabaseMigrations(knex);
+          await knex<DbRefreshStateRow>('refresh_state').insert({
+            entity_id: 'my-id',
+            entity_ref: 'k:ns/n',
+            unprocessed_entity: '{}',
+            processed_entity: JSON.stringify({
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: { name: 'n', namespace: 'ns' },
+            }),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          });
+          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+          const [claim] = await getDeferredStitchableEntities({
+            knex,
+            batchSize: 1,
+            stitchTimeout: { minutes: 1 },
+          });
+          const queued = await knex('stitch_queue');
+          const actual =
+            jest.requireActual<typeof import('./syncSearchRows')>(
+              './syncSearchRows',
+            ).syncSearchRows;
+          let attempts = 0;
+          syncSearchRowsMock.mockImplementation(async (...args) => {
+            await actual(...args);
+            attempts++;
+            if (attempts === 1 || outcome === 'exhausted') {
+              if (outcome === 'superseded') {
+                await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+              }
+              // Fail after both real writes to verify the entire publication
+              // rolls back before retry, rather than only search synchronization.
+              throw Object.assign(new Error('publication deadlock'), {
+                code: '40P01',
+                errno: 1213,
+              });
+            }
+          });
+          try {
+            const publication = await performStitching({
+              knex,
+              logger: mockServices.logger.mock(),
+              ...claim,
+            }).then(
+              result => ({ result }),
+              error => ({ error: error.message }),
+            );
+            expect(publication).toEqual(
+              outcome === 'exhausted'
+                ? { error: 'publication deadlock' }
+                : { result: outcome === 'retry' ? 'changed' : 'abandoned' },
+            );
+            expect(attempts).toBe(
+              { exhausted: 4, retry: 2, superseded: 1 }[outcome],
+            );
+            expect(await knex('final_entities')).toHaveLength(
+              outcome === 'retry' ? 1 : 0,
+            );
+            await expect(
+              knex('search').where('key', 'metadata.name'),
+            ).resolves.toEqual(
+              outcome === 'retry'
+                ? [
+                    {
+                      entity_id: 'my-id',
+                      key: 'metadata.name',
+                      value: 'n',
+                      original_value: 'n',
+                    },
+                  ]
+                : [],
+            );
+            expect((await knex('search')).length > 0).toBe(outcome === 'retry');
+            const remaining = await knex('stitch_queue');
+            expect(remaining).toHaveLength(outcome === 'retry' ? 0 : 1);
+            expect(remaining[0]?.stitch_ticket === claim.stitchTicket).toBe(
+              outcome === 'exhausted',
+            );
+            expect(remaining[0]?.next_stitch_at).toEqual(
+              {
+                exhausted: queued[0].next_stitch_at,
+                superseded: expect.anything(),
+                retry: undefined,
+              }[outcome],
+            );
+            const followUps = await getDeferredStitchableEntities({
+              knex,
+              batchSize: 1,
+              stitchTimeout: { minutes: 1 },
+            });
+            expect(followUps.map(item => item.entityRef)).toEqual(
+              outcome === 'superseded' ? ['k:ns/n'] : [],
+            );
+            expect(followUps[0]?.stitchTicket).not.toBe(claim.stitchTicket);
+          } finally {
+            syncSearchRowsMock.mockImplementation(actual);
+          }
+        },
+      );
+    }
+    if (databaseId.startsWith('POSTGRES')) {
+      it.each([
+        ['insert', 'completed successor', ['fresh']],
+        ['update', 'completed successor', ['fresh']],
+        ['insert', 'old-worker reclaim', []],
+        ['update', 'old-worker reclaim', ['initial']],
+      ] as const)(
+        'rolls back a stale %s after a %s during the publication statement',
+        async (publicationKind, supersession, expectedDescriptions) => {
+          const knex = await databases.init(databaseId);
+          await applyDatabaseMigrations(knex);
+          const logger = mockServices.logger.mock();
+          const entityRef = 'k:ns/n';
+          const entity = {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns', description: 'initial' },
+          };
+          await knex<DbRefreshStateRow>('refresh_state').insert({
+            entity_id: 'my-id',
+            entity_ref: entityRef,
+            unprocessed_entity: '{}',
+            processed_entity: JSON.stringify(entity),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          });
+          if (publicationKind === 'update') {
+            await markForStitching({ knex, entityRefs: [entityRef] });
+            await performStitching({
+              knex,
+              logger,
+              ...(await getStitchClaim(knex, entityRef)),
+            });
+          }
+          await knex('refresh_state').update({
+            processed_entity: JSON.stringify({
+              ...entity,
+              metadata: { ...entity.metadata, description: 'stale' },
+            }),
+          });
+          await markForStitching({ knex, entityRefs: [entityRef] });
+          const [claim] = await getDeferredStitchableEntities({
+            knex,
+            batchSize: 1,
+            stitchTimeout: { seconds: 0 },
+          });
+          // Pause only the stale INSERT after its statement snapshot is taken,
+          // before it acquires the final-row lock. Successor writes remain free.
+          await knex.raw(`
+            CREATE FUNCTION pause_stale_publication() RETURNS trigger
+            LANGUAGE plpgsql AS $$
+            BEGIN
+              IF NEW.final_entity::jsonb #>> '{metadata,description}' = 'stale' THEN
+                PERFORM pg_advisory_xact_lock(841721);
+              END IF;
+              RETURN NEW;
+            END $$
+          `);
+          await knex.raw(`
+            CREATE TRIGGER pause_stale_publication BEFORE INSERT ON final_entities
+            FOR EACH ROW EXECUTE FUNCTION pause_stale_publication()
+          `);
+          const gate = await knex.transaction();
+          let stale: Promise<string> | undefined;
+          let successorTicket: string | undefined;
+          let successorResult: string | undefined;
+          try {
+            await gate.raw('SELECT pg_advisory_xact_lock(841721)');
+            stale = performStitching({ knex, logger, ...claim });
+            void stale.catch(() => {});
+            const deadline = Date.now() + 5_000;
+            for (;;) {
+              const {
+                rows: [{ paused }],
+              } = await knex.raw(`
+                SELECT EXISTS (
+                  SELECT 1 FROM pg_locks
+                  WHERE locktype = 'advisory' AND classid = 0
+                    AND objid = 841721 AND NOT granted
+                    AND database = (
+                      SELECT oid FROM pg_database WHERE datname = current_database()
+                    )
+                ) AS paused
+              `);
+              if (paused) break;
+              if (Date.now() >= deadline) {
+                throw new Error('Stale publication did not reach the barrier');
+              }
+              await new Promise(resolve => setTimeout(resolve, 10));
+            }
+            if (supersession === 'completed successor') {
+              await knex('refresh_state').update({
+                processed_entity: JSON.stringify({
+                  ...entity,
+                  metadata: { ...entity.metadata, description: 'fresh' },
+                }),
+              });
+              const [successor] = await knex.transaction(async tx => {
+                await tx.raw("SET LOCAL statement_timeout = '2s'");
+                return getDeferredStitchableEntities({
+                  knex: tx,
+                  batchSize: 1,
+                  stitchTimeout: { minutes: 1 },
+                });
+              });
+              successorTicket = successor.stitchTicket;
+              successorResult = await knex.transaction(async tx => {
+                await tx.raw("SET LOCAL statement_timeout = '2s'");
+                return performStitching({ knex: tx, logger, ...successor });
+              });
+            } else {
+              // Old workers replace only the lease, so a ticket-only
+              // post-write check would still let this stale attempt commit.
+              await knex('stitch_queue').update({
+                next_stitch_at: '2099-01-01 00:00:00',
+              });
+            }
+            const finalBefore = await knex('final_entities');
+            const searchBefore = await knex('search');
+            const queueBefore = await knex('stitch_queue');
+            expect(successorTicket).not.toBe(claim.stitchTicket);
+            expect(successorResult).toBe(
+              supersession === 'completed successor' ? 'changed' : undefined,
+            );
+            expect(queueBefore.map(row => row.stitch_ticket)).toEqual(
+              supersession === 'completed successor'
+                ? []
+                : [claim.stitchTicket],
+            );
+            expect(
+              finalBefore.map(
+                row => JSON.parse(row.final_entity).metadata.description,
+              ),
+            ).toEqual(expectedDescriptions);
+            await gate.commit();
+            await expect(stale).resolves.toBe('abandoned');
+            await expect(knex('final_entities')).resolves.toEqual(finalBefore);
+            await expect(knex('search')).resolves.toEqual(searchBefore);
+            await expect(knex('stitch_queue')).resolves.toEqual(queueBefore);
+          } finally {
+            if (!gate.isCompleted()) await gate.rollback();
+            if (stale) await stale.catch(() => {});
+            await knex.raw(
+              'DROP TRIGGER pause_stale_publication ON final_entities',
+            );
+            await knex.raw('DROP FUNCTION pause_stale_publication()');
+          }
+        },
+      );
+
+      it.each(['commit', 'rollback'] as const)(
+        'publishes without a lock inversion while cascading deletion waits, then %s deletion',
+        async deletionOutcome => {
+          const knex = await databases.init(databaseId);
+          await applyDatabaseMigrations(knex);
+          const logger = mockServices.logger.mock();
+          const initial = {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { old: 'value' },
+          };
+          await knex<DbRefreshStateRow>('refresh_state').insert({
+            entity_id: 'my-id',
+            entity_ref: 'k:ns/n',
+            unprocessed_entity: '{}',
+            processed_entity: JSON.stringify(initial),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          });
+          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+          await performStitching({
+            knex,
+            logger,
+            ...(await getStitchClaim(knex, 'k:ns/n')),
+          });
+          const beforeFinal = await knex<DbFinalEntitiesRow>('final_entities');
+          await knex<DbRefreshStateRow>('refresh_state')
+            .where('entity_id', 'my-id')
+            .update({
+              processed_entity: JSON.stringify({
+                ...initial,
+                spec: { new: 'value' },
+              }),
+            });
+          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+          const [claim] = await getDeferredStitchableEntities({
+            knex,
+            batchSize: 1,
+            stitchTimeout: { minutes: 1 },
+          });
+          const deletion = await knex.transaction();
+          let deleted: Promise<number> | undefined;
+          const actualSync =
+            jest.requireActual<typeof import('./syncSearchRows')>(
+              './syncSearchRows',
+            ).syncSearchRows;
+
+          try {
+            const {
+              rows: [{ pid: deletionPid }],
+            } = await deletion.raw('SELECT pg_backend_pid() AS pid');
+            syncSearchRowsMock.mockImplementationOnce(
+              async (tx, id, entries) => {
+                const {
+                  rows: [{ pid: publicationPid }],
+                } = await tx.raw('SELECT pg_backend_pid() AS pid');
+                // Publication already owns the final row. Deletion locks refresh
+                // state and then waits on the final row through ON DELETE CASCADE.
+                deleted = deletion('refresh_state')
+                  .where('entity_id', 'my-id')
+                  .delete()
+                  .then(count => count);
+                // Attach a rejection handler immediately, including when a broken
+                // implementation changes the intended ordering.
+                void deleted.catch(() => {});
+                const deadline = Date.now() + 5_000;
+                for (;;) {
+                  const {
+                    rows: [{ blocked }],
+                  } = await knex.raw(
+                    'SELECT ? = ANY(pg_blocking_pids(?)) AS blocked',
+                    [publicationPid, deletionPid],
+                  );
+                  if (blocked) break;
+                  if (Date.now() >= deadline) {
+                    throw new Error('Deletion did not wait for publication');
+                  }
+                  await new Promise(resolve => setTimeout(resolve, 10));
+                }
+                // Search references final_entities, not refresh_state. Its FK
+                // check must not wait on the deleting transaction's refresh row,
+                // which would complete a deadlock cycle.
+                await actualSync(tx, id, entries);
+              },
+            );
+            await expect(
+              performStitching({ knex, logger, ...claim }),
+            ).resolves.toBe('changed');
+            await expect(deleted).resolves.toBe(1);
+            await deletion[deletionOutcome]();
+          } finally {
+            syncSearchRowsMock.mockReset().mockImplementation(actualSync);
+            if (!deletion.isCompleted()) await deletion.rollback();
+            if (deleted) await deleted.catch(() => {});
+          }
+
+          expect(await knex('stitch_queue')).toEqual([]);
+          const committedDeletion = deletionOutcome === 'commit';
+          const refreshRows = await knex<DbRefreshStateRow>('refresh_state');
+          expect(refreshRows.map(row => row.entity_ref)).toEqual(
+            committedDeletion ? [] : ['k:ns/n'],
+          );
+          const finalRows = await knex<DbFinalEntitiesRow>('final_entities');
+          expect(
+            finalRows.map(row => ({
+              spec: JSON.parse(row.final_entity!).spec,
+              changed: row.hash !== beforeFinal[0].hash,
+            })),
+          ).toEqual(
+            committedDeletion
+              ? []
+              : [{ spec: { new: 'value' }, changed: true }],
+          );
+          expect((await knex<DbSearchRow>('search')).length > 0).toBe(
+            !committedDeletion,
+          );
+          expect(
+            await knex<DbSearchRow>('search').where('key', 'spec.old'),
+          ).toEqual([]);
+          expect(
+            await knex<DbSearchRow>('search').where('key', 'spec.new'),
+          ).toEqual(
+            committedDeletion
+              ? []
+              : [
+                  {
+                    entity_id: 'my-id',
+                    key: 'spec.new',
+                    value: 'value',
+                    original_value: 'value',
+                  },
+                ],
+          );
+        },
+      );
+    }
+
+    it('retains failed work for a fenced retry and settles unprocessed work', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: 'my-id',
+        entity_ref: 'k:ns/n',
+        unprocessed_entity: '{}',
+        processed_entity: '{invalid json',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      const [claim] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { seconds: 0 },
+      });
+      const before = await knex('stitch_queue');
+      const logger = mockServices.logger.mock();
+      await expect(
+        performStitching({ knex, logger, ...claim }),
+      ).rejects.toThrow(SyntaxError);
+      const failed = await knex('stitch_queue');
+      expect(failed).toEqual([{ ...before[0], failure_count: 1 }]);
+      await expect(knex('final_entities')).resolves.toEqual([]);
+      await expect(knex('search')).resolves.toEqual([]);
+      const [retry] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(retry.stitchTicket).not.toBe(claim.stitchTicket);
+      const successor = await knex('stitch_queue').first();
+      await expect(
+        performStitching({ knex, logger, ...claim }),
+      ).rejects.toThrow(SyntaxError);
+      expect(await knex('stitch_queue').first()).toEqual(successor);
+      await markForStitching({ knex, entityIds: ['my-id'] });
+      expect((await knex('stitch_queue').first()).failure_count).toBe(0);
+      await expect(
+        performStitching({ knex, logger, ...retry }),
+      ).rejects.toThrow(SyntaxError);
+      const [fresh] = await getDeferredStitchableEntities({
+        knex,
+        batchSize: 1,
+        stitchTimeout: { minutes: 1 },
+      });
+      expect(fresh).toBeDefined();
+      await knex('refresh_state')
+        .where('entity_id', 'my-id')
+        .update({ processed_entity: null });
+      await expect(performStitching({ knex, logger, ...fresh })).resolves.toBe(
+        'abandoned',
+      );
+      await expect(knex('stitch_queue')).resolves.toEqual([]);
+      await expect(knex('final_entities')).resolves.toEqual([]);
+    });
+
     it('stitches when final_entities row already exists', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
@@ -341,8 +868,7 @@ describe.each(databases.eachSupportedId())(
         performStitching({
           knex,
           logger: stitchLogger,
-          entityRef: 'k:ns/n',
-          stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+          ...(await getStitchClaim(knex, 'k:ns/n')),
         }),
       ).resolves.toBe('changed');
 
@@ -375,13 +901,12 @@ describe.each(databases.eachSupportedId())(
 
       // First stitch: create the final_entities row with a valid ticket
       await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-      const validTicket = await getStitchTicket(knex, 'k:ns/n');
+      const validClaim = await getStitchClaim(knex, 'k:ns/n');
 
       const result1 = await performStitching({
         knex,
         logger: mockServices.logger.mock(),
-        entityRef: 'k:ns/n',
-        stitchTicket: validTicket,
+        ...validClaim,
       });
       expect(result1).toBe('changed');
 
@@ -402,13 +927,13 @@ describe.each(databases.eachSupportedId())(
         });
 
       await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-      const freshTicket = await getStitchTicket(knex, 'k:ns/n');
+      const freshClaim = await getStitchClaim(knex, 'k:ns/n');
 
       // Attempt to stitch with a WRONG ticket (simulating a stale worker)
       const result2 = await performStitching({
         knex,
         logger: mockServices.logger.mock(),
-        entityRef: 'k:ns/n',
+        ...freshClaim,
         stitchTicket: 'stale-ticket-that-does-not-match',
       });
       expect(result2).toBe('abandoned');
@@ -419,12 +944,12 @@ describe.each(databases.eachSupportedId())(
       expect(afterStale).toHaveLength(1);
       expect(afterStale[0].hash).toBe(firstHash);
 
-      // Now stitch with the correct fresh ticket — should succeed
+      // Abandonment made the row due again. Claim a fresh lease rather than
+      // reusing the lease that the previous completion has already settled.
       const result3 = await performStitching({
         knex,
         logger: mockServices.logger.mock(),
-        entityRef: 'k:ns/n',
-        stitchTicket: freshTicket,
+        ...(await getStitchClaim(knex, 'k:ns/n')),
       });
       expect(result3).toBe('changed');
 
@@ -434,19 +959,87 @@ describe.each(databases.eachSupportedId())(
       const freshEntity = JSON.parse(afterFresh[0].final_entity!);
       expect(freshEntity.spec).toEqual({ original: false, stale: true });
     });
+
+    it('leaves nothing behind when the search index write fails', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { k: 'v' },
+          }),
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+
+      syncSearchRowsMock.mockRejectedValueOnce(
+        new Error('connection terminated unexpectedly'),
+      );
+
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        }),
+      ).rejects.toThrow('connection terminated unexpectedly');
+
+      // Neither half of the write may survive. A final_entities row left
+      // behind here is what makes the entity unrecoverable, because the
+      // retry below would match its hash and skip the search index.
+      expect(await knex<DbFinalEntitiesRow>('final_entities')).toEqual([]);
+      expect(await knex<DbSearchRow>('search')).toEqual([]);
+
+      // The failure left the queue entry in place, so the entity can be
+      // reclaimed and retried with a new ticket and lease.
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        }),
+      ).resolves.toBe('changed');
+
+      const entities = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(entities).toHaveLength(1);
+      expect(await knex<DbSearchRow>('search')).toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: 'my-id',
+            key: 'metadata.name',
+            original_value: 'n',
+            value: 'n',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'spec.k',
+            original_value: 'v',
+            value: 'v',
+          },
+        ]),
+      );
+    });
   },
 );
 
-async function getStitchTicket(
-  knex: import('knex').Knex,
-  entityRef: string,
-): Promise<string> {
-  const row = await knex('stitch_queue')
-    .where('entity_ref', entityRef)
-    .select('stitch_ticket')
-    .first();
-  if (!row) {
-    throw new Error(`No stitch_queue entry for ${entityRef}`);
-  }
-  return row.stitch_ticket;
+async function getStitchClaim(knex: import('knex').Knex, entityRef: string) {
+  const claims = await getDeferredStitchableEntities({
+    knex,
+    batchSize: 100,
+    stitchTimeout: { seconds: 0 },
+  });
+  const claim = claims.find(item => item.entityRef === entityRef);
+  if (!claim) throw new Error(`No claim for ${entityRef}`);
+  return claim;
 }

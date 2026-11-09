@@ -69,6 +69,7 @@ const testNotification1: Notification = {
     link: '/catalog',
     severity: 'critical',
     icon: 'docs',
+    metadata: { some_key: 'some_value' },
   },
 };
 const testNotification2: Notification = {
@@ -226,6 +227,24 @@ describe.each(databases.eachSupportedId())(
           id3,
           id1,
         ]);
+      });
+
+      it('should preserve metadata', async () => {
+        const metadataNotification = {
+          ...testNotification1,
+          id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          payload: {
+            ...testNotification1.payload,
+            metadata: { key: 'value' },
+          },
+        };
+        await storage.saveNotification(metadataNotification);
+
+        const notifications = await storage.getNotifications({ user });
+        const saved = notifications.find(
+          n => n.id === 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        );
+        expect(saved?.payload.metadata).toEqual({ key: 'value' });
       });
 
       it('should return null value for user for broadcast notifications', async () => {
@@ -581,6 +600,56 @@ describe.each(databases.eachSupportedId())(
     });
 
     describe('restoreExistingNotification', () => {
+      it.each(['notification', 'broadcast'] as const)(
+        'should persist, replace, and clear metadata for a scoped %s',
+        async type => {
+          const notification: Notification = {
+            ...testNotification2,
+            payload: {
+              ...testNotification2.payload,
+              metadata: {
+                nested: { values: ['original', 42, false, null] },
+              },
+            },
+          };
+          if (type === 'broadcast') {
+            await storage.saveBroadcast(notification);
+          } else {
+            await storage.saveNotification(notification);
+          }
+          const options = { id: notification.id, user };
+          expect(
+            (await storage.getNotification(options))?.payload.metadata,
+          ).toEqual(notification.payload.metadata);
+          expect(
+            (await storage.getNotifications({ user }))[0].payload.metadata,
+          ).toEqual(notification.payload.metadata);
+
+          const replacement = {
+            ...notification,
+            payload: { ...notification.payload, metadata: { changed: true } },
+          };
+          const restored = await storage.restoreExistingNotification({
+            id: notification.id,
+            notification: replacement,
+          });
+          expect(restored?.payload.metadata).toEqual({ changed: true });
+          expect(
+            (await storage.getNotification(options))?.payload.metadata,
+          ).toEqual({ changed: true });
+
+          const { metadata: _metadata, ...payload } = replacement.payload;
+          const cleared = await storage.restoreExistingNotification({
+            id: notification.id,
+            notification: { ...replacement, payload },
+          });
+          expect(cleared?.payload.metadata).toBeUndefined();
+          expect(
+            (await storage.getNotifications({ user }))[0].payload.metadata,
+          ).toBeUndefined();
+        },
+      );
+
       it('should return restore existing scope notification', async () => {
         await storage.saveNotification(testNotification1);
         await storage.saveNotification(testNotification2);
@@ -654,6 +723,89 @@ describe.each(databases.eachSupportedId())(
           user: otherUser,
         });
         expect(otherNotification?.user).toBeNull();
+      });
+    });
+
+    it.each([
+      ['saved', 'read', 'markSaved', 'markRead', 'markUnread'],
+      ['read', 'saved', 'markRead', 'markSaved', 'markUnsaved'],
+    ] as const)(
+      'should preserve broadcast %s status when updating the other status',
+      async (status, otherStatus, firstUpdate, secondUpdate, clearUpdate) => {
+        await storage.saveBroadcast(testNotification1);
+        await storage[firstUpdate]({ ids: [id1], user });
+        const before = await storage.getNotification({ id: id1, user });
+        expect(before?.[status]).toBeTruthy();
+        expect(before?.[otherStatus]).toBeNull();
+
+        await storage[secondUpdate]({ ids: [id1], user });
+        const after = await storage.getNotification({ id: id1, user });
+        expect(after?.[status]).toEqual(before?.[status]);
+        expect(after?.[otherStatus]).toBeTruthy();
+
+        await storage[firstUpdate]({ ids: [id1], user });
+        const repeated = await storage.getNotification({ id: id1, user });
+        expect(repeated?.[status]).toBeTruthy();
+        expect(repeated?.[otherStatus]).toEqual(after?.[otherStatus]);
+
+        await storage[clearUpdate]({ ids: [id1], user });
+        const cleared = await storage.getNotification({ id: id1, user });
+        expect(cleared?.[status]).toEqual(repeated?.[status]);
+        expect(cleared?.[otherStatus]).toBeNull();
+      },
+    );
+
+    it('should preserve independent statuses for bulk updates and different users', async () => {
+      await storage.saveBroadcast(testNotification1);
+      await storage.saveBroadcast(testNotification2);
+      await storage.saveNotification(testNotification3);
+      const options = { ids: [id1, id2, id3], user };
+
+      await storage.markSaved(options);
+      await storage.markRead(options);
+      await storage.markRead({ ids: [id1], user: otherUser });
+      await storage.markSaved({ ids: [id2], user: otherUser });
+
+      const notifications = await storage.getNotifications(options);
+      expect(notifications).toHaveLength(3);
+      for (const notification of notifications) {
+        expect(notification.read).toBeTruthy();
+        expect(notification.saved).toBeTruthy();
+      }
+      expect(await storage.getNotifications({ user: otherUser })).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: id1,
+            read: expect.anything(),
+            saved: null,
+          }),
+          expect.objectContaining({
+            id: id2,
+            read: null,
+            saved: expect.anything(),
+          }),
+        ]),
+      );
+
+      await storage.markUnread(options);
+      await storage.markRead(options);
+      await storage.markUnsaved(options);
+      const unsaved = await storage.getNotifications(options);
+      for (const notification of unsaved) {
+        expect(notification.read).toBeTruthy();
+        expect(notification.saved).toBeNull();
+      }
+      expect(
+        await storage.getNotification({ id: id1, user: otherUser }),
+      ).toMatchObject({
+        read: expect.anything(),
+        saved: null,
+      });
+      expect(
+        await storage.getNotification({ id: id2, user: otherUser }),
+      ).toMatchObject({
+        read: null,
+        saved: expect.anything(),
       });
     });
 

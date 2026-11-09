@@ -16,3 +16,4 @@
 
 export { tryRunPrettier, tryRunPrettierAsync } from './tryRunPrettier';
 export { logApiReportInstructions } from './logApiReportInstructions';
+export { logReportDiff } from './logReportDiff';

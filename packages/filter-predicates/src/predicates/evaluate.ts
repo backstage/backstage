@@ -16,7 +16,11 @@
 
 import { InputError } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
-import { FilterPredicate, FilterPredicateValue } from './types';
+import {
+  AnyFilterPredicate,
+  FilterPredicate,
+  FilterPredicateValue,
+} from './types';
 import { getJsonValueAtPath } from './getJsonValueAtPath';
 
 /**
@@ -25,7 +29,7 @@ import { getJsonValueAtPath } from './getJsonValueAtPath';
  * @public
  */
 export function evaluateFilterPredicate(
-  predicate: FilterPredicate,
+  predicate: AnyFilterPredicate,
   value: unknown,
 ): boolean {
   if (

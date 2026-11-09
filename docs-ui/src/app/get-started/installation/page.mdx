@@ -35,6 +35,24 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<App />);`}
   variant="warning"
 />
 
+## Customize component styles
+
+BUI styles are organized in CSS cascade layers, in this order: `tokens`, `base`, `components`, `theme`, `utilities`. A later layer always wins over an earlier one, whatever the selector specificity.
+
+BUI leaves the `theme` layer empty for your app. Put brand overrides in it to win over component styles while still letting utility props such as `p` or `m` take effect:
+
+<CodeBlock
+  lang="css"
+  title="Add this to your app's stylesheet"
+  code={`@layer theme {
+  .bui-Button {
+    border-radius: 9999px;
+  }
+}`}
+/>
+
+Styles outside any layer win over all of BUI's layers, including utilities.
+
 ## Use BUI components
 
 As a plugin maintainer, you can use BUI components in your plugin. As mentioned above, you should not import the styles

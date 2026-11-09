@@ -46,6 +46,7 @@ export type PluginWrapperApi = {
  * The API reference of {@link PluginWrapperApi}.
  *
  * @public
+ * @deprecated Use `coreApis.pluginWrapper` from `@backstage/frontend-plugin-api` instead.
  */
 export const pluginWrapperApiRef = createApiRef<PluginWrapperApi>().with({
   id: 'core.plugin-wrapper',

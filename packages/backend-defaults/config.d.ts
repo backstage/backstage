@@ -681,6 +681,11 @@ export interface Config {
       /** Database name prefix override */
       prefix?: string;
       /**
+       * Whether to run a query every minute for each plugin database client to
+       * keep its connections active. Defaults to false.
+       */
+      keepalive?: boolean;
+      /**
        * Prefix for schema names when using pluginDivisionMode: schema.
        * @default ''
        */
@@ -1311,6 +1316,15 @@ export interface Config {
          */
         level: 'debug' | 'info' | 'warn' | 'error';
       }>;
+
+      /**
+       * List of values to allow through redaction.
+       *
+       * This makes it possible to avoid redacting certain values that are known to be safe to log.
+       *
+       * @visibility backend
+       */
+      redactAllowlist?: string[];
     };
 
     /**

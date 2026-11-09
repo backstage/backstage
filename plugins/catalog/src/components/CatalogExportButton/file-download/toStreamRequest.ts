@@ -22,9 +22,16 @@ import type {
   StreamEntitiesRequest,
   EntityOrderQuery,
 } from '@backstage/catalog-client';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 
 function isBackendFilter(f: any): f is { getCatalogFilters: () => any } {
   return typeof f?.getCatalogFilters === 'function';
+}
+
+function isQueryFilter(
+  f: any,
+): f is { getCatalogQuery: () => FilterPredicate | undefined } {
+  return typeof f?.getCatalogQuery === 'function';
 }
 
 function isEntityTextFilter(f: any): f is EntityTextFilter {
@@ -75,9 +82,17 @@ export const toStreamRequest = (
     (f): f is NonNullable<typeof f> => f !== null && f !== undefined,
   );
 
+  const predicates = filterValues.flatMap(f => {
+    if (isQueryFilter(f)) {
+      const predicate = f.getCatalogQuery();
+      return predicate !== undefined ? [predicate] : [];
+    }
+    return [];
+  });
+
   const backendFilters = filterValues
     .flatMap(f => {
-      if (isBackendFilter(f)) {
+      if (!isQueryFilter(f) && isBackendFilter(f)) {
         const backendFilter = f.getCatalogFilters();
         return backendFilter ? [backendFilter] : [];
       }
@@ -100,6 +115,12 @@ export const toStreamRequest = (
 
   if (Object.keys(backendFilters).length > 0) {
     request.filter = backendFilters;
+  }
+
+  if (predicates.length === 1) {
+    request.query = predicates[0];
+  } else if (predicates.length > 1) {
+    request.query = { $all: predicates };
   }
 
   if (fullTextFilter) {

@@ -1,5 +1,43 @@
 # @backstage/plugin-search-react
 
+## 1.11.10-next.1
+
+### Patch Changes
+
+- 6c8a6b1: Fixed `SearchFilter.Autocomplete` with `multiple` clearing the typed text on every keystroke once a value was selected.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 1.11.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 1.11.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-search-common@1.2.26
+
+## 1.11.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
 ## 1.11.8
 
 ### Patch Changes

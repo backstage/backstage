@@ -28,12 +28,11 @@ describe('createZodV3FilterPredicateSchema', () => {
 
   describe('valid predicates', () => {
     const predicates: FilterPredicate[] = [
-      'string',
-      '',
-      1,
       { kind: 'component', 'spec.type': 'service' },
       { 'metadata.tags': { $in: ['java'] } },
       { 'metadata.tags': { $contains: 'java' } },
+      { 'metadata.tags': { $contains: { $any: ['java', 'go'] } } },
+      { 'metadata.tags': { $contains: { $not: 'java' } } },
       {
         $all: [
           { 'metadata.tags': { $contains: 'java' } },
@@ -95,6 +94,13 @@ describe('createZodV3FilterPredicateSchema', () => {
     const predicates: Array<
       Exclude<FilterPredicate | unknown, FilterPredicate>
     > = [
+      'string',
+      '',
+      1,
+      true,
+      { $not: 'string' },
+      { $all: ['string'] },
+      { $any: [1] },
       [],
       ['foo', 'bar'],
       { kind: { 1: 'foo' } },
@@ -158,12 +164,11 @@ describe('createZodV4FilterPredicateSchema', () => {
 describe('parseFilterPredicate', () => {
   describe('valid predicates', () => {
     const predicates: FilterPredicate[] = [
-      'string',
-      '',
-      1,
       { kind: 'component', 'spec.type': 'service' },
       { 'metadata.tags': { $in: ['java'] } },
       { 'metadata.tags': { $contains: 'java' } },
+      { 'metadata.tags': { $contains: { $any: ['java', 'go'] } } },
+      { 'metadata.tags': { $contains: { $not: 'java' } } },
       {
         $all: [
           { 'metadata.tags': { $contains: 'java' } },
@@ -229,6 +234,13 @@ describe('parseFilterPredicate', () => {
     const predicates: Array<
       Exclude<FilterPredicate | unknown, FilterPredicate>
     > = [
+      'string',
+      '',
+      1,
+      true,
+      { $not: 'string' },
+      { $all: ['string'] },
+      { $any: [1] },
       [],
       ['foo', 'bar'],
       { kind: { 1: 'foo' } },
@@ -260,5 +272,17 @@ describe('parseFilterPredicate', () => {
         );
       },
     );
+
+    it('should reject deeply nested invalid predicates in linear time', () => {
+      // Overlapping recursive branches in the schema would make this take
+      // exponential time in the nesting depth
+      let predicate: unknown = null;
+      for (let i = 0; i < 30; i++) {
+        predicate = { $not: { a: { $contains: predicate } } };
+      }
+      expect(() => parseFilterPredicate(predicate)).toThrow(
+        /Invalid filter predicate/,
+      );
+    });
   });
 });

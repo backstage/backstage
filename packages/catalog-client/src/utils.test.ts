@@ -73,13 +73,22 @@ describe('convertFilterToPredicate', () => {
     });
   });
 
-  it('treats CATALOG_FILTER_EXISTS mixed with string values as just existence', () => {
+  it('lets string values take precedence over CATALOG_FILTER_EXISTS', () => {
+    // Matches the legacy query parameter, where `filter=spec.owner,spec.owner=team-a`
+    // is parsed by the backend as just `spec.owner=team-a`
     expect(
       convertFilterToPredicate({
         'spec.owner': [CATALOG_FILTER_EXISTS, 'team-a'],
       }),
     ).toEqual({
-      'spec.owner': { $exists: true },
+      'spec.owner': 'team-a',
+    });
+    expect(
+      convertFilterToPredicate({
+        'spec.owner': [CATALOG_FILTER_EXISTS, 'team-a', 'team-b'],
+      }),
+    ).toEqual({
+      'spec.owner': { $in: ['team-a', 'team-b'] },
     });
   });
 
@@ -92,6 +101,28 @@ describe('convertFilterToPredicate', () => {
   it('ignores entries with no valid values', () => {
     expect(
       convertFilterToPredicate({ kind: 'component', other: [] as string[] }),
+    ).toEqual({ kind: 'component' });
+  });
+
+  it('returns undefined for filters that do not constrain anything', () => {
+    expect(convertFilterToPredicate([])).toBeUndefined();
+    expect(convertFilterToPredicate({})).toBeUndefined();
+    expect(convertFilterToPredicate([{}, {}])).toBeUndefined();
+    expect(convertFilterToPredicate({ kind: [] as string[] })).toBeUndefined();
+  });
+
+  it('drops records without keys rather than matching everything', () => {
+    // The legacy query parameter omits empty records entirely
+    expect(
+      convertFilterToPredicate([{ kind: 'component' }, {}, { kind: 'api' }]),
+    ).toEqual({
+      $any: [{ kind: 'component' }, { kind: 'api' }],
+    });
+  });
+
+  it('ignores symbols other than CATALOG_FILTER_EXISTS', () => {
+    expect(
+      convertFilterToPredicate({ kind: [Symbol('other'), 'component'] }),
     ).toEqual({ kind: 'component' });
   });
 });

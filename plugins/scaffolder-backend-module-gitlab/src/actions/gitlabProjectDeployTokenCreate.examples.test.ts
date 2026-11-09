@@ -24,6 +24,10 @@ import { examples } from './gitlabProjectDeployTokenCreate.examples';
 const mockGitlabClient = {
   DeployTokens: {
     create: jest.fn(),
+    remove: jest.fn(),
+  },
+  ProjectVariables: {
+    create: jest.fn(),
   },
 };
 jest.mock('@gitbeaker/rest', () => ({
@@ -185,5 +189,52 @@ describe('gitlab:create-deploy-token', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
+  });
+
+  it(`Should ${examples[5].description}`, async () => {
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
+      id: 1,
+      token: 'TOKEN',
+      username: 'User',
+    });
+    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[5].example).steps[0].input,
+    });
+
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
+      'backstage-deploy-token',
+      ['read_registry'],
+      {
+        projectId: '456',
+        username: undefined,
+      },
+    );
+
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      '456',
+      'BACKSTAGE_DEPLOY_TOKEN',
+      'TOKEN',
+      {
+        variableType: 'env_var',
+        protected: true,
+        masked: true,
+        masked_and_hidden: false,
+        raw: true,
+        environmentScope: '*',
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_DEPLOY_TOKEN',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
+    expect(mockContext.output).not.toHaveBeenCalledWith(
+      'deploy_token',
+      expect.anything(),
+    );
   });
 });

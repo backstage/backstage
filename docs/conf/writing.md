@@ -42,6 +42,57 @@ are needed by the frontend, use the following command:
 yarn backstage-cli config:docs
 ```
 
+## Restricting public configuration
+
+:::note
+This feature is supported only with the default Rspack build. Legacy webpack
+builds, enabled with `LEGACY_WEBPACK_BUILD`, embed frontend configuration in the
+JavaScript bundle, which is not restricted by these allowlists.
+:::
+
+When serving a protected app with a
+[public entry point](../tutorials/enable-public-entry.md), the app backend injects
+all frontend-visible configuration into both entry points by default. To restrict
+what is initially exposed to users without an authenticated session cookie,
+configure `app.publicConfig`:
+
+```yaml
+app:
+  publicConfig:
+    allowedConfig:
+      - app.title
+      - backend.baseUrl
+      - auth.environment
+      - auth.providers
+    allowedExtensions:
+      - sign-in-page:app
+```
+
+The presence of `app.publicConfig` enables filtering. Missing or empty lists allow
+no config keys or extensions. An existing extension list is replaced with an empty
+list when no extension IDs are allowed.
+
+Allowed key paths include their descendants, except that `app.extensions` is
+always controlled exclusively by `allowedExtensions`, including when `app` or
+`app.extensions` is listed in `allowedConfig`. Extension IDs are matched exactly
+for both string entries and object entries. These IDs select extension configuration
+to expose; they do not control which extensions the public app loads. Normal
+[frontend visibility rules](./defining.md#visibility) still apply. Authenticated
+users continue to receive the full frontend-visible configuration.
+
+Filtering applies to the injected configuration payload. HTML templates still
+receive the full frontend-visible config, so titles and asset paths work even
+when their config keys are omitted from `allowedConfig`. Values explicitly
+rendered by a template remain visible in the HTML regardless of these allowlists.
+
+Do not combine `app.publicConfig` with `app.disableConfigInjection: true`.
+Filtering requires runtime configuration injection; disabling injection serves
+the configuration embedded at build time without applying these allowlists.
+
+This setting only applies when serving the enabled public entry point to
+unauthenticated users. It has no effect when that entry point is absent or
+disabled. The main entry point always receives the full frontend-visible config.
+
 ## Environment Variable Overrides
 
 Individual configuration values can be overridden using environment variables

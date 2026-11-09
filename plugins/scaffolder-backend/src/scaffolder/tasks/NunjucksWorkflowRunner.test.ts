@@ -822,6 +822,60 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
 
+    it('should convert single statement block results to native values', async () => {
+      const number = 42;
+      const text = 'hello';
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'skipped',
+            name: 'skipped',
+            action: 'output-action',
+            if: "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}",
+          },
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              number: `{% if parameters.selection %}${number}{% endif %}`,
+              text: `{% if parameters.selection %}${text}{% endif %}`,
+              mixed: '{% if parameters.selection %}mixed{% endif %} suffix',
+              interpolated:
+                '{% if parameters.selection %}${{ "1" }}{% endif %}',
+              empty: '{% if not parameters.selection %}x{% endif %}',
+              siblings:
+                '{% if parameters.selection %}1{% endif %}{% if parameters.selection %}2{% endif %}',
+              nested:
+                '{% if parameters.selection %}{% if parameters.selection %}7{% endif %}{% endif %}',
+            },
+          },
+        ],
+        output: {
+          result: '${{ steps.skipped.output.mock }}',
+        },
+        parameters: { selection: 'existing' },
+      });
+
+      const {
+        output: { result },
+      } = await runner.execute(task);
+
+      expect(result).toBeUndefined();
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            number,
+            text,
+            mixed: 'mixed suffix',
+            interpolated: '1',
+            siblings: '12',
+            nested: 7,
+          },
+        }),
+      );
+    });
+
     it('should template complex values into the action', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -1251,6 +1305,43 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('redactions', () => {
+    it('preserves public fields when an omitted secret changes object positions', async () => {
+      actionRegistry.register({
+        id: 'log-rendered-input',
+        handler: async ctx => {
+          ctx.logger.info(JSON.stringify(ctx.input));
+        },
+      });
+      const publicUrl = 'https://example.com/merge_requests/1';
+      const nestedPublicUrl = 'https://example.com/merge_requests/2';
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'test',
+              action: 'log-rendered-input',
+              input: {
+                token: '${{ secrets.token }}',
+                publicUrl,
+                nested: {
+                  token: '${{ secrets.token | upper }}',
+                  publicUrl: nestedPublicUrl,
+                },
+              },
+            },
+          ],
+        },
+        { token: 'private-test-token' },
+      );
+      await runner.execute(task);
+      const logs = JSON.stringify(fakeTaskLog.mock.calls);
+      expect(logs).toContain(publicUrl);
+      expect(logs).toContain(nestedPublicUrl);
+      expect(logs).not.toContain('private-test-token');
+      expect(logs).not.toContain('PRIVATE-TEST-TOKEN');
+    });
+
     it('should redact secrets from action errors', async () => {
       actionRegistry.register({
         id: 'fail-with-secret',

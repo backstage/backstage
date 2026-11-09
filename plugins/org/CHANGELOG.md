@@ -1,5 +1,75 @@
 # @backstage/plugin-org
 
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 1557a8c: Added a swappable `UserAvatar` component and wired org plugin surfaces to use it for user profile pictures.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-catalog-common@1.2.1
+
+## 0.8.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 1557a8c: Added a swappable `UserAvatar` component and wired org plugin surfaces to use it for user profile pictures.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.4-next.1
+  - @backstage/core-components@0.18.15-next.2
+
+## 0.7.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 0.7.9
 
 ### Patch Changes

@@ -19,7 +19,7 @@ import { GithubAppConfig, GithubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
-import { cloneDeep } from 'lodash';
+import lodash from 'lodash';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
@@ -245,7 +245,7 @@ class GithubAppManager {
   }
 
   async getInstallations(): Promise<Installations> {
-    return cloneDeep(await this.getCachedInstallations());
+    return lodash.cloneDeep(await this.getCachedInstallations());
   }
 
   private async getCachedInstallations(
@@ -261,7 +261,10 @@ class GithubAppManager {
     if (!this.pendingInstallations) {
       const pending = this.appClient
         .paginate(this.appClient.apps.listInstallations)
-        .then(data => {
+        .then(response => {
+          // GitHub has been observed to return null entries in this list,
+          // which would make every lookup against the cached list throw
+          const data = response.filter(Boolean);
           const now = DateTime.local();
           this.installationsCache = {
             data,

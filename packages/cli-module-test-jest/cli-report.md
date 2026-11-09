@@ -48,6 +48,7 @@ Options:
   --clearMocks
   --collectCoverage
   --collectCoverageFrom
+  --collectTests
   --color
   --colors
   --coverage
@@ -131,6 +132,7 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
+  --workerGracefulExitTimeout
   --workerThreads
   -b, --bail
   -c, --config

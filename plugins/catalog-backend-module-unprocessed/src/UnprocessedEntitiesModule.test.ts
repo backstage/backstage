@@ -52,6 +52,7 @@ describe('UnprocessedEntitiesModule', () => {
 
     await db.schema.createTable('final_entities', table => {
       table.string('entity_id').primary();
+      table.string('entity_ref').unique();
       table.text('final_entity').nullable();
     });
 
@@ -86,6 +87,7 @@ describe('UnprocessedEntitiesModule', () => {
 
     await db('final_entities').insert({
       entity_id: 'failed-entity',
+      entity_ref: 'component:default/failed',
       final_entity: null,
     });
 
@@ -137,9 +139,14 @@ describe('UnprocessedEntitiesModule', () => {
       expect(response.status).toBe(200);
       expect(response.body.type).toBe('pending');
       expect(response.body.entities).toHaveLength(1);
-      expect(response.body.entities[0].entity_ref).toBe(
-        'component:default/pending',
+      expect(response.body.entities[0]).toEqual(
+        expect.objectContaining({
+          entity_id: 'pending-entity',
+          entity_ref: 'component:default/pending',
+        }),
       );
+      // Columns from the joined final entity must not leak into the result.
+      expect(response.body.entities[0]).not.toHaveProperty('final_entity');
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
 
@@ -170,9 +177,13 @@ describe('UnprocessedEntitiesModule', () => {
       expect(response.status).toBe(200);
       expect(response.body.type).toBe('failed');
       expect(response.body.entities).toHaveLength(1);
-      expect(response.body.entities[0].entity_ref).toBe(
-        'component:default/failed',
+      expect(response.body.entities[0]).toEqual(
+        expect.objectContaining({
+          entity_id: 'failed-entity',
+          entity_ref: 'component:default/failed',
+        }),
       );
+      expect(response.body.entities[0]).not.toHaveProperty('final_entity');
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
 

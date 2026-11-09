@@ -92,6 +92,8 @@ const app = preparedApp.finalize();
 
 When using phased app preparation, `app/root.children` acts as the main session boundary. Conditional extensions behind that boundary are evaluated during finalization. Conditional `app/root.elements` and API branches are also deferred until finalization, while other bootstrap-visible predicates are ignored and reported as warnings.
 
+Elements in `app/root.elements` render during bootstrap, before the routes of the pages behind `app/root.children` are known. During that time `useRouteRef` from `@backstage/frontend-plugin-api` returns `undefined` for those routes, and the element re-renders with the resolved route once the app is finalized. To find out when the app is finalized in your own code, use the `AppLifecycleApi`.
+
 Utility APIs that are first materialized during bootstrap are frozen for the lifetime of that app instance. Finalization may still add new APIs and may override existing API refs that were not materialized during bootstrap, but any deferred override of an already materialized bootstrap API is ignored and reported as an app error.
 
 ## Plugin Info Resolution

@@ -140,6 +140,7 @@ Dockerize
 dockerode
 Docusaurus
 Dominik
+dirtyreload
 DOMPurify
 don'ts
 dynatrace
@@ -192,6 +193,7 @@ Hackathons
 hackathon
 haproxy
 hardcoded
+hardcodes
 hardcoding
 harness
 Helidon
@@ -260,6 +262,7 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+livereload
 liveness
 LLMs
 LocalStack
@@ -279,6 +282,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+materialx
 matchers
 md
 memcache
@@ -373,7 +377,10 @@ pipx
 plaintext
 plantuml
 Platformize
+pluggable
+Pluggable
 Podman
+polyfills
 posix
 postgres
 postpack
@@ -394,6 +401,7 @@ pseudonymized
 pubsub
 Pulumi
 pygments
+pymdown
 pymdownx
 rankdir
 readme
@@ -495,6 +503,7 @@ subfolders
 subheader
 subheaders
 subkey
+submenu
 subpage
 subpath
 subpaths
@@ -564,10 +573,12 @@ ungrouped
 unicode
 unmanaged
 unmount
+unparseable
 unregister
 unregistering
 unregisters
 unregistration
+unpatched
 unreviewed
 unstarred
 untemplated
@@ -609,7 +620,11 @@ xyz
 yaml
 Zalando
 Zhou
+zensical
+Zensical
 zod
 Zolotusky
 zoomable
 zsh
+Zensical
+zensical

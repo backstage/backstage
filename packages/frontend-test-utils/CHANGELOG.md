@@ -1,5 +1,121 @@
 # @backstage/frontend-test-utils
 
+## 0.7.0-next.1
+
+### Minor Changes
+
+- 76b1c3d: Removed the deprecated standalone mock API type exports. Use the corresponding `mockApis` helpers to create instances and derive types as follows:
+
+  | Removed type                 | Replacement type                                                     |
+  | ---------------------------- | -------------------------------------------------------------------- |
+  | `MockAlertApi`               | `ReturnType<typeof mockApis.alert>`                                  |
+  | `MockAnalyticsApi`           | `ReturnType<typeof mockApis.analytics>`                              |
+  | `MockConfigApi`              | `ReturnType<typeof mockApis.config>`                                 |
+  | `MockErrorApi`               | `ReturnType<typeof mockApis.error>`                                  |
+  | `MockFeatureFlagsApi`        | `ReturnType<typeof mockApis.featureFlags>`                           |
+  | `MockFetchApi`               | `ReturnType<typeof mockApis.fetch>`                                  |
+  | `MockPermissionApi`          | `ReturnType<typeof mockApis.permission>`                             |
+  | `MockStorageApi`             | `ReturnType<typeof mockApis.storage>`                                |
+  | `MockTranslationApi`         | `ReturnType<typeof mockApis.translation>`                            |
+  | `MockErrorApiOptions`        | `NonNullable<Parameters<typeof mockApis.error>[0]>`                  |
+  | `MockFeatureFlagsApiOptions` | `NonNullable<Parameters<typeof mockApis.featureFlags>[0]>`           |
+  | `ErrorWithContext`           | `ReturnType<ReturnType<typeof mockApis.error>['getErrors']>[number]` |
+
+  Import `mockApis` from `@backstage/frontend-test-utils`. For example, use `mockApis.analytics()` to create an analytics mock and `ReturnType<typeof mockApis.analytics>` when you need an explicit instance type. Existing calls to the helpers require no changes. Inspection methods such as `getEvents`, `getErrors`, and `getAlerts`, along with legacy alert support, remain available. `MockFetchApiOptions` remains exported for configuring `mockApis.fetch`.
+
+- 53ab1aa: **BREAKING**: `renderInTestApp`, `renderTestApp` and `createExtensionTester` now throw for every error reported while creating the test app or extension tree, including the ones a real app only logs as warnings, such as `EXTENSION_IGNORED`. Previously `renderInTestApp` and `renderTestApp` ignored these errors, so a test could pass for an app that is broken. All three helpers accept a new `isExpectedError` option to allow specific errors.
+
+  **Migration:** fix the reported error in the test setup. The error message names the code to allow if the error is expected:
+
+  ```ts
+  renderInTestApp(<MyComponent />, {
+    isExpectedError: error =>
+      error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
+      error.context.node.spec.id === 'page:my-plugin',
+  });
+  ```
+
+  A common one is `API_FACTORY_CONFLICT` from providing an API that another plugin owns, such as a `core.*` API passed in `extensions`. That override was always rejected, so remove it, or use the `apis` option to replace an API in a test.
+
+- e3d50c4: Removed the deprecated `show` and `showModal` methods from dialog test helpers, and `getIcon` from icons test helpers. Update tests to use `open` for dialogs and `icon` for icon elements.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/plugin-app@0.6.0-next.1
+  - @backstage/core-app-api@1.20.7-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-app-react@0.3.0-next.1
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 8ca78a2: **BREAKING** Updated `renderInTestApp` and `renderTestApp` to provide default API implementations that are more suitable for testing. This may break existing tests that rely on the previous defaults:
+
+  - **Toasts** are collected in memory instead of being displayed. Tests that assert on visible notifications need to provide an API implementation that forwards toasts to the UI, or assert on an explicitly supplied toast fake instead.
+  - **Storage** is isolated in memory for each test app instead of using browser `localStorage`. Tests that seed or inspect `localStorage`, or rely on storage persisting between test apps, need to supply an explicit storage implementation.
+  - **Errors** are collected without forwarding them to alerts or installing global error handlers. Error subscriptions no longer receive events from the default implementation. Tests that rely on these behaviors need an explicit error API implementation; tests can also supply a collecting error fake to assert on reported errors.
+  - **Alerts** are collected and delivered to current subscribers, but earlier alerts are no longer replayed to new subscribers. Tests that rely on replay need an explicit alert API implementation.
+  - **OAuth requests** use an in-memory coordinator with the same request coordination behavior as before.
+
+  Explicit API overrides continue to take precedence over the defaults.
+
+  Added `mockApis` helpers for all APIs in `coreApis`, including app state, dialogs, icons, OAuth requests, plugin wrappers and header actions, route resolution, swappable components, and toast notifications. Each `.mock()` helper provides typed Jest stubs without default behavior that can be registered directly with frontend test utilities.
+
+  Added functional in-memory fakes for language, lifecycle, themes, icons, OAuth requests, plugin header actions, and toast notifications. Except for lifecycle, these can be supplied explicitly through the test app's `apis` option to configure behavior and inspect state. Use `TestApiProvider` for the lifecycle fake, since test apps manage their own lifecycle.
+
+  Fixed storage fake isolation for nested buckets with the same name under different parents.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/frontend-app-api@0.16.10-next.0
+  - @backstage/plugin-app@0.5.5-next.0
+  - @backstage/plugin-app-react@0.2.9-next.0
+  - @backstage/core-app-api@1.20.7-next.0
+  - @backstage/test-utils@1.7.24-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 0.6.5
+
+### Patch Changes
+
+- 8747376: Declared the dependencies of internally bundled code so that the package works with strict `node_modules` layouts.
+- Updated dependencies
+  - @backstage/plugin-app@0.5.4
+  - @backstage/frontend-app-api@0.16.9
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/config@1.3.10
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/test-utils@1.7.23
+  - @backstage/plugin-app-react@0.2.8
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-react@0.5.6
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-app-api@1.20.6-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-app-api@0.16.9-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/test-utils@1.7.23-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/plugin-app@0.5.4-next.0
+  - @backstage/plugin-app-react@0.2.8-next.0
+
 ## 0.6.4
 
 ### Patch Changes

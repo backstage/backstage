@@ -220,4 +220,73 @@ describe('BitbucketCloudClient', () => {
     expect(results).toHaveLength(1);
     expect(results[0].name).toEqual('branch1');
   });
+
+  it('authenticates with Bearer token when token only is provided', async () => {
+    const tokenClient = BitbucketCloudClient.fromConfig({
+      host: 'bitbucket.org',
+      apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      token: 'my-bearer-token',
+    });
+
+    server.use(
+      http.get('https://api.bitbucket.org/2.0/workspaces', ({ request }) => {
+        // Assert that the request includes the Bearer authorization header
+        if (request.headers.get('authorization') !== 'Bearer my-bearer-token') {
+          return new HttpResponse(null, { status: 401 });
+        }
+
+        return HttpResponse.json({
+          values: [
+            {
+              type: 'workspace',
+              slug: 'workspace1',
+            } as Models.Workspace,
+          ],
+        });
+      }),
+    );
+
+    const pagination = tokenClient.listWorkspaces();
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].slug).toEqual('workspace1');
+  });
+
+  it('uses Basic authentication when both username and token are provided', async () => {
+    const basicClient = BitbucketCloudClient.fromConfig({
+      host: 'bitbucket.org',
+      apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      username: 'my-user',
+      token: 'my-token',
+    });
+
+    server.use(
+      http.get('https://api.bitbucket.org/2.0/workspaces', ({ request }) => {
+        const expectedAuth = `Basic ${Buffer.from('my-user:my-token').toString(
+          'base64',
+        )}`;
+        if (request.headers.get('authorization') !== expectedAuth) {
+          return new HttpResponse(null, { status: 401 });
+        }
+
+        return HttpResponse.json({
+          values: [
+            { type: 'workspace', slug: 'workspace1' } as Models.Workspace,
+          ],
+        });
+      }),
+    );
+
+    const pagination = basicClient.listWorkspaces();
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+  });
 });

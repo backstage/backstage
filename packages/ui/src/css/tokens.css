@@ -329,4 +329,16 @@
     --bui-border-success: #53db83;
     --bui-shadow: none;
   }
+
+  /*
+   * Follows `color-scheme` until a theme mode is set, so the app background
+   * matches the theme while the app loads. Browsers without light-dark()
+   * support use the light value above. The values must match the light and
+   * dark --bui-bg-app tokens above.
+   */
+  @supports (color: light-dark(#000, #fff)) {
+    :root {
+      --bui-bg-app: light-dark(#f5f5f5, #333333);
+    }
+  }
 }

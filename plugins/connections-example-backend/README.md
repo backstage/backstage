@@ -1,24 +1,30 @@
 # connections-example-backend
 
-This plugin backend was templated using the Backstage CLI. You should replace this text with a description of your plugin backend.
+This example shows how a backend plugin declares and consumes connections using
+the experimental connections service.
 
-## Installation
+**Use dummy credentials only.** The example returns the full connection, including
+its credentials, without requiring authentication. Run it locally, not in
+production.
 
-This plugin is installed via the `@backstage/plugin-connections-example-backend` package. To install it to your backend package, run the following command:
+## Run the example
 
-    # From your root directory
-    yarn --cwd packages/backend add @backstage/plugin-connections-example-backend
+Run `yarn install` from the repository root. Then enter the example package and
+run `yarn start`:
 
-Then add the plugin to your backend in `packages/backend/src/index.ts`:
+```sh
+cd plugins/connections-example-backend
+yarn start
+```
 
-    const backend = createBackend();
-    // ...
-    backend.add(import('@backstage/plugin-connections-example-backend'));
+This loads [`app-config.example.yaml`](./app-config.example.yaml), which contains
+a dummy GitLab token. Keep any credentials you add to this example fake.
 
-## Development
+In another terminal, look up the dummy connection:
 
-This plugin backend can be started in a standalone mode from directly in this
-package with `yarn start`. It is a limited setup that is most convenient when
-developing the plugin backend itself.
+```sh
+curl 'http://localhost:7007/api/connections-example-backend/find?type=gitlab&url=https%3A%2F%2Fgitlab.example.com&auth=token'
+```
 
-If you want to run the entire project, including the frontend, run `yarn start` from the root directory.
+The response includes the host and dummy token in `auth.token`. No request is
+made to GitLab.

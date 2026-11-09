@@ -18,6 +18,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { Readable } from 'node:stream';
 
 const mockDryRun = jest.fn();
 
@@ -55,70 +56,74 @@ const ctx = (args: string[]): CliCommandContext =>
 
 describe('template dry-run', () => {
   let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
+  let directory: string;
+  let templatePath: string;
+  const templateYaml = 'kind: Template\nmetadata:\n  name: my-tpl';
 
   beforeEach(() => {
     jest.clearAllMocks();
+    process.exitCode = undefined;
     stdoutSpy = jest
       .spyOn(process.stdout, 'write')
       .mockImplementation(() => true);
+    directory = mkdtempSync(join(tmpdir(), 'template-dry-run-'));
+    templatePath = join(directory, 'template.yaml');
   });
 
   afterEach(() => {
     stdoutSpy.mockRestore();
+    rmSync(directory, { recursive: true });
+    process.exitCode = undefined;
   });
 
-  it('throws when neither --template-file nor --template-ref is provided', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
+  const readOutput = () =>
+    JSON.parse(stdoutSpy.mock.calls.map(c => c[0]).join(''));
 
-    await expect(templateDryRun(ctx([]))).rejects.toThrow(
-      '--template-file or --template-ref is required',
-    );
-  });
-
-  it('reports a validation error when the template is not valid YAML', async () => {
+  it('reports a validation error and exits with 1 when the template is not valid YAML', async () => {
+    writeFileSync(templatePath, '{not: valid: yaml');
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'template-ref': '{not: valid: yaml' },
+      flags: {},
+      _: { file: templatePath },
     });
 
-    await templateDryRun(ctx([]));
+    await templateDryRun(ctx([templatePath]));
 
     expect(mockDryRun).not.toHaveBeenCalled();
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
+    const result = readOutput();
     expect(result.valid).toBe(false);
     expect(result.message).toBe('Failed to parse YAML template');
+    expect(process.exitCode).toBe(1);
   });
 
-  it('dry-runs the parsed template with default values', async () => {
+  it('dry-runs the template from a file with default values', async () => {
+    writeFileSync(templatePath, templateYaml);
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'template-ref': 'kind: Template\nmetadata:\n  name: my-tpl' },
+      flags: {},
+      _: { file: templatePath },
     });
     mockDryRun.mockResolvedValue({ steps: [], output: {}, log: [] });
 
-    await templateDryRun(ctx([]));
+    await templateDryRun(ctx([templatePath]));
 
     expect(mockDryRun).toHaveBeenCalledWith({
       template: { kind: 'Template', metadata: { name: 'my-tpl' } },
       values: {},
     });
-
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
-    expect(result).toEqual({
+    expect(readOutput()).toEqual({
       valid: true,
       message: 'Template validation successful',
       log: [],
       output: {},
       steps: [],
     });
+    expect(process.exitCode).toBeUndefined();
   });
 
-  it('passes values when provided and maps log entries', async () => {
+  it('passes repeatable values and maps log entries', async () => {
+    writeFileSync(templatePath, templateYaml);
     (mockCli as jest.Mock).mockReturnValue({
-      flags: {
-        'template-ref': 'kind: Template\nmetadata:\n  name: my-tpl',
-        value: ['name=app'],
-      },
+      flags: { value: ['name=my-app', 'owner=team-a', 'replicas=3'] },
+      _: { file: templatePath },
     });
     mockDryRun.mockResolvedValue({
       steps: [{ id: 'step-1', name: 'fetch', action: 'fetch:template' }],
@@ -126,15 +131,13 @@ describe('template dry-run', () => {
       log: [{ body: { message: 'hello', stepId: 'step-1', status: 'ok' } }],
     });
 
-    await templateDryRun(ctx([]));
+    await templateDryRun(ctx([templatePath]));
 
     expect(mockDryRun).toHaveBeenCalledWith({
       template: { kind: 'Template', metadata: { name: 'my-tpl' } },
-      values: { name: 'app' },
+      values: { name: 'my-app', owner: 'team-a', replicas: 3 },
     });
-
-    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const result = JSON.parse(output);
+    const result = readOutput();
     expect(result.log).toEqual([
       { message: 'hello', stepId: 'step-1', status: 'ok' },
     ]);
@@ -143,31 +146,41 @@ describe('template dry-run', () => {
     ]);
   });
 
-  it('reads the template from --template-file with repeatable values', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'template-dry-run-'));
-    const templatePath = join(directory, 'template.yaml');
-    writeFileSync(templatePath, 'kind: Template\nmetadata:\n  name: my-tpl');
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: {
-        'template-file': templatePath,
-        value: ['name=my-app', 'owner=team-a', 'replicas=3'],
-      },
+  it('reads the template from stdin when the file is "-"', async () => {
+    const stdin = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+    Object.defineProperty(process, 'stdin', {
+      value: Readable.from([templateYaml]),
+      configurable: true,
     });
+    (mockCli as jest.Mock).mockReturnValue({ flags: {}, _: { file: '-' } });
     mockDryRun.mockResolvedValue({ steps: [], output: {}, log: [] });
 
     try {
-      await templateDryRun(ctx(['--template-file', templatePath]));
+      await templateDryRun(ctx(['-']));
     } finally {
-      rmSync(directory, { recursive: true });
+      Object.defineProperty(process, 'stdin', stdin);
     }
 
     expect(mockDryRun).toHaveBeenCalledWith({
       template: { kind: 'Template', metadata: { name: 'my-tpl' } },
-      values: { name: 'my-app', owner: 'team-a', replicas: 3 },
+      values: {},
     });
   });
 
-  it('rejects the removed JSON --values flag during parsing', async () => {
+  it('propagates dry-run request failures', async () => {
+    writeFileSync(templatePath, templateYaml);
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { file: templatePath },
+    });
+    mockDryRun.mockRejectedValue(new Error('network error'));
+
+    await expect(templateDryRun(ctx([templatePath]))).rejects.toThrow(
+      'network error',
+    );
+  });
+
+  it('rejects the removed JSON --values flag and requires a file during parsing', async () => {
     const exitSpy = jest.spyOn(process, 'exit').mockImplementation(code => {
       throw new Error(`process.exit(${code})`);
     });
@@ -176,14 +189,7 @@ describe('template dry-run', () => {
 
     try {
       await expect(
-        templateDryRun(
-          ctx([
-            '--template-ref',
-            'kind: Template\nmetadata:\n  name: my-tpl',
-            '--values',
-            '{"name":"my-app"}',
-          ]),
-        ),
+        templateDryRun(ctx(['template.yaml', '--values', '{"name":"my-app"}'])),
       ).rejects.toThrow('process.exit(1)');
       expect(errorSpy).toHaveBeenCalledWith(
         'Error: Unknown flag: --values. (Did you mean --value?)',

@@ -51,5 +51,26 @@ export interface Config {
      * entry point instead.
      */
     disablePublicEntryPoint?: boolean;
+
+    /**
+     * Restricts frontend-visible configuration injected into the unauthenticated
+     * public entry point. If omitted, all frontend-visible configuration is included.
+     * Does not affect configuration served to authenticated users or apps without
+     * an enabled public entry point. Do not combine with disableConfigInjection.
+     */
+    publicConfig?: {
+      /**
+       * Config key paths to include. Omitted or empty means no keys are allowed.
+       * Extension configuration is controlled exclusively by allowedExtensions,
+       * even when this list includes app or app.extensions.
+       */
+      allowedConfig?: string[];
+
+      /**
+       * Exact extension IDs whose app.extensions entries are included.
+       * Omitted or empty means no extension configuration is included.
+       */
+      allowedExtensions?: string[];
+    };
   };
 }

@@ -42,6 +42,7 @@ describe('mysql', () => {
       expect(buildMysqlDatabaseConfig(createConfig(mockConnection))).toEqual({
         client: 'mysql2',
         connection: mockConnection,
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -54,6 +55,7 @@ describe('mysql', () => {
       ).toEqual({
         client: 'mysql2',
         connection: mockConnectionString,
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -71,6 +73,7 @@ describe('mysql', () => {
           ...mockConnection,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -81,7 +84,7 @@ describe('mysql', () => {
       expect(
         buildMysqlDatabaseConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
-          pool: { min: 0, max: 7 },
+          pool: { min: 2, max: 7 },
           debug: true,
         }),
       ).toEqual({
@@ -91,7 +94,7 @@ describe('mysql', () => {
           database: 'other_db',
         },
         useNullAsDefault: true,
-        pool: { min: 0, max: 7 },
+        pool: { min: 2, max: 7 },
         debug: true,
       });
     });
@@ -111,6 +114,7 @@ describe('mysql', () => {
           port: 3306,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });

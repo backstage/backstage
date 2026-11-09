@@ -15,8 +15,6 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import throttle from 'lodash/throttle';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
   Button,
@@ -45,6 +43,7 @@ import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
 import { NotificationIcon } from './NotificationIcon';
 import { NotificationDescription } from './NotificationDescription';
+import { RelativeTime } from '../RelativeTime/RelativeTime';
 
 import styles from './NotificationsTable.module.css';
 

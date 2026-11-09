@@ -21,7 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
 import { EntityInfoCard } from '@backstage/plugin-catalog-react';
-import { Avatar, Box, Flex, Text } from '@backstage/ui';
+import { Box, Flex, Text } from '@backstage/ui';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import BaseButton from '@material-ui/core/ButtonBase';
 import IconButton from '@material-ui/core/IconButton';
@@ -51,6 +51,7 @@ import { LinksGroup } from '../../Meta';
 import { useCallback, useState } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
+import { UserAvatar } from '../../../UserAvatar';
 
 /** @public */
 export type UserProfileCardClassKey =
@@ -82,14 +83,13 @@ const useStyles = makeStyles(
   { name: 'PluginOrgUserProfileCard' },
 );
 
-const CardTitle = (props: { title: string; pictureSrc?: string }) =>
+const CardTitle = (props: { entity: UserEntity; title: string }) =>
   props.title ? (
     <Flex align="center" gap="2">
-      <Avatar
+      <UserAvatar
+        entity={props.entity}
+        displayName={props.title}
         size="small"
-        purpose="decoration"
-        name={props.title}
-        src={props.pictureSrc || ''}
       />
       {props.title}
     </Flex>
@@ -135,7 +135,7 @@ export const UserProfileCard = (props: {
 
   return (
     <EntityInfoCard
-      title={<CardTitle title={displayName} pictureSrc={profile?.picture} />}
+      title={<CardTitle entity={user} title={displayName} />}
       headerActions={
         <>
           {entityMetadataEditUrl && (

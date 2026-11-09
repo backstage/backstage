@@ -1,5 +1,54 @@
 # @backstage/cli
 
+## 0.36.8-next.1
+
+### Patch Changes
+
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+  - @backstage/cli-module-build@0.1.10-next.1
+
+## 0.36.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+  - @backstage/eslint-plugin@0.3.4-next.0
+  - @backstage/cli-defaults@0.1.8-next.0
+  - @backstage/cli-module-build@0.1.10-next.0
+  - @backstage/cli-module-test-jest@0.1.8-next.0
+
+## 0.36.7
+
+### Patch Changes
+
+- 933e50e: The ESLint configuration for packages with the `common-library` role now reports named imports from `lodash`, such as `import { trimEnd } from 'lodash'`. Common libraries are published with an ESM build, and these imports cause that build to fail when imported from ESM projects in Node.js. Use `import lodash from 'lodash'` instead.
+- 36e3f24: Updated the test runner to use the latest Jest 30 releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/cli-module-test-jest@0.1.7
+  - @backstage/eslint-plugin@0.3.3
+  - @backstage/cli-module-build@0.1.9
+  - @backstage/cli-common@0.3.2
+  - @backstage/cli-defaults@0.1.7
+
+## 0.36.7-next.0
+
+### Patch Changes
+
+- 36e3f24: Updated the test runner to use the latest Jest 30 releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/cli-module-test-jest@0.1.7-next.0
+  - @backstage/cli-defaults@0.1.7-next.0
+  - @backstage/cli-module-build@0.1.9-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.36.6
 
 ### Patch Changes

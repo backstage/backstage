@@ -61,6 +61,12 @@ auth backend in the new system. Both the user and ownership references should
 always be full entity references, as opposed to shorthands like just `jane` or
 `user:jane`.
 
+When a sign-in resolver calls `ctx.issueToken`, the entity references in the
+`sub` and `ent` claims are converted to their canonical form, for example
+`User:default/Jane` becomes `user:default/jane`. Duplicate references in `ent`
+are removed. If you leave out the `ent` claim, it defaults to a list containing
+only the canonical `sub`.
+
 ## Sign-in Resolvers
 
 :::warning

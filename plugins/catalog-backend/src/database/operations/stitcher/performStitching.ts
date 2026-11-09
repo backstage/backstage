@@ -29,8 +29,13 @@ import stableStringify from 'fast-json-stable-stringify';
 import { DbFinalEntitiesRow, DbStitchQueueRow } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
+import { markDeferredStitchFailed } from './markDeferredStitchFailed';
 import { syncSearchRows } from './syncSearchRows';
+import { StitchLeaseExpiresAt } from './getDeferredStitchableEntities';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { retryOnDeadlock } from '../../util';
+
+class StitchPublicationSupersededError extends Error {}
 
 function generateStableHash(entity: Entity) {
   return createHash('sha1')
@@ -53,13 +58,14 @@ export async function performStitching(options: {
   logger: LoggerService;
   entityRef: string;
   stitchTicket: string;
+  stitchLeaseExpiresAt: StitchLeaseExpiresAt;
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
-  const { knex, logger, entityRef, stitchTicket } = options;
+  const { knex, logger, entityRef, stitchTicket, stitchLeaseExpiresAt } =
+    options;
 
-  // The stitch queue is cleaned up on ANY completion — either by deleting
-  // the entry (ticket unchanged) or bumping next_stitch_at (re-stitch
-  // requested). Exceptions are the only case where we skip cleanup, so
-  // the entity gets retried at a later time.
+  // Settle the claim on any completion, without disturbing a successor's
+  // lease. A new request during this lease becomes eligible immediately.
+  // Exceptions skip cleanup so the entity gets retried at a later time.
   let stitchResult: 'succeeded' | 'abandoned' | undefined;
 
   try {
@@ -201,73 +207,141 @@ export async function performStitching(options: {
 
     // Guard against concurrent stitchers: if our stitch_ticket no longer
     // matches stitch_queue, another worker has newer data and we should
-    // not overwrite it. On PostgreSQL and SQLite, this is done atomically
-    // via a WHERE on the upsert merge path. MySQL does not support
-    // ON CONFLICT ... DO UPDATE ... WHERE, so it uses a separate check
-    // with a negligible TOCTOU window (self-corrects on the next ~1s
-    // stitch cycle).
+    // not overwrite it. PostgreSQL guards both insert and merge in the
+    // publication statement and rechecks the captured claim after the upsert.
+    // SQLite checks inside its transaction as well
+    // as guarding the merge path. MySQL does not support
+    // ON CONFLICT ... DO UPDATE ... WHERE, so its separate check retains
+    // a best-effort TOCTOU window. Do not turn it into a queue lock here:
+    // that would introduce a new lock-order dependency during publication.
     const isMySQL = String(knex.client.config.client).includes('mysql');
+    const isPostgres = knex.client.config.client === 'pg';
 
-    if (isMySQL) {
-      const ticketValid = await knex<DbStitchQueueRow>('stitch_queue')
-        .where('entity_ref', entityRef)
-        .where('stitch_ticket', stitchTicket)
-        .first();
-      if (!ticketValid) {
-        logger.debug(
-          `Entity ${entityRef} is already stitched, skipping write.`,
-        );
-        stitchResult = 'abandoned';
-        return 'abandoned';
+    // The final_entities row and the search index rows have to land
+    // together. If the search write fails on its own, the next stitch
+    // attempt reads back the hash we just wrote and returns early as
+    // unchanged, so the entity keeps a stale search index for good. It
+    // stays readable by direct lookup and drops out of every filtered or
+    // sorted list query.
+    const writeOutcome = await retryOnDeadlock(
+      () =>
+        knex.transaction(async tx => {
+          // Recheck on every attempt: a request or reclaimed claim may have
+          // superseded this worker while its previous transaction rolled back.
+          // Do not lock the queue here; processing locks refresh state before queue.
+          if (!isPostgres) {
+            const ticketValid = await tx<DbStitchQueueRow>('stitch_queue')
+              .where('entity_ref', entityRef)
+              .where('stitch_ticket', stitchTicket)
+              .first();
+            if (!ticketValid) return 'abandoned' as const;
+          }
+          // Knex's typed insert overload excludes raw INSERT SELECT bodies.
+          let upsert = tx('final_entities')
+            .insert(
+              !isPostgres
+                ? {
+                    entity_id: entityId,
+                    entity_ref: entityRef,
+                    final_entity: JSON.stringify(entity),
+                    hash,
+                    last_updated_at: tx.fn.now(),
+                  }
+                : tx.raw(
+                    '(entity_id, entity_ref, final_entity, hash, last_updated_at) ' +
+                      'select ?, ?, ?, ?, CURRENT_TIMESTAMP ' +
+                      'where exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
+                    [
+                      entityId,
+                      entityRef,
+                      JSON.stringify(entity),
+                      hash,
+                      entityRef,
+                      stitchTicket,
+                    ],
+                  ),
+            )
+            .onConflict('entity_id')
+            .merge(['final_entity', 'hash', 'last_updated_at']);
+
+          if (!isMySQL) {
+            upsert = upsert.where(
+              tx.raw(
+                'exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
+                [entityRef, stitchTicket],
+              ),
+            );
+          }
+
+          await upsert;
+
+          // Verify the write took effect. On PostgreSQL, also recheck ownership
+          // using this statement's fresh Read Committed snapshot: the upsert's
+          // snapshot may predate a reclaim that committed while it was running.
+          // A successful upsert holds the final-row lock until commit, so a
+          // successor cannot publish past us after this check. Do not lock the
+          // queue, which would introduce a publication/deletion lock inversion.
+          if (!isMySQL) {
+            const written = await tx<DbFinalEntitiesRow>('final_entities')
+              .where('entity_id', entityId)
+              .where('hash', hash)
+              .modify(qb => {
+                if (isPostgres) {
+                  qb.whereExists(
+                    tx<DbStitchQueueRow>('stitch_queue')
+                      .select(tx.raw('1'))
+                      .where('entity_ref', entityRef)
+                      .where('stitch_ticket', stitchTicket)
+                      .where('next_stitch_at', stitchLeaseExpiresAt),
+                  );
+                }
+              })
+              .select(tx.raw('1'))
+              .first();
+            if (!written) {
+              // Returning normally would commit any stale write already made.
+              throw new StitchPublicationSupersededError();
+            }
+          }
+
+          await syncSearchRows(tx, entityId, searchEntries);
+
+          return 'changed' as const;
+        }),
+      knex,
+    ).catch(error => {
+      // Knex has rolled the publication back before rejecting the transaction.
+      // Supersession is a normal abandonment, not a failure or deadlock retry.
+      if (error instanceof StitchPublicationSupersededError) {
+        return 'abandoned' as const;
       }
+      throw error;
+    });
+
+    if (writeOutcome === 'abandoned') {
+      logger.debug(`Entity ${entityRef} is already stitched, skipping write.`);
+      stitchResult = 'abandoned';
+      return 'abandoned';
     }
-
-    let upsert = knex<DbFinalEntitiesRow>('final_entities')
-      .insert({
-        entity_id: entityId,
-        entity_ref: entityRef,
-        final_entity: JSON.stringify(entity),
-        hash,
-        last_updated_at: knex.fn.now(),
-      })
-      .onConflict('entity_id')
-      .merge(['final_entity', 'hash', 'last_updated_at']);
-
-    if (!isMySQL) {
-      upsert = upsert.where(
-        knex.raw(
-          'exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
-          [entityRef, stitchTicket],
-        ),
-      );
-    }
-
-    await upsert;
-
-    // Verify the write took effect. INSERT return values vary across
-    // database engines (row IDs vs row counts vs empty arrays), so we
-    // check the hash directly — we already know hash !== previousHash
-    // from the check above, so a mismatch means the write was blocked.
-    if (!isMySQL) {
-      const written = await knex<DbFinalEntitiesRow>('final_entities')
-        .where('entity_id', entityId)
-        .where('hash', hash)
-        .select(knex.raw('1'))
-        .first();
-      if (!written) {
-        logger.debug(
-          `Entity ${entityRef} is already stitched, skipping write.`,
-        );
-        stitchResult = 'abandoned';
-        return 'abandoned';
-      }
-    }
-
-    await syncSearchRows(knex, entityId, searchEntries);
 
     stitchResult = 'succeeded';
     return 'changed';
   } catch (error) {
+    try {
+      await markDeferredStitchFailed({
+        knex,
+        entityRef,
+        stitchTicket,
+        stitchLeaseExpiresAt,
+      });
+    } catch (recordError) {
+      // A database outage may also prevent recording the failure. Keep the
+      // queued work and report the original stitching error to the caller.
+      logger.warn(
+        `Failed to record stitch failure for ${entityRef}`,
+        recordError,
+      );
+    }
     throw error;
   } finally {
     if (stitchResult) {
@@ -275,7 +349,7 @@ export async function performStitching(options: {
         knex: knex,
         entityRef,
         stitchTicket,
-        result: stitchResult,
+        stitchLeaseExpiresAt,
       });
     }
   }

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-mcp-actions-backend",
-  "version": "0.2.2",
+  "version": "0.2.4-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "mcp-actions",
@@ -45,7 +45,7 @@
     "@modelcontextprotocol/sdk": "^1.25.2",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.1",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

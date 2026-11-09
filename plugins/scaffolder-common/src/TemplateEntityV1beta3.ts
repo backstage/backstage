@@ -169,6 +169,8 @@ export type TemplateParameterSchema = {
   steps: Array<{
     title: string;
     description?: string;
+    /** Nunjitsu condition evaluated against the current parameters. */
+    when?: string | boolean;
     schema: JsonObject;
   }>;
   formDecorators?: { id: string; input?: JsonObject }[];
@@ -184,6 +186,8 @@ export type TemplateParameterSchema = {
  * @public
  */
 export interface TemplateParametersV1beta3 extends JsonObject {
+  /** Nunjitsu condition that controls the visibility of a parameter step. */
+  when?: string | boolean;
   'backstage:permissions'?: TemplatePermissionsV1beta3;
 }
 

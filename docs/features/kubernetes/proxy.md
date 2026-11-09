@@ -5,7 +5,7 @@ sidebar_label: Proxy
 description: Interacting with the Kubernetes API in Backstage plugins
 ---
 
-[Contributors](https://backstage.io/docs/overview/glossary#backstage-user-profiles) wanting to
+[Contributors](https://backstage.io/docs/references/glossary#contributor) wanting to
 create developer portal experiences based on data from Kubernetes (e.g. for
 interacting with [Custom Resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
 beyond the default behaviors of the existing Kubernetes plugin) can leverage the

@@ -1,5 +1,43 @@
 # @backstage/plugin-events-node
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- a70aaea: The requests passed to request validators now include the parsed query string. The request rejection details now also
+  support an optional `contentType` option for the provided payload, defaulting to `application/json` but also allowing
+  `text/plain`.
+
+## 0.4.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.4.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/errors@1.3.2
+
+## 0.4.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
+## 0.4.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
 ## 0.4.26
 
 ### Patch Changes

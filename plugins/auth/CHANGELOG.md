@@ -1,5 +1,44 @@
 # @backstage/plugin-auth
 
+## 0.1.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/errors@1.3.2
+
+## 0.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/ui@0.19.0-next.0
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+
 ## 0.1.12
 
 ### Patch Changes

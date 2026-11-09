@@ -20,6 +20,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import {
@@ -2765,6 +2766,96 @@ describe.each(databases.eachSupportedId())(
             ]),
           },
         });
+      });
+
+      it('filters facets and counts with a permission style filter', async () => {
+        const catalog = await setupFacetsCatalog([
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'owned' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/a' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'unrestricted' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/b' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'readable',
+              annotations: { 'example.com/readers': 'group:default/a' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'restricted',
+              annotations: { 'example.com/readers': 'group:default/b' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Template',
+            metadata: { name: 'template' },
+            spec: {},
+          },
+        ]);
+
+        const claims = ['user:default/me', 'group:default/a'];
+        const filter: FilterPredicate = {
+          $all: [
+            {
+              $any: [
+                { 'relations.ownedBy': { $in: claims } },
+                { 'metadata.annotations.example.com/readers': { $in: claims } },
+                {
+                  $not: {
+                    'metadata.annotations.example.com/readers': {
+                      $exists: true,
+                    },
+                  },
+                },
+              ],
+            },
+            { $not: { kind: 'template' } },
+          ],
+        };
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name'],
+            filter,
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': [
+              { value: 'owned', count: 1 },
+              { value: 'readable', count: 1 },
+              { value: 'unrestricted', count: 1 },
+            ],
+          },
+        });
+
+        const response = await catalog.queryEntities({
+          filter,
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+          limit: 2,
+          credentials: mockCredentials.none(),
+        });
+        expect(response.totalItems).toBe(3);
+        expect(
+          entitiesResponseToObjects(response.items).map(e => e!.metadata.name),
+        ).toEqual(['owned', 'readable']);
       });
 
       it('filters with both filter and query combined', async () => {

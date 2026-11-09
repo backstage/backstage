@@ -1,5 +1,76 @@
 # @backstage/frontend-app-api
 
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 8c6c842: **BREAKING**: Removed the deprecated `createSpecializedApp` and `CreateSpecializedAppOptions` exports. Use `prepareSpecializedApp(options).finalize()` and `PrepareSpecializedAppOptions` instead. For sign-in or asynchronous session preparation, render the bootstrap app and subscribe with `onFinalized()` instead of calling `finalize()`.
+
+  Replace `advanced.apis` with `advanced.sessionState` from a previously finalized app to reuse its APIs, identity, and predicate context. Register custom APIs through `ApiBlueprint` extensions rather than passing an arbitrary API holder. Pass a supplied config API through the top-level `config` option. To reuse an identity supplied through the API holder, configure a sign-in page that calls `onSignInSuccess(identityApi)` and use the bootstrap/`onFinalized()` flow; an `ApiBlueprint` cannot override the app's identity proxy.
+
+### Patch Changes
+
+- d514e4d: Updated app options to use the `ExtensionFactoryMiddleware` type from `@backstage/frontend-app-api` instead of the deprecated export from `@backstage/frontend-plugin-api`. Middleware behavior is unchanged.
+- e55a4a8: Updated plugin identity handling to use `pluginId`, while preserving support for older plugin instances that only expose `id`.
+- c147b7a: Fixed disabled external route bindings falling back to their default targets during link resolution.
+
+  Navigation analytics now use the most specific routed extension even when it has no route reference, including nested extensions with an empty path.
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.5.8-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/core-app-api@1.20.7-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.16.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/frontend-defaults@0.5.8-next.0
+  - @backstage/core-app-api@1.20.7-next.0
+
+## 0.16.9
+
+### Patch Changes
+
+- 0caa896: Provided an implementation of `AppLifecycleApi` and updated the app preparation and finalization process to utilize this API.
+- 5b67e11: The permission check for extension `if` predicates during app startup now retries network failures and 5xx responses, for up to about 15 seconds, instead of failing the whole app on the first error. This helps when the frontend comes up before the permission backend, and when a request is dropped during sign-in.
+- d810cc9: Improved link resolution performance by reusing route matches for recently visited locations.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/frontend-defaults@0.5.7
+
+## 0.16.9-next.1
+
+### Patch Changes
+
+- 0caa896: Provided an implementation of `AppLifecycleApi` and updated the app preparation and finalization process to utilize this API.
+- d810cc9: Improved link resolution performance by reusing route matches for recently visited locations.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/core-app-api@1.20.6-next.1
+
+## 0.16.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-app-api@1.20.6-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-defaults@0.5.7-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+
 ## 0.16.8
 
 ### Patch Changes

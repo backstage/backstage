@@ -147,9 +147,10 @@ export type AnalyticsApi = {
  * @remarks
  *
  * To define a concrete Analytics Implementation, use
- * {@link AnalyticsImplementationBlueprint} instead.
+ * {@link @backstage/plugin-app-react#AnalyticsImplementationBlueprint}.
  *
  * @public
+ * @deprecated Use {@link coreApis.analytics} instead.
  */
 export const analyticsApiRef = createApiRef<AnalyticsApi>().with({
   id: 'core.analytics',

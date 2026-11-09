@@ -121,6 +121,34 @@ describe.each(caches.eachSupportedId())(
       await expect(plugin2a.get('a')).resolves.toBe('plugin2b');
       await expect(plugin2b.get('a')).resolves.toBe('plugin2b');
     });
+
+    it('isolates the same key across plugins when a prefix is configured', async () => {
+      const { store, connection } = await caches.init(cacheId);
+
+      const manager = CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store,
+                connection,
+                valkey: { client: { keyPrefix: 'vk:' } },
+                redis: { client: { namespace: 'rd' } },
+              },
+            },
+          },
+        }),
+      );
+
+      const pluginA = manager.forPlugin('plugin-a');
+      const pluginB = manager.forPlugin('plugin-b');
+
+      await pluginA.set('shared', 'from-a');
+      await pluginB.set('shared', 'from-b');
+
+      await expect(pluginA.get('shared')).resolves.toBe('from-a');
+      await expect(pluginB.get('shared')).resolves.toBe('from-b');
+    });
   },
 );
 
@@ -383,6 +411,7 @@ describe('CacheManager store options', () => {
     );
     expect(KeyvValkey).toHaveBeenCalledWith(expect.any(Object), {
       keyPrefix: undefined,
+      useRedisSets: false,
     });
   });
 
@@ -420,6 +449,7 @@ describe('CacheManager store options', () => {
     );
     expect(KeyvValkey).toHaveBeenCalledWith(expect.any(Object), {
       keyPrefix: 'my-app:',
+      useRedisSets: false,
     });
   });
 
@@ -444,7 +474,51 @@ describe('CacheManager store options', () => {
     expect(ValkeyCluster).not.toHaveBeenCalled();
     expect(KeyvValkey).toHaveBeenCalledWith('redis://localhost:6379', {
       keyPrefix: undefined,
+      useRedisSets: false,
     });
+  });
+
+  it('does not let client options turn redis sets back on for valkey', () => {
+    // The config schema only passes on keyPrefix, so this goes through the
+    // constructor, which accepts the full client option type
+    const storeOptions = {
+      type: 'valkey' as const,
+      client: { keyPrefix: 'my-app:', useRedisSets: true },
+    };
+
+    new CacheManager(
+      'valkey',
+      'redis://localhost:6379',
+      undefined,
+      undefined,
+      undefined,
+      storeOptions,
+    ).forPlugin('p1');
+
+    expect(ValkeyCluster).not.toHaveBeenCalled();
+    expect(KeyvValkey).toHaveBeenLastCalledWith('redis://localhost:6379', {
+      keyPrefix: 'my-app:',
+      useRedisSets: false,
+    });
+
+    new CacheManager(
+      'valkey',
+      'redis://localhost:6379',
+      undefined,
+      undefined,
+      undefined,
+      {
+        ...storeOptions,
+        cluster: { rootNodes: [{ host: 'localhost', port: 6379 }] },
+      },
+    ).forPlugin('p1');
+
+    expect(ValkeyCluster).toHaveBeenCalledTimes(1);
+    expect(KeyvValkey).toHaveBeenLastCalledWith(expect.any(Object), {
+      keyPrefix: 'my-app:',
+      useRedisSets: false,
+    });
+    expect(storeOptions.client.useRedisSets).toBe(true);
   });
 
   it('correctly applies namespace configuration to redis and valkey stores', () => {
@@ -486,10 +560,10 @@ describe('CacheManager store options', () => {
         );
       } else if (store === 'valkey') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvValkey).toHaveBeenCalledWith(
-          'redis://localhost:6379',
-          client,
-        );
+        expect(KeyvValkey).toHaveBeenCalledWith('redis://localhost:6379', {
+          ...client,
+          useRedisSets: false,
+        });
       }
     });
   });

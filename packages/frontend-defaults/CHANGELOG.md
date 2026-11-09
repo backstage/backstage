@@ -1,5 +1,49 @@
 # @backstage/frontend-defaults
 
+## 0.5.8-next.1
+
+### Patch Changes
+
+- d514e4d: Updated app options to use the `ExtensionFactoryMiddleware` type from `@backstage/frontend-app-api` instead of the deprecated export from `@backstage/frontend-plugin-api`. Middleware behavior is unchanged.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.17.0-next.1
+  - @backstage/plugin-app@0.6.0-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/frontend-app-api@0.16.10-next.0
+  - @backstage/plugin-app@0.5.5-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.4
+  - @backstage/frontend-app-api@0.16.9
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/frontend-app-api@0.16.9-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-app@0.5.4-next.0
+
 ## 0.5.6
 
 ### Patch Changes

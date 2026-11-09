@@ -38,7 +38,7 @@ We recognize that maintaining two separate theming systems is not ideal. Because
 
 ## Creating custom themes
 
-During the transition to Backstage UI, you will need to maintain themes in two places: some components and plugins still rely on MUI, while others use Backstage UI. We are working on a plugin that will make help you convert your existing MUI theme into a Backstage UI CSS file you can add to your application. We'll update this page when the plugin is available but for now you can follow progress on this PR [#31140](https://github.com/backstage/backstage/pull/31140).
+During the transition to Backstage UI, you will need to maintain themes in two places: some components and plugins still rely on MUI, while others use Backstage UI. To make this easier, the [BUI Theme Converter](#bui-theme-converter) plugin can automatically generate BUI CSS variables from your existing MUI theme, giving you a head start on your Backstage UI theme.
 
 ```tsx title="packages/app/src/App.tsx"
 /* highlight-add-start */
@@ -284,6 +284,37 @@ All Backstage UI components come with a set of CSS classes that you can use to s
 ![classname-structure](../../assets/user-interface/css-classname-structure.png)
 
 Every component has a unique prefix `.bui-` followed by the component name. Component props are represented using the `data-` attribute. That way, class names are easily identifiable.
+
+### BUI Theme Converter
+
+If you already have a custom MUI theme and want to adopt Backstage UI, the **BUI Theme Converter** plugin can help bridge the gap. It reads the MUI themes installed in your app, maps palette colors, typography, spacing, and border-radius values to the corresponding BUI CSS variables, and lets you preview the result—all without requiring a backend.
+
+The plugin detects every theme registered in your app through the `AppThemeApi` and, for each one, generates a complete set of BUI CSS custom properties derived from the MUI theme object. The generated output includes colors (background, foreground, border, and status), typography (font family and weights), spacing (when non-default), and border radius (when set to `0`).
+
+You can view the generated CSS, copy it to the clipboard, or download it as a `.css` file. A live preview tab shows common BUI components rendered with your converted theme so you can verify the result before adding it to your app.
+
+To install the plugin, add it to your app:
+
+```bash
+yarn --cwd packages/app add @backstage/plugin-mui-to-bui
+```
+
+If you are using the **new frontend system**, the plugin is automatically discovered and no additional wiring is needed. For more details and alternative installation methods, see [installing plugins](../../frontend-system/building-apps/05-installing-plugins.md).
+
+If your app uses the **old frontend system**, add a route manually:
+
+```tsx title="packages/app/src/App.tsx"
+import { BuiThemerPage } from '@backstage/plugin-mui-to-bui';
+
+// Inside your FlatRoutes:
+<Route path="/mui-to-bui" element={<BuiThemerPage />} />;
+```
+
+Once installed, start your Backstage app locally with `yarn start` and navigate to `/mui-to-bui`. The page lists every theme installed in your app. For each theme you can switch to the **Generated CSS** tab to inspect the output, switch to the **Live Preview** tab to see BUI components rendered with the converted variables, or click **Copy CSS** / **Download CSS** to export the result. Paste or import the CSS file into your app (for example as `packages/app/src/styles.css`) and import it as described in the [creating custom themes](#creating-custom-themes) section above.
+
+Light-theme variables are placed under `:root` while dark-theme variables use the `[data-theme-mode='dark']` selector, matching the convention described in [Create a theme for Backstage UI (New)](#create-a-theme-for-backstage-ui-new).
+
+The converter produces a best-effort mapping. Because MUI and BUI have different design foundations, not every MUI token has a direct BUI equivalent. After generating the CSS you should review the output and adjust values that don't look right—especially neutral background layers and hover/pressed states that MUI doesn't expose directly. Use the live preview as a starting point and refer to the full list of [CSS variables](#css-variables) for further tweaking.
 
 ## Create a theme for MUI (Legacy)
 

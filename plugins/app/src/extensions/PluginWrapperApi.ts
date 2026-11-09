@@ -39,7 +39,7 @@ export const PluginWrapperApi = ApiBlueprint.makeWithOverrides({
           return DefaultPluginWrapperApi.fromWrappers(
             inputs.wrappers.map(wrapperInput => ({
               loader: wrapperInput.get(PluginWrapperBlueprint.dataRefs.wrapper),
-              pluginId: wrapperInput.node.spec.plugin.id ?? 'app',
+              pluginId: wrapperInput.node.spec.plugin.pluginId ?? 'app',
             })),
           );
         },

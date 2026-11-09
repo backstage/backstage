@@ -80,8 +80,9 @@ describe('livereload helpers', () => {
       proxyHtmlWithLivereloadInjection({
         request: req,
         response: res,
-        mkdocsTargetAddress: 'http://localhost:8000',
+        targetAddress: 'http://localhost:8000',
         proxyEndpoint: '/api/techdocs/',
+        transformHtml: injectLivereloadParameters,
         onError: () => {},
       });
 
@@ -128,8 +129,9 @@ describe('livereload helpers', () => {
       proxyHtmlWithLivereloadInjection({
         request: req,
         response: res,
-        mkdocsTargetAddress: 'http://localhost:8000',
+        targetAddress: 'http://localhost:8000',
         proxyEndpoint: '/api/techdocs/',
+        transformHtml: injectLivereloadParameters,
         onError: () => {},
       });
 

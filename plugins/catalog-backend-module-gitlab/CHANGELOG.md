@@ -1,5 +1,65 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.1
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.8.10-next.0
+
+### Patch Changes
+
+- ca14116: Moved `@gitbeaker/rest` to dev dependencies, since it is only used for types.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.8.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+
+## 0.8.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-defaults@0.18.1-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
+## 0.8.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-defaults@0.18.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 0.8.8
 
 ### Patch Changes

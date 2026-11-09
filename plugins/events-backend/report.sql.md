@@ -19,8 +19,9 @@
 
 ### Indices
 
+- `event_bus_events_created_at_id_idx` (`created_at`, `id`)
 - `event_bus_events_pkey` (`id`) unique primary
-- `event_bus_events_topic_idx` (`topic`)
+- `event_bus_events_topic_id_idx` (`topic`, `id`)
 
 ## Table `event_bus_subscriptions`
 

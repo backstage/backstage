@@ -18,7 +18,7 @@ import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import type { FilterPredicate } from '@backstage/filter-predicates';
 import { createCatalogClient } from '../lib/catalogClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 import { parseEntityRef } from '../lib/input';
 
@@ -26,40 +26,39 @@ export default async ({ args, info }: CliCommandContext) => {
   const parsed = cli(
     {
       name: info.usage,
-      parameters: ['[ref]'],
+      strictFlags: true,
+      parameters: ['<ref>'],
       flags: {
-        name: { type: String, description: 'Entity name alias' },
         kind: {
           type: String,
-          description: 'Entity kind for a short reference',
+          description:
+            'Kind to use when the entity reference does not include one',
         },
         namespace: {
           type: String,
-          description: 'Entity namespace for a short reference',
+          description:
+            'Namespace to use when the entity reference does not include one',
         },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
+        ...instanceFlag,
       },
     },
     undefined,
     args,
   );
   const { flags } = parsed;
-  const ref = parsed._?.ref ?? flags.name;
-
-  if (!ref) {
-    throw new Error(
-      'Entity reference or --name is required. Usage: catalog get [kind:][namespace/]name',
-    );
-  }
+  const ref = parsed._.ref;
 
   const entityRef = parseEntityRef(ref);
+  if (flags.kind && entityRef.kind) {
+    throw new Error(
+      `--kind ${flags.kind} conflicts with the kind "${entityRef.kind}" in the reference "${ref}"`,
+    );
+  }
+  if (flags.namespace && entityRef.namespace) {
+    throw new Error(
+      `--namespace ${flags.namespace} conflicts with the namespace "${entityRef.namespace}" in the reference "${ref}"`,
+    );
+  }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);

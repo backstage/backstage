@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react';
+import { render, renderHook, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import {
   appTreeApiRef,
   iconsApiRef,
-  AppTreeApi,
   IconsApi,
+  AppTreeApi,
   AppTree,
   AppNode,
 } from '@backstage/frontend-plugin-api';
@@ -48,12 +48,9 @@ describe('useApp', () => {
   });
 
   describe('new system', () => {
-    const mockIcon = () => null;
+    const mockIcon = <svg aria-label="Test icon" />;
     const mockIconsApi: IconsApi = {
       icon: jest.fn((key: string) =>
-        key === 'test-icon' ? mockIcon() : undefined,
-      ),
-      getIcon: jest.fn((key: string) =>
         key === 'test-icon' ? mockIcon : undefined,
       ),
       listIconKeys: jest.fn(() => ['test-icon']),
@@ -105,8 +102,15 @@ describe('useApp', () => {
       expect(appContext).toBeDefined();
       expect(appContext.getPlugins()).toHaveLength(1);
       expect(appContext.getPlugins()[0].getId()).toBe('test-plugin');
-      expect(appContext.getSystemIcon('test-icon')).toBe(mockIcon);
-      expect(appContext.getSystemIcons()).toEqual({ 'test-icon': mockIcon });
+      const Icon = appContext.getSystemIcon('test-icon')!;
+      expect(appContext.getSystemIcon('missing')).toBeUndefined();
+      expect(appContext.getSystemIcons()).toEqual({ 'test-icon': Icon });
+      render(<Icon fontSize="small" />);
+      expect(screen.getByLabelText('Test icon')).toHaveStyle({
+        fontSize: '1.25rem',
+      });
+      renderedHook.rerender();
+      expect(renderedHook.result.current.getSystemIcon('test-icon')).toBe(Icon);
       expect(appContext.getComponents().Progress).toBeDefined();
       expect(appContext.getComponents().NotFoundErrorPage).toBeDefined();
     });

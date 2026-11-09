@@ -247,6 +247,11 @@ their existing integrations while plugins migrate to the connection service.
 The conversion does not rewrite `app-config.yaml`. It only determines which
 connections the running backend loads.
 
+Conversion is one-way: existing integration APIs do not read `connections`
+configuration. Before removing legacy configuration, check that every plugin
+using it has adopted the connections service. Plugins that still use integration
+APIs need their existing configuration.
+
 ### Migrate one type at a time
 
 Legacy and explicit entries can be used together when they have different

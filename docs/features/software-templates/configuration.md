@@ -303,6 +303,52 @@ app:
                 $contains: wip
 ```
 
+### Filtering templates for the signed-in user
+
+Use `ScaffolderTemplateFilterBlueprint` when the filter depends on the current
+viewer or other frontend APIs. Its `useTemplateFilter` parameter is a React
+hook that returns the predicate applied to every template.
+
+For example, the following module only shows templates tagged `owner-only` to
+users whose ownership claims match the template's `ownedBy` relation:
+
+```tsx title="packages/app/src/modules/scaffolderOwnerFilter.tsx"
+import { useCallback } from 'react';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { useEntityOwnership } from '@backstage/plugin-catalog-react';
+import { ScaffolderTemplateFilterBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+
+const ownerFilter = ScaffolderTemplateFilterBlueprint.make({
+  name: 'owner-filter',
+  params: {
+    useTemplateFilter() {
+      const { loading, isOwnedEntity } = useEntityOwnership();
+
+      return useCallback(
+        template =>
+          !template.metadata.tags?.includes('owner-only') ||
+          (!loading && isOwnedEntity(template)),
+        [loading, isOwnedEntity],
+      );
+    },
+  },
+});
+
+export default createFrontendModule({
+  pluginId: 'scaffolder',
+  extensions: [ownerFilter],
+});
+```
+
+The hook can also query the catalog to implement organization-specific group
+hierarchy rules. If both this extension and the `templateFilter` config field
+are present, a template must pass both filters. Only one
+`ScaffolderTemplateFilterBlueprint` extension can be attached to the templates
+page.
+
+This filter only changes which cards are displayed. Use the permission
+framework when templates or their actions need access control.
+
 ### Replacing the default `TemplateCard`
 
 The `TemplateCard` exported from `@backstage/plugin-scaffolder-react/alpha`
@@ -339,3 +385,32 @@ binding the template to `onSelected`, so the card just calls
 `props.onSelected?.()` to choose itself. The example app under
 `packages/app/src/modules/BuiTemplateCard.tsx` shows a Backstage UI (BUI)
 implementation you can use as a starting point.
+
+## Featuring templates on the homepage (requires the new frontend system)
+
+The scaffolder plugin provides a homepage widget that promotes a curated set of templates.
+It shows templates tagged with a configurable catalog tag (`featured` by default) as a row of template cards,
+and uses the same swappable `TemplateCard` as the templates page.
+
+Add the tag to the templates you want to promote:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nodejs-service
+  title: Node.js Service
+  tags:
+    - featured
+```
+
+This widget can be configured in `app-config.yaml`:
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:scaffolder/featured-templates:
+        config:
+          title: Golden Paths
+          tag: golden-path
+```

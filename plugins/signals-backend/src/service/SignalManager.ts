@@ -16,7 +16,6 @@
 
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
-import crypto from 'node:crypto';
 import { RawData, WebSocket } from 'ws';
 import { randomUUID as uuid } from 'node:crypto';
 import { JsonObject } from '@backstage/types';
@@ -24,6 +23,7 @@ import {
   BackstageUserInfo,
   LifecycleService,
   LoggerService,
+  RootInstanceMetadataService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
@@ -47,6 +47,7 @@ export type SignalManagerOptions = {
   config: Config;
   logger: LoggerService;
   lifecycle: LifecycleService;
+  instanceMetadata: RootInstanceMetadataService;
 };
 
 /** @internal */
@@ -69,7 +70,7 @@ export class SignalManager {
     // Use a unique subscriber ID for each signals instance, in order to fan-out
     // all events to each signals instance. This ensures that events always
     // reach users in a scaled deployment.
-    const id = `signals-${crypto.randomBytes(8).toString('hex')}`;
+    const id = options.instanceMetadata.getId();
     this.logger = options.logger.child({ subscriberId: id });
     this.logger.info(`Signals manager is subscribing to signals events`);
 
@@ -109,7 +110,7 @@ export class SignalManager {
     this.connections.clear();
   }
 
-  addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
+  addConnection(ws: WebSocket, identity: BackstageUserInfo) {
     // Start pinging on first connection
     if (!this.pingInterval) {
       this.pingInterval = setInterval(() => this.ping(), 30000);
@@ -118,11 +119,9 @@ export class SignalManager {
     const id = uuid();
     const conn = {
       id,
-      user: identity?.userEntityRef ?? 'user:default/guest',
+      user: identity.userEntityRef,
       ws,
-      ownershipEntityRefs: identity?.ownershipEntityRefs ?? [
-        'user:default/guest',
-      ],
+      ownershipEntityRefs: identity.ownershipEntityRefs,
       subscriptions: new Set<string>(),
       isAlive: true,
     };

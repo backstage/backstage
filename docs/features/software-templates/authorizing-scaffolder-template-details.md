@@ -231,6 +231,12 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder. You can configure policies to restrict access to tasks to only their creators, while also granting specific users the permission to view all tasks.
 
+Backend modules can add custom rules for the `scaffolder-task` resource through
+`coreServices.permissionsRegistry.addPermissionRules`. These rules are evaluated
+for individual task access and task list filtering. Registering a rule does not
+grant access - the permission policy must return a condition using that rule.
+Read and cancellation permissions remain separate.
+
 The following is a simple example of how to do this:
 
 ```ts title="packages/src/backend/plugins/permissions.ts"

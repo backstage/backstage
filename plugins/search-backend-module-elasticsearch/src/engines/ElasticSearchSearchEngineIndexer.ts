@@ -48,6 +48,7 @@ function duration(startTimestamp: [number, number]): string {
  */
 export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private processed: number = 0;
+  private hasExistingIndices: boolean = false;
   private removableIndices: string[] = [];
 
   private readonly startTimestamp: [number, number];
@@ -114,7 +115,15 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
       index: this.constructIndexName('*'),
     });
 
-    for (const key of Object.keys(indices.body)) {
+    for (const [key, details] of Object.entries(
+      indices.body as Record<string, { aliases?: Record<string, unknown> }>,
+    )) {
+      this.hasExistingIndices = true;
+      // Keep the index currently behind the alias so that in-flight queries
+      // can complete; it will be removed by the next indexing run instead.
+      if (details?.aliases?.[this.alias]) {
+        continue;
+      }
       this.removableIndices.push(key);
     }
 
@@ -146,7 +155,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     if (this.processed === 0) {
       this.logger.warn(
         `Index for ${this.indexName} of ${this.type} was not ${
-          this.removableIndices.length ? 'replaced' : 'created'
+          this.hasExistingIndices ? 'replaced' : 'created'
         }: indexer received 0 documents`,
       );
       try {

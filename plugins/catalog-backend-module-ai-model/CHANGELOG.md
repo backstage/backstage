@@ -1,5 +1,47 @@
 # @backstage/plugin-catalog-backend-module-ai-model
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- f74cd6a: Document how to declare relation pairs for custom kinds when using the catalog model layer.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+
 ## 0.1.4
 
 ### Patch Changes

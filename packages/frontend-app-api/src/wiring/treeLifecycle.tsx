@@ -21,11 +21,11 @@ import {
   AppTree,
   coreExtensionData,
   ExtensionDataRef,
-  ExtensionFactoryMiddleware,
 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { ErrorCollector } from './createErrorCollector';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   AppTreeApiProxy,
   instantiateAndInitializePhaseTree,

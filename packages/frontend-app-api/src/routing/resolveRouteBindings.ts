@@ -81,8 +81,11 @@ export function resolveRouteBindings(
   config: Config,
   routesById: RouteRefsById,
   collector: ErrorCollector,
-): Map<ExternalRouteRef, RouteRef | SubRouteRef> {
-  const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
+): Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined> {
+  const result = new Map<
+    ExternalRouteRef,
+    RouteRef | SubRouteRef | undefined
+  >();
   const disabledExternalRefs = new Set<ExternalRouteRef>();
 
   // Perform callback bindings first with highest priority
@@ -175,6 +178,12 @@ export function resolveRouteBindings(
     }
   }
 
+  // Preserve disabled bindings so resolution cannot restore their defaults.
+  for (const ref of disabledExternalRefs) {
+    if (!result.has(ref)) {
+      result.set(ref, undefined);
+    }
+  }
   return result;
 }
 

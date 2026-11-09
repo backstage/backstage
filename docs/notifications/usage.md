@@ -31,6 +31,10 @@ The `NotificationsSidebarItem` component can be used as an active left-side menu
 
 You can customize the sidebar item using its [properties](https://backstage.io/api/stable/functions/_backstage_plugin-notifications.index.NotificationsSidebarItem.html) to fit your specific needs.
 
+Read and saved statuses are independent for each user, including for broadcast
+notifications. Marking a notification as read or unread preserves its saved
+status. Changing a notification's saved status preserves its read status.
+
 ## Usage
 
 New notifications can be sent either by a backend plugin or by an external service through the REST API.
