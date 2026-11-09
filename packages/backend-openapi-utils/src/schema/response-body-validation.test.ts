@@ -70,7 +70,7 @@ describe('response body', () => {
         {
           path: '/body/result',
           message: 'must NOT have additional properties',
-          code: 'additionalProperties.openapi.validation',
+          code: 'unrecognized_keys',
         },
       ],
     });

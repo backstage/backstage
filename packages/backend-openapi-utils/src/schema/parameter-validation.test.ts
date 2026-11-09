@@ -101,7 +101,7 @@ describe('query parameters', () => {
             {
               path: '/query/param',
               message: 'must be number',
-              code: 'type.openapi.validation',
+              code: 'invalid_type',
             },
           ],
         });

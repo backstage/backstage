@@ -15,6 +15,64 @@
  */
 
 /**
+ * The closed list of codes that a {@link ValidationIssue} can have.
+ *
+ * @remarks
+ *
+ * The names follow the issue codes of zod v4, regardless of which validator
+ * reported the failure:
+ *
+ * - `invalid_type`: the value has the wrong type, or is missing.
+ * - `too_small`: a number, string, array or object is below its minimum.
+ * - `too_big`: a number, string, array or object is above its maximum.
+ * - `invalid_format`: a string does not match its format or pattern.
+ * - `invalid_value`: the value is not one of the allowed values.
+ * - `not_multiple_of`: a number is not a multiple of the required step.
+ * - `unrecognized_keys`: an object has properties that are not allowed.
+ * - `invalid_union`: the value matches none, or too many, of the alternatives.
+ * - `custom`: any other failure.
+ *
+ * @public
+ */
+export type ValidationIssueCode =
+  | 'invalid_type'
+  | 'too_small'
+  | 'too_big'
+  | 'invalid_format'
+  | 'invalid_value'
+  | 'not_multiple_of'
+  | 'unrecognized_keys'
+  | 'invalid_union'
+  | 'custom';
+
+/**
+ * Maps the issue codes of zod v3 and v4 onto {@link ValidationIssueCode}.
+ * Codes that are not listed, including those of other zod versions, become
+ * `custom`.
+ */
+const ZOD_CODES: Record<string, ValidationIssueCode> = {
+  invalid_type: 'invalid_type',
+  too_small: 'too_small',
+  too_big: 'too_big',
+  invalid_format: 'invalid_format',
+  invalid_value: 'invalid_value',
+  not_multiple_of: 'not_multiple_of',
+  unrecognized_keys: 'unrecognized_keys',
+  invalid_union: 'invalid_union',
+  custom: 'custom',
+  // zod v3 codes that were renamed in v4
+  invalid_string: 'invalid_format',
+  invalid_enum_value: 'invalid_value',
+  invalid_literal: 'invalid_value',
+  invalid_date: 'invalid_type',
+  invalid_union_discriminator: 'invalid_union',
+  invalid_arguments: 'invalid_type',
+  invalid_return_type: 'invalid_type',
+  not_finite: 'invalid_type',
+  invalid_intersection_types: 'custom',
+};
+
+/**
  * A single validation failure for one value in a request.
  *
  * The member names follow zod issues, except that `path` is always a JSON
@@ -31,8 +89,11 @@ export type ValidationIssue = {
   path: string;
   /** A human readable explanation of why the value is invalid. */
   message: string;
-  /** A machine readable code for the failure, such as `invalid_type`. */
-  code?: string;
+  /**
+   * A machine readable code for the failure, from a closed list that follows
+   * the issue codes of zod v4. See {@link ValidationIssueCode}.
+   */
+  code?: ValidationIssueCode;
 };
 
 /**
@@ -60,7 +121,8 @@ function toJsonPointer(
  * @remarks
  *
  * The error is matched by its shape, so both zod v3 and zod v4 errors are
- * supported without depending on zod directly.
+ * supported without depending on zod directly. Issue codes are converted to
+ * the zod v4 names, and codes without a v4 equivalent become `custom`.
  *
  * @public
  * @param error - A zod error, or any object with a matching `issues` array.
@@ -85,7 +147,7 @@ export function validationIssuesFromZod(
       message: issue.message,
     };
     if (issue.code !== undefined) {
-      item.code = issue.code;
+      item.code = ZOD_CODES[issue.code] ?? 'custom';
     }
     return item;
   });

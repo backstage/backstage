@@ -131,7 +131,7 @@ describe('createRouter', () => {
       {
         path: '/body/name',
         message: "must have required property 'name'",
-        code: 'required.openapi.validation',
+        code: 'invalid_type',
       },
     ]);
 
@@ -143,7 +143,7 @@ describe('createRouter', () => {
       {
         path: '/body/count',
         message: 'must be integer',
-        code: 'type.openapi.validation',
+        code: 'invalid_type',
       },
     ]);
 
@@ -155,7 +155,7 @@ describe('createRouter', () => {
       {
         path: '/body/a~1b',
         message: 'must NOT have additional properties',
-        code: 'additionalProperties.openapi.validation',
+        code: 'unrecognized_keys',
       },
     ]);
 
@@ -164,7 +164,11 @@ describe('createRouter', () => {
       .send({ name: 'thing' });
     expect(unknownQuery.status).toBe(400);
     expect(unknownQuery.body.error.issues).toEqual([
-      { path: '/query/a~1b', message: "Unknown query parameter 'a/b'" },
+      {
+        path: '/query/a~1b',
+        message: "Unknown query parameter 'a/b'",
+        code: 'custom',
+      },
     ]);
 
     const malformed = await request(app)

@@ -30,5 +30,5 @@ export {
 export { CustomErrorBase } from './CustomErrorBase';
 export { ResponseError } from './ResponseError';
 export { validationIssuesFromZod } from './validation';
-export type { ValidationIssue } from './validation';
+export type { ValidationIssue, ValidationIssueCode } from './validation';
 export type { ConsumedResponse } from './types';

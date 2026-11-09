@@ -32,7 +32,21 @@ export interface ValidationIssue {
    */
   message: string;
   /**
-   * A machine readable code for the failure.
+   * A machine readable code for the failure. The codes follow the issue codes of zod v4.
    */
-  code?: string;
+  code?: ValidationIssueCodeEnum;
 }
+
+/**
+ * @public
+ */
+export type ValidationIssueCodeEnum =
+  | 'invalid_type'
+  | 'too_small'
+  | 'too_big'
+  | 'invalid_format'
+  | 'invalid_value'
+  | 'not_multiple_of'
+  | 'unrecognized_keys'
+  | 'invalid_union'
+  | 'custom';

@@ -76,7 +76,7 @@ describe('request body', () => {
         {
           path: '/body/query',
           message: 'must be string',
-          code: 'type.openapi.validation',
+          code: 'invalid_type',
         },
       ],
     });

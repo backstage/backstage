@@ -16,7 +16,7 @@
 
 import { deserializeError, serializeError } from '../serialization';
 import { InputError } from './common';
-import { validationIssuesFromZod } from './validation';
+import { validationIssuesFromZod, ValidationIssue } from './validation';
 
 describe('validationIssuesFromZod', () => {
   it('converts zod issues into validation issues', () => {
@@ -53,10 +53,46 @@ describe('validationIssuesFromZod', () => {
   });
 });
 
+describe('validationIssuesFromZod codes', () => {
+  it('maps zod v3 and unknown codes onto the zod v4 names', () => {
+    const codes = [
+      'invalid_string',
+      'invalid_enum_value',
+      'invalid_literal',
+      'invalid_date',
+      'invalid_union_discriminator',
+      'invalid_intersection_types',
+      'not_finite',
+      'too_small',
+      'invalid_format',
+      'something_new',
+    ];
+    const issues = validationIssuesFromZod({
+      issues: codes.map(code => ({ code, path: [], message: 'm' })),
+    });
+    expect(issues.map(i => i.code)).toEqual([
+      'invalid_format',
+      'invalid_value',
+      'invalid_value',
+      'invalid_type',
+      'invalid_union',
+      'custom',
+      'invalid_type',
+      'too_small',
+      'invalid_format',
+      'custom',
+    ]);
+  });
+});
+
 describe('InputError validation issues', () => {
   it('keeps validation issues through serialization', () => {
-    const issues = [
-      { path: '/body/location', message: 'must be string', code: 'type' },
+    const issues: ValidationIssue[] = [
+      {
+        path: '/body/location',
+        message: 'must be string',
+        code: 'invalid_type',
+      },
     ];
     const error = new InputError('Invalid request', undefined, { issues });
 

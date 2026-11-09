@@ -174,8 +174,20 @@ export function toError(value: unknown): ErrorLike;
 export type ValidationIssue = {
   path: string;
   message: string;
-  code?: string;
+  code?: ValidationIssueCode;
 };
+
+// @public
+export type ValidationIssueCode =
+  | 'invalid_type'
+  | 'too_small'
+  | 'too_big'
+  | 'invalid_format'
+  | 'invalid_value'
+  | 'not_multiple_of'
+  | 'unrecognized_keys'
+  | 'invalid_union'
+  | 'custom';
 
 // @public
 export function validationIssuesFromZod(

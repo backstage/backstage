@@ -14,10 +14,45 @@
  * limitations under the License.
  */
 
-import type { ValidationIssue } from '@backstage/errors';
+import type { ValidationIssue, ValidationIssueCode } from '@backstage/errors';
 import type { ErrorObject } from 'ajv';
 
 const OPENAPI_VALIDATION_CODE_SUFFIX = '.openapi.validation';
+
+/**
+ * Maps ajv keywords onto the zod v4 issue codes. A missing required property
+ * is `invalid_type`, the same as in zod. Keywords that are not listed are
+ * `custom`.
+ */
+const KEYWORD_CODES: Record<string, ValidationIssueCode> = {
+  type: 'invalid_type',
+  required: 'invalid_type',
+  minLength: 'too_small',
+  minItems: 'too_small',
+  minimum: 'too_small',
+  exclusiveMinimum: 'too_small',
+  minProperties: 'too_small',
+  maxLength: 'too_big',
+  maxItems: 'too_big',
+  maximum: 'too_big',
+  exclusiveMaximum: 'too_big',
+  maxProperties: 'too_big',
+  format: 'invalid_format',
+  pattern: 'invalid_format',
+  enum: 'invalid_value',
+  const: 'invalid_value',
+  multipleOf: 'not_multiple_of',
+  additionalProperties: 'unrecognized_keys',
+  unevaluatedProperties: 'unrecognized_keys',
+  oneOf: 'invalid_union',
+  anyOf: 'invalid_union',
+};
+
+function codeFromKeyword(keyword: string): ValidationIssueCode {
+  return Object.prototype.hasOwnProperty.call(KEYWORD_CODES, keyword)
+    ? KEYWORD_CODES[keyword]
+    : 'custom';
+}
 
 /**
  * The keywords whose ajv errors point at the parent object, with the name of
@@ -69,7 +104,7 @@ export function validationIssuesFromAjv(
     return {
       path,
       message: error.message ?? `must pass "${error.keyword}" validation`,
-      code: `${error.keyword}${OPENAPI_VALIDATION_CODE_SUFFIX}`,
+      code: codeFromKeyword(error.keyword),
     };
   });
 }
@@ -172,14 +207,19 @@ export function validationIssuesFromValidatorError(
   return items.map(item => {
     const rawPath = typeof item?.path === 'string' ? item.path : '';
     const message = String(item?.message ?? '');
-    const code =
+    const errorCode: string | undefined =
       typeof item?.errorCode === 'string' ? item.errorCode : undefined;
 
     let path: string;
-    if (code?.endsWith(OPENAPI_VALIDATION_CODE_SUFFIX)) {
+    let code: ValidationIssueCode = 'custom';
+    if (errorCode?.endsWith(OPENAPI_VALIDATION_CODE_SUFFIX)) {
       // Schema validation errors from ajv, which are rooted at the request
       // data, for example `/body/location`.
-      const keyword = code.slice(0, -OPENAPI_VALIDATION_CODE_SUFFIX.length);
+      const keyword = errorCode.slice(
+        0,
+        -OPENAPI_VALIDATION_CODE_SUFFIX.length,
+      );
+      code = codeFromKeyword(keyword);
       path = PROPERTY_PARAMS[keyword]
         ? fixPropertyPath(rawPath, keyword, message, data)
         : rawPath;
@@ -190,14 +230,10 @@ export function validationIssuesFromValidatorError(
     } else {
       // Other errors, such as an unsupported media type, carry the URL path
       // of the request rather than a location in it, so they refer to the
-      // request as a whole.
+      // request as a whole. They are not schema failures, so they are `custom`.
       path = '';
     }
 
-    const issue: ValidationIssue = { path, message };
-    if (code !== undefined) {
-      issue.code = code;
-    }
-    return issue;
+    return { path, message, code };
   });
 }
