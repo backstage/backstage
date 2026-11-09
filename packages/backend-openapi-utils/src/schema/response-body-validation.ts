@@ -21,7 +21,7 @@ import {
   OperationParsingResponseError,
   OperationResponseError,
 } from './errors';
-import Ajv from 'ajv';
+import { SchemaCompiler } from './schema-compiler';
 import { OperationObject, ResponseObject } from 'openapi3-ts';
 
 class DisabledResponseBodyParser
@@ -47,7 +47,7 @@ export class ResponseBodyParser
   implements ResponseParser<JsonObject | undefined>
 {
   operation: Operation;
-  ajv: Ajv;
+  compiler: SchemaCompiler;
 
   static fromOperation(operation: Operation, options: ParserOptions) {
     return operation.schema.responses &&
@@ -58,7 +58,7 @@ export class ResponseBodyParser
 
   constructor(operation: Operation, options: ParserOptions) {
     this.operation = operation;
-    this.ajv = options.ajv;
+    this.compiler = options.compiler;
     const responseSchemas = operation.schema.responses;
     for (const [statusCode, schema] of Object.entries(responseSchemas)) {
       const contentTypes = schema.content;
@@ -73,11 +73,6 @@ export class ResponseBodyParser
         throw new OperationError(
           this.operation,
           `No application/json content type found in response for status code ${statusCode}`,
-        );
-      } else if ('$ref' in contentTypes[jsonContentType].schema) {
-        throw new OperationError(
-          this.operation,
-          'Reference objects are not supported',
         );
       }
     }
@@ -125,34 +120,28 @@ export class ResponseBodyParser
     if (!schema) {
       throw new OperationError(this.operation, 'No schema found in response');
     }
-    if ('$ref' in schema) {
-      throw new OperationResponseError(
-        this.operation,
-        response,
-        'Reference objects are not supported',
-      );
-    }
 
-    if (!schema.required && !body?.length) {
+    const required = '$ref' in schema ? undefined : schema.required;
+    if (!required && !body?.length) {
       throw new OperationResponseError(
         this.operation,
         response,
         'Response body is required but missing',
       );
-    } else if (!schema.required && !body?.length) {
+    } else if (!required && !body?.length) {
       // If there is no content in the response schema and no body in the response, then the response is valid
       return undefined;
     }
 
-    const validate = this.ajv.compile(schema);
+    const validator = this.compiler.compile(schema);
     const jsonBody = (await response.json()) as JsonObject;
-    const valid = validate(jsonBody);
-    if (!valid) {
+    const result = validator.safeParse(jsonBody, { reportInput: true });
+    if (!result.success) {
       throw new OperationParsingResponseError(
         this.operation,
         response,
         'Response body',
-        validate.errors!,
+        result.error.issues,
       );
     }
     return jsonBody;

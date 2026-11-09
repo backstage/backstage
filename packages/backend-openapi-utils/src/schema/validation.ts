@@ -15,7 +15,6 @@
  */
 import { CompletedRequest, CompletedResponse } from 'mockttp';
 import { OpenAPIObject, OperationObject } from 'openapi3-ts';
-import Ajv from 'ajv';
 import Parser from '@apidevtools/swagger-parser';
 import { Operation, Validator, ValidatorParams } from './types';
 import { ParameterValidator } from './parameter-validation';
@@ -23,13 +22,14 @@ import { OperationError } from './errors';
 import { RequestBodyParser } from './request-body-validation';
 import { mockttpToFetchRequest, mockttpToFetchResponse } from './utils';
 import { ResponseBodyParser } from './response-body-validation';
-
-const ajv = new Ajv({ allErrors: true });
+import { SchemaCompiler } from './schema-compiler';
 
 class RequestBodyValidator implements Validator {
   schema: OpenAPIObject;
-  constructor(schema: OpenAPIObject) {
+  compiler: SchemaCompiler;
+  constructor(schema: OpenAPIObject, compiler: SchemaCompiler) {
     this.schema = schema;
+    this.compiler = compiler;
   }
 
   async validate({ pair, operation }: ValidatorParams) {
@@ -40,7 +40,9 @@ class RequestBodyValidator implements Validator {
     }
 
     // NOTE: There may be a worthwhile optimization here to cache these results to avoid re-parsing the schema for every request. As is, I don't think this is a big deal.
-    const parser = RequestBodyParser.fromOperation(operation, { ajv });
+    const parser = RequestBodyParser.fromOperation(operation, {
+      compiler: this.compiler,
+    });
     const fetchRequest = mockttpToFetchRequest(request);
     await parser.parse(fetchRequest);
   }
@@ -48,14 +50,18 @@ class RequestBodyValidator implements Validator {
 
 class ResponseBodyValidator implements Validator {
   schema: OpenAPIObject;
-  constructor(schema: OpenAPIObject) {
+  compiler: SchemaCompiler;
+  constructor(schema: OpenAPIObject, compiler: SchemaCompiler) {
     this.schema = schema;
+    this.compiler = compiler;
   }
 
   async validate({ pair, operation }: ValidatorParams) {
     const { response } = pair;
     // NOTE: There may be a worthwhile optimization here to cache these results to avoid re-parsing the schema for every request. As is, I don't think this is a big deal.
-    const parser = ResponseBodyParser.fromOperation(operation, { ajv });
+    const parser = ResponseBodyParser.fromOperation(operation, {
+      compiler: this.compiler,
+    });
     const fetchResponse = mockttpToFetchResponse(response);
     await parser.parse(fetchResponse);
   }
@@ -116,11 +122,16 @@ export class OpenApiProxyValidator {
   validators: Validator[] | undefined;
 
   async initialize(url: string) {
-    this.schema = (await Parser.dereference(url)) as unknown as OpenAPIObject;
+    // Circular references are kept as refs so the schema stays serializable,
+    // the schema compiler resolves them instead.
+    this.schema = (await Parser.dereference(url, {
+      dereference: { circular: 'ignore' },
+    })) as unknown as OpenAPIObject;
+    const compiler = new SchemaCompiler(this.schema);
     this.validators = [
-      new ParameterValidator(this.schema),
-      new RequestBodyValidator(this.schema),
-      new ResponseBodyValidator(this.schema),
+      new ParameterValidator(this.schema, compiler),
+      new RequestBodyValidator(this.schema, compiler),
+      new ResponseBodyValidator(this.schema, compiler),
     ];
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { CompletedRequest, CompletedResponse } from 'mockttp';
-import { ErrorObject } from 'ajv';
+import { z } from 'zod';
 
 export function mockttpToFetchRequest(request: CompletedRequest) {
   const headers = new Headers(request.rawHeaders);
@@ -36,17 +36,41 @@ export function mockttpToFetchResponse(response: CompletedResponse) {
   } as Response;
 }
 
-export function humanifyAjvError(error: ErrorObject) {
-  switch (error.keyword) {
-    case 'required':
-      return `The "${error.params.missingProperty}" property is required`;
-    case 'type':
-      return `${
-        error.instancePath ? `"${error.instancePath}"` : 'Value'
-      } should be of type ${error.params.type}`;
-    case 'additionalProperties':
-      return `The "${error.params.additionalProperty}" property is not allowed`;
-    default:
-      return error.message;
-  }
+function formatPath(path: PropertyKey[]) {
+  return path.length ? `"/${path.map(String).join('/')}"` : 'Value';
+}
+
+/**
+ * Convert zod issues into human readable messages. Each issue may produce
+ * multiple messages, for example one per unrecognized key.
+ */
+export function humanifyZodIssues(issues: z.core.$ZodIssue[]): string[] {
+  return issues.flatMap(issue => {
+    switch (issue.code) {
+      case 'invalid_type':
+        // Issues are produced with `reportInput`, an undefined input means the value was missing.
+        if (
+          'input' in issue &&
+          issue.input === undefined &&
+          issue.path.length
+        ) {
+          return [
+            `The "${String(
+              issue.path[issue.path.length - 1],
+            )}" property is required`,
+          ];
+        }
+        return [
+          `${formatPath(issue.path)} should be of type ${issue.expected}`,
+        ];
+      case 'unrecognized_keys':
+        return issue.keys.map(key => `The "${key}" property is not allowed`);
+      default:
+        return [
+          issue.path.length
+            ? `${formatPath(issue.path)} ${issue.message}`
+            : issue.message,
+        ];
+    }
+  });
 }
