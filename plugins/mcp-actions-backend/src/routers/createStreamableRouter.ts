@@ -17,8 +17,11 @@ import PromiseRouter from 'express-promise-router';
 import { Router } from 'express';
 import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
-import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
-import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/server';
+import { toNodeHandler } from '@modelcontextprotocol/node';
+import {
+  createMcpHandler,
+  LATEST_PROTOCOL_VERSION,
+} from '@modelcontextprotocol/server';
 import { toError } from '@backstage/errors';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import {
@@ -81,27 +84,15 @@ export const createStreamableRouter = ({
         req,
       });
 
-      const transport = new NodeStreamableHTTPServerTransport({
-        // stateless implementation for now, so that we can support multiple
-        // instances of the server backend, and avoid sticky sessions.
-        sessionIdGenerator: undefined,
+      // Each handler closes over this request's credentials and server filters.
+      const handler = createMcpHandler(() => server, {
+        legacy: 'stateless',
+        onerror: error => logger.error(error.message),
       });
 
-      await server.connect(transport);
-
-      const ctx = tracing.propagation.extract(
-        tracing.context.active(),
-        req.headers,
-      );
-      await tracing.context.with(ctx, () =>
-        transport.handleRequest(req, res, req.body),
-      );
-
-      await connectionEvent.success();
-
       res.on('close', async () => {
-        transport.close();
-        server.close();
+        baseAttributes['mcp.protocol.version'] =
+          server.getNegotiatedProtocolVersion() ?? LATEST_PROTOCOL_VERSION;
 
         const durationSeconds = (performance.now() - sessionStart) / 1000;
 
@@ -114,6 +105,22 @@ export const createStreamableRouter = ({
         });
         await e.success();
       });
+
+      const ctx = tracing.propagation.extract(
+        tracing.context.active(),
+        req.headers,
+      );
+      try {
+        await tracing.context.with(ctx, () =>
+          toNodeHandler(handler, {
+            onerror: error => logger.error(error.message),
+          })(req, res, req.body),
+        );
+        await connectionEvent.success();
+      } finally {
+        await handler.close();
+        await server.close();
+      }
     } catch (error) {
       const err = toError(error);
       const errorType = err.name;

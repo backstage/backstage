@@ -254,7 +254,7 @@ auth:
 
 ## Configuring MCP Clients
 
-The MCP server uses the **Streamable HTTP** protocol. It uses MCP SDK v2 and retains support for existing clients through the handshake-based protocol revisions up to `2025-11-25`.
+The MCP server uses the **Streamable HTTP** protocol. It supports MCP revision `2026-07-28` and retains support for existing clients through the handshake-based protocol revisions up to `2025-11-25`. Both use the same endpoints. Modern clients must send the required `MCP-Protocol-Version`, `Mcp-Method`, and, where applicable, `Mcp-Name` headers. Reverse proxies and browser CORS policies must allow these headers. Tool discovery keeps the SDK defaults of private scope and zero cache lifetime because available actions depend on caller credentials.
 
 ### Endpoints
 
