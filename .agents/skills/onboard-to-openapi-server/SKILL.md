@@ -221,16 +221,16 @@ Do not run `yarn changesets version`. Write the changeset markdown files directl
 
 These all live in [`backstage/backstage`](https://github.com/backstage/backstage); the user's workspace likely doesn't contain them. Browse via the links below.
 
-| What you need                      | Where to read                                                                                                                                                                              |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Spec example (small)               | [`plugins/events-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/schema/openapi.yaml)                                      |
-| Spec example (large)               | [`plugins/catalog-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/schema/openapi.yaml)                                    |
-| Router using `createOpenApiRouter` | [`plugins/events-backend/src/service/hub/createEventBusRouter.ts`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/service/hub/createEventBusRouter.ts)      |
-| Test using `wrapServer`            | [`plugins/scaffolder-backend/src/service/router.test.ts`](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/service/router.test.ts)                        |
-| Generate command source            | [`packages/repo-tools/src/commands/package/schema/openapi/generate/`](https://github.com/backstage/backstage/tree/master/packages/repo-tools/src/commands/package/schema/openapi/generate) |
-| Spec lint command source           | [`packages/repo-tools/src/commands/repo/schema/openapi/lint.ts`](https://github.com/backstage/backstage/blob/master/packages/repo-tools/src/commands/repo/schema/openapi/lint.ts)          |
-| `wrapServer` implementation        | [`packages/backend-openapi-utils/src/testUtils.ts`](https://github.com/backstage/backstage/blob/master/packages/backend-openapi-utils/src/testUtils.ts)                                    |
-| Client output reference            | [`plugins/events-node/src/generated/`](https://github.com/backstage/backstage/tree/master/plugins/events-node/src/generated)                                                               |
+| What you need                      | Where to read                                                                                                                                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Spec example (small)               | [`plugins/events-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/schema/openapi.yaml)                                                                    |
+| Spec example (large)               | [`plugins/catalog-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/schema/openapi.yaml)                                                                  |
+| Router using `createOpenApiRouter` | [`plugins/events-backend/src/service/hub/createEventBusRouter.ts`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/service/hub/createEventBusRouter.ts)                                    |
+| Test using `wrapServer`            | [`plugins/scaffolder-backend/src/service/router.test.ts`](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/service/router.test.ts)                                                      |
+| Generate command source            | [`packages/cli-module-schema-openapi/src/commands/package/schema/openapi/generate/`](https://github.com/backstage/backstage/tree/master/packages/cli-module-schema-openapi/src/commands/package/schema/openapi/generate) |
+| Spec lint command source           | [`packages/cli-module-schema-openapi/src/commands/repo/schema/openapi/lint.ts`](https://github.com/backstage/backstage/blob/master/packages/cli-module-schema-openapi/src/commands/repo/schema/openapi/lint.ts)          |
+| `wrapServer` implementation        | [`packages/backend-openapi-utils/src/testUtils.ts`](https://github.com/backstage/backstage/blob/master/packages/backend-openapi-utils/src/testUtils.ts)                                                                  |
+| Client output reference            | [`plugins/events-node/src/generated/`](https://github.com/backstage/backstage/tree/master/plugins/events-node/src/generated)                                                                                             |
 
 ## Things to refuse / hand back to the user
 
